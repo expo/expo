@@ -59,7 +59,7 @@ class SessionSharedObjectTest {
 
       // Act — the very first touch is a write. If the INSERT didn't run first,
       // the FK on metrics.sessionId would throw FOREIGN KEY constraint failed.
-      session.addMetrics(listOf(createMetric("metric-1", session.sessionId)))
+      session.addMetrics(listOf(createInput("metric-1")))
 
       // Assert — both the row and the metric exist.
       assertNotNull(sessionManager.getSessionRow(session.sessionId))
@@ -235,11 +235,30 @@ class SessionSharedObjectTest {
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
 
-      session.addMetrics(listOf(createMetric("metric-1", session.sessionId)))
+      session.addMetrics(listOf(createInput("metric-1")))
       session.addLogs(listOf(createLog("log-1", session.sessionId)))
 
       assertEquals(setOf("metric-1"), session.getMetrics().map { it.metricId }.toSet())
       assertEquals(setOf("log-1"), session.getLogs().map { it.logId }.toSet())
+    }
+
+  @Test
+  fun `addMetrics stamps inputs with this session's id`() =
+    runTest {
+      // Metric inputs carry no session id — the shared object owns the association
+      // and stamps its own id onto every metric it persists.
+      val session = SessionSharedObject(
+        sessionManager = sessionManager,
+        scope = this,
+        type = "main",
+        customStartTimestamp = "2025-01-01T00:00:00.000Z"
+      )
+
+      session.addMetrics(listOf(createInput("metric-1")))
+
+      val persisted = session.getMetrics()
+      assertEquals(setOf("metric-1"), persisted.map { it.metricId }.toSet())
+      assertTrue(persisted.all { it.sessionId == session.sessionId })
     }
 
   @Test
@@ -267,13 +286,9 @@ class SessionSharedObjectTest {
 
   // region Helpers
 
-  private fun createMetric(
-    metricId: String,
-    sessionId: String
-  ): Metric =
-    Metric(
+  private fun createInput(metricId: String): MetricInput =
+    MetricInput(
       metricId = metricId,
-      sessionId = sessionId,
       timestamp = "2025-01-01T00:00:00.000Z",
       category = "test",
       name = "test-metric",

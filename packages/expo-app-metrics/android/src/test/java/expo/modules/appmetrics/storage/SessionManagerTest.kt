@@ -262,11 +262,11 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(session2Id, "2025-01-01T01:00:00.000Z")
 
       val metricsForSession1 = listOf(
-        createMetric("metric-1", ""),
-        createMetric("metric-2", "")
+        createInput("metric-1"),
+        createInput("metric-2")
       )
       val metricsForSession2 = listOf(
-        createMetric("metric-3", "")
+        createInput("metric-3")
       )
 
       // Act
@@ -301,8 +301,8 @@ class SessionManagerTest {
       }
 
       val metrics = listOf(
-        createMetric("metric-1", ""),
-        createMetric("metric-2", "")
+        createInput("metric-1"),
+        createInput("metric-2")
       )
 
       // Act
@@ -330,7 +330,7 @@ class SessionManagerTest {
         listener2Ids.addAll(metricIds)
       }
 
-      val metrics = listOf(createMetric("metric-1", ""))
+      val metrics = listOf(createInput("metric-1"))
 
       // Act
       sessionManager.addMetrics(metrics, sessionId)
@@ -354,9 +354,9 @@ class SessionManagerTest {
       sessionManager.addMetricsInsertListener(listener)
 
       // Act - add metrics, then remove listener, then add more metrics
-      sessionManager.addMetrics(listOf(createMetric("metric-1", "")), sessionId)
+      sessionManager.addMetrics(listOf(createInput("metric-1")), sessionId)
       sessionManager.removeMetricsInsertListener(listener)
-      sessionManager.addMetrics(listOf(createMetric("metric-2", "")), sessionId)
+      sessionManager.addMetrics(listOf(createInput("metric-2")), sessionId)
 
       // Assert - only the first metric should have been received
       assertEquals(1, receivedIds.size)
@@ -765,6 +765,22 @@ class SessionManagerTest {
     Metric(
       metricId = metricId,
       sessionId = sessionId,
+      timestamp = "2025-01-01T00:00:00.000Z",
+      category = category,
+      name = name,
+      value = value,
+      routeName = null,
+      params = null
+    )
+
+  private fun createInput(
+    metricId: String,
+    name: String = "test-metric",
+    category: String = "test",
+    value: Double = 123.45
+  ): MetricInput =
+    MetricInput(
+      metricId = metricId,
       timestamp = "2025-01-01T00:00:00.000Z",
       category = category,
       name = name,

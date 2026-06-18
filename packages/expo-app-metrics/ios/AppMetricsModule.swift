@@ -34,23 +34,13 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       )
     }
 
-    // TODO(@ubax): move `logEvent` onto the Session shared object so logs are recorded via a
-    // session handle (like `addMetric`), instead of writing to `mainSession` directly here.
+    // Convenience wrapper that records against the main session. Validation and record building
+    // happen here (via `makeLogRecord`); the session only persists, stamping its own id in
+    // `receiveLog`. `getMainSession()` returns this same `mainSession` instance.
     Function("logEvent") { (name: String, options: LogEventOptions?) in
-      guard let validatedName = validateEventName(name) else {
+      guard let record = makeLogRecord(name: name, options: options) else {
         return
       }
-      let validatedBody = validateEventBody(options?.body)
-      let sanitized = sanitizeLogEventAttributes(options?.attributes)
-      // Globals merge happens in `LogRow.from` so every persistence path picks them up.
-      let record = LogRecord(
-        name: validatedName,
-        body: validatedBody,
-        attributes: sanitized.attributes,
-        droppedAttributesCount: sanitized.droppedCount,
-        severity: options?.severity ?? .info
-      )
-
       AppMetricsActor.isolated {
         AppMetrics.mainSession.receiveLog(record)
       }
@@ -84,13 +74,6 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
         return try AppMetrics.database?
           .getInactiveSessionsWithChildren()
           .map { StoredSession(from: $0) } ?? []
-      }.value
-    }
-
-    AsyncFunction("addCustomMetricToSession") { (jsMetric: JsMetric) in
-      try await AppMetricsActor.isolated {
-        let metric = jsMetric.toMetric()
-        try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: jsMetric.sessionId))
       }.value
     }
 
@@ -131,6 +114,17 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
 
       AsyncFunction("addMetric") { (session: Session, input: SessionMetricInput) in
         try await AppMetricsActor.isolated { try session.addMetric(input) }.value
+      }
+
+      // Builds the record here (like the module-level `logEvent`) and lets the session persist it
+      // under its own id via `receiveLog`. Best-effort, unlike `addMetric`: an invalid event or a
+      // failed insert resolves the promise rather than rejecting it, since logging is telemetry that
+      // shouldn't surface errors to the app.
+      AsyncFunction("logEvent") { (session: Session, name: String, options: LogEventOptions?) in
+        guard let record = makeLogRecord(name: name, options: options) else {
+          return
+        }
+        try await AppMetricsActor.isolated { session.receiveLog(record) }.value
       }
     }
 

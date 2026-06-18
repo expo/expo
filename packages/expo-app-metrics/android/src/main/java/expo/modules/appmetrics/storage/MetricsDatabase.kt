@@ -116,6 +116,24 @@ data class Metric(
   val params: String? = null
 )
 
+// A metric before it's attached to a session — every `Metric` field except the
+// `sessionId`.
+data class MetricInput(
+  val metricId: String = UUID.randomUUID().toString(),
+  // ISO 8601 date string
+  val timestamp: String,
+  val category: String,
+  val name: String,
+  val value: Double,
+  val routeName: String? = null,
+  val updateId: String? = null,
+  // JSON string
+  val params: String? = null
+) {
+  fun stamp(sessionId: String): Metric =
+    Metric(metricId, sessionId, timestamp, category, name, value, routeName, updateId, params)
+}
+
 data class SessionWithMetrics(
   @Embedded val session: Session,
   @Relation(

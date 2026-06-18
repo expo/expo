@@ -25,9 +25,14 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
     // session (metrics, logs, `stop()`, crash reports) all go through the same actor, and tasks on
     // an actor run in submission order — so they always observe the INSERT before their own SQL
     // runs, even though no caller `await`s the task returned here. The invariant only holds because
-    // every metric-producing path enqueues *after* `Session.init` returns; if a future caller
-    // submits to `AppMetricsActor` from a parallel task that could race `init`, this should be
-    // converted to a stored `sessionStartTask` that downstream writes `await` before proceeding.
+    // every metric-producing path enqueues *after* `Session.init` returns.
+    //
+    // TODO(@ubax): this is no longer airtight. `session.addMetric`/`session.logEvent` are exposed to
+    // JS on the `Session` class, so a foreground session (created on `applicationDidBecomeActive`)
+    // can receive a write almost immediately — `Task`s aren't guaranteed to reach the actor in
+    // creation order, so the write can race the INSERT and hit an FK violation that `receiveLog`/
+    // `receiveMetric` silently swallow (a dropped row). Convert this to a stored `sessionStartTask`
+    // that downstream writes `await` before proceeding, mirroring Android's `awaitSessionPersisted`.
     AppMetricsActor.isolated { [self] in
       let environment = AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment()
       do {
@@ -126,7 +131,7 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
   /// Records a metric against this session. JS-facing: errors propagate so the caller's promise rejects.
   @AppMetricsActor
   func addMetric(_ input: SessionMetricInput) throws {
-    try insert(input.toMetric(sessionId: id))
+    try insert(input.toMetric())
   }
 
   // Persists a metric row for this session. Shared by the throwing JS path (`addMetric`) and the

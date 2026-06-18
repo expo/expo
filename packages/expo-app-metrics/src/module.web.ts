@@ -41,6 +41,7 @@ class WebSession extends globalThis.expo.SharedObject {
     return [];
   }
   async addMetric(_metric: MetricInput): Promise<void> {}
+  async logEvent(_name: string, _options?: LogEventOptions): Promise<void> {}
 }
 
 class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleType {

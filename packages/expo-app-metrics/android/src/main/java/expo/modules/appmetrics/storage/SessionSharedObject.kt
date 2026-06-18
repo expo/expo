@@ -32,7 +32,7 @@ class SessionSharedObject(
   /** Suspends until the session row has been persisted. */
   suspend fun awaitSessionPersisted() = sessionStartJob.join()
 
-  suspend fun addMetrics(metrics: List<Metric>) {
+  suspend fun addMetrics(metrics: List<MetricInput>) {
     awaitSessionPersisted()
     sessionManager.addMetrics(metrics, sessionId)
   }

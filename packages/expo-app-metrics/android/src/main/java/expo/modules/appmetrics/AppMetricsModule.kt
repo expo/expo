@@ -1,25 +1,22 @@
 package expo.modules.appmetrics
 
 import android.content.Context
+import android.util.Log
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.logevents.LogEventOptions
+import expo.modules.appmetrics.logevents.makeLogRecord
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
-import expo.modules.appmetrics.logevents.Severity
-import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
-import expo.modules.appmetrics.logevents.validateEventBody
-import expo.modules.appmetrics.logevents.validateEventName
-import expo.modules.appmetrics.memory.MemoryMetricsManager
 import expo.modules.appmetrics.storage.JsDebugSession
 import expo.modules.appmetrics.storage.JsLogRecord
 import expo.modules.appmetrics.storage.JsMetric
 import expo.modules.appmetrics.storage.LogRecord
+import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.storage.SessionMetricInput
 import expo.modules.appmetrics.storage.SessionSharedObject
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
-import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.CodedException
@@ -46,7 +43,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private val scope: CoroutineScope
     get() = appContext.modulesQueue
 
-  lateinit var memoryMetricsManager: MemoryMetricsManager
   lateinit var updatesMonitoring: UpdatesMonitoring
   private var subscription: UpdatesStateChangeSubscription? = null
 
@@ -75,13 +71,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
       }
 
-      // TODO(@ubax): move `logEvent` onto the Session shared object so logs are recorded via a
-      // session handle (like `addMetric`), instead of writing to `mainSession` directly here.
+      // Convenience wrapper that records against the main session. Validation and record building
+      // happen in `makeLogRecord`; the session only persists, stamping its own id in `addLogs`.
       Function("logEvent") { name: String, options: LogEventOptions? ->
-        val validatedName = validateEventName(name) ?: return@Function
-        val validatedBody = validateEventBody(options?.body)
-        val sanitized = sanitizeLogEventAttributes(options?.attributes)
-        val severity = options?.severity ?: Severity.INFO
+        val record = makeLogRecord(name, options) ?: return@Function
 
         scope.launch {
           // Attach any pending startup metrics first so the session has them
@@ -92,19 +85,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // Globals merge happens inside `sessionManager.addLogs` so every
           // persistence path picks them up. The session waits for its row
           // before inserting.
-          mainSession.addLogs(
-            listOf(
-              LogRecord(
-                sessionId = mainSession.sessionId,
-                timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
-                name = validatedName,
-                body = validatedBody,
-                severity = severity.rawValue,
-                attributes = sanitized.attributes?.let { JsonAny.encodeMapToJsonString(it) },
-                droppedAttributesCount = sanitized.droppedCount
-              )
-            )
-          )
+          mainSession.addLogs(listOf(record))
         }
       }
 
@@ -141,11 +122,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // matter. Relies on `<`, not `<=` (see SessionManagerTest).
         scope.launch { sessionManager.deactivateAllSessionsBefore(appSessionStartTimestamp) }
 
-        memoryMetricsManager = MemoryMetricsManager(
-          context = context,
-          sessionManager = sessionManager
-        )
-        updatesMonitoring = UpdatesMonitoring(session = mainSession)
+        updatesMonitoring = UpdatesMonitoring()
         updatesMonitoring.patchAppInfoIfNeeded(metadata)
         UpdatesControllerRegistry.controller?.get()?.let { controller ->
           subscription = controller.subscribeToUpdatesStateChanges(this@AppMetricsModule)
@@ -179,15 +156,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithMetrics(it) }
       }
 
-      AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->
-        return@Coroutine memoryMetricsManager.takeMemorySnapshot(sessionId)
-      }
-
       AsyncFunction("clearStoredEntries") Coroutine { -> sessionManager.clearAllData() }
-
-      AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
-        sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)
-      }
 
       Function("getMainSession") {
         mainSession
@@ -234,7 +203,22 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
 
         AsyncFunction("addMetric") Coroutine { ref: SessionSharedObject, metric: SessionMetricInput ->
-          ref.addMetrics(listOf(metric.toMetric(ref.sessionId)))
+          // `addMetrics` stamps the session id, so the input doesn't carry one.
+          ref.addMetrics(listOf(metric.toMetric()))
+        }
+
+        // Builds the record here (like the module-level `logEvent`) and lets the session persist it
+        // under its own id via `addLogs`. Invalid events are dropped without persisting. Best-effort:
+        // a failed insert is logged and swallowed so logging never rejects the caller's promise
+        // (matching iOS). Startup metrics aren't flushed here — that's a main-session concern handled
+        // by the module-level `logEvent` and lifecycle hooks, not a per-session log write.
+        AsyncFunction("logEvent") Coroutine { ref: SessionSharedObject, name: String, options: LogEventOptions? ->
+          val record = makeLogRecord(name, options) ?: return@Coroutine
+          try {
+            ref.addLogs(listOf(record))
+          } catch (e: Exception) {
+            Log.w(TAG, "[AppMetrics] Failed to record log event \"${record.name}\"", e)
+          }
         }
       }
     }

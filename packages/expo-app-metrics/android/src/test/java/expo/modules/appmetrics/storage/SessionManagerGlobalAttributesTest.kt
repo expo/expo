@@ -186,10 +186,9 @@ class SessionManagerGlobalAttributesTest {
     name: String = "test-metric",
     params: Map<String, Any?>? = null,
     rawParams: String? = null
-  ): Metric =
-    Metric(
+  ): MetricInput =
+    MetricInput(
       metricId = metricId,
-      sessionId = "",
       timestamp = "2025-01-01T00:00:00.000Z",
       category = "test",
       name = name,
