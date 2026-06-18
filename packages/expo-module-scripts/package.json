@@ -10,12 +10,6 @@
   },
   "exports": {
     "./package.json": "./package.json",
-    "./babel.config.*": {
-      "require": "./babel.config.*.cjs"
-    },
-    "./babel.config.*.js": {
-      "require": "./babel.config.*.cjs"
-    },
     "./eslintrc.base.js": {
       "require": "./eslintrc.base.cjs"
     },
