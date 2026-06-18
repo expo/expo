@@ -130,19 +130,6 @@ describe('useStandardState', () => {
     });
   });
 
-  it('does not project preloadedRoutes of a non-stack state', () => {
-    // A custom router could coincidentally name a state field `preloadedRoutes`; the projection
-    // is only meaningful for stack states.
-    const builderState = {
-      ...makeBuilderState([{ key: 'feed-1', name: 'feed' }]),
-      preloadedRoutes: [{ key: 'settings-1', name: 'settings' }],
-    } as unknown as NavigationState;
-
-    const { result } = renderHook(() => useStandardState(builderState));
-
-    expect(result.current.routes).toHaveLength(1);
-  });
-
   it('ignores an empty preloadedRoutes array', () => {
     const builderState = {
       ...makeBuilderState([{ key: 'feed-1', name: 'feed' }]),

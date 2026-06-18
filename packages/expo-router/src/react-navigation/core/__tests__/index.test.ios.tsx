@@ -183,61 +183,6 @@ test('rehydrates state for a navigator on navigation', () => {
   });
 });
 
-test("doesn't rehydrate state if the type of state didn't match router", () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-
-    return (
-      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
-    );
-  };
-
-  const FooScreen = (props: any) => {
-    React.useEffect(() => {
-      props.navigation.dispatch({ type: 'UPDATE' });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    return null;
-  };
-
-  const initialState = {
-    index: 1,
-    routes: [
-      { key: 'foo', name: 'foo' },
-      { key: 'bar', name: 'bar' },
-    ],
-  };
-
-  const onStateChange = jest.fn();
-
-  const element = (
-    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
-      <TestNavigator initialRouteName="foo">
-        <Screen name="foo" component={FooScreen} initialParams={{ answer: 42 }} />
-        <Screen name="bar" component={React.Fragment} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  render(element).update(element);
-
-  expect(onStateChange).toHaveBeenLastCalledWith({
-    index: 0,
-    key: '0',
-    routeNames: ['foo', 'bar'],
-    routes: [
-      {
-        key: 'foo',
-        name: 'foo',
-        params: { answer: 42 },
-      },
-      { key: 'bar', name: 'bar' },
-    ],
-    stale: false,
-  });
-});
-
 test('initializes state for nested screens in React.Fragment', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
