@@ -21,7 +21,6 @@
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "watch": "pnpm run build --watch --preserveWatchOutput",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "repository": {

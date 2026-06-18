@@ -32,7 +32,6 @@
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "watch": "expo-module tsc --watch --preserveWatchOutput",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "engines": {

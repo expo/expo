@@ -29,7 +29,6 @@
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "watch": "pnpm run build -w",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "engines": {

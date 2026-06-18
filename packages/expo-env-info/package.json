@@ -21,8 +21,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod",
-    "test": "expo-module test",
-    "watch": "pnpm run build -w"
+    "test": "expo-module test"
   },
   "repository": {
     "type": "git",

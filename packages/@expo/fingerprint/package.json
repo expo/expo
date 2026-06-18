@@ -15,8 +15,7 @@
     "expo-module": "expo-module",
     "pretest:e2e": "expo-module prepublishOnly",
     "test:e2e": "expo-module test --config e2e/jest.config.js",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch"
+    "typecheck": "expo-module typecheck"
   },
   "bin": {
     "fingerprint": "bin/cli.js"
