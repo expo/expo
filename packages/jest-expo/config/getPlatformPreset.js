@@ -3,6 +3,7 @@
 const { getBareExtensions } = require('./extensions');
 const { withWatchPlugins } = require('./withWatchPlugins');
 const expoPreset = require('../jest-preset');
+const { resolveBabelOptions } = require('../src/resolveBabelOptions');
 
 function getUpstreamBabelJest(transform) {
   const upstreamBabelJest = Object.keys(transform).find((key) =>
@@ -40,6 +41,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   });
 
   const upstreamBabelJest = getUpstreamBabelJest(expoPreset.transform) ?? '\\.[jt]sx?$';
+  const babelJestOptions = resolveBabelOptions(process.cwd());
 
   if (isReactServer && displayOptions && displayOptions.name) {
     displayOptions.name = `rsc/${extensions[0]}`;
@@ -51,6 +53,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
       [upstreamBabelJest]: [
         'babel-jest',
         {
+          ...babelJestOptions,
           caller: {
             name: 'metro',
             bundler: 'metro',
