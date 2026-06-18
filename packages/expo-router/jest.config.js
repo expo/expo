@@ -1,3 +1,4 @@
+const createJestPreset = require('expo-module-scripts/createJestPreset');
 const {
   getWebPreset,
   getNodePreset,
@@ -34,7 +35,9 @@ const projects = [
   getWebPreset(),
   getIOSPreset(),
   getAndroidPreset(),
-].map(withDefaults);
+]
+  .map(createJestPreset)
+  .map(withDefaults);
 
 const config = withWatchPlugins({
   projects,

@@ -1,3 +1,4 @@
+const createJestPreset = require('expo-module-scripts/createJestPreset');
 const { getWebPreset, getNodePreset } = require('jest-expo/config/getPlatformPreset');
 const { withWatchPlugins } = require('jest-expo/config/withWatchPlugins');
 const path = require('node:path');
@@ -14,7 +15,9 @@ const projects = [
   // Create a new project for each platform needed
   getNodePreset(),
   getWebPreset(),
-].map(withDefaults);
+]
+  .map(createJestPreset)
+  .map(withDefaults);
 
 projects.push({
   displayName: { name: 'Type Generation', color: 'blue' },
