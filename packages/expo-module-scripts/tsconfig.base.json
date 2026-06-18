@@ -18,6 +18,10 @@
     "esModuleInterop": true,
     "isolatedModules": true,
 
+    // Incremental type-checking cache
+    "incremental": true,
+    "tsBuildInfoFile": "${configDir}/.tsbuildinfo",
+
     // Output options
     "sourceMap": true,
     "declaration": true,

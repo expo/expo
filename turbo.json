@@ -12,7 +12,16 @@
         "utils/build/**"
       ],
       "outputLogs": "new-only",
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "typecheck": {
+      "outputs": [
+        ".tsbuildinfo",
+        "*/.tsbuildinfo"
+      ],
+      "outputLogs": "new-only"
     },
     "lint": {
       "cache": false
