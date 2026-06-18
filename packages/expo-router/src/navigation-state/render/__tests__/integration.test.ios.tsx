@@ -5,6 +5,7 @@ import { usePathname } from '../../../hooks';
 import { router } from '../../../imperative-api';
 import { Stack } from '../../../layouts/Stack';
 import { renderRouter, screen } from '../../../testing-library';
+import { useNavigation } from '../../../useNavigation';
 import { __resetNewStateModelForTests, enableNewStateModel } from '../../enable';
 import { __resetRouterRegistryForTests } from '../../routerRegistry';
 import { getNavSnapshot, useOptionalNavigationTree } from '../../store';
@@ -29,6 +30,19 @@ it('boots a Stack app from the new state model and renders the initial screen', 
     details: () => <Text testID="details">Details</Text>,
   });
   expect(screen.getByTestId('index')).toBeVisible();
+});
+
+it('a screen can call useNavigation() — per-scene NavigationContext is provided', () => {
+  function NavScreen() {
+    // Threw "Couldn't find a navigation object" before the per-scene NavigationProvider was added.
+    const navigation = useNavigation();
+    return <Text testID="canGoBack">{String(navigation.canGoBack())}</Text>;
+  }
+  renderRouter({
+    _layout: () => <Stack />,
+    index: NavScreen,
+  });
+  expect(screen.getByTestId('canGoBack')).toBeVisible();
 });
 
 it('router.push and router.back navigate, and usePathname tracks the new model', () => {

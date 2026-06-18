@@ -27,6 +27,7 @@ import type {
   NativeTabsViewTabItem,
   OnTabChangeEventPayload,
 } from '../../native-tabs/types';
+import { NavigationProvider } from '../../react-navigation/core/NavigationProvider';
 import { ThemeProvider } from '../../react-navigation/core/theming/ThemeProvider';
 import { DefaultTheme } from '../../react-navigation/native';
 import { getQualifiedRouteComponent } from '../../useScreens';
@@ -113,10 +114,14 @@ export function NativeTabs({ children }: { children?: ReactNode }) {
         name: tab.name,
         contentRenderer: () => {
           const Screen = getQualifiedRouteComponent(screenNode);
+          const route = { key: routeKey, name: tab.name };
           return (
-            <NavNodeProvider node={contentNode}>
-              <Screen route={{ key: routeKey, name: tab.name }} navigation={navigation} />
-            </NavNodeProvider>
+            // Per-scene navigation/route contexts so the tab screen's useNavigation()/useRoute() resolve.
+            <NavigationProvider route={route as never} navigation={navigation as never}>
+              <NavNodeProvider node={contentNode}>
+                <Screen route={route} navigation={navigation} />
+              </NavNodeProvider>
+            </NavigationProvider>
           );
         },
       };

@@ -18,6 +18,7 @@ import { projectToStackState } from './projectToStackState';
 import { useRouteNode, type RouteNode } from '../../Route';
 import { NavigationHelpersContext } from '../../react-navigation/core/NavigationHelpersContext';
 import { NavigationMetaContext } from '../../react-navigation/core/NavigationMetaContext';
+import { NavigationProvider } from '../../react-navigation/core/NavigationProvider';
 import { PreventRemoveProvider } from '../../react-navigation/core/PreventRemoveProvider';
 import { ThemeProvider } from '../../react-navigation/core/theming/ThemeProvider';
 import { FocusedRouteKeyContext } from '../../react-navigation/core/useIsFocused';
@@ -77,7 +78,18 @@ function useStackDescriptors(node: NavNode, layoutNode: RouteNode | null) {
           const Screen = getQualifiedRouteComponent(screenNode);
           const element = <Screen route={routeProp} navigation={navigation} />;
           // Hand the nested navigator (if any) its slice — the recursion seam.
-          return child ? <NavNodeProvider node={child}>{element}</NavNodeProvider> : element;
+          const content = child ? (
+            <NavNodeProvider node={child}>{element}</NavNodeProvider>
+          ) : (
+            element
+          );
+          // Per-scene navigation/route contexts so screens' useNavigation()/useRoute() resolve
+          // (normally set by useDescriptors' SceneView).
+          return (
+            <NavigationProvider route={routeProp as never} navigation={navigation as never}>
+              {content}
+            </NavigationProvider>
+          );
         },
       };
     }
