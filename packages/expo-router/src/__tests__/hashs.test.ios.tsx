@@ -78,12 +78,10 @@ it('can push a hash url', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -253,11 +251,9 @@ it('navigating to the same route with a hash will only rerender the screen', () 
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });

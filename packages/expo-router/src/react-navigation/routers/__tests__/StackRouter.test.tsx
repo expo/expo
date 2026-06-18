@@ -23,7 +23,6 @@ test('gets initial state from route names and params with initialRouteName', () 
     routeNames: ['bar', 'baz', 'qux'],
     routes: [{ key: 'baz-test', name: 'baz', params: { answer: 42 } }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -46,7 +45,6 @@ test('gets initial state from route names and params without initialRouteName', 
     routeNames: ['bar', 'baz', 'qux'],
     routes: [{ key: 'bar-test', name: 'bar' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -83,7 +81,6 @@ test('gets rehydrated state from partial state', () => {
       { key: 'qux-1', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
-    type: 'stack',
   });
 
   expect(
@@ -109,7 +106,6 @@ test('gets rehydrated state from partial state', () => {
       { key: 'qux-2', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
-    type: 'stack',
   });
 
   expect(
@@ -127,7 +123,6 @@ test('gets rehydrated state from partial state', () => {
     routeNames: ['bar', 'baz', 'qux'],
     routes: [{ key: 'bar-test', name: 'bar' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -141,7 +136,6 @@ test("doesn't rehydrate state if it's not stale", () => {
     routeNames: ['bar', 'baz', 'qux'],
     routes: [{ key: 'bar-test', name: 'bar' }],
     stale: false as const,
-    type: 'stack' as const,
   };
 
   expect(
@@ -169,7 +163,6 @@ test('gets state on route names change', () => {
           { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
         ],
         stale: false,
-        type: 'stack',
       },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
@@ -191,7 +184,6 @@ test('gets state on route names change', () => {
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
-    type: 'stack',
   });
 
   expect(
@@ -206,7 +198,6 @@ test('gets state on route names change', () => {
           { key: 'bar-test', name: 'bar' },
         ],
         stale: false,
-        type: 'stack',
       },
       {
         routeNames: ['baz', 'qux'],
@@ -224,7 +215,6 @@ test('gets state on route names change', () => {
     routeNames: ['baz', 'qux'],
     routes: [{ key: 'baz-test', name: 'baz', params: { name: 'John' } }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -243,7 +233,6 @@ test('gets state on route names change with initialRouteName', () => {
           { key: 'bar-test', name: 'bar' },
         ],
         stale: false,
-        type: 'stack',
       },
       {
         routeNames: ['baz', 'qux'],
@@ -261,7 +250,6 @@ test('gets state on route names change with initialRouteName', () => {
     routeNames: ['baz', 'qux'],
     routes: [{ key: 'qux-test', name: 'qux' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -277,7 +265,6 @@ test('handles navigate action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -292,7 +279,6 @@ test('handles navigate action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -312,7 +298,6 @@ test('handles navigate action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -327,7 +312,6 @@ test('handles navigate action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -352,7 +336,6 @@ test('updates params on navigate if already on the screen', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -367,7 +350,6 @@ test('updates params on navigate if already on the screen', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -391,7 +373,6 @@ test('merges params on navigate when specified', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -406,7 +387,6 @@ test('merges params on navigate when specified', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -430,7 +410,6 @@ test("doesn't navigate to nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -461,7 +440,6 @@ test('ensures unique ID for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 0,
         preloadedRoutes: [],
@@ -473,7 +451,6 @@ test('ensures unique ID for navigate', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -488,7 +465,6 @@ test('ensures unique ID for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -503,7 +479,6 @@ test('ensures unique ID for navigate', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -518,7 +493,6 @@ test('ensures unique ID for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -533,7 +507,6 @@ test('ensures unique ID for navigate', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -548,7 +521,6 @@ test('ensures unique ID for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -563,7 +535,6 @@ test('ensures unique ID for navigate', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -592,7 +563,6 @@ test('ensure unique ID is only per route name for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -607,7 +577,6 @@ test('ensure unique ID is only per route name for navigate', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -632,7 +601,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -651,7 +619,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -671,7 +638,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -690,7 +656,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 0,
     preloadedRoutes: [],
@@ -702,7 +667,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -721,7 +685,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -748,7 +711,6 @@ test('goes back to matching ID for navigate if pop: true', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -767,7 +729,6 @@ test('goes back to matching ID for navigate if pop: true', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -782,7 +743,6 @@ test('goes back to matching ID for navigate if pop: true', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -803,7 +763,6 @@ test('goes back to matching ID for navigate if pop: true', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -828,7 +787,6 @@ test('handles navigate action (legacy)', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -843,7 +801,6 @@ test('handles navigate action (legacy)', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -863,7 +820,6 @@ test('handles navigate action (legacy)', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -878,7 +834,6 @@ test('handles navigate action (legacy)', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 0,
     preloadedRoutes: [],
@@ -890,7 +845,6 @@ test('handles navigate action (legacy)', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -905,7 +859,6 @@ test('handles navigate action (legacy)', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -920,7 +873,6 @@ test('handles navigate action (legacy)', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -948,7 +900,6 @@ test("doesn't navigate to nonexistent screen (legacy)", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -967,7 +918,6 @@ test("doesn't navigate to nonexistent screen (legacy)", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1001,7 +951,6 @@ test('ensures unique ID for navigate (legacy)', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 0,
         preloadedRoutes: [],
@@ -1013,7 +962,6 @@ test('ensures unique ID for navigate (legacy)', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1028,7 +976,6 @@ test('ensures unique ID for navigate (legacy)', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1043,7 +990,6 @@ test('ensures unique ID for navigate (legacy)', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1058,7 +1004,6 @@ test('ensures unique ID for navigate (legacy)', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1073,7 +1018,6 @@ test('ensures unique ID for navigate (legacy)', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -1102,7 +1046,6 @@ test('ensure unique ID is only per route name for navigate (legacy)', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1117,7 +1060,6 @@ test('ensure unique ID is only per route name for navigate (legacy)', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -1142,7 +1084,6 @@ test('handles go back action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1157,7 +1098,6 @@ test('handles go back action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 0,
     preloadedRoutes: [],
@@ -1169,7 +1109,6 @@ test('handles go back action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 0,
         preloadedRoutes: [],
@@ -1194,7 +1133,6 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -1210,7 +1148,6 @@ test('handles pop action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1225,7 +1162,6 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -1241,7 +1177,6 @@ test('handles pop action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 0,
     preloadedRoutes: [],
@@ -1253,7 +1188,6 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -1269,7 +1203,6 @@ test('handles pop action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 0,
     preloadedRoutes: [],
@@ -1281,7 +1214,6 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -1301,7 +1233,6 @@ test('handles pop action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1316,7 +1247,6 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 4,
         preloadedRoutes: [],
@@ -1338,7 +1268,6 @@ test('handles pop action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -1354,7 +1283,6 @@ test('handles pop action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 0,
         preloadedRoutes: [],
@@ -1379,7 +1307,6 @@ test('handles pop to top action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -1395,7 +1322,6 @@ test('handles pop to top action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 0,
     preloadedRoutes: [],
@@ -1416,7 +1342,6 @@ test('replaces focused screen with replace', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         routes: [
@@ -1432,7 +1357,6 @@ test('replaces focused screen with replace', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     routes: [
@@ -1457,7 +1381,6 @@ test('replaces active screen with replace', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         routes: [
@@ -1476,7 +1399,6 @@ test('replaces active screen with replace', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     routes: [
@@ -1501,7 +1423,6 @@ test("handles replace if source key isn't present but target is not specified", 
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         routes: [
@@ -1529,7 +1450,6 @@ test("handles replace if source key isn't present but target is not specified", 
       { key: 'baz', name: 'baz' },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -1545,7 +1465,6 @@ test("doesn't handle replace if source key isn't present when target is specifie
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         routes: [
@@ -1578,7 +1497,6 @@ test("doesn't handle replace if screen to replace with isn't present", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         routes: [
@@ -1612,7 +1530,6 @@ test('handles push action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -1624,7 +1541,6 @@ test('handles push action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1639,7 +1555,6 @@ test('handles push action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -1651,7 +1566,6 @@ test('handles push action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1666,7 +1580,6 @@ test('handles push action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -1691,7 +1604,6 @@ test("doesn't push nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1722,7 +1634,6 @@ test('ensures unique ID for push', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 0,
         preloadedRoutes: [],
@@ -1734,7 +1645,6 @@ test('ensures unique ID for push', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1749,7 +1659,6 @@ test('ensures unique ID for push', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1764,7 +1673,6 @@ test('ensures unique ID for push', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1779,7 +1687,6 @@ test('ensures unique ID for push', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1794,7 +1701,6 @@ test('ensures unique ID for push', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -1823,7 +1729,6 @@ test('ensure unique ID is only per route name for push', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1838,7 +1743,6 @@ test('ensure unique ID is only per route name for push', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [],
@@ -1863,7 +1767,6 @@ test('adds path on navigate if provided', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1882,7 +1785,6 @@ test('adds path on navigate if provided', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1897,7 +1799,6 @@ test('adds path on navigate if provided', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1916,7 +1817,6 @@ test('adds path on navigate if provided', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1936,7 +1836,6 @@ test('adds path on navigate if provided', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 0,
         preloadedRoutes: [],
@@ -1951,7 +1850,6 @@ test('adds path on navigate if provided', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -1979,7 +1877,6 @@ test("doesn't remove existing path on navigate if not provided", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -1998,7 +1895,6 @@ test("doesn't remove existing path on navigate if not provided", () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2022,7 +1918,6 @@ test('handles popTo action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -2037,7 +1932,6 @@ test('handles popTo action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2056,7 +1950,6 @@ test('handles popTo action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -2071,7 +1964,6 @@ test('handles popTo action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 0,
     preloadedRoutes: [],
@@ -2083,7 +1975,6 @@ test('handles popTo action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -2098,7 +1989,6 @@ test('handles popTo action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2122,7 +2012,6 @@ test("doesn't popTo to nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -2152,7 +2041,6 @@ test("doesn't merge params on popTo to an existing screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -2168,7 +2056,6 @@ test("doesn't merge params on popTo to an existing screen", () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2183,7 +2070,6 @@ test("doesn't merge params on popTo to an existing screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -2198,7 +2084,6 @@ test("doesn't merge params on popTo to an existing screen", () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2225,7 +2110,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -2242,7 +2126,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2257,7 +2140,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -2272,7 +2154,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2291,7 +2172,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -2306,7 +2186,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 0,
     preloadedRoutes: [],
@@ -2333,7 +2212,6 @@ test("handles popTo if source key isn't present but target is not specified", ()
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         routes: [
@@ -2360,7 +2238,6 @@ test("handles popTo if source key isn't present but target is not specified", ()
       { key: 'qux-test', name: 'qux', params: { answer: 42 } },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -2376,7 +2253,6 @@ test('handles popTo when source and target match a route', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         routes: [
@@ -2404,7 +2280,6 @@ test('handles popTo when source and target match a route', () => {
       { key: 'qux-test', name: 'qux', params: { answer: 42 } },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -2420,7 +2295,6 @@ test("doesn't handle popTo if source key isn't present when target is specified"
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         routes: [
@@ -2458,7 +2332,6 @@ test('adds route to preloaded list with preload', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 2,
         preloadedRoutes: [],
@@ -2475,7 +2348,6 @@ test('adds route to preloaded list with preload', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 2,
     preloadedRoutes: [{ key: 'bar-test', name: 'bar', params: { color: 'test' } }],
@@ -2491,7 +2363,6 @@ test('adds route to preloaded list with preload', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -2511,7 +2382,6 @@ test('adds route to preloaded list with preload', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2530,7 +2400,6 @@ test('adds route to preloaded list with preload', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [],
@@ -2550,7 +2419,6 @@ test('adds route to preloaded list with preload', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [{ key: 'bar-test', name: 'bar', params: { answer: 43, color: 'test' } }],
@@ -2578,7 +2446,6 @@ test('uses preloaded route when pushing a route with the same name', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 0,
         preloadedRoutes: [
@@ -2602,7 +2469,6 @@ test('uses preloaded route when pushing a route with the same name', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [
@@ -2625,7 +2491,6 @@ test('uses preloaded route when pushing a route with the same name', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [
@@ -2650,7 +2515,6 @@ test('uses preloaded route when pushing a route with the same name', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [
@@ -2687,7 +2551,6 @@ test('uses preloaded route when pushing a route with the same ID', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 0,
         preloadedRoutes: [
@@ -2713,7 +2576,6 @@ test('uses preloaded route when pushing a route with the same ID', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2749,7 +2611,6 @@ test('does not use preloaded route when pushing a route with different ID', () =
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 0,
         preloadedRoutes: [
@@ -2776,7 +2637,6 @@ test('does not use preloaded route when pushing a route with different ID', () =
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [
@@ -2818,7 +2678,6 @@ test('uses preloaded route when replacing current route', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [
@@ -2839,7 +2698,6 @@ test('uses preloaded route when replacing current route', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2871,7 +2729,6 @@ test('uses preloaded route with the same ID when replacing current route', () =>
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [
@@ -2892,7 +2749,6 @@ test('uses preloaded route with the same ID when replacing current route', () =>
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -2924,7 +2780,6 @@ test('does not use preloaded route with different ID when replacing current rout
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [
@@ -2945,7 +2800,6 @@ test('does not use preloaded route with different ID when replacing current rout
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [
@@ -2981,7 +2835,6 @@ test('uses preloaded route with the same name when popTo replaces current route'
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [
@@ -3002,7 +2855,6 @@ test('uses preloaded route with the same name when popTo replaces current route'
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -3034,7 +2886,6 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [
@@ -3055,7 +2906,6 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [],
@@ -3087,7 +2937,6 @@ test('does not use preloaded route with different ID when popTo replaces current
     router.getStateForAction(
       {
         stale: false,
-        type: 'stack',
         key: 'root',
         index: 1,
         preloadedRoutes: [
@@ -3108,7 +2957,6 @@ test('does not use preloaded route with different ID when popTo replaces current
     )
   ).toEqual({
     stale: false,
-    type: 'stack',
     key: 'root',
     index: 1,
     preloadedRoutes: [

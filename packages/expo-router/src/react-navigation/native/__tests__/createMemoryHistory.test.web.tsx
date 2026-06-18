@@ -46,7 +46,6 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
         params: undefined,
       },
     ],
-    type: 'stack',
     stale: false,
   };
 
@@ -80,7 +79,6 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
         params: {},
       },
     ],
-    type: 'stack',
     stale: false,
   };
   history.push({ path: '/route-two', state: mockStateTwo });
@@ -134,7 +132,6 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
         params: undefined,
       },
     ],
-    type: 'stack',
     stale: false,
   };
   history.replace({ path: '/route-three', state: mockStateThree });
@@ -165,7 +162,6 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
         params: undefined,
       },
     ],
-    type: 'stack',
     stale: false,
   };
 

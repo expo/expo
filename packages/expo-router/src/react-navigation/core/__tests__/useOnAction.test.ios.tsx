@@ -93,7 +93,6 @@ test("lets parent handle the action if child didn't", () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
-    type: 'test',
     index: 2,
     key: '0',
     routeNames: ['foo', 'bar', 'baz'],
@@ -211,7 +210,6 @@ test("lets children handle the action if parent didn't with navigationInChildEna
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
-    type: 'test',
     index: 0,
     key: '0',
     routeNames: ['foo', 'bar', 'baz'],
@@ -221,7 +219,6 @@ test("lets children handle the action if parent didn't with navigationInChildEna
         name: 'baz',
         state: {
           stale: false,
-          type: 'test',
           index: 0,
           key: '1',
           routeNames: ['qux', 'lex'],
@@ -344,7 +341,6 @@ test('action goes to correct parent navigator if target is specified', () => {
 
   const initialState = {
     stale: false,
-    type: 'test',
     index: 1,
     key: '0',
     routeNames: ['foo', 'bar', 'baz'],
@@ -354,7 +350,6 @@ test('action goes to correct parent navigator if target is specified', () => {
         name: 'baz',
         state: {
           stale: false,
-          type: 'test',
           index: 0,
           key: '1',
           routeNames: ['qux', 'lex'],
@@ -393,7 +388,6 @@ test('action goes to correct parent navigator if target is specified', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
-    type: 'test',
     index: 1,
     key: '0',
     routeNames: ['foo', 'bar', 'baz'],
@@ -405,7 +399,6 @@ test('action goes to correct parent navigator if target is specified', () => {
         name: 'baz',
         state: {
           stale: false,
-          type: 'test',
           index: 0,
           key: '1',
           routeNames: ['qux', 'lex'],
@@ -458,7 +451,6 @@ test('action goes to correct child navigator if target is specified', () => {
 
   const initialState = {
     stale: false,
-    type: 'test',
     index: 0,
     key: '0',
     routeNames: ['foo', 'bar', 'baz'],
@@ -470,7 +462,6 @@ test('action goes to correct child navigator if target is specified', () => {
         name: 'baz',
         state: {
           stale: false,
-          type: 'test',
           index: 0,
           key: '1',
           routeNames: ['qux', 'lex'],
@@ -513,7 +504,6 @@ test('action goes to correct child navigator if target is specified', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
-    type: 'test',
     index: 2,
     key: '0',
     routeNames: ['foo', 'bar', 'baz'],
@@ -525,7 +515,6 @@ test('action goes to correct child navigator if target is specified', () => {
         name: 'baz',
         state: {
           stale: false,
-          type: 'test',
           index: 0,
           key: '1',
           routeNames: ['qux', 'lex'],
@@ -760,7 +749,6 @@ test("prevents removing a screen with 'beforeRemove' event", () => {
       { key: 'bar-5', name: 'bar' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -780,7 +768,6 @@ test("prevents removing a screen with 'beforeRemove' event", () => {
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -799,7 +786,6 @@ test("prevents removing a screen with 'beforeRemove' event", () => {
       { key: 'baz-6', name: 'baz' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   shouldPrevent = false;
@@ -814,7 +800,6 @@ test("prevents removing a screen with 'beforeRemove' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 
   shouldPrevent = true;
@@ -831,7 +816,6 @@ test("prevents removing a screen with 'beforeRemove' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -907,7 +891,6 @@ test("prevents removing a child screen with 'beforeRemove' event", () => {
       { key: 'bar-5', name: 'bar' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -931,12 +914,10 @@ test("prevents removing a child screen with 'beforeRemove' event", () => {
           routeNames: ['qux', 'lex'],
           routes: [{ key: 'qux-9', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -962,12 +943,10 @@ test("prevents removing a child screen with 'beforeRemove' event", () => {
           routeNames: ['qux', 'lex'],
           routes: [{ key: 'qux-9', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   shouldPrevent = false;
@@ -982,7 +961,6 @@ test("prevents removing a child screen with 'beforeRemove' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 
   shouldPrevent = true;
@@ -999,7 +977,6 @@ test("prevents removing a child screen with 'beforeRemove' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -1080,7 +1057,6 @@ test("prevents removing a grand child screen with 'beforeRemove' event", () => {
       { key: 'bar-5', name: 'bar' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -1113,17 +1089,14 @@ test("prevents removing a grand child screen with 'beforeRemove' event", () => {
                 routeNames: ['lex'],
                 routes: [{ key: 'lex-13', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -1158,17 +1131,14 @@ test("prevents removing a grand child screen with 'beforeRemove' event", () => {
                 routeNames: ['lex'],
                 routes: [{ key: 'lex-13', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   shouldPrevent = false;
@@ -1183,7 +1153,6 @@ test("prevents removing a grand child screen with 'beforeRemove' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 
   shouldPrevent = true;
@@ -1200,7 +1169,6 @@ test("prevents removing a grand child screen with 'beforeRemove' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -1309,17 +1277,14 @@ test("prevents removing by multiple screens with 'beforeRemove' event", () => {
                 routeNames: ['lex'],
                 routes: [{ key: 'lex-14', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   };
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
@@ -1362,7 +1327,6 @@ test("prevents removing by multiple screens with 'beforeRemove' event", () => {
     routeNames: ['foo', 'bar', 'baz', 'bax'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -1445,12 +1409,10 @@ test("prevents removing a child screen with 'beforeRemove' event with 'resetRoot
           routeNames: ['qux', 'lex'],
           routes: [{ key: 'qux-8', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() =>
@@ -1460,7 +1422,6 @@ test("prevents removing a child screen with 'beforeRemove' event with 'resetRoot
       routeNames: ['foo', 'bar', 'baz'],
       routes: [{ key: 'foo-3', name: 'foo' }],
       stale: false,
-      type: 'stack',
     })
   );
 
@@ -1484,12 +1445,10 @@ test("prevents removing a child screen with 'beforeRemove' event with 'resetRoot
           routeNames: ['qux', 'lex'],
           routes: [{ key: 'qux-8', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   shouldPrevent = false;
@@ -1501,7 +1460,6 @@ test("prevents removing a child screen with 'beforeRemove' event with 'resetRoot
       routeNames: ['foo', 'bar', 'baz'],
       routes: [{ key: 'foo-3', name: 'foo' }],
       stale: false,
-      type: 'stack',
     })
   );
 
@@ -1512,6 +1470,5 @@ test("prevents removing a child screen with 'beforeRemove' event with 'resetRoot
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-3', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });

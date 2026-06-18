@@ -37,7 +37,6 @@ test('gets initial state from route names and params with initialRouteName', () 
       { type: 'route', key: 'baz-test' },
     ],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -65,7 +64,6 @@ test('gets initial state from route names and params without initialRouteName', 
     ],
     history: [{ type: 'route', key: 'bar-test' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -103,7 +101,6 @@ test('gets rehydrated state from partial state', () => {
     ],
     history: [{ type: 'route', key: 'bar-0' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 
@@ -128,7 +125,6 @@ test('gets rehydrated state from partial state', () => {
       { type: 'route', key: 'baz-0' },
     ],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 
@@ -158,7 +154,6 @@ test('gets rehydrated state from partial state', () => {
       { type: 'route', key: 'qux-2' },
     ],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 
@@ -187,7 +182,6 @@ test('gets rehydrated state from partial state', () => {
       { type: 'route', key: 'qux-2' },
     ],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 
@@ -210,7 +204,6 @@ test('gets rehydrated state from partial state', () => {
     ],
     history: [{ type: 'route', key: 'bar-test' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 
@@ -238,7 +231,6 @@ test('gets rehydrated state from partial state', () => {
     ],
     history: [{ type: 'route', key: 'bar-test' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -257,7 +249,6 @@ test("doesn't rehydrate state if it's not stale", () => {
     ],
     history: [{ type: 'route', key: 'bar-test' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   };
 
@@ -308,7 +299,6 @@ test('restores correct history on rehydrating with backBehavior: order', () => {
       { key: 'baz-0', type: 'route' },
     ],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -347,7 +337,6 @@ test('restores correct history on rehydrating with backBehavior: history', () =>
     ],
     history: [{ key: 'baz-0', type: 'route' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -386,7 +375,6 @@ test('restores correct history on rehydrating with backBehavior: fullHistory', (
     ],
     history: [{ key: 'baz-0', type: 'route' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -431,7 +419,6 @@ test('restores correct history on rehydrating with backBehavior: firstRoute', ()
       { key: 'baz-0', type: 'route' },
     ],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -476,7 +463,6 @@ test('restores correct history on rehydrating with backBehavior: initialRoute', 
       { key: 'baz-0', type: 'route' },
     ],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -515,7 +501,6 @@ test('restores correct history on rehydrating with backBehavior: none', () => {
     ],
     history: [{ key: 'baz-0', type: 'route' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -536,7 +521,6 @@ test('gets state on route names change', () => {
         ],
         history: [{ type: 'route', key: 'bar-test' }],
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
       },
       {
@@ -561,7 +545,6 @@ test('gets state on route names change', () => {
     ],
     history: [{ type: 'route', key: 'qux-test' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 
@@ -577,7 +560,6 @@ test('gets state on route names change', () => {
         ],
         history: [{ type: 'route', key: 'bar-test' }],
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
       },
       {
@@ -597,7 +579,6 @@ test('gets state on route names change', () => {
     ],
     history: [{ type: 'route', key: 'foo-test' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -618,7 +599,6 @@ test('preserves focused route on route names change', () => {
         ],
         history: [{ type: 'route', key: 'baz-test' }],
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
       },
       {
@@ -643,7 +623,6 @@ test('preserves focused route on route names change', () => {
     ],
     history: [{ type: 'route', key: 'baz-test' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -664,7 +643,6 @@ test('falls back to first route if route is removed on route names change', () =
         ],
         history: [{ type: 'route', key: 'baz-test' }],
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
       },
       {
@@ -688,7 +666,6 @@ test('falls back to first route if route is removed on route names change', () =
     ],
     history: [{ type: 'route', key: 'qux-test' }],
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
   });
 });
@@ -705,7 +682,6 @@ test('handles navigate action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -721,7 +697,6 @@ test('handles navigate action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 0,
@@ -746,7 +721,6 @@ test('merges params on navigate when specified', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -762,7 +736,6 @@ test('merges params on navigate when specified', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 0,
@@ -787,7 +760,6 @@ test("doesn't navigate to nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -807,7 +779,6 @@ test("doesn't navigate to nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -839,7 +810,6 @@ test('ensures unique ID for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 0,
@@ -855,7 +825,6 @@ test('ensures unique ID for navigate', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 0,
@@ -871,7 +840,6 @@ test('ensures unique ID for navigate', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 0,
@@ -887,7 +855,6 @@ test('ensures unique ID for navigate', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -915,7 +882,6 @@ test('handles jump to action', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 0,
@@ -931,7 +897,6 @@ test('handles jump to action', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -959,7 +924,6 @@ test("doesn't jump to nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -991,7 +955,6 @@ test('ensures unique ID for jump to', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 0,
@@ -1007,7 +970,6 @@ test('ensures unique ID for jump to', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 0,
@@ -1023,7 +985,6 @@ test('ensures unique ID for jump to', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 0,
@@ -1039,7 +1000,6 @@ test('ensures unique ID for jump to', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -1075,7 +1035,6 @@ test('handles back action with backBehavior: history', () => {
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 0,
@@ -1096,7 +1055,6 @@ test('handles back action with backBehavior: history', () => {
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 2,
@@ -1120,7 +1078,6 @@ test('handles back action with backBehavior: history', () => {
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 1,
@@ -1157,7 +1114,6 @@ test('handles back action with backBehavior: fullHistory', () => {
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 0,
@@ -1178,7 +1134,6 @@ test('handles back action with backBehavior: fullHistory', () => {
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 2,
@@ -1202,7 +1157,6 @@ test('handles back action with backBehavior: fullHistory', () => {
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 1,
@@ -1240,7 +1194,6 @@ test('handles back action with backBehavior: order', () => {
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 1,
@@ -1264,7 +1217,6 @@ test('handles back action with backBehavior: order', () => {
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 0,
@@ -1306,7 +1258,6 @@ test('handles back action with backBehavior: initialRoute', () => {
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 0,
@@ -1327,7 +1278,6 @@ test('handles back action with backBehavior: initialRoute', () => {
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 0,
@@ -1373,7 +1323,6 @@ test('handles back action with backBehavior: initialRoute and initialRouteName',
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 1,
@@ -1394,7 +1343,6 @@ test('handles back action with backBehavior: initialRoute and initialRouteName',
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'tab-test',
     index: 1,
@@ -1454,7 +1402,6 @@ test('updates route key history on navigate and jump to with backBehavior: histo
       { key: 'qux-0', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false as const,
-    type: 'tab',
     preloadedRouteKeys: [],
   };
 
@@ -1528,7 +1475,6 @@ test('updates route key history on focus change with backBehavior: history', () 
     ],
     history: [{ type: 'route' as const, key: 'bar-0' }],
     stale: false,
-    type: 'tab',
   };
 
   state = router.getStateForRouteFocus(state, 'bar-0');
@@ -1578,7 +1524,6 @@ test('updates route key history on navigate and jump to with backBehavior: fullH
       { key: 'qux-0', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false as const,
-    type: 'tab',
     preloadedRouteKeys: [],
   };
 
@@ -1761,7 +1706,6 @@ test('updates route key history on focus change with backBehavior: fullHistory',
     ],
     history: [{ type: 'route' as const, key: 'bar-0' }],
     stale: false,
-    type: 'tab',
   };
 
   state = router.getStateForRouteFocus(state, 'bar-0');
@@ -1823,7 +1767,6 @@ test('adds path on navigate if provided', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -1843,7 +1786,6 @@ test('adds path on navigate if provided', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -1863,7 +1805,6 @@ test('adds path on navigate if provided', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -1888,7 +1829,6 @@ test('adds path on navigate if provided', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -1922,7 +1862,6 @@ test("doesn't remove existing path on navigate if not provided", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -1939,7 +1878,6 @@ test("doesn't remove existing path on navigate if not provided", () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -1970,7 +1908,6 @@ test("doesn't merge params on navigate to an existing screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -1987,7 +1924,6 @@ test("doesn't merge params on navigate to an existing screen", () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -2007,7 +1943,6 @@ test("doesn't merge params on navigate to an existing screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -2024,7 +1959,6 @@ test("doesn't merge params on navigate to an existing screen", () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -2044,7 +1978,6 @@ test("doesn't merge params on navigate to an existing screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -2061,7 +1994,6 @@ test("doesn't merge params on navigate to an existing screen", () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 2,
@@ -2090,7 +2022,6 @@ test('merges params on navigate to an existing screen if merge: true', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -2110,7 +2041,6 @@ test('merges params on navigate to an existing screen if merge: true', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -2130,7 +2060,6 @@ test('merges params on navigate to an existing screen if merge: true', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -2151,7 +2080,6 @@ test('merges params on navigate to an existing screen if merge: true', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -2180,7 +2108,6 @@ test("doesn't merge params on jump to an existing screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -2197,7 +2124,6 @@ test("doesn't merge params on jump to an existing screen", () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -2217,7 +2143,6 @@ test("doesn't merge params on jump to an existing screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 1,
@@ -2234,7 +2159,6 @@ test("doesn't merge params on jump to an existing screen", () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 1,
@@ -2265,7 +2189,6 @@ test('handles screen preloading', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 0,
@@ -2282,7 +2205,6 @@ test('handles screen preloading', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: ['qux'],
     key: 'root',
     index: 0,
@@ -2299,7 +2221,6 @@ test('handles screen preloading', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 0,
@@ -2316,7 +2237,6 @@ test('handles screen preloading', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: ['bar-test'],
     key: 'root',
     index: 0,
@@ -2333,7 +2253,6 @@ test('handles screen preloading', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: ['bar-test-old'],
         key: 'root',
         index: 0,
@@ -2354,7 +2273,6 @@ test('handles screen preloading', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: ['bar-test'],
     key: 'root',
     index: 0,
@@ -2371,7 +2289,6 @@ test('handles screen preloading', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 0,
@@ -2392,7 +2309,6 @@ test('handles screen preloading', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: ['bar-test'],
     key: 'root',
     index: 0,
@@ -2413,7 +2329,6 @@ test('handles screen preloading', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: ['qux-test'],
         key: 'root',
         index: 0,
@@ -2434,7 +2349,6 @@ test('handles screen preloading', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 2,
@@ -2458,7 +2372,6 @@ test('handles screen preloading', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: ['baz-test'],
         key: 'root',
         index: 2,
@@ -2482,7 +2395,6 @@ test('handles screen preloading', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: [],
     key: 'root',
     index: 0,
@@ -2503,7 +2415,6 @@ test('handles screen preloading', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 2,
@@ -2527,7 +2438,6 @@ test('handles screen preloading', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: ['bar-some'],
     key: 'root',
     index: 2,
@@ -2551,7 +2461,6 @@ test('handles screen preloading', () => {
     router.getStateForAction(
       {
         stale: false,
-        type: 'tab',
         preloadedRouteKeys: [],
         key: 'root',
         index: 2,
@@ -2575,7 +2484,6 @@ test('handles screen preloading', () => {
     )
   ).toEqual({
     stale: false,
-    type: 'tab',
     preloadedRouteKeys: ['bar-test'],
     key: 'root',
     index: 2,

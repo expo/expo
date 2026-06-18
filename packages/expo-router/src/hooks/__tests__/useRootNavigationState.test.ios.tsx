@@ -37,7 +37,6 @@ describe(useRootNavigationState, () => {
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 
@@ -83,7 +82,6 @@ describe(useRootNavigationState, () => {
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 
@@ -120,7 +118,6 @@ describe(useRootNavigationState, () => {
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 
@@ -166,7 +163,6 @@ describe(useRootNavigationState, () => {
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });

@@ -115,7 +115,6 @@ describe(getTabPathFromRootStateByHref, () => {
   it('returns single tab path with one tab navigator in href, but without change', () => {
     const state = {
       stale: false,
-      type: 'stack',
       key: 'stack-JffH1vhEyC5DchHoYg_-L',
       index: 0,
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -124,7 +123,6 @@ describe(getTabPathFromRootStateByHref, () => {
           name: '__root',
           state: {
             stale: false,
-            type: 'tab',
             key: 'tab-IBiK_OuEIIGFJ_YDRF760',
             index: 1,
             routeNames: ['index', 'faces', 'explore'],
@@ -145,7 +143,6 @@ describe(getTabPathFromRootStateByHref, () => {
                 key: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
                 state: {
                   stale: false,
-                  type: 'stack',
                   key: 'stack-7sR1tGrlUaLv2LXn74x0d',
                   index: 0,
                   routeNames: ['index', '[face]'],
@@ -191,7 +188,6 @@ describe(getTabPathFromRootStateByHref, () => {
   it('returns single tab path with one tab navigator in href and with change', () => {
     const state = {
       stale: false,
-      type: 'stack',
       key: 'stack-BwGGEF5WBtNuQP8AG6YUK',
       index: 0,
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -200,7 +196,6 @@ describe(getTabPathFromRootStateByHref, () => {
           name: '__root',
           state: {
             stale: false,
-            type: 'tab',
             key: 'tab-gFrqtQnDMQQ8qMMIptL6E',
             index: 0,
             routeNames: ['index', 'faces', 'explore'],
@@ -221,7 +216,6 @@ describe(getTabPathFromRootStateByHref, () => {
                 key: 'faces-CtzasUGRC7VBM70ECYYD9',
                 state: {
                   stale: false,
-                  type: 'stack',
                   key: 'stack-0o3mKk6OKgAREN0rnNN9T',
                   index: 0,
                   routeNames: ['index', '[face]'],
@@ -287,7 +281,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
   it('returns correct preloaded route in the same stack', () => {
     const state = {
       stale: false,
-      type: 'stack',
       key: 'stack-JffH1vhEyC5DchHoYg_-L',
       index: 0,
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -296,7 +289,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
           name: '__root',
           state: {
             stale: false,
-            type: 'tab',
             key: 'tab-IBiK_OuEIIGFJ_YDRF760',
             index: 1,
             routeNames: ['index', 'faces', 'explore'],
@@ -317,7 +309,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
                 key: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
                 state: {
                   stale: false,
-                  type: 'stack',
                   key: 'stack-7sR1tGrlUaLv2LXn74x0d',
                   index: 0,
                   routeNames: ['index', '[face]'],
@@ -364,7 +355,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
   it('returns correct preloaded route in the different stack in different tab', () => {
     const state = {
       stale: false,
-      type: 'stack',
       key: 'stack-BwGGEF5WBtNuQP8AG6YUK',
       index: 0,
       routeNames: ['__root', '+not-found', '_sitemap'],
@@ -373,7 +363,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
           name: '__root',
           state: {
             stale: false,
-            type: 'tab',
             key: 'tab-gFrqtQnDMQQ8qMMIptL6E',
             index: 0,
             routeNames: ['index', 'faces', 'explore'],
@@ -394,7 +383,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
                 key: 'faces-CtzasUGRC7VBM70ECYYD9',
                 state: {
                   stale: false,
-                  type: 'stack',
                   key: 'stack-0o3mKk6OKgAREN0rnNN9T',
                   index: 0,
                   routeNames: ['index', '[face]'],

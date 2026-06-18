@@ -49,7 +49,6 @@ describe('hash support', () => {
         },
       ],
       stale: true,
-      type: 'stack',
     };
 
     const config = {
@@ -86,7 +85,6 @@ describe('hash support', () => {
         },
       ],
       stale: false,
-      type: 'stack',
     };
 
     const config = {
@@ -146,7 +144,6 @@ describe('state mutation safety', () => {
         },
       ],
       stale: false,
-      type: 'stack',
     };
 
     const config = {
