@@ -26,8 +26,8 @@ importers:
         specifier: ^2.1.2
         version: 2.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(use-sync-external-store@1.6.0(react@19.2.6))
       '@expo/styleguide-icons':
-        specifier: ^4.2.4
-        version: 4.2.4(react@19.2.6)(tailwindcss@4.2.4)
+        specifier: ^4.2.5
+        version: 4.2.6(react@19.2.6)(tailwindcss@4.2.4)
       '@expo/styleguide-search-ui':
         specifier: ^9.1.7
         version: 9.1.7(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(next@16.2.6(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.2.4)
@@ -765,13 +765,18 @@ packages:
     peerDependencies:
       react: '>= 19'
 
+  '@expo/styleguide-base@3.1.4':
+    resolution: {integrity: sha512-nYr0MYFDKjTqkJVMEfkhfCejCiGOfyuSnzsRkM2Ux49BwpygONF2fCzJcWMSGE8KoEYaYjRydRiSwqKT2VJY8g==}
+    peerDependencies:
+      react: '>= 19'
+
   '@expo/styleguide-cookie-consent@2.1.2':
     resolution: {integrity: sha512-97X0ZCcV2Q1hNoDk70gfnqFuXdh3RvaHVfCjhktz1RIXWLJRM9CvsqgZWIl6DgCyb9xCnYL0RCZOpNPp2L614w==}
     peerDependencies:
       react: '>= 19'
 
-  '@expo/styleguide-icons@4.2.4':
-    resolution: {integrity: sha512-ibh6sVj+IsGkhdeyMfj28l7vb0JBUSSbrOeW2L2OJQ+hn29TonK9vg/HW1AaUEp9rEZAEUmLEEV4kjejvkOXIA==}
+  '@expo/styleguide-icons@4.2.6':
+    resolution: {integrity: sha512-IBjcInVTDg3zPJaskppMy/FQzhYK1HewtL3OWVpwinL45L+IzqluWV+K6oDPuis0VFDzFkIcnbEXAuR0DkecVQ==}
     peerDependencies:
       react: '>= 19'
       tailwindcss: ^4.2.2
@@ -7550,6 +7555,12 @@ snapshots:
       react: 19.2.6
       tailwind-merge: 3.5.0
 
+  '@expo/styleguide-base@3.1.4(react@19.2.6)':
+    dependencies:
+      '@radix-ui/colors': 3.0.0
+      react: 19.2.6
+      tailwind-merge: 3.5.0
+
   '@expo/styleguide-cookie-consent@2.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(use-sync-external-store@1.6.0(react@19.2.6))':
     dependencies:
       '@radix-ui/react-accordion': 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -7565,16 +7576,16 @@ snapshots:
       - react-dom
       - use-sync-external-store
 
-  '@expo/styleguide-icons@4.2.4(react@19.2.6)(tailwindcss@4.2.4)':
+  '@expo/styleguide-icons@4.2.6(react@19.2.6)(tailwindcss@4.2.4)':
     dependencies:
-      '@expo/styleguide-base': 3.1.2(react@19.2.6)
+      '@expo/styleguide-base': 3.1.4(react@19.2.6)
       react: 19.2.6
       tailwindcss: 4.2.4
 
   '@expo/styleguide-search-ui@9.1.7(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(next@16.2.6(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.2.4)':
     dependencies:
       '@expo/styleguide': 14.1.5(next@16.2.6(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(tailwindcss@4.2.4)
-      '@expo/styleguide-icons': 4.2.4(react@19.2.6)(tailwindcss@4.2.4)
+      '@expo/styleguide-icons': 4.2.6(react@19.2.6)(tailwindcss@4.2.4)
       '@kapaai/react-sdk': 0.9.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@sanity/client': 7.21.0
       '@sanity/image-url': 2.1.1
