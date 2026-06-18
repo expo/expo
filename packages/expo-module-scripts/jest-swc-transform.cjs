@@ -15,7 +15,7 @@ module.exports = {
           plugins: [[require.resolve('@swc-contrib/mut-cjs-exports'), {}]],
         },
       },
-      module: { type: 'commonjs', lazy: true },
+      module: { type: 'commonjs' },
     },
   ],
 };
