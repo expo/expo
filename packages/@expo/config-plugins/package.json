@@ -104,7 +104,8 @@
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.7.0",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
   },
   "publishConfig": {
     "access": "public"

@@ -1,5 +1,6 @@
-import * as WarningAggregator from '../../utils/warnings';
 import { setRequiresFullScreen } from '../RequiresFullScreen';
+import type { InfoPlist } from '../IosConfig.types';
+import * as WarningAggregator from '../../utils/warnings';
 
 it(`sets UIRequiresFullScreen value`, () => {
   expect(setRequiresFullScreen({ ios: { requireFullScreen: true } }, {})).toMatchObject({
@@ -94,10 +95,10 @@ it(`does not warn when predefined orientation mask is empty`, () => {
 });
 
 it(`cannot remove predefined orientation mask`, () => {
-  let plist = {};
+  let plist: InfoPlist = {};
   plist = setRequiresFullScreen({ ios: { requireFullScreen: false, supportsTablet: true } }, plist);
-  expect(plist['UISupportedInterfaceOrientations~ipad']?.length).toBe(4);
+  expect((plist['UISupportedInterfaceOrientations~ipad'] as unknown[])?.length).toBe(4);
   plist = setRequiresFullScreen({ ios: { requireFullScreen: true, isTabletOnly: true } }, plist);
-  expect(plist['UISupportedInterfaceOrientations~ipad']?.length).toBe(4);
+  expect((plist['UISupportedInterfaceOrientations~ipad'] as unknown[])?.length).toBe(4);
   expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
 });
