@@ -511,7 +511,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const appDir = path.join(this.projectRoot, routerRoot);
     const url = this.getDevServerUrlOrAssert();
 
-    const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
+    const { getStaticContent, getStreamingContent, getManifest, getBuildTimeServerManifestAsync } =
       await this.ssrLoadModule<
         typeof import('@expo/router-server/build/static/renderStaticContent')
       >(require.resolve('@expo/router-server/node/render.js'), {
@@ -538,6 +538,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Get route generating function
       renderAsync: async (path, route, opts?) => {
         const location = new URL(path, url);
+        if (useServerRendering) {
+          // SSG is rendered through the streaming renderer so static export and runtime SSR share
+          // one rendering path. `opts.hydrate` (set to `true` by the export) flows through to the
+          // bootstrap script; there is no longer a post-render step to inject the flag.
+          return await getStreamingContent(location, { ...opts, output: 'static' });
+        }
         return await getStaticContent(location, opts);
       },
       executeLoaderAsync: async (path, route) => {
@@ -749,30 +755,47 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return { content };
     }
 
-    const [{ artifacts: resources }, { getStaticContent }, { loader }] = await Promise.all([
-      this.getStaticResourcesAsync({ clientBoundaries: [] }),
-      this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
-        require.resolve('@expo/router-server/node/render.js'),
-        {
-          // This must always use the legacy rendering resolution (no `react-server`) because it leverages
-          // the previous React SSG utilities which aren't available in React 19.
-          environment: 'node',
-          minify: false,
-          isExporting,
-          platform,
-        }
-      ),
-      this.getDevServerRenderOptionsAsync({ location, route, request }),
-    ]);
+    const [{ artifacts: resources }, { getStaticContent, getStreamingContent }, { loader }] =
+      await Promise.all([
+        this.getStaticResourcesAsync({ clientBoundaries: [] }),
+        this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
+          require.resolve('@expo/router-server/node/render.js'),
+          {
+            // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+            // the previous React SSG utilities which aren't available in React 19.
+            environment: 'node',
+            minify: false,
+            isExporting,
+            platform,
+          }
+        ),
+        this.getDevServerRenderOptionsAsync({ location, route, request }),
+      ]);
+
+    const assets = serialAssetsToStaticContentAssets(resources, {
+      isExporting: false,
+      baseUrl,
+      bundleUrl: devBundleUrlPathname,
+    });
+
+    // Reaching here with `unstable_useServerRendering` means `web.output` is `static` (the
+    // `output: 'server'` SSR case returned above), i.e. SSG in development — render it through the
+    // streaming renderer, draining to a string, so dev SSG matches the export's rendering path.
+    const useServerRendering = exp.extra?.router?.unstable_useServerRendering === true;
+    if (useServerRendering) {
+      const content = await getStreamingContent(location, {
+        ...(loader ? { loader } : {}),
+        output: 'static',
+        hydrate: env.EXPO_WEB_DEV_HYDRATE,
+        assets,
+      });
+      return { content, resources };
+    }
 
     const content = await getStaticContent(location, {
       ...(loader ? { loader } : {}),
       hydrate: env.EXPO_WEB_DEV_HYDRATE,
-      assets: serialAssetsToStaticContentAssets(resources, {
-        isExporting: false,
-        baseUrl,
-        bundleUrl: devBundleUrlPathname,
-      }),
+      assets,
     });
     return {
       content,
