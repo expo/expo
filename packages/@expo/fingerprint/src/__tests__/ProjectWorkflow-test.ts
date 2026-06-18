@@ -5,7 +5,9 @@ import { resolveExpoConfigPluginsPackagePath } from '../ExpoResolver';
 import { resolveProjectWorkflowAsync } from '../ProjectWorkflow';
 import { buildPathMatchObjects } from '../utils/Path';
 
-const defaultSpawnAsync = async (command: string, args: readonly string[] = []) => {
+// Function declaration (not a `const`) so it's hoisted and available to the hoisted
+// `jest.mock` factory below, which references it before this line runs.
+async function defaultSpawnAsync(command: string, args: readonly string[] = []) {
   if (command === 'git' && args[0] === '--help') {
     return { status: 0 };
   }
@@ -13,7 +15,7 @@ const defaultSpawnAsync = async (command: string, args: readonly string[] = []) 
     return { stdout: '/app' };
   }
   throw new Error(`Unexpected command: ${command} ${args.join(' ')}`);
-};
+}
 jest.mock('@expo/spawn-async', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(defaultSpawnAsync),
