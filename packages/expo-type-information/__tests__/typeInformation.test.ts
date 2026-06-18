@@ -4,13 +4,16 @@ import * as fs from 'fs';
 import { GetFileTypeInformationOptions } from '../build';
 import { generateTSMockForModule } from '../src/mockgen';
 import {
-  FileTypeInformation,
   getFileTypeInformation,
-  ModuleClassDeclaration,
   serializeTypeInformation,
-  TypeInferenceOption,
   withPreparedSingleFile,
 } from '../src/typeInformation';
+import {
+  GetFileTypeInformationOptions,
+  TypeInferenceOption,
+  ModuleClassDeclaration,
+  FileTypeInformation,
+} from '../src/typeInformation.types';
 import {
   generateFullTsInterface,
   generateConciseTsInterface,
