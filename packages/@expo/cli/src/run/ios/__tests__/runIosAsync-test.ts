@@ -131,6 +131,7 @@ describe(resolveOptionsAsync, () => {
       deviceType: 'device',
       udid: '00008101-001964A22629003A',
       connectionType: 'USB',
+      osType: 'iOS',
     });
     jest.mocked(isSimulatorDevice).mockReturnValueOnce(false);
     mockPlatform('darwin');

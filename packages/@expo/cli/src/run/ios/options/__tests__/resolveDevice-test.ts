@@ -82,7 +82,7 @@ describe(resolveDeviceAsync, () => {
           scheme: '123',
           xcodeProject: { isWorkspace: true, name: '123 ' },
         })
-      ).name
+      )!.name
     ).toEqual('iPhone 8');
     expect(AppleDeviceManager.assertSystemRequirementsAsync).toHaveBeenCalled();
   });
@@ -95,7 +95,7 @@ describe(resolveDeviceAsync, () => {
           scheme: '123',
           xcodeProject: { isWorkspace: true, name: '123 ' },
         })
-      ).name
+      )!.name
     ).toEqual(`Evan's phone`);
 
     expect(promptDeviceAsync).toHaveBeenCalledWith([expect.anything(), expect.anything()]);
@@ -112,7 +112,7 @@ describe(resolveDeviceAsync, () => {
           scheme: '123',
           xcodeProject: { isWorkspace: true, name: '123 ' },
         })
-      ).name
+      )!.name
     ).toEqual(`Evan's phone`);
 
     expect(promptDeviceAsync).not.toHaveBeenCalled();
@@ -129,7 +129,7 @@ describe(resolveDeviceAsync, () => {
           scheme: '123',
           xcodeProject: { isWorkspace: true, name: '123 ' },
         })
-      ).udid
+      )!.udid
     ).toEqual(`00008101-001964A22629003A`);
 
     expect(promptDeviceAsync).not.toHaveBeenCalled();

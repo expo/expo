@@ -27,8 +27,8 @@ describe('createInteractiveMenuItems', () => {
       Promise.resolve()
     );
     expect(menuItems.length).toBe(1);
-    expect(menuItems[menuItems.length - 1].title).toBe(chalk`Open {bold test-plugin}`);
-    expect(menuItems[menuItems.length - 1].children).toBeUndefined();
+    expect(menuItems[menuItems.length - 1]!.title).toBe(chalk`Open {bold test-plugin}`);
+    expect(menuItems[menuItems.length - 1]!.children).toBeUndefined();
   });
 
   it('should create a main menu item with one child when plugin with one command is provided', () => {
@@ -56,9 +56,9 @@ describe('createInteractiveMenuItems', () => {
       Promise.resolve()
     );
     expect(menuItems.length).toBe(1);
-    expect(menuItems[menuItems.length - 1].title).toBe(chalk`{bold test-plugin}`);
-    expect(menuItems[menuItems.length - 1].children?.length).toBe(1);
-    expect(menuItems[menuItems.length - 1].children[0].title).toBe('Test Command');
+    expect(menuItems[menuItems.length - 1]!.title).toBe(chalk`{bold test-plugin}`);
+    expect(menuItems[menuItems.length - 1]!.children?.length).toBe(1);
+    expect(menuItems[menuItems.length - 1]!.children![0]!.title).toBe('Test Command');
   });
 
   it('should create a main menu item with two child when plugin with two commands is provided', () => {
@@ -92,10 +92,10 @@ describe('createInteractiveMenuItems', () => {
       Promise.resolve()
     );
     expect(menuItems.length).toBe(1);
-    expect(menuItems[menuItems.length - 1].title).toBe(chalk`{bold test-plugin}`);
-    expect(menuItems[menuItems.length - 1].children?.length).toBe(2);
-    expect(menuItems[menuItems.length - 1].children[0].title).toBe('Test Command 1');
-    expect(menuItems[menuItems.length - 1].children[1].title).toBe('Test Command 2');
+    expect(menuItems[menuItems.length - 1]!.title).toBe(chalk`{bold test-plugin}`);
+    expect(menuItems[menuItems.length - 1]!.children?.length).toBe(2);
+    expect(menuItems[menuItems.length - 1]!.children![0]!.title).toBe('Test Command 1');
+    expect(menuItems[menuItems.length - 1]!.children![1]!.title).toBe('Test Command 2');
   });
 
   it('should create a main menu item with two children when plugin with webpage url and a command is provided', () => {
@@ -124,10 +124,10 @@ describe('createInteractiveMenuItems', () => {
       Promise.resolve()
     );
     expect(menuItems.length).toBe(1);
-    expect(menuItems[menuItems.length - 1].title).toBe(chalk`{bold test-plugin}`);
-    expect(menuItems[menuItems.length - 1].children?.length).toBe(2);
-    expect(menuItems[menuItems.length - 1].children[0].title).toBe(chalk`Open {bold test-plugin}`);
-    expect(menuItems[menuItems.length - 1].children[1].title).toBe('Test Command 1');
+    expect(menuItems[menuItems.length - 1]!.title).toBe(chalk`{bold test-plugin}`);
+    expect(menuItems[menuItems.length - 1]!.children?.length).toBe(2);
+    expect(menuItems[menuItems.length - 1]!.children![0]!.title).toBe(chalk`Open {bold test-plugin}`);
+    expect(menuItems[menuItems.length - 1]!.children![1]!.title).toBe('Test Command 1');
   });
 
   it('should return empty list if no commands supports the cli environment', () => {

@@ -1,5 +1,7 @@
+import type { ConnectedDevice } from '../../appleDevice/AppleDevice';
 import { stripAnsi } from '../../../../utils/ansi';
 import { formatDeviceChoice } from '../promptDevice';
+import type { Device } from '../../../../start/platforms/ios/simctl';
 
 describe(formatDeviceChoice, () => {
   it(`formats USB connected device`, () => {
@@ -10,7 +12,8 @@ describe(formatDeviceChoice, () => {
       deviceType: 'device',
       connectionType: 'USB',
       udid: '00008101-001964A22629003A',
-    });
+      osType: 'iOS',
+    } as ConnectedDevice);
 
     expect(stripAnsi(option.title)).toEqual(`🔌 Evan's phone (15.4.1)`);
     expect(stripAnsi(option.value)).toEqual('00008101-001964A22629003A');
@@ -23,7 +26,8 @@ describe(formatDeviceChoice, () => {
       deviceType: 'device',
       connectionType: 'Network',
       udid: '00008101-001964A22629003A',
-    });
+      osType: 'iOS',
+    } as ConnectedDevice);
 
     expect(stripAnsi(option.title)).toEqual(`🌐 Evan's phone (15.4.1)`);
     expect(stripAnsi(option.value)).toEqual('00008101-001964A22629003A');
@@ -44,7 +48,7 @@ describe(formatDeviceChoice, () => {
       osVersion: '15.4',
       windowName: 'iPhone 8 (15.4)',
       osType: 'iOS',
-    });
+    } as Device);
 
     expect(stripAnsi(option.title)).toEqual(`iPhone 8 (15.4)`);
     expect(stripAnsi(option.value)).toEqual('ADEF1A93-5D20-40C3-826C-5A4E04DBBB52');
@@ -64,7 +68,7 @@ describe(formatDeviceChoice, () => {
       osVersion: '15.4',
       windowName: 'iPhone 8 Plus (15.4)',
       osType: 'iOS',
-    });
+    } as Device);
 
     expect(stripAnsi(option.title)).toEqual(`iPhone 8 Plus (15.4)`);
     expect(stripAnsi(option.value)).toEqual('4DE5F2E1-C6FF-4CCE-BD27-7D40E2674066');

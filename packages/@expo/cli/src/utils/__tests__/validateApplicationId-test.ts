@@ -52,7 +52,7 @@ describe(validatePackageWithWarning, () => {
 });
 
 describe(getSanitizedBundleIdentifier, () => {
-  [
+  ([
     // Sanity
     ['bacon.com.hey', 'bacon.com.hey'],
     // Most likely outcome
@@ -70,7 +70,7 @@ describe(getSanitizedBundleIdentifier, () => {
     ['native.ios', 'native.ios'],
     ['com.native', 'com.native'],
     ['a.b', 'a.b'],
-  ].forEach(([input, output]) => {
+  ] as [string, string][]).forEach(([input, output]) => {
     it(`sanitizes ${input} to valid "${output}"`, () => {
       const sanitized = getSanitizedBundleIdentifier(input);
       expect(sanitized).toBe(output);
@@ -80,7 +80,7 @@ describe(getSanitizedBundleIdentifier, () => {
 });
 
 describe(getSanitizedPackage, () => {
-  [
+  ([
     // Sanity
     ['bacon.com.hey', 'bacon.com.hey'],
     // Most likely outcome
@@ -105,7 +105,7 @@ describe(getSanitizedPackage, () => {
     ['. ..', 'com.app'],
     [',', 'com.app'],
     ['...b.a.-c.0.n...', 'b.a.c.x0.n'],
-  ].forEach(([input, output]) => {
+  ] as [string, string][]).forEach(([input, output]) => {
     it(`sanitizes ${input} to valid "${output}"`, () => {
       const sanitized = getSanitizedPackage(input);
       expect(sanitized).toBe(output);

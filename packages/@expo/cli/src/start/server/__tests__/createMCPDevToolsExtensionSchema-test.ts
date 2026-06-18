@@ -39,14 +39,18 @@ describe(createMCPDevToolsExtensionSchema, () => {
   });
 
   it('throws error if plugin has no commands', () => {
-    const pluginWithoutCommands: DevToolsPlugin = {
-      packageName: 'no-commands-plugin',
-      packageRoot: '/path/to/no-commands-plugin',
-      cliExtensions: {
-        entryPoint: 'cli-extension.js',
-        commands: [],
-      },
-    } as DevToolsPlugin;
+    const pluginWithoutCommands = new DevToolsPlugin(
+      // Intentionally invalid (no commands) to exercise the validation path.
+      {
+        packageName: 'no-commands-plugin',
+        packageRoot: '/path/to/no-commands-plugin',
+        cliExtensions: {
+          entryPoint: 'cli-extension.js',
+          commands: [],
+        },
+      } as unknown as DevToolsPluginInfo,
+      ''
+    );
 
     expect(() => {
       createMCPDevToolsExtensionSchema(pluginWithoutCommands);

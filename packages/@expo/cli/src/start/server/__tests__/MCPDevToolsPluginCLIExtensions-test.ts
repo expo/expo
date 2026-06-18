@@ -306,8 +306,10 @@ describe(addMcpCapabilities, () => {
     await handler({ parameters: { command: 'safe-read', id: 'abc' } });
 
     expect(MockedExecutor).toHaveBeenCalledTimes(1);
-    const [executorPluginArg] = MockedExecutor.mock.calls[0];
-    expect(executorPluginArg.cliExtensions?.commands.map((c) => c.name)).toEqual(['safe-read']);
+    const [executorPluginArg] = MockedExecutor.mock.calls[0]!;
+    expect(
+      executorPluginArg.cliExtensions?.commands.map((c: DevToolsPluginCommand) => c.name)
+    ).toEqual(['safe-read']);
   });
 });
 

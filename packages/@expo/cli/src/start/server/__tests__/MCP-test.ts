@@ -1,4 +1,3 @@
-// @ts-expect-error
 import resolveFrom from 'resolve-from';
 
 import { Log } from '../../../log';
@@ -125,7 +124,7 @@ describe(maybeCreateMCPServerAsync, () => {
       projectRoot: '/app',
       devServerUrl: 'http://localhost:8081',
     });
-    await server.closeAsync();
+    await server!.closeAsync();
     expect(mockRemoveExitHook).toHaveBeenCalledTimes(1);
   });
 });

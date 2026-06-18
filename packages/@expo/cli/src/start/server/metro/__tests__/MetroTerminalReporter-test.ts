@@ -1,5 +1,4 @@
 import type { Terminal } from '@expo/metro/metro-core';
-import arg = require('arg');
 import { stripVTControlCharacters } from 'node:util';
 
 import { stripAnsi } from '../../../../utils/ansi';
@@ -50,8 +49,9 @@ describe('symbolicate React stacks', () => {
     persistStatus: jest.fn(),
     status: jest.fn(),
     flush: jest.fn(),
+    // `_update` is a private member of `Terminal`, so it must be added explicitly.
     _update: jest.fn(),
-  } satisfies Partial<Terminal>;
+  } satisfies Partial<Terminal> & { _update: jest.Mock };
 
   const reporter = new MetroTerminalReporter('/', terminal as any);
   reporter._getElapsedTime = jest.fn(() => BigInt(100));
@@ -254,8 +254,9 @@ describe('client log platform prefix and format substitution', () => {
     persistStatus: jest.fn(),
     status: jest.fn(),
     flush: jest.fn(),
+    // `_update` is a private member of `Terminal`, so it must be added explicitly.
     _update: jest.fn(),
-  } satisfies Partial<Terminal>;
+  } satisfies Partial<Terminal> & { _update: jest.Mock };
 
   const reporter = new MetroTerminalReporter('/', terminal as any);
 
@@ -589,7 +590,7 @@ describe('non-interactive terminal output', () => {
   function collectOutputOrder(terminal: { log: jest.Mock; status: jest.Mock }) {
     const output: { type: 'log' | 'status'; content: string }[] = [];
     terminal.log.mockImplementation((...args: any[]) => {
-      output.push({ type: 'log', content: stripAnsi(args.join(' ')) });
+      output.push({ type: 'log', content: stripAnsi(args.join(' ')) ?? '' });
     });
     terminal.status.mockImplementation((...args: any[]) => {
       const content = stripAnsi(args.join(' '));
@@ -670,7 +671,6 @@ describe('non-interactive terminal output', () => {
 
     // Now check the status calls: in non-TTY mode, these become permanent output.
     // After a bundle completes, the status should not contain progress bars for completed bundles.
-    const statusMessages = output.filter((o) => o.type === 'status');
 
     // Find the status call that happens right after the first "Bundled" log
     const firstBundledIndex = output.findIndex(
@@ -733,19 +733,11 @@ describe('status cleared before log lines', () => {
    */
 
   const buildID1 = 'build-1';
-  const buildID2 = 'build-2';
   const entryFile = 'node_modules/expo-router/entry.js';
-  const serverEntry = 'packages/@expo/router-server/node/render.js';
   const webDetails = asBundleDetails({
     entryFile,
     platform: 'web',
     bundleType: 'bundle',
-  });
-  const serverDetails = asBundleDetails({
-    entryFile: serverEntry,
-    platform: 'web',
-    bundleType: 'bundle',
-    customTransformOptions: { environment: 'node' },
   });
 
   function createReporter() {
@@ -753,13 +745,15 @@ describe('status cleared before log lines', () => {
 
     const terminal = {
       log: jest.fn((...args: any[]) => {
-        const content = stripAnsi(args.join(' '));
+        const content = stripAnsi(args.join(' ')) ?? '';
         callOrder.push({ type: 'log', content });
       }),
       persistStatus: jest.fn(),
       status: jest.fn((...args: any[]) => {
-        const content = stripAnsi(args.join(' '));
+        const content = stripAnsi(args.join(' ')) ?? '';
         callOrder.push({ type: 'status', content });
+        // `Terminal.status` returns the resolved status string.
+        return content;
       }),
       flush: jest.fn(),
     } satisfies Partial<Terminal>;
