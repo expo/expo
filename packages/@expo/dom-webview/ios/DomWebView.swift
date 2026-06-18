@@ -225,7 +225,7 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
       let script = """
       window.ReactNativeWebView = window.ReactNativeWebView || {};
       window.ReactNativeWebView.injectedObjectJson = function () {
-        return `\(source)`;
+        return JSON.stringify(\(source));
       }
       true;
       """
