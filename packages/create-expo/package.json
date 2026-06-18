@@ -53,6 +53,7 @@
     "expo-module-scripts": "workspace:*",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
+    "memfs": "^3.2.0",
     "nock": "^14.0.10",
     "ora": "3.4.0",
     "picomatch": "^2.3.2",
