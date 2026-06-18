@@ -136,11 +136,13 @@ export class DevToolsPlugin {
   }
 
   get cliBanner(): boolean {
-    return this.plugin?.cliBanner ?? false;
+    return this.plugin.bannerTitle !== undefined && this.plugin.bannerTitle !== false;
   }
 
   get bannerTitle(): string {
-    return this.plugin?.bannerTitle ?? this.plugin.packageName;
+    return typeof this.plugin.bannerTitle === 'string' && this.plugin.bannerTitle
+      ? this.plugin.bannerTitle
+      : this.plugin.packageName;
   }
 
   get description(): string {

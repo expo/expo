@@ -14,8 +14,7 @@ afterEach(() => {
 function createRevision(
   pkgDir: string,
   webpageRoot: string | undefined,
-  cliBanner?: boolean,
-  bannerTitle?: string,
+  bannerTitle?: boolean | string,
   serverEntryPoint?: string
 ) {
   return {
@@ -26,7 +25,6 @@ function createRevision(
       platforms: ['devtools'],
       devtools: {
         ...(webpageRoot != null ? { webpageRoot } : {}),
-        ...(cliBanner != null ? { cliBanner } : {}),
         ...(bannerTitle != null ? { bannerTitle } : {}),
         ...(serverEntryPoint != null ? { serverEntryPoint } : {}),
       },
@@ -50,24 +48,24 @@ describe(resolveModuleAsync, () => {
     const result = await resolveModuleAsync('example-devtools', createRevision(pkgDir, 'web'));
     expect(result).not.toBeNull();
     expect(result!.webpageRoot).toBe(path.join(pkgDir, 'web'));
-    expect(result!.cliBanner).toBe(false);
+    expect(result!.bannerTitle).toBeUndefined();
   });
 
-  it('resolves cliBanner option', async () => {
+  it('resolves boolean bannerTitle option', async () => {
     const pkgDir = path.resolve('/node_modules/example-devtools');
     const result = await resolveModuleAsync(
       'example-devtools',
       createRevision(pkgDir, 'web', true)
     );
     expect(result).not.toBeNull();
-    expect(result!.cliBanner).toBe(true);
+    expect(result!.bannerTitle).toBe(true);
   });
 
-  it('resolves bannerTitle option', async () => {
+  it('resolves string bannerTitle option', async () => {
     const pkgDir = path.resolve('/node_modules/example-devtools');
     const result = await resolveModuleAsync(
       'example-devtools',
-      createRevision(pkgDir, 'web', true, 'Example DevTools')
+      createRevision(pkgDir, 'web', 'Example DevTools')
     );
     expect(result).not.toBeNull();
     expect(result!.bannerTitle).toBe('Example DevTools');
@@ -84,7 +82,7 @@ describe(resolveModuleAsync, () => {
     const pkgDir = path.resolve('/node_modules/example-devtools');
     const result = await resolveModuleAsync(
       'example-devtools',
-      createRevision(pkgDir, 'web', undefined, undefined, 'dist/server.js')
+      createRevision(pkgDir, 'web', undefined, 'dist/server.js')
     );
     expect(result).not.toBeNull();
     expect(result!.serverEntryPoint).toBe(path.join(pkgDir, 'dist', 'server.js'));
@@ -94,7 +92,7 @@ describe(resolveModuleAsync, () => {
     const pkgDir = path.resolve('/node_modules/example-devtools');
     const result = await resolveModuleAsync(
       'example-devtools',
-      createRevision(pkgDir, undefined, undefined, undefined, 'dist/server.js')
+      createRevision(pkgDir, undefined, undefined, 'dist/server.js')
     );
     expect(result).not.toBeNull();
     expect(result!.webpageRoot).toBeUndefined();
@@ -105,7 +103,7 @@ describe(resolveModuleAsync, () => {
     const pkgDir = path.resolve('/project/node_modules/malicious');
     const result = await resolveModuleAsync(
       'malicious',
-      createRevision(pkgDir, 'web', undefined, undefined, '../../evil.js')
+      createRevision(pkgDir, 'web', undefined, '../../evil.js')
     );
     expect(result).not.toBeNull();
     expect(result!.serverEntryPoint).toBeUndefined();

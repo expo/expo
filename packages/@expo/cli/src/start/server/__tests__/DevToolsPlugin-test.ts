@@ -22,12 +22,11 @@ describe('DevToolsPlugin', () => {
     expect(plugin.description).toBe('');
   });
 
-  it('should create an instance from a plugin with cliBanner enabled', () => {
+  it('should create an instance from a plugin with a custom bannerTitle', () => {
     const pluginDescriptor = {
       packageName: 'example-plugin',
       packageRoot: '/path/to/example-plugin',
       webpageRoot: '/path/to/example-plugin/web',
-      cliBanner: true,
       bannerTitle: 'Example Plugin',
     };
     const projectRoot = '/path/to/project';
@@ -35,6 +34,64 @@ describe('DevToolsPlugin', () => {
 
     expect(plugin.cliBanner).toBe(true);
     expect(plugin.bannerTitle).toBe('Example Plugin');
+  });
+
+  it('should use the package name when bannerTitle is true', () => {
+    const pluginDescriptor = {
+      packageName: 'example-plugin',
+      packageRoot: '/path/to/example-plugin',
+      webpageRoot: '/path/to/example-plugin/web',
+      bannerTitle: true,
+    };
+    const projectRoot = '/path/to/project';
+    const plugin = new DevToolsPlugin(pluginDescriptor, projectRoot);
+
+    expect(plugin.cliBanner).toBe(true);
+    expect(plugin.bannerTitle).toBe('example-plugin');
+  });
+
+  it('should reject an empty bannerTitle', () => {
+    const pluginDescriptor = {
+      packageName: 'example-plugin',
+      packageRoot: '/path/to/example-plugin',
+      webpageRoot: '/path/to/example-plugin/web',
+      bannerTitle: '',
+    };
+    const projectRoot = '/path/to/project';
+
+    expect(() => new DevToolsPlugin(pluginDescriptor, projectRoot)).toThrow(
+      'Invalid plugin configuration:'
+    );
+  });
+
+  it('should use the package name when a resolved bannerTitle is an empty string', () => {
+    const plugin = new DevToolsPlugin(
+      {
+        packageName: 'example-plugin',
+        packageRoot: '/path/to/example-plugin',
+        webpageRoot: '/path/to/example-plugin/web',
+        bannerTitle: true,
+      },
+      '/path/to/project'
+    );
+    (plugin as unknown as { plugin: { bannerTitle: string } }).plugin.bannerTitle = '';
+
+    expect(plugin.cliBanner).toBe(true);
+    expect(plugin.bannerTitle).toBe('example-plugin');
+  });
+
+  it('should not set a banner title when bannerTitle is false', () => {
+    const pluginDescriptor = {
+      packageName: 'example-plugin',
+      packageRoot: '/path/to/example-plugin',
+      webpageRoot: '/path/to/example-plugin/web',
+      bannerTitle: false,
+    };
+    const projectRoot = '/path/to/project';
+    const plugin = new DevToolsPlugin(pluginDescriptor, projectRoot);
+
+    expect(plugin.cliBanner).toBe(false);
+    expect(plugin.bannerTitle).toBe('example-plugin');
   });
 
   it('should reject a webpageRoot that escapes the package directory', () => {
@@ -221,9 +278,11 @@ describe('DevToolsPlugin', () => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
       expect(isEsmEntryPoint('/pkg/dist/server.js', '/pkg')).toBe(false);
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining(
-        'Unable to load package.json for DevTools plugin server entry point /pkg/dist/server.js, loading as CommonJS.'
-      ));
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Unable to load package.json for DevTools plugin server entry point /pkg/dist/server.js, loading as CommonJS.'
+        )
+      );
       warn.mockRestore();
     });
   });

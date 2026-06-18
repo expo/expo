@@ -5,14 +5,22 @@ const DEFAULT_SERVER_URL = 'http://localhost:8081';
 const DEFAULT_PROJECT_ROOT = '/path/to/project';
 
 describe(getDevToolsPluginCliBannerItems, () => {
-  it('returns banner items for opted-in webpage plugins only', () => {
+  it('returns banner items for webpage plugins with bannerTitle only', () => {
     const visiblePlugin = new DevToolsPlugin(
       {
         packageName: 'visible-plugin',
         packageRoot: '/path/to/visible-plugin',
         webpageRoot: '/path/to/visible-plugin/web',
-        cliBanner: true,
         bannerTitle: 'Visible Plugin',
+      },
+      DEFAULT_PROJECT_ROOT
+    );
+    const packageTitlePlugin = new DevToolsPlugin(
+      {
+        packageName: 'package-title-plugin',
+        packageRoot: '/path/to/package-title-plugin',
+        webpageRoot: '/path/to/package-title-plugin/web',
+        bannerTitle: true,
       },
       DEFAULT_PROJECT_ROOT
     );
@@ -28,7 +36,7 @@ describe(getDevToolsPluginCliBannerItems, () => {
       {
         packageName: 'cli-plugin',
         packageRoot: '/path/to/cli-plugin',
-        cliBanner: true,
+        bannerTitle: true,
         cliExtensions: {
           description: 'CLI only',
           entryPoint: 'index.js',
@@ -40,13 +48,17 @@ describe(getDevToolsPluginCliBannerItems, () => {
 
     expect(
       getDevToolsPluginCliBannerItems(
-        [visiblePlugin, hiddenPlugin, cliOnlyPlugin],
+        [visiblePlugin, packageTitlePlugin, hiddenPlugin, cliOnlyPlugin],
         DEFAULT_SERVER_URL
       )
     ).toEqual([
       {
         title: 'Visible Plugin',
         url: 'http://localhost:8081/_expo/plugins/visible-plugin',
+      },
+      {
+        title: 'package-title-plugin',
+        url: 'http://localhost:8081/_expo/plugins/package-title-plugin',
       },
     ]);
   });

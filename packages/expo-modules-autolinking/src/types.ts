@@ -84,8 +84,7 @@ export interface ModuleDescriptorDevTools {
   packageName: string;
   packageRoot: string;
   webpageRoot?: string;
-  cliBanner: boolean;
-  bannerTitle?: string;
+  bannerTitle?: boolean | string;
   serverEntryPoint?: string;
   cliExtensions?: {
     description: string;
@@ -317,14 +316,10 @@ export interface RawExpoModuleConfig {
      */
     webpageRoot?: string;
     /**
-     * Whether to show the DevTools plugin URL in the Expo CLI startup banner.
-     * Defaults to false.
+     * The title to show in the Expo CLI startup banner. Defaults to the package name if set,
+     * otherwise the banner is not shown.
      */
-    cliBanner?: boolean;
-    /**
-     * The title to show in the Expo CLI startup banner. Defaults to the package name.
-     */
-    bannerTitle?: string;
+    bannerTitle?: string | boolean;
     /**
      * A package-local JavaScript file default-exporting a `handler(request)` function that
      * handles requests to the plugin endpoint. Runs in the Expo CLI Node.js process.

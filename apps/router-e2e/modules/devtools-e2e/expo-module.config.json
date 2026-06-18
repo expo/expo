@@ -3,7 +3,6 @@
   "devtools": {
     "webpageRoot": "public",
     "serverEntryPoint": "server.mjs",
-    "cliBanner": true,
     "bannerTitle": "Banner E2E"
   }
 }

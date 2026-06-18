@@ -16,7 +16,6 @@ export async function resolveModuleAsync(
     packageName,
     packageRoot: revision.path,
     webpageRoot: await resolvePackageLocalPath(revision.path, devtoolsConfig.webpageRoot),
-    cliBanner: devtoolsConfig.cliBanner ?? false,
     bannerTitle: devtoolsConfig.bannerTitle,
     serverEntryPoint: await resolvePackageLocalPath(revision.path, devtoolsConfig.serverEntryPoint),
     cliExtensions: devtoolsConfig.cliExtensions,

@@ -25,7 +25,7 @@ function mockAutolinkingPlugins(
   plugins: {
     packageName: string;
     packageRoot: string;
-    bannerTitle?: string;
+    bannerTitle?: boolean | string;
     cliExtensions?: any;
     webpageRoot?: string;
     serverEntryPoint?: string;
@@ -138,6 +138,12 @@ describe('DevToolsPluginManager', () => {
         packageName: 'server-plugin',
         packageRoot: '/path/to/server-plugin',
         serverEntryPoint: '/path/to/server-plugin/server.js',
+        bannerTitle: true,
+      },
+      {
+        packageName: 'untitled-web-plugin',
+        packageRoot: '/path/to/untitled-web-plugin',
+        webpageRoot: '/path/to/untitled-web-plugin/web',
       },
       {
         packageName: 'cli-only-plugin',
@@ -170,6 +176,10 @@ describe('DevToolsPluginManager', () => {
           packageName: 'server-plugin',
           bannerTitle: 'server-plugin',
           webpageEndpoint: '/_expo/plugins/server-plugin',
+        },
+        {
+          packageName: 'untitled-web-plugin',
+          webpageEndpoint: '/_expo/plugins/untitled-web-plugin',
         },
       ],
     });
