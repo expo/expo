@@ -4417,6 +4417,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
 
   packages/expo-file-system:
     dependencies:
