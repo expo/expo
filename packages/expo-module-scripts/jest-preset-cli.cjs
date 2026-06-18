@@ -2,19 +2,7 @@
 module.exports = {
   testEnvironment: 'node',
   testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
-  transform: {
-    '^.+\\.[jt]sx?$': [
-      require.resolve('@swc/jest'),
-      {
-        jsc: {
-          parser: { syntax: 'typescript', tsx: true, dynamicImport: true },
-          target: 'es2022',
-          transform: { react: { runtime: 'automatic' } },
-        },
-        module: { type: 'commonjs', lazy: true },
-      },
-    ],
-  },
+  transform: require('./jest-swc-transform.cjs'),
   watchPlugins: [
     require.resolve('jest-watch-typeahead/filename'),
     require.resolve('jest-watch-typeahead/testname'),
