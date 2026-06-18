@@ -59,7 +59,7 @@ describe(serialAssetsToStaticContentAssets, () => {
       '/dist/entry.js',
     ]);
     expect(assets.css).toEqual([
-      { type: 'external', source: '<link rel="stylesheet" href="https://x/y.css">' },
+      { type: 'external', href: 'https://x/y.css', media: undefined },
       { type: 'css', href: '/dist/styles.css' },
     ]);
   });

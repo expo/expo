@@ -201,7 +201,7 @@ describe(injectAssetsIntoHtml, () => {
     const result = injectAssetsIntoHtml(TEMPLATE, {
       assets: {
         css: [
-          { type: 'external', source: '<link rel="stylesheet" href="https://x/y.css">' },
+          { type: 'external', href: 'https://x/y.css' },
           { type: 'css', href: '/a.css' },
         ],
         js: [],
@@ -211,6 +211,26 @@ describe(injectAssetsIntoHtml, () => {
       expectedHead([
         '<link rel="stylesheet" href="https://x/y.css">',
         '<link rel="preload" href="/a.css" as="style">\n<link rel="stylesheet" href="/a.css">',
+      ])
+    );
+  });
+
+  it('rebuilds external CSS `<link>`s from `{ href, media }`, escaping and preserving `media`', () => {
+    const result = injectAssetsIntoHtml(TEMPLATE, {
+      assets: {
+        css: [
+          {
+            type: 'external',
+            href: 'https://fonts.googleapis.com/css2?family=Roboto&display=swap',
+            media: 'screen and (min-width: 900px)',
+          },
+        ],
+        js: [],
+      },
+    });
+    expect(result).toContain(
+      expectedHead([
+        '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&amp;display=swap" media="screen and (min-width: 900px)">',
       ])
     );
   });

@@ -11,6 +11,7 @@ import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
+import type { AssetInfo } from 'expo-server/private';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
@@ -20,7 +21,6 @@ import {
   createLoaderDataScriptAsString,
   injectAssetsIntoHtml,
   serializeHelmetToHtml,
-  type StaticContentAssets,
 } from '../utils/html';
 
 const debug = createDebug('expo:router:server:renderStaticContent');
@@ -45,7 +45,7 @@ export type GetStaticContentOptions = {
   /** When true, injects the `__EXPO_ROUTER_HYDRATE__` flag. */
   hydrate?: boolean;
   /** Asset manifest for hydration bundles. */
-  assets?: StaticContentAssets;
+  assets?: AssetInfo;
 };
 
 /**

@@ -1,27 +1,36 @@
 import type { ReactNode } from 'react';
 
 /**
+ * A single CSS asset to inject, in document order. This is the canonical, shared shape consumed by
+ * both the streaming renderer (`getStreamingContent`, as React nodes) and the static renderer
+ * (`getStaticContent` → `injectAssetsIntoHtml`, as an HTML string).
+ *
+ * - `css`: a bundled stylesheet href, rendered as a `<link rel="preload">` + `<link rel="stylesheet">` pair.
+ * - `inline`: CSS source rendered as a `<style>` tag for development HMR; never emitted in production.
+ * - `external`: an external stylesheet (`@import url(https://...)`) rendered as a
+ *   `<link rel="stylesheet">`, preserving `media`. Stored structurally as `{ href, media }` because
+ *   the manifest persists only those fields, not the serializer's verbatim `<link>` string.
+ */
+export type CssAsset =
+  | { type: 'css'; href: string }
+  | { type: 'inline'; source: string; hmrId?: string }
+  | { type: 'external'; href: string; media?: string };
+
+/**
  * Asset manifest for client hydration bundles.
  *
  * {@link import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
  */
 export interface AssetInfo {
-  css: string[];
   /**
-   * External stylesheets (`@import url(https://...)`) extracted from the bundled CSS. Rendered
-   * verbatim as `<link rel="stylesheet">` so attributes like `media` are preserved in the SSR HTML.
+   * CSS assets injected in array order, so the caller controls the cascade. A single ordered list
+   * (rather than split bundled/external arrays) preserves the source-order interleave of bundled and
+   * external stylesheets.
    */
-  externalCss?: ExternalCssInfo[];
+  css: CssAsset[];
   js: string[];
   /** Public href of a favicon generated from `web.favicon` in the app config. */
   favicon?: string;
-}
-
-/** A single external stylesheet `<link>` (e.g. from `@import url(https://...)`). */
-export interface ExternalCssInfo {
-  href: string;
-  /** Media query baked into the `<link>` tag, when present. */
-  media?: string;
 }
 
 /**

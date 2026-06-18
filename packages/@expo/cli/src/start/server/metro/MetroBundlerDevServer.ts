@@ -511,7 +511,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const appDir = path.join(this.projectRoot, routerRoot);
     const url = this.getDevServerUrlOrAssert();
 
-    const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
+    const { getStaticContent, getStreamingContent, getManifest, getBuildTimeServerManifestAsync } =
       await this.ssrLoadModule<
         typeof import('@expo/router-server/build/static/renderStaticContent')
       >(require.resolve('@expo/router-server/node/render.js'), {
@@ -538,6 +538,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Get route generating function
       renderAsync: async (path, route, opts?) => {
         const location = new URL(path, url);
+        if (useServerRendering) {
+          // SSG is rendered through the streaming renderer so static export and runtime SSR share
+          // one rendering path. `opts.hydrate` (set to `true` by the export) flows through to the
+          // bootstrap script; there is no longer a post-render step to inject the flag.
+          return await getStreamingContent(location, { ...opts, output: 'static' });
+        }
         return await getStaticContent(location, opts);
       },
       executeLoaderAsync: async (path, route) => {
@@ -728,7 +734,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const { artifacts: resources } = await this.getStaticResourcesAsync({
         clientBoundaries: [],
       });
-      const { cssHrefs, externalCss, inlineCss } = getStreamingCssAssetsFromSerialAssets(resources);
+      const css = getStreamingCssAssetsFromSerialAssets(resources);
       const { loader, metadata } = await this.getDevServerRenderOptionsAsync({
         location,
         route,
@@ -741,9 +747,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         metadata,
         request: request as unknown as Request,
         assets: {
-          css: cssHrefs,
-          externalCss,
-          inlineCss,
+          css,
           js: [devBundleUrlPathname],
         },
       });
@@ -751,30 +755,47 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return { content };
     }
 
-    const [{ artifacts: resources }, { getStaticContent }, { loader }] = await Promise.all([
-      this.getStaticResourcesAsync({ clientBoundaries: [] }),
-      this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
-        require.resolve('@expo/router-server/node/render.js'),
-        {
-          // This must always use the legacy rendering resolution (no `react-server`) because it leverages
-          // the previous React SSG utilities which aren't available in React 19.
-          environment: 'node',
-          minify: false,
-          isExporting,
-          platform,
-        }
-      ),
-      this.getDevServerRenderOptionsAsync({ location, route, request }),
-    ]);
+    const [{ artifacts: resources }, { getStaticContent, getStreamingContent }, { loader }] =
+      await Promise.all([
+        this.getStaticResourcesAsync({ clientBoundaries: [] }),
+        this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
+          require.resolve('@expo/router-server/node/render.js'),
+          {
+            // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+            // the previous React SSG utilities which aren't available in React 19.
+            environment: 'node',
+            minify: false,
+            isExporting,
+            platform,
+          }
+        ),
+        this.getDevServerRenderOptionsAsync({ location, route, request }),
+      ]);
+
+    const assets = serialAssetsToStaticContentAssets(resources, {
+      isExporting: false,
+      baseUrl,
+      bundleUrl: devBundleUrlPathname,
+    });
+
+    // Reaching here with `unstable_useServerRendering` means `web.output` is `static` (the
+    // `output: 'server'` SSR case returned above), i.e. SSG in development — render it through the
+    // streaming renderer, draining to a string, so dev SSG matches the export's rendering path.
+    const useServerRendering = exp.extra?.router?.unstable_useServerRendering === true;
+    if (useServerRendering) {
+      const content = await getStreamingContent(location, {
+        ...(loader ? { loader } : {}),
+        output: 'static',
+        hydrate: env.EXPO_WEB_DEV_HYDRATE,
+        assets,
+      });
+      return { content, resources };
+    }
 
     const content = await getStaticContent(location, {
       ...(loader ? { loader } : {}),
       hydrate: env.EXPO_WEB_DEV_HYDRATE,
-      assets: serialAssetsToStaticContentAssets(resources, {
-        isExporting: false,
-        baseUrl,
-        bundleUrl: devBundleUrlPathname,
-      }),
+      assets,
     });
     return {
       content,
@@ -2416,28 +2437,22 @@ function unique<T>(array: T[]): T[] {
   return Array.from(new Set(array));
 }
 
-function getStreamingCssAssetsFromSerialAssets(resources: SerialAsset[]): {
-  cssHrefs: string[];
-  externalCss: NonNullable<GetStreamingContentOptions['assets']>['externalCss'];
-  inlineCss: NonNullable<GetStreamingContentOptions['assets']>['inlineCss'];
-} {
-  const cssHrefs: string[] = [];
-  const externalCss: NonNullable<GetStreamingContentOptions['assets']>['externalCss'] = [];
-  const inlineCss: NonNullable<GetStreamingContentOptions['assets']>['inlineCss'] = [];
+/**
+ * Builds the ordered CSS asset list for development streaming SSR, walking the serial assets in
+ * source order so bundled (inlined for HMR) and external stylesheets keep their interleave.
+ */
+function getStreamingCssAssetsFromSerialAssets(
+  resources: SerialAsset[]
+): NonNullable<GetStreamingContentOptions['assets']>['css'] {
+  const css: NonNullable<GetStreamingContentOptions['assets']>['css'] = [];
 
   for (const asset of resources) {
     if (asset.type === 'css') {
-      inlineCss.push({
-        source: asset.source,
-        hmrId: asset.metadata.hmrId,
-      });
+      css.push({ type: 'inline', source: asset.source, hmrId: asset.metadata.hmrId });
     } else if (asset.type === 'css-external') {
-      externalCss.push({
-        href: asset.filename,
-        media: asset.metadata.media,
-      });
+      css.push({ type: 'external', href: asset.filename, media: asset.metadata.media });
     }
   }
 
-  return { cssHrefs, externalCss, inlineCss };
+  return css;
 }

@@ -13,6 +13,8 @@ import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { ServerDocument } from 'expo-router/internal/server';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
+import type { AssetInfo } from 'expo-server/private';
+import { text } from 'node:stream/consumers';
 import React, { type ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
@@ -21,9 +23,7 @@ import { createDebug } from '../utils/debug';
 import {
   createFaviconAsNode,
   createInjectedCssAsNodes,
-  createInjectedExternalCssAsNodes,
   createInjectedFontsAsNodes,
-  createInjectedInlineCssAsNodes,
   getBootstrapContents,
 } from '../utils/react';
 
@@ -50,26 +50,19 @@ export type GetStreamingContentOptions = {
     headNodes: ReactNode[];
   } | null;
   request?: Request;
-  /** Assets for hydration bundles and development-only inline CSS. */
-  assets?: {
-    css: string[];
-    /**
-     * External stylesheets (`@import url(https://…)`) extracted from the bundled CSS, rendered
-     * verbatim as `<link rel="stylesheet">` so attributes like `media` survive.
-     */
-    externalCss?: {
-      href: string;
-      media?: string;
-    }[];
-    /** CSS source to inline into the document head, used by development SSR. */
-    inlineCss?: {
-      source: string;
-      hmrId?: string;
-    }[];
-    js: string[];
-    /** Public href of a favicon generated from `web.favicon` in the app config. */
-    favicon?: string;
-  };
+  /** Ordered CSS/JS assets for hydration bundles and development-only inline CSS. */
+  assets?: AssetInfo;
+  /**
+   * Render output shape, mirroring `web.output` from the Expo app config.
+   * - `'server'` (default): a `ReadableStream<Uint8Array>` for progressive SSR.
+   * - `'static'`: the fully-rendered HTML string, for build-time SSG.
+   */
+  output?: 'static' | 'server';
+  /**
+   * Whether to embed the `__EXPO_ROUTER_HYDRATE__` flag in the bootstrap script. Defaults to
+   * `true`.
+   */
+  hydrate?: boolean;
 };
 
 /**
@@ -121,24 +114,29 @@ function FontResources() {
 /**
  * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
  * that emits the full HTML document with head injections applied.
+ *
+ * When `output` is `'static'`, the stream is drained to a fully-rendered HTML string instead
+ * (build-time SSG).
  */
+export function getStreamingContent(
+  location: URL,
+  options: GetStreamingContentOptions & { output: 'static' }
+): Promise<string>;
+export function getStreamingContent(
+  location: URL,
+  options?: GetStreamingContentOptions & { output?: 'server' }
+): Promise<ReadableStream<Uint8Array>>;
 export async function getStreamingContent(
   location: URL,
   options?: GetStreamingContentOptions
-): Promise<ReadableStream<Uint8Array>> {
-  return Font.withServerContext(() => {
+): Promise<ReadableStream<Uint8Array> | string> {
+  return Font.withServerContext(async () => {
     const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
       location,
       options
     );
 
-    const { headNodes: headCssNodes } = createInjectedCssAsNodes(options?.assets?.css ?? []);
-    const { headNodes: externalCssNodes } = createInjectedExternalCssAsNodes(
-      options?.assets?.externalCss
-    );
-    const { headNodes: inlineCssNodes } = createInjectedInlineCssAsNodes(
-      options?.assets?.inlineCss
-    );
+    const { headNodes: cssNodes } = createInjectedCssAsNodes(options?.assets?.css ?? []);
     const faviconNode = options?.assets?.favicon
       ? createFaviconAsNode(options?.assets?.favicon)
       : undefined;
@@ -148,14 +146,17 @@ export async function getStreamingContent(
         ...(options?.metadata?.headNodes ?? []),
         faviconNode,
         getStyleElement({ key: 'rnw-style-element' }),
-        ...(headCssNodes ?? []),
-        ...(externalCssNodes ?? []),
-        ...(inlineCssNodes ?? []),
+        ...(cssNodes ?? []),
       ].filter(Boolean),
       bodyNodes: [<FontResources key="font-resources" />],
     };
 
-    return ReactDOMServer.renderToReadableStream(
+    // `stream.allReady` only rejects on fatal Suspense errors; React-recovered errors (a Suspense
+    // subtree with no error boundary) hit `onError` and let the render finish. SSG must fail the
+    // export in that case, so capture and rethrow.
+    const renderErrors: unknown[] = [];
+
+    const stream = await ReactDOMServer.renderToReadableStream(
       <ServerDocument data={serverDocumentData}>
         {/* TODO(@hassankhan): Remove `<Head.Provider>` when `unstable_useServerRendering` is stabilized */}
         <Head.Provider context={headContext}>
@@ -166,7 +167,10 @@ export async function getStreamingContent(
         // TODO(@hassankhan): Experiment and see if we can calculate a better default
         // We're doubling the default here so non-JavaScript renders show some content
         progressiveChunkSize: 12800 * 2,
-        bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
+        bootstrapScriptContent: getBootstrapContents({
+          hydrate: options?.hydrate ?? true,
+          loadedData,
+        }),
         bootstrapScripts: options?.assets?.js,
         signal: options?.request?.signal,
         onError(error) {
@@ -174,10 +178,26 @@ export async function getStreamingContent(
             return;
           }
 
+          if (options?.output === 'static') {
+            renderErrors.push(error);
+          }
+
           console.error('SSR streaming render error:', error);
         },
       }
     );
+
+    if (options?.output === 'static') {
+      // NOTE(@hassankhan): We should probably have a timeout here to prevent hanging
+      // `expo export` if a loader gets stuck.
+      await stream.allReady;
+      if (renderErrors.length > 0) {
+        throw renderErrors[0];
+      }
+      return text(stream);
+    }
+
+    return stream;
   });
 }
 

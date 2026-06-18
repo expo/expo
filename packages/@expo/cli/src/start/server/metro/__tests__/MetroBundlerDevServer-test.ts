@@ -308,10 +308,49 @@ describe('getStaticPageAsync', () => {
       metadata: null,
       request,
       assets: {
-        css: [],
-        externalCss: [{ href: 'https://example.com/font.css' }],
-        inlineCss: [{ source: 'body { color: red; }', hmrId: 'app_global_css' }],
+        css: [
+          { type: 'inline', source: 'body { color: red; }', hmrId: 'app_global_css' },
+          { type: 'external', href: 'https://example.com/font.css', media: undefined },
+        ],
         js: [expect.stringContaining('/index.bundle?')],
+      },
+    });
+  });
+
+  it('drains streaming output to a string for SSG (web.output static + server rendering)', async () => {
+    jest.mocked(getConfig).mockReturnValue({
+      // @ts-expect-error
+      pkg: {},
+      exp: {
+        web: {
+          output: 'static',
+        },
+        extra: {
+          router: {
+            unstable_useServerRendering: true,
+          },
+        },
+      },
+    });
+
+    const devServer = createDevServerForStaticPageTests();
+    const getStaticContent = jest.fn();
+    const getStreamingContent = jest.fn(async () => '<html><head></head><body></body></html>');
+    devServer['ssrLoadModule'] = jest.fn(async () => ({ getStaticContent, getStreamingContent }));
+    devServer['getStaticResourcesAsync'] = jest.fn(async () => ({ artifacts: [] })) as any;
+
+    const result = await devServer['getStaticPageAsync']('/posts/123', htmlRoute);
+
+    expect(typeof result.content).toBe('string');
+    expect(result.resources).toEqual([]);
+    expect(getStaticContent).not.toHaveBeenCalled();
+    expect(getStreamingContent).toHaveBeenCalledWith(new URL('http://localhost:8081/posts/123'), {
+      output: 'static',
+      hydrate: false,
+      assets: {
+        css: [],
+        js: [expect.stringContaining('/index.bundle?')],
+        favicon: undefined,
       },
     });
   });

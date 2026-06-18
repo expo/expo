@@ -11,6 +11,8 @@
 // This utility is based on https://github.com/zertosh/htmlescape
 // License: https://github.com/zertosh/htmlescape/blob/0527ca7156a524d256101bb310a9f970f63078ad/LICENSE
 
+import type { AssetInfo } from 'expo-server/private';
+
 const UNSAFE_CHARACTERS_REGEX = /[&><\u2028\u2029]/g;
 const ESCAPED_CHARACTERS: { [match: string]: string } = {
   '&': '\\u0026',
@@ -116,22 +118,26 @@ export function createLoaderDataScriptAsString(data: Record<string, unknown>): s
 }
 
 /**
- * A CSS entry to inject: `css` is a bundled stylesheet href (rendered as preload + stylesheet
- * links), `inline` is CSS source rendered as a `<style>` for dev HMR, `external` is a pre-rendered
- * `<link>` injected verbatim.
+ * Returns the `<link rel="stylesheet">` markup for an external stylesheet (`@import url(https://...)`).
+ *
+ * Rebuilt from the structured `{ href, media }` (the only fields the manifest persists) and must
+ * stay byte-for-byte identical to the serializer's `css-external` `source`
+ * (`packages/@expo/metro-config/src/serializer/getCssDeps.ts`): attribute order `rel`/`href`/`media`,
+ * `href`/`media` escaped via {@link escapeHtmlAttribute}, no trailing slash.
  */
-export type StaticContentCssAsset =
-  | { type: 'css'; href: string }
-  | { type: 'inline'; source: string; hmrId?: string }
-  | { type: 'external'; source: string };
-
-export type StaticContentAssets = {
-  /** Injected in array order, so the caller controls cascade. */
-  css: StaticContentCssAsset[];
-  js: string[];
-  /** Public href of a favicon from `web.favicon`. */
-  favicon?: string;
-};
+export function createExternalCssLinkAsString({
+  href,
+  media,
+}: {
+  href: string;
+  media?: string;
+}): string {
+  let link = `<link rel="stylesheet" href="${escapeHtmlAttribute(href)}"`;
+  if (media) {
+    link += ` media="${escapeHtmlAttribute(media)}"`;
+  }
+  return link + '>';
+}
 
 /**
  * Injects favicon, hydration flag, and CSS (in that order) before `</head>`, and deferred scripts
@@ -139,7 +145,7 @@ export type StaticContentAssets = {
  */
 export function injectAssetsIntoHtml(
   html: string,
-  { assets, hydrate }: { assets?: StaticContentAssets; hydrate?: boolean }
+  { assets, hydrate }: { assets?: AssetInfo; hydrate?: boolean }
 ): string {
   if (assets?.favicon) {
     html = html.replace('</head>', `${createFaviconAsString(assets.favicon)}</head>`);
@@ -158,7 +164,7 @@ export function injectAssetsIntoHtml(
           case 'inline':
             return `<style data-expo-css-hmr="${entry.hmrId}">${entry.source}\n</style>`;
           case 'external':
-            return entry.source;
+            return createExternalCssLinkAsString(entry);
         }
       })
       .join('');
