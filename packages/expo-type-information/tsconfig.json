@@ -4,7 +4,7 @@
   "compilerOptions": {
     "types": ["node"],
     "lib": ["dom", "esnext"],
-    "outDir": "./build",
+    "noEmit": true,
     "rootDir": "./src",
     "isolatedModules": true
   }

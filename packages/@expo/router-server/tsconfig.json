@@ -1,6 +1,7 @@
 {
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
+    "noEmit": true,
     "rootDir": "./src",
     "resolveJsonModule": true,
     "types": ["jest", "node"]

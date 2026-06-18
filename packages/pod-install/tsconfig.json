@@ -1,7 +1,7 @@
 {
   "extends": "expo-module-scripts/tsconfig.node",
   "compilerOptions": {
-    "outDir": "build",
+    "noEmit": true,
     "rootDir": "src",
     "declaration": false
   },

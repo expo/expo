@@ -3,7 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "./src",
-    "outDir": "./build",
+    "noEmit": true,
     "rootDir": "./src",
     "emitDeclarationOnly": true
   },

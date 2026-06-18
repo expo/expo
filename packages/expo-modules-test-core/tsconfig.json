@@ -4,7 +4,7 @@
     "moduleResolution": "node16",
     "strict": true,
     "rootDir": "./src",
-    "outDir": "./build",
+    "noEmit": true,
     "types": ["node"],
     "module": "node16",
     "verbatimModuleSyntax": false

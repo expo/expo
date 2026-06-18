@@ -3,7 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "types": ["node"],
-    "outDir": "build",
+    "noEmit": true,
     "rootDir": "src"
   },
   "include": ["./src"]

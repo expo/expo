@@ -3,7 +3,7 @@
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./build"
+    "noEmit": true
   },
   "include": ["./src", "../expo/src/ts-declarations"],
   "exclude": ["**/__rsc_tests__/*"]

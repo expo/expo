@@ -3,6 +3,6 @@
   "include": ["./src"],
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./build"
+    "noEmit": true
   }
 }

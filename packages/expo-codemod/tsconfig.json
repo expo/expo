@@ -3,7 +3,7 @@
   "include": ["./src", "./ts-declarations"],
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./build",
+    "noEmit": true,
     "sourceMap": true
   }
 }

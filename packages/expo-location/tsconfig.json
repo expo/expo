@@ -4,7 +4,7 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "./src",
-    "outDir": "./build"
+    "noEmit": true
   },
   "include": ["./src", "../expo/src/ts-declarations"],
   "exclude": ["**/__rsc_tests__/*"]
