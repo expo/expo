@@ -86,6 +86,23 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     },
   });
 
+  preset.testEnvironmentOptions ??= {};
+  if (!preset.testEnvironmentOptions.customExportConditions) {
+    preset.testEnvironmentOptions.customExportConditions = isServer
+      ? ['node', 'require', 'source']
+      : platform === 'web'
+        ? ['browser', 'source']
+        : ['react-native', 'source'];
+  } else if (!preset.testEnvironmentOptions.customExportConditions.includes('source')) {
+    preset.testEnvironmentOptions.customExportConditions.push('source');
+  }
+  preset.moduleNameMapper = {
+    // Source exports can contain TypeScript files that use explicit `.js`
+    // extensions for runtime ESM compatibility.
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+    ...preset.moduleNameMapper,
+  };
+
   if (isServer) {
     preset.testEnvironment = 'node';
   }
@@ -101,12 +118,12 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     preset.setupFilesAfterEnv ??= [];
     preset.setupFilesAfterEnv.push(require.resolve('../src/rsc-expect.ts'));
 
-    preset.testEnvironmentOptions ??= {};
     // Matches withMetroMultiPlatform, e.g. resolution for RSC.
     preset.testEnvironmentOptions.customExportConditions = [
       'node',
       'require',
       'react-server',
+      'source',
       'workerd',
     ];
   }

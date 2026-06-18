@@ -25,6 +25,13 @@ open class SharedObject: AnySharedObject {
   public internal(set) weak var appContext: AppContext?
 
   /**
+   Weak reference to the native state that owns this `SharedObject` and bridges
+   it to its JS counterpart. Populated by `SharedObjectRegistry.add` and used to
+   recover the paired JS object without going through the registry's id table.
+   */
+  internal weak var nativeState: SharedObjectNativeState?
+
+  /**
    The default public initializer of the shared object.
    */
   public init() {}

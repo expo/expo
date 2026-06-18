@@ -41,7 +41,7 @@ See README.md for the rationale (Swift/C++ interop is contained inside this pack
 
 - `apple/scripts/build-xcframework.sh` is the real build, invoked from the podspec's `script_phase` and run automatically as part of the host app's compilation. It shells out to SPM, hashes inputs to skip no-op rebuilds, and writes additive per-platform slices into `apple/Products/ExpoModulesJSI.xcframework`. Cache lives in `apple/.xcframework-slices/` and `.DerivedData` / `.build` next to the package.
 - `apple/scripts/create-stub-xcframework.sh` runs as the podspec's `prepare_command` to materialize an empty xcframework so CocoaPods inserts the copy/embed phases. The primary path for the stub is `ensure_expo_modules_jsi_stub_xcframework` in `expo-modules-autolinking`; `prepare_command` is a fallback because CocoaPods skips it on cache hits.
-- Run the script manually with `PODS_ROOT=/path/to/Pods apple/scripts/build-xcframework.sh [--clean]`, or `pnpm build` from the package root. `PLATFORM_NAME` narrows it to a single platform (e.g. `iphonesimulator`).
+- Run the script manually with `PODS_ROOT=/path/to/Pods apple/scripts/build-xcframework.sh [--clean]`, or `pnpm build:xcframework` from the package root. `PLATFORM_NAME` narrows it to a single platform (e.g. `iphonesimulator`).
 
 ## Testing
 

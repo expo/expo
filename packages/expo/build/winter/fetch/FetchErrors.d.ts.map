@@ -1,1 +1,0 @@
-{"version":3,"file":"FetchErrors.d.ts","sourceRoot":"","sources":["../../../src/winter/fetch/FetchErrors.ts"],"names":[],"mappings":"AAAA,qBAAa,UAAW,SAAQ,KAAK;gBACvB,OAAO,EAAE,MAAM,EAAE,EAAE,KAAK,EAAE,KAAK,EAAE,GAAE;QAAE,KAAK,CAAC,EAAE,OAAO,CAAC;QAAC,KAAK,CAAC,EAAE,MAAM,CAAA;KAAO;IAMvF,MAAM,CAAC,eAAe,CAAC,KAAK,EAAE,KAAK,GAAG,UAAU;CAGjD"}

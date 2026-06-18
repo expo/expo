@@ -5,6 +5,7 @@
   "main": "default.js",
   "scripts": {
     "lint": "eslint .",
+    "pretest": "pnpm --filter eslint-plugin-expo build",
     "test": "jest"
   },
   "repository": {
@@ -51,7 +52,7 @@
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.8.3",
     "react": "19.2.3",
-    "react-native": "0.86.0-rc.3"
+    "react-native": "0.86.0"
   },
   "peerDependencies": {
     "eslint": ">=8.10"

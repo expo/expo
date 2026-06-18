@@ -2,70 +2,122 @@
   "name": "@expo/ui",
   "version": "56.0.14",
   "description": "A collection of UI components",
-  "sideEffects": [
-    "*.fx.js"
-  ],
+  "sideEffects": false,
   "exports": {
-    "./package.json": "./package.json",
     ".": {
-      "types": "./build/universal/index.d.ts",
-      "default": "./src/universal/index.ts"
+      "types": {
+        "source": "./src/universal/index.ts",
+        "default": "./build/universal/index.d.ts"
+      },
+      "source": "./src/universal/index.ts",
+      "default": "./build/universal/index.js"
     },
     "./swift-ui": {
-      "types": "./build/swift-ui/index.d.ts",
-      "default": "./src/swift-ui/index.tsx"
+      "types": {
+        "source": "./src/swift-ui/index.tsx",
+        "default": "./build/swift-ui/index.d.ts"
+      },
+      "source": "./src/swift-ui/index.tsx",
+      "default": "./build/swift-ui/index.js"
     },
     "./swift-ui/modifiers": {
-      "types": "./build/swift-ui/modifiers/index.d.ts",
-      "default": "./src/swift-ui/modifiers/index.ts"
+      "types": {
+        "source": "./src/swift-ui/modifiers/index.ts",
+        "default": "./build/swift-ui/modifiers/index.d.ts"
+      },
+      "source": "./src/swift-ui/modifiers/index.ts",
+      "default": "./build/swift-ui/modifiers/index.js"
     },
     "./jetpack-compose": {
-      "types": "./build/jetpack-compose/index.d.ts",
-      "default": "./src/jetpack-compose/index.ts"
+      "types": {
+        "source": "./src/jetpack-compose/index.ts",
+        "default": "./build/jetpack-compose/index.d.ts"
+      },
+      "source": "./src/jetpack-compose/index.ts",
+      "default": "./build/jetpack-compose/index.js"
     },
     "./jetpack-compose/modifiers": {
-      "types": "./build/jetpack-compose/modifiers/index.d.ts",
-      "default": "./src/jetpack-compose/modifiers/index.ts"
+      "types": {
+        "source": "./src/jetpack-compose/modifiers/index.ts",
+        "default": "./build/jetpack-compose/modifiers/index.d.ts"
+      },
+      "source": "./src/jetpack-compose/modifiers/index.ts",
+      "default": "./build/jetpack-compose/modifiers/index.js"
     },
     "./community/datetime-picker": {
-      "types": "./build/community/datetime-picker/index.d.ts",
-      "default": "./src/community/datetime-picker/index.tsx"
+      "types": {
+        "source": "./src/community/datetime-picker/index.tsx",
+        "default": "./build/community/datetime-picker/index.d.ts"
+      },
+      "source": "./src/community/datetime-picker/index.tsx",
+      "default": "./build/community/datetime-picker/index.js"
     },
     "./community/bottom-sheet": {
-      "types": "./build/community/bottom-sheet/index.d.ts",
-      "default": "./src/community/bottom-sheet/index.tsx"
+      "types": {
+        "source": "./src/community/bottom-sheet/index.tsx",
+        "default": "./build/community/bottom-sheet/index.d.ts"
+      },
+      "source": "./src/community/bottom-sheet/index.tsx",
+      "default": "./build/community/bottom-sheet/index.js"
     },
     "./community/segmented-control": {
-      "types": "./build/community/segmented-control/index.d.ts",
-      "default": "./src/community/segmented-control/index.tsx"
+      "types": {
+        "source": "./src/community/segmented-control/index.tsx",
+        "default": "./build/community/segmented-control/index.d.ts"
+      },
+      "source": "./src/community/segmented-control/index.tsx",
+      "default": "./build/community/segmented-control/index.js"
     },
     "./community/picker": {
-      "types": "./build/community/picker/index.d.ts",
-      "default": "./src/community/picker/index.tsx"
+      "types": {
+        "source": "./src/community/picker/index.tsx",
+        "default": "./build/community/picker/index.d.ts"
+      },
+      "source": "./src/community/picker/index.tsx",
+      "default": "./build/community/picker/index.js"
     },
     "./community/slider": {
-      "types": "./build/community/slider/index.d.ts",
-      "default": "./src/community/slider/index.tsx"
+      "types": {
+        "source": "./src/community/slider/index.tsx",
+        "default": "./build/community/slider/index.d.ts"
+      },
+      "source": "./src/community/slider/index.tsx",
+      "default": "./build/community/slider/index.js"
     },
     "./community/masked-view": {
-      "types": "./build/community/masked-view/index.d.ts",
-      "default": "./src/community/masked-view/index.tsx"
+      "types": {
+        "source": "./src/community/masked-view/index.tsx",
+        "default": "./build/community/masked-view/index.d.ts"
+      },
+      "source": "./src/community/masked-view/index.tsx",
+      "default": "./build/community/masked-view/index.js"
     },
     "./community/menu": {
-      "types": "./build/community/menu/index.d.ts",
-      "default": "./src/community/menu/index.tsx"
+      "types": {
+        "source": "./src/community/menu/index.tsx",
+        "default": "./build/community/menu/index.d.ts"
+      },
+      "source": "./src/community/menu/index.tsx",
+      "default": "./build/community/menu/index.js"
     },
     "./community/pager-view": {
-      "types": "./build/community/pager-view/index.d.ts",
-      "default": "./src/community/pager-view/index.tsx"
+      "types": {
+        "source": "./src/community/pager-view/index.tsx",
+        "default": "./build/community/pager-view/index.d.ts"
+      },
+      "source": "./src/community/pager-view/index.tsx",
+      "default": "./build/community/pager-view/index.js"
     },
     "./babel-plugin": {
       "types": "./plugin/babel-plugin.d.ts",
       "default": "./plugin/babel-plugin.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
@@ -101,9 +153,9 @@
     "@types/babel__core": "^7.20.5",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "react-native-worklets": "0.8.3"
+    "react-native-reanimated": "4.4.1",
+    "react-native-worklets": "0.9.2"
   },
   "jest": {
     "preset": "expo-module-scripts"

@@ -5,10 +5,9 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepublishOnly": "pnpm run clean && expo-module build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },

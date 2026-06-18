@@ -1,8 +1,8 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-06-08T07:41:21.204Z",
-    "cliVersion": "20.1.0"
+    "fetchedAt": "2026-06-16T07:03:16.187Z",
+    "cliVersion": "20.2.0"
   },
   "totalCommands": 123,
   "commands": [
@@ -522,9 +522,9 @@
       "usage": "USAGE\n  $ eas update:roll-back-to-embedded [--branch <value>] [--channel <value>] [--runtime-version <value>] [--message <value>] [-p\n    android|ios|all] [--private-key-path <value>] [--json] [--non-interactive]\n\nFLAGS\n  -p, --platform=<option>         [default: all]\n                                  <options: android|ios|all>\n      --branch=<value>            Branch to publish the rollback to embedded update group on\n      --channel=<value>           Channel that the published rollback to embedded update should affect\n      --json                      Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                  --non-interactive.\n      --message=<value>           A short message describing the rollback to embedded update\n      --non-interactive           Run the command in non-interactive mode.\n      --private-key-path=<value>  File containing the PEM-encoded private key corresponding to the certificate in\n                                  expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                                  certificate's directory. Only relevant if you are using code signing:\n                                  https://docs.expo.dev/eas-update/code-signing/\n      --runtime-version=<value>   Runtime version that the rollback to embedded update should target\n\nDESCRIPTION\n  roll back to the embedded update"
     },
     {
-      "command": "eas update:rollback",
-      "description": "Roll back to an embedded update or an existing update. Users wishing to run this command non-interactively should instead execute \"eas update:republish\" or \"eas update:roll-back-to-embedded\".",
-      "usage": "USAGE\n  $ eas update:rollback [--private-key-path <value>]\n\nFLAGS\n  --private-key-path=<value>  File containing the PEM-encoded private key corresponding to the certificate in\n                              expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                              certificate's directory. Only relevant if you are using code signing:\n                              https://docs.expo.dev/eas-update/code-signing/\n\nDESCRIPTION\n  Roll back to an embedded update or an existing update. Users wishing to run this command non-interactively should\n  instead execute \"eas update:republish\" or \"eas update:roll-back-to-embedded\"."
+      "command": "eas update:rollback [GROUPID]",
+      "description": "roll back to an embedded update or an existing update",
+      "usage": "USAGE\n  $ eas update:rollback [GROUPID] [-m <value>] [-p android|ios|all] [--private-key-path <value>] [--json]\n    [--non-interactive]\n\nARGUMENTS\n  [GROUPID]  The ID of the update group to roll back. Must be the latest update for its branch and runtime version. The\n             update group published before it is republished; if there is none, a roll back to the embedded update is\n             published. Required in non-interactive mode.\n\nFLAGS\n  -m, --message=<value>           Short message describing the rollback update\n  -p, --platform=<option>         [default: all]\n                                  <options: android|ios|all>\n      --json                      Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                  --non-interactive.\n      --non-interactive           Run the command in non-interactive mode.\n      --private-key-path=<value>  File containing the PEM-encoded private key corresponding to the certificate in\n                                  expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                                  certificate's directory. Only relevant if you are using code signing:\n                                  https://docs.expo.dev/eas-update/code-signing/\n\nDESCRIPTION\n  roll back to an embedded update or an existing update"
     },
     {
       "command": "eas update:view GROUPID",

@@ -457,11 +457,6 @@ export interface ExpoAppMetricsModuleType {
   getInactiveSessions(): Promise<DebugSession[]>;
 
   /**
-   * @private This API is unstable and may change without notice.
-   */
-  addCustomMetricToSession(metric: Metric): Promise<void>;
-
-  /**
    * Returns the main session — the per-launch session that tracks the entire
    * app process — as a shared object built from in-memory state, so the call
    * is synchronous and never returns `null`. Metrics and logs are fetched
