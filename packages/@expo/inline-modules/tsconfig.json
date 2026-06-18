@@ -6,5 +6,5 @@
     "types": ["node"]
   },
   "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__typetests__/*"]
+  "exclude": ["**/__typetests__/*"]
 }

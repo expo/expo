@@ -3,6 +3,5 @@
   "compilerOptions": {
     "rootDir": "."
   },
-  "include": ["./__tests__"],
-  "exclude": []
+  "include": ["./__tests__"]
 }

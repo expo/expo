@@ -6,5 +6,5 @@
     "customConditions": ["react-native-strict-api-UNSAFE-ALLOW-SUBPATHS", "source"]
   },
   "include": ["src/**/*"],
-  "exclude": ["app/**/*", "dist/**/*", "build/**/*", "**/__mocks__/*", "**/__tests__/*"]
+  "exclude": ["app/**/*", "dist/**/*", "build/**/*"]
 }

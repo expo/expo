@@ -6,6 +6,5 @@
     "outDir": "./build",
     "sourceMap": true
   },
-  "include": ["./src", "e2e/__tests__/bare-test.ts"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "include": ["./src", "e2e/__tests__/bare-test.ts"]
 }

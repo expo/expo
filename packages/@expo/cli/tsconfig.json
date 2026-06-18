@@ -1,7 +1,7 @@
 {
   "extends": "expo-module-scripts/tsconfig.node",
   "include": ["./src", "./metro-require"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__typetests__/*"],
+  "exclude": ["**/__typetests__/*"],
   "compilerOptions": {
     "lib": ["dom", "esnext"],
     "rootDir": ".",

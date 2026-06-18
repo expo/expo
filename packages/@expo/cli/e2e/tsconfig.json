@@ -3,6 +3,5 @@
   "compilerOptions": {
     "rootDir": "."
   },
-  "include": ["./__tests__", "./playwright", "./utils", "./jest.setup.ts"],
-  "exclude": []
+  "include": ["./__tests__", "./playwright", "./utils", "./jest.setup.ts"]
 }

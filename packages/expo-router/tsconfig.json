@@ -6,5 +6,5 @@
     "types": ["jest", "node"]
   },
   "include": ["./src"],
-  "exclude": ["**/__tests__/", "**/__rsc_tests__/"]
+  "exclude": ["**/__rsc_tests__/"]
 }

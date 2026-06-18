@@ -5,6 +5,5 @@
     "outDir": "./build",
     "emitDeclarationOnly": true
   },
-  "include": ["./src", "../../expo/src/ts-declarations"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "include": ["./src", "../../expo/src/ts-declarations"]
 }
