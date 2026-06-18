@@ -1,117 +1,113 @@
-import { store, type ReactNavigationState } from '../../global-state/router-store';
-import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
-import { removeInternalExpoRouterParams } from '../../navigationParams';
-import type {
-  ParamListBase,
-  StackNavigationState,
-  NavigationRoute,
-  NavigationState,
-  TabNavigationState,
-} from '../../react-navigation/native';
-import type { Href } from '../../types';
-import { resolveHref } from '../href';
 import type { TabPath } from './native';
+import type { ReactNavigationState } from '../../global-state/router-store';
+import type { NavigationRoute, ParamListBase } from '../../react-navigation/native';
+import type { Href } from '../../types';
 
+// TODO(@ubax): rework the link preview navigation to check state types on native. `type` was
+// removed from navigation state, so we can no longer detect the tab navigators along the href path.
 export function getTabPathFromRootStateByHref(
-  href: Href,
-  rootState: ReactNavigationState
+  _href: Href,
+  _rootState: ReactNavigationState
 ): TabPath[] {
-  const hrefState = store.getStateForHref(resolveHref(href));
-  const state: ReactNavigationState | undefined = rootState;
-  if (!hrefState || !state) {
-    return [];
-  }
-  // Replicating the logic from `linkTo`
-  const { navigationRoutes } = findDivergentState(hrefState, state as NavigationState, true);
+  return [];
+  // const hrefState = store.getStateForHref(resolveHref(href));
+  // const state: ReactNavigationState | undefined = rootState;
+  // if (!hrefState || !state) {
+  //   return [];
+  // }
+  // // Replicating the logic from `linkTo`
+  // const { navigationRoutes } = findDivergentState(hrefState, state as NavigationState, true);
 
-  if (!navigationRoutes.length) {
-    return [];
-  }
+  // if (!navigationRoutes.length) {
+  //   return [];
+  // }
 
-  const tabPath: TabPath[] = [];
-  navigationRoutes.forEach((route, i, arr) => {
-    if (route.state?.type === 'tab') {
-      const tabState = route.state as TabNavigationState<ParamListBase>;
-      const oldTabKey = tabState.routes[tabState.index]!.key;
-      // The next route will be either stack inside a tab or a new tab key
-      if (!arr[i + 1]) {
-        throw new Error(
-          `New tab route is missing for ${route.key}. This is likely an internal Expo Router bug.`
-        );
-      }
-      const newTabKey = arr[i + 1]!.key;
-      tabPath.push({ oldTabKey, newTabKey });
-    }
-  });
-  return tabPath;
+  // const tabPath: TabPath[] = [];
+  // navigationRoutes.forEach((route, i, arr) => {
+  //   if (route.state?.type === 'tab') {
+  //     const tabState = route.state as TabNavigationState<ParamListBase>;
+  //     const oldTabKey = tabState.routes[tabState.index]!.key;
+  //     // The next route will be either stack inside a tab or a new tab key
+  //     if (!arr[i + 1]) {
+  //       throw new Error(
+  //         `New tab route is missing for ${route.key}. This is likely an internal Expo Router bug.`
+  //       );
+  //     }
+  //     const newTabKey = arr[i + 1]!.key;
+  //     tabPath.push({ oldTabKey, newTabKey });
+  //   }
+  // });
+  // return tabPath;
 }
 
+// TODO(@ubax): rework the link preview navigation to check state types on native. `type` was
+// removed from navigation state, so we can no longer detect the stack holding a preloaded route.
 export function getPreloadedRouteFromRootStateByHref(
-  href: Href,
-  rootState: ReactNavigationState
+  _href: Href,
+  _rootState: ReactNavigationState
 ): NavigationRoute<ParamListBase, string> | undefined {
-  const hrefState = store.getStateForHref(resolveHref(href));
-  const state: ReactNavigationState | undefined = rootState;
-  if (!hrefState || !state) {
-    return undefined;
-  }
-  // Replicating the logic from `linkTo`
-  const { navigationState, actionStateRoute } = findDivergentState(
-    hrefState,
-    state as NavigationState,
-    true
-  );
+  // const hrefState = store.getStateForHref(resolveHref(href));
+  // const state: ReactNavigationState | undefined = rootState;
+  // if (!hrefState || !state) {
+  //   return undefined;
+  // }
+  // // Replicating the logic from `linkTo`
+  // const { navigationState, actionStateRoute } = findDivergentState(
+  //   hrefState,
+  //   state as NavigationState,
+  //   true
+  // );
 
-  if (!navigationState || !actionStateRoute) {
-    return undefined;
-  }
+  // if (!navigationState || !actionStateRoute) {
+  //   return undefined;
+  // }
 
-  if (navigationState.type === 'stack') {
-    const stackState = navigationState as StackNavigationState<ParamListBase>;
-    const payload = getPayloadFromStateRoute(actionStateRoute);
+  // if (navigationState.type === 'stack') {
+  //   const stackState = navigationState as StackNavigationState<ParamListBase>;
+  //   const payload = getPayloadFromStateRoute(actionStateRoute);
 
-    const preloadedRoute = stackState.preloadedRoutes.find(
-      (route) =>
-        route.name === actionStateRoute.name &&
-        deepEqual(
-          removeInternalExpoRouterParams(route.params),
-          removeInternalExpoRouterParams(payload.params)
-        )
-    );
+  //   const preloadedRoute = stackState.preloadedRoutes.find(
+  //     (route) =>
+  //       route.name === actionStateRoute.name &&
+  //       deepEqual(
+  //         removeInternalExpoRouterParams(route.params),
+  //         removeInternalExpoRouterParams(payload.params)
+  //       )
+  //   );
 
-    const activeRoute = stackState.routes[stackState.index]!;
-    // When the active route is the same as the preloaded route,
-    // then we should not navigate. It aligns with base link behavior.
-    if (
-      activeRoute.name === preloadedRoute?.name &&
-      deepEqual(
-        // using ?? {}, because from our perspective undefined === {}, as both mean no params
-        removeInternalExpoRouterParams(activeRoute.params ?? {}),
-        removeInternalExpoRouterParams(payload.params ?? {})
-      )
-    ) {
-      return undefined;
-    }
+  //   const activeRoute = stackState.routes[stackState.index]!;
+  //   // When the active route is the same as the preloaded route,
+  //   // then we should not navigate. It aligns with base link behavior.
+  //   if (
+  //     activeRoute.name === preloadedRoute?.name &&
+  //     deepEqual(
+  //       // using ?? {}, because from our perspective undefined === {}, as both mean no params
+  //       removeInternalExpoRouterParams(activeRoute.params ?? {}),
+  //       removeInternalExpoRouterParams(payload.params ?? {})
+  //     )
+  //   ) {
+  //     return undefined;
+  //   }
 
-    return preloadedRoute;
-  }
+  //   return preloadedRoute;
+  // }
 
   return undefined;
 }
 
-export function deepEqual(
-  a: { [key: string]: any } | undefined,
-  b: { [key: string]: any } | undefined
-): boolean {
-  if (a === b) {
-    return true;
-  }
-  if (a == null || b == null) {
-    return false;
-  }
-  if (typeof a !== 'object' || typeof b !== 'object') {
-    return false;
-  }
-  const keys = Object.keys(a);
-  return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
-}
+// export function deepEqual(
+//   a: { [key: string]: any } | undefined,
+//   b: { [key: string]: any } | undefined
+// ): boolean {
+//   if (a === b) {
+//     return true;
+//   }
+//   if (a == null || b == null) {
+//     return false;
+//   }
+//   if (typeof a !== 'object' || typeof b !== 'object') {
+//     return false;
+//   }
+//   const keys = Object.keys(a);
+//   return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
+// }

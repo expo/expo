@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `type` field from the navigation state. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
 - [android] Support `Stack.Toolbar.Badge` in header left/right placements ([#46537](https://github.com/expo/expo/pull/46537) by [@benjaminkomen](https://github.com/benjaminkomen))
