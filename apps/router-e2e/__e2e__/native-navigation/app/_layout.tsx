@@ -1,7 +1,8 @@
-import { Stack, unstable_navigationEvents } from 'expo-router';
+import { enableNewStateModel, Stack, unstable_navigationEvents } from 'expo-router';
 import { DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
 
 const appStart = Date.now();
+enableNewStateModel();
 
 unstable_navigationEvents.enable();
 (['pagePreloaded', 'pageFocused', 'pageBlurred', 'pageRemoved'] as const).forEach((eventType) => {
