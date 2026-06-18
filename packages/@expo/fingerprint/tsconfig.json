@@ -7,5 +7,5 @@
     "noEmit": true,
     "sourceMap": true
   },
-  "include": ["./src", "e2e/__tests__/bare-test.ts"]
+  "include": ["./src"]
 }
