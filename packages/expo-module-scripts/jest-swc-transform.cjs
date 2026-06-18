@@ -9,6 +9,11 @@ module.exports = {
         parser: { syntax: 'typescript', tsx: true, dynamicImport: true },
         target: 'es2022',
         transform: { react: { runtime: 'automatic' } },
+        // Emit configurable/writable CommonJS exports so `jest.spyOn`/reassignment of module
+        // members works (SWC's default getter-only exports are not mockable).
+        experimental: {
+          plugins: [[require.resolve('@swc-contrib/mut-cjs-exports'), {}]],
+        },
       },
       module: { type: 'commonjs', lazy: true },
     },

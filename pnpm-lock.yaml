@@ -4834,6 +4834,9 @@ importers:
       '@react-native/jest-preset':
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(react@19.2.3)
+      '@swc-contrib/mut-cjs-exports':
+        specifier: ^14.13.0
+        version: 14.13.0(@swc/core@1.15.18)(@swc/jest@0.2.39(@swc/core@1.15.18))
       '@swc/core':
         specifier: ^1.15.18
         version: 1.15.18
@@ -8995,6 +8998,12 @@ packages:
         optional: true
       react-native-webview:
         optional: true
+
+  '@swc-contrib/mut-cjs-exports@14.13.0':
+    resolution: {integrity: sha512-m6GILmYD3SGHLm4lhDPsGcUzJwM8VNIIzKMHGICZC+MIXpfLE9/TNUkA8taHeui/MTq7YFIsDxLYOuAJxFmJOA==}
+    peerDependencies:
+      '@swc/core': ^1.10.0
+      '@swc/jest': ^0.2.37
 
   '@swc/core-darwin-arm64@1.15.18':
     resolution: {integrity: sha512-+mIv7uBuSaywN3C9LNuWaX1jJJ3SKfiJuE6Lr3bd+/1Iv8oMU7oLBjYMluX1UrEPzwN2qCdY6Io0yVicABoCwQ==}
@@ -18720,6 +18729,11 @@ snapshots:
     optionalDependencies:
       expo: link:packages/expo
       react-native-webview: 13.16.1(react-native@0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+
+  '@swc-contrib/mut-cjs-exports@14.13.0(@swc/core@1.15.18)(@swc/jest@0.2.39(@swc/core@1.15.18))':
+    dependencies:
+      '@swc/core': 1.15.18
+      '@swc/jest': 0.2.39(@swc/core@1.15.18)
 
   '@swc/core-darwin-arm64@1.15.18':
     optional: true

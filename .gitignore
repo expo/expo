@@ -144,6 +144,9 @@ docs/pages/versions/*/react-native/*.diff
 # TypeScript state
 *.tsbuildinfo
 
+# SWC cache outputs
+.swc/
+
 # Secrets - contains real secrets fetched from GCP
 /secrets/keys.json
 /secrets/expotools.env
