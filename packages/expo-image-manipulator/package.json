@@ -29,6 +29,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/imagemanipulator/",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "dependencies": {
     "expo-image-loader": "workspace:~56.0.3"
   },
