@@ -27,7 +27,8 @@
       "cache": false
     },
     "test": {
-      "cache": false
+      "cache": false,
+      "outputLogs": "errors-only"
     }
   },
   "remoteCache": {
