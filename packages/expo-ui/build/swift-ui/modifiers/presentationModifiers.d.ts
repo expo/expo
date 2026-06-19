@@ -64,4 +64,23 @@ export declare const presentationBackground: (color: string) => ModifierConfig;
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/interactivedismissdisabled(_:)).
  */
 export declare const interactiveDismissDisabled: (isDisabled?: boolean) => ModifierConfig;
+/**
+ * Sizing behavior for a sheet presentation.
+ * - `'automatic'`: The system default sizing.
+ * - `'fitted'`: Sizes the sheet to fit its content.
+ * - `'form'`: A compact, centered form sheet.
+ * - `'page'`: A larger page sheet.
+ *
+ * @remarks Sizing mainly affects the regular size class (iPad); in a compact size class (iPhone)
+ * sheets remain edge-attached and detents drive the height.
+ */
+export type PresentationSizingType = 'automatic' | 'fitted' | 'form' | 'page';
+/**
+ * Sets the sizing of a sheet presentation.
+ * @param sizing - The sizing behavior to apply.
+ * @platform ios 18.0+
+ * @platform tvos 18.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/presentationsizing(_:)).
+ */
+export declare const presentationSizing: (sizing: PresentationSizingType) => ModifierConfig;
 //# sourceMappingURL=presentationModifiers.d.ts.map

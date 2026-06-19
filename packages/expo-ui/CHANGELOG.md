@@ -108,6 +108,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [iOS] Added the SwiftUI `presentationSizing` modifier (`automatic`/`fitted`/`form`/`page`) to control sheet sizing, and applied `fitted` in `community/bottom-sheet` dynamic sizing so the sheet hugs its content on iPad instead of opening near full-screen. ([#47050](https://github.com/expo/expo/pull/47050) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `imageScale` modifier to scale SF Symbols within a view relative to the surrounding text (`small`, `medium`, `large`). ([#46774](https://github.com/expo/expo/pull/46774) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [jetpack-compose] Added `onGloballyPositioned` modifier, which reports a composable's window position and size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Extended the SwiftUI `onGeometryChange` modifier to also report the view's global position (`x`/`y`) alongside its size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway))
