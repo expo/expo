@@ -33,10 +33,7 @@ test('gets initial state from route names and params with initialRouteName', () 
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
     ],
-    history: [
-      { type: 'route', key: 'bar-test' },
-      { type: 'route', key: 'baz-test' },
-    ],
+    history: [],
     default: 'closed',
     stale: false,
   });
@@ -64,13 +61,37 @@ test('gets initial state from route names and params without initialRouteName', 
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
     ],
-    history: [{ type: 'route', key: 'bar-test' }],
+    history: [],
     default: 'closed',
     stale: false,
   });
 });
 
-test('gets rehydrated state from partial state', () => {
+test('seeds an open drawer in initial state when defaultStatus is open', () => {
+  const router = DrawerRouter({ defaultStatus: 'open' });
+
+  expect(
+    router.getInitialState({
+      routeNames: ['bar', 'baz'],
+      routeParamList: {},
+      routeGetIdList: {},
+    })
+  ).toEqual({
+    index: 0,
+    key: 'drawer-test',
+    routeNames: ['bar', 'baz'],
+    preloadedRouteKeys: [],
+    routes: [
+      { key: 'bar-test', name: 'bar' },
+      { key: 'baz-test', name: 'baz' },
+    ],
+    history: [],
+    default: 'open',
+    stale: false,
+  });
+});
+
+test('rehydrates preserving the persisted route order and appending new tabs', () => {
   const router = DrawerRouter({});
 
   const options: RouterConfigOptions = {
@@ -82,9 +103,12 @@ test('gets rehydrated state from partial state', () => {
     routeGetIdList: {},
   };
 
+  // Persisted state focuses qux (index 1 of its own routes). baz is newly
+  // declared, so it is appended at the end in declaration order.
   expect(
     router.getRehydratedState(
       {
+        index: 1,
         routes: [
           { key: 'bar-0', name: 'bar' },
           { key: 'qux-1', name: 'qux' },
@@ -93,20 +117,36 @@ test('gets rehydrated state from partial state', () => {
       options
     )
   ).toEqual({
-    index: 0,
+    index: 1,
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
     routes: [
       { key: 'bar-0', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-1', name: 'qux', params: { name: 'Jane' } },
+      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
     ],
-    history: [{ type: 'route', key: 'bar-0' }],
+    history: [],
     default: 'closed',
     stale: false,
   });
+});
 
+test('rehydrates focusing the previously-focused route and falling back to 0', () => {
+  const router = DrawerRouter({});
+
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {
+      baz: { answer: 42 },
+      qux: { name: 'Jane' },
+    },
+    routeGetIdList: {},
+  };
+
+  // No index given → focused falls back to the persisted route 'baz'. The drawer's
+  // default `firstRoute` arranges the back stack as [first, focused, ...rest], so
+  // anchor 'bar' leads and 'baz' sits at index 1 (its persisted key is kept).
   expect(
     router.getRehydratedState(
       {
@@ -124,44 +164,12 @@ test('gets rehydrated state from partial state', () => {
       { key: 'baz-0', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
     ],
-    history: [
-      { type: 'route', key: 'bar-test' },
-      { type: 'route', key: 'baz-0' },
-    ],
+    history: [],
     default: 'closed',
     stale: false,
   });
 
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-1', name: 'baz' },
-          { key: 'qux-2', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    index: 2,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-1', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-2', name: 'qux', params: { name: 'Jane' } },
-    ],
-    history: [
-      { type: 'route', key: 'bar-0' },
-      { type: 'route', key: 'qux-2' },
-    ],
-    default: 'closed',
-    stale: false,
-  });
-
+  // Empty routes → everything rebuilt in declaration order, index falls back to 0.
   expect(
     router.getRehydratedState(
       {
@@ -180,22 +188,32 @@ test('gets rehydrated state from partial state', () => {
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
     ],
-    history: [{ type: 'route', key: 'bar-test' }],
+    history: [],
     default: 'closed',
     stale: false,
   });
+});
 
+test('rehydrates a persisted open drawer and drops route history entries', () => {
+  const router = DrawerRouter({});
+
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {
+      baz: { answer: 42 },
+      qux: { name: 'Jane' },
+    },
+    routeGetIdList: {},
+  };
+
+  // The drawer entry in the persisted history restores an open drawer; the
+  // returned history holds only the drawer entry.
   expect(
     router.getRehydratedState(
       {
-        index: 1,
-        history: [
-          { type: 'route', key: 'bar-test' },
-          { type: 'route', key: 'qux-test' },
-          { type: 'route', key: 'foo-test' },
-          { type: 'drawer', status: 'open' },
-        ],
-        routes: [],
+        index: 0,
+        history: [{ type: 'drawer', status: 'open' }],
+        routes: [{ key: 'bar-0', name: 'bar' }],
       },
       options
     )
@@ -205,14 +223,11 @@ test('gets rehydrated state from partial state', () => {
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
     routes: [
-      { key: 'bar-test', name: 'bar' },
+      { key: 'bar-0', name: 'bar' },
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
     ],
-    history: [
-      { type: 'route', key: 'bar-test' },
-      { type: 'drawer', status: 'open' },
-    ],
+    history: [{ type: 'drawer', status: 'open' }],
     default: 'closed',
     stale: false,
   });
@@ -231,10 +246,7 @@ test("doesn't rehydrate state if it's not stale", () => {
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
     ],
-    history: [
-      { type: 'route', key: 'bar-test' },
-      { type: 'drawer', status: 'open' },
-    ],
+    history: [{ type: 'drawer', status: 'open' }],
     default: 'closed',
     stale: false as const,
   };
@@ -248,27 +260,30 @@ test("doesn't rehydrate state if it's not stale", () => {
   ).toBe(state);
 });
 
-test('handles navigate action', () => {
+test('handles navigate action by focusing the target route in place', () => {
   const router = DrawerRouter({});
   const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar'],
+    routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
     routeGetIdList: {},
   };
 
+  // The drawer uses the default `firstRoute` back behavior, so `routes` stays in
+  // declaration order; navigating to baz just focuses it (index → its position).
   expect(
     router.getStateForAction(
       {
         stale: false,
         preloadedRouteKeys: [],
         key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar'],
+        index: 2,
+        routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz', params: { color: 'tomato' } },
           { key: 'bar', name: 'bar' },
+          { key: 'qux', name: 'qux' },
         ],
-        history: [{ type: 'route', key: 'bar' }],
+        history: [],
         default: 'closed',
       },
       CommonActions.navigate('baz', { answer: 42 }),
@@ -278,57 +293,60 @@ test('handles navigate action', () => {
     stale: false,
     key: 'root',
     index: 0,
-    routeNames: ['baz', 'bar'],
+    routeNames: ['baz', 'bar', 'qux'],
     preloadedRouteKeys: [],
     routes: [
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
+      { key: 'baz', name: 'baz', params: { answer: 42 }, path: undefined },
       { key: 'bar', name: 'bar' },
+      { key: 'qux', name: 'qux' },
     ],
-    history: [{ type: 'route', key: 'baz' }],
+    history: [],
     default: 'closed',
   });
 });
 
-test('handles navigate action with open drawer', () => {
+test('handles navigate action with open drawer by closing it', () => {
   const router = DrawerRouter({});
   const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar'],
+    routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
     routeGetIdList: {},
   };
 
+  // Focus starts on baz. The drawer's default `firstRoute` arranges the back stack
+  // as [first, focused, ...rest], so navigating to qux gives [baz, qux, bar] with
+  // qux focused at index 1. The focused route changed, so the open drawer is closed.
   expect(
     router.getStateForAction(
       {
         stale: false,
         preloadedRouteKeys: [],
         key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar'],
+        index: 0,
+        routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
           { key: 'bar', name: 'bar' },
+          { key: 'qux', name: 'qux' },
         ],
-        history: [
-          { type: 'route', key: 'bar' },
-          { type: 'drawer', status: 'open' },
-        ],
+        history: [{ type: 'drawer', status: 'open' }],
         default: 'closed',
       },
-      CommonActions.navigate('baz', { answer: 42 }),
+      CommonActions.navigate('qux', { answer: 42 }),
       options
     )
   ).toEqual({
     stale: false,
     key: 'root',
-    index: 0,
-    routeNames: ['baz', 'bar'],
+    index: 1,
+    routeNames: ['baz', 'bar', 'qux'],
     preloadedRouteKeys: [],
     routes: [
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
+      { key: 'baz', name: 'baz' },
+      { key: 'qux', name: 'qux', params: { answer: 42 }, path: undefined },
       { key: 'bar', name: 'bar' },
     ],
-    history: [{ type: 'route', key: 'baz' }],
+    history: [],
     default: 'closed',
   });
 });
@@ -353,7 +371,7 @@ test('handles open drawer action', () => {
           { key: 'baz', name: 'baz' },
           { key: 'bar', name: 'bar' },
         ],
-        history: [{ type: 'route', key: 'bar' }],
+        history: [],
         default: 'closed',
       },
       DrawerActions.openDrawer(),
@@ -369,13 +387,11 @@ test('handles open drawer action', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
     ],
-    history: [
-      { type: 'route', key: 'bar' },
-      { type: 'drawer', status: 'open' },
-    ],
+    history: [{ type: 'drawer', status: 'open' }],
     default: 'closed',
   });
 
+  // Opening an already-open drawer is a no-op (same reference returned).
   const state: DrawerNavigationState<ParamListBase> = {
     stale: false as const,
     key: 'root',
@@ -386,10 +402,7 @@ test('handles open drawer action', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
     ],
-    history: [
-      { type: 'route', key: 'bar' },
-      { type: 'drawer', status: 'open' },
-    ],
+    history: [{ type: 'drawer', status: 'open' }],
     default: 'closed',
   };
 
@@ -416,10 +429,7 @@ test('handles close drawer action', () => {
           { key: 'baz', name: 'baz' },
           { key: 'bar', name: 'bar' },
         ],
-        history: [
-          { type: 'route', key: 'bar' },
-          { type: 'drawer', status: 'open' },
-        ],
+        history: [{ type: 'drawer', status: 'open' }],
         default: 'closed',
       },
       DrawerActions.closeDrawer(),
@@ -435,10 +445,11 @@ test('handles close drawer action', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
     ],
-    history: [{ type: 'route', key: 'bar' }],
+    history: [],
     default: 'closed',
   });
 
+  // Closing an already-closed drawer is a no-op (same reference returned).
   const state: DrawerNavigationState<ParamListBase> = {
     stale: false as const,
     key: 'root',
@@ -449,10 +460,7 @@ test('handles close drawer action', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
     ],
-    history: [
-      { type: 'route', key: 'bar' },
-      { type: 'route', key: 'baz' },
-    ],
+    history: [],
     default: 'closed',
   };
 
@@ -467,6 +475,7 @@ test('handles toggle drawer action', () => {
     routeGetIdList: {},
   };
 
+  // Open → closed (drawer entry removed).
   expect(
     router.getStateForAction(
       {
@@ -479,10 +488,7 @@ test('handles toggle drawer action', () => {
           { key: 'baz', name: 'baz' },
           { key: 'bar', name: 'bar' },
         ],
-        history: [
-          { type: 'route', key: 'bar' },
-          { type: 'drawer', status: 'open' },
-        ],
+        history: [{ type: 'drawer', status: 'open' }],
         default: 'closed',
       },
       DrawerActions.toggleDrawer(),
@@ -498,10 +504,11 @@ test('handles toggle drawer action', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
     ],
-    history: [{ type: 'route', key: 'bar' }],
+    history: [],
     default: 'closed',
   });
 
+  // Closed → open (drawer entry added).
   expect(
     router.getStateForAction(
       {
@@ -514,7 +521,7 @@ test('handles toggle drawer action', () => {
           { key: 'baz', name: 'baz' },
           { key: 'bar', name: 'bar' },
         ],
-        history: [{ type: 'route', key: 'bar' }],
+        history: [],
         default: 'closed',
       },
       DrawerActions.toggleDrawer(),
@@ -530,115 +537,70 @@ test('handles toggle drawer action', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
     ],
-    history: [
-      { type: 'route', key: 'bar' },
-      { type: 'drawer', status: 'open' },
-    ],
+    history: [{ type: 'drawer', status: 'open' }],
     default: 'closed',
   });
 });
 
-test('updates history on focus change with backBehavior: history', () => {
+test('GO_BACK closes an open drawer without changing routes or index', () => {
   const router = DrawerRouter({ backBehavior: 'history' });
-
-  let state: DrawerNavigationState<ParamListBase> = {
-    index: 0,
-    key: 'drawer-test',
-    routeNames: ['baz', 'bar'],
-    preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-0', name: 'qux', params: { name: 'Jane' } },
-    ],
-    history: [{ type: 'route', key: 'bar-0' }],
-    default: 'closed',
-    stale: false as const,
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
   };
 
-  state = router.getStateForRouteFocus(state, 'bar-0');
-
-  expect(state.history).toEqual([{ type: 'route', key: 'bar-0' }]);
-
-  state = router.getStateForRouteFocus(state, 'baz-0');
-
-  expect(state.history).toEqual([
-    { type: 'route', key: 'bar-0' },
-    { type: 'route', key: 'baz-0' },
-  ]);
-
-  state = router.getStateForRouteFocus(state, 'qux-0');
-
-  expect(state.history).toEqual([
-    { type: 'route', key: 'bar-0' },
-    { type: 'route', key: 'baz-0' },
-    { type: 'route', key: 'qux-0' },
-  ]);
-
-  state = router.getStateForRouteFocus(state, 'baz-0');
-
-  expect(state.history).toEqual([
-    { type: 'route', key: 'bar-0' },
-    { type: 'route', key: 'qux-0' },
-    { type: 'route', key: 'baz-0' },
-  ]);
-});
-
-test('updates history on focus change with backBehavior: fullHistory', () => {
-  const router = DrawerRouter({ backBehavior: 'fullHistory' });
-
-  let state: DrawerNavigationState<ParamListBase> = {
-    index: 0,
-    key: 'drawer-test',
-    routeNames: ['baz', 'bar'],
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 1,
+        routeNames: ['bar', 'baz', 'qux'],
+        preloadedRouteKeys: [],
+        routes: [
+          { key: 'bar-0', name: 'bar' },
+          { key: 'baz-0', name: 'baz' },
+          { key: 'qux-0', name: 'qux' },
+        ],
+        history: [{ type: 'drawer', status: 'open' }],
+        default: 'closed',
+      },
+      CommonActions.goBack(),
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'root',
+    index: 1,
+    routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
     routes: [
       { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-0', name: 'qux', params: { name: 'Jane' } },
+      { key: 'baz-0', name: 'baz' },
+      { key: 'qux-0', name: 'qux' },
     ],
-    history: [{ type: 'route', key: 'bar-0' }],
+    history: [],
     default: 'closed',
-    stale: false as const,
+  });
+});
+
+test('GO_BACK delegates to the tab router when the drawer is closed', () => {
+  const router = DrawerRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
   };
 
-  state = router.getStateForRouteFocus(state, 'bar-0');
-
-  expect(state.history).toEqual([{ type: 'route', key: 'bar-0' }]);
-
-  state = router.getStateForRouteFocus(state, 'baz-0');
-
-  expect(state.history).toEqual([
-    { type: 'route', key: 'bar-0' },
-    { type: 'route', key: 'baz-0', params: { answer: 42 } },
-  ]);
-
-  state = router.getStateForRouteFocus(state, 'qux-0');
-
-  expect(state.history).toEqual([
-    { type: 'route', key: 'bar-0' },
-    { type: 'route', key: 'baz-0', params: { answer: 42 } },
-    { type: 'route', key: 'qux-0', params: { name: 'Jane' } },
-  ]);
-
-  state = router.getStateForRouteFocus(state, 'baz-0');
-
-  expect(state.history).toEqual([
-    { type: 'route', key: 'bar-0' },
-    { type: 'route', key: 'baz-0', params: { answer: 42 } },
-    { type: 'route', key: 'qux-0', params: { name: 'Jane' } },
-    { type: 'route', key: 'baz-0', params: { answer: 42 } },
-  ]);
-});
-
-test('closes drawer on focus change with backBehavior: history', () => {
-  const router = DrawerRouter({ backBehavior: 'history' });
-
+  // No drawer entry → tab GO_BACK with backBehavior 'history' moves focus to the
+  // previous route (index - 1). Routes are left untouched.
   expect(
-    router.getStateForRouteFocus(
+    router.getStateForAction(
       {
-        index: 0,
-        key: 'drawer-test',
+        stale: false,
+        key: 'root',
+        index: 2,
         routeNames: ['bar', 'baz', 'qux'],
         preloadedRouteKeys: [],
         routes: [
@@ -646,15 +608,16 @@ test('closes drawer on focus change with backBehavior: history', () => {
           { key: 'baz-0', name: 'baz' },
           { key: 'qux-0', name: 'qux' },
         ],
-        history: [{ type: 'route', key: 'bar-0' }],
+        history: [],
         default: 'closed',
-        stale: false,
       },
-      'baz-0'
+      CommonActions.goBack(),
+      options
     )
   ).toEqual({
+    stale: false,
+    key: 'root',
     index: 1,
-    key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
     routes: [
@@ -662,93 +625,16 @@ test('closes drawer on focus change with backBehavior: history', () => {
       { key: 'baz-0', name: 'baz' },
       { key: 'qux-0', name: 'qux' },
     ],
-    history: [
-      { type: 'route', key: 'bar-0' },
-      { type: 'route', key: 'baz-0' },
-    ],
+    history: [],
     default: 'closed',
-    stale: false,
-  });
-
-  expect(
-    router.getStateForRouteFocus(
-      {
-        index: 0,
-        key: 'drawer-test',
-        routeNames: ['bar', 'baz', 'qux'],
-        preloadedRouteKeys: [],
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-0', name: 'baz' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-        history: [
-          { type: 'route', key: 'bar-0' },
-          { type: 'drawer', status: 'open' },
-        ],
-        default: 'closed',
-        stale: false,
-      },
-      'bar-0'
-    )
-  ).toEqual({
-    index: 0,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz' },
-      { key: 'qux-0', name: 'qux' },
-    ],
-    history: [{ type: 'route', key: 'bar-0' }],
-    default: 'closed',
-    stale: false,
-  });
-
-  expect(
-    router.getStateForRouteFocus(
-      {
-        index: 0,
-        key: 'drawer-test',
-        routeNames: ['bar', 'baz', 'qux'],
-        preloadedRouteKeys: [],
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-0', name: 'baz' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-        history: [
-          { type: 'route', key: 'bar-0' },
-          { type: 'drawer', status: 'open' },
-        ],
-        default: 'closed',
-        stale: false,
-      },
-      'baz-0'
-    )
-  ).toEqual({
-    index: 1,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz' },
-      { key: 'qux-0', name: 'qux' },
-    ],
-    history: [
-      { type: 'route', key: 'bar-0' },
-      { type: 'route', key: 'baz-0' },
-    ],
-    default: 'closed',
-    stale: false,
   });
 });
 
-test('closes drawer on focus change with backBehavior: fullHistory', () => {
-  const router = DrawerRouter({ backBehavior: 'fullHistory' });
+test('getStateForRouteFocus focuses the route in place and closes the drawer', () => {
+  const router = DrawerRouter({});
 
+  // Default `firstRoute` back behavior: `routes` stays in declaration order, focus
+  // just moves to the route's index, and the open drawer is closed.
   expect(
     router.getStateForRouteFocus(
       {
@@ -761,7 +647,7 @@ test('closes drawer on focus change with backBehavior: fullHistory', () => {
           { key: 'baz-0', name: 'baz' },
           { key: 'qux-0', name: 'qux' },
         ],
-        history: [{ type: 'route', key: 'bar-0' }],
+        history: [{ type: 'drawer', status: 'open' }],
         default: 'closed',
         stale: false,
       },
@@ -777,85 +663,7 @@ test('closes drawer on focus change with backBehavior: fullHistory', () => {
       { key: 'baz-0', name: 'baz' },
       { key: 'qux-0', name: 'qux' },
     ],
-    history: [
-      { type: 'route', key: 'bar-0' },
-      { type: 'route', key: 'baz-0' },
-    ],
-    default: 'closed',
-    stale: false,
-  });
-
-  expect(
-    router.getStateForRouteFocus(
-      {
-        index: 0,
-        key: 'drawer-test',
-        routeNames: ['bar', 'baz', 'qux'],
-        preloadedRouteKeys: [],
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-0', name: 'baz' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-        history: [
-          { type: 'route', key: 'bar-0' },
-          { type: 'drawer', status: 'open' },
-        ],
-        default: 'closed',
-        stale: false,
-      },
-      'bar-0'
-    )
-  ).toEqual({
-    index: 0,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz' },
-      { key: 'qux-0', name: 'qux' },
-    ],
-    history: [{ type: 'route', key: 'bar-0' }],
-    default: 'closed',
-    stale: false,
-  });
-
-  expect(
-    router.getStateForRouteFocus(
-      {
-        index: 0,
-        key: 'drawer-test',
-        routeNames: ['bar', 'baz', 'qux'],
-        preloadedRouteKeys: [],
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-0', name: 'baz' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-        history: [
-          { type: 'route', key: 'bar-0' },
-          { type: 'drawer', status: 'open' },
-        ],
-        default: 'closed',
-        stale: false,
-      },
-      'baz-0'
-    )
-  ).toEqual({
-    index: 1,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz' },
-      { key: 'qux-0', name: 'qux' },
-    ],
-    history: [
-      { type: 'route', key: 'bar-0' },
-      { type: 'route', key: 'baz-0' },
-    ],
+    history: [],
     default: 'closed',
     stale: false,
   });
