@@ -112,6 +112,17 @@ struct DevServersView: View {
         #endif
           .disableAutocorrection(true)
           .toolbar {
+            #if os(tvOS)
+            ToolbarItemGroup(placement: .automatic) {
+              ForEach(keyboardShortcuts, id: \.self) { shortcut in
+                Button {
+                  urlText += shortcut
+                } label: {
+                  Text(shortcut)
+                }
+              }
+            }
+            #else
             ToolbarItemGroup(placement: .keyboard) {
               ForEach(keyboardShortcuts, id: \.self) { shortcut in
                 Button {
@@ -121,6 +132,7 @@ struct DevServersView: View {
                 }
               }
             }
+            #endif
           }
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
