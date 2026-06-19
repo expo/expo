@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix recording crash in apps wrapped with Microsoft Intune. ([#47005](https://github.com/expo/expo/pull/47005) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 57.0.2 — 2026-07-15
