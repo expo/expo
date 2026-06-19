@@ -23,6 +23,56 @@ function unquoteForWrite(value: any): any {
 // `$(inherited)`, stored unquoted (`@bacons` re-quotes at serialize).
 const INHERITED = '$(inherited)';
 
+// Copy-files phase destination lookups, ported from legacy `xcode`.
+const DESTINATION_BY_TARGETTYPE: Record<string, string> = {
+  application: 'wrapper',
+  app_extension: 'plugins',
+  bundle: 'wrapper',
+  command_line_tool: 'wrapper',
+  dynamic_library: 'products_directory',
+  framework: 'shared_frameworks',
+  frameworks: 'frameworks',
+  static_library: 'products_directory',
+  unit_test_bundle: 'wrapper',
+  watch_app: 'wrapper',
+  watch2_app: 'products_directory',
+  watch_extension: 'plugins',
+  watch2_extension: 'plugins',
+};
+const SUBFOLDERSPEC_BY_DESTINATION: Record<string, number> = {
+  absolute_path: 0,
+  executables: 6,
+  frameworks: 10,
+  java_resources: 15,
+  plugins: 13,
+  products_directory: 16,
+  resources: 7,
+  shared_frameworks: 11,
+  shared_support: 12,
+  wrapper: 1,
+  xpc_services: 0,
+};
+
+function copyFilesPhaseProps(folderType: string, subfolderPath: string | undefined, name: string) {
+  return {
+    name,
+    dstPath: subfolderPath ? trimQuotes(subfolderPath) : '',
+    dstSubfolderSpec: SUBFOLDERSPEC_BY_DESTINATION[DESTINATION_BY_TARGETTYPE[folderType] ?? ''],
+  };
+}
+
+function shellScriptPhaseProps(options: any, name: string) {
+  // Stored unquoted; `@bacons` escapes/quotes the script and re-quotes the paths
+  // at serialize (legacy stores paths verbatim and never quotes them).
+  return {
+    name,
+    inputPaths: (options.inputPaths || []).map(unquoteForWrite),
+    outputPaths: (options.outputPaths || []).map(unquoteForWrite),
+    shellPath: options.shellPath,
+    shellScript: options.shellScript,
+  };
+}
+
 /**
  * Backwards-compatible facade exposing the legacy `xcode` `XcodeProject` API on
  * top of a typed `@bacons/xcode` project. The substrate (construct / parse /
@@ -123,6 +173,28 @@ export class XcodeProjectShim {
   private buildPhaseForTarget(isa: string, targetUuid?: string): any {
     const target = (targetUuid && this.safeGetObject(targetUuid)) || this.firstTargetModel();
     return (target?.props?.buildPhases ?? []).find((phase: any) => phase.isa === isa);
+  }
+
+  /** Legacy-shaped view of a build phase: scalars pass through, `files` is a live array. */
+  private legacyBuildPhase(model: any): any {
+    const project = this.inner;
+    const props = model.props;
+    return {
+      uuid: model.uuid,
+      isa: model.isa,
+      name: props.name,
+      buildActionMask: props.buildActionMask,
+      runOnlyForDeploymentPostprocessing: props.runOnlyForDeploymentPostprocessing,
+      shellPath: props.shellPath,
+      shellScript: props.shellScript,
+      inputPaths: props.inputPaths,
+      outputPaths: props.outputPaths,
+      dstPath: props.dstPath,
+      dstSubfolderSpec: props.dstSubfolderSpec,
+      get files() {
+        return legacyRefArray(props.files, project);
+      },
+    };
   }
 
   // Append a build file to a target's phase. A missing build file (e.g. a file
@@ -234,26 +306,32 @@ export class XcodeProjectShim {
     const model = this.modelsOfIsa('PBXGroup').find((g) => g.getDisplayName() === name);
     return model ? this.legacyGroup(model) : null;
   }
-  pbxResourcesBuildPhaseObj(..._args: any[]): any {
-    notImplemented('pbxResourcesBuildPhaseObj');
+  pbxResourcesBuildPhaseObj(target?: string): any {
+    return this.buildPhaseObject('PBXResourcesBuildPhase', 'Resources', target);
   }
-  pbxSourcesBuildPhaseObj(..._args: any[]): any {
-    notImplemented('pbxSourcesBuildPhaseObj');
+  pbxSourcesBuildPhaseObj(target?: string): any {
+    return this.buildPhaseObject('PBXSourcesBuildPhase', 'Sources', target);
   }
-  pbxFrameworksBuildPhaseObj(..._args: any[]): any {
-    notImplemented('pbxFrameworksBuildPhaseObj');
+  pbxFrameworksBuildPhaseObj(target?: string): any {
+    return this.buildPhaseObject('PBXFrameworksBuildPhase', 'Frameworks', target);
   }
-  pbxEmbedFrameworksBuildPhaseObj(..._args: any[]): any {
-    notImplemented('pbxEmbedFrameworksBuildPhaseObj');
+  pbxEmbedFrameworksBuildPhaseObj(target?: string): any {
+    return this.buildPhaseObject('PBXCopyFilesBuildPhase', 'Embed Frameworks', target);
   }
-  pbxCopyfilesBuildPhaseObj(..._args: any[]): any {
-    notImplemented('pbxCopyfilesBuildPhaseObj');
+  pbxCopyfilesBuildPhaseObj(target?: string): any {
+    return this.buildPhaseObject('PBXCopyFilesBuildPhase', 'Copy Files', target);
   }
   buildPhase(..._args: any[]): any {
     notImplemented('buildPhase');
   }
-  buildPhaseObject(..._args: any[]): any {
-    notImplemented('buildPhaseObject');
+  buildPhaseObject(isa: string, name: string, target?: string): any {
+    const targetModel = (target && this.safeGetObject(target)) || this.firstTargetModel();
+    // Unnamed built-in phases (Sources/Frameworks/Resources) match by isa; named
+    // phases (copy-files, shell scripts) disambiguate by name.
+    const phase = (targetModel?.props?.buildPhases ?? []).find(
+      (p: any) => p.isa === isa && (p.props.name == null || trimQuotes(p.props.name) === name)
+    );
+    return phase ? this.legacyBuildPhase(phase) : null;
   }
   getFirstProject(): any {
     return { uuid: this.inner.rootObject.uuid, firstProject: this.legacyProject() };
@@ -460,8 +538,49 @@ export class XcodeProjectShim {
   removeFromPbxCopyfilesBuildPhase(..._args: any[]): any {
     notImplemented('removeFromPbxCopyfilesBuildPhase');
   }
-  addBuildPhase(..._args: any[]): any {
-    notImplemented('addBuildPhase');
+  addBuildPhase(
+    filePathsArray: string[],
+    buildPhaseType: string,
+    comment: string,
+    target?: string,
+    optionsOrFolderType?: any,
+    subfolderPath?: string
+  ): any {
+    const targetModel = (target && this.safeGetObject(target)) || this.firstTargetModel();
+
+    let extra: Record<string, any> = {};
+    if (buildPhaseType === 'PBXCopyFilesBuildPhase') {
+      extra = copyFilesPhaseProps(optionsOrFolderType, subfolderPath, comment);
+    } else if (buildPhaseType === 'PBXShellScriptBuildPhase') {
+      extra = shellScriptPhaseProps(optionsOrFolderType, comment);
+    }
+
+    const phase = this.createObjectWithUuid(this.generateUuid(), {
+      isa: buildPhaseType,
+      buildActionMask: 2147483647,
+      files: [],
+      runOnlyForDeploymentPostprocessing: 0,
+      ...extra,
+    });
+    targetModel.props.buildPhases.push(phase);
+
+    for (const filePath of filePathsArray) {
+      const existing = this.modelsOfIsa('PBXBuildFile').find(
+        (bf) => bf.props.fileRef?.props?.path === filePath
+      );
+      if (existing) {
+        phase.props.files.push(existing);
+        continue;
+      }
+      const file = new PbxFile(filePath);
+      file.uuid = this.generateUuid();
+      file.fileRef = this.generateUuid();
+      this.addToPbxFileReferenceSection(file);
+      this.addToPbxBuildFileSection(file);
+      phase.props.files.push(this.inner.getObject(file.uuid));
+    }
+
+    return { uuid: phase.uuid, buildPhase: this.legacyBuildPhase(phase) };
   }
 
   // === Mutate: groups ===

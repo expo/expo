@@ -702,7 +702,7 @@ exports[`legacy xcode golden baseline build-phases/add-shell-script 1`] = `
 			runOnlyForDeploymentPostprocessing = 0;
 			name = "Upload Source Maps";
 			inputPaths = (
-				$(SRCROOT)/main.jsbundle,
+				"$(SRCROOT)/main.jsbundle",
 			);
 			outputPaths = (
 			);
@@ -923,7 +923,7 @@ exports[`legacy xcode golden baseline build-phases/add-shell-script 1`] = `
 ",
   "result": {
     "inputPaths": [
-      "$(SRCROOT)/main.jsbundle",
+      ""$(SRCROOT)/main.jsbundle"",
     ],
     "isa": "PBXShellScriptBuildPhase",
     "name": ""Upload Source Maps"",

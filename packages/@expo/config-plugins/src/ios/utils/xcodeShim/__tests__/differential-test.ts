@@ -28,6 +28,9 @@ const IMPLEMENTED = new Set<string>([
   'build-settings/add-header-search-paths',
   'build-settings/add-other-linker-flags',
   'misc/add-known-region',
+  'build-phases/add-shell-script',
+  'build-phases/add-copy-files',
+  'build-phases/build-phase-object',
 ]);
 
 function runOn(backend: Backend, scenario: Scenario): { result: unknown; pbxproj: string } {

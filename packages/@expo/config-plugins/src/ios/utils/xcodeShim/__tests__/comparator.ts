@@ -158,7 +158,14 @@ export function compareSemantics(legacyText: string, shimText: string): Diff {
 // the shim (a documented behavior change), so quoting is cosmetic when comparing
 // read results — `'"<group>"'` and `'<group>'` are the same value.
 function stripQuotesDeep(value: any): any {
-  if (typeof value === 'string') return value.replace(/^"(.*)"$/, '$1');
+  if (typeof value === 'string') {
+    // Strip outer quotes and unescape, so legacy's `"echo \"hi\""` and the shim's
+    // raw `echo "hi"` compare equal.
+    if (value.length >= 2 && value.startsWith('"') && value.endsWith('"')) {
+      return value.slice(1, -1).replace(/\\(["\\])/g, '$1');
+    }
+    return value;
+  }
   if (Array.isArray(value)) return value.map(stripQuotesDeep);
   if (value && typeof value === 'object') {
     const out: Record<string, any> = {};

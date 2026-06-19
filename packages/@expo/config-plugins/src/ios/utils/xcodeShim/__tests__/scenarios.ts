@@ -389,7 +389,8 @@ export const scenarios: Scenario[] = [
         {
           shellPath: '/bin/sh',
           shellScript: 'echo "uploading"',
-          inputPaths: ['$(SRCROOT)/main.jsbundle'],
+          // Paths are passed pre-quoted, the way Xcode represents them.
+          inputPaths: ['"$(SRCROOT)/main.jsbundle"'],
           outputPaths: [],
         }
       );

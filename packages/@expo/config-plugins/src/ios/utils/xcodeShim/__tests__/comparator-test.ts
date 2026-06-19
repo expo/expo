@@ -142,6 +142,10 @@ describe('compareResults', () => {
   it('treats read quoting as cosmetic', () => {
     expect(compareResults({ sourceTree: '"<group>"' }, { sourceTree: '<group>' }).equal).toBe(true);
   });
+
+  it('normalizes escaped quotes in read values', () => {
+    expect(compareResults({ s: '"echo \\"hi\\""' }, { s: 'echo "hi"' }).equal).toBe(true);
+  });
 });
 
 describe('normalizedTextDiff', () => {
