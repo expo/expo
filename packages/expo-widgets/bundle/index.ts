@@ -1,12 +1,10 @@
 /* eslint-disable no-var */
 
-import * as swiftUI from '@expo/ui/swift-ui';
-import * as modifiers from '@expo/ui/swift-ui/modifiers';
-
 import { decorateInteractiveTargets } from './decorator';
 import * as jsxRuntime from './jsx-runtime-stub';
 import * as ReactNative from './react-native-stub';
 import * as React from './react-stub';
+import * as uiGlobals from './ui-globals';
 
 type Dictionary = Record<string, unknown>;
 
@@ -58,8 +56,7 @@ const __expoWidgetHandlePress = function (
 };
 
 Object.assign(globalThis, {
-  ...swiftUI,
-  ...modifiers,
+  ...uiGlobals,
   ...jsxRuntime,
   ...React,
   ...ReactNative,
