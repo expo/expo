@@ -488,6 +488,45 @@ export const scenarios: Scenario[] = [
     },
   },
   {
+    name: 'files/build-file-before-file-reference',
+    description:
+      'addToPbxBuildFileSection before addToPbxFileReferenceSection (ios-stickers pattern)',
+    fixture: 'bareMinimum',
+    run({ project, PbxFile }) {
+      const file = new PbxFile('Sticker.png');
+      file.uuid = project.generateUuid();
+      file.fileRef = project.generateUuid();
+      file.target = appTarget(project).uuid;
+      // Link the build file before its file reference exists; the ref is added next.
+      project.addToPbxBuildFileSection(file);
+      project.addToPbxFileReferenceSection(file);
+      project.addToPbxResourcesBuildPhase(file);
+      return { hasFile: !!project.hasFile('Sticker.png') };
+    },
+  },
+  {
+    name: 'targets/reassign-build-configuration-list',
+    description:
+      'reassign a target buildConfigurationList via pbxNativeTargetSection (brownfield pattern)',
+    fixture: 'bareMinimum',
+    run({ project }) {
+      const { uuid: listUuid } = project.addXCConfigurationList(
+        [
+          { name: 'Debug', isa: 'XCBuildConfiguration', buildSettings: { PRODUCT_NAME: '"X"' } },
+          { name: 'Release', isa: 'XCBuildConfiguration', buildSettings: { PRODUCT_NAME: '"X"' } },
+        ],
+        'Release',
+        'Build configuration list for PBXNativeTarget "X"'
+      );
+      const section = project.pbxNativeTargetSection();
+      const entry = Object.entries(section).find(
+        ([, v]: any) => v && v.isa === 'PBXNativeTarget'
+      ) as any;
+      entry[1].buildConfigurationList = listUuid;
+      return { reassigned: entry[1].buildConfigurationList === listUuid };
+    },
+  },
+  {
     name: 'targets/add-xc-configuration-list',
     description: 'addXCConfigurationList registers build configs + a config list',
     fixture: 'bareMinimum',

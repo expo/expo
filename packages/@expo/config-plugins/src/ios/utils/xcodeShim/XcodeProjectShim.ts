@@ -368,35 +368,58 @@ export class XcodeProjectShim {
     return view;
   }
 
-  // Legacy-shaped view of one object's props: references become UUID strings,
-  // ref arrays become live `{ value, comment }` arrays, and `buildSettings` is a
-  // write-through unquoting Proxy. Scalars/plain dicts are shared by reference so
-  // direct mutations (e.g. `obj.buildSettings.X = …`) reach the model.
+  // Live legacy-shaped view of one object's props. Fields are read+write-through
+  // so plugins that mutate the object obtained from a section (e.g.
+  // `target.buildConfigurationList = uuid`) reach the model: references read as
+  // UUIDs / write by resolving, ref arrays are live `{ value, comment }` arrays,
+  // `buildSettings` is an unquoting Proxy, and scalars read-quote / write-unquote.
   private toLegacyObject(model: any): any {
-    const project = this.inner;
+    const self = this;
+    const props = model.props;
     const out: Record<string, any> = {};
-    for (const key of Object.keys(model.props)) {
-      const value = model.props[key];
+    for (const key of Object.keys(props)) {
+      const value = props[key];
       if (key === 'buildSettings' && value && typeof value === 'object' && !Array.isArray(value)) {
         out[key] = buildSettingsProxy(value);
+      } else if (
+        Array.isArray(value) &&
+        (REF_ARRAY_FIELDS.has(key) ||
+          (value.length > 0 && value.every((v) => v && typeof v.uuid === 'string')))
+      ) {
+        defineLiveRefArray(out, key, value, this.inner);
       } else if (
         value &&
         typeof value === 'object' &&
         !Array.isArray(value) &&
         typeof value.uuid === 'string'
       ) {
-        out[key] = value.uuid;
-      } else if (
-        Array.isArray(value) &&
-        (REF_ARRAY_FIELDS.has(key) ||
-          (value.length > 0 && value.every((v) => v && typeof v.uuid === 'string')))
-      ) {
-        defineLiveRefArray(out, key, value, project);
+        Object.defineProperty(out, key, {
+          enumerable: true,
+          configurable: true,
+          get: () => props[key]?.uuid,
+          set: (v) => {
+            props[key] = self.resolveRef(v);
+          },
+        });
       } else {
-        out[key] = quoteForRead(value);
+        Object.defineProperty(out, key, {
+          enumerable: true,
+          configurable: true,
+          get: () => quoteForRead(props[key]),
+          set: (v) => {
+            props[key] = typeof v === 'string' ? unquoteForWrite(v) : v;
+          },
+        });
       }
     }
     return out;
+  }
+
+  // Resolve a reference assignment to a model (or a stand-in relinked at write).
+  private resolveRef(value: any): any {
+    if (value && typeof value === 'object') return value;
+    const uuid = trimQuotes(String(value));
+    return this.safeGetObject(uuid) ?? { uuid };
   }
 
   /** Legacy section dict: `{ uuid: object, uuid_comment: name }` for each model of an isa. */
@@ -493,7 +516,33 @@ export class XcodeProjectShim {
   }
 
   writeSync(): string {
+    this.relinkStandIns();
     return build(this.inner.toJSON());
+  }
+
+  // Stand-ins (`{ uuid }`) pushed for link-before-register are replaced with the
+  // now-registered model before serialization (`@bacons` can't serialize a bare
+  // `{ uuid }` in a single-reference field).
+  private relinkStandIns(): void {
+    const isStandIn = (v: any) =>
+      v && typeof v === 'object' && !Array.isArray(v) && typeof v.uuid === 'string' && !v.props;
+    for (const model of this.models()) {
+      const props = model.props;
+      for (const key of Object.keys(props)) {
+        const value = props[key];
+        if (isStandIn(value)) {
+          const real = this.safeGetObject(value.uuid);
+          if (real) props[key] = real;
+        } else if (Array.isArray(value)) {
+          value.forEach((entry, i) => {
+            if (isStandIn(entry)) {
+              const real = this.safeGetObject(entry.uuid);
+              if (real) value[i] = real;
+            }
+          });
+        }
+      }
+    }
   }
 
   get hash(): any {

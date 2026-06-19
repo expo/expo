@@ -42,6 +42,8 @@ const IMPLEMENTED = new Set<string>([
   'targets/add-app-extension',
   'targets/add-target-dependency',
   'targets/hash-precreated-target-dependency',
+  'files/build-file-before-file-reference',
+  'targets/reassign-build-configuration-list',
 ]);
 
 function runOn(backend: Backend, scenario: Scenario): { result: unknown; pbxproj: string } {
