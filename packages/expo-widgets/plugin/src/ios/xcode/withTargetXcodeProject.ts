@@ -25,6 +25,8 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
     const xcodeProject = config.modResults;
     const targetUuid = xcodeProject.generateUuid();
     const groupName = 'Embed Foundation Extensions';
+    const marketingVersion = config.ios?.version ?? config.version ?? '1.0';
+    const currentProjectVersion = config.ios?.buildNumber ?? '1';
 
     // TODO(@kitten): This was untyped before and is now failing
     const xCConfigurationList: any = addXCConfigurationList(xcodeProject, {
@@ -32,8 +34,8 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
       bundleIdentifier,
       deploymentTarget,
       appleTeamId,
-      marketingVersion: '1.0',
-      currentProjectVersion: '1',
+      marketingVersion,
+      currentProjectVersion,
     });
     // TODO(@kitten): This was untyped before and is now failing
     const productFile: any = addProductFile(xcodeProject, {
