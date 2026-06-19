@@ -343,7 +343,9 @@ describe('getStaticPageAsync', () => {
 
     const devServer = createDevServerForStaticPageTests();
     const getStaticContent = jest.fn(async () => '<html><head></head><body></body></html>');
-    devServer['ssrLoadModule'] = jest.fn(async () => ({ getStaticContent })) as unknown as (typeof devServer)['ssrLoadModule'];
+    devServer['ssrLoadModule'] = jest.fn(async () => ({
+      getStaticContent,
+    })) as unknown as (typeof devServer)['ssrLoadModule'];
     devServer['getStaticResourcesAsync'] = jest.fn(async () => ({ artifacts: [] })) as any;
 
     const result = await devServer['getStaticPageAsync']('/posts/123', htmlRoute);

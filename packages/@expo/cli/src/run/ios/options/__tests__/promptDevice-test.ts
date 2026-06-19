@@ -1,7 +1,7 @@
-import type { ConnectedDevice } from '../../appleDevice/AppleDevice';
-import { stripAnsi } from '../../../../utils/ansi';
-import { formatDeviceChoice } from '../promptDevice';
 import type { Device } from '../../../../start/platforms/ios/simctl';
+import { stripAnsi } from '../../../../utils/ansi';
+import type { ConnectedDevice } from '../../appleDevice/AppleDevice';
+import { formatDeviceChoice } from '../promptDevice';
 
 describe(formatDeviceChoice, () => {
   it(`formats USB connected device`, () => {

@@ -1,6 +1,6 @@
-import { setRequiresFullScreen } from '../RequiresFullScreen';
-import type { InfoPlist } from '../IosConfig.types';
 import * as WarningAggregator from '../../utils/warnings';
+import type { InfoPlist } from '../IosConfig.types';
+import { setRequiresFullScreen } from '../RequiresFullScreen';
 
 it(`sets UIRequiresFullScreen value`, () => {
   expect(setRequiresFullScreen({ ios: { requireFullScreen: true } }, {})).toMatchObject({

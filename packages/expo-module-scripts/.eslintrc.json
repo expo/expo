@@ -1,0 +1,5 @@
+{
+  "root": true,
+  "extends": "eslint-config-universe/node.js",
+  "ignorePatterns": ["templates"]
+}

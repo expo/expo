@@ -52,25 +52,27 @@ describe(validatePackageWithWarning, () => {
 });
 
 describe(getSanitizedBundleIdentifier, () => {
-  ([
-    // Sanity
-    ['bacon.com.hey', 'bacon.com.hey'],
-    // Most likely outcome
-    ['com.my-expo-username.june-34', 'com.my-expo-username.june-34'],
-    // Also possible
+  (
     [
-      // Dropped this string in Xcode (accounting for escape characters) and got the output string...
-      '1234567890-=qwertyuiop[]\\asdfghjkl;\'zxcvbnm,./!@#$%^&*()_+`~QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?',
-      '-234567890--qwertyuiop---asdfghjkl--zxcvbnm-.---------------QWERTYUIOP---ASDFGHJKL--ZXCVBNM---',
-    ],
-    ['7', '-'],
-    ['#', '-'],
-    ['P', 'P'],
-    ['...', '...'],
-    ['native.ios', 'native.ios'],
-    ['com.native', 'com.native'],
-    ['a.b', 'a.b'],
-  ] as [string, string][]).forEach(([input, output]) => {
+      // Sanity
+      ['bacon.com.hey', 'bacon.com.hey'],
+      // Most likely outcome
+      ['com.my-expo-username.june-34', 'com.my-expo-username.june-34'],
+      // Also possible
+      [
+        // Dropped this string in Xcode (accounting for escape characters) and got the output string...
+        '1234567890-=qwertyuiop[]\\asdfghjkl;\'zxcvbnm,./!@#$%^&*()_+`~QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?',
+        '-234567890--qwertyuiop---asdfghjkl--zxcvbnm-.---------------QWERTYUIOP---ASDFGHJKL--ZXCVBNM---',
+      ],
+      ['7', '-'],
+      ['#', '-'],
+      ['P', 'P'],
+      ['...', '...'],
+      ['native.ios', 'native.ios'],
+      ['com.native', 'com.native'],
+      ['a.b', 'a.b'],
+    ] as [string, string][]
+  ).forEach(([input, output]) => {
     it(`sanitizes ${input} to valid "${output}"`, () => {
       const sanitized = getSanitizedBundleIdentifier(input);
       expect(sanitized).toBe(output);
@@ -80,32 +82,34 @@ describe(getSanitizedBundleIdentifier, () => {
 });
 
 describe(getSanitizedPackage, () => {
-  ([
-    // Sanity
-    ['bacon.com.hey', 'bacon.com.hey'],
-    // Most likely outcome
-    ['com.my-expo-username.june-34', 'com.myexpousername.june34'],
+  (
+    [
+      // Sanity
+      ['bacon.com.hey', 'bacon.com.hey'],
+      // Most likely outcome
+      ['com.my-expo-username.june-34', 'com.myexpousername.june34'],
 
-    // Also possible
-    ['jun25-d..ev @la0_0.0._uncher', 'jun25d.evla0_0.x0.x_uncher'],
+      // Also possible
+      ['jun25-d..ev @la0_0.0._uncher', 'jun25d.evla0_0.x0.x_uncher'],
 
-    ['native.android', 'xnative.android'],
-    ['com.native', 'com.xnative'],
-    // Appends correct number of segments
-    ['a', 'com.a'],
-    ['a.b', 'a.b'],
-    // Ensures that each dot starts with a letter
-    ['_', 'com.x_'],
-    // Strips extra dots
-    ['a.b...c.', 'a.b.c'],
-    ['a.b_..c', 'a.b_.c'],
-    // Should likely never happen given how we use the function.
-    ['.', 'com.app'],
-    ['.', 'com.app'],
-    ['. ..', 'com.app'],
-    [',', 'com.app'],
-    ['...b.a.-c.0.n...', 'b.a.c.x0.n'],
-  ] as [string, string][]).forEach(([input, output]) => {
+      ['native.android', 'xnative.android'],
+      ['com.native', 'com.xnative'],
+      // Appends correct number of segments
+      ['a', 'com.a'],
+      ['a.b', 'a.b'],
+      // Ensures that each dot starts with a letter
+      ['_', 'com.x_'],
+      // Strips extra dots
+      ['a.b...c.', 'a.b.c'],
+      ['a.b_..c', 'a.b_.c'],
+      // Should likely never happen given how we use the function.
+      ['.', 'com.app'],
+      ['.', 'com.app'],
+      ['. ..', 'com.app'],
+      [',', 'com.app'],
+      ['...b.a.-c.0.n...', 'b.a.c.x0.n'],
+    ] as [string, string][]
+  ).forEach(([input, output]) => {
     it(`sanitizes ${input} to valid "${output}"`, () => {
       const sanitized = getSanitizedPackage(input);
       expect(sanitized).toBe(output);

@@ -98,11 +98,13 @@ export default async function checkPackageAsync(
 
     if (options.checkPackageType === 'package') {
       let finalResult: boolean = true;
-      // TODO(jest-composite): The root `test` task now runs every sub-folder's tests via a
-      // composite multi-project Jest config (`createCompositeJestPreset`), so the per-target
-      // recursions below only need to lint/dependency-check — not re-run tests. This `test: false`
-      // is a temporary measure until check-packages models composite packages directly.
-      const subOptions = { ...options, test: false };
+      // TODO(composite-tasks): The root `test` and `lint` tasks now cover every sub-folder in one
+      // invocation — `test` via a composite multi-project Jest config (`createCompositeJestPreset`)
+      // and `lint` via `expo-module lint` linting each sub-target's `src` by default. So the
+      // per-target recursions below only need to dependency-check — not re-run tests or lint. These
+      // `test: false`/`lint: false` flags are a temporary measure until check-packages models
+      // composite packages directly.
+      const subOptions = { ...options, test: false, lint: false };
       if (pkg.hasPlugin) {
         finalResult =
           finalResult && (await checkPackageAsync(pkg, { ...subOptions, checkPackageType: 'plugin' }));

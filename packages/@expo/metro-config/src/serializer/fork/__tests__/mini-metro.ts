@@ -105,12 +105,7 @@ export async function microBundle({
   };
   preModulesFs?: Record<string, string>;
 }): Promise<
-  [
-    string,
-    readonly Module<MixedOutput>[],
-    ReadOnlyGraph<MixedOutput>,
-    SerializerOptions,
-  ]
+  [string, readonly Module<MixedOutput>[], ReadOnlyGraph<MixedOutput>, SerializerOptions]
 > {
   const fullFs: Record<string, string> = {
     'expo-router/rsc/internal': ``,

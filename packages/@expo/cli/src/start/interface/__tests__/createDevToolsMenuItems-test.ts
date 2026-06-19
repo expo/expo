@@ -126,7 +126,9 @@ describe('createInteractiveMenuItems', () => {
     expect(menuItems.length).toBe(1);
     expect(menuItems[menuItems.length - 1]!.title).toBe(chalk`{bold test-plugin}`);
     expect(menuItems[menuItems.length - 1]!.children?.length).toBe(2);
-    expect(menuItems[menuItems.length - 1]!.children![0]!.title).toBe(chalk`Open {bold test-plugin}`);
+    expect(menuItems[menuItems.length - 1]!.children![0]!.title).toBe(
+      chalk`Open {bold test-plugin}`
+    );
     expect(menuItems[menuItems.length - 1]!.children![1]!.title).toBe('Test Command 1');
   });
 

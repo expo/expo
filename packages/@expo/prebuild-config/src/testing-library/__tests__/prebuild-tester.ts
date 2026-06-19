@@ -118,9 +118,7 @@ export function getInfoPlistPathLikePrebuild(config: ExpoConfig): string {
     infoPlistBuildProperty
   );
   if (!fs.existsSync(infoPlistPath)) {
-    throw new Error(
-      `Info.plist file linked to Xcode project does not exist: ${infoPlistPath}`
-    );
+    throw new Error(`Info.plist file linked to Xcode project does not exist: ${infoPlistPath}`);
   }
 
   return infoPlistPath;

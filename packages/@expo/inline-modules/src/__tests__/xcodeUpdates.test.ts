@@ -27,7 +27,10 @@ describe('updateXcodeProject', () => {
     expect(tempProjectRoot).toBeDefined();
     tempProjectRoot = tempProjectRoot as string;
 
-    await updateXcodeProject(tempProjectRoot, { watchedDirectories: ['app'], name: 'bare-project' });
+    await updateXcodeProject(tempProjectRoot, {
+      watchedDirectories: ['app'],
+      name: 'bare-project',
+    });
 
     const pbxProject = IOSConfig.XcodeUtils.getPbxproj(tempProjectRoot);
     const objects = pbxProject.hash.project.objects;
