@@ -36,6 +36,7 @@
     "lint": "expo-module lint",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [

@@ -23,6 +23,16 @@
       ],
       "outputLogs": "new-only"
     },
+    "depscheck": {
+      "inputs": [
+        "package.json",
+        "src/**",
+        "plugin/src/**",
+        "cli/src/**",
+        "utils/src/**"
+      ],
+      "outputLogs": "errors-only"
+    },
     "lint": {
       "cache": false
     },

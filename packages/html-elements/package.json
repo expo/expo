@@ -13,6 +13,7 @@
     "test:src": "jest",
     "test:babel": "jest --config babel/jest.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [

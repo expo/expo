@@ -24,6 +24,7 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "syncBrowserScripts": "./scripts/buildBrowserScripts.ts",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [

@@ -22,6 +22,7 @@
     "lint": "eslint .",
     "test": "jest",
     "build": "expo-build cjs:src",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {

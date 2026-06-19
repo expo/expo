@@ -14,6 +14,7 @@
     "build": "expo-build cjs:src",
     "lint": "expo-module lint",
     "clean": "expo-module clean",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {

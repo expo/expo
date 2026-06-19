@@ -33,6 +33,7 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "pretest:e2e-cli": "expo-module prepublishOnly",
     "test:e2e-cli": "jest --config e2e-cli/jest.config.js",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [

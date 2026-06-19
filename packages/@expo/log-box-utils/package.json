@@ -23,6 +23,7 @@
     "clean": "rimraf build",
     "lint": "expo-module lint",
     "prepublishOnly": "run-s clean build",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {},

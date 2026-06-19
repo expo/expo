@@ -26,6 +26,7 @@
     "test": "echo \"Tests can only be run on MacOS with sourceKitten installed. Run tests locally instead using local-test script.\"",
     "local-test": "NODE_OPTIONS=\"--experimental-vm-modules\" jest",
     "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {

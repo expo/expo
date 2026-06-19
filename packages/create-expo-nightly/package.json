@@ -22,6 +22,7 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
