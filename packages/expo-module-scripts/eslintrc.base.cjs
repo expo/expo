@@ -8,9 +8,20 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/__tests__/*'],
+      files: ['**/__tests__/**'],
       env: { node: true },
       globals: { __DEV__: true },
+      rules: {
+        'no-unused-expressions': 'off',
+        'no-unused-vars': 'off',
+        'no-useless-return': 'off',
+        'no-unreachable': 'off',
+        'no-undef': 'off',
+        'no-dupe-keys': 'off',
+        'no-dupe-class-members': 'off',
+        'no-dupe-args': 'off',
+        'no-new': 'off',
+      },
     },
     {
       files: ['./*.config.js', './.*rc.js'],
