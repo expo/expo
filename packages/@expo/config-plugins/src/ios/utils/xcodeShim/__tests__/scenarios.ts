@@ -470,6 +470,24 @@ export const scenarios: Scenario[] = [
     },
   },
   {
+    name: 'targets/hash-precreated-target-dependency',
+    description:
+      'pre-create dependency sections via hash, then addTargetDependency (widgets pattern)',
+    fixture: 'bareMinimum',
+    run({ project }) {
+      const app = project.getFirstTarget();
+      const ext = project.addTarget('Widget', 'app_extension', 'Widget', 'com.example.app.Widget');
+      const objects = project.hash.project.objects;
+      objects.PBXTargetDependency ??= {};
+      objects.PBXContainerItemProxy ??= {};
+      project.addTargetDependency(app.uuid, [ext.uuid]);
+      return {
+        appDependencyCount: project.getFirstTarget().firstTarget.dependencies.length,
+        hasContainerItemProxy: !!project.hash.project.objects['PBXContainerItemProxy'],
+      };
+    },
+  },
+  {
     name: 'targets/add-xc-configuration-list',
     description: 'addXCConfigurationList registers build configs + a config list',
     fixture: 'bareMinimum',

@@ -41,6 +41,7 @@ const IMPLEMENTED = new Set<string>([
   'misc/direct-hash-objects',
   'targets/add-app-extension',
   'targets/add-target-dependency',
+  'targets/hash-precreated-target-dependency',
 ]);
 
 function runOn(backend: Backend, scenario: Scenario): { result: unknown; pbxproj: string } {

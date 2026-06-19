@@ -206,6 +206,11 @@ export class XcodeProjectShim {
 
   private project: XcodeProject | null = null;
 
+  // ISAs whose section was explicitly created via `hash.project.objects[ISA] = …`
+  // (legacy treats a present-but-empty section as existing; the typed model has
+  // no empty sections, so track them here).
+  private hashCreatedSections = new Set<string>();
+
   constructor(filePath: string) {
     this.filepath = path.resolve(filePath);
   }
@@ -404,6 +409,62 @@ export class XcodeProjectShim {
     return section;
   }
 
+  private sectionExists(isa: string): boolean {
+    return this.modelsOfIsa(isa).length > 0 || this.hashCreatedSections.has(isa);
+  }
+
+  // Create a model from a legacy-shaped plain object written via the hash bridge
+  // (`objects[ISA][uuid] = obj`): resolve uuid-string ref fields to model
+  // instances and unquote values, then register it.
+  private createFromLegacyObject(uuid: string, obj: any): void {
+    if (!obj || typeof obj !== 'object' || this.safeGetObject(uuid)) return;
+    const resolveMaybeRef = (v: any) =>
+      typeof v === 'string' ? (this.safeGetObject(trimQuotes(v)) ?? unquoteForWrite(v)) : v;
+    const json: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (key.endsWith('_comment')) continue;
+      if (key === 'buildSettings' && value && typeof value === 'object' && !Array.isArray(value)) {
+        json[key] = unquoteBuildSettings(value as Record<string, any>);
+      } else if (Array.isArray(value)) {
+        json[key] = value.map(resolveMaybeRef);
+      } else {
+        json[key] = resolveMaybeRef(value);
+      }
+    }
+    this.createObjectWithUuid(uuid, json);
+  }
+
+  // A live, read-write `hash.project.objects[ISA]` section: reads project the
+  // models (`{ uuid: object, uuid_comment }`); writes create models.
+  private hashSection(isa: string): any {
+    const self = this;
+    return new Proxy(
+      {},
+      {
+        get(_t, key) {
+          if (typeof key !== 'string') return undefined;
+          if (key.endsWith('_comment')) {
+            return self.safeGetObject(key.slice(0, -'_comment'.length))?.getDisplayName?.();
+          }
+          const model = self.safeGetObject(key);
+          return model && model.isa === isa ? self.toLegacyObject(model) : undefined;
+        },
+        set(_t, key, value) {
+          if (typeof key === 'string' && !key.endsWith('_comment')) {
+            self.createFromLegacyObject(key, value);
+          }
+          return true;
+        },
+        ownKeys() {
+          return self.modelsOfIsa(isa).flatMap((m) => [m.uuid, `${m.uuid}_comment`]);
+        },
+        getOwnPropertyDescriptor() {
+          return { enumerable: true, configurable: true };
+        },
+      }
+    );
+  }
+
   /** Legacy-shaped view of the root project: references as UUIDs, `targets` as a live array. */
   private legacyProject(): any {
     const props = this.inner.rootObject.props;
@@ -442,11 +503,19 @@ export class XcodeProjectShim {
         objects: new Proxy(
           {},
           {
-            // Legacy has no section dict for an isa with no objects; mirror that
-            // (a present-but-empty section would read as truthy).
-            get: (_t, isa: string) => {
-              const section = self.legacySection(String(isa));
-              return Object.keys(section).length ? section : undefined;
+            // Absent sections read as undefined (legacy has no dict for an isa
+            // with no objects); assigning one records its existence and creates
+            // any objects it carries.
+            get: (_t, isa: string) =>
+              self.sectionExists(String(isa)) ? self.hashSection(String(isa)) : undefined,
+            set: (_t, isa: string, value: any) => {
+              self.hashCreatedSections.add(String(isa));
+              if (value && typeof value === 'object') {
+                for (const [key, obj] of Object.entries(value)) {
+                  if (!key.endsWith('_comment')) self.createFromLegacyObject(key, obj);
+                }
+              }
+              return true;
             },
           }
         ),
@@ -573,7 +642,7 @@ export class XcodeProjectShim {
     notImplemented('findPBXGroupKeyAndType');
   }
   getPBXObject(name: string): any {
-    return this.legacySection(name);
+    return this.hashSection(name);
   }
   hasFile(filePath: string): any {
     for (const ref of this.modelsOfIsa('PBXFileReference')) {
@@ -1052,10 +1121,10 @@ export class XcodeProjectShim {
     for (const dep of dependencyTargets) {
       if (!this.safeGetObject(dep)) throw new Error('Invalid target: ' + dep);
     }
-    // Legacy only wires dependencies when both sections already exist in the project.
+    // Legacy only wires dependencies when both sections already exist (plugins
+    // pre-create them via `hash.project.objects[ISA] ??= {}`).
     const sectionsExist =
-      this.modelsOfIsa('PBXTargetDependency').length > 0 &&
-      this.modelsOfIsa('PBXContainerItemProxy').length > 0;
+      this.sectionExists('PBXTargetDependency') && this.sectionExists('PBXContainerItemProxy');
     for (const depUuid of sectionsExist ? dependencyTargets : []) {
       const depModel = this.safeGetObject(depUuid);
       const itemProxy = this.createObjectWithUuid(this.generateUuid(), {
