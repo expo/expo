@@ -403,7 +403,7 @@ async function preparePackageJson(
       dependencies: {
         ...packageJson.dependencies,
         glob: '^11.0.0',
-        'react-native-tvos': '0.86.0-0rc3',
+        'react-native-tvos': '0.86.0-1',
         '@react-native-tvos/config-tv': '^0.1.6',
       },
     };
