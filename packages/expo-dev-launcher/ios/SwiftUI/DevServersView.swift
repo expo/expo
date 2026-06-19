@@ -23,6 +23,7 @@ private func sanitizeUrlString(_ urlString: String) -> String? {
 }
 
 private let urlInputAnimation = Animation.easeInOut(duration: 0.3)
+private let keyboardShortcuts = ["http://", "https://", "127.0.0.1", ":", "/"]
 
 struct DevServersView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
@@ -110,6 +111,17 @@ struct DevServersView: View {
           .autocapitalization(.none)
         #endif
           .disableAutocorrection(true)
+          .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+              ForEach(keyboardShortcuts, id: \.self) { shortcut in
+                Button {
+                  urlText += shortcut
+                } label: {
+                  Text(shortcut)
+                }
+              }
+            }
+          }
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
           .foregroundColor(.primary)
