@@ -6,6 +6,5 @@
     "rootDir": "./src",
     "noEmit": true
   },
-  "include": ["./src", "../expo/src/ts-declarations"],
-  "exclude": ["**/__rsc_tests__/*"]
+  "include": ["./src", "../expo/src/ts-declarations"]
 }

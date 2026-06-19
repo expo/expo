@@ -46,6 +46,10 @@ const projects = [
 const { watchPlugins, prettierPath, ...pluginProject } = require('./plugin/jest.config.js');
 projects.push({ ...pluginProject, rootDir: path.join(__dirname, 'plugin') });
 
+// Run the RSC `__rsc_tests__` as their own per-platform projects (`rsc/<platform>`) so a single
+// `jest` covers them too. These match only `**/__rsc_tests__/**`, separate from the projects above.
+projects.push(...require('jest-expo/rsc/jest-preset').projects);
+
 const config = withWatchPlugins({
   ...require('jest-expo/config/maxWorkers'),
   projects,

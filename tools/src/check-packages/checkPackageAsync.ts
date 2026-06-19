@@ -75,12 +75,8 @@ export default async function checkPackageAsync(
           // Limit to one worker on CIs
           args.push('--maxWorkers', '1');
         }
-        await runPackageScriptAsync(pkg, 'test', args);
 
-        if (pkg.hasReactServerComponents && options.checkPackageType === 'package') {
-          // Test RSC if available...
-          await runPackageScriptAsync(pkg, 'test:rsc', args);
-        }
+        await runPackageScriptAsync(pkg, 'test', args);
       }
     }
     if (options.lint) {

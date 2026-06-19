@@ -50,7 +50,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "jest",
-    "test:rsc": "jest --config jest-rsc.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "depscheck": "expo-module depscheck",
@@ -74,9 +73,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-core",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "dependencies": {
     "@expo/expo-modules-macros-plugin": "0.3.0",
     "expo-modules-jsi": "workspace:~56.0.7",

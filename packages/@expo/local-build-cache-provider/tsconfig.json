@@ -6,6 +6,5 @@
     "sourceMap": true,
     "types": ["node", "jest"]
   },
-  "include": ["./src"],
-  "exclude": ["**/__rsc_tests__/*"]
+  "include": ["./src"]
 }

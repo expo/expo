@@ -29,7 +29,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "jest",
-    "test:rsc": "jest --config jest-rsc.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
@@ -50,9 +49,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/constants/",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "dependencies": {
     "@expo/env": "workspace:~2.3.0"
   },
