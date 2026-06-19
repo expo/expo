@@ -22,6 +22,7 @@
     "lint": "expo-module lint",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "jest": {

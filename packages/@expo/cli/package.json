@@ -31,6 +31,7 @@
     "build:metro-require": "expo-build script:metro-require=build/metro-require",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "test": "jest",
     "test:e2e": "jest --config e2e/jest.config.js",

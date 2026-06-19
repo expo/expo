@@ -28,6 +28,7 @@
     "test:tsd": "EXPORT_ROUTER_JEST_TSD=true jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [

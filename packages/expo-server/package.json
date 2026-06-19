@@ -68,6 +68,7 @@
     "prepublishOnly": "run-s clean build",
     "lint": "eslint .",
     "test": "jest",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {

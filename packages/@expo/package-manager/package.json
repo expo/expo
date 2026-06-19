@@ -9,6 +9,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "jest",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {

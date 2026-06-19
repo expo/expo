@@ -14,6 +14,7 @@
     "lint": "expo-module lint",
     "test": "jest",
     "test:e2e": "jest --config e2e/jest.config.js",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },

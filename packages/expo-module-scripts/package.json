@@ -86,7 +86,8 @@
     "jest-expo": "workspace:~56.0.4",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
-    "resolve-workspace-root": "^2.0.0"
+    "resolve-workspace-root": "^2.0.0",
+    "typescript": "^6.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
@@ -97,6 +98,7 @@
       "./bin/expo-module-build",
       "./bin/expo-module-clean",
       "./bin/expo-module-configure",
+      "./bin/expo-module-depscheck",
       "./bin/expo-module-eslint",
       "./bin/expo-module-jest",
       "./bin/expo-module-lint",

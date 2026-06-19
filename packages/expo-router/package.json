@@ -275,6 +275,7 @@
     "test:types": "expo-module build -p tsconfig.test.json",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [

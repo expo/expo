@@ -171,6 +171,7 @@
     "lint": "eslint src",
     "test": "jest",
     "prepublishOnly": "run-s clean build",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "jest": {

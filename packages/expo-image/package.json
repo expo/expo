@@ -26,6 +26,7 @@
     "test": "jest",
     "test:rsc": "jest --config jest-rsc.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/image/",

@@ -4,6 +4,7 @@
   "description": "ESLint config for Expo apps",
   "main": "default.js",
   "scripts": {
+    "depscheck": "expo-module depscheck",
     "lint": "eslint .",
     "pretest": "pnpm --filter eslint-plugin-expo build",
     "test": "jest"

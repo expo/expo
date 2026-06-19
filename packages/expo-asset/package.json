@@ -17,6 +17,7 @@
     "test": "jest",
     "test:rsc": "jest --config jest-rsc.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [

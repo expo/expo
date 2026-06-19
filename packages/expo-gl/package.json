@@ -12,6 +12,7 @@
     "test": "jest",
     "test:snapshots": "jest --updateSnapshot",
     "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [

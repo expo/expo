@@ -30,6 +30,7 @@
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "test": "jest",
     "prepublishOnly": "pnpm run clean && pnpm run build"

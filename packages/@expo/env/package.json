@@ -10,6 +10,7 @@
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "jest",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {

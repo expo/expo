@@ -13,6 +13,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/audio/",
