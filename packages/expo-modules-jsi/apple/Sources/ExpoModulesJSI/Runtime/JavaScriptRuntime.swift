@@ -17,7 +17,7 @@ internal import jsi
 ///
 /// The runtime maintains a weak reference pattern for values, objects, and arrays to prevent
 /// retain cycles. Ensure the runtime remains alive while any derived JavaScript objects are in use.
-open class JavaScriptRuntime: Equatable, @unchecked Sendable {
+open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// The underlying JSI runtime this `JavaScriptRuntime` points to, exposed as
   /// `IRuntime` — the abstract base interface that virtually all JSI value/object/
   /// function methods take (`Value::getString`, `Object::setProperty`,
@@ -613,6 +613,24 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
 
   public static func == (lhs: JavaScriptRuntime, rhs: JavaScriptRuntime) -> Bool {
     return lhs === rhs
+  }
+
+  // MARK: - Identifiable
+
+  /// Identity of the underlying JSI runtime, as its pointer address.
+  ///
+  /// Stable for the runtime's lifetime: JSI runtimes are non-movable and pinned (every
+  /// `jsi::Value`/`Object` stores a `Runtime&` and assumes it never moves), so the address is a sound
+  /// identity while the runtime is alive. It is *not* unique across time, though: once a runtime is
+  /// destroyed its address may be reused by a later runtime, so don't treat the value as a
+  /// permanent/global id or hold it past the runtime's lifetime.
+  public typealias ID = UInt
+
+  /// The runtime's `ID`. Unlike `==` (which compares `JavaScriptRuntime` wrapper identity), this is
+  /// stable across multiple wrappers of the same underlying runtime, so it's safe to use as a key that
+  /// must agree regardless of which wrapper produced it.
+  public var id: ID {
+    return UInt(bitPattern: Unmanaged.passUnretained(runtimePointee).toOpaque())
   }
 
   // MARK: - Caching JavaScriptPropNameID
