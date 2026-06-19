@@ -1892,6 +1892,10 @@ extension ViewModifierRegistry {
       return try PresentationBackgroundModifier(from: params, appContext: appContext)
     }
 
+    register("presentationSizing") { params, appContext, _ in
+      return try PresentationSizingModifier(from: params, appContext: appContext)
+    }
+
     register("listStyle") { params, appContext, _ in
       return try ListStyleModifier(from: params, appContext: appContext)
     }
