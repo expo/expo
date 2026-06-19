@@ -931,7 +931,12 @@ export class XcodeProjectShim {
     return this.pbxCreateGroupWithType(name, pathName, 'PBXGroup');
   }
   pbxCreateGroupWithType(name: string, pathName: string | undefined, groupType: string): string {
-    const opts: any = { isa: groupType, name, children: [], sourceTree: '<group>' };
+    const opts: any = {
+      isa: groupType,
+      name: unquoteForWrite(name),
+      children: [],
+      sourceTree: '<group>',
+    };
     if (pathName) opts.path = unquoteForWrite(pathName);
     return this.inner.createModel(opts).uuid;
   }
@@ -950,8 +955,8 @@ export class XcodeProjectShim {
     const group = this.createObjectWithUuid(this.generateUuid(), {
       isa: 'PBXGroup',
       children: [],
-      name,
-      path: groupPath,
+      name: unquoteForWrite(name),
+      path: unquoteForWrite(groupPath),
       sourceTree: sourceTree ? unquoteForWrite(sourceTree) : '<group>',
     });
 

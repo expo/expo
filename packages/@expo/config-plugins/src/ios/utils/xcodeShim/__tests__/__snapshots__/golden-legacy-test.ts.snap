@@ -9808,6 +9808,461 @@ exports[`legacy xcode golden baseline files/build-file-before-file-reference 1`]
 }
 `;
 
+exports[`legacy xcode golden baseline files/create-group-quoted-name 1`] = `
+{
+  "pbxproj": "// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		UUID-0001 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = UUID-0002 /* Images.xcassets */; };
+		UUID-0003 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = UUID-0004 /* SplashScreen.storyboard */; };
+		UUID-0005 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = UUID-0006 /* Expo.plist */; };
+		UUID-0007 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = UUID-0008 /* AppDelegate.swift */; };
+		UUID-0009 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = UUID-0010 /* SceneDelegate.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		UUID-0011 /* HelloWorld.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloWorld.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		UUID-0002 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = HelloWorld/Images.xcassets; sourceTree = "<group>"; };
+		UUID-0012 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = HelloWorld/Info.plist; sourceTree = "<group>"; };
+		UUID-0004 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = HelloWorld/SplashScreen.storyboard; sourceTree = "<group>"; };
+		UUID-0006 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		UUID-0013 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		UUID-0008 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = HelloWorld/AppDelegate.swift; sourceTree = "<group>"; };
+		UUID-0010 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = HelloWorld/SceneDelegate.swift; sourceTree = "<group>"; };
+		UUID-0014 /* HelloWorld-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "HelloWorld-Bridging-Header.h"; path = "HelloWorld/HelloWorld-Bridging-Header.h"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		UUID-0015 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		UUID-0016 /* HelloWorld */ = {
+			isa = PBXGroup;
+			children = (
+				UUID-0008 /* AppDelegate.swift */,
+				UUID-0010 /* SceneDelegate.swift */,
+				UUID-0014 /* HelloWorld-Bridging-Header.h */,
+				UUID-0017 /* Supporting */,
+				UUID-0002 /* Images.xcassets */,
+				UUID-0012 /* Info.plist */,
+				UUID-0004 /* SplashScreen.storyboard */,
+			);
+			name = HelloWorld;
+			sourceTree = "<group>";
+		};
+		UUID-0018 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				UUID-0013 /* JavaScriptCore.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		UUID-0019 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		UUID-0020 = {
+			isa = PBXGroup;
+			children = (
+				UUID-0016 /* HelloWorld */,
+				UUID-0019 /* Libraries */,
+				UUID-0021 /* Products */,
+				UUID-0018 /* Frameworks */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
+		};
+		UUID-0021 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				UUID-0011 /* HelloWorld.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		UUID-0017 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				UUID-0006 /* Expo.plist */,
+			);
+			name = Supporting;
+			path = HelloWorld/Supporting;
+			sourceTree = "<group>";
+		};
+		UUID-0022 /* "My Stickers" */ = {
+			isa = "PBXGroup";
+			children = (
+			);
+			name = "My Stickers";
+			sourceTree = "<group>";
+			path = "";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		UUID-0023 /* HelloWorld */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = UUID-0024 /* Build configuration list for PBXNativeTarget "HelloWorld" */;
+			buildPhases = (
+				UUID-0025 /* [CP] Check Pods Manifest.lock */,
+				UUID-0026 /* Sources */,
+				UUID-0015 /* Frameworks */,
+				UUID-0027 /* Resources */,
+				UUID-0028 /* Bundle React Native code and images */,
+				UUID-0029 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HelloWorld;
+			productName = HelloWorld;
+			productReference = UUID-0011 /* HelloWorld.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		UUID-0030 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1130;
+				TargetAttributes = {
+					UUID-0023 = {
+						LastSwiftMigration = 1250;
+					};
+				};
+			};
+			buildConfigurationList = UUID-0031 /* Build configuration list for PBXProject "HelloWorld" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = UUID-0020;
+			productRefGroup = UUID-0021 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				UUID-0023 /* HelloWorld */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		UUID-0027 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				UUID-0005 /* Expo.plist in Resources */,
+				UUID-0001 /* Images.xcassets in Resources */,
+				UUID-0003 /* SplashScreen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		UUID-0028 /* Bundle React Native code and images */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+			);
+			name = "Bundle React Native code and images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ -f \\"$PODS_ROOT/../.xcode.env\\" ]]; then\\n  source \\"$PODS_ROOT/../.xcode.env\\"\\nfi\\nif [[ -f \\"$PODS_ROOT/../.xcode.env.local\\" ]]; then\\n  source \\"$PODS_ROOT/../.xcode.env.local\\"\\nfi\\n\\n# The project root by default is one level up from the ios directory\\nexport PROJECT_ROOT=\\"$PROJECT_DIR\\"/..\\n\\nif [[ \\"$CONFIGURATION\\" = *Debug* ]]; then\\n  export SKIP_BUNDLING=1\\nfi\\nif [[ -z \\"$ENTRY_FILE\\" ]]; then\\n  # Set the entry JS file using the bundler's entry resolution.\\n  export ENTRY_FILE=\\"$(\\"$NODE_BINARY\\" -e \\"require('expo/scripts/resolveAppEntry')\\" \\"$PROJECT_ROOT\\" ios absolute | tail -n 1)\\"\\nfi\\n\\nif [[ -z \\"$CLI_PATH\\" ]]; then\\n  # Use Expo CLI\\n  export CLI_PATH=\\"$(\\"$NODE_BINARY\\" --print \\"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\\")\\"\\nfi\\nif [[ -z \\"$BUNDLE_COMMAND\\" ]]; then\\n  # Default Expo CLI command for bundling\\n  export BUNDLE_COMMAND=\\"export:embed\\"\\nfi\\n\\n# Source .xcode.env.updates if it exists to allow\\n# SKIP_BUNDLING to be unset if needed\\nif [[ -f \\"$PODS_ROOT/../.xcode.env.updates\\" ]]; then\\n  source \\"$PODS_ROOT/../.xcode.env.updates\\"\\nfi\\n# Source local changes to allow overrides\\n# if needed\\nif [[ -f \\"$PODS_ROOT/../.xcode.env.local\\" ]]; then\\n  source \\"$PODS_ROOT/../.xcode.env.local\\"\\nfi\\n\\n\`\\"$NODE_BINARY\\" --print \\"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\\"\`\\n\\n";
+		};
+		UUID-0025 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"\${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"\${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-HelloWorld-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \\"\${PODS_PODFILE_DIR_PATH}/Podfile.lock\\" \\"\${PODS_ROOT}/Manifest.lock\\" > /dev/null\\nif [ $? != 0 ] ; then\\n    # print error to STDERR\\n    echo \\"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\\" >&2\\n    exit 1\\nfi\\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\\necho \\"SUCCESS\\" > \\"\${SCRIPT_OUTPUT_FILE_0}\\"\\n";
+			showEnvVarsInLog = 0;
+		};
+		UUID-0029 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"\${PODS_ROOT}/Target Support Files/Pods-HelloWorld/Pods-HelloWorld-resources.sh",
+				"\${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"\${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
+				"\${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"\${TARGET_BUILD_DIR}/\${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"\${TARGET_BUILD_DIR}/\${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXUpdates.bundle",
+				"\${TARGET_BUILD_DIR}/\${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\\"\${PODS_ROOT}/Target Support Files/Pods-HelloWorld/Pods-HelloWorld-resources.sh\\"\\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		UUID-0026 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				UUID-0007 /* AppDelegate.swift in Sources */,
+				UUID-0009 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		UUID-0032 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_BITCODE = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"FB_SONARKIT_ENABLED=1",
+				);
+				INFOPLIST_FILE = HelloWorld/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.name.HelloWorld;
+				PRODUCT_NAME = HelloWorld;
+				SWIFT_OBJC_BRIDGING_HEADER = "HelloWorld/HelloWorld-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		UUID-0033 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = HelloWorld/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.name.HelloWorld;
+				PRODUCT_NAME = HelloWorld;
+				SWIFT_OBJC_BRIDGING_HEADER = "HelloWorld/HelloWorld-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		UUID-0034 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = "\\"$(inherited)\\"";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		UUID-0035 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = "\\"$(inherited)\\"";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		UUID-0024 /* Build configuration list for PBXNativeTarget "HelloWorld" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				UUID-0032 /* Debug */,
+				UUID-0033 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		UUID-0031 /* Build configuration list for PBXProject "HelloWorld" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				UUID-0034 /* Debug */,
+				UUID-0035 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = UUID-0030 /* Project object */;
+}
+",
+  "result": {
+    "name": ""My Stickers"",
+  },
+}
+`;
+
 exports[`legacy xcode golden baseline files/ensure-group-recursively 1`] = `
 {
   "pbxproj": "// !$*UTF8*$!

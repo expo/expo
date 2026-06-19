@@ -306,6 +306,17 @@ export const scenarios: Scenario[] = [
     },
   },
   {
+    name: 'files/create-group-quoted-name',
+    description:
+      'pbxCreateGroup with a pre-quoted name is not double-quoted (ios-stickers pattern)',
+    fixture: 'bareMinimum',
+    run({ project }) {
+      const key = project.pbxCreateGroup('"My Stickers"', '""');
+      const group = project.getPBXGroupByKey(key);
+      return { name: group.name };
+    },
+  },
+  {
     name: 'files/has-file',
     description: 'hasFile read against an existing file reference',
     fixture: 'bareMinimum',
