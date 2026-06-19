@@ -19,6 +19,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # JS-only job, so skip the ~685 MB @shopify/react-native-skia prebuilt-binary download.
+  SKIP_SKIA_DOWNLOAD: '1'
+
 jobs:
   test:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
