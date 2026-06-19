@@ -7,6 +7,8 @@ import { type WebSocket, WebSocketServer } from 'ws';
 import * as Log from '../../log';
 import { isPathInside } from '../../utils/dir';
 
+const importEsm = require('@expo/cli/add-module') as <T>(moduleName: string) => Promise<T>; 
+
 const maybeRealpath = (target: string): string => {
   try {
     return fs.realpathSync(target);
@@ -58,16 +60,6 @@ const nearestPackageType = (entryPoint: string, packageRoot: string): 'module' |
   );
   return 'commonjs';
 };
-
-/**
- * Indirect dynamic `import()`. Built through `new Function` so neither the production bundler (swc)
- * nor the test transpiler (babel/jest) rewrites it into a `require()` — `require()` cannot load ES
- * modules, and jest's transform otherwise routes `import()` through its CommonJS module registry.
- * This stays a native `import()`, which loads both CommonJS and ESM in Node.
- */
-const importEsm =
-  // eslint-disable-next-line no-new-func
-  new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<any>;
 
 export const loadServerModuleAsync = async (
   entryPoint: string,
