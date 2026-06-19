@@ -3,6 +3,7 @@ import { Badge, Box, Icon, IconButton, Text as ComposeText } from '@expo/ui/jetp
 
 import type { NativeToolbarButtonProps } from './types';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
+import { convertFontWeightToComposeFontWeight } from '../../../../utils/font';
 import { useToolbarColors } from '../context';
 import { DEFAULT_TOOLBAR_TINT_COLOR } from '../defaults';
 
@@ -45,6 +46,8 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
     </IconButton>
   );
 
+  const hasBadge = props.badge?.value != null;
+
   return (
     <AnimatedItemContainer visible={!props.hidden}>
       {props.badge ? (
@@ -53,8 +56,14 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
           <Badge
             containerColor={props.badge.style?.backgroundColor}
             contentColor={props.badge.style?.color}>
-            {props.badge.value ? (
-              <ComposeText style={{ typography: 'labelSmall' }}>
+            {hasBadge ? (
+              <ComposeText
+                style={{
+                  typography: 'labelSmall',
+                  fontWeight: convertFontWeightToComposeFontWeight(props.badge.style?.fontWeight),
+                  fontSize: props.badge.style?.fontSize,
+                  fontFamily: props.badge.style?.fontFamily,
+                }}>
                 {String(props.badge.value)}
               </ComposeText>
             ) : null}

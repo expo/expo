@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import type { BasicTextStyle } from '../../../../utils/font';
 import type { StackHeaderItemSharedProps } from '../shared';
 
@@ -186,14 +187,5 @@ export interface NativeToolbarButtonProps {
   source?: ImageSourcePropType;
   /** Badge overlay on the icon. Only rendered in left/right placements.
    * @platform android */
-  badge?: {
-    value: number | string;
-    style?: {
-      color?: ColorValue;
-      backgroundColor?: ColorValue;
-      fontFamily?: string;
-      fontSize?: number;
-      fontWeight?: string;
-    };
-  };
+  badge?: NativeStackHeaderItemButton['badge'];
 }
