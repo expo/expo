@@ -223,13 +223,13 @@ INSERT INTO users (name) VALUES ('aaa');
           throw new Error(`Exception from promise1: Expected aaa but received ${result?.name}}`);
         }
         await txn.runAsync('UPDATE users SET name = ?', 'aaa');
-        await delayAsync(200);
+        await delayAsync(30);
       }
     });
 
     const promise2 = new Promise(async (resolve, reject) => {
       try {
-        await delayAsync(100);
+        await delayAsync(50);
         await db?.runAsync('UPDATE users SET name = ?', 'bbb');
         const result = await db?.getFirstAsync<{ name: string }>('SELECT name FROM users');
         if (result?.name !== 'bbb') {
