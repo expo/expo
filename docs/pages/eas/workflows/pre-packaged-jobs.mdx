@@ -1267,11 +1267,11 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter   | Type   | Description                                                                                                                                                                |
-| ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Parameter   | Type   | Description                                                                                                                                                                                 |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | webhook_url | string | Required. The Slack webhook URL to send the message to. Use an [environment variable](/eas/environment-variables/manage/#manage-environment-variables) with `${{ env.SLACK_WEBHOOK_URL }}`. |
-| message     | string | Required if payload is not provided. The message to send.                                                                                                                  |
-| payload     | object | Required if message is not provided. The [Slack Block Kit](https://docs.slack.dev/block-kit) payload to send.                                                              |
+| message     | string | Required if payload is not provided. The message to send.                                                                                                                                   |
+| payload     | object | Required if message is not provided. The [Slack Block Kit](https://docs.slack.dev/block-kit) payload to send.                                                                               |
 
 ### Examples
 
