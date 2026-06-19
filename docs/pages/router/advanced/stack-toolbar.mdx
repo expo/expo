@@ -522,12 +522,13 @@ Use [`Stack.Toolbar.Spacer`](/versions/latest/sdk/router/stack/#stacktoolbarspac
 - **Android**: `Stack.Toolbar.Spacer` always requires an explicit `width`. There is no flexible-fill spacer at the moment.
 - **iOS**: a `Stack.Toolbar.Spacer` without a `width` creates flexible space between items, pushing them to opposite sides. This is useful for layouts like buttons on both ends of the toolbar. Pass a `width` for fixed-size spacing.
 
-## Adding badges to buttons (iOS only)
+## Adding badges to buttons
 
 In header toolbars, you can add badges to indicate counts or status. Use [`Stack.Toolbar.Icon`](/versions/latest/sdk/router/stack/#stacktoolbaricon), [`Stack.Toolbar.Label`](/versions/latest/sdk/router/stack/#stacktoolbarlabel), and [`Stack.Toolbar.Badge`](/versions/latest/sdk/router/stack/#stacktoolbarbadge) to compose the button content:
 
 ```tsx src/app/inbox.tsx
 import { Stack } from 'expo-router';
+import bellIcon from '@/assets/bell.png';
 
 export default function InboxScreen() {
   const unreadCount = 5;
@@ -535,8 +536,9 @@ export default function InboxScreen() {
   return (
     <>
       <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button onPress={() => {}}>
-          <Stack.Toolbar.Icon sf="bell" />
+        <Stack.Toolbar.Button
+          icon={process.env.EXPO_OS === 'ios' ? 'bell' : bellIcon}
+          onPress={() => {}}>
           <Stack.Toolbar.Label>Notifications</Stack.Toolbar.Label>
           {unreadCount > 0 && <Stack.Toolbar.Badge>{String(unreadCount)}</Stack.Toolbar.Badge>}
         </Stack.Toolbar.Button>
@@ -547,7 +549,7 @@ export default function InboxScreen() {
 }
 ```
 
-> **info** Badges only work in iOS header placements (`left` or `right`), not in the bottom toolbar nor on Android.
+> **info** Badges only work in header placements (`left` or `right`), not in the bottom toolbar. On Android, the `icon` prop or `Stack.Toolbar.Icon` with a `src` source is required for the badge to render.
 
 ## Embedding custom views
 
@@ -784,9 +786,9 @@ You cannot nest `Stack.Toolbar` components inside each other.
 
 </Collapsible>
 
-<Collapsible summary="Badge and Label primitives are not supported on Android">
+<Collapsible summary="Label primitive is not supported on Android">
 
-On Android, `Stack.Toolbar.Button` renders only its icon — the `Stack.Toolbar.Badge` and `Stack.Toolbar.Label` children are dropped. If you need badge-like UI on Android, embed a custom component using [`Stack.Toolbar.View`](/versions/latest/sdk/router/stack/#stacktoolbarview).
+On Android, `Stack.Toolbar.Button` renders only its icon and badge — the `Stack.Toolbar.Label` children are dropped. If you need label-like UI on Android, embed a custom component using [`Stack.Toolbar.View`](/versions/latest/sdk/router/stack/#stacktoolbarview).
 
 </Collapsible>
 

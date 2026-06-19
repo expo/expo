@@ -9,6 +9,9 @@ jest.mock('@expo/ui/jetpack-compose', () => {
   return {
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
     Icon: jest.fn((props) => <View testID="Icon" {...props} />),
+    Badge: jest.fn((props) => <View testID="Badge" {...props} />),
+    Box: jest.fn((props) => <View testID="Box" {...props} />),
+    Text: jest.fn((props) => <View testID="ComposeText" {...props} />),
   };
 });
 
@@ -29,11 +32,18 @@ jest.mock('../../../toolbar/AnimatedItemContainer', () => {
   };
 });
 
-const { IconButton, Icon } = jest.requireMock(
-  '@expo/ui/jetpack-compose'
-) as typeof import('@expo/ui/jetpack-compose');
+const {
+  IconButton,
+  Icon,
+  Badge,
+  Box,
+  Text: ComposeText,
+} = jest.requireMock('@expo/ui/jetpack-compose') as typeof import('@expo/ui/jetpack-compose');
 const MockedIconButton = IconButton as jest.MockedFunction<typeof IconButton>;
 const MockedIcon = Icon as jest.MockedFunction<typeof Icon>;
+const MockedBadge = Badge as jest.MockedFunction<typeof Badge>;
+const MockedBox = Box as jest.MockedFunction<typeof Box>;
+const MockedComposeText = ComposeText as jest.MockedFunction<typeof ComposeText>;
 
 const { AnimatedItemContainer } = jest.requireMock(
   '../../../toolbar/AnimatedItemContainer'
@@ -253,6 +263,75 @@ describe('NativeToolbarButton', () => {
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         contentDescription: undefined,
+      });
+    });
+  });
+
+  describe('badge rendering', () => {
+    it('renders Box with Badge and text when badge has a value', () => {
+      render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
+
+      expect(MockedBox).toHaveBeenCalled();
+      expect(MockedBox.mock.calls[0]![0]).toMatchObject({
+        contentAlignment: 'topEnd',
+      });
+      expect(MockedBadge).toHaveBeenCalled();
+      expect(MockedComposeText).toHaveBeenCalled();
+      expect(MockedComposeText.mock.calls[0]![0]).toMatchObject({
+        children: '3',
+      });
+    });
+
+    it('renders Badge without children when badge value is empty string (dot indicator)', () => {
+      render(<NativeToolbarButton {...defaultProps} badge={{ value: '' }} />);
+
+      expect(MockedBox).toHaveBeenCalled();
+      expect(MockedBadge).toHaveBeenCalled();
+      expect(MockedComposeText).not.toHaveBeenCalled();
+    });
+
+    it('passes containerColor from badge.style.backgroundColor', () => {
+      render(
+        <NativeToolbarButton
+          {...defaultProps}
+          badge={{ value: '5', style: { backgroundColor: 'red' } }}
+        />
+      );
+
+      expect(MockedBadge.mock.calls[0]![0]).toMatchObject({
+        containerColor: 'red',
+      });
+    });
+
+    it('passes contentColor from badge.style.color', () => {
+      render(
+        <NativeToolbarButton {...defaultProps} badge={{ value: '5', style: { color: 'white' } }} />
+      );
+
+      expect(MockedBadge.mock.calls[0]![0]).toMatchObject({
+        contentColor: 'white',
+      });
+    });
+
+    it('does not render Box when badge prop is undefined', () => {
+      render(<NativeToolbarButton {...defaultProps} />);
+
+      expect(MockedBox).not.toHaveBeenCalled();
+    });
+
+    it('converts numeric badge value to string', () => {
+      render(<NativeToolbarButton {...defaultProps} badge={{ value: 42 }} />);
+
+      expect(MockedComposeText.mock.calls[0]![0]).toMatchObject({
+        children: '42',
+      });
+    });
+
+    it('AnimatedItemContainer visible works with badge present', () => {
+      render(<NativeToolbarButton {...defaultProps} badge={{ value: '1' }} hidden />);
+
+      expect(MockedAnimatedItemContainer.mock.calls[0]![0]).toMatchObject({
+        visible: false,
       });
     });
   });

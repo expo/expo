@@ -184,4 +184,16 @@ export interface NativeToolbarButtonProps {
   label?: string;
   /* @platform android */
   source?: ImageSourcePropType;
+  /** Badge overlay on the icon. Only rendered in left/right placements.
+   * @platform android */
+  badge?: {
+    value: number | string;
+    style?: {
+      color?: ColorValue;
+      backgroundColor?: ColorValue;
+      fontFamily?: string;
+      fontSize?: number;
+      fontWeight?: string;
+    };
+  };
 }

@@ -1,5 +1,5 @@
 'use client';
-import { IconButton, Icon } from '@expo/ui/jetpack-compose';
+import { Badge, Box, Icon, IconButton, Text as ComposeText } from '@expo/ui/jetpack-compose';
 
 import type { NativeToolbarButtonProps } from './types';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
@@ -30,16 +30,39 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
       ? null
       : (props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
 
+  const iconElement = (
+    <Icon
+      source={props.source}
+      tint={tintColor}
+      size={24}
+      contentDescription={props.accessibilityLabel}
+    />
+  );
+
+  const button = (
+    <IconButton onClick={props.onPress} enabled={!props.disabled}>
+      {iconElement}
+    </IconButton>
+  );
+
   return (
     <AnimatedItemContainer visible={!props.hidden}>
-      <IconButton onClick={props.onPress} enabled={!props.disabled}>
-        <Icon
-          source={props.source}
-          tint={tintColor}
-          size={24}
-          contentDescription={props.accessibilityLabel}
-        />
-      </IconButton>
+      {props.badge ? (
+        <Box contentAlignment="topEnd">
+          {button}
+          <Badge
+            containerColor={props.badge.style?.backgroundColor}
+            contentColor={props.badge.style?.color}>
+            {props.badge.value ? (
+              <ComposeText style={{ typography: 'labelSmall' }}>
+                {String(props.badge.value)}
+              </ComposeText>
+            ) : null}
+          </Badge>
+        </Box>
+      ) : (
+        button
+      )}
     </AnimatedItemContainer>
   );
 };
