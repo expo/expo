@@ -40,6 +40,18 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     self.pointee = facebook.jsi.Value(runtime.pointee, facebook.jsi.BigInt.fromUint64(runtime.pointee, bigInt))
   }
 
+  /// Wraps a raw pointer to an existing `facebook::jsi::Value` into a `JavaScriptValue`,
+  /// copying the value against the given runtime. Used to bridge values that originate in
+  /// C++ into the Swift JSI layer so they can be decoded with the regular value APIs.
+  /// The pointer must point to a live `jsi::Value` valid on `runtime`'s thread; the call
+  /// must happen on the JavaScript thread. The value is copied, so the source pointer does
+  /// not need to outlive the returned `JavaScriptValue`.
+  public init(_ runtime: JavaScriptRuntime, unsafeValuePointer pointer: UnsafeRawPointer) {
+    let value = pointer.assumingMemoryBound(to: facebook.jsi.Value.self)
+    self.runtime = runtime
+    self.pointee = facebook.jsi.Value(runtime.pointee, value.pointee)
+  }
+
   /// Creates a JS value from a JS representable.
   public init(_ runtime: JavaScriptRuntime, _ value: JavaScriptRepresentable) {
     self.runtime = runtime

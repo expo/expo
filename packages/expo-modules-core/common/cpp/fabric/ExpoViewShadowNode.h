@@ -62,10 +62,7 @@ private:
     }
 
     if (YGNodeStyleGetDisplay(&this->yogaNode_) == YGDisplayContents) {
-      auto it = viewProps.propsMap.find("disableForceFlatten");
-      bool disableForceFlatten = (it != viewProps.propsMap.end()) && it->second.getBool();
-
-      if (disableForceFlatten) {
+      if (viewProps.disableForceFlatten) {
         this->traits_.unset(react::ShadowNodeTraits::Trait::ForceFlattenView);
       }
     }

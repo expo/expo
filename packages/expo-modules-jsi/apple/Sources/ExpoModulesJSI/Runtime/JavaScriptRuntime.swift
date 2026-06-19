@@ -558,6 +558,27 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     assert(isOnJavaScriptThread(), "Function '\(function)' is not run on the JavaScript thread (\(file):\(line))")
   }
 
+  /// Runs `operation` with `@JavaScriptActor` isolation, gating on the reliable pthread-id
+  /// check (`isOnJavaScriptThread()`) rather than `JavaScriptActor.assumeIsolated`'s thread-
+  /// *name* heuristic. Use this from synchronous native entry points that are known to run on
+  /// the JS pthread but where `NSThread.current.name` may not be set. Traps if not actually on
+  /// the JavaScript thread.
+  public final func assumeIsolatedOnJavaScriptThread<T: ~Copyable>(
+    _ operation: @JavaScriptActor () throws -> T
+  ) rethrows -> T {
+    precondition(
+      isOnJavaScriptThread(),
+      "assumeIsolatedOnJavaScriptThread must be called on the JavaScript thread")
+
+    typealias YesActor = @JavaScriptActor () throws -> T
+    typealias NoActor = () throws -> T
+
+    return try withoutActuallyEscaping(operation) { (_ fn: @escaping YesActor) throws -> T in
+      let rawFn = unsafeBitCast(fn, to: NoActor.self)
+      return try rawFn()
+    }
+  }
+
   /// Priority of the scheduled task.
   /// - Note: Keep it in sync with the equivalent C++ enum from React Native (see `SchedulerPriority.h` from `React-callinvoker`).
   public enum SchedulerPriority: Int32 {

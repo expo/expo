@@ -1,4 +1,4 @@
-import { isRunningInExpoGo } from 'expo';
+import { isRunningInExpoGo, Platform } from 'expo';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
@@ -28,6 +28,17 @@ if (!isRunningInExpoGo()) {
       return optionalRequire(() => require('./Benchmarks/ModulesBenchmarksScreen'));
     },
   });
+  // The view-props decoding benchmark is iOS-only (the native `BenchmarkView` and the
+  // view-props counters aren't implemented on Android).
+  if (Platform.OS === 'ios') {
+    ModulesCoreScreens.push({
+      name: 'View props decoding benchmark',
+      route: 'modulescore/view-props-benchmark',
+      getComponent() {
+        return optionalRequire(() => require('./ViewPropsBenchmarkScreen'));
+      },
+    });
+  }
 }
 
 export default function ModulesCoreScreen() {

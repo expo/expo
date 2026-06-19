@@ -5,7 +5,7 @@
 
 #import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
-#import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
+#import <ExpoModulesCore/ExpoViewJSIComponentDescriptor.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 
 #import <React/RCTComponentViewFactory.h>
@@ -84,7 +84,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const expo::ExpoViewProps>();
+    static const auto defaultProps = std::make_shared<const expo::ExpoJSIViewProps>();
     _props = defaultProps;
   }
   return self;
@@ -107,11 +107,15 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
   react::ComponentName componentName = react::ComponentName { flavor->c_str() };
   react::ComponentHandle componentHandle = reinterpret_cast<react::ComponentHandle>(componentName);
 
+  // Toggle between the JSI decode-on-the-JS-thread path and the legacy
+  // folly::dynamic / NSDictionary path by swapping the descriptor here:
+  // `ExpoViewJSIComponentDescriptor<>` (JSI) or `ExpoViewComponentDescriptor<>` (legacy).
+  // `finalizeUpdates:` handles both.
   return react::ComponentDescriptorProvider {
     componentHandle,
     componentName,
     flavor,
-    &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewComponentDescriptor<>>
+    &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewJSIComponentDescriptor<>>
   };
 }
 
@@ -121,19 +125,40 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 
   if (updateMask & RNComponentViewUpdateMaskProps) {
     const auto &newProps = static_cast<const ExpoViewProps &>(*_props);
-    NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
 
-    for (const auto &item : newProps.propsMap) {
-      NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
+    [self callViewWillUpdateLifecycleMethods];
 
-      // Ignore props inherited from the base view and Yoga.
-      if ([self supportsPropWithName:propName]) {
-        propsMap[propName] = convertFollyDynamicToId(item.second);
+    // JSI path (`ExpoViewJSIComponentDescriptor`): props are decoded straight from their
+    // JavaScript values on the JS thread and applied directly here; `propsMap` is empty, so the
+    // dictionary path below is skipped. The `dynamic_cast` is what makes the descriptor choice a
+    // clean toggle: under the legacy descriptor the props are a plain `ExpoViewProps` and this is
+    // null, so only the dictionary path runs.
+    if (const auto *jsiProps = dynamic_cast<const ExpoJSIViewProps *>(&newProps)) {
+      if (jsiProps->decodedProps) {
+        EXDecodedViewProps *decodedProps = (__bridge EXDecodedViewProps *)jsiProps->decodedProps.get();
+        [self applyDecodedProps:decodedProps];
       }
     }
 
-    [self updateProps:propsMap];
-    [self viewDidUpdateProps];
+    // Legacy path (`ExpoViewComponentDescriptor`): props were lowered to `folly::dynamic` in
+    // `propsMap`; re-materialize them into an `NSDictionary` and apply on the main thread. Empty
+    // on the JSI path, so this allocates and runs only when the legacy descriptor is in use.
+    if (!newProps.propsMap.empty()) {
+      NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
+
+      for (const auto &item : newProps.propsMap) {
+        NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
+
+        // Ignore props inherited from the base view and Yoga.
+        if ([self supportsPropWithName:propName]) {
+          propsMap[propName] = convertFollyDynamicToId(item.second);
+        }
+      }
+
+      [self updateProps:propsMap];
+    }
+
+    [self callViewDidUpdateLifecycleMethods];
   }
 }
 
@@ -158,12 +183,22 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
   // Implemented in `ExpoFabricView.swift`
 }
 
+- (void)applyDecodedProps:(nonnull id)decodedProps
+{
+  // Implemented in `ExpoFabricView.swift`
+}
+
 - (void)updateState:(react::State::Shared const &)state oldState:(react::State::Shared const &)oldState
 {
   _state = std::static_pointer_cast<const ExpoViewShadowNode<>::ConcreteState>(state);
 }
 
-- (void)viewDidUpdateProps
+- (void)callViewWillUpdateLifecycleMethods
+{
+  // Implemented in `ExpoFabricView.swift`
+}
+
+- (void)callViewDidUpdateLifecycleMethods
 {
   // Implemented in `ExpoFabricView.swift`
 }

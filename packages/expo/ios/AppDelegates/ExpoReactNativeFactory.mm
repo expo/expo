@@ -22,6 +22,11 @@
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #import <ExpoModulesCore/EXReactSchedulerDispatch.h>
 
+#import <React/RCTSurfacePresenter.h>
+#import <react/utils/ContextContainer.h>
+#import <ExpoModulesCore/ExpoAppContextHolder.h>
+#import <ExpoModulesCore/ExpoViewPropsDecoder.h>
+
 @implementation EXReactNativeFactory {
   EXAppContext *_appContext;
 }
@@ -60,6 +65,20 @@
   [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
   [_appContext registerNativeModules];
+
+  // Make the app context reachable (weakly) from the Fabric props-parse path so view props
+  // can be decoded straight from their JavaScript values on the JavaScript thread. The
+  // ContextContainer is per-host and `insert` is safe to call through the const pointee.
+  // `insert` is a no-op when the key already exists, so on a JS reload (a second
+  // `didInitializeRuntime:` reusing the same container) it would leave the stale holder in
+  // place — erase first so the new `_appContext` always wins.
+  auto contextContainer = host.surfacePresenter.contextContainer;
+  if (contextContainer) {
+    contextContainer->erase(expo::ExpoAppContextHolder::kContextContainerKey);
+    contextContainer->insert(
+      expo::ExpoAppContextHolder::kContextContainerKey,
+      expo::makeAppContextHolder(_appContext));
+  }
 }
 
 @end

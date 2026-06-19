@@ -1,5 +1,7 @@
 import ExpoModulesCore
 import ExpoModulesJSI
+import QuartzCore
+import UIKit
 
 struct Point: Record {
   @Field
@@ -23,6 +25,12 @@ final class SharedPoint: SharedObject {
 @ExpoModule
 public final class BenchmarkingExpoModule: Module {
   public func definition() -> ModuleDefinition {
+    OnCreate {
+      // Attach the JS-thread decode timing observer to expo-modules-core (no-op cost in core when
+      // unset; only this benchmark module sets it).
+      ViewPropsBenchmark.installDecodeObserver()
+    }
+
     Function("nothing") {}
     Function("nothingOptimized", nothingOptimized())
 
@@ -84,6 +92,44 @@ public final class BenchmarkingExpoModule: Module {
 
       Property("y") { (point: SharedPoint) in
         return point.y
+      }
+    }
+
+    // MARK: - View-props benchmark
+    //
+    // `getViewPropsBenchmark` / `resetViewPropsBenchmark` read the process-wide counters that
+    // expo-modules-core accumulates around view-prop decode (JS thread) and apply (main
+    // thread). Drive the `BenchmarkView` below with changing props, then read the totals.
+
+    Function("resetViewPropsBenchmark") {
+      ViewPropsBenchmark.reset()
+    }
+
+    Function("getViewPropsBenchmark") { () -> [String: Any] in
+      return ViewPropsBenchmark.snapshot()
+    }
+
+    View(BenchmarkView.self) {
+      Prop("color") { (view: BenchmarkView, color: UIColor) in
+        view.color = color
+      }
+      Prop("decoration") { (view: BenchmarkView, decoration: BenchmarkStyle) in
+        view.decoration = decoration
+      }
+      Prop("values") { (view: BenchmarkView, values: [Double]) in
+        view.values = values
+      }
+      Prop("count") { (view: BenchmarkView, count: Int) in
+        view.count = count
+      }
+      Prop("ratio") { (view: BenchmarkView, ratio: Double) in
+        _ = ratio
+      }
+      Prop("title") { (view: BenchmarkView, title: String) in
+        view.title = title
+      }
+      Prop("subtitle") { (view: BenchmarkView, subtitle: String) in
+        view.accessibilityHint = subtitle
       }
     }
 

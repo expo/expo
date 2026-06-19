@@ -12,6 +12,13 @@ public protocol AnyViewDefinition: Sendable {
   var name: String { get }
 
   /**
+   Whether the view is backed by SwiftUI. SwiftUI views apply props from the lowered
+   `folly::dynamic` / dictionary path (`updateRawProps`), so they opt out of JSI view-props
+   decoding.
+   */
+  var isSwiftUI: Bool { get }
+
+  /**
    Names of the events that the view can send to JavaScript.
    */
   var eventNames: [String] { get }
