@@ -170,9 +170,14 @@ export class XcodeProjectShim {
     };
   }
 
+  private targetModel(targetUuid?: string): any {
+    return (targetUuid && this.safeGetObject(targetUuid)) || this.firstTargetModel();
+  }
+
   private buildPhaseForTarget(isa: string, targetUuid?: string): any {
-    const target = (targetUuid && this.safeGetObject(targetUuid)) || this.firstTargetModel();
-    return (target?.props?.buildPhases ?? []).find((phase: any) => phase.isa === isa);
+    return (this.targetModel(targetUuid)?.props?.buildPhases ?? []).find(
+      (phase: any) => phase.isa === isa
+    );
   }
 
   /** Legacy-shaped view of a build phase: scalars pass through, `files` is a live array. */
@@ -456,9 +461,6 @@ export class XcodeProjectShim {
   removeFromLibrarySearchPaths(..._args: any[]): any {
     notImplemented('removeFromLibrarySearchPaths');
   }
-  addToFrameworkSearchPaths(..._args: any[]): any {
-    notImplemented('addToFrameworkSearchPaths');
-  }
   removeFromFrameworkSearchPaths(..._args: any[]): any {
     notImplemented('removeFromFrameworkSearchPaths');
   }
@@ -520,14 +522,8 @@ export class XcodeProjectShim {
   removeFromPbxSourcesBuildPhase(..._args: any[]): any {
     notImplemented('removeFromPbxSourcesBuildPhase');
   }
-  addToPbxFrameworksBuildPhase(..._args: any[]): any {
-    notImplemented('addToPbxFrameworksBuildPhase');
-  }
   removeFromPbxFrameworksBuildPhase(..._args: any[]): any {
     notImplemented('removeFromPbxFrameworksBuildPhase');
-  }
-  addToPbxEmbedFrameworksBuildPhase(..._args: any[]): any {
-    notImplemented('addToPbxEmbedFrameworksBuildPhase');
   }
   removeFromPbxEmbedFrameworksBuildPhase(..._args: any[]): any {
     notImplemented('removeFromPbxEmbedFrameworksBuildPhase');
@@ -657,14 +653,78 @@ export class XcodeProjectShim {
 
   // === Mutate: frameworks / files ===
 
-  addFramework(..._args: any[]): any {
-    notImplemented('addFramework');
+  addFramework(fpath: string, opt: any = {}): any {
+    const customFramework = opt.customFramework === true;
+    const link = opt.link === undefined || opt.link;
+    const embed = !!opt.embed;
+
+    const file = new PbxFile(fpath, { ...opt, embed: false });
+    file.uuid = this.generateUuid();
+    file.fileRef = this.generateUuid();
+    file.target = opt.target;
+
+    if (file.path && this.hasFile(file.path)) return false;
+
+    // Create the file reference before the build file that points at it (legacy's
+    // untyped hash tolerated the reverse order; the typed model needs the ref first).
+    this.addToPbxFileReferenceSection(file);
+    this.addToPbxBuildFileSection(file);
+    this.addToFrameworksPbxGroup(file);
+    if (link) this.addToPbxFrameworksBuildPhase(file);
+
+    if (customFramework) {
+      this.addToFrameworkSearchPaths(file);
+      if (embed) {
+        const embeddedFile = new PbxFile(fpath, { ...opt, embed: true });
+        embeddedFile.uuid = this.generateUuid();
+        embeddedFile.fileRef = file.fileRef;
+        embeddedFile.target = opt.target;
+        this.addToPbxBuildFileSection(embeddedFile);
+        this.addToPbxEmbedFrameworksBuildPhase(embeddedFile);
+        return embeddedFile;
+      }
+    }
+    return file;
   }
   removeFramework(..._args: any[]): any {
     notImplemented('removeFramework');
   }
-  addToFrameworksPbxGroup(..._args: any[]): any {
-    notImplemented('addToFrameworksPbxGroup');
+  addToFrameworksPbxGroup(file: any): void {
+    const group = this.pbxGroupByName('Frameworks');
+    if (!group) {
+      this.addPbxGroup([file.path], 'Frameworks');
+    } else {
+      group.children.push({ value: file.fileRef, comment: file.basename });
+    }
+  }
+  addToPbxFrameworksBuildPhase(file: any): void {
+    this.addBuildFileToPhase('PBXFrameworksBuildPhase', file);
+  }
+  // Custom frameworks add their containing dir (as a quoted path) to the
+  // app target's FRAMEWORK_SEARCH_PATHS.
+  addToFrameworkSearchPaths(file: any): void {
+    const value = `"${file.dirname}"`;
+    const productName = this.productName;
+    for (const config of this.modelsOfIsa('XCBuildConfiguration')) {
+      const buildSettings = config.props.buildSettings;
+      if (trimQuotes(buildSettings.PRODUCT_NAME ?? '') !== productName) continue;
+      if (
+        !buildSettings.FRAMEWORK_SEARCH_PATHS ||
+        buildSettings.FRAMEWORK_SEARCH_PATHS === INHERITED
+      ) {
+        buildSettings.FRAMEWORK_SEARCH_PATHS = [INHERITED];
+      }
+      buildSettings.FRAMEWORK_SEARCH_PATHS.push(value);
+    }
+  }
+  // Mirrors the legacy quirk: only links into an existing "Embed Frameworks"
+  // copy-files phase; if none exists it silently no-ops.
+  addToPbxEmbedFrameworksBuildPhase(file: any): void {
+    const phase = (this.targetModel(file.target)?.props?.buildPhases ?? []).find(
+      (p: any) =>
+        p.isa === 'PBXCopyFilesBuildPhase' && trimQuotes(p.props.name ?? '') === 'Embed Frameworks'
+    );
+    if (phase) phase.props.files.push(this.inner.getObject(file.uuid));
   }
   addFile(..._args: any[]): any {
     notImplemented('addFile');
