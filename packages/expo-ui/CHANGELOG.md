@@ -56,6 +56,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the `community/datetime-picker` field collapsing to zero width — invisible and untappable — when its parent doesn't stretch it (e.g. `alignItems: 'center'`). ([#47033](https://github.com/expo/expo/pull/47033) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix Mac Catalyst build failure with `activityBackgroundTint` ([#46929](https://github.com/expo/expo/pull/46929) by [@theeket](https://github.com/theeket))
 - [iOS] Fix the SwiftUI `listRowInsets` modifier being ignored when every edge is set to `0`, so a row can now reset all of its insets. ([#47000](https://github.com/expo/expo/pull/47000) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Fix `FieldGroup` rendering an empty row/section when a conditional child (e.g. `{condition && <FieldGroup.Section>…</FieldGroup.Section>}`) evaluates to `false`. ([##46874](https://github.com/expo/expo/pull/46874) by [@dileepapeiris](https://github.com/dileepapeiris))
