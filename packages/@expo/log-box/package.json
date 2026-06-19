@@ -81,8 +81,7 @@
     "react-dom": "19.2.3",
     "react-native": "0.86.0",
     "react-native-web": "^0.21.0",
-    "rimraf": "^6.1.2",
-    "typescript-plugin-css-modules": "^5.2.0"
+    "rimraf": "^6.1.2"
   },
   "peerDependencies": {
     "@expo/dom-webview": "workspace:^56.0.5",
