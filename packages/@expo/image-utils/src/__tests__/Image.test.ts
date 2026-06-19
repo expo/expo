@@ -25,9 +25,7 @@ describe('Image #getPngInfo', () => {
     try {
       await getPngInfo('random/path');
     } catch (e) {
-      expect((e as Error).message).toEqual(
-        "ENOENT: no such file or directory, open 'random/path'"
-      );
+      expect((e as Error).message).toEqual("ENOENT: no such file or directory, open 'random/path'");
     }
   });
 

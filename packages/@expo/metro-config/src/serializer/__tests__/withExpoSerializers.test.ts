@@ -153,7 +153,9 @@ describe('serializes', () => {
         throw new Error('wrong type');
       }
 
-      const indexJs = artifacts.find((artifact: SerialAsset) => artifact.originFilename === 'index.js');
+      const indexJs = artifacts.find(
+        (artifact: SerialAsset) => artifact.originFilename === 'index.js'
+      );
       const fooJs = artifacts.find((artifact: SerialAsset) => artifact.originFilename === 'foo.js');
 
       const fooJsFilenameImportedFromIndexJs =
@@ -1542,7 +1544,9 @@ describe('serializes', () => {
       'util.js': `export const u = 2;`,
     });
 
-    const byOrigin = Object.fromEntries(artifacts.map((art: SerialAsset) => [art.originFilename, art] as const));
+    const byOrigin = Object.fromEntries(
+      artifacts.map((art: SerialAsset) => [art.originFilename, art] as const)
+    );
     expect(byOrigin['index.js']!.source).toContain(byOrigin['math.js']!.filename);
     expect(byOrigin['math.js']!.source).toContain(byOrigin['util.js']!.filename);
   });

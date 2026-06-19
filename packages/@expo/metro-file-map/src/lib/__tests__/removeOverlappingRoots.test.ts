@@ -22,9 +22,8 @@ describe.each([['win32'], ['posix']])('removeOverlappingRoots on %s', (platform)
 
   beforeEach(() => {
     jest.resetModules();
-    mockPathModule = jest.requireActual<typeof import('path')>('path')[
-      platform as 'win32' | 'posix'
-    ];
+    mockPathModule =
+      jest.requireActual<typeof import('path')>('path')[platform as 'win32' | 'posix'];
     removeOverlappingRoots = require('../removeOverlappingRoots').default;
   });
 

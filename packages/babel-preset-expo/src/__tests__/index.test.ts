@@ -386,7 +386,10 @@ describe('"lazyImports" option', () => {
     [false],
     [true],
     [['inline-comp', './inline-func', '../inline-func-with-side-effects.fx.ts']],
-    [(name: string) => !(name.endsWith('.fx') || name.endsWith('.fx.js') || name.endsWith('.fx.ts'))],
+    [
+      (name: string) =>
+        !(name.endsWith('.fx') || name.endsWith('.fx.js') || name.endsWith('.fx.ts')),
+    ],
   ])(`accepts %p`, (lazyImportsOption) => {
     const testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
     const options = {

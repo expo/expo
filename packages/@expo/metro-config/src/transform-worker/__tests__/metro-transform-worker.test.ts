@@ -459,7 +459,9 @@ it('does not add "use strict" on non-modules', async () => {
   );
 
   expect(result.output[0]!.type).toBe('js/module');
-  expect(result.output[0]!.data.code).toBe([HEADER_DEV, '  module.exports = {};', '});'].join('\n'));
+  expect(result.output[0]!.data.code).toBe(
+    [HEADER_DEV, '  module.exports = {};', '});'].join('\n')
+  );
 });
 
 it('preserves require() calls when module wrapping is disabled', async () => {

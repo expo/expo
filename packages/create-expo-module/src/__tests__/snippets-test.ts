@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import type { Feature } from '../features';
+import type { Platform } from '../prompts';
 import {
   buildAppSnippets,
   buildModuleSnippets,
@@ -9,8 +11,6 @@ import {
   buildWebModuleSnippets,
   copyFileSnippets,
 } from '../snippets';
-import type { Feature } from '../features';
-import type { Platform } from '../prompts';
 import type { SubstitutionData } from '../types';
 
 // Minimal mock data matching SubstitutionData shape
