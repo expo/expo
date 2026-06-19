@@ -53,6 +53,8 @@
     "expo-module-scripts": "workspace:*",
     "expotools": "workspace:*",
     "jest": "^29.7.0",
+    "oxfmt": "^0.55.0",
+    "oxlint": "^1.70.0",
     "ts-node": "^10.9.2",
     "turbo": "2.9.18",
     "typescript": "^6.0.2"

@@ -16,6 +16,12 @@
     "./eslint.config.base": {
       "require": "./eslint.config.base.cjs"
     },
+    "./oxlint.config.base": {
+      "import": "./oxlint.config.base.js"
+    },
+    "./oxlint.config.base.js": {
+      "import": "./oxlint.config.base.js"
+    },
     "./jest-preset-*": {
       "import": "./jest-preset-*.cjs",
       "require": "./jest-preset-*.cjs"
@@ -83,6 +89,7 @@
     "commander": "^12.1.0",
     "eslint-config-universe": "workspace:^15.2.0",
     "glob": "^13.0.0",
+    "oxlint-config-universe": "^0.0.3",
     "jest-expo": "workspace:~56.0.4",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
