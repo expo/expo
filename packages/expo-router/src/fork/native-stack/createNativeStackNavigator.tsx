@@ -47,7 +47,7 @@ function NativeStackNavigator({
   UNSTABLE_router,
   ...rest
 }: NativeStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -101,8 +101,7 @@ function NativeStackNavigator({
   const { computedState, computedDescriptors, navigationWrapper } = usePreviewTransition(
     state,
     navigation,
-    descriptors,
-    describe
+    descriptors
   );
 
   // Map internal gesture option to React Navigation's gestureEnabled option
@@ -160,7 +159,6 @@ function NativeStackNavigator({
             // navigation={navigation}
             // descriptors={descriptors}
             // END FORK
-            describe={describe}
           />
         </CompositionContext>
       </NavigationContent>
