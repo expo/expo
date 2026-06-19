@@ -8,7 +8,7 @@ jest.mock('../../../events', () => ({
 }));
 
 const { events } = require('../../../events') as { events: jest.Mock };
-const mockEvent = events.mock.results[0].value as jest.Mock;
+const mockEvent = events.mock.results[0]!.value as jest.Mock;
 
 // Mock the autolinking module
 jest.mock('expo/internal/unstable-autolinking-exports', () => ({
