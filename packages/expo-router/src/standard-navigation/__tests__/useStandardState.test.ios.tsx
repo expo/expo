@@ -101,46 +101,6 @@ describe('useStandardState', () => {
     expect(result.current).not.toBe(first);
   });
 
-  it('appends preloaded routes after the focused route, keeping index unchanged', () => {
-    const builderState = {
-      ...makeBuilderState(
-        [
-          { key: 'feed-1', name: 'feed' },
-          { key: 'profile-1', name: 'profile' },
-        ],
-        1
-      ),
-      preloadedRoutes: [{ key: 'settings-1', name: 'settings', params: { from: 'preload' } }],
-    } as unknown as NavigationState;
-
-    const { result } = renderHook(() => useStandardState(builderState));
-
-    expect(result.current).toEqual({
-      index: 1,
-      routes: [
-        { href: '/href/feed', key: 'feed-1', name: 'feed', params: undefined },
-        { href: '/href/profile', key: 'profile-1', name: 'profile', params: undefined },
-        {
-          href: '/href/settings',
-          key: 'settings-1',
-          name: 'settings',
-          params: { from: 'preload' },
-        },
-      ],
-    });
-  });
-
-  it('ignores an empty preloadedRoutes array', () => {
-    const builderState = {
-      ...makeBuilderState([{ key: 'feed-1', name: 'feed' }]),
-      preloadedRoutes: [],
-    } as unknown as NavigationState;
-
-    const { result } = renderHook(() => useStandardState(builderState));
-
-    expect(result.current.routes).toHaveLength(1);
-  });
-
   it('recomputes when buildHref identity changes even if builderState is stable', () => {
     const builderState = makeBuilderState([{ key: 'feed-1', name: 'feed' }]);
     mockedUseBuildHref.mockReturnValue((route) => `/v1/${route.name}`);

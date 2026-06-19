@@ -19,7 +19,6 @@ test('gets initial state from route names and params with initialRouteName', () 
   ).toEqual({
     index: 0,
     key: 'stack-test',
-    preloadedRoutes: [],
     routeNames: ['bar', 'baz', 'qux'],
     routes: [{ key: 'baz-test', name: 'baz', params: { answer: 42 } }],
     stale: false,
@@ -41,7 +40,6 @@ test('gets initial state from route names and params without initialRouteName', 
   ).toEqual({
     index: 0,
     key: 'stack-test',
-    preloadedRoutes: [],
     routeNames: ['bar', 'baz', 'qux'],
     routes: [{ key: 'bar-test', name: 'bar' }],
     stale: false,
@@ -67,14 +65,12 @@ test('gets rehydrated state from partial state', () => {
           { key: 'bar-0', name: 'bar' },
           { key: 'qux-1', name: 'qux' },
         ],
-        preloadedRoutes: [{ name: 'baz', key: 'baz-test' }],
       },
       options
     )
   ).toEqual({
     index: 1,
     key: 'stack-test',
-    preloadedRoutes: [{ name: 'baz', key: 'baz-test', params: { answer: 42 } }],
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
       { key: 'bar-0', name: 'bar' },
@@ -98,7 +94,6 @@ test('gets rehydrated state from partial state', () => {
   ).toEqual({
     index: 2,
     key: 'stack-test',
-    preloadedRoutes: [],
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
       { key: 'bar-0', name: 'bar' },
@@ -119,7 +114,6 @@ test('gets rehydrated state from partial state', () => {
   ).toEqual({
     index: 0,
     key: 'stack-test',
-    preloadedRoutes: [],
     routeNames: ['bar', 'baz', 'qux'],
     routes: [{ key: 'bar-test', name: 'bar' }],
     stale: false,
@@ -132,7 +126,6 @@ test("doesn't rehydrate state if it's not stale", () => {
   const state = {
     index: 0,
     key: 'stack-test',
-    preloadedRoutes: [],
     routeNames: ['bar', 'baz', 'qux'],
     routes: [{ key: 'bar-test', name: 'bar' }],
     stale: false as const,
@@ -155,7 +148,6 @@ test('gets state on route names change', () => {
       {
         index: 2,
         key: 'stack-test',
-        preloadedRoutes: [],
         routeNames: ['bar', 'baz', 'qux'],
         routes: [
           { key: 'bar-test', name: 'bar' },
@@ -177,7 +169,6 @@ test('gets state on route names change', () => {
   ).toEqual({
     index: 1,
     key: 'stack-test',
-    preloadedRoutes: [],
     routeNames: ['qux', 'baz', 'foo', 'fiz'],
     routes: [
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
@@ -191,7 +182,6 @@ test('gets state on route names change', () => {
       {
         index: 1,
         key: 'stack-test',
-        preloadedRoutes: [],
         routeNames: ['foo', 'bar'],
         routes: [
           { key: 'foo-test', name: 'foo' },
@@ -211,7 +201,6 @@ test('gets state on route names change', () => {
   ).toEqual({
     index: 0,
     key: 'stack-test',
-    preloadedRoutes: [],
     routeNames: ['baz', 'qux'],
     routes: [{ key: 'baz-test', name: 'baz', params: { name: 'John' } }],
     stale: false,
@@ -226,7 +215,6 @@ test('gets state on route names change with initialRouteName', () => {
       {
         index: 1,
         key: 'stack-test',
-        preloadedRoutes: [],
         routeNames: ['foo', 'bar'],
         routes: [
           { key: 'foo-test', name: 'foo' },
@@ -246,7 +234,6 @@ test('gets state on route names change with initialRouteName', () => {
   ).toEqual({
     index: 0,
     key: 'stack-test',
-    preloadedRoutes: [],
     routeNames: ['baz', 'qux'],
     routes: [{ key: 'qux-test', name: 'qux' }],
     stale: false,
@@ -267,7 +254,6 @@ test('handles navigate action', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -281,7 +267,6 @@ test('handles navigate action', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -300,7 +285,6 @@ test('handles navigate action', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -314,7 +298,6 @@ test('handles navigate action', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -338,7 +321,6 @@ test('updates params on navigate if already on the screen', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -352,7 +334,6 @@ test('updates params on navigate if already on the screen', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -375,7 +356,6 @@ test('merges params on navigate when specified', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -389,7 +369,6 @@ test('merges params on navigate when specified', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -412,7 +391,6 @@ test("doesn't navigate to nonexistent screen", () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -442,7 +420,6 @@ test('ensures unique ID for navigate', () => {
         stale: false,
         key: 'root',
         index: 0,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
       },
@@ -453,7 +430,6 @@ test('ensures unique ID for navigate', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -467,7 +443,6 @@ test('ensures unique ID for navigate', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
@@ -481,7 +456,6 @@ test('ensures unique ID for navigate', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -495,7 +469,6 @@ test('ensures unique ID for navigate', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
@@ -509,7 +482,6 @@ test('ensures unique ID for navigate', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -523,7 +495,6 @@ test('ensures unique ID for navigate', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
@@ -537,7 +508,6 @@ test('ensures unique ID for navigate', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -565,7 +535,6 @@ test('ensure unique ID is only per route name for navigate', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'qux-test', name: 'qux', params: { test: 'a' } },
@@ -579,7 +548,6 @@ test('ensure unique ID is only per route name for navigate', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'qux-test', name: 'qux', params: { test: 'a' } },
@@ -603,7 +571,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -621,7 +588,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -640,7 +606,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -658,7 +623,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
     stale: false,
     key: 'root',
     index: 0,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz', params: { answer: 42 } }],
   });
@@ -669,7 +633,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -687,7 +650,6 @@ test('goes back to matching screen for navigate if pop: true', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -713,7 +675,6 @@ test('goes back to matching ID for navigate if pop: true', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
@@ -731,7 +692,6 @@ test('goes back to matching ID for navigate if pop: true', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -745,7 +705,6 @@ test('goes back to matching ID for navigate if pop: true', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
@@ -765,12 +724,13 @@ test('goes back to matching ID for navigate if pop: true', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
+    // `bar-b` (matched) becomes active; `bar-c` was inactive and is preserved in the tail.
     routes: [
       { key: 'bar', name: 'bar' },
       { key: 'bar-a', name: 'bar', params: { foo: 'a' } },
       { key: 'bar-b', name: 'bar', params: { foo: 'b' } },
+      { key: 'bar-c', name: 'bar', params: { foo: 'c' } },
     ],
   });
 });
@@ -789,7 +749,6 @@ test('handles navigate action (legacy)', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -803,7 +762,6 @@ test('handles navigate action (legacy)', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -822,7 +780,6 @@ test('handles navigate action (legacy)', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -836,7 +793,6 @@ test('handles navigate action (legacy)', () => {
     stale: false,
     key: 'root',
     index: 0,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz', params: { answer: 42 } }],
   });
@@ -847,7 +803,6 @@ test('handles navigate action (legacy)', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -861,7 +816,6 @@ test('handles navigate action (legacy)', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -875,7 +829,6 @@ test('handles navigate action (legacy)', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -902,7 +855,6 @@ test("doesn't navigate to nonexistent screen (legacy)", () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -920,7 +872,6 @@ test("doesn't navigate to nonexistent screen (legacy)", () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -953,7 +904,6 @@ test('ensures unique ID for navigate (legacy)', () => {
         stale: false,
         key: 'root',
         index: 0,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
       },
@@ -964,7 +914,6 @@ test('ensures unique ID for navigate (legacy)', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -978,7 +927,6 @@ test('ensures unique ID for navigate (legacy)', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
@@ -992,7 +940,6 @@ test('ensures unique ID for navigate (legacy)', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -1006,7 +953,6 @@ test('ensures unique ID for navigate (legacy)', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
@@ -1020,7 +966,6 @@ test('ensures unique ID for navigate (legacy)', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -1048,7 +993,6 @@ test('ensure unique ID is only per route name for navigate (legacy)', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'qux-test', name: 'qux', params: { test: 'a' } },
@@ -1062,7 +1006,6 @@ test('ensure unique ID is only per route name for navigate (legacy)', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'qux-test', name: 'qux', params: { test: 'a' } },
@@ -1086,7 +1029,6 @@ test('handles go back action', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1100,7 +1042,6 @@ test('handles go back action', () => {
     stale: false,
     key: 'root',
     index: 0,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz' }],
   });
@@ -1111,7 +1052,6 @@ test('handles go back action', () => {
         stale: false,
         key: 'root',
         index: 0,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'baz', name: 'baz' }],
       },
@@ -1135,7 +1075,6 @@ test('handles pop action', () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1150,7 +1089,6 @@ test('handles pop action', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -1164,7 +1102,6 @@ test('handles pop action', () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1179,7 +1116,6 @@ test('handles pop action', () => {
     stale: false,
     key: 'root',
     index: 0,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz' }],
   });
@@ -1190,7 +1126,6 @@ test('handles pop action', () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1205,7 +1140,6 @@ test('handles pop action', () => {
     stale: false,
     key: 'root',
     index: 0,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz' }],
   });
@@ -1216,7 +1150,6 @@ test('handles pop action', () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz-0', name: 'baz' },
@@ -1235,7 +1168,6 @@ test('handles pop action', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz-0', name: 'baz' },
@@ -1249,7 +1181,6 @@ test('handles pop action', () => {
         stale: false,
         key: 'root',
         index: 4,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz-0', name: 'baz' },
@@ -1270,7 +1201,6 @@ test('handles pop action', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz-0', name: 'baz' },
@@ -1285,7 +1215,6 @@ test('handles pop action', () => {
         stale: false,
         key: 'root',
         index: 0,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'baz-0', name: 'baz' }],
       },
@@ -1309,7 +1238,6 @@ test('handles pop to top action', () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1324,7 +1252,6 @@ test('handles pop to top action', () => {
     stale: false,
     key: 'root',
     index: 0,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz' }],
   });
@@ -1349,7 +1276,6 @@ test('replaces focused screen with replace', () => {
           { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
           { key: 'baz', name: 'baz' },
         ],
-        preloadedRoutes: [],
         routeNames: ['foo', 'bar', 'baz', 'qux'],
       },
       StackActions.replace('qux', { answer: 42 }),
@@ -1364,7 +1290,6 @@ test('replaces focused screen with replace', () => {
       { key: 'qux-test', name: 'qux', params: { answer: 42 } },
       { key: 'baz', name: 'baz' },
     ],
-    preloadedRoutes: [],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
   });
 });
@@ -1388,7 +1313,6 @@ test('replaces active screen with replace', () => {
           { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
           { key: 'baz', name: 'baz' },
         ],
-        preloadedRoutes: [],
         routeNames: ['foo', 'bar', 'baz', 'qux'],
       },
       {
@@ -1406,7 +1330,6 @@ test('replaces active screen with replace', () => {
       { key: 'qux-test', name: 'qux', params: { answer: 42 } },
       { key: 'baz', name: 'baz' },
     ],
-    preloadedRoutes: [],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
   });
 });
@@ -1430,7 +1353,6 @@ test("handles replace if source key isn't present but target is not specified", 
           { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
           { key: 'baz', name: 'baz' },
         ],
-        preloadedRoutes: [],
         routeNames: ['foo', 'bar', 'baz', 'qux'],
       },
       {
@@ -1442,7 +1364,6 @@ test("handles replace if source key isn't present but target is not specified", 
   ).toEqual({
     index: 1,
     key: 'root',
-    preloadedRoutes: [],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routes: [
       { key: 'foo', name: 'foo' },
@@ -1472,7 +1393,6 @@ test("doesn't handle replace if source key isn't present when target is specifie
           { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
           { key: 'baz', name: 'baz' },
         ],
-        preloadedRoutes: [],
         routeNames: ['foo', 'bar', 'baz', 'qux'],
       },
       {
@@ -1504,7 +1424,6 @@ test("doesn't handle replace if screen to replace with isn't present", () => {
           { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
           { key: 'baz', name: 'baz' },
         ],
-        preloadedRoutes: [],
         routeNames: ['foo', 'bar', 'baz', 'qux'],
       },
       {
@@ -1532,7 +1451,6 @@ test('handles push action', () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
       },
@@ -1543,7 +1461,6 @@ test('handles push action', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -1557,7 +1474,6 @@ test('handles push action', () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
       },
@@ -1568,7 +1484,6 @@ test('handles push action', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -1582,7 +1497,6 @@ test('handles push action', () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
       },
@@ -1606,7 +1520,6 @@ test("doesn't push nonexistent screen", () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1636,7 +1549,6 @@ test('ensures unique ID for push', () => {
         stale: false,
         key: 'root',
         index: 0,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar' }],
       },
@@ -1647,7 +1559,6 @@ test('ensures unique ID for push', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -1661,7 +1572,6 @@ test('ensures unique ID for push', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
@@ -1675,7 +1585,6 @@ test('ensures unique ID for push', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -1689,7 +1598,6 @@ test('ensures unique ID for push', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'bar', name: 'bar' },
@@ -1703,7 +1611,6 @@ test('ensures unique ID for push', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
@@ -1731,7 +1638,6 @@ test('ensure unique ID is only per route name for push', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'qux-test', name: 'qux', params: { test: 'a' } },
@@ -1745,7 +1651,6 @@ test('ensure unique ID is only per route name for push', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'qux-test', name: 'qux', params: { test: 'a' } },
@@ -1769,7 +1674,6 @@ test('adds path on navigate if provided', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1787,7 +1691,6 @@ test('adds path on navigate if provided', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -1801,7 +1704,6 @@ test('adds path on navigate if provided', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1819,7 +1721,6 @@ test('adds path on navigate if provided', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -1838,7 +1739,6 @@ test('adds path on navigate if provided', () => {
         stale: false,
         key: 'root',
         index: 0,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [{ key: 'bar', name: 'bar', params: { answer: 42 } }],
       },
@@ -1852,7 +1752,6 @@ test('adds path on navigate if provided', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar', params: { answer: 42 } },
@@ -1879,7 +1778,6 @@ test("doesn't remove existing path on navigate if not provided", () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1897,7 +1795,6 @@ test("doesn't remove existing path on navigate if not provided", () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -1920,7 +1817,6 @@ test('handles popTo action', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1934,7 +1830,6 @@ test('handles popTo action', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -1952,7 +1847,6 @@ test('handles popTo action', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1966,7 +1860,6 @@ test('handles popTo action', () => {
     stale: false,
     key: 'root',
     index: 0,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [{ key: 'baz', name: 'baz', params: { answer: 42 } }],
   });
@@ -1977,7 +1870,6 @@ test('handles popTo action', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -1991,7 +1883,6 @@ test('handles popTo action', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -2014,7 +1905,6 @@ test("doesn't popTo to nonexistent screen", () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -2043,7 +1933,6 @@ test("doesn't merge params on popTo to an existing screen", () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -2058,7 +1947,6 @@ test("doesn't merge params on popTo to an existing screen", () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -2072,7 +1960,6 @@ test("doesn't merge params on popTo to an existing screen", () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -2086,7 +1973,6 @@ test("doesn't merge params on popTo to an existing screen", () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -2112,7 +1998,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -2128,7 +2013,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -2142,7 +2026,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -2156,7 +2039,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -2174,7 +2056,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz', params: { test: 99 } },
@@ -2188,7 +2069,6 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     stale: false,
     key: 'root',
     index: 0,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       {
@@ -2219,7 +2099,6 @@ test("handles popTo if source key isn't present but target is not specified", ()
           { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
           { key: 'baz', name: 'baz' },
         ],
-        preloadedRoutes: [],
         routeNames: ['foo', 'bar', 'baz', 'qux'],
       },
       {
@@ -2231,11 +2110,12 @@ test("handles popTo if source key isn't present but target is not specified", ()
   ).toEqual({
     index: 1,
     key: 'root',
-    preloadedRoutes: [],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
+    // `baz` was inactive (position > index), so it is preserved in the tail.
     routes: [
       { key: 'foo', name: 'foo' },
       { key: 'qux-test', name: 'qux', params: { answer: 42 } },
+      { key: 'baz', name: 'baz' },
     ],
     stale: false,
   });
@@ -2260,7 +2140,6 @@ test('handles popTo when source and target match a route', () => {
           { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
           { key: 'baz', name: 'baz' },
         ],
-        preloadedRoutes: [],
         routeNames: ['foo', 'bar', 'baz', 'qux'],
       },
       {
@@ -2273,7 +2152,6 @@ test('handles popTo when source and target match a route', () => {
   ).toEqual({
     index: 1,
     key: 'root',
-    preloadedRoutes: [],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routes: [
       { key: 'foo', name: 'foo' },
@@ -2302,7 +2180,6 @@ test("doesn't handle popTo if source key isn't present when target is specified"
           { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
           { key: 'baz', name: 'baz' },
         ],
-        preloadedRoutes: [],
         routeNames: ['foo', 'bar', 'baz', 'qux'],
       },
       {
@@ -2334,7 +2211,6 @@ test('adds route to preloaded list with preload', () => {
         stale: false,
         key: 'root',
         index: 2,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
@@ -2350,12 +2226,13 @@ test('adds route to preloaded list with preload', () => {
     stale: false,
     key: 'root',
     index: 2,
-    preloadedRoutes: [{ key: 'bar-test', name: 'bar', params: { color: 'test' } }],
     routeNames: ['baz', 'bar', 'qux'],
+    // Preloaded route is appended to the inactive tail (position > index).
     routes: [
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar', params: { answer: 42 } },
       { key: 'qux', name: 'qux' },
+      { key: 'bar-test', name: 'bar', params: { color: 'test' } },
     ],
   });
 
@@ -2365,7 +2242,6 @@ test('adds route to preloaded list with preload', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           {
@@ -2384,7 +2260,6 @@ test('adds route to preloaded list with preload', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       {
@@ -2402,11 +2277,10 @@ test('adds route to preloaded list with preload', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           {
-            key: 'bar-test',
+            key: 'bar-existing',
             name: 'bar',
             params: { answer: 42, toBe: 'notMerged' },
           },
@@ -2421,15 +2295,16 @@ test('adds route to preloaded list with preload', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [{ key: 'bar-test', name: 'bar', params: { answer: 43, color: 'test' } }],
     routeNames: ['baz', 'bar', 'qux'],
+    // Different id ⇒ a new preloaded route is appended to the inactive tail.
     routes: [
       {
-        key: 'bar-test',
+        key: 'bar-existing',
         name: 'bar',
         params: { answer: 42, toBe: 'notMerged' },
       },
       { key: 'baz', name: 'baz' },
+      { key: 'bar-test', name: 'bar', params: { answer: 43, color: 'test' } },
     ],
   });
 });
@@ -2448,19 +2323,11 @@ test('uses preloaded route when pushing a route with the same name', () => {
         stale: false,
         key: 'root',
         index: 0,
-        preloadedRoutes: [
-          {
-            key: 'bar-test',
-            name: 'bar',
-          },
-          { key: 'qux-some', name: 'qux' },
-        ],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
-          {
-            key: 'bar-test',
-            name: 'bar',
-          },
+          { key: 'bar-test', name: 'bar' },
+          // Preloaded route lives in the inactive tail (position > index).
+          { key: 'qux-some', name: 'qux' },
         ],
       },
 
@@ -2471,64 +2338,10 @@ test('uses preloaded route when pushing a route with the same name', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [
-      {
-        key: 'bar-test',
-        name: 'bar',
-      },
-    ],
     routeNames: ['baz', 'bar', 'qux'],
+    // The preloaded route is promoted, reusing its key (no remount).
     routes: [
-      {
-        key: 'bar-test',
-        name: 'bar',
-      },
-      { key: 'qux-some', name: 'qux' },
-    ],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        key: 'root',
-        index: 1,
-        preloadedRoutes: [
-          {
-            key: 'bar-test',
-            name: 'bar',
-          },
-          { key: 'qux-some', name: 'qux' },
-        ],
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'qux-some', name: 'qux' },
-          {
-            key: 'bar-test',
-            name: 'bar',
-          },
-        ],
-      },
-
-      StackActions.push('qux'),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    key: 'root',
-    index: 1,
-    preloadedRoutes: [
-      {
-        key: 'bar-test',
-        name: 'bar',
-      },
-    ],
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      {
-        key: 'bar-test',
-        name: 'bar',
-      },
+      { key: 'bar-test', name: 'bar' },
       { key: 'qux-some', name: 'qux' },
     ],
   });
@@ -2553,20 +2366,19 @@ test('uses preloaded route when pushing a route with the same ID', () => {
         stale: false,
         key: 'root',
         index: 0,
-        preloadedRoutes: [
+        routeNames: ['baz', 'bar', 'qux'],
+        routes: [
+          {
+            key: 'qux-test',
+            name: 'qux',
+          },
+          // Preloaded route in the inactive tail (position > index).
           {
             key: 'bar-test',
             params: {
               answer: 41,
             },
             name: 'bar',
-          },
-        ],
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          {
-            key: 'qux-test',
-            name: 'qux',
           },
         ],
       },
@@ -2578,7 +2390,6 @@ test('uses preloaded route when pushing a route with the same ID', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'qux-test', name: 'qux' },
@@ -2613,7 +2424,13 @@ test('does not use preloaded route when pushing a route with different ID', () =
         stale: false,
         key: 'root',
         index: 0,
-        preloadedRoutes: [
+        routeNames: ['baz', 'bar', 'qux'],
+        routes: [
+          {
+            key: 'qux-test',
+            name: 'qux',
+          },
+          // Preloaded route in the inactive tail (position > index).
           {
             key: 'bar-some',
             params: {
@@ -2621,13 +2438,6 @@ test('does not use preloaded route when pushing a route with different ID', () =
               toBe: 'notMerged',
             },
             name: 'bar',
-          },
-        ],
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          {
-            key: 'qux-test',
-            name: 'qux',
           },
         ],
       },
@@ -2639,17 +2449,8 @@ test('does not use preloaded route when pushing a route with different ID', () =
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [
-      {
-        key: 'bar-some',
-        params: {
-          answer: 42,
-          toBe: 'notMerged',
-        },
-        name: 'bar',
-      },
-    ],
     routeNames: ['baz', 'bar', 'qux'],
+    // Different id ⇒ a fresh route is pushed; the preloaded route stays in the tail.
     routes: [
       { key: 'qux-test', name: 'qux' },
       {
@@ -2657,6 +2458,14 @@ test('does not use preloaded route when pushing a route with different ID', () =
         params: {
           color: 'test',
           answer: 41,
+        },
+        name: 'bar',
+      },
+      {
+        key: 'bar-some',
+        params: {
+          answer: 42,
+          toBe: 'notMerged',
         },
         name: 'bar',
       },
@@ -2680,17 +2489,12 @@ test('uses preloaded route when replacing current route', () => {
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 42 },
-          },
-        ],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
           { key: 'qux', name: 'qux' },
+          // Preloaded route in the inactive tail (position > index).
+          { key: 'bar-preloaded', name: 'bar', params: { answer: 42 } },
         ],
       },
       StackActions.replace('bar'),
@@ -2700,7 +2504,6 @@ test('uses preloaded route when replacing current route', () => {
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -2731,17 +2534,12 @@ test('uses preloaded route with the same ID when replacing current route', () =>
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 42 },
-          },
-        ],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
           { key: 'qux', name: 'qux' },
+          // Preloaded route in the inactive tail (position > index).
+          { key: 'bar-preloaded', name: 'bar', params: { answer: 42 } },
         ],
       },
       StackActions.replace('bar', { answer: 42 }),
@@ -2751,7 +2549,6 @@ test('uses preloaded route with the same ID when replacing current route', () =>
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -2782,17 +2579,12 @@ test('does not use preloaded route with different ID when replacing current rout
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 99 },
-          },
-        ],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
           { key: 'qux', name: 'qux' },
+          // Preloaded route in the inactive tail (position > index).
+          { key: 'bar-preloaded', name: 'bar', params: { answer: 99 } },
         ],
       },
       StackActions.popTo('bar', { answer: 42 }),
@@ -2802,14 +2594,8 @@ test('does not use preloaded route with different ID when replacing current rout
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [
-      {
-        key: 'bar-preloaded',
-        name: 'bar',
-        params: { answer: 99 },
-      },
-    ],
     routeNames: ['baz', 'bar', 'qux'],
+    // Different id ⇒ a fresh route is added; the preloaded route stays in the inactive tail.
     routes: [
       { key: 'baz', name: 'baz' },
       {
@@ -2817,6 +2603,7 @@ test('does not use preloaded route with different ID when replacing current rout
         name: 'bar',
         params: { color: 'test', answer: 42 },
       },
+      { key: 'bar-preloaded', name: 'bar', params: { answer: 99 } },
     ],
   });
 });
@@ -2837,17 +2624,12 @@ test('uses preloaded route with the same name when popTo replaces current route'
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 42 },
-          },
-        ],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
           { key: 'qux', name: 'qux' },
+          // Preloaded route in the inactive tail (position > index).
+          { key: 'bar-preloaded', name: 'bar', params: { answer: 42 } },
         ],
       },
       StackActions.popTo('bar'),
@@ -2857,7 +2639,6 @@ test('uses preloaded route with the same name when popTo replaces current route'
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -2888,17 +2669,12 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 42 },
-          },
-        ],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
           { key: 'qux', name: 'qux' },
+          // Preloaded route in the inactive tail (position > index).
+          { key: 'bar-preloaded', name: 'bar', params: { answer: 42 } },
         ],
       },
       StackActions.popTo('bar', { answer: 42 }),
@@ -2908,7 +2684,6 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -2939,17 +2714,12 @@ test('does not use preloaded route with different ID when popTo replaces current
         stale: false,
         key: 'root',
         index: 1,
-        preloadedRoutes: [
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 99 },
-          },
-        ],
         routeNames: ['baz', 'bar', 'qux'],
         routes: [
           { key: 'baz', name: 'baz' },
           { key: 'qux', name: 'qux' },
+          // Preloaded route in the inactive tail (position > index).
+          { key: 'bar-preloaded', name: 'bar', params: { answer: 99 } },
         ],
       },
       StackActions.popTo('bar', { answer: 42 }),
@@ -2959,14 +2729,8 @@ test('does not use preloaded route with different ID when popTo replaces current
     stale: false,
     key: 'root',
     index: 1,
-    preloadedRoutes: [
-      {
-        key: 'bar-preloaded',
-        name: 'bar',
-        params: { answer: 99 },
-      },
-    ],
     routeNames: ['baz', 'bar', 'qux'],
+    // Different id ⇒ a fresh route is added; the preloaded route stays in the inactive tail.
     routes: [
       { key: 'baz', name: 'baz' },
       {
@@ -2974,6 +2738,7 @@ test('does not use preloaded route with different ID when popTo replaces current
         name: 'bar',
         params: { color: 'test', answer: 42 },
       },
+      { key: 'bar-preloaded', name: 'bar', params: { answer: 99 } },
     ],
   });
 });
