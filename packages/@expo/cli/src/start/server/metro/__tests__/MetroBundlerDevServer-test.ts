@@ -117,6 +117,13 @@ describe('startAsync', () => {
     });
 
     expect(instantiateMetroAsync).toHaveBeenCalled();
+    expect(instantiateMetroAsync).toHaveBeenCalledWith(
+      devServer,
+      expect.any(Object),
+      expect.objectContaining({
+        devToolsPluginManager: devServer['devToolsPluginManager'],
+      })
+    );
   });
 });
 

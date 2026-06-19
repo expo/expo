@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Add `bannerTitle` and `serverEntryPoint` options to the DevTools plugin module config. ([#46764](https://github.com/expo/expo/pull/46764) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ## 57.0.4 — 2026-07-03
 
 ### 🐛 Bug fixes
