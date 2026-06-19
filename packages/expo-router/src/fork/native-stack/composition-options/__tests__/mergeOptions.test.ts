@@ -21,7 +21,6 @@ function createMockState(
     index: 0,
     routeNames: ['index'],
     routes: [{ key: 'route-1', name: 'index', params: undefined }],
-    preloadedRoutes: [],
     stale: false,
     ...overrides,
   };
@@ -104,8 +103,11 @@ describe('mergeOptions', () => {
     };
     const state = createMockState({
       index: 0,
-      routes: [{ key: 'route-1', name: 'index', params: undefined }],
-      preloadedRoutes: [{ key: 'route-preloaded', name: 'detail', params: undefined }],
+      // Preloaded route lives in the inactive tail (position > index).
+      routes: [
+        { key: 'route-1', name: 'index', params: undefined },
+        { key: 'route-preloaded', name: 'detail', params: undefined },
+      ],
     });
 
     const result = mergeOptions(descriptors, registry, state);
@@ -125,14 +127,12 @@ describe('mergeOptions', () => {
     const registry: CompositionRegistry = {
       'route-preloaded': [{ title: 'Preloaded Composed' }],
     };
-    // Preloaded route that is also focused (e.g., during preview transition)
     const state = createMockState({
       index: 1,
       routes: [
         { key: 'route-1', name: 'index', params: undefined },
         { key: 'route-preloaded', name: 'detail', params: undefined },
       ],
-      preloadedRoutes: [{ key: 'route-preloaded', name: 'detail', params: undefined }],
     });
 
     const result = mergeOptions(descriptors, registry, state);
