@@ -9,8 +9,8 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",
@@ -40,10 +40,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/Haptics.ts",
+        "expo-source": "./src/Haptics.ts",
         "default": "./build/Haptics.d.ts"
       },
-      "source": "./src/Haptics.ts",
+      "expo-source": "./src/Haptics.ts",
       "default": "./build/Haptics.js"
     },
     "./package.json": "./package.json"

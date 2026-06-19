@@ -21,7 +21,7 @@ function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
   const map = new Map();
 
   for (const dep of deps) {
-    map.set(dep.data.data.key ?? dep.absolutePath, dep);
+    map.set(dep.data.data.key ?? ('absolutePath' in dep ? dep.absolutePath : undefined), dep);
   }
 
   return map;
@@ -109,10 +109,10 @@ export async function microBundle({
     string,
     readonly Module<MixedOutput>[],
     ReadOnlyGraph<MixedOutput>,
-    SerializerOptions<MixedOutput>,
+    SerializerOptions,
   ]
 > {
-  const fullFs = {
+  const fullFs: Record<string, string> = {
     'expo-router/rsc/internal': ``,
     'react-server-dom-webpack/server': ``,
     'react-server-dom-webpack/client': ``,
@@ -147,12 +147,12 @@ export async function microBundle({
     inlineRequires: options.inlineRequires ?? false,
     customTransformOptions: {
       __proto__: null,
-      bytecode: options.hermes,
+      bytecode: options.hermes ? '1' : undefined,
       baseUrl: options.baseUrl,
       engine: options.hermes ? 'hermes' : undefined,
       environment: options.isReactServer ? 'react-server' : options.isServer ? 'node' : undefined,
       optimize: options.optimize ?? options.treeshake,
-      reactCompiler: options.reactCompiler,
+      reactCompiler: options.reactCompiler ? 'true' : undefined,
     },
     // NOTE: This is non-standard but it provides a cleaner output
     experimentalImportSupport: true,
@@ -273,19 +273,19 @@ export async function microBundle({
       asyncRequireModulePath: 'expo-mock/async-require',
 
       sourceUrl: options.sourceUrl,
-      createModuleId(filePath) {
+      createModuleId(filePath: string) {
         return filePath as unknown as number;
       },
       dev,
-      getRunModuleStatement(moduleId) {
+      getRunModuleStatement(moduleId: number | string) {
         return `TEST_RUN_MODULE(${JSON.stringify(moduleId)});`;
       },
       includeAsyncPaths: dev,
-      shouldAddToIgnoreList(module) {
+      shouldAddToIgnoreList(_module: Module) {
         return false;
       },
       modulesOnly: false,
-      processModuleFilter(module) {
+      processModuleFilter(_module: Module) {
         return true;
       },
       projectRoot,
@@ -297,7 +297,7 @@ export async function microBundle({
       _test_getPackageJson(dir: string) {
         const packageJsonPath = findUpPackageJsonPath(projectRoot, dir);
         if (packageJsonPath) {
-          return [JSON.parse(fullFs[packageJsonPath]), packageJsonPath];
+          return [JSON.parse(fullFs[packageJsonPath]!), packageJsonPath];
         }
         return [null, null];
       },

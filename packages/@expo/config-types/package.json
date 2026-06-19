@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/ExpoConfig.ts",
+        "expo-source": "./src/ExpoConfig.ts",
         "default": "./build/ExpoConfig.d.ts"
       },
-      "source": "./src/ExpoConfig.ts",
+      "expo-source": "./src/ExpoConfig.ts",
       "default": "./build/ExpoConfig.js"
     },
     "./package.json": "./package.json"
@@ -21,9 +21,8 @@
     "generate": "node ./scripts/generate.js",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch --preserveWatchOutput"
+    "test": "jest",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -47,6 +46,7 @@
     "build"
   ],
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",

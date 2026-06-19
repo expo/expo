@@ -46,7 +46,7 @@ describe('DevToolsPluginManager', () => {
     const plugins = await manager.queryPluginsAsync();
 
     expect(plugins.length).toBe(1);
-    expect(plugins[0].packageName).toBe('valid-plugin');
+    expect(plugins[0]!.packageName).toBe('valid-plugin');
   });
 
   it('should skip a plugin whose webpageRoot escapes the package directory', async () => {
@@ -105,8 +105,8 @@ describe('DevToolsPluginManager', () => {
     const plugins = await manager.queryPluginsAsync();
 
     expect(plugins.length).toBe(2);
-    expect(plugins[0].packageName).toBe('valid-plugin');
-    expect(plugins[1].packageName).toBe('another-valid-plugin');
+    expect(plugins[0]!.packageName).toBe('valid-plugin');
+    expect(plugins[1]!.packageName).toBe('another-valid-plugin');
     expect(Log.warn).toHaveBeenCalledWith(
       expect.stringContaining('Skipping plugin "invalid-plugin"')
     );

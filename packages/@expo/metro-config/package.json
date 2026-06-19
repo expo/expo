@@ -7,28 +7,28 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "require": "./build/index.js",
       "default": "./build/index.js"
     },
     "./babel-transformer": {
       "types": {
-        "source": "./src/babel-transformer.ts",
+        "expo-source": "./src/babel-transformer.ts",
         "default": "./build/babel-transformer.d.ts"
       },
-      "source": "./src/babel-transformer.ts",
+      "expo-source": "./src/babel-transformer.ts",
       "require": "./build/babel-transformer.js",
       "default": "./build/babel-transformer.js"
     },
     "./file-store": {
       "types": {
-        "source": "./src/file-store.ts",
+        "expo-source": "./src/file-store.ts",
         "default": "./build/file-store.d.ts"
       },
-      "source": "./src/file-store.ts",
+      "expo-source": "./src/file-store.ts",
       "require": "./build/file-store.js",
       "default": "./build/file-store.js"
     },
@@ -43,9 +43,8 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch --preserveWatchOutput"
+    "test": "jest",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -108,6 +107,7 @@
     "@types/picomatch": "^4.0.2",
     "dedent": "^1.5.3",
     "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0",
     "metro-minify-terser": "^0.84.2",
     "sass": "^1.60.0"
   },

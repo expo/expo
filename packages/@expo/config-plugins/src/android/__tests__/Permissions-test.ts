@@ -179,7 +179,7 @@ describe(addBlockedPermissions, () => {
                 $: { 'android:name': 'dev.expo.foobar-2' },
               },
             ],
-          },
+          } as AndroidManifest['manifest'],
         },
         ['dev.expo.foobar']
       ).manifest['uses-permission']
@@ -202,7 +202,7 @@ describe(addBlockedPermissions, () => {
               'xmlns:android': '...',
             },
             'uses-permission': [],
-          },
+          } as unknown as AndroidManifest['manifest'],
         },
         ['dev.expo.foobar']
       ).manifest['uses-permission']

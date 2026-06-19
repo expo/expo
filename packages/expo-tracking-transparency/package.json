@@ -10,8 +10,9 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -30,6 +31,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/tracking-transparency",
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
@@ -37,8 +39,5 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   }
 }

@@ -14,9 +14,10 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -32,17 +33,17 @@
     ".": {
       "react-server": {
         "types": {
-          "source": "./src/index.server.ts",
+          "expo-source": "./src/index.server.ts",
           "default": "./build/index.server.d.ts"
         },
-        "source": "./src/index.server.ts",
+        "expo-source": "./src/index.server.ts",
         "default": "./build/index.server.js"
       },
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     }
   },
@@ -66,6 +67,7 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "@types/react-native__assets": "^1.0.3",

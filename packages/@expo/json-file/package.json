@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/JsonFile.ts",
+        "expo-source": "./src/JsonFile.ts",
         "default": "./build/JsonFile.d.ts"
       },
-      "source": "./src/JsonFile.ts",
+      "expo-source": "./src/JsonFile.ts",
       "default": "./build/JsonFile.js"
     },
     "./package.json": "./package.json"
@@ -20,9 +20,8 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch --preserveWatchOutput"
+    "test": "jest",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -46,6 +45,7 @@
   },
   "devDependencies": {
     "@types/babel__code-frame": "^7.27.0",
+    "@types/jest": "^29.2.1",
     "@types/json5": "^2.2.0",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",

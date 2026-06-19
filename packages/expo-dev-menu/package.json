@@ -11,8 +11,8 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "expo",
@@ -38,6 +38,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/react-native": "^13.3.0",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",

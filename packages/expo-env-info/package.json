@@ -21,8 +21,8 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod",
-    "test": "expo-module test",
-    "watch": "pnpm run build -w"
+    "test": "jest",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -37,8 +37,10 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-env-info#readme",
   "devDependencies": {
     "@types/envinfo": "^7.8.1",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
   },
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"

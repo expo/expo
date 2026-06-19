@@ -1,3 +1,6 @@
+const path = require('node:path');
+
+const createJestPreset = require('expo-module-scripts/createJestPreset');
 const {
   getWebPreset,
   getNodePreset,
@@ -34,9 +37,17 @@ const projects = [
   getWebPreset(),
   getIOSPreset(),
   getAndroidPreset(),
-].map(withDefaults);
+]
+  .map(createJestPreset)
+  .map(withDefaults);
+
+// Run the config plugin's tests as their own project so a single `jest` covers the package.
+// `watchPlugins`/`prettierPath` are root-only, so strip them from the sub-project.
+const { watchPlugins, prettierPath, ...pluginProject } = require('./plugin/jest.config.js');
+projects.push({ ...pluginProject, rootDir: path.join(__dirname, 'plugin') });
 
 const config = withWatchPlugins({
+  ...require('jest-expo/config/maxWorkers'),
   projects,
 });
 

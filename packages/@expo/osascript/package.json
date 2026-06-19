@@ -28,9 +28,8 @@
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
-    "test": "expo-module test",
-    "watch": "pnpm run build --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "engines": {

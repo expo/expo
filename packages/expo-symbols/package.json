@@ -7,18 +7,18 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./androidWeights/*": {
       "types": {
-        "source": "./src/android/weights/*/index.ts",
+        "expo-source": "./src/android/weights/*/index.ts",
         "default": "./build/android/weights/*/index.d.ts"
       },
-      "source": "./src/android/weights/*/index.ts",
+      "expo-source": "./src/android/weights/*/index.ts",
       "default": "./build/android/weights/*/index.js"
     },
     "./package.json": "./package.json"
@@ -27,8 +27,8 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",

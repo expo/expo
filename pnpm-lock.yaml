@@ -1999,6 +1999,9 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
+      '@babel/core':
+        specifier: ^7.20.0
+        version: 7.29.0
       '@expo/fingerprint':
         specifier: workspace:*
         version: link:../fingerprint
@@ -2017,6 +2020,9 @@ importers:
       '@types/accepts':
         specifier: ^1.3.5
         version: 1.3.7
+      '@types/babel__core':
+        specifier: ^7.20.5
+        version: 7.20.5
       '@types/connect':
         specifier: ^3.4.33
         version: 3.4.38
@@ -2056,6 +2062,12 @@ importers:
       '@types/prompts':
         specifier: ^2.0.6
         version: 2.4.9
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.14
+      '@types/react-test-renderer':
+        specifier: ^19.1.0
+        version: 19.1.0
       '@types/resolve':
         specifier: ^1.20.2
         version: 1.20.6
@@ -2116,6 +2128,15 @@ importers:
       playwright:
         specifier: ^1.59.0
         version: 1.59.0
+      react:
+        specifier: '*'
+        version: 19.2.3
+      react-refresh:
+        specifier: ^0.14.2
+        version: 0.14.2
+      react-test-renderer:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
       tree-kill:
         specifier: ^1.2.2
         version: 1.2.2
@@ -2168,6 +2189,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
 
   packages/@expo/config-plugins:
     dependencies:
@@ -2229,9 +2253,15 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
 
   packages/@expo/config-types:
     devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.19.15
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -2263,12 +2293,18 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
+      '@types/ws':
+        specifier: ^8.5.4
+        version: 8.18.1
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -2319,6 +2355,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
 
   packages/@expo/fingerprint:
     dependencies:
@@ -2371,6 +2410,9 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
+      '@types/require-from-string':
+        specifier: ^1.2.3
+        version: 1.2.3
       '@types/semver':
         specifier: ^7.5.8
         version: 7.7.1
@@ -2380,6 +2422,9 @@ importers:
       expo-splash-screen:
         specifier: workspace:*
         version: link:../../expo-splash-screen
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
       require-from-string:
         specifier: ^2.0.2
         version: 2.0.2
@@ -2455,6 +2500,9 @@ importers:
       '@types/babel__code-frame':
         specifier: ^7.27.0
         version: 7.27.0
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/json5':
         specifier: ^2.2.0
         version: 2.2.0
@@ -2653,6 +2701,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
       metro-minify-terser:
         specifier: ^0.84.2
         version: 0.84.4
@@ -2789,6 +2840,12 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
+      strip-ansi:
+        specifier: ^6.0.1
+        version: 6.0.1
 
   packages/@expo/pkcs12:
     dependencies:
@@ -2818,6 +2875,9 @@ importers:
         specifier: ^15.1.1
         version: 15.1.1
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -2980,6 +3040,9 @@ importers:
       '@babel/cli':
         specifier: ^7.23.4
         version: 7.28.6(@babel/core@7.29.0)
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -3150,21 +3213,36 @@ importers:
         specifier: workspace:^56.0.15
         version: link:../expo-widgets
     devDependencies:
+      '@babel/code-frame':
+        specifier: ^7.20.0
+        version: 7.29.0
       '@babel/core':
         specifier: ^7.26.0
         version: 7.29.0
+      '@expo/config':
+        specifier: workspace:*
+        version: link:../@expo/config
       '@expo/metro':
         specifier: ~56.0.0
         version: 56.0.0
       '@expo/metro-config':
         specifier: workspace:*
         version: link:../@expo/metro-config
+      '@expo/spawn-async':
+        specifier: ^1.8.0
+        version: 1.8.0
+      '@types/babel__code-frame':
+        specifier: ^7.27.0
+        version: 7.27.0
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
       '@types/babel__generator':
         specifier: ^7.27.0
         version: 7.27.0
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -3183,9 +3261,6 @@ importers:
       react-refresh:
         specifier: ^0.14.2
         version: 0.14.2
-      resolve-from:
-        specifier: ^5.0.0
-        version: 5.0.0
 
   packages/create-expo:
     devDependencies:
@@ -3240,6 +3315,9 @@ importers:
       glob:
         specifier: ^13.0.0
         version: 13.0.6
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
       multitars:
         specifier: ^1.0.0
         version: 1.0.0
@@ -3340,9 +3418,6 @@ importers:
         specifier: ^8.8.5
         version: 8.8.5
     devDependencies:
-      '@tsconfig/node22':
-        specifier: ^22.0.3
-        version: 22.0.5
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3461,7 +3536,7 @@ importers:
         specifier: ^8.56.12
         version: 8.56.12
       '@types/jest':
-        specifier: ^29.5.12
+        specifier: ^29.2.1
         version: 29.5.14
       '@typescript-eslint/rule-tester':
         specifier: ^8.59.0
@@ -3478,9 +3553,6 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
-      ts-jest:
-        specifier: ^29.1.2
-        version: 29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(typescript@6.0.3)
 
   packages/expo:
     dependencies:
@@ -3651,6 +3723,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -3694,6 +3769,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.3.0
         version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -3716,6 +3794,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -3775,6 +3856,9 @@ importers:
         specifier: workspace:~56.0.15
         version: link:../expo-task-manager
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -3791,6 +3875,9 @@ importers:
         specifier: workspace:~56.0.15
         version: link:../expo-task-manager
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -3866,6 +3953,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -3915,6 +4005,9 @@ importers:
       '@types/diff':
         specifier: ^5.2.0
         version: 5.2.3
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -3968,6 +4061,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -3993,6 +4089,9 @@ importers:
         specifier: '*'
         version: 0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4008,6 +4107,9 @@ importers:
 
   packages/expo-cellular:
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4124,6 +4226,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4167,6 +4272,9 @@ importers:
         specifier: workspace:~56.0.1
         version: link:../expo-updates-interface
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4195,6 +4303,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4214,6 +4325,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.3.0
         version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4308,6 +4422,9 @@ importers:
       ignore:
         specifier: ^5.3.2
         version: 5.3.2
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
       ora:
         specifier: 3.4.0
         version: 3.4.0
@@ -4326,6 +4443,9 @@ importers:
 
   packages/expo-document-picker:
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4351,12 +4471,18 @@ importers:
       '@types/envinfo':
         specifier: ^7.8.1
         version: 7.8.4
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
 
   packages/expo-file-system:
     dependencies:
@@ -4367,6 +4493,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4398,6 +4527,9 @@ importers:
       '@types/fontfaceobserver':
         specifier: ^2.1.3
         version: 2.1.3
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4509,6 +4641,9 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4553,6 +4688,9 @@ importers:
       '@testing-library/user-event':
         specifier: ^14.6.1
         version: 14.6.1(@testing-library/dom@10.4.1)
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4690,6 +4828,9 @@ importers:
       '@types/invariant':
         specifier: ^2.2.33
         version: 2.2.37
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4712,6 +4853,9 @@ importers:
       '@types/i18n-js':
         specifier: ^3.8.2
         version: 3.8.9
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4737,6 +4881,9 @@ importers:
         specifier: workspace:^0.10.1
         version: link:../@expo/image-utils
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4749,6 +4896,9 @@ importers:
 
   packages/expo-mail-composer:
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4781,6 +4931,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4800,6 +4953,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4831,36 +4987,27 @@ importers:
 
   packages/expo-module-scripts:
     dependencies:
-      '@babel/cli':
-        specifier: ^7.23.4
-        version: 7.28.6(@babel/core@7.29.0)
-      '@babel/plugin-transform-export-namespace-from':
-        specifier: ^7.23.4
-        version: 7.27.1(@babel/core@7.29.0)
-      '@babel/preset-env':
-        specifier: ^7.23.8
-        version: 7.29.2(@babel/core@7.29.0)
-      '@babel/preset-typescript':
-        specifier: ^7.23.3
-        version: 7.28.5(@babel/core@7.29.0)
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
       '@react-native/jest-preset':
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(react@19.2.3)
+      '@swc-contrib/mut-cjs-exports':
+        specifier: ^14.13.0
+        version: 14.13.0(@swc/core@1.15.18)(@swc/jest@0.2.39(@swc/core@1.15.18))
       '@swc/core':
         specifier: ^1.15.18
         version: 1.15.18
+      '@swc/jest':
+        specifier: ^0.2.39
+        version: 0.2.39(@swc/core@1.15.18)
       '@testing-library/react-native':
         specifier: ^13.3.0
         version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
-      babel-plugin-dynamic-import-node:
-        specifier: ^2.3.3
-        version: 2.3.3
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -4882,9 +5029,6 @@ importers:
       resolve-workspace-root:
         specifier: ^2.0.0
         version: 2.0.1
-      ts-jest:
-        specifier: ~29.4.7
-        version: 29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(typescript@6.0.3)
     devDependencies:
       '@babel/core':
         specifier: ^7.26.0
@@ -4982,6 +5126,9 @@ importers:
         specifier: ^2.8.3
         version: 2.8.3
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -5001,6 +5148,9 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5063,6 +5213,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5333,6 +5486,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5345,6 +5501,9 @@ importers:
 
   packages/expo-secure-store:
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5367,6 +5526,9 @@ importers:
       '@types/invariant':
         specifier: ^2.2.33
         version: 2.2.37
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5413,6 +5575,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5462,6 +5627,9 @@ importers:
       '@expo/plist':
         specifier: workspace:*
         version: link:../@expo/plist
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5493,6 +5661,9 @@ importers:
       '@types/better-sqlite3':
         specifier: ^7.6.6
         version: 7.6.13
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5542,6 +5713,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.3.0
         version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5616,6 +5790,9 @@ importers:
         specifier: '*'
         version: 0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5635,6 +5812,9 @@ importers:
         specifier: workspace:~56.0.0
         version: link:../unimodules-app-loader
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5694,6 +5874,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5737,9 +5920,6 @@ importers:
       jest:
         specifier: ^29.3.1
         version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
-      ts-jest:
-        specifier: ^29.1.2
-        version: 29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(typescript@6.0.3)
 
   packages/expo-ui:
     dependencies:
@@ -5771,6 +5951,9 @@ importers:
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5914,6 +6097,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5942,6 +6128,9 @@ importers:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5967,6 +6156,9 @@ importers:
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -8112,6 +8304,10 @@ packages:
     resolution: {integrity: sha512-4QqS3LY5PBmTRHj9sAg1HLoPzqAI0uOX6wI/TRqHIcOxlFidy6YEmCQJk6FSZjNLGCeubDMfmkWL+qaLKhSGQA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
+  '@jest/create-cache-key-function@30.4.1':
+    resolution: {integrity: sha512-R+xGEtzA95NIsvpXJSROG4t01956dDOt17KpamguY4XOnGvdHNFFXE7Er0C1OAsRjOwiIxpKqOvGlznIGZIQlQ==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
   '@jest/diff-sequences@30.3.0':
     resolution: {integrity: sha512-cG51MVnLq1ecVUaQ3fr6YuuAOitHK1S4WUJHnsPFE/quQr33ADUx1FfrTCpMCRxvy0Yr9BThKpDjSlcTi91tMA==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
@@ -8140,6 +8336,10 @@ packages:
     resolution: {integrity: sha512-mpiz3dutLbkW2MNFubUGUEVLkTGiqW6yLVTA+JbP6fI6J5iL9Y0Nlg8k95pcF8ctKwCS7WVxteBs29hhfAotzQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
+  '@jest/pattern@30.4.0':
+    resolution: {integrity: sha512-RAWn3+f9u8BsHijKJ71uHcFp6vmyEt6VvoWXkl6hKF3qVIuWNmudVjg12DlBPGup/frIl5UcUlH5HfEuvHpEXg==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
   '@jest/reporters@29.7.0':
     resolution: {integrity: sha512-DApq0KJbJOEzAFYjHADNNxAE3KbhxQB1y5Kplb5Waqw6zVbuWatSnMjE5gs8FUgEPmNsnZA3NCWl9NG0ia04Pg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -8155,6 +8355,10 @@ packages:
 
   '@jest/schemas@30.0.5':
     resolution: {integrity: sha512-DmdYgtezMkh3cpU8/1uyXakv3tJRcmcXxBOcO0tbaozPwpmh4YMsnWrQm9ZmZMfa5ocbxzbFk6O4bDPEc/iAnA==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
+  '@jest/schemas@30.4.1':
+    resolution: {integrity: sha512-i6b4qw5qnP8c5FEeBJg/uZQ4ddrkN6Ca8qISJh0pr7a5hfn3h3v5x60BEbOC7OYAGZNMs1LfFLwnW2CuK8F57Q==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   '@jest/source-map@29.6.3':
@@ -8176,6 +8380,10 @@ packages:
   '@jest/types@29.6.3':
     resolution: {integrity: sha512-u3UPsIilWKOM3F9CXtrG8LEJmNxwoCQC/XVj4IKYXvvpx7QIi/Kg1LI5uDmDpKlac62NUtX7eLjRh+jVZcLOzw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+
+  '@jest/types@30.4.1':
+    resolution: {integrity: sha512-f1x/vJXIfjOlEmejYpbkbgw1gOqpPECwMvMEtBqe47j7H2Hg8h8w3o3ikhSXq3MI15kg+oQ0exWO0uCtTNJLoQ==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -9001,6 +9209,12 @@ packages:
       react-native-webview:
         optional: true
 
+  '@swc-contrib/mut-cjs-exports@14.13.0':
+    resolution: {integrity: sha512-m6GILmYD3SGHLm4lhDPsGcUzJwM8VNIIzKMHGICZC+MIXpfLE9/TNUkA8taHeui/MTq7YFIsDxLYOuAJxFmJOA==}
+    peerDependencies:
+      '@swc/core': ^1.10.0
+      '@swc/jest': ^0.2.37
+
   '@swc/core-darwin-arm64@1.15.18':
     resolution: {integrity: sha512-+mIv7uBuSaywN3C9LNuWaX1jJJ3SKfiJuE6Lr3bd+/1Iv8oMU7oLBjYMluX1UrEPzwN2qCdY6Io0yVicABoCwQ==}
     engines: {node: '>=10'}
@@ -9077,6 +9291,12 @@ packages:
   '@swc/counter@0.1.3':
     resolution: {integrity: sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==}
 
+  '@swc/jest@0.2.39':
+    resolution: {integrity: sha512-eyokjOwYd0Q8RnMHri+8/FS1HIrIUKK/sRrFp8c1dThUOfNeCWbLmBP1P5VsKdvmkd25JaH+OKYwEYiAYg9YAA==}
+    engines: {npm: '>= 7.0.0'}
+    peerDependencies:
+      '@swc/core': '*'
+
   '@swc/types@0.1.25':
     resolution: {integrity: sha512-iAoY/qRhNH8a/hBvm3zKj9qQ4oc2+3w1unPJa2XvTK3XjeLXtzcCingVPw/9e5mn1+0yPqxcBGp9Jf0pkfMb1g==}
 
@@ -9140,9 +9360,6 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
-
-  '@tsconfig/node22@22.0.5':
-    resolution: {integrity: sha512-hLf2ld+sYN/BtOJjHUWOk568dvjFQkHnLNa6zce25GIH+vxKfvTgm3qpaH6ToF5tu/NN0IH66s+Bb5wElHrLcw==}
 
   '@tsd/typescript@5.9.3':
     resolution: {integrity: sha512-JSSdNiS0wgd8GHhBwnMAI18Y8XPhLVN+dNelPfZCXFhy9Lb3NbnFyp9JKxxr54jSUkEJPk3cidvCoHducSaRMQ==}
@@ -9495,6 +9712,9 @@ packages:
 
   '@types/react@19.2.14':
     resolution: {integrity: sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==}
+
+  '@types/require-from-string@1.2.3':
+    resolution: {integrity: sha512-kxLU5xvefySGpp1Z7VCt4m5AhQJUZ8HjW8ADdeS7GieqFPHLAde007fd9bxeXEsFXyaA0LeWIoQXyXP17mGpIg==}
 
   '@types/resolve@1.20.6':
     resolution: {integrity: sha512-A4STmOXPhMUtHH+S6ymgE2GiBSMqf4oTvcQZMcHzokuTLVYzXTB8ttjcgxOVaAp2lGwEdzZ0J+cRbbeevQj1UQ==}
@@ -10060,9 +10280,6 @@ packages:
     peerDependencies:
       '@babel/core': ^7.8.0
 
-  babel-plugin-dynamic-import-node@2.3.3:
-    resolution: {integrity: sha512-jZVI+s9Zg3IqA/kdi0i6UDCybUI3aSBLnglhYbSSjKlV7yF1F/5LWv8MakQmvYpnbJDS6fcBL2KzHSxNCMtWSQ==}
-
   babel-plugin-istanbul@6.1.1:
     resolution: {integrity: sha512-Y1IQok9821cC9onCx5otgFfRm7Lm+I+wwxOx738M/WLPZ9Q42m4IG5W0FNX8WLL2gYMZo3JkuXIH2DOpWM+qwA==}
     engines: {node: '>=8'}
@@ -10212,10 +10429,6 @@ packages:
     resolution: {integrity: sha512-48xSriZYYg+8qXna9kwqjIVzuQxi+KYWp2+5nCYnYKPTr0LvD89Jqk2Or5ogxz0NUMfIjhh2lIUX/LyX9B4oIg==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
-
-  bs-logger@0.2.6:
-    resolution: {integrity: sha512-pd8DCoxmbgc7hyPKOvxtqNcjYoOsABPQdcCUjGp3d42VR2CX1ORhk2A87oqqu5R1kk+76nsxZupkmyd+MVtCog==}
-    engines: {node: '>= 6'}
 
   bser@2.1.1:
     resolution: {integrity: sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==}
@@ -11748,11 +11961,6 @@ packages:
     resolution: {integrity: sha512-BL/Xd/T9baO6NFzoMpiMD7YUZ62R6viR5tp/MULVEnbYJXZA//kRNW7J0j1w/wXArgL0sCxhDfK5dczSKn3+cg==}
     engines: {node: '>= 10.x'}
 
-  handlebars@4.7.9:
-    resolution: {integrity: sha512-4E71E0rpOaQuJR2A3xDZ+GM1HyWYv1clR58tC8emQNeQe3RH7MAzSbat+V0wG78LQBo6m6bzSG/L4pBuCsgnUQ==}
-    engines: {node: '>=0.4.7'}
-    hasBin: true
-
   hard-rejection@2.1.0:
     resolution: {integrity: sha512-VIZB+ibDhx7ObhAe7OVtoEbuP4h/MuOTHJ+J8h/eBXotJYl0fBgR72xDFCKgIh22OJZIOVNxBMWuhAr10r8HdA==}
     engines: {node: '>=6'}
@@ -12371,6 +12579,10 @@ packages:
     resolution: {integrity: sha512-KJJBsRCyyLNWCNBOvZyRDnAIfUiRJ8v+hOBQYGn8gDyF3UegwiP4gwRR3/SDa42g1YbVycTidUF3rKjyLFDWbg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
+  jest-regex-util@30.4.0:
+    resolution: {integrity: sha512-mWlvLviKIgIQ8VCuM1xRdD0TWp3zlzionlmDBjuXVBs+VkmXq6FgW9T4Emr7oGz/Rk6feDCGyiugolcQEyp3mg==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
   jest-resolve-dependencies@29.7.0:
     resolution: {integrity: sha512-un0zD/6qxJ+S0et7WxeI3H5XSe9lTBBR7bOHCHXkKR6luG5mwDDlIzVQ0V5cZCuoTgEdcdwzTghYkTWfubi+nA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -12531,6 +12743,9 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
+
+  jsonc-parser@3.3.1:
+    resolution: {integrity: sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ==}
 
   jsondiffpatch@0.4.1:
     resolution: {integrity: sha512-t0etAxTUk1w5MYdNOkZBZ8rvYYN5iL+2dHCCx/DpkFm/bW28M6y5nUS83D4XdZiHy35Fpaw6LBb+F88fHZnVCw==}
@@ -12731,9 +12946,6 @@ packages:
 
   lodash.keysin@3.0.8:
     resolution: {integrity: sha512-YDB/5xkL3fBKFMDaC+cfGV00pbiJ6XoJIfRmBhv7aR6wWtbCW6IzkiWnTfkiHTF6ALD7ff83dAtB3OEaSoyQPg==}
-
-  lodash.memoize@4.1.2:
-    resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -14889,33 +15101,6 @@ packages:
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
-  ts-jest@29.4.9:
-    resolution: {integrity: sha512-LTb9496gYPMCqjeDLdPrKuXtncudeV1yRZnF4Wo5l3SFi0RYEnYRNgMrFIdg+FHvfzjCyQk1cLncWVqiSX+EvQ==}
-    engines: {node: ^14.15.0 || ^16.10.0 || ^18.0.0 || >=20.0.0}
-    hasBin: true
-    peerDependencies:
-      '@babel/core': '>=7.0.0-beta.0 <8'
-      '@jest/transform': ^29.0.0 || ^30.0.0
-      '@jest/types': ^29.0.0 || ^30.0.0
-      babel-jest: ^29.0.0 || ^30.0.0
-      esbuild: '*'
-      jest: ^29.0.0 || ^30.0.0
-      jest-util: ^29.0.0 || ^30.0.0
-      typescript: '>=4.3 <7'
-    peerDependenciesMeta:
-      '@babel/core':
-        optional: true
-      '@jest/transform':
-        optional: true
-      '@jest/types':
-        optional: true
-      babel-jest:
-        optional: true
-      esbuild:
-        optional: true
-      jest-util:
-        optional: true
-
   ts-node@10.9.2:
     resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
     hasBin: true
@@ -15003,10 +15188,6 @@ packages:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
 
-  type-fest@4.41.0:
-    resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
-    engines: {node: '>=16'}
-
   type-fest@5.4.4:
     resolution: {integrity: sha512-JnTrzGu+zPV3aXIUhnyWJj4z/wigMsdYajGLIYakqyOW1nPllzXEJee0QQbHj+CTIQtXGlAjuK0UY+2xTyjVAw==}
     engines: {node: '>=20'}
@@ -15070,11 +15251,6 @@ packages:
 
   uglify-js@2.8.29:
     resolution: {integrity: sha512-qLq/4y2pjcU3vhlhseXGGJ7VbFO4pBANu0kwl8VCa9KEI0V8VfZIx2Fy3w01iSTA/pGwKZSmu/+I4etLNDdt5w==}
-    engines: {node: '>=0.8.0'}
-    hasBin: true
-
-  uglify-js@3.19.3:
-    resolution: {integrity: sha512-v3Xu+yuwBXisp6QYTcH4UbH+xYJXqnq2m/LtQVWKWzYc1iehYnLixoQDN9FH6/j9/oybfd6W9Ghwkl8+UMKTKQ==}
     engines: {node: '>=0.8.0'}
     hasBin: true
 
@@ -15543,9 +15719,6 @@ packages:
     resolution: {integrity: sha512-xSBsCeh+g+dinoBv3GAOWM4LcVVO68wLXRanibtBSdUvkGWQRGeE9P7IwU9EmDDi4jA6L44lz15CGMwdw9N5+Q==}
     engines: {node: '>=0.4.0'}
 
-  wordwrap@1.0.0:
-    resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
-
   workerd@1.20260317.1:
     resolution: {integrity: sha512-ZuEq1OdrJBS+NV+L5HMYPCzVn49a2O60slQiiLpG44jqtlOo+S167fWC76kEXteXLLLydeuRrluRel7WdOUa4g==}
     engines: {node: '>=16'}
@@ -15914,16 +16087,19 @@ snapshots:
       '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/plugin-bugfix-safari-class-field-initializer-scope@7.27.1(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression@7.27.1(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining@7.27.1(@babel/core@7.29.0)':
     dependencies:
@@ -15933,6 +16109,7 @@ snapshots:
       '@babel/plugin-transform-optional-chaining': 7.28.6(@babel/core@7.29.0)
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/plugin-bugfix-v8-static-class-fields-redefine-readonly@7.28.6(@babel/core@7.29.0)':
     dependencies:
@@ -15941,6 +16118,7 @@ snapshots:
       '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/plugin-proposal-decorators@7.29.0(@babel/core@7.29.0)':
     dependencies:
@@ -15959,6 +16137,7 @@ snapshots:
   '@babel/plugin-proposal-private-property-in-object@7.21.0-placeholder-for-preset-env.2(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
+    optional: true
 
   '@babel/plugin-syntax-async-generators@7.8.4(@babel/core@7.29.0)':
     dependencies:
@@ -16004,6 +16183,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-syntax-import-attributes@7.28.6(@babel/core@7.29.0)':
     dependencies:
@@ -16075,6 +16255,7 @@ snapshots:
       '@babel/core': 7.29.0
       '@babel/helper-create-regexp-features-plugin': 7.28.5(@babel/core@7.29.0)
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-arrow-functions@7.27.1(@babel/core@7.29.0)':
     dependencies:
@@ -16103,6 +16284,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-block-scoping@7.28.6(@babel/core@7.29.0)':
     dependencies:
@@ -16142,6 +16324,7 @@ snapshots:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/template': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-destructuring@7.28.5(@babel/core@7.29.0)':
     dependencies:
@@ -16156,22 +16339,26 @@ snapshots:
       '@babel/core': 7.29.0
       '@babel/helper-create-regexp-features-plugin': 7.28.5(@babel/core@7.29.0)
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-duplicate-keys@7.27.1(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-duplicate-named-capturing-groups-regex@7.29.0(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-create-regexp-features-plugin': 7.28.5(@babel/core@7.29.0)
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-dynamic-import@7.27.1(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-explicit-resource-management@7.28.6(@babel/core@7.29.0)':
     dependencies:
@@ -16180,11 +16367,13 @@ snapshots:
       '@babel/plugin-transform-destructuring': 7.28.5(@babel/core@7.29.0)
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/plugin-transform-exponentiation-operator@7.28.6(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-export-namespace-from@7.27.1(@babel/core@7.29.0)':
     dependencies:
@@ -16213,16 +16402,19 @@ snapshots:
       '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/plugin-transform-json-strings@7.28.6(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-literals@7.27.1(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-logical-assignment-operators@7.28.6(@babel/core@7.29.0)':
     dependencies:
@@ -16233,6 +16425,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-modules-amd@7.27.1(@babel/core@7.29.0)':
     dependencies:
@@ -16241,6 +16434,7 @@ snapshots:
       '@babel/helper-plugin-utils': 7.28.6
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/plugin-transform-modules-commonjs@7.28.6(@babel/core@7.29.0)':
     dependencies:
@@ -16259,6 +16453,7 @@ snapshots:
       '@babel/traverse': 7.29.0
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/plugin-transform-modules-umd@7.27.1(@babel/core@7.29.0)':
     dependencies:
@@ -16267,6 +16462,7 @@ snapshots:
       '@babel/helper-plugin-utils': 7.28.6
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/plugin-transform-named-capturing-groups-regex@7.29.0(@babel/core@7.29.0)':
     dependencies:
@@ -16278,6 +16474,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-nullish-coalescing-operator@7.28.6(@babel/core@7.29.0)':
     dependencies:
@@ -16288,6 +16485,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-object-rest-spread@7.28.6(@babel/core@7.29.0)':
     dependencies:
@@ -16307,6 +16505,7 @@ snapshots:
       '@babel/helper-replace-supers': 7.28.6(@babel/core@7.29.0)
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/plugin-transform-optional-catch-binding@7.28.6(@babel/core@7.29.0)':
     dependencies:
@@ -16347,6 +16546,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-react-display-name@7.28.0(@babel/core@7.29.0)':
     dependencies:
@@ -16397,11 +16597,13 @@ snapshots:
       '@babel/core': 7.29.0
       '@babel/helper-create-regexp-features-plugin': 7.28.5(@babel/core@7.29.0)
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-reserved-words@7.27.1(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-runtime@7.29.0(@babel/core@7.29.0)':
     dependencies:
@@ -16427,11 +16629,13 @@ snapshots:
       '@babel/helper-skip-transparent-expression-wrappers': 7.27.1
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/plugin-transform-sticky-regex@7.27.1(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-template-literals@7.27.1(@babel/core@7.29.0)':
     dependencies:
@@ -16442,6 +16646,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-typescript@7.28.6(@babel/core@7.29.0)':
     dependencies:
@@ -16458,12 +16663,14 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-unicode-property-regex@7.28.6(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-create-regexp-features-plugin': 7.28.5(@babel/core@7.29.0)
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/plugin-transform-unicode-regex@7.27.1(@babel/core@7.29.0)':
     dependencies:
@@ -16476,6 +16683,7 @@ snapshots:
       '@babel/core': 7.29.0
       '@babel/helper-create-regexp-features-plugin': 7.28.5(@babel/core@7.29.0)
       '@babel/helper-plugin-utils': 7.28.6
+    optional: true
 
   '@babel/preset-env@7.29.2(@babel/core@7.29.0)':
     dependencies:
@@ -16552,6 +16760,7 @@ snapshots:
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/preset-flow@7.27.1(@babel/core@7.29.0)':
     dependencies:
@@ -16566,6 +16775,7 @@ snapshots:
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/types': 7.29.0
       esutils: 2.0.3
+    optional: true
 
   '@babel/preset-typescript@7.28.5(@babel/core@7.29.0)':
     dependencies:
@@ -17637,6 +17847,10 @@ snapshots:
     dependencies:
       '@jest/types': 29.6.3
 
+  '@jest/create-cache-key-function@30.4.1':
+    dependencies:
+      '@jest/types': 30.4.1
+
   '@jest/diff-sequences@30.3.0': {}
 
   '@jest/environment@29.7.0':
@@ -17677,6 +17891,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@jest/pattern@30.4.0':
+    dependencies:
+      '@types/node': 22.19.15
+      jest-regex-util: 30.4.0
+
   '@jest/reporters@29.7.0':
     dependencies:
       '@bcoe/v8-coverage': 0.2.3
@@ -17711,6 +17930,10 @@ snapshots:
       '@sinclair/typebox': 0.27.10
 
   '@jest/schemas@30.0.5':
+    dependencies:
+      '@sinclair/typebox': 0.34.48
+
+  '@jest/schemas@30.4.1':
     dependencies:
       '@sinclair/typebox': 0.34.48
 
@@ -17757,6 +17980,16 @@ snapshots:
   '@jest/types@29.6.3':
     dependencies:
       '@jest/schemas': 29.6.3
+      '@types/istanbul-lib-coverage': 2.0.6
+      '@types/istanbul-reports': 3.0.4
+      '@types/node': 22.19.15
+      '@types/yargs': 17.0.35
+      chalk: 4.1.2
+
+  '@jest/types@30.4.1':
+    dependencies:
+      '@jest/pattern': 30.4.0
+      '@jest/schemas': 30.4.1
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
       '@types/node': 22.19.15
@@ -18707,6 +18940,11 @@ snapshots:
       expo: link:packages/expo
       react-native-webview: 13.16.1(react-native@0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
 
+  '@swc-contrib/mut-cjs-exports@14.13.0(@swc/core@1.15.18)(@swc/jest@0.2.39(@swc/core@1.15.18))':
+    dependencies:
+      '@swc/core': 1.15.18
+      '@swc/jest': 0.2.39(@swc/core@1.15.18)
+
   '@swc/core-darwin-arm64@1.15.18':
     optional: true
 
@@ -18754,6 +18992,13 @@ snapshots:
       '@swc/core-win32-x64-msvc': 1.15.18
 
   '@swc/counter@0.1.3': {}
+
+  '@swc/jest@0.2.39(@swc/core@1.15.18)':
+    dependencies:
+      '@jest/create-cache-key-function': 30.4.1
+      '@swc/core': 1.15.18
+      '@swc/counter': 0.1.3
+      jsonc-parser: 3.3.1
 
   '@swc/types@0.1.25':
     dependencies:
@@ -18818,8 +19063,6 @@ snapshots:
   '@tsconfig/node14@1.0.3': {}
 
   '@tsconfig/node16@1.0.4': {}
-
-  '@tsconfig/node22@22.0.5': {}
 
   '@tsd/typescript@5.9.3': {}
 
@@ -19205,6 +19448,8 @@ snapshots:
   '@types/react@19.2.14':
     dependencies:
       csstype: 3.2.3
+
+  '@types/require-from-string@1.2.3': {}
 
   '@types/resolve@1.20.6': {}
 
@@ -19811,10 +20056,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  babel-plugin-dynamic-import-node@2.3.3:
-    dependencies:
-      object.assign: 4.1.7
-
   babel-plugin-istanbul@6.1.1:
     dependencies:
       '@babel/helper-plugin-utils': 7.28.6
@@ -19864,6 +20105,7 @@ snapshots:
       core-js-compat: 3.49.0
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   babel-plugin-polyfill-regenerator@0.6.8(@babel/core@7.29.0):
     dependencies:
@@ -20029,10 +20271,6 @@ snapshots:
       electron-to-chromium: 1.5.330
       node-releases: 2.0.36
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
-
-  bs-logger@0.2.6:
-    dependencies:
-      fast-json-stable-stringify: 2.1.0
 
   bser@2.1.1:
     dependencies:
@@ -21878,15 +22116,6 @@ snapshots:
 
   graphql@15.10.1: {}
 
-  handlebars@4.7.9:
-    dependencies:
-      minimist: 1.2.8
-      neo-async: 2.6.2
-      source-map: 0.6.1
-      wordwrap: 1.0.0
-    optionalDependencies:
-      uglify-js: 3.19.3
-
   hard-rejection@2.1.0: {}
 
   has-bigints@1.1.0: {}
@@ -22596,6 +22825,8 @@ snapshots:
 
   jest-regex-util@29.6.3: {}
 
+  jest-regex-util@30.4.0: {}
+
   jest-resolve-dependencies@29.7.0:
     dependencies:
       jest-regex-util: 29.6.3
@@ -22894,6 +23125,8 @@ snapshots:
 
   json5@2.2.3: {}
 
+  jsonc-parser@3.3.1: {}
+
   jsondiffpatch@0.4.1:
     dependencies:
       chalk: 2.4.2
@@ -23072,8 +23305,6 @@ snapshots:
     dependencies:
       lodash.isarguments: 3.1.0
       lodash.isarray: 3.0.4
-
-  lodash.memoize@4.1.2: {}
 
   lodash.merge@4.6.2: {}
 
@@ -25495,26 +25726,6 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-jest@29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(typescript@6.0.3):
-    dependencies:
-      bs-logger: 0.2.6
-      fast-json-stable-stringify: 2.1.0
-      handlebars: 4.7.9
-      jest: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
-      json5: 2.2.3
-      lodash.memoize: 4.1.2
-      make-error: 1.3.6
-      semver: 7.7.4
-      type-fest: 4.41.0
-      typescript: 6.0.3
-      yargs-parser: 21.1.1
-    optionalDependencies:
-      '@babel/core': 7.29.0
-      '@jest/transform': 29.7.0
-      '@jest/types': 29.6.3
-      babel-jest: 29.7.0(@babel/core@7.29.0)
-      jest-util: 29.7.0
-
   ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
@@ -25605,8 +25816,6 @@ snapshots:
   type-fest@0.7.1: {}
 
   type-fest@0.8.1: {}
-
-  type-fest@4.41.0: {}
 
   type-fest@5.4.4:
     dependencies:
@@ -25705,9 +25914,6 @@ snapshots:
       yargs: 3.10.0
     optionalDependencies:
       uglify-to-browserify: 1.0.2
-
-  uglify-js@3.19.3:
-    optional: true
 
   uglify-to-browserify@1.0.2:
     optional: true
@@ -26296,8 +26502,6 @@ snapshots:
   word-wrap@1.2.5: {}
 
   wordwrap@0.0.2: {}
-
-  wordwrap@1.0.0: {}
 
   workerd@1.20260317.1:
     optionalDependencies:

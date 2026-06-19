@@ -9,10 +9,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
@@ -23,9 +23,10 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/image/",
   "repository": {
@@ -42,6 +43,7 @@
     "sf-symbols-typescript": "^2.2.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",

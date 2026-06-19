@@ -3,7 +3,6 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import { LinearGradient } from '../LinearGradient';
 import { getLinearGradientBackgroundImage } from '../NativeLinearGradient.web';

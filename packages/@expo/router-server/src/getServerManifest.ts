@@ -47,7 +47,7 @@ type GetServerManifestOptions = {
 // Given a nested route tree, return a flattened array of all routes that can be matched.
 export function getServerManifest(
   route: RouteNode | null,
-  options: GetServerManifestOptions | undefined
+  options?: GetServerManifestOptions
 ): RoutesManifest<string> {
   function getFlatNodes(route: RouteNode, parentRoute: string = ''): FlatNode[] {
     // Use a recreated route instead of contextKey because we duplicate nodes to support array syntax.

@@ -11,10 +11,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
@@ -24,8 +24,9 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "echo \"Tests can only be run on MacOS with sourceKitten installed. Run tests locally instead using local-test script.\"",
-    "local-test": "NODE_OPTIONS=\"--experimental-vm-modules\" expo-module test",
-    "expo-module": "expo-module"
+    "local-test": "NODE_OPTIONS=\"--experimental-vm-modules\" jest",
+    "expo-module": "expo-module",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {
     "expo-type-information": "./bin/cli.js"
@@ -52,7 +53,6 @@
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
-    "jest": "^29.3.1",
-    "ts-jest": "^29.1.2"
+    "jest": "^29.3.1"
   }
 }

@@ -133,7 +133,7 @@ describe(getMiddlewareForDirectory, () => {
   });
 
   describe('in development', () => {
-    let originalEnv: string;
+    let originalEnv: typeof process.env.NODE_ENV;
     beforeAll(() => {
       originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
@@ -174,7 +174,7 @@ describe(getMiddlewareForDirectory, () => {
   });
 
   describe('in production', () => {
-    let originalEnv: string;
+    let originalEnv: typeof process.env.NODE_ENV;
     beforeAll(() => {
       originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';

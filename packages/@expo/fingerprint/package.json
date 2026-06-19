@@ -10,13 +10,12 @@
     "build:cli": "expo-build --base cli cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "pretest:e2e": "expo-module prepublishOnly",
-    "test:e2e": "expo-module test --config e2e/jest.config.js",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch"
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "bin": {
     "fingerprint": "bin/cli.js"
@@ -62,10 +61,12 @@
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.5.8",
     "@types/node": "^22.14.0",
+    "@types/require-from-string": "^1.2.3",
     "@expo/config": "workspace:~55.0.8",
     "@expo/require-utils": "workspace:~55.0.2",
     "expo-module-scripts": "workspace:*",
     "expo-splash-screen": "workspace:*",
+    "memfs": "^3.2.0",
     "require-from-string": "^2.0.2",
     "temp-dir": "^2.0.0"
   }

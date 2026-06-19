@@ -9,10 +9,10 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "test:e2e": "expo-module clean && expo-module tsc && expo-module test --config e2e/jest.config.js",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch"
+    "test": "jest",
+    "pretest:e2e": "pnpm run build",
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {
     "patch-project": "bin/cli.js"

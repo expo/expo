@@ -13,34 +13,34 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./types": {
       "types": {
-        "source": "./src/types.ts",
+        "expo-source": "./src/types.ts",
         "default": "./build/types.d.ts"
       },
-      "source": "./src/types.ts",
+      "expo-source": "./src/types.ts",
       "default": "./build/types.js"
     },
     "./src/polyfill/dangerous-internal": {
       "types": {
-        "source": "./src/polyfill/dangerous-internal.ts",
+        "expo-source": "./src/polyfill/dangerous-internal.ts",
         "default": "./build/polyfill/dangerous-internal.d.ts"
       },
-      "source": "./src/polyfill/dangerous-internal.ts",
+      "expo-source": "./src/polyfill/dangerous-internal.ts",
       "default": "./build/polyfill/dangerous-internal.js"
     },
     "./src/uuid": {
       "types": {
-        "source": "./src/uuid/index.ts",
+        "expo-source": "./src/uuid/index.ts",
         "default": "./build/uuid/index.d.ts"
       },
-      "source": "./src/uuid/index.ts",
+      "expo-source": "./src/uuid/index.ts",
       "default": "./build/uuid/index.js"
     },
     "./package.json": "./package.json"
@@ -49,10 +49,11 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "test:rsc": "jest --config jest-rsc.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "expo",

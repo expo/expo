@@ -9,17 +9,17 @@
     ".": {
       "react-server": {
         "types": {
-          "source": "./src/Constants.server.ts",
+          "expo-source": "./src/Constants.server.ts",
           "default": "./build/Constants.server.d.ts"
         },
-        "source": "./src/Constants.server.ts",
+        "expo-source": "./src/Constants.server.ts",
         "default": "./build/Constants.server.js"
       },
       "types": {
-        "source": "./src/Constants.ts",
+        "expo-source": "./src/Constants.ts",
         "default": "./build/Constants.d.ts"
       },
-      "source": "./src/Constants.ts",
+      "expo-source": "./src/Constants.ts",
       "default": "./build/Constants.js"
     },
     "./package.json": "./package.json"
@@ -28,9 +28,10 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",

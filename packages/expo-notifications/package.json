@@ -13,8 +13,9 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -34,13 +35,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/notifications/",
-  "jest": {
-    "projects": [
-      {
-        "preset": "jest-expo/ios"
-      }
-    ]
-  },
   "dependencies": {
     "@expo/image-utils": "workspace:^0.10.1",
     "abort-controller": "^3.0.0",
@@ -49,6 +43,7 @@
     "expo-constants": "workspace:~56.0.16"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",

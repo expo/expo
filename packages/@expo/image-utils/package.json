@@ -9,11 +9,10 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "expo-module prepublishOnly",
-    "test": "expo-module test",
+    "test": "jest",
     "pretest:e2e": "expo-module prepublishOnly",
-    "test:e2e": "expo-module test --config e2e/jest.config.js",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch --preserveWatchOutput"
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",

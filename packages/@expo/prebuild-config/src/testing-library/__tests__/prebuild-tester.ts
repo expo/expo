@@ -1,11 +1,11 @@
 import './expect';
 
-import { withInternal } from '@expo/config/build/plugins/withInternal';
 import {
   AndroidConfig,
   compileModsAsync as compileInternalModsAsync,
   type ExportedConfig,
   IOSConfig,
+  type StaticPlugin,
   withPlugins,
 } from '@expo/config-plugins';
 import { getInfoPlistPathFromPbxproj } from '@expo/config-plugins/build/ios/utils/getInfoPlistPath';
@@ -25,7 +25,7 @@ jest.mock('fs');
 
 export function getPrebuildConfig(exp: ExpoConfig): ExportedConfig {
   // let config = exp;
-  let config = withPlugins(exp, exp.plugins ?? []);
+  let config = withPlugins(exp, (exp.plugins ?? []) as (string | StaticPlugin)[]);
 
   config = withVersionedExpoSDKPlugins(config);
 
@@ -34,6 +34,7 @@ export function getPrebuildConfig(exp: ExpoConfig): ExportedConfig {
   });
   config = withAndroidExpoPlugins(config, {
     package: config.android?.package ?? 'com.bacon.todo',
+    projectRoot: config._internal?.projectRoot ?? '',
   });
   return config;
 }
@@ -68,11 +69,13 @@ export function compileModsAsync(
   props: Parameters<typeof compileInternalModsAsync>[1]
 ): Promise<ExportedConfig> {
   let config = ensureConfigRequired(exp);
-  config = withInternal(config as any, {
+  // Mirror `@expo/config`'s internal `withInternal` plugin, which is not part of its
+  // public API. It seeds the `_internal` object that the mod pipeline relies on.
+  config._internal = {
+    ...config._internal,
     projectRoot: props.projectRoot,
-    // ...(paths ?? {}),
     packageJsonPath: path.join(props.projectRoot, 'package.json'),
-  });
+  };
   config = getPrebuildConfig(config);
 
   return compileInternalModsAsync(config, props);
@@ -114,12 +117,11 @@ export function getInfoPlistPathLikePrebuild(config: ExpoConfig): string {
     //: MyApp/Info.plist
     infoPlistBuildProperty
   );
-  if (fs.existsSync(infoPlistPath)) {
-    return infoPlistPath;
+  if (!fs.existsSync(infoPlistPath)) {
+    throw new Error(
+      `Info.plist file linked to Xcode project does not exist: ${infoPlistPath}`
+    );
   }
 
-  console.warn(
-    'mods.ios.infoPlist',
-    `Info.plist file linked to Xcode project does not exist: ${infoPlistPath}`
-  );
+  return infoPlistPath;
 }

@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
@@ -22,7 +22,8 @@
     "build": "expo-build src",
     "clean": "rimraf build",
     "lint": "expo-module lint",
-    "prepublishOnly": "run-s clean build"
+    "prepublishOnly": "run-s clean build",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {},
   "devDependencies": {

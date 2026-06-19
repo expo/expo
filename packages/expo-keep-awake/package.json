@@ -7,18 +7,18 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./*": {
       "types": {
-        "source": "./src/*.ts",
+        "expo-source": "./src/*.ts",
         "default": "./build/*.d.ts"
       },
-      "source": "./src/*.ts",
+      "expo-source": "./src/*.ts",
       "default": "./build/*.js"
     },
     "./package.json": "./package.json"
@@ -28,9 +28,10 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",

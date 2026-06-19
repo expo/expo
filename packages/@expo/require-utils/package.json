@@ -8,10 +8,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
@@ -25,8 +25,8 @@
     "lint": "expo-module lint",
     "generate": "node ./scripts/generate.js",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck"
+    "test": "jest",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/require-utils#readme",
   "repository": {

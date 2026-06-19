@@ -15,6 +15,6 @@ describe('logger', () => {
     logger.setEnableLogging(true);
     logger.info('test logging');
     expect(spyLog).toHaveBeenCalled();
-    expect(spyLog.mock.calls[0][0]).toBe('test logging');
+    expect(spyLog.mock.calls[0]![0]).toBe('test logging');
   });
 });

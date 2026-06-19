@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/Crypto.ts",
+        "expo-source": "./src/Crypto.ts",
         "default": "./build/Crypto.d.ts"
       },
-      "source": "./src/Crypto.ts",
+      "expo-source": "./src/Crypto.ts",
       "default": "./build/Crypto.js"
     },
     "./package.json": "./package.json"
@@ -20,8 +20,9 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",

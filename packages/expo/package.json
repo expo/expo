@@ -18,10 +18,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/Expo.ts",
+        "expo-source": "./src/Expo.ts",
         "default": "./build/Expo.d.ts"
       },
-      "source": "./src/Expo.ts",
+      "expo-source": "./src/Expo.ts",
       "default": "./build/Expo.js"
     },
     "./types": {
@@ -30,18 +30,18 @@
     },
     "./internal/async-require-module": {
       "types": {
-        "source": "./src/async-require/asyncRequireModule.ts",
+        "expo-source": "./src/async-require/asyncRequireModule.ts",
         "default": "./build/async-require/asyncRequireModule.d.ts"
       },
-      "source": "./src/async-require/asyncRequireModule.ts",
+      "expo-source": "./src/async-require/asyncRequireModule.ts",
       "default": "./build/async-require/asyncRequireModule.js"
     },
     "./internal/install-global": {
       "types": {
-        "source": "./src/winter/installGlobal.ts",
+        "expo-source": "./src/winter/installGlobal.ts",
         "default": "./build/winter/installGlobal.d.ts"
       },
-      "source": "./src/winter/installGlobal.ts",
+      "expo-source": "./src/winter/installGlobal.ts",
       "default": "./build/winter/installGlobal.js"
     },
     "./internal/*": {
@@ -50,34 +50,34 @@
     },
     "./dom": {
       "types": {
-        "source": "./src/dom/dom.ts",
+        "expo-source": "./src/dom/dom.ts",
         "default": "./build/dom/dom.d.ts"
       },
-      "source": "./src/dom/dom.ts",
+      "expo-source": "./src/dom/dom.ts",
       "default": "./build/dom/dom.js"
     },
     "./dom/global": {
       "types": {
-        "source": "./src/dom/global-events.ts",
+        "expo-source": "./src/dom/global-events.ts",
         "default": "./build/dom/global-events.d.ts"
       },
-      "source": "./src/dom/global-events.ts",
+      "expo-source": "./src/dom/global-events.ts",
       "default": "./build/dom/global-events.js"
     },
     "./dom/internal": {
       "types": {
-        "source": "./src/dom/internal.ts",
+        "expo-source": "./src/dom/internal.ts",
         "default": "./build/dom/internal.d.ts"
       },
-      "source": "./src/dom/internal.ts",
+      "expo-source": "./src/dom/internal.ts",
       "default": "./build/dom/internal.js"
     },
     "./fetch": {
       "types": {
-        "source": "./src/winter/fetch/index.ts",
+        "expo-source": "./src/winter/fetch/index.ts",
         "default": "./build/winter/fetch/index.d.ts"
       },
-      "source": "./src/winter/fetch/index.ts",
+      "expo-source": "./src/winter/fetch/index.ts",
       "default": "./build/winter/fetch/index.js"
     },
     "./config": {
@@ -90,26 +90,26 @@
     },
     "./src/winter": {
       "types": {
-        "source": "./src/winter/index.ts",
+        "expo-source": "./src/winter/index.ts",
         "default": "./build/winter/index.d.ts"
       },
-      "source": "./src/winter/index.ts",
+      "expo-source": "./src/winter/index.ts",
       "default": "./build/winter/index.js"
     },
     "./src/*.ts": {
       "types": {
-        "source": "./src/*.ts",
+        "expo-source": "./src/*.ts",
         "default": "./build/*.d.ts"
       },
-      "source": "./src/*.ts",
+      "expo-source": "./src/*.ts",
       "default": "./build/*.js"
     },
     "./src/*": {
       "types": {
-        "source": "./src/*.ts",
+        "expo-source": "./src/*.ts",
         "default": "./build/*.d.ts"
       },
-      "source": "./src/*.ts",
+      "expo-source": "./src/*.ts",
       "default": "./build/*.js"
     },
     "./dom/entry.js": "./dom/entry.js",
@@ -170,7 +170,8 @@
     "clean": "rimraf build",
     "lint": "eslint src",
     "test": "jest",
-    "prepublishOnly": "run-s clean build"
+    "prepublishOnly": "run-s clean build",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "jest": {
     "preset": "../expo-module-scripts/jest-preset.cjs"

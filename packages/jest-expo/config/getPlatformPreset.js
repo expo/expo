@@ -3,6 +3,7 @@
 const { getBareExtensions } = require('./extensions');
 const { withWatchPlugins } = require('./withWatchPlugins');
 const expoPreset = require('../jest-preset');
+const { resolveBabelOptions } = require('../src/resolveBabelOptions');
 
 function getUpstreamBabelJest(transform) {
   const upstreamBabelJest = Object.keys(transform).find((key) =>
@@ -40,6 +41,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   });
 
   const upstreamBabelJest = getUpstreamBabelJest(expoPreset.transform) ?? '\\.[jt]sx?$';
+  const babelJestOptions = resolveBabelOptions(process.cwd());
 
   if (isReactServer && displayOptions && displayOptions.name) {
     displayOptions.name = `rsc/${extensions[0]}`;
@@ -51,6 +53,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
       [upstreamBabelJest]: [
         'babel-jest',
         {
+          ...babelJestOptions,
           caller: {
             name: 'metro',
             bundler: 'metro',
@@ -89,12 +92,12 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   preset.testEnvironmentOptions ??= {};
   if (!preset.testEnvironmentOptions.customExportConditions) {
     preset.testEnvironmentOptions.customExportConditions = isServer
-      ? ['node', 'require', 'source']
+      ? ['node', 'require', 'expo-source']
       : platform === 'web'
-        ? ['browser', 'source']
-        : ['react-native', 'source'];
-  } else if (!preset.testEnvironmentOptions.customExportConditions.includes('source')) {
-    preset.testEnvironmentOptions.customExportConditions.push('source');
+        ? ['browser', 'expo-source']
+        : ['react-native', 'expo-source'];
+  } else if (!preset.testEnvironmentOptions.customExportConditions.includes('expo-source')) {
+    preset.testEnvironmentOptions.customExportConditions.push('expo-source');
   }
   preset.moduleNameMapper = {
     // Source exports can contain TypeScript files that use explicit `.js`
@@ -123,7 +126,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
       'node',
       'require',
       'react-server',
-      'source',
+      'expo-source',
       'workerd',
     ];
   }

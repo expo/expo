@@ -27,9 +27,8 @@
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
-    "test": "expo-module test",
-    "watch": "pnpm run build -w",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "engines": {
@@ -54,6 +53,7 @@
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "ignore": "^5.3.2",
+    "memfs": "^3.2.0",
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",
     "resolve-workspace-root": "^2.0.0",

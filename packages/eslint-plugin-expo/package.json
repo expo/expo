@@ -21,7 +21,8 @@
   "scripts": {
     "lint": "eslint .",
     "test": "jest",
-    "build": "expo-build cjs:src"
+    "build": "expo-build cjs:src",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@typescript-eslint/types": "^8.59.0",
@@ -30,13 +31,12 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.56.12",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^29.2.1",
     "@typescript-eslint/rule-tester": "^8.59.0",
     "eslint-config-universe": "workspace:*",
     "eslint-plugin-eslint-plugin": "^6.2.0",
     "expo-module-scripts": "workspace:*",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.2"
+    "jest": "^29.7.0"
   },
   "engines": {
     "node": ">=18.0.0"

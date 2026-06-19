@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/StatusBar.ts",
+        "expo-source": "./src/StatusBar.ts",
         "default": "./build/StatusBar.d.ts"
       },
-      "source": "./src/StatusBar.ts",
+      "expo-source": "./src/StatusBar.ts",
       "default": "./build/StatusBar.js"
     },
     "./plugin": "./plugin/build/index.js",
@@ -23,8 +23,9 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -47,6 +48,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.3.0",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
@@ -56,15 +58,5 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  },
-  "jest": {
-    "projects": [
-      {
-        "preset": "jest-expo/ios"
-      },
-      {
-        "preset": "jest-expo/android"
-      }
-    ]
   }
 }

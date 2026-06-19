@@ -236,7 +236,7 @@ function transformTest(
   const meta = results.metadata as unknown as { hasCjsExports?: boolean };
 
   // Parse again to ensure the output is valid code
-  babel.parse(results.code, options);
+  babel.parse(results.code!, options);
 
   return {
     code: results.code,

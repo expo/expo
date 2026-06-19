@@ -6,7 +6,7 @@
   "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./plugin": "./plugin/build/index.js",
@@ -19,8 +19,9 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "@expo/plist": "workspace:*",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/xml2js": "~0.4.11",
     "expo-module-scripts": "workspace:*",

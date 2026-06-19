@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
@@ -19,9 +19,8 @@
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
-    "test": "expo-module test",
-    "watch": "pnpm run build --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "repository": {
@@ -46,6 +45,7 @@
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },

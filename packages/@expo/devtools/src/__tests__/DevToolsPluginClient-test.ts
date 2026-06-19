@@ -28,6 +28,7 @@ describe(`DevToolsPluginClient`, () => {
     devServer = `localhost:${8000 + testCaseCounter}`;
     appClient = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'app',
       pluginName,
@@ -68,6 +69,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
 
     appClient = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'app',
       pluginName,
@@ -75,6 +77,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     });
     browserClient = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'browser',
       pluginName,
@@ -95,6 +98,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
   it('should support ping-pong messages', async () => {
     appClient = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'app',
       pluginName,
@@ -102,6 +106,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     });
     browserClient = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'browser',
       pluginName,
@@ -133,6 +138,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
 
     appClient = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'app',
       pluginName,
@@ -140,6 +146,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     });
     browserClient = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'browser',
       pluginName: 'pluginB',
@@ -161,6 +168,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
 
     appClient = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'app',
       pluginName,
@@ -173,6 +181,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
 
     browserClient = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'browser',
       pluginName,
@@ -182,6 +191,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     await delayAsync(100);
     const browserClient2 = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'browser',
       pluginName,
@@ -205,6 +215,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     const spyConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     appClient = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'app',
       pluginName,
@@ -212,6 +223,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     });
     browserClient = await createDevToolsPluginClient({
       protocolVersion: -1,
+      useWss: false,
       devServer,
       sender: 'browser',
       pluginName,
@@ -243,6 +255,7 @@ describe(`DevToolsPluginClient - multiplexing`, () => {
     const wsStore = new WebSocketBackingStore();
     const appClient1 = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'app',
       pluginName: 'plugin1',
@@ -250,6 +263,7 @@ describe(`DevToolsPluginClient - multiplexing`, () => {
     });
     const appClient2 = await createDevToolsPluginClient({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       devServer,
       sender: 'app',
       pluginName: 'plugin2',

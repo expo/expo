@@ -27,7 +27,7 @@ describe('getRoutesManifest', () => {
     const manifest = await env.getRoutesManifest();
 
     expect(input.readJson).toHaveBeenCalledWith('_expo/routes.json');
-    expect(manifest.htmlRoutes).toHaveLength(1);
+    expect(manifest!.htmlRoutes).toHaveLength(1);
   });
 
   it('converts `namedRegex` strings to RegExp instances', async () => {
@@ -60,9 +60,9 @@ describe('getRoutesManifest', () => {
 
     const manifest = await env.getRoutesManifest();
 
-    expect(manifest.htmlRoutes[0].namedRegex).toBeInstanceOf(RegExp);
-    expect(manifest.apiRoutes[0].namedRegex).toBeInstanceOf(RegExp);
-    expect(manifest.notFoundRoutes[0].namedRegex).toBeInstanceOf(RegExp);
+    expect(manifest!.htmlRoutes[0]!.namedRegex).toBeInstanceOf(RegExp);
+    expect(manifest!.apiRoutes[0]!.namedRegex).toBeInstanceOf(RegExp);
+    expect(manifest!.notFoundRoutes[0]!.namedRegex).toBeInstanceOf(RegExp);
   });
 
   it('caches the manifest on subsequent calls in production', async () => {

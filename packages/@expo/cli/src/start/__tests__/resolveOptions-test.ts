@@ -212,13 +212,13 @@ describe(resolvePortsAsync, () => {
   beforeEach(() => {
     jest
       .mocked(resolvePortAsync)
-      .mockImplementation(async (root, { defaultPort, fallbackPort }) => {
+      .mockImplementation(async (root, { defaultPort, fallbackPort } = {}) => {
         if (typeof defaultPort === 'string' && defaultPort) {
           return parseInt(defaultPort, 10);
         } else if (typeof defaultPort === 'number' && defaultPort) {
           return defaultPort;
         }
-        return fallbackPort;
+        return fallbackPort ?? null;
       });
   });
   it(`resolves default port for metro`, async () => {

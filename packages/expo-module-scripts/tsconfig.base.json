@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     // Redirect monorepo package typings to src
-    "customConditions": ["source"],
+    "customConditions": ["expo-source"],
 
     // Typings
     "lib": ["dom", "DOM.Iterable", "esnext"],
@@ -17,6 +17,10 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "isolatedModules": true,
+
+    // Incremental type-checking cache
+    "incremental": true,
+    "tsBuildInfoFile": "${configDir}/.tsbuildinfo",
 
     // Output options
     "sourceMap": true,

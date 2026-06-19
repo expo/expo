@@ -290,13 +290,13 @@ export * as default from './Animated';
       caller,
     };
 
-    function stablePaths(src) {
+    function stablePaths(src: string) {
       return src
         .replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js')
         .replace(/__pluginVersion="\d+(?:\.\d+){2}"/, '__pluginVersion="[GLOBAL]"');
     }
 
-    const code = stablePaths(babel.transformFileSync(samplesPath, options)!.code);
+    const code = stablePaths(babel.transformFileSync(samplesPath, options)!.code!);
 
     expect(code).toMatchSnapshot();
 
@@ -306,7 +306,7 @@ export * as default from './Animated';
           ...options,
           // Test that duplicate plugins make no difference
           plugins: [require.resolve('react-native-worklets/plugin')],
-        })!.code
+        })!.code!
       )
     ).toBe(code);
   });
@@ -386,7 +386,7 @@ describe('"lazyImports" option', () => {
     [false],
     [true],
     [['inline-comp', './inline-func', '../inline-func-with-side-effects.fx.ts']],
-    [(name) => !(name.endsWith('.fx') || name.endsWith('.fx.js') || name.endsWith('.fx.ts'))],
+    [(name: string) => !(name.endsWith('.fx') || name.endsWith('.fx.js') || name.endsWith('.fx.ts'))],
   ])(`accepts %p`, (lazyImportsOption) => {
     const testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
     const options = {

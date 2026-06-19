@@ -12,9 +12,9 @@
   ],
   "scripts": {
     "build": "expo-build cjs:src",
-    "test": "expo-module test",
     "lint": "expo-module lint",
-    "clean": "expo-module clean"
+    "clean": "expo-module clean",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {
     "expo-modules-test-core": "./bin/cli.js"
@@ -32,13 +32,14 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-test-core",
   "dependencies": {
     "@types/node": "^22.14.0",
+    "expo-type-information": "workspace:^0.0.5",
     "glob": "^13.0.0",
     "prettier": "^3.8.3",
     "xml-js": "^1.6.11",
-    "yaml": "^2.8.3",
-    "expo-type-information": "workspace:^0.0.5"
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "expo-module-scripts": "workspace:*"
   }
 }

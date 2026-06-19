@@ -1,13 +1,20 @@
 import type { ExpoConfig } from '@expo/config';
-import type { ConfigPlugin, ExportedConfigWithProps, Mod } from '@expo/config-plugins';
+import type {
+  ConfigPlugin,
+  ExportedConfigWithProps,
+  Mod,
+} from '@expo/config-plugins';
 
 // Usage: add the following mock to the mods you are using:
 // jest.mock('../../plugins/android-plugins');
 
-export function mockModWithResults(withMod, modResults) {
-  withMod.mockImplementationOnce((config, action) => {
-    return action({ ...config, modResults });
-  });
+export function mockModWithResults<T>(
+  withMod: jest.MockedFunction<ConfigPlugin<Mod<T>>>,
+  modResults: T
+) {
+  withMod.mockImplementationOnce(((config: ExpoConfig, action: Mod<T>) => {
+    return action({ ...config, modResults } as ExportedConfigWithProps<T>);
+  }) as ConfigPlugin<Mod<T>>);
 }
 
 /**
@@ -28,6 +35,7 @@ export async function compileMockModWithResultsAsync<T>(
     modResults: T;
   }
 ): Promise<ExportedConfigWithProps<T>> {
-  mockModWithResults(mod, modResults);
-  return (await plugin(config as any)) as ExportedConfigWithProps<T>;
+  // `mod` is statically a ConfigPlugin but is jest-mocked at runtime by callers.
+  mockModWithResults(mod as jest.MockedFunction<ConfigPlugin<Mod<T>>>, modResults);
+  return (await plugin(config as ExpoConfig)) as ExportedConfigWithProps<T>;
 }

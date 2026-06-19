@@ -20,7 +20,6 @@ program.command('prepare', `Scripts to run during the "prepare" phase`);
 program.command('prepublishOnly', `Scripts to run during the "prepublishOnly" phase`);
 
 // Pass-through scripts
-program.command('babel', `Runs Babel CLI with the given arguments`);
 program.command('eslint', `Runs ESLint with the given arguments`);
 program.command('jest', `Runs Jest with the given arguments`);
 program.command('tsc', `Runs tsc with the given arguments`);

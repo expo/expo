@@ -11,26 +11,26 @@
     "./plugin": "./plugin/build/index.js",
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./legacy": {
       "types": {
-        "source": "./src/legacy/index.ts",
+        "expo-source": "./src/legacy/index.ts",
         "default": "./build/legacy/index.d.ts"
       },
-      "source": "./src/legacy/index.ts",
+      "expo-source": "./src/legacy/index.ts",
       "default": "./build/legacy/index.js"
     },
     "./next": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     }
   },
@@ -41,8 +41,9 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -64,10 +65,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/media-library/",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
