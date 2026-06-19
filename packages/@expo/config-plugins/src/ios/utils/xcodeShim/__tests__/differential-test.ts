@@ -23,6 +23,8 @@ const IMPLEMENTED = new Set<string>([
   'files/add-resource-file-no-build',
   'files/add-source-file',
   'files/add-duplicate-resource',
+  'files/add-pbx-group',
+  'files/add-to-pbx-group',
 ]);
 
 function runOn(backend: Backend, scenario: Scenario): { result: unknown; pbxproj: string } {

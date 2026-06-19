@@ -154,9 +154,27 @@ export function compareSemantics(legacyText: string, shimText: string): Diff {
   return compareGraphs(legacy, shim);
 }
 
-/** Compare scenario read results, normalizing UUIDs by first appearance. */
+// Strip one layer of outer quotes from every string. Reads aren't re-quoted by
+// the shim (a documented behavior change), so quoting is cosmetic when comparing
+// read results — `'"<group>"'` and `'<group>'` are the same value.
+function stripQuotesDeep(value: any): any {
+  if (typeof value === 'string') return value.replace(/^"(.*)"$/, '$1');
+  if (Array.isArray(value)) return value.map(stripQuotesDeep);
+  if (value && typeof value === 'object') {
+    const out: Record<string, any> = {};
+    for (const key of Object.keys(value)) out[key] = stripQuotesDeep(value[key]);
+    return out;
+  }
+  return value;
+}
+
+/** Compare scenario read results, normalizing UUIDs by first appearance and quoting. */
 export function compareResults(legacy: unknown, shim: unknown): Diff {
-  return deepDiff(normalizeResult(legacy), normalizeResult(shim), '');
+  return deepDiff(
+    stripQuotesDeep(normalizeResult(legacy)),
+    stripQuotesDeep(normalizeResult(shim)),
+    ''
+  );
 }
 
 /**

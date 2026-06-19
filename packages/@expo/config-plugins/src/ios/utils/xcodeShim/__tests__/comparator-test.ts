@@ -138,6 +138,10 @@ describe('compareResults', () => {
   it('catches a differing scalar', () => {
     expect(compareResults({ value: 'en' }, { value: 'fr' }).equal).toBe(false);
   });
+
+  it('treats read quoting as cosmetic', () => {
+    expect(compareResults({ sourceTree: '"<group>"' }, { sourceTree: '<group>' }).equal).toBe(true);
+  });
 });
 
 describe('normalizedTextDiff', () => {

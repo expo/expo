@@ -3,6 +3,7 @@ import { build } from '@bacons/xcode/json';
 import path from 'path';
 
 import { legacyRefArray } from './legacyRefArray';
+import { PbxFile } from './pbxFile';
 
 function notImplemented(method: string): never {
   throw new Error(`XcodeProjectShim.${method} is not implemented yet`);
@@ -254,8 +255,9 @@ export class XcodeProjectShim {
     const model = this.safeGetObject(key);
     return model && model.isa === 'PBXGroup' ? this.legacyGroup(model) : undefined;
   }
-  getPBXGroupByKeyAndType(..._args: any[]): any {
-    notImplemented('getPBXGroupByKeyAndType');
+  getPBXGroupByKeyAndType(key: string, groupType: string): any {
+    const model = this.safeGetObject(key);
+    return model && model.isa === groupType ? this.legacyGroup(model) : undefined;
   }
   getPBXVariantGroupByKey(..._args: any[]): any {
     notImplemented('getPBXVariantGroupByKey');
@@ -454,20 +456,57 @@ export class XcodeProjectShim {
   pbxCreateVariantGroup(..._args: any[]): any {
     notImplemented('pbxCreateVariantGroup');
   }
-  addPbxGroup(..._args: any[]): any {
-    notImplemented('addPbxGroup');
+  addPbxGroup(
+    filePathsArray: string[],
+    name?: string,
+    groupPath?: string,
+    sourceTree?: string
+  ): any {
+    const existing = new Map<string, any>();
+    for (const ref of this.modelsOfIsa('PBXFileReference')) existing.set(ref.props.path, ref);
+
+    const group = this.createObjectWithUuid(this.generateUuid(), {
+      isa: 'PBXGroup',
+      children: [],
+      name,
+      path: groupPath,
+      sourceTree: sourceTree ? unquoteForWrite(sourceTree) : '<group>',
+    });
+
+    for (const filePath of filePathsArray) {
+      const found = existing.get(filePath) ?? existing.get(`"${filePath}"`);
+      if (found) {
+        group.props.children.push(found);
+        continue;
+      }
+      const file = new PbxFile(filePath);
+      file.uuid = this.generateUuid();
+      file.fileRef = this.generateUuid();
+      this.addToPbxFileReferenceSection(file);
+      this.addToPbxBuildFileSection(file);
+      group.props.children.push(this.inner.getObject(file.fileRef));
+    }
+
+    return { uuid: group.uuid, pbxGroup: this.legacyGroup(group) };
   }
   removePbxGroup(..._args: any[]): any {
     notImplemented('removePbxGroup');
   }
-  addToPbxGroup(..._args: any[]): any {
-    notImplemented('addToPbxGroup');
+  addToPbxGroup(file: any, groupKey: string): void {
+    this.addToPbxGroupType(file, groupKey, 'PBXGroup');
   }
-  addToPbxGroupType(..._args: any[]): any {
-    notImplemented('addToPbxGroupType');
+  addToPbxGroupType(file: any, groupKey: string, groupType: string): void {
+    const group = this.getPBXGroupByKeyAndType(groupKey, groupType);
+    if (!group?.children) return;
+    if (typeof file === 'string') {
+      const child = this.safeGetObject(file);
+      group.children.push({ value: file, comment: child?.getDisplayName?.() ?? file });
+    } else {
+      group.children.push({ value: file.fileRef, comment: file.basename });
+    }
   }
-  addToPbxVariantGroup(..._args: any[]): any {
-    notImplemented('addToPbxVariantGroup');
+  addToPbxVariantGroup(file: any, groupKey: string): void {
+    this.addToPbxGroupType(file, groupKey, 'PBXVariantGroup');
   }
   removeFromPbxGroup(..._args: any[]): any {
     notImplemented('removeFromPbxGroup');
