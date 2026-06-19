@@ -6,6 +6,17 @@ function notImplemented(method: string): never {
   throw new Error(`XcodeProjectShim.${method} is not implemented yet`);
 }
 
+function trimQuotes(value: string): string {
+  return value.replace(/^"(.*)"$/, '$1');
+}
+
+// Legacy callers pass values verbatim-quoted (e.g. `'"com.example"'`).
+// `@bacons` stores values unquoted and re-quotes at serialize, so strip one
+// layer of outer quotes on write to avoid double-quoting.
+function unquoteForWrite(value: any): any {
+  return typeof value === 'string' ? trimQuotes(value) : value;
+}
+
 /**
  * Backwards-compatible facade exposing the legacy `xcode` `XcodeProject` API on
  * top of a typed `@bacons/xcode` project. The substrate (construct / parse /
@@ -28,6 +39,26 @@ export class XcodeProjectShim {
       );
     }
     return this.project;
+  }
+
+  private models(): any[] {
+    return [...this.inner.values()];
+  }
+
+  private modelsOfIsa(isa: string): any[] {
+    return this.models().filter((model) => model.isa === isa);
+  }
+
+  private findTargetByName(name: string): any | null {
+    return (
+      this.modelsOfIsa('PBXNativeTarget').find((t) => trimQuotes(t.props.name) === name) ?? null
+    );
+  }
+
+  /** UUIDs of the build configurations belonging to a target's configuration list. */
+  private configUuidsForTarget(target: any): Set<string> {
+    const configs = target?.props?.buildConfigurationList?.props?.buildConfigurations ?? [];
+    return new Set<string>(configs.map((config: any) => config.uuid));
   }
 
   // === Lifecycle / IO ===
@@ -143,8 +174,18 @@ export class XcodeProjectShim {
   hasFile(..._args: any[]): any {
     notImplemented('hasFile');
   }
-  getBuildProperty(..._args: any[]): any {
-    notImplemented('getBuildProperty');
+  getBuildProperty(prop: string, build?: string, targetName?: string): any {
+    const scoped = targetName ? this.configUuidsForTarget(this.findTargetByName(targetName)) : null;
+    let result: any;
+    for (const config of this.modelsOfIsa('XCBuildConfiguration')) {
+      if (scoped && !scoped.has(config.uuid)) continue;
+      if (build === undefined || config.props.name === build) {
+        if (config.props.buildSettings[prop] !== undefined) {
+          result = config.props.buildSettings[prop];
+        }
+      }
+    }
+    return result;
   }
   getBuildConfigByName(..._args: any[]): any {
     notImplemented('getBuildConfigByName');
@@ -155,17 +196,34 @@ export class XcodeProjectShim {
 
   // === Mutate: build settings ===
 
-  addBuildProperty(..._args: any[]): any {
-    notImplemented('addBuildProperty');
+  addBuildProperty(prop: string, value: any, buildName?: string): void {
+    for (const config of this.modelsOfIsa('XCBuildConfiguration')) {
+      if (!buildName || config.props.name === buildName) {
+        config.props.buildSettings[prop] = unquoteForWrite(value);
+      }
+    }
   }
-  removeBuildProperty(..._args: any[]): any {
-    notImplemented('removeBuildProperty');
+
+  removeBuildProperty(prop: string, buildName?: string): void {
+    for (const config of this.modelsOfIsa('XCBuildConfiguration')) {
+      if (!buildName || config.props.name === buildName) {
+        delete config.props.buildSettings[prop];
+      }
+    }
   }
-  updateBuildProperty(..._args: any[]): any {
-    notImplemented('updateBuildProperty');
+
+  updateBuildProperty(prop: string, value: any, build?: string | null, targetName?: string): void {
+    const scoped = targetName ? this.configUuidsForTarget(this.findTargetByName(targetName)) : null;
+    for (const config of this.modelsOfIsa('XCBuildConfiguration')) {
+      if (scoped && !scoped.has(config.uuid)) continue;
+      if (!build || config.props.name === build) {
+        config.props.buildSettings[prop] = unquoteForWrite(value);
+      }
+    }
   }
-  updateProductName(..._args: any[]): any {
-    notImplemented('updateProductName');
+
+  updateProductName(name: string): void {
+    this.updateBuildProperty('PRODUCT_NAME', name);
   }
   addToBuildSettings(..._args: any[]): any {
     notImplemented('addToBuildSettings');

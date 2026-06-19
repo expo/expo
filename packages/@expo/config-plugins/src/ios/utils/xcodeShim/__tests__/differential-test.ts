@@ -8,7 +8,16 @@ import { compareResults, compareSemantics, normalizedTextDiff } from './comparat
 import { FIXTURES, FixtureName, fixturePath } from './fixtures';
 import { Scenario, scenarios } from './scenarios';
 
-const IMPLEMENTED = new Set<string>([]);
+const IMPLEMENTED = new Set<string>([
+  'build-settings/set-bundle-identifier',
+  'build-settings/set-development-team',
+  'build-settings/set-deployment-target',
+  'build-settings/toggle-bitcode',
+  'build-settings/set-device-family',
+  'build-settings/update-product-name',
+  'build-settings/set-entitlements',
+  'build-settings/update-property-for-target',
+]);
 
 function runOn(backend: Backend, scenario: Scenario): { result: unknown; pbxproj: string } {
   const ctx = backend.load(fixturePath(scenario.fixture));
