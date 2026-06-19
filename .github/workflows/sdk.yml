@@ -11,17 +11,17 @@ on:
     branches: [main, 'sdk-*']
     paths:
       - .github/workflows/sdk.yml
-      - tools/**
       - packages/**
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
+      - turbo.json
   pull_request:
     paths:
       - .github/workflows/sdk.yml
-      - tools/**
       - packages/**
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
+      - turbo.json
   schedule:
     - cron: 0 14 * * *
 
@@ -42,13 +42,6 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
-      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
-        id: filter
-        with:
-          filters: |
-            module-scripts:
-              - 'packages/expo-module-scripts/**'
-              - 'packages/jest-expo/**'
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.base_ref || github.event.before || 'main' }}:${{ github.base_ref || github.event.before || 'main' }} --depth 100
         if: github.event_name == 'pull_request'
@@ -69,18 +62,26 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
+
       - name: 🧐 Check all packages
         if: github.event_name == 'schedule' ||
-          github.event.inputs.checkAll == 'check-all' ||
-          steps.filter.outputs.module-scripts == 'true'
-        run: pnpm expotools check-packages --all
+          github.event.inputs.checkAll == 'check-all'
+        run: |
+          pnpm turbo run build typecheck depscheck test lint \
+            --filter="./packages/**" \
+            --continue=dependencies-successful
+
       - name: 🧐 Check changed packages
         if: github.event_name != 'schedule' &&
-          github.event.inputs.checkAll != 'check-all' &&
-          steps.filter.outputs.module-scripts != 'true'
+          github.event.inputs.checkAll != 'check-all'
         env:
-          SINCE: ${{ github.base_ref || github.event.before || 'main' }}
-        run: pnpm expotools check-packages --since $SINCE --core
+          TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
+        run: |
+          pnpm turbo run build typecheck depscheck test lint \
+            --affected \
+            --filter="./packages/**" \
+            --continue=dependencies-successful
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-')) && github.repository == 'expo/expo'
@@ -113,8 +114,30 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
+
       - name: 🧐 Check all packages
-        run: pnpm expotools check-packages --all
+        shell: bash
+        run: |
+          pnpm turbo run build typecheck depscheck test lint \
+            --filter="./packages/**" \
+            --filter='!@expo/cli' \
+            --filter='!@expo/config' \
+            --filter='!@expo/config-plugins' \
+            --filter='!@expo/env' \
+            --filter='!@expo/fingerprint' \
+            --filter='!@expo/image-utils' \
+            --filter='!@expo/metro-config' \
+            --filter='!@expo/package-manager' \
+            --filter='!@expo/prebuild-config' \
+            --filter='!@expo/router-server' \
+            --filter='!babel-preset-expo' \
+            --filter='!create-expo' \
+            --filter='!expo-brownfield' \
+            --filter='!expo-doctor' \
+            --filter='!expo-modules-autolinking' \
+            --filter='!install-expo-modules' \
+            --continue=dependencies-successful
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-')) && github.repository == 'expo/expo'
