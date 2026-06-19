@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 
+import { useStableTabOrder } from '../../core/useStableTabOrder';
 import {
   CommonActions,
   DrawerActions,
@@ -34,8 +35,12 @@ export function DrawerItemList({ state, navigation, descriptors }: Props) {
     drawerInactiveBackgroundColor,
   } = focusedOptions;
 
-  return state.routes.map((route, i) => {
-    const focused = i === state.index;
+  // `state.routes` is ordered by the navigator's back stack; render the drawer items
+  // in stable declaration order and detect focus by key.
+  const orderedRoutes = useStableTabOrder(state);
+
+  return orderedRoutes.map((route) => {
+    const focused = route.key === focusedRoute.key;
 
     const onPress = () => {
       const event = navigation.emit({

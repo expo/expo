@@ -102,7 +102,6 @@ export const TabsNavigatorContext = createContext<TabsContextValue['navigation']
  */
 export const TabsStateContext = createContext<TabsContextValue['state']>({
   preloadedRouteKeys: [],
-  history: [],
   index: -1,
   key: '',
   stale: false,

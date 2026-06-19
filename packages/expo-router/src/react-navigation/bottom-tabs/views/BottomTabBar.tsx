@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
+import { useStableTabOrder } from '../../core/useStableTabOrder';
 import { getDefaultSidebarWidth, getLabel, MissingIcon, useFrameSize } from '../../elements';
 import {
   CommonActions,
@@ -237,7 +238,9 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
     });
   };
 
-  const { routes } = state;
+  // `state.routes` is ordered by the navigator's back stack; render the bar in stable
+  // declaration order and detect focus by key.
+  const routes = useStableTabOrder(state);
 
   const tabBarHeight = useFrameSize((dimensions) =>
     getTabBarHeight({
@@ -340,7 +343,7 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
       </View>
       <View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
         {routes.map((route, index) => {
-          const focused = index === state.index;
+          const focused = route.key === focusedRoute.key;
           const { options } = descriptors[route.key]!;
 
           const onPress = () => {

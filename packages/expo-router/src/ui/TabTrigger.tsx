@@ -152,13 +152,18 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         return;
       }
 
+      const routeName = state.routeNames[config.index];
+      const route = state.routes.find((r) => r.name === routeName);
+      const focusedKey = state.routes[state.index]?.key;
+
       return {
-        isFocused: state.index === config.index,
-        route: state.routes[config.index]!,
+        isFocused: route?.key !== undefined && route.key === focusedKey,
+        route: route!,
         resolvedHref: stripGroupSegmentsFromPath(appendBaseUrl(config.href)),
         ...config,
       };
     },
+    // TODO(@ubax): Investigate why state.index and state.routes are not in the array
     [triggerMap]
   );
 

@@ -358,28 +358,24 @@ it('can use replace navigation', () => {
         name: '__root',
         params: undefined,
         state: {
-          history: [
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-          ],
-          index: 1,
+          // `replace` prunes the replaced `one` from the back stack: it moves past
+          // the focused `two`, which lands at index 0 (so back is blocked).
+          index: 0,
           key: expect.any(String),
           preloadedRouteKeys: [],
           routeNames: ['one', 'two'],
           routes: [
             {
               key: expect.any(String),
-              name: 'one',
-              params: undefined,
-              path: '/one',
-            },
-            {
-              key: expect.any(String),
               name: 'two',
               params: {},
               path: undefined,
+            },
+            {
+              key: expect.any(String),
+              name: 'one',
+              params: undefined,
+              path: '/one',
             },
           ],
           stale: false,
@@ -412,6 +408,8 @@ it('can use replace navigation with history backBehavior', () => {
 
   act(() => router.back());
 
+  // `replace` drops the route it replaced (`/two`) from the history, so back skips
+  // it and returns to `/one`.
   expect(screen.getByTestId('one')).toBeVisible();
 });
 
