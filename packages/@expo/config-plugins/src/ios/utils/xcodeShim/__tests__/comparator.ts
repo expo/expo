@@ -2,8 +2,6 @@ import { parse } from '@bacons/xcode/json';
 
 import { normalizeResult, normalizeUuids } from './normalize';
 
-const UUID_RE = /^[0-9A-F]{24}$/;
-
 interface Graph {
   objects: Record<string, any>;
   rootObject: string;
@@ -19,14 +17,17 @@ export interface Diff {
 
 const EQUAL: Diff = { equal: true };
 
+// A reference is any string value that names an object in the graph. Detecting
+// refs by membership (not by UUID charset) is robust to both legacy's hex UUIDs
+// and `@bacons`'s `XX…XX` content-hash UUIDs.
 function isRef(value: unknown, objects: Record<string, any>): value is string {
-  return typeof value === 'string' && UUID_RE.test(value) && value in objects;
+  return typeof value === 'string' && value in objects;
 }
 
 function isRefKeyedDict(value: any, objects: Record<string, any>): boolean {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const keys = Object.keys(value);
-  return keys.length > 0 && keys.every((k) => UUID_RE.test(k) && k in objects);
+  return keys.length > 0 && keys.every((k) => k in objects);
 }
 
 function stableStringify(value: any): string {

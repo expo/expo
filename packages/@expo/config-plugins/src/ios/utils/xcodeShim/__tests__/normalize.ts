@@ -1,4 +1,5 @@
-const UUID_TOKEN = /\b[0-9A-F]{24}\b/g;
+// 24-char pbxproj identifier: legacy hex, or `@bacons`'s `XX…XX` content-hash form.
+const UUID_TOKEN = /\b[0-9A-FX]{24}\b/g;
 
 /**
  * Replace each pbxproj UUID with a stable placeholder in first-appearance
