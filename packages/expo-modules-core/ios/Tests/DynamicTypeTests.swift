@@ -660,8 +660,8 @@ struct DynamicTypeTests {
     }
 
     @Test
-    func `throws NativeSharedObjectNotFoundException`() {
-      #expect(throws: NativeSharedObjectNotFoundException.self) {
+    func `throws SharedObject.NotFoundException`() {
+      #expect(throws: SharedObject.NotFoundException.self) {
         try (~TestSharedObject.self).cast("a string", appContext: appContext)
       }
     }
