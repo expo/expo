@@ -4,6 +4,9 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Removed the deprecated `AppContext.hostingRuntimeContext` property. Use `AppContext.runtime` instead. ([#46964](https://github.com/expo/expo/pull/46964) by [@wenszel](https://github.com/wenszel))
+- [Android] Removed the deprecated `AppContext.errorManager` property. Use `AppContext.jsLogger` instead. ([#46964](https://github.com/expo/expo/pull/46964) by [@wenszel](https://github.com/wenszel))
+
 ### 🎉 New features
 
 - [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
