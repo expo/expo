@@ -23,10 +23,30 @@ function unquoteForWrite(value: any): any {
 // `$(inherited)`, stored unquoted (`@bacons` re-quotes at serialize).
 const INHERITED = '$(inherited)';
 
+// Re-quote a value on read the way pbxproj serialization would, so reads
+// reproduce legacy's verbatim (quoted) form — plugins that compare against
+// quoted strings (e.g. `productType === '"…application"'`) keep working. Mirrors
+// `@bacons`'s `ensureQuotes` (hyphen is NOT a safe char, so product types quote).
+function quoteForRead(value: any): any {
+  if (typeof value !== 'string') return value;
+  const escaped = value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+    .replace(/\t/g, '\\t');
+  return /^[\w$/:.]+$/.test(escaped) ? escaped : `"${escaped}"`;
+}
+
 // Array-valued build settings written directly (e.g. HEADER_SEARCH_PATHS) are
 // unquoted on push/index-set so `@bacons` doesn't double-quote pre-quoted entries.
 function unquotingArray(arr: any[]): any[] {
   return new Proxy(arr, {
+    get(target, prop) {
+      if (typeof prop === 'string' && /^\d+$/.test(prop)) {
+        return quoteForRead(target[Number(prop)]);
+      }
+      return Reflect.get(target, prop);
+    },
     set(target, prop, value) {
       if (typeof prop === 'string' && /^\d+$/.test(prop)) {
         target[Number(prop)] = unquoteForWrite(value);
@@ -45,7 +65,8 @@ function buildSettingsProxy(buildSettings: Record<string, any>): Record<string, 
   return new Proxy(buildSettings, {
     get(target, key) {
       const value = target[key as string];
-      return Array.isArray(value) ? unquotingArray(value) : value;
+      if (Array.isArray(value)) return unquotingArray(value);
+      return typeof value === 'string' ? quoteForRead(value) : value;
     },
     set(target, key, value) {
       if (typeof key !== 'string') {
@@ -232,9 +253,9 @@ export class XcodeProjectShim {
     const view: any = {
       uuid: model.uuid,
       isa: model.isa,
-      name: model.props.name,
-      path: model.props.path,
-      sourceTree: model.props.sourceTree,
+      name: quoteForRead(model.props.name),
+      path: quoteForRead(model.props.path),
+      sourceTree: quoteForRead(model.props.sourceTree),
     };
     defineLiveRefArray(view, 'children', model.props.children, this.inner);
     return view;
@@ -263,9 +284,9 @@ export class XcodeProjectShim {
     const view: any = {
       uuid: model.uuid,
       isa: model.isa,
-      name: props.name,
-      productName: props.productName,
-      productType: props.productType,
+      name: quoteForRead(props.name),
+      productName: quoteForRead(props.productName),
+      productType: quoteForRead(props.productType),
       buildConfigurationList: props.buildConfigurationList?.uuid,
     };
     defineLiveRefArray(view, 'dependencies', props.dependencies, this.inner);
@@ -289,14 +310,18 @@ export class XcodeProjectShim {
     const view: any = {
       uuid: model.uuid,
       isa: model.isa,
-      name: props.name,
+      name: quoteForRead(props.name),
       buildActionMask: props.buildActionMask,
       runOnlyForDeploymentPostprocessing: props.runOnlyForDeploymentPostprocessing,
-      shellPath: props.shellPath,
-      shellScript: props.shellScript,
-      inputPaths: props.inputPaths,
-      outputPaths: props.outputPaths,
-      dstPath: props.dstPath,
+      shellPath: quoteForRead(props.shellPath),
+      shellScript: quoteForRead(props.shellScript),
+      inputPaths: Array.isArray(props.inputPaths)
+        ? props.inputPaths.map(quoteForRead)
+        : props.inputPaths,
+      outputPaths: Array.isArray(props.outputPaths)
+        ? props.outputPaths.map(quoteForRead)
+        : props.outputPaths,
+      dstPath: quoteForRead(props.dstPath),
       dstSubfolderSpec: props.dstSubfolderSpec,
     };
     defineLiveRefArray(view, 'files', props.files, this.inner);
@@ -331,7 +356,7 @@ export class XcodeProjectShim {
     const view: any = {
       uuid: model.uuid,
       isa: model.isa,
-      defaultConfigurationName: props.defaultConfigurationName,
+      defaultConfigurationName: quoteForRead(props.defaultConfigurationName),
       defaultConfigurationIsVisible: props.defaultConfigurationIsVisible,
     };
     defineLiveRefArray(view, 'buildConfigurations', props.buildConfigurations, this.inner);
@@ -363,7 +388,7 @@ export class XcodeProjectShim {
       ) {
         defineLiveRefArray(out, key, value, project);
       } else {
-        out[key] = value;
+        out[key] = quoteForRead(value);
       }
     }
     return out;
@@ -388,8 +413,8 @@ export class XcodeProjectShim {
       buildConfigurationList: props.buildConfigurationList?.uuid,
       knownRegions: props.knownRegions,
       attributes: props.attributes,
-      compatibilityVersion: props.compatibilityVersion,
-      developmentRegion: props.developmentRegion,
+      compatibilityVersion: quoteForRead(props.compatibilityVersion),
+      developmentRegion: quoteForRead(props.developmentRegion),
     };
     defineLiveRefArray(view, 'targets', props.targets, this.inner);
     return view;
@@ -569,7 +594,7 @@ export class XcodeProjectShim {
         }
       }
     }
-    return result;
+    return quoteForRead(result);
   }
   getBuildConfigByName(..._args: any[]): any {
     notImplemented('getBuildConfigByName');

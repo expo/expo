@@ -32,6 +32,20 @@ describe('stubbed surface', () => {
   });
 });
 
+describe('read re-quoting (legacy-faithful)', () => {
+  it('quotes values pbxproj would quote on read, leaves safe ones bare', () => {
+    const p = project(fixturePath('bareMinimum')).parseSync();
+    const target: any = Object.values(p.pbxNativeTargetSection()).find(
+      (t: any) => t && t.isa === 'PBXNativeTarget'
+    );
+    // Hyphen isn't a safe pbxproj identifier char, so productType reads quoted —
+    // matching legacy (and plugins that strict-compare the quoted form).
+    expect(target.productType).toBe('"com.apple.product-type.application"');
+    // A safe identifier reads bare.
+    expect(target.name).toBe('HelloWorld');
+  });
+});
+
 describe('pbxFile', () => {
   it('derives file metadata from the path', () => {
     const file = new PbxFile('HelloWorld/Foo.swift');
