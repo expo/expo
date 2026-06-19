@@ -26,9 +26,9 @@ describe('substrate', () => {
 describe('stubbed surface', () => {
   it('throws "not implemented yet" for unimplemented methods', () => {
     const p = project(fixturePath('bareMinimum')).parseSync();
-    expect(() => p.addTarget()).toThrow(/not implemented yet/);
-    expect(() => p.pbxProjectSection()).toThrow(/not implemented yet/);
-    expect(() => p.pbxNativeTargetSection()).toThrow(/not implemented yet/);
+    expect(() => p.addToBuildSettings()).toThrow(/not implemented yet/);
+    expect(() => p.removePbxGroup()).toThrow(/not implemented yet/);
+    expect(() => p.pbxItemByComment()).toThrow(/not implemented yet/);
   });
 });
 

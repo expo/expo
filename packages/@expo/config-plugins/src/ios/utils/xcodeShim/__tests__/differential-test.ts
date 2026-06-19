@@ -39,6 +39,8 @@ const IMPLEMENTED = new Set<string>([
   'targets/add-product-file',
   'targets/add-xc-configuration-list',
   'misc/direct-hash-objects',
+  'targets/add-app-extension',
+  'targets/add-target-dependency',
 ]);
 
 function runOn(backend: Backend, scenario: Scenario): { result: unknown; pbxproj: string } {

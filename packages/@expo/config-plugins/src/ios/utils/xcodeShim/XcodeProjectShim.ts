@@ -70,6 +70,35 @@ function copyFilesPhaseProps(folderType: string, subfolderPath: string | undefin
   };
 }
 
+const PRODUCTTYPE_BY_TARGETTYPE: Record<string, string> = {
+  application: 'com.apple.product-type.application',
+  app_extension: 'com.apple.product-type.app-extension',
+  bundle: 'com.apple.product-type.bundle',
+  command_line_tool: 'com.apple.product-type.tool',
+  dynamic_library: 'com.apple.product-type.library.dynamic',
+  framework: 'com.apple.product-type.framework',
+  static_library: 'com.apple.product-type.library.static',
+  unit_test_bundle: 'com.apple.product-type.bundle.unit-test',
+  watch_app: 'com.apple.product-type.application.watchapp',
+  watch2_app: 'com.apple.product-type.application.watchapp2',
+  watch_extension: 'com.apple.product-type.watchkit-extension',
+  watch2_extension: 'com.apple.product-type.watchkit2-extension',
+};
+const FILETYPE_BY_PRODUCTTYPE: Record<string, string> = {
+  'com.apple.product-type.application': '"wrapper.application"',
+  'com.apple.product-type.app-extension': '"wrapper.app-extension"',
+  'com.apple.product-type.bundle': '"wrapper.plug-in"',
+  'com.apple.product-type.tool': '"compiled.mach-o.dylib"',
+  'com.apple.product-type.library.dynamic': '"compiled.mach-o.dylib"',
+  'com.apple.product-type.framework': '"wrapper.framework"',
+  'com.apple.product-type.library.static': '"archive.ar"',
+  'com.apple.product-type.bundle.unit-test': '"wrapper.cfbundle"',
+  'com.apple.product-type.application.watchapp': '"wrapper.application"',
+  'com.apple.product-type.application.watchapp2': '"wrapper.application"',
+  'com.apple.product-type.watchkit-extension': '"wrapper.app-extension"',
+  'com.apple.product-type.watchkit2-extension': '"wrapper.app-extension"',
+};
+
 function shellScriptPhaseProps(options: any, name: string) {
   // Stored unquoted; `@bacons` escapes/quotes the script and re-quotes the paths
   // at serialize (legacy stores paths verbatim and never quotes them).
@@ -167,15 +196,23 @@ export class XcodeProjectShim {
     return this.inner.rootObject.props.targets[0];
   }
 
-  /** Legacy-shaped view of a native target: references as UUIDs. */
+  /** Legacy-shaped view of a native target: references as UUIDs, ref arrays live. */
   private legacyTarget(model: any): any {
+    const project = this.inner;
+    const props = model.props;
     return {
       uuid: model.uuid,
       isa: model.isa,
-      name: model.props.name,
-      productName: model.props.productName,
-      productType: model.props.productType,
-      buildConfigurationList: model.props.buildConfigurationList?.uuid,
+      name: props.name,
+      productName: props.productName,
+      productType: props.productType,
+      buildConfigurationList: props.buildConfigurationList?.uuid,
+      get dependencies() {
+        return legacyRefArray(props.dependencies, project);
+      },
+      get buildPhases() {
+        return legacyRefArray(props.buildPhases, project);
+      },
     };
   }
 
@@ -298,7 +335,12 @@ export class XcodeProjectShim {
         objects: new Proxy(
           {},
           {
-            get: (_t, isa: string) => self.legacySection(isa),
+            // Legacy has no section dict for an isa with no objects; mirror that
+            // (a present-but-empty section would read as truthy).
+            get: (_t, isa: string) => {
+              const section = self.legacySection(String(isa));
+              return Object.keys(section).length ? section : undefined;
+            },
           }
         ),
       },
@@ -538,11 +580,22 @@ export class XcodeProjectShim {
   removeFromPbxBuildFileSection(..._args: any[]): any {
     notImplemented('removeFromPbxBuildFileSection');
   }
-  addToPbxProjectSection(..._args: any[]): any {
-    notImplemented('addToPbxProjectSection');
+  addToPbxProjectSection(target: any): void {
+    this.inner.rootObject.props.targets.push(this.inner.getObject(target.uuid));
   }
-  addToPbxNativeTargetSection(..._args: any[]): any {
-    notImplemented('addToPbxNativeTargetSection');
+  addToPbxNativeTargetSection(target: any): void {
+    const nt = target.pbxNativeTarget;
+    this.createObjectWithUuid(target.uuid, {
+      isa: 'PBXNativeTarget',
+      name: trimQuotes(nt.name),
+      productName: trimQuotes(nt.productName),
+      productReference: this.inner.getObject(nt.productReference),
+      productType: trimQuotes(nt.productType),
+      buildConfigurationList: this.inner.getObject(nt.buildConfigurationList),
+      buildPhases: [],
+      buildRules: [],
+      dependencies: [],
+    });
   }
   addToXcVersionGroupSection(..._args: any[]): any {
     notImplemented('addToXcVersionGroupSection');
@@ -568,8 +621,13 @@ export class XcodeProjectShim {
   removeFromPbxEmbedFrameworksBuildPhase(..._args: any[]): any {
     notImplemented('removeFromPbxEmbedFrameworksBuildPhase');
   }
-  addToPbxCopyfilesBuildPhase(..._args: any[]): any {
-    notImplemented('addToPbxCopyfilesBuildPhase');
+  addToPbxCopyfilesBuildPhase(file: any): void {
+    // Legacy falls back to a project-wide search by name when the file's target
+    // doesn't own the "Copy Files" phase (it lives on the host app target).
+    const phase = this.modelsOfIsa('PBXCopyFilesBuildPhase').find(
+      (p) => trimQuotes(p.props.name ?? '') === 'Copy Files'
+    );
+    if (phase) phase.props.files.push(this.inner.getObject(file.uuid));
   }
   removeFromPbxCopyfilesBuildPhase(..._args: any[]): any {
     notImplemented('removeFromPbxCopyfilesBuildPhase');
@@ -793,11 +851,112 @@ export class XcodeProjectShim {
 
   // === Mutate: targets ===
 
-  addTarget(..._args: any[]): any {
-    notImplemented('addTarget');
+  addTarget(name: string, type: string, subfolder?: string, bundleId?: string): any {
+    const targetUuid = this.generateUuid();
+    const targetSubfolder = subfolder || name;
+    const targetName = name.trim();
+    if (!targetName) throw new Error('Target name missing.');
+    if (!type) throw new Error('Target type missing.');
+    const productType = PRODUCTTYPE_BY_TARGETTYPE[type];
+    if (!productType) throw new Error('Target type invalid: ' + type);
+
+    // Quote placement mirrors legacy `xcode` (the trailing quote lands inside join).
+    const infoPlist = '"' + path.join(targetSubfolder, targetSubfolder + '-Info.plist"');
+    const runpath = '"$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks"';
+    const debug: Record<string, any> = {
+      GCC_PREPROCESSOR_DEFINITIONS: ['"DEBUG=1"', '"$(inherited)"'],
+      INFOPLIST_FILE: infoPlist,
+      LD_RUNPATH_SEARCH_PATHS: runpath,
+      PRODUCT_NAME: '"' + targetName + '"',
+      SKIP_INSTALL: 'YES',
+    };
+    const release: Record<string, any> = {
+      INFOPLIST_FILE: infoPlist,
+      LD_RUNPATH_SEARCH_PATHS: runpath,
+      PRODUCT_NAME: '"' + targetName + '"',
+      SKIP_INSTALL: 'YES',
+    };
+    if (bundleId) {
+      debug.PRODUCT_BUNDLE_IDENTIFIER = '"' + bundleId + '"';
+      release.PRODUCT_BUNDLE_IDENTIFIER = '"' + bundleId + '"';
+    }
+
+    const buildConfigurations = this.addXCConfigurationList(
+      [
+        { name: 'Debug', isa: 'XCBuildConfiguration', buildSettings: debug },
+        { name: 'Release', isa: 'XCBuildConfiguration', buildSettings: release },
+      ],
+      'Release',
+      'Build configuration list for PBXNativeTarget "' + targetName + '"'
+    );
+
+    const productFile = this.addProductFile(targetName, {
+      group: 'Copy Files',
+      target: targetUuid,
+      explicitFileType: FILETYPE_BY_PRODUCTTYPE[productType],
+    });
+    this.addToPbxBuildFileSection(productFile);
+
+    const target = {
+      uuid: targetUuid,
+      pbxNativeTarget: {
+        isa: 'PBXNativeTarget',
+        name: '"' + targetName + '"',
+        productName: '"' + targetName + '"',
+        productReference: productFile.fileRef,
+        productType: '"' + productType + '"',
+        buildConfigurationList: buildConfigurations.uuid,
+        buildPhases: [],
+        buildRules: [],
+        dependencies: [],
+      },
+    };
+    this.addToPbxNativeTargetSection(target);
+
+    if (type === 'app_extension') {
+      this.addBuildPhase(
+        [],
+        'PBXCopyFilesBuildPhase',
+        'Copy Files',
+        this.getFirstTarget().uuid,
+        type
+      );
+      this.addToPbxCopyfilesBuildPhase(productFile);
+    }
+
+    this.addToPbxProjectSection(target);
+    this.addTargetDependency(this.getFirstTarget().uuid, [target.uuid]);
+
+    return target;
   }
-  addTargetDependency(..._args: any[]): any {
-    notImplemented('addTargetDependency');
+  addTargetDependency(targetUuid: string, dependencyTargets: string[]): any {
+    if (!targetUuid) return undefined;
+    const targetModel = this.safeGetObject(targetUuid);
+    if (!targetModel) throw new Error('Invalid target: ' + targetUuid);
+    for (const dep of dependencyTargets) {
+      if (!this.safeGetObject(dep)) throw new Error('Invalid target: ' + dep);
+    }
+    // Legacy only wires dependencies when both sections already exist in the project.
+    const sectionsExist =
+      this.modelsOfIsa('PBXTargetDependency').length > 0 &&
+      this.modelsOfIsa('PBXContainerItemProxy').length > 0;
+    for (const depUuid of sectionsExist ? dependencyTargets : []) {
+      const depModel = this.safeGetObject(depUuid);
+      const itemProxy = this.createObjectWithUuid(this.generateUuid(), {
+        isa: 'PBXContainerItemProxy',
+        containerPortal: this.inner.rootObject,
+        proxyType: 1,
+        remoteGlobalIDString: depUuid,
+        remoteInfo: trimQuotes(depModel.props.name),
+      });
+      const targetDependency = this.createObjectWithUuid(this.generateUuid(), {
+        isa: 'PBXTargetDependency',
+        target: depModel,
+        targetProxy: itemProxy,
+      });
+      targetModel.props.dependencies.push(targetDependency);
+    }
+    return { uuid: targetUuid, target: this.legacyTarget(targetModel) };
   }
   addXCConfigurationList(
     configurationObjectsArray: any[],
