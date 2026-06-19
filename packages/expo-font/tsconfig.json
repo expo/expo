@@ -6,6 +6,5 @@
     "noEmit": true,
     "types": ["jest", "node"]
   },
-  "include": ["./src"],
-  "exclude": ["**/__rsc_tests__/*"]
+  "include": ["./src"]
 }

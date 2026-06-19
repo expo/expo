@@ -10,5 +10,5 @@
   // `*.tsd.ts` files are type-assertion tests run by `jest-runner-tsd` (see `test:tsd`),
   // which uses its own compiler that understands `expectError`. They intentionally contain
   // type errors, so they must be excluded from the regular `tsc` typecheck.
-  "exclude": ["**/__rsc_tests__/*", "**/*.tsd.ts"]
+  "exclude": ["**/*.tsd.ts"]
 }
