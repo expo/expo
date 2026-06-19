@@ -15,6 +15,10 @@ jest.mock('@expo/ui/jetpack-compose', () => {
   };
 });
 
+jest.mock('@expo/ui/jetpack-compose/modifiers', () => ({
+  alpha: jest.fn((value: number) => ({ type: 'alpha', alpha: value })),
+}));
+
 jest.mock('../../../color', () => ({
   Color: {
     android: {
@@ -333,6 +337,128 @@ describe('NativeToolbarButton', () => {
       expect(MockedAnimatedItemContainer.mock.calls[0]![0]).toMatchObject({
         visible: false,
       });
+    });
+
+    it('does not render badge text when value is null', () => {
+      render(<NativeToolbarButton {...defaultProps} badge={{ value: null }} />);
+
+      expect(MockedBox).toHaveBeenCalled();
+      expect(MockedBadge).toHaveBeenCalled();
+      expect(MockedComposeText).not.toHaveBeenCalled();
+    });
+
+    it('renders badge text "0" when value is 0', () => {
+      render(<NativeToolbarButton {...defaultProps} badge={{ value: 0 }} />);
+
+      expect(MockedComposeText).toHaveBeenCalled();
+      expect(MockedComposeText.mock.calls[0]![0]).toMatchObject({
+        children: '0',
+      });
+    });
+
+    it('passes fontSize from badge.style to ComposeText', () => {
+      render(
+        <NativeToolbarButton {...defaultProps} badge={{ value: '1', style: { fontSize: 10 } }} />
+      );
+
+      expect(MockedComposeText.mock.calls[0]![0]).toMatchObject({
+        style: expect.objectContaining({ fontSize: 10 }),
+      });
+    });
+
+    it('passes fontFamily from badge.style to ComposeText', () => {
+      render(
+        <NativeToolbarButton
+          {...defaultProps}
+          badge={{ value: '1', style: { fontFamily: 'monospace' } }}
+        />
+      );
+
+      expect(MockedComposeText.mock.calls[0]![0]).toMatchObject({
+        style: expect.objectContaining({ fontFamily: 'monospace' }),
+      });
+    });
+
+    it('passes supported fontWeight from badge.style to ComposeText', () => {
+      render(
+        <NativeToolbarButton
+          {...defaultProps}
+          badge={{ value: '1', style: { fontWeight: '700' } }}
+        />
+      );
+
+      expect(MockedComposeText.mock.calls[0]![0]).toMatchObject({
+        style: expect.objectContaining({ fontWeight: '700' }),
+      });
+    });
+
+    it('warns and omits unsupported fontWeight values', () => {
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      render(
+        <NativeToolbarButton
+          {...defaultProps}
+          badge={{ value: '1', style: { fontWeight: 'semibold' } }}
+        />
+      );
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Unsupported fontWeight "semibold"')
+      );
+      expect(MockedComposeText.mock.calls[0]![0]).toMatchObject({
+        style: expect.objectContaining({ fontWeight: undefined }),
+      });
+      consoleSpy.mockRestore();
+    });
+
+    it('applies alpha modifier to Box when disabled with badge', () => {
+      render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} disabled />);
+
+      expect(MockedBox.mock.calls[0]![0]).toMatchObject({
+        modifiers: [{ type: 'alpha', alpha: 0.38 }],
+      });
+    });
+
+    it('does not apply alpha modifier to Box when enabled with badge', () => {
+      render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
+
+      expect(MockedBox.mock.calls[0]![0].modifiers).toBeUndefined();
+    });
+  });
+
+  describe('accessibility with badge', () => {
+    it('appends badge value to contentDescription', () => {
+      render(
+        <NativeToolbarButton
+          {...defaultProps}
+          accessibilityLabel="Notifications"
+          badge={{ value: '3' }}
+        />
+      );
+
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        contentDescription: 'Notifications, 3',
+      });
+    });
+
+    it('does not append badge value when badge has no value', () => {
+      render(
+        <NativeToolbarButton
+          {...defaultProps}
+          accessibilityLabel="Notifications"
+          badge={{ value: '' }}
+        />
+      );
+
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        contentDescription: 'Notifications',
+      });
+    });
+
+    it('does not set contentDescription when no accessibilityLabel', () => {
+      render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
+
+      expect(MockedIcon.mock.calls[0]![0].contentDescription).toBeUndefined();
     });
   });
 });

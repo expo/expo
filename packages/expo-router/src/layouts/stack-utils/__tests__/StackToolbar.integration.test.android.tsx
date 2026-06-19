@@ -348,9 +348,34 @@ describe('Stack.Toolbar Android integration tests', () => {
 
         expect(screen.getByTestId('index')).toBeVisible();
         expect(screen.getByTestId('Box')).toBeDefined();
-        expect(screen.getByTestId('Badge')).toBeDefined();
+        const badge = screen.getByTestId('Badge');
+        expect(badge).toBeDefined();
+        expect(within(badge).getByTestId('ComposeText')).toBeDefined();
+        expect(within(badge).getByTestId('ComposeText').props.children).toBe('3');
       }
     );
+
+    it('renders dot badge when Badge has no children', () => {
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Button icon={{ uri: 'icon' }}>
+                  <Stack.Toolbar.Icon src={{ uri: 'icon' }} />
+                  <Stack.Toolbar.Badge />
+                </Stack.Toolbar.Button>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen.getByTestId('Badge')).toBeDefined();
+      expect(screen.queryByTestId('ComposeText')).toBeNull();
+    });
 
     it('does not render Box when button has no Badge child', () => {
       renderRouter({

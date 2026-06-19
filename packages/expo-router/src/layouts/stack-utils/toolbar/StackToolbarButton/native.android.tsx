@@ -1,5 +1,6 @@
 'use client';
 import { Badge, Box, Icon, IconButton, Text as ComposeText } from '@expo/ui/jetpack-compose';
+import { alpha as alphaModifier } from '@expo/ui/jetpack-compose/modifiers';
 
 import type { NativeToolbarButtonProps } from './types';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
@@ -31,12 +32,20 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
       ? null
       : (props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
 
+  const hasBadge = props.badge?.value != null && props.badge?.value !== '';
+
+  const contentDescription = props.accessibilityLabel
+    ? hasBadge
+      ? `${props.accessibilityLabel}, ${props.badge!.value}`
+      : props.accessibilityLabel
+    : undefined;
+
   const iconElement = (
     <Icon
       source={props.source}
       tint={tintColor}
       size={24}
-      contentDescription={props.accessibilityLabel}
+      contentDescription={contentDescription}
     />
   );
 
@@ -46,12 +55,12 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
     </IconButton>
   );
 
-  const hasBadge = props.badge?.value != null;
-
   return (
     <AnimatedItemContainer visible={!props.hidden}>
       {props.badge ? (
-        <Box contentAlignment="topEnd">
+        <Box
+          contentAlignment="topEnd"
+          modifiers={props.disabled ? [alphaModifier(0.38)] : undefined}>
           {button}
           <Badge
             containerColor={props.badge.style?.backgroundColor}
