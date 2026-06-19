@@ -24,7 +24,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "jest",
-    "test:rsc": "jest --config jest-rsc.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
@@ -60,8 +59,5 @@
     "react-native-web": {
       "optional": true
     }
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   }
 }
