@@ -15,6 +15,7 @@ import {
   presentationBackground,
   presentationDetents,
   presentationDragIndicator,
+  presentationSizing,
 } from '../../swift-ui/modifiers/presentationModifiers';
 
 export { useBottomSheet } from './context';
@@ -206,7 +207,9 @@ export function BottomSheet(props: BottomSheetProps) {
     const bg = extractBackgroundColor(backgroundStyle);
     return [
       ...(fitToContents
-        ? []
+        ? // The native sheet derives a content-height detent; `presentationSizing('fitted')` makes
+          // the iPad form sheet size to that content instead of opening near full height.
+          [presentationSizing('fitted')]
         : [
             presentationDetents(detents, {
               selection: selectedDetent,
