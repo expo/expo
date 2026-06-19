@@ -15,7 +15,8 @@ export const event = events('expo', (t) => [
       plugins: {
         packageName: string;
         bannerTitle: string;
-        webpageEndpoint: string;
+        cliBanner: boolean;
+        webpageEndpoint: string | undefined;
       }[];
     }
   >(),
@@ -30,13 +31,12 @@ export default class DevToolsPluginManager {
     if (!this.plugins) {
       this.plugins = await this.queryAutolinkedPluginsAsync(this.projectRoot);
       event('dev-tools-plugin:load', {
-        plugins: this.plugins
-          .filter((plugin) => plugin.webpageEndpoint != null)
-          .map((plugin) => ({
-            packageName: plugin.packageName,
-            bannerTitle: plugin.bannerTitle,
-            webpageEndpoint: plugin.webpageEndpoint!,
-          })),
+        plugins: this.plugins.map((plugin) => ({
+          packageName: plugin.packageName,
+          bannerTitle: plugin.bannerTitle,
+          cliBanner: plugin.cliBanner,
+          webpageEndpoint: plugin.webpageEndpoint,
+        })),
       });
     }
     return this.plugins;

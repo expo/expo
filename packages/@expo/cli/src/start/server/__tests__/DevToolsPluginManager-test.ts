@@ -126,7 +126,7 @@ describe('DevToolsPluginManager', () => {
     );
   });
 
-  it('should log loaded plugins with a webroot or server available', async () => {
+  it('should log loaded plugins with their banner and webpage endpoint metadata', async () => {
     mockAutolinkingPlugins([
       {
         packageName: 'web-plugin',
@@ -170,16 +170,26 @@ describe('DevToolsPluginManager', () => {
         {
           packageName: 'web-plugin',
           bannerTitle: 'Web Plugin',
+          cliBanner: true,
           webpageEndpoint: '/_expo/plugins/web-plugin',
         },
         {
           packageName: 'server-plugin',
           bannerTitle: 'server-plugin',
+          cliBanner: true,
           webpageEndpoint: '/_expo/plugins/server-plugin',
         },
         {
           packageName: 'untitled-web-plugin',
+          bannerTitle: 'untitled-web-plugin',
+          cliBanner: false,
           webpageEndpoint: '/_expo/plugins/untitled-web-plugin',
+        },
+        {
+          packageName: 'cli-only-plugin',
+          bannerTitle: 'cli-only-plugin',
+          cliBanner: false,
+          webpageEndpoint: undefined,
         },
       ],
     });

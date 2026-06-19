@@ -316,13 +316,14 @@ export interface RawExpoModuleConfig {
      */
     webpageRoot?: string;
     /**
-     * The title to show in the Expo CLI startup banner. Defaults to the package name if set,
+     * The title to show in the Expo CLI startup banner. Defaults to the package name if passing `true`,
      * otherwise the banner is not shown.
      */
     bannerTitle?: string | boolean;
     /**
      * A package-local JavaScript file default-exporting a `handler(request)` function that
-     * handles requests to the plugin endpoint. Runs in the Expo CLI Node.js process.
+     * handles requests to the plugin endpoint and optional `webSocketHandlers` for WebSocket connections.
+     * Runs in the Expo CLI Node.js process.
      */
     serverEntryPoint?: string;
     /**
