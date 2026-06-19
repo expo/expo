@@ -20,6 +20,9 @@ function unquoteForWrite(value: any): any {
   return typeof value === 'string' ? trimQuotes(value) : value;
 }
 
+// `$(inherited)`, stored unquoted (`@bacons` re-quotes at serialize).
+const INHERITED = '$(inherited)';
+
 /**
  * Backwards-compatible facade exposing the legacy `xcode` `XcodeProject` API on
  * top of a typed `@bacons/xcode` project. The substrate (construct / parse /
@@ -128,6 +131,20 @@ export class XcodeProjectShim {
     const buildFile = this.safeGetObject(file.uuid);
     if (!buildFile) return;
     this.buildPhaseForTarget(isa, file.target).props.files.push(buildFile);
+  }
+
+  // Append a value to an array-valued build setting, on the configs of the app
+  // target (legacy scopes these to configs whose PRODUCT_NAME is the productName).
+  private appendScopedArraySetting(key: string, value: any): void {
+    const productName = this.productName;
+    for (const config of this.modelsOfIsa('XCBuildConfiguration')) {
+      const buildSettings = config.props.buildSettings;
+      if (trimQuotes(buildSettings.PRODUCT_NAME ?? '') !== productName) continue;
+      if (!buildSettings[key] || buildSettings[key] === INHERITED) {
+        buildSettings[key] = [INHERITED];
+      }
+      buildSettings[key].push(unquoteForWrite(value));
+    }
   }
 
   /** Legacy section dict: `{ uuid: object, uuid_comment: name }` for each model of an isa. */
@@ -305,7 +322,11 @@ export class XcodeProjectShim {
     notImplemented('getBuildConfigByName');
   }
   get productName(): any {
-    return notImplemented('productName');
+    for (const config of this.modelsOfIsa('XCBuildConfiguration')) {
+      const name = config.props.buildSettings.PRODUCT_NAME;
+      if (name) return trimQuotes(name);
+    }
+    return undefined;
   }
 
   // === Mutate: build settings ===
@@ -345,8 +366,8 @@ export class XcodeProjectShim {
   removeFromBuildSettings(..._args: any[]): any {
     notImplemented('removeFromBuildSettings');
   }
-  addToHeaderSearchPaths(..._args: any[]): any {
-    notImplemented('addToHeaderSearchPaths');
+  addToHeaderSearchPaths(file: any): void {
+    this.appendScopedArraySetting('HEADER_SEARCH_PATHS', file);
   }
   removeFromHeaderSearchPaths(..._args: any[]): any {
     notImplemented('removeFromHeaderSearchPaths');
@@ -363,8 +384,8 @@ export class XcodeProjectShim {
   removeFromFrameworkSearchPaths(..._args: any[]): any {
     notImplemented('removeFromFrameworkSearchPaths');
   }
-  addToOtherLinkerFlags(..._args: any[]): any {
-    notImplemented('addToOtherLinkerFlags');
+  addToOtherLinkerFlags(flag: any): void {
+    this.appendScopedArraySetting('OTHER_LDFLAGS', flag);
   }
   removeFromOtherLinkerFlags(..._args: any[]): any {
     notImplemented('removeFromOtherLinkerFlags');
@@ -580,14 +601,16 @@ export class XcodeProjectShim {
 
   // === Mutate: regions / variant groups ===
 
-  addKnownRegion(..._args: any[]): any {
-    notImplemented('addKnownRegion');
+  addKnownRegion(name: string): void {
+    const props = this.inner.rootObject.props;
+    if (!props.knownRegions) props.knownRegions = [];
+    if (!this.hasKnownRegion(name)) props.knownRegions.push(name);
   }
   removeKnownRegion(..._args: any[]): any {
     notImplemented('removeKnownRegion');
   }
-  hasKnownRegion(..._args: any[]): any {
-    notImplemented('hasKnownRegion');
+  hasKnownRegion(name: string): boolean {
+    return (this.inner.rootObject.props.knownRegions ?? []).includes(name);
   }
   addLocalizationVariantGroup(..._args: any[]): any {
     notImplemented('addLocalizationVariantGroup');

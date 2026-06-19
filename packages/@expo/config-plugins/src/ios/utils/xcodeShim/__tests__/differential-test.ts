@@ -25,6 +25,9 @@ const IMPLEMENTED = new Set<string>([
   'files/add-duplicate-resource',
   'files/add-pbx-group',
   'files/add-to-pbx-group',
+  'build-settings/add-header-search-paths',
+  'build-settings/add-other-linker-flags',
+  'misc/add-known-region',
 ]);
 
 function runOn(backend: Backend, scenario: Scenario): { result: unknown; pbxproj: string } {
