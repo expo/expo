@@ -2,7 +2,7 @@
 
 #include "../ExpoHeader.pch"
 #include "../JavaScriptObject.h"
-#include "MainRuntimeInstaller.h"
+#include "../installers/MainRuntimeInstaller.h"
 
 namespace jni = facebook::jni;
 

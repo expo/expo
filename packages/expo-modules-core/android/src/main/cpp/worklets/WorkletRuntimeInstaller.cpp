@@ -1,12 +1,8 @@
 #include "WorkletRuntimeInstaller.h"
 
-#if WORKLETS_ENABLED
-
-#include "../worklets/WorkletJSCallInvoker.h"
+#include "WorkletJSCallInvoker.h"
 #include <worklets/Compat/StableApi.h>
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
-
-#endif
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -27,7 +23,6 @@ jni::local_ref<JSIContext::javaobject> WorkletRuntimeInstaller::install(
   jlong jsRuntimePointer,
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator
 ) noexcept {
-#if WORKLETS_ENABLED
   auto *jsRuntime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
   auto workletRuntime = worklets::WorkletRuntime::getWeakRuntimeFromJSIRuntime(*jsRuntime);
 
@@ -41,16 +36,12 @@ jni::local_ref<JSIContext::javaobject> WorkletRuntimeInstaller::install(
   WorkletRuntimeInstaller::prepareRuntime(jsiContext);
 
   return jsiContext;
-#else
-  return nullptr;
-#endif
 }
 
 jlong WorkletRuntimeInstaller::resolveUIRuntimePointer(
   jni::alias_ref<jni::JClass>,
   jni::alias_ref<JavaScriptObject::javaobject> uiRuntimeHolder
 ) noexcept {
-#if WORKLETS_ENABLED
   auto *holder = uiRuntimeHolder->cthis();
   jsi::Runtime &runtime = holder->getRuntime();
   std::shared_ptr<jsi::Object> holderObject = holder->get();
@@ -63,15 +54,11 @@ jlong WorkletRuntimeInstaller::resolveUIRuntimePointer(
 
   jsi::Runtime &uiRuntime = worklets::getJSIRuntimeFromWorkletRuntime(workletRuntime);
   return reinterpret_cast<jlong>(&uiRuntime);
-#else
-  return 0;
-#endif
 }
 
 void WorkletRuntimeInstaller::prepareRuntime(
   jni::local_ref<JSIContext::javaobject> jsiContext
 ) noexcept {
-#if WORKLETS_ENABLED
   auto cxxPart = jsiContext->cthis();
   auto runtimeHolder = cxxPart->runtimeHolder;
   jsi::Runtime &runtime = runtimeHolder->get();
@@ -101,7 +88,6 @@ void WorkletRuntimeInstaller::prepareRuntime(
 //    cxxPart,
 //    mainObject
 //  );
-#endif
 }
 
 } // namespace expo
