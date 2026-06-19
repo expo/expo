@@ -7636,7 +7636,6 @@ exports[`legacy xcode golden baseline files/add-resource-file-no-build 1`] = `
 				UUID-0005 /* Expo.plist in Resources */,
 				UUID-0001 /* Images.xcassets in Resources */,
 				UUID-0003 /* SplashScreen.storyboard in Resources */,
-				UUID-0032 /* readme-only.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7719,7 +7718,7 @@ exports[`legacy xcode golden baseline files/add-resource-file-no-build 1`] = `
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		UUID-0033 /* Debug */ = {
+		UUID-0032 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -7752,7 +7751,7 @@ exports[`legacy xcode golden baseline files/add-resource-file-no-build 1`] = `
 			};
 			name = Debug;
 		};
-		UUID-0034 /* Release */ = {
+		UUID-0033 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -7779,7 +7778,7 @@ exports[`legacy xcode golden baseline files/add-resource-file-no-build 1`] = `
 			};
 			name = Release;
 		};
-		UUID-0035 /* Debug */ = {
+		UUID-0034 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -7838,7 +7837,7 @@ exports[`legacy xcode golden baseline files/add-resource-file-no-build 1`] = `
 			};
 			name = Debug;
 		};
-		UUID-0036 /* Release */ = {
+		UUID-0035 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -7896,8 +7895,8 @@ exports[`legacy xcode golden baseline files/add-resource-file-no-build 1`] = `
 		UUID-0024 /* Build configuration list for PBXNativeTarget "HelloWorld" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				UUID-0033 /* Debug */,
-				UUID-0034 /* Release */,
+				UUID-0032 /* Debug */,
+				UUID-0033 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -7905,8 +7904,8 @@ exports[`legacy xcode golden baseline files/add-resource-file-no-build 1`] = `
 		UUID-0031 /* Build configuration list for PBXProject "HelloWorld" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				UUID-0035 /* Debug */,
-				UUID-0036 /* Release */,
+				UUID-0034 /* Debug */,
+				UUID-0035 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

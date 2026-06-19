@@ -65,13 +65,15 @@ function addFileToGroup(
   file.fileRef = project.generateUuid();
 
   project.addToPbxFileReferenceSection(file);
+  // Real callers always add resource/source files as build files; a non-build
+  // file is just a file reference in a group, not linked into a build phase.
   if (isBuildFile) {
     project.addToPbxBuildFileSection(file);
-  }
-  if (phase === 'resources') {
-    project.addToPbxResourcesBuildPhase(file);
-  } else {
-    project.addToPbxSourcesBuildPhase(file);
+    if (phase === 'resources') {
+      project.addToPbxResourcesBuildPhase(file);
+    } else {
+      project.addToPbxSourcesBuildPhase(file);
+    }
   }
   group.children.push({ value: file.fileRef, comment: file.basename });
   return { basename: file.basename, added: true };

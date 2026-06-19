@@ -30,8 +30,14 @@ describe('stubbed surface', () => {
     expect(() => p.addTarget()).toThrow(/not implemented yet/);
     expect(() => p.pbxProjectSection()).toThrow(/not implemented yet/);
   });
+});
 
-  it('throws "not implemented yet" when constructing a pbxFile', () => {
-    expect(() => new PbxFile('Foo.swift')).toThrow(/not implemented yet/);
+describe('pbxFile', () => {
+  it('derives file metadata from the path', () => {
+    const file = new PbxFile('HelloWorld/Foo.swift');
+    expect(file.basename).toBe('Foo.swift');
+    expect(file.lastKnownFileType).toBe('sourcecode.swift');
+    expect(file.group).toBe('Sources');
+    expect(file.sourceTree).toBe('"<group>"');
   });
 });

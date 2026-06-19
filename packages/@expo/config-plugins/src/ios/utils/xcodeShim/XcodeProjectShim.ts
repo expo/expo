@@ -87,6 +87,58 @@ export class XcodeProjectShim {
     };
   }
 
+  // `createObject` builds a model with a caller-chosen uuid but does not register
+  // it; `set` adds it to the project so it serializes. Undefined fields are
+  // dropped so the shim never emits `= undefined`.
+  private createObjectWithUuid(uuid: string, json: Record<string, any>): any {
+    const clean: Record<string, any> = {};
+    for (const [key, value] of Object.entries(json)) {
+      if (value !== undefined) clean[key] = value;
+    }
+    const model = this.inner.createObject(uuid, clean as any);
+    this.inner.set(uuid, model);
+    return model;
+  }
+
+  private firstTargetModel(): any {
+    return this.inner.rootObject.props.targets[0];
+  }
+
+  /** Legacy-shaped view of a native target: references as UUIDs. */
+  private legacyTarget(model: any): any {
+    return {
+      uuid: model.uuid,
+      isa: model.isa,
+      name: model.props.name,
+      productName: model.props.productName,
+      productType: model.props.productType,
+      buildConfigurationList: model.props.buildConfigurationList?.uuid,
+    };
+  }
+
+  private buildPhaseForTarget(isa: string, targetUuid?: string): any {
+    const target = (targetUuid && this.safeGetObject(targetUuid)) || this.firstTargetModel();
+    return (target?.props?.buildPhases ?? []).find((phase: any) => phase.isa === isa);
+  }
+
+  // Append a build file to a target's phase. A missing build file (e.g. a file
+  // added without a PBXBuildFile) is skipped rather than linked as a dangling ref.
+  private addBuildFileToPhase(isa: string, file: any): void {
+    const buildFile = this.safeGetObject(file.uuid);
+    if (!buildFile) return;
+    this.buildPhaseForTarget(isa, file.target).props.files.push(buildFile);
+  }
+
+  /** Legacy section dict: `{ uuid: object, uuid_comment: name }` for each model of an isa. */
+  private legacySection(isa: string): Record<string, any> {
+    const section: Record<string, any> = {};
+    for (const model of this.modelsOfIsa(isa)) {
+      section[model.uuid] = model.props;
+      section[`${model.uuid}_comment`] = model.getDisplayName?.() ?? model.uuid;
+    }
+    return section;
+  }
+
   /** Legacy-shaped view of the root project: references as UUIDs, `targets` as a live array. */
   private legacyProject(): any {
     const project = this.inner;
@@ -128,8 +180,13 @@ export class XcodeProjectShim {
     notImplemented('allUuids');
   }
 
-  generateUuid(..._args: any[]): any {
-    notImplemented('generateUuid');
+  generateUuid(): string {
+    let id: string;
+    do {
+      id = '';
+      for (let i = 0; i < 24; i++) id += '0123456789ABCDEF'[Math.floor(Math.random() * 16)];
+    } while (this.inner.has(id));
+    return id;
   }
 
   // === Read / query ===
@@ -146,11 +203,11 @@ export class XcodeProjectShim {
   pbxXCConfigurationList(..._args: any[]): any {
     notImplemented('pbxXCConfigurationList');
   }
-  pbxFileReferenceSection(..._args: any[]): any {
-    notImplemented('pbxFileReferenceSection');
+  pbxFileReferenceSection(): any {
+    return this.legacySection('PBXFileReference');
   }
-  pbxBuildFileSection(..._args: any[]): any {
-    notImplemented('pbxBuildFileSection');
+  pbxBuildFileSection(): any {
+    return this.legacySection('PBXBuildFile');
   }
   xcVersionGroupSection(..._args: any[]): any {
     notImplemented('xcVersionGroupSection');
@@ -183,11 +240,15 @@ export class XcodeProjectShim {
   getFirstProject(): any {
     return { uuid: this.inner.rootObject.uuid, firstProject: this.legacyProject() };
   }
-  getFirstTarget(..._args: any[]): any {
-    notImplemented('getFirstTarget');
+  getFirstTarget(): any {
+    const model = this.firstTargetModel();
+    return { uuid: model.uuid, firstTarget: this.legacyTarget(model) };
   }
-  getTarget(..._args: any[]): any {
-    notImplemented('getTarget');
+  getTarget(productType: string): any {
+    const model = this.modelsOfIsa('PBXNativeTarget').find(
+      (t) => trimQuotes(t.props.productType) === productType
+    );
+    return model ? { uuid: model.uuid, target: this.legacyTarget(model) } : null;
   }
   getPBXGroupByKey(key: string): any {
     const model = this.safeGetObject(key);
@@ -309,14 +370,27 @@ export class XcodeProjectShim {
 
   // === Mutate: sections ===
 
-  addToPbxFileReferenceSection(..._args: any[]): any {
-    notImplemented('addToPbxFileReferenceSection');
+  addToPbxFileReferenceSection(file: any): void {
+    this.createObjectWithUuid(file.fileRef, {
+      isa: 'PBXFileReference',
+      name: file.basename,
+      path: file.path,
+      sourceTree: unquoteForWrite(file.sourceTree),
+      fileEncoding: file.fileEncoding,
+      lastKnownFileType: file.lastKnownFileType,
+      explicitFileType: unquoteForWrite(file.explicitFileType),
+      includeInIndex: file.includeInIndex,
+    });
   }
   removeFromPbxFileReferenceSection(..._args: any[]): any {
     notImplemented('removeFromPbxFileReferenceSection');
   }
-  addToPbxBuildFileSection(..._args: any[]): any {
-    notImplemented('addToPbxBuildFileSection');
+  addToPbxBuildFileSection(file: any): void {
+    this.createObjectWithUuid(file.uuid, {
+      isa: 'PBXBuildFile',
+      fileRef: this.inner.getObject(file.fileRef),
+      settings: file.settings,
+    });
   }
   removeFromPbxBuildFileSection(..._args: any[]): any {
     notImplemented('removeFromPbxBuildFileSection');
@@ -333,14 +407,14 @@ export class XcodeProjectShim {
 
   // === Mutate: build phases ===
 
-  addToPbxResourcesBuildPhase(..._args: any[]): any {
-    notImplemented('addToPbxResourcesBuildPhase');
+  addToPbxResourcesBuildPhase(file: any): void {
+    this.addBuildFileToPhase('PBXResourcesBuildPhase', file);
   }
   removeFromPbxResourcesBuildPhase(..._args: any[]): any {
     notImplemented('removeFromPbxResourcesBuildPhase');
   }
-  addToPbxSourcesBuildPhase(..._args: any[]): any {
-    notImplemented('addToPbxSourcesBuildPhase');
+  addToPbxSourcesBuildPhase(file: any): void {
+    this.addBuildFileToPhase('PBXSourcesBuildPhase', file);
   }
   removeFromPbxSourcesBuildPhase(..._args: any[]): any {
     notImplemented('removeFromPbxSourcesBuildPhase');

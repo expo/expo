@@ -19,6 +19,10 @@ const IMPLEMENTED = new Set<string>([
   'build-settings/update-property-for-target',
   'files/has-file',
   'files/ensure-group-recursively',
+  'files/add-resource-file',
+  'files/add-resource-file-no-build',
+  'files/add-source-file',
+  'files/add-duplicate-resource',
 ]);
 
 function runOn(backend: Backend, scenario: Scenario): { result: unknown; pbxproj: string } {

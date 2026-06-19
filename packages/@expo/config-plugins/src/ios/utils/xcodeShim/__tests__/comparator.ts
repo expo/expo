@@ -74,7 +74,11 @@ function fingerprint(value: any, objects: Record<string, any>, stack: Set<string
 function fingerprintObject(obj: any, objects: Record<string, any>, stack: Set<string>): any {
   const out: Record<string, any> = {};
   for (const key of Object.keys(obj)) {
-    out[key] = fingerprint(obj[key], objects, stack);
+    const value = obj[key];
+    // Legacy serializes unset fields as the bareword `undefined` (parsed back as
+    // the string "undefined"); an unset field is semantically absent.
+    if (value === undefined || value === 'undefined') continue;
+    out[key] = fingerprint(value, objects, stack);
   }
   return out;
 }

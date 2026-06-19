@@ -80,6 +80,15 @@ describe('compareGraphs (semantic, UUID-independent)', () => {
     expect(compareGraphs(mk(1), mk(101))).toEqual({ equal: true });
   });
 
+  it('treats a field valued "undefined" (legacy unset) as absent', () => {
+    const a = {
+      rootObject: hex(1),
+      objects: { [hex(1)]: { isa: 'PBXFileReference', path: 'A', explicitFileType: 'undefined' } },
+    };
+    const b = { rootObject: hex(1), objects: { [hex(1)]: { isa: 'PBXFileReference', path: 'A' } } };
+    expect(compareGraphs(a, b).equal).toBe(true);
+  });
+
   it('compares UUID-keyed dicts (TargetAttributes) structurally', () => {
     const mk = (base: number) => ({
       rootObject: hex(base),
