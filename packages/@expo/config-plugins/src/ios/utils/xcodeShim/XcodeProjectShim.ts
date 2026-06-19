@@ -23,13 +23,65 @@ function unquoteForWrite(value: any): any {
 // `$(inherited)`, stored unquoted (`@bacons` re-quotes at serialize).
 const INHERITED = '$(inherited)';
 
+// Array-valued build settings written directly (e.g. HEADER_SEARCH_PATHS) are
+// unquoted on push/index-set so `@bacons` doesn't double-quote pre-quoted entries.
+function unquotingArray(arr: any[]): any[] {
+  return new Proxy(arr, {
+    set(target, prop, value) {
+      if (typeof prop === 'string' && /^\d+$/.test(prop)) {
+        target[Number(prop)] = unquoteForWrite(value);
+        return true;
+      }
+      return Reflect.set(target, prop, value);
+    },
+  });
+}
+
 // Build settings written directly through a section view (bypassing
-// addBuildProperty) are unquoted on assignment so `@bacons` doesn't double-quote.
+// addBuildProperty) are unquoted so `@bacons` doesn't double-quote. Scalar and
+// array-element assignments are unquoted, and array reads return an unquoting
+// view so later `.push(...)` of quoted values is normalized too.
 function buildSettingsProxy(buildSettings: Record<string, any>): Record<string, any> {
   return new Proxy(buildSettings, {
+    get(target, key) {
+      const value = target[key as string];
+      return Array.isArray(value) ? unquotingArray(value) : value;
+    },
     set(target, key, value) {
-      target[key as string] = typeof key === 'string' ? unquoteForWrite(value) : value;
+      if (typeof key !== 'string') {
+        target[key as any] = value;
+      } else {
+        target[key] = Array.isArray(value) ? value.map(unquoteForWrite) : unquoteForWrite(value);
+      }
       return true;
+    },
+  });
+}
+
+// Object fields that hold arrays of references (even when currently empty).
+const REF_ARRAY_FIELDS = new Set([
+  'children',
+  'files',
+  'buildPhases',
+  'dependencies',
+  'buildConfigurations',
+  'buildRules',
+  'targets',
+]);
+
+// Define a legacy-shaped ref-array property with both get (live view) and set
+// (wholesale reassignment, which legacy plugins do e.g. `group.children = [...]`).
+function defineLiveRefArray(view: any, key: string, backing: any[], project: XcodeProject): void {
+  Object.defineProperty(view, key, {
+    enumerable: true,
+    configurable: true,
+    get() {
+      return legacyRefArray(backing, project);
+    },
+    set(entries: any[]) {
+      backing.length = 0;
+      const arr = legacyRefArray(backing, project);
+      for (const entry of entries ?? []) arr.push(entry);
     },
   });
 }
@@ -177,17 +229,15 @@ export class XcodeProjectShim {
 
   /** Legacy-shaped view of a group: references as UUIDs, `children` as a live array. */
   private legacyGroup(model: any): any {
-    const project = this.inner;
-    return {
+    const view: any = {
       uuid: model.uuid,
       isa: model.isa,
       name: model.props.name,
       path: model.props.path,
       sourceTree: model.props.sourceTree,
-      get children() {
-        return legacyRefArray(model.props.children, project);
-      },
     };
+    defineLiveRefArray(view, 'children', model.props.children, this.inner);
+    return view;
   }
 
   // `createObject` builds a model with a caller-chosen uuid but does not register
@@ -209,22 +259,18 @@ export class XcodeProjectShim {
 
   /** Legacy-shaped view of a native target: references as UUIDs, ref arrays live. */
   private legacyTarget(model: any): any {
-    const project = this.inner;
     const props = model.props;
-    return {
+    const view: any = {
       uuid: model.uuid,
       isa: model.isa,
       name: props.name,
       productName: props.productName,
       productType: props.productType,
       buildConfigurationList: props.buildConfigurationList?.uuid,
-      get dependencies() {
-        return legacyRefArray(props.dependencies, project);
-      },
-      get buildPhases() {
-        return legacyRefArray(props.buildPhases, project);
-      },
     };
+    defineLiveRefArray(view, 'dependencies', props.dependencies, this.inner);
+    defineLiveRefArray(view, 'buildPhases', props.buildPhases, this.inner);
+    return view;
   }
 
   private targetModel(targetUuid?: string): any {
@@ -239,9 +285,8 @@ export class XcodeProjectShim {
 
   /** Legacy-shaped view of a build phase: scalars pass through, `files` is a live array. */
   private legacyBuildPhase(model: any): any {
-    const project = this.inner;
     const props = model.props;
-    return {
+    const view: any = {
       uuid: model.uuid,
       isa: model.isa,
       name: props.name,
@@ -253,10 +298,9 @@ export class XcodeProjectShim {
       outputPaths: props.outputPaths,
       dstPath: props.dstPath,
       dstSubfolderSpec: props.dstSubfolderSpec,
-      get files() {
-        return legacyRefArray(props.files, project);
-      },
     };
+    defineLiveRefArray(view, 'files', props.files, this.inner);
+    return view;
   }
 
   // Append a build file to a target's phase. A missing build file (e.g. a file
@@ -283,17 +327,15 @@ export class XcodeProjectShim {
 
   /** Legacy-shaped view of an XCConfigurationList: `buildConfigurations` as a live array. */
   private legacyConfigList(model: any): any {
-    const project = this.inner;
     const props = model.props;
-    return {
+    const view: any = {
       uuid: model.uuid,
       isa: model.isa,
       defaultConfigurationName: props.defaultConfigurationName,
       defaultConfigurationIsVisible: props.defaultConfigurationIsVisible,
-      get buildConfigurations() {
-        return legacyRefArray(props.buildConfigurations, project);
-      },
     };
+    defineLiveRefArray(view, 'buildConfigurations', props.buildConfigurations, this.inner);
+    return view;
   }
 
   // Legacy-shaped view of one object's props: references become UUID strings,
@@ -316,10 +358,10 @@ export class XcodeProjectShim {
         out[key] = value.uuid;
       } else if (
         Array.isArray(value) &&
-        value.length > 0 &&
-        value.every((v) => v && typeof v.uuid === 'string')
+        (REF_ARRAY_FIELDS.has(key) ||
+          (value.length > 0 && value.every((v) => v && typeof v.uuid === 'string')))
       ) {
-        out[key] = legacyRefArray(value, project);
+        defineLiveRefArray(out, key, value, project);
       } else {
         out[key] = value;
       }
@@ -339,9 +381,8 @@ export class XcodeProjectShim {
 
   /** Legacy-shaped view of the root project: references as UUIDs, `targets` as a live array. */
   private legacyProject(): any {
-    const project = this.inner;
     const props = this.inner.rootObject.props;
-    return {
+    const view: any = {
       mainGroup: props.mainGroup?.uuid,
       productRefGroup: props.productRefGroup?.uuid,
       buildConfigurationList: props.buildConfigurationList?.uuid,
@@ -349,10 +390,9 @@ export class XcodeProjectShim {
       attributes: props.attributes,
       compatibilityVersion: props.compatibilityVersion,
       developmentRegion: props.developmentRegion,
-      get targets() {
-        return legacyRefArray(props.targets, project);
-      },
     };
+    defineLiveRefArray(view, 'targets', props.targets, this.inner);
+    return view;
   }
 
   // === Lifecycle / IO ===
@@ -451,9 +491,15 @@ export class XcodeProjectShim {
     const targetModel = (target && this.safeGetObject(target)) || this.firstTargetModel();
     // Unnamed built-in phases (Sources/Frameworks/Resources) match by isa; named
     // phases (copy-files, shell scripts) disambiguate by name.
-    const phase = (targetModel?.props?.buildPhases ?? []).find(
+    let phase = (targetModel?.props?.buildPhases ?? []).find(
       (p: any) => p.isa === isa && (p.props.name == null || trimQuotes(p.props.name) === name)
     );
+    // Legacy fallback: when the passed target doesn't own the named phase, match
+    // it by name across the whole section (e.g. a phase that lives on the app
+    // target is looked up via a freshly-created extension target).
+    if (!phase) {
+      phase = this.modelsOfIsa(isa).find((p) => trimQuotes(p.props.name ?? '') === name);
+    }
     return phase ? this.legacyBuildPhase(phase) : null;
   }
   getFirstProject(): any {
@@ -613,9 +659,12 @@ export class XcodeProjectShim {
     notImplemented('removeFromPbxFileReferenceSection');
   }
   addToPbxBuildFileSection(file: any): void {
+    // Tolerate link-before-register: some plugins add the build file before its
+    // file reference. A stand-in carrying the uuid serializes the right ref once
+    // the file reference is registered (moments later).
     this.createObjectWithUuid(file.uuid, {
       isa: 'PBXBuildFile',
-      fileRef: this.inner.getObject(file.fileRef),
+      fileRef: this.safeGetObject(file.fileRef) ?? { uuid: file.fileRef },
       settings: file.settings,
     });
   }

@@ -19,9 +19,10 @@ function resolve(project: XcodeProject, entry: any): any {
   try {
     return project.getObject(uuid);
   } catch {
-    throw new Error(
-      `XcodeProjectShim: object ${JSON.stringify(uuid)} must be added to the project before being linked into a group or build phase.`
-    );
+    // Legacy tolerates linking a reference before its object is registered (the
+    // object is usually added moments later). Push a stand-in carrying the uuid
+    // so serialization emits the right reference once it exists.
+    return { uuid, getDisplayName: () => entry?.comment ?? uuid };
   }
 }
 

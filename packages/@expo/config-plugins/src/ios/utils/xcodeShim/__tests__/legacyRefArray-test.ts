@@ -69,10 +69,14 @@ describe('legacyRefArray', () => {
     expect(backing[0].uuid).toBe('ZZZ');
   });
 
-  it('throws a clear error when referencing an unmaterialized object', () => {
+  it('tolerates linking a not-yet-registered reference (legacy behavior)', () => {
     const { project } = makeProject();
-    const arr = legacyRefArray([], project);
-    expect(() => arr.push({ value: 'NOPE', comment: 'x' })).toThrow(/must be added to the project/);
+    const backing: any[] = [];
+    const arr = legacyRefArray(backing, project);
+    arr.push({ value: 'NOPE', comment: 'x' });
+    // A stand-in carrying the uuid is stored so serialization emits the reference.
+    expect(backing[0].uuid).toBe('NOPE');
+    expect(arr[0]).toEqual({ value: 'NOPE', comment: 'x' });
   });
 
   it('throws on unsupported mutators rather than silently dropping writes', () => {
