@@ -122,7 +122,6 @@ it('push should include (group)/index as an anchor route when using withAnchor',
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -132,7 +131,6 @@ it('push should include (group)/index as an anchor route when using withAnchor',
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
@@ -149,7 +147,6 @@ it('push should include (group)/index as an anchor route when using withAnchor',
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['test', 'orange'],
                 routes: [
                   {
@@ -208,7 +205,6 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -218,7 +214,6 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
@@ -235,7 +230,6 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
               state: {
                 index: 0,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['test', 'orange'],
                 routes: [
                   {

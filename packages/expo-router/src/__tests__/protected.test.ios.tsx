@@ -67,7 +67,6 @@ it('should protect routes during the initial load', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -77,7 +76,6 @@ it('should protect routes during the initial load', () => {
         state: {
           index: 0,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['a', 'index', 'b', 'c'],
           routes: [
             {
@@ -256,7 +254,6 @@ it('should default to anchor during initial load', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -266,7 +263,6 @@ it('should default to anchor during initial load', () => {
         state: {
           index: 0,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['a', 'b', 'index'],
           routes: [
             {

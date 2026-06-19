@@ -224,7 +224,6 @@ it('can push to a redirect', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -234,7 +233,6 @@ it('can push to a redirect', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', 'bar', 'foo'],
           routes: [
             {
@@ -390,7 +388,6 @@ it('not existing nested route redirects correctly', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -400,7 +397,6 @@ it('not existing nested route redirects correctly', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', 'explore', 'test/1234', '[id]'],
           routes: [
             {
