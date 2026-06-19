@@ -1339,6 +1339,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       await instantiateMetroAsync(this, parsedOptions, {
         isExporting: !!options.isExporting,
         exp,
+        devToolsPluginManager: this.devToolsPluginManager,
       });
 
     // Required for symbolication:
