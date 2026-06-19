@@ -15,6 +15,12 @@ public class AudioModule: Module {
   private var sessionOptions: AVAudioSession.CategoryOptions = []
   private var lastConfiguredMode: AudioMode?
 
+  // Serializes the blocking AVAudioSession.setActive(...) calls off the main thread and
+  // guards a monotonic activation token used to drop stale deactivations.
+  private let sessionQueue = DispatchQueue(label: "expo.modules.audio.session")
+  private let sessionTokenLock = NSLock()
+  private var sessionActivationToken = 0
+
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
 
@@ -613,7 +619,7 @@ public class AudioModule: Module {
 
   private func handleInterruptionEnded(with options: AVAudioSession.InterruptionOptions) {
     do {
-      try AVAudioSession.sharedInstance().setActive(true)
+      try activateSession()
       if options.contains(.shouldResume) {
         resumeInterruptedPlayers()
       }
@@ -658,7 +664,7 @@ public class AudioModule: Module {
       if let mode = lastConfiguredMode {
         try setAudioMode(mode: mode)
       }
-      try AVAudioSession.sharedInstance().setActive(true)
+      try activateSession()
     } catch {
       print("Failed to reconfigure audio session after media services reset: \(error)")
     }
@@ -743,6 +749,11 @@ public class AudioModule: Module {
     }
 
     do {
+      // Bump the activation token on activation so a pending deactivateSession() doesn't
+      // tear down the session we're explicitly activating here (see activateSession()).
+      if isActive {
+        bumpActivationToken()
+      }
       try AVAudioSession.sharedInstance().setActive(isActive, options: isActive ? [] : [.notifyOthersOnDeactivation])
       sessionIsActive = isActive
     } catch {
@@ -821,17 +832,36 @@ public class AudioModule: Module {
   }
 
   private func activateSession() throws {
+    // Supersede any deactivation scheduled before this activation so back-to-back
+    // playback isn't torn down by a stale setActive(false).
+    bumpActivationToken()
     try AVAudioSession.sharedInstance().setActive(true)
   }
 
   private func deactivateSession() {
-    // We need to give isPlaying time to update before running this
+    // Capture the activation token now: if the session is reactivated before the blocking
+    // call runs, the token changes and we skip the stale deactivation.
+    let requestedToken = currentActivationToken()
+    // We need to give isPlaying time to update before running this.
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
       guard let self else {
         return
       }
       let hasActivePlayables = self.registry.allPlayables.contains { $0.isPlaying }
-      if !hasActivePlayables {
+      guard !hasActivePlayables else {
+        return
+      }
+      // AVAudioSession.setActive(false) makes a synchronous, blocking XPC round-trip to the
+      // audio daemon that can stall for seconds under system contention. Running it on the
+      // main thread freezes the UI and surfaces as an iOS app hang, so dispatch it off-main.
+      self.sessionQueue.async {
+        // Best-effort supersede: the token read and setActive(false) aren't atomic relative to
+        // a concurrent activation, so a narrow TOCTOU window remains (far smaller than the
+        // untokened main-thread race before). iOS's own `isBusy` error covers the audible case
+        // where the next player is already producing audio.
+        guard self.currentActivationToken() == requestedToken else {
+          return
+        }
         do {
           try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
         } catch {
@@ -839,6 +869,18 @@ public class AudioModule: Module {
         }
       }
     }
+  }
+
+  private func bumpActivationToken() {
+    sessionTokenLock.lock()
+    defer { sessionTokenLock.unlock() }
+    sessionActivationToken += 1
+  }
+
+  private func currentActivationToken() -> Int {
+    sessionTokenLock.lock()
+    defer { sessionTokenLock.unlock() }
+    return sessionActivationToken
   }
 
   private func checkPermissions() throws {
