@@ -3147,7 +3147,7 @@ SPEC CHECKSUMS:
   ExpoClipboard: 40221903a1caa68259e022517af49d12962821fe
   ExpoImage: 3f44073bf450afdb87333f9671ffe7b9bfa5f70e
   ExpoMediaLibrary: 5ab82b8ace3f9ab7ac4ca3b2060bd915a4f1568f
-  ExpoModulesCore: 7ee5c9715b287b20ec9caa7f2577007597adf25a
+  ExpoModulesCore: 17bcaab73cb8d760aafe4f1f6b4f066975c317db
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
   ExpoModulesTestCore: 768a9a2b0401e87090bc7280cdb0607ab4cad382
   ExpoModulesWorklets: 874ceeb92a8da1dfa32adf197aa65f926e74b9c5

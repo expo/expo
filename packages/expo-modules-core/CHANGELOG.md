@@ -14,6 +14,7 @@
 - [iOS] `@ExpoModule` now synthesizes the module's JavaScript name from the class name or its `@ExpoModule("CustomName")` argument, so a `Name(…)` definition entry is no longer required. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added `Module.emit` that sends an event directly to the module's own JavaScript object, mirroring `SharedObject.emit`. Both now share an `EventEmitter` protocol. ([#46555](https://github.com/expo/expo/pull/46555) by [@tsapeta](https://github.com/tsapeta))
 - Add `useReleasingSharedObjectWithLifecycle` hook. ([#46494](https://github.com/expo/expo/pull/46494) by [@behenate](https://github.com/behenate))
+- [iOS] Added `SharedObject.native(from:)` that recovers the native shared object paired with a JavaScript object, with a generic overload that returns the concrete subclass directly. ([#47054](https://github.com/expo/expo/pull/47054) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
