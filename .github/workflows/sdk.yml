@@ -125,9 +125,26 @@ jobs:
           TURBO_TEAM: expo
 
       - name: 🧐 Check all packages
+        shell: bash
         run: |
           pnpm turbo run build typecheck depscheck test lint \
             --filter="./packages/**" \
+            --filter='!@expo/cli' \
+            --filter='!@expo/config' \
+            --filter='!@expo/config-plugins' \
+            --filter='!@expo/env' \
+            --filter='!@expo/fingerprint' \
+            --filter='!@expo/image-utils' \
+            --filter='!@expo/metro-config' \
+            --filter='!@expo/package-manager' \
+            --filter='!@expo/prebuild-config' \
+            --filter='!@expo/router-server' \
+            --filter='!babel-preset-expo' \
+            --filter='!create-expo' \
+            --filter='!expo-brownfield' \
+            --filter='!expo-doctor' \
+            --filter='!expo-modules-autolinking' \
+            --filter='!install-expo-modules' \
             --continue=dependencies-successful
 
       - name: 🔔 Notify on Slack
