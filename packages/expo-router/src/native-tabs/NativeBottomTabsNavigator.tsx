@@ -3,6 +3,7 @@
 import React, { use, useCallback, useMemo, useRef } from 'react';
 import type { NavigatorArgs } from 'standard-navigation';
 
+import { useStableTabOrder } from '../react-navigation/core/useStableTabOrder';
 import type {
   ParamListBase,
   TabNavigationState,
@@ -56,10 +57,13 @@ function NativeTabsContent({
   }
 
   const { routes } = state;
+  // `state.routes` is ordered by the navigator's back stack; render the native tab bar
+  // in stable declaration order while resolving focus from `state.routes`.
+  const orderedRoutes = useStableTabOrder(state);
 
   const visibleTabs = useMemo(
     () =>
-      routes
+      orderedRoutes
         // The <NativeTab.Trigger> always sets `hidden` to defined boolean value.
         // If it is not defined, then it was not specified, and we should hide the tab.
         .filter((route) => descriptors[route.key]!.options?.hidden !== true)
@@ -71,11 +75,11 @@ function NativeTabsContent({
             contentRenderer: () => descriptors[route.key]!.render(),
           })
         ),
-    [routes, descriptors]
+    [orderedRoutes, descriptors]
   );
   const visibleFocusedTabIndex = useMemo(
-    () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index]!.key),
-    [visibleTabs, routes, state.index]
+    () => visibleTabs.findIndex((tab) => tab.routeKey === state.routes[state.index]!.key),
+    [visibleTabs, state.routes, state.index]
   );
   const visibleTabsKeys = useMemo(
     () => visibleTabs.map((tab) => tab.routeKey).join(';'),

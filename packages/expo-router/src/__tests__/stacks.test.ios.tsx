@@ -162,16 +162,6 @@ test.skip('dismissAll nested', () => {
         name: '__root',
         params: undefined,
         state: {
-          history: [
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-          ],
           index: 2,
           key: expect.any(String),
           preloadedRouteKeys: [],
@@ -283,16 +273,6 @@ test.skip('dismissAll nested', () => {
         name: '__root',
         params: undefined,
         state: {
-          history: [
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-          ],
           index: 2,
           key: expect.any(String),
           preloadedRouteKeys: [],
@@ -392,16 +372,6 @@ test.skip('dismissAll nested', () => {
         name: '__root',
         params: undefined,
         state: {
-          history: [
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-            {
-              key: expect.any(String),
-              type: 'route',
-            },
-          ],
           index: 2,
           key: expect.any(String),
           preloadedRouteKeys: [],

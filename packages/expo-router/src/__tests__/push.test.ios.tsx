@@ -327,17 +327,9 @@ it('works in a nested layout Stack->Tab->Stack', () => {
               },
               path: undefined,
               state: {
-                history: [
-                  {
-                    key: expect.any(String),
-                    type: 'route',
-                  },
-                  {
-                    key: expect.any(String),
-                    type: 'route',
-                  },
-                ],
-                index: 2,
+                // firstRoute arranges the back stack as `[first, focused, ...rest]`,
+                // so focusing `c` gives `[a, c, b]` with `c` at index 1.
+                index: 1,
                 key: expect.any(String),
                 preloadedRouteKeys: [],
                 routeNames: ['a', 'b', 'c'],
@@ -345,12 +337,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                   {
                     key: expect.any(String),
                     name: 'a',
-                    params: {},
-                    path: undefined,
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'b',
                     params: {},
                     path: undefined,
                   },
@@ -389,6 +375,12 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                       ],
                       stale: false,
                     },
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'b',
+                    params: {},
+                    path: undefined,
                   },
                 ],
                 stale: false,

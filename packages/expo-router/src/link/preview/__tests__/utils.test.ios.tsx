@@ -123,12 +123,6 @@ describe(getTabPathFromRootStateByHref, () => {
             key: 'tab-IBiK_OuEIIGFJ_YDRF760',
             index: 1,
             routeNames: ['index', 'faces', 'explore'],
-            history: [
-              {
-                type: 'route',
-                key: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
-              },
-            ],
             routes: [
               {
                 name: 'index',
@@ -198,12 +192,6 @@ describe(getTabPathFromRootStateByHref, () => {
             key: 'tab-gFrqtQnDMQQ8qMMIptL6E',
             index: 0,
             routeNames: ['index', 'faces', 'explore'],
-            history: [
-              {
-                type: 'route',
-                key: 'index-rYeU6j6cRmkJK1pXpEFHs',
-              },
-            ],
             routes: [
               {
                 name: 'index',
@@ -293,12 +281,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
             key: 'tab-IBiK_OuEIIGFJ_YDRF760',
             index: 1,
             routeNames: ['index', 'faces', 'explore'],
-            history: [
-              {
-                type: 'route',
-                key: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
-              },
-            ],
             routes: [
               {
                 name: 'index',
@@ -369,12 +351,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
             key: 'tab-gFrqtQnDMQQ8qMMIptL6E',
             index: 0,
             routeNames: ['index', 'faces', 'explore'],
-            history: [
-              {
-                type: 'route',
-                key: 'index-rYeU6j6cRmkJK1pXpEFHs',
-              },
-            ],
             routes: [
               {
                 name: 'index',
