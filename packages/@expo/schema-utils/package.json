@@ -28,7 +28,6 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.4",
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
