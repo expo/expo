@@ -47,7 +47,6 @@ type Props = {
   insets: EdgeInsets;
   state: StackNavigationState<ParamListBase>;
   descriptors: StackDescriptorMap;
-  preloadedDescriptors: StackDescriptorMap;
   routes: Route<string>[];
   openingRouteKeys: string[];
   closingRouteKeys: string[];
@@ -238,33 +237,32 @@ export class CardStack extends React.Component<Props, State> {
       return null;
     }
 
-    const gestures = [...props.routes, ...props.state.preloadedRoutes].reduce<GestureValues>(
-      (acc, curr) => {
-        const descriptor = props.descriptors[curr.key] || props.preloadedDescriptors[curr.key];
-        const { animation } = descriptor?.options || {};
-
-        acc[curr.key] =
-          state.gestures[curr.key] ||
-          new Animated.Value(
-            (props.openingRouteKeys.includes(curr.key) && getAnimationEnabled(animation)) ||
-              props.state.preloadedRoutes.includes(curr)
-              ? getDistanceFromOptions(state.layout, descriptor?.options, props.direction === 'rtl')
-              : 0
-          );
-
-        return acc;
-      },
-      {}
+    // Preloaded/inactive routes live in the nav state's `routes` tail (position > index).
+    const preloadedRouteKeys = new Set(
+      props.state.routes.slice(props.state.index + 1).map((r) => r.key)
     );
 
-    const modalRouteKeys = getModalRouteKeys([...props.routes, ...props.state.preloadedRoutes], {
-      ...props.descriptors,
-      ...props.preloadedDescriptors,
-    });
+    const gestures = props.routes.reduce<GestureValues>((acc, curr) => {
+      const descriptor = props.descriptors[curr.key];
+      const { animation } = descriptor?.options || {};
 
-    const scenes = [...props.routes, ...props.state.preloadedRoutes].map((route, index, self) => {
+      acc[curr.key] =
+        state.gestures[curr.key] ||
+        new Animated.Value(
+          (props.openingRouteKeys.includes(curr.key) && getAnimationEnabled(animation)) ||
+            preloadedRouteKeys.has(curr.key)
+            ? getDistanceFromOptions(state.layout, descriptor?.options, props.direction === 'rtl')
+            : 0
+        );
+
+      return acc;
+    }, {});
+
+    const modalRouteKeys = getModalRouteKeys(props.routes, props.descriptors);
+
+    const scenes = props.routes.map((route, index, self) => {
       // For preloaded screens, we don't care about the previous and the next screen
-      const isPreloaded = props.state.preloadedRoutes.includes(route);
+      const isPreloaded = preloadedRouteKeys.has(route.key);
       const previousRoute = isPreloaded ? undefined : self[index - 1];
       const nextRoute = isPreloaded ? undefined : self[index + 1];
 
@@ -275,7 +273,7 @@ export class CardStack extends React.Component<Props, State> {
       const nextGesture = nextRoute ? gestures[nextRoute.key]! : undefined;
 
       const descriptor =
-        (isPreloaded ? props.preloadedDescriptors : props.descriptors)[route.key] ||
+        props.descriptors[route.key] ||
         state.descriptors[route.key] ||
         (oldScene ? oldScene.descriptor : FALLBACK_DESCRIPTOR);
 
@@ -593,6 +591,9 @@ export class CardStack extends React.Component<Props, State> {
     const focusedRoute = state.routes[state.index]!;
     const focusedHeaderHeight = headerHeights[focusedRoute.key];
 
+    // Preloaded/inactive routes live in the nav state's `routes` tail (position > index).
+    const preloadedRouteKeys = new Set(state.routes.slice(state.index + 1).map((r) => r.key));
+
     const isFloatHeaderAbsolute = this.state.scenes.slice(-2).some((scene) => {
       const options = scene.descriptor.options ?? {};
       const { headerMode, headerTransparent, headerShown = true } = options;
@@ -626,22 +627,11 @@ export class CardStack extends React.Component<Props, State> {
           enabled={detachInactiveScreens}
           style={styles.container}
           onLayout={this.handleLayout}>
-          {[...routes, ...state.preloadedRoutes].map((route, index) => {
+          {routes.map((route, index) => {
             const focused = focusedRoute.key === route.key;
             const gesture = gestures[route.key]!;
             const scene = scenes[index]!;
-            // It is possible that for a short period the route appears in both arrays.
-            // Particularly, if the screen is removed with `retain`, then it needs a moment to execute the animation.
-            // However, due to the router action, it immediately populates the `preloadedRoutes` array.
-            // Practically, the logic below takes care that it is rendered only once.
-            const isPreloaded = state.preloadedRoutes.includes(route) && !routes.includes(route);
-            if (
-              state.preloadedRoutes.includes(route) &&
-              routes.includes(route) &&
-              index >= routes.length
-            ) {
-              return null;
-            }
+            const isPreloaded = preloadedRouteKeys.has(route.key);
 
             const {
               headerShown = true,

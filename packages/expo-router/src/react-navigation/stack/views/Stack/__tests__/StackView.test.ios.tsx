@@ -16,14 +16,18 @@ const createRoute = (name: string, key?: string): Route<string> => ({
 const createNavigationState = (
   routes: Route<string>[],
   options: { index?: number; preloadedRoutes?: Route<string>[] } = {}
-): StackNavigationState<ParamListBase> => ({
-  stale: false,
-  key: 'stack-1',
-  index: options.index ?? routes.length - 1,
-  routeNames: routes.map((r) => r.name),
-  routes,
-  preloadedRoutes: options.preloadedRoutes ?? [],
-});
+): StackNavigationState<ParamListBase> => {
+  const preloadedRoutes = options.preloadedRoutes ?? [];
+  // Preloaded routes live in the inactive tail (position > index).
+  const allRoutes = [...routes, ...preloadedRoutes];
+  return {
+    stale: false,
+    key: 'stack-1',
+    index: options.index ?? routes.length - 1,
+    routeNames: allRoutes.map((r) => r.name),
+    routes: allRoutes,
+  };
+};
 
 const createDescriptors = (
   routes: Route<string>[],

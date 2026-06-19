@@ -101,7 +101,9 @@ export function BottomTabView(props: Props) {
     ) {
       const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
-      if (prevRoute?.state && 'preloadedRoutes' in prevRoute.state && prevRoute.state.key) {
+      // Best-effort popToTop at the previous tab's nested navigator. POP_TO_TOP is only handled
+      // by stack navigators; it is a no-op for any other (non-stack) target.
+      if (prevRoute?.state?.key) {
         popToTopAction = {
           ...StackActions.popToTop(),
           target: prevRoute.state.key,

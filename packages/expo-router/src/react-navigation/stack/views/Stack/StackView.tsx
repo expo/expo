@@ -9,12 +9,10 @@ import {
   type LocaleDirection,
   type ParamListBase,
   type Route,
-  type RouteProp,
   StackActions,
   type StackNavigationState,
 } from '../../../native';
 import type {
-  StackDescriptor,
   StackDescriptorMap,
   StackNavigationConfig,
   StackNavigationHelpers,
@@ -29,7 +27,6 @@ type Props = StackNavigationConfig & {
   state: StackNavigationState<ParamListBase>;
   navigation: StackNavigationHelpers;
   descriptors: StackDescriptorMap;
-  describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => StackDescriptor;
 };
 
 type State = {
@@ -61,10 +58,8 @@ const isArrayEqual = (a: any[], b: any[]) =>
 
 export class StackView extends React.Component<Props, State> {
   static getDerivedStateFromProps(props: Readonly<Props>, state: Readonly<State>) {
-    const allRoutes = [...props.state.routes, ...props.state.preloadedRoutes];
-    const previousRoutes = state.previousState
-      ? [...state.previousState.routes, ...state.previousState.preloadedRoutes]
-      : [];
+    const allRoutes = props.state.routes;
+    const previousRoutes = state.previousState ? state.previousState.routes : [];
 
     // If there was no change in routes, we don't need to compute anything
     if (
@@ -430,11 +425,6 @@ export class StackView extends React.Component<Props, State> {
 
     const { routes, descriptors, openingRouteKeys, closingRouteKeys } = this.state;
 
-    const preloadedDescriptors = state.preloadedRoutes.reduce<StackDescriptorMap>((acc, route) => {
-      acc[route.key] = acc[route.key] || this.props.describe(route, true);
-      return acc;
-    }, {});
-
     return (
       <GestureHandlerWrapper style={styles.container}>
         <SafeAreaProviderCompat>
@@ -462,7 +452,6 @@ export class StackView extends React.Component<Props, State> {
                         onGestureStart={this.handleGestureStart}
                         onGestureEnd={this.handleGestureEnd}
                         onGestureCancel={this.handleGestureCancel}
-                        preloadedDescriptors={preloadedDescriptors}
                         {...rest}
                       />
                     )}
