@@ -23,6 +23,15 @@ function unquoteForWrite(value: any): any {
 // `$(inherited)`, stored unquoted (`@bacons` re-quotes at serialize).
 const INHERITED = '$(inherited)';
 
+// Strip outer quotes from build-setting values (and array elements) on write.
+function unquoteBuildSettings(buildSettings: Record<string, any> = {}): Record<string, any> {
+  const out: Record<string, any> = {};
+  for (const [key, value] of Object.entries(buildSettings)) {
+    out[key] = Array.isArray(value) ? value.map(unquoteForWrite) : unquoteForWrite(value);
+  }
+  return out;
+}
+
 // Copy-files phase destination lookups, ported from legacy `xcode`.
 const DESTINATION_BY_TARGETTYPE: Record<string, string> = {
   application: 'wrapper',
@@ -224,6 +233,21 @@ export class XcodeProjectShim {
     }
   }
 
+  /** Legacy-shaped view of an XCConfigurationList: `buildConfigurations` as a live array. */
+  private legacyConfigList(model: any): any {
+    const project = this.inner;
+    const props = model.props;
+    return {
+      uuid: model.uuid,
+      isa: model.isa,
+      defaultConfigurationName: props.defaultConfigurationName,
+      defaultConfigurationIsVisible: props.defaultConfigurationIsVisible,
+      get buildConfigurations() {
+        return legacyRefArray(props.buildConfigurations, project);
+      },
+    };
+  }
+
   /** Legacy section dict: `{ uuid: object, uuid_comment: name }` for each model of an isa. */
   private legacySection(isa: string): Record<string, any> {
     const section: Record<string, any> = {};
@@ -268,7 +292,17 @@ export class XcodeProjectShim {
   }
 
   get hash(): any {
-    return notImplemented('hash');
+    const self = this;
+    return {
+      project: {
+        objects: new Proxy(
+          {},
+          {
+            get: (_t, isa: string) => self.legacySection(isa),
+          }
+        ),
+      },
+    };
   }
 
   allUuids(..._args: any[]): any {
@@ -295,8 +329,8 @@ export class XcodeProjectShim {
   pbxXCBuildConfigurationSection(..._args: any[]): any {
     notImplemented('pbxXCBuildConfigurationSection');
   }
-  pbxXCConfigurationList(..._args: any[]): any {
-    notImplemented('pbxXCConfigurationList');
+  pbxXCConfigurationList(): any {
+    return this.legacySection('XCConfigurationList');
   }
   pbxFileReferenceSection(): any {
     return this.legacySection('PBXFileReference');
@@ -362,14 +396,20 @@ export class XcodeProjectShim {
   getPBXVariantGroupByKey(..._args: any[]): any {
     notImplemented('getPBXVariantGroupByKey');
   }
-  pbxTargetByName(..._args: any[]): any {
-    notImplemented('pbxTargetByName');
+  pbxTargetByName(name: string): any {
+    const model = this.modelsOfIsa('PBXNativeTarget').find(
+      (t) => trimQuotes(t.props.name) === name
+    );
+    return model ? this.legacyTarget(model) : null;
   }
   pbxItemByComment(..._args: any[]): any {
     notImplemented('pbxItemByComment');
   }
-  findTargetKey(..._args: any[]): any {
-    notImplemented('findTargetKey');
+  findTargetKey(name: string): any {
+    const model = this.modelsOfIsa('PBXNativeTarget').find(
+      (t) => trimQuotes(t.props.name) === name
+    );
+    return model ? model.uuid : null;
   }
   findPBXGroupKey(..._args: any[]): any {
     notImplemented('findPBXGroupKey');
@@ -377,8 +417,8 @@ export class XcodeProjectShim {
   findPBXGroupKeyAndType(..._args: any[]): any {
     notImplemented('findPBXGroupKeyAndType');
   }
-  getPBXObject(..._args: any[]): any {
-    notImplemented('getPBXObject');
+  getPBXObject(name: string): any {
+    return this.legacySection(name);
   }
   hasFile(filePath: string): any {
     for (const ref of this.modelsOfIsa('PBXFileReference')) {
@@ -759,17 +799,48 @@ export class XcodeProjectShim {
   addTargetDependency(..._args: any[]): any {
     notImplemented('addTargetDependency');
   }
-  addXCConfigurationList(..._args: any[]): any {
-    notImplemented('addXCConfigurationList');
+  addXCConfigurationList(
+    configurationObjectsArray: any[],
+    defaultConfigurationName: string,
+    _comment?: string
+  ): any {
+    const buildConfigurations = configurationObjectsArray.map((configuration) =>
+      this.createObjectWithUuid(this.generateUuid(), {
+        isa: 'XCBuildConfiguration',
+        name: configuration.name,
+        buildSettings: unquoteBuildSettings(configuration.buildSettings),
+      })
+    );
+    const list = this.createObjectWithUuid(this.generateUuid(), {
+      isa: 'XCConfigurationList',
+      buildConfigurations,
+      defaultConfigurationIsVisible: 0,
+      defaultConfigurationName,
+    });
+    return { uuid: list.uuid, xcConfigurationList: this.legacyConfigList(list) };
   }
-  addProductFile(..._args: any[]): any {
-    notImplemented('addProductFile');
+  addProductFile(targetPath: string, opt: any = {}): any {
+    const file = new PbxFile(targetPath, opt);
+    file.includeInIndex = 0;
+    file.fileRef = this.generateUuid();
+    file.target = opt.target;
+    file.group = opt.group;
+    file.uuid = this.generateUuid();
+    file.path = file.basename;
+    this.addToPbxFileReferenceSection(file);
+    this.addToProductsPbxGroup(file);
+    return file;
   }
   removeProductFile(..._args: any[]): any {
     notImplemented('removeProductFile');
   }
-  addToProductsPbxGroup(..._args: any[]): any {
-    notImplemented('addToProductsPbxGroup');
+  addToProductsPbxGroup(file: any): void {
+    const group = this.pbxGroupByName('Products');
+    if (!group) {
+      this.addPbxGroup([file.path], 'Products');
+    } else {
+      group.children.push({ value: file.fileRef, comment: file.basename });
+    }
   }
   addTargetAttribute(..._args: any[]): any {
     notImplemented('addTargetAttribute');

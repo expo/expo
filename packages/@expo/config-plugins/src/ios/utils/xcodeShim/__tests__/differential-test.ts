@@ -35,6 +35,10 @@ const IMPLEMENTED = new Set<string>([
   'frameworks/add-framework-weak',
   'frameworks/add-custom-framework-embed-sign',
   'frameworks/embed-frameworks-phase',
+  'targets/pbx-target-by-name',
+  'targets/add-product-file',
+  'targets/add-xc-configuration-list',
+  'misc/direct-hash-objects',
 ]);
 
 function runOn(backend: Backend, scenario: Scenario): { result: unknown; pbxproj: string } {
