@@ -18,6 +18,7 @@ const IMPLEMENTED = new Set<string>([
   'build-settings/set-entitlements',
   'build-settings/update-property-for-target',
   'files/has-file',
+  'files/ensure-group-recursively',
 ]);
 
 function runOn(backend: Backend, scenario: Scenario): { result: unknown; pbxproj: string } {

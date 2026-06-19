@@ -2,6 +2,8 @@ import { XcodeProject } from '@bacons/xcode';
 import { build } from '@bacons/xcode/json';
 import path from 'path';
 
+import { legacyRefArray } from './legacyRefArray';
+
 function notImplemented(method: string): never {
   throw new Error(`XcodeProjectShim.${method} is not implemented yet`);
 }
@@ -61,6 +63,48 @@ export class XcodeProjectShim {
     return new Set<string>(configs.map((config: any) => config.uuid));
   }
 
+  // `@bacons`'s getObject throws on miss; legacy returns null/undefined.
+  private safeGetObject(uuid: string): any {
+    try {
+      return this.inner.getObject(uuid);
+    } catch {
+      return undefined;
+    }
+  }
+
+  /** Legacy-shaped view of a group: references as UUIDs, `children` as a live array. */
+  private legacyGroup(model: any): any {
+    const project = this.inner;
+    return {
+      uuid: model.uuid,
+      isa: model.isa,
+      name: model.props.name,
+      path: model.props.path,
+      sourceTree: model.props.sourceTree,
+      get children() {
+        return legacyRefArray(model.props.children, project);
+      },
+    };
+  }
+
+  /** Legacy-shaped view of the root project: references as UUIDs, `targets` as a live array. */
+  private legacyProject(): any {
+    const project = this.inner;
+    const props = this.inner.rootObject.props;
+    return {
+      mainGroup: props.mainGroup?.uuid,
+      productRefGroup: props.productRefGroup?.uuid,
+      buildConfigurationList: props.buildConfigurationList?.uuid,
+      knownRegions: props.knownRegions,
+      attributes: props.attributes,
+      compatibilityVersion: props.compatibilityVersion,
+      developmentRegion: props.developmentRegion,
+      get targets() {
+        return legacyRefArray(props.targets, project);
+      },
+    };
+  }
+
   // === Lifecycle / IO ===
 
   parseSync(): this {
@@ -111,8 +155,9 @@ export class XcodeProjectShim {
   xcVersionGroupSection(..._args: any[]): any {
     notImplemented('xcVersionGroupSection');
   }
-  pbxGroupByName(..._args: any[]): any {
-    notImplemented('pbxGroupByName');
+  pbxGroupByName(name: string): any {
+    const model = this.modelsOfIsa('PBXGroup').find((g) => g.getDisplayName() === name);
+    return model ? this.legacyGroup(model) : null;
   }
   pbxResourcesBuildPhaseObj(..._args: any[]): any {
     notImplemented('pbxResourcesBuildPhaseObj');
@@ -135,8 +180,8 @@ export class XcodeProjectShim {
   buildPhaseObject(..._args: any[]): any {
     notImplemented('buildPhaseObject');
   }
-  getFirstProject(..._args: any[]): any {
-    notImplemented('getFirstProject');
+  getFirstProject(): any {
+    return { uuid: this.inner.rootObject.uuid, firstProject: this.legacyProject() };
   }
   getFirstTarget(..._args: any[]): any {
     notImplemented('getFirstTarget');
@@ -144,8 +189,9 @@ export class XcodeProjectShim {
   getTarget(..._args: any[]): any {
     notImplemented('getTarget');
   }
-  getPBXGroupByKey(..._args: any[]): any {
-    notImplemented('getPBXGroupByKey');
+  getPBXGroupByKey(key: string): any {
+    const model = this.safeGetObject(key);
+    return model && model.isa === 'PBXGroup' ? this.legacyGroup(model) : undefined;
   }
   getPBXGroupByKeyAndType(..._args: any[]): any {
     notImplemented('getPBXGroupByKeyAndType');
@@ -323,11 +369,13 @@ export class XcodeProjectShim {
 
   // === Mutate: groups ===
 
-  pbxCreateGroup(..._args: any[]): any {
-    notImplemented('pbxCreateGroup');
+  pbxCreateGroup(name: string, pathName?: string): string {
+    return this.pbxCreateGroupWithType(name, pathName, 'PBXGroup');
   }
-  pbxCreateGroupWithType(..._args: any[]): any {
-    notImplemented('pbxCreateGroupWithType');
+  pbxCreateGroupWithType(name: string, pathName: string | undefined, groupType: string): string {
+    const opts: any = { isa: groupType, name, children: [], sourceTree: '<group>' };
+    if (pathName) opts.path = unquoteForWrite(pathName);
+    return this.inner.createModel(opts).uuid;
   }
   pbxCreateVariantGroup(..._args: any[]): any {
     notImplemented('pbxCreateVariantGroup');
