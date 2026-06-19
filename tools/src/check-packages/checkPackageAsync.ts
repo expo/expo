@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import os from 'node:os';
 
-import { checkDependenciesAsync } from './checkDependenciesAsync';
 import runPackageScriptAsync from './runPackageScriptAsync';
 import { ActionOptions } from './types';
 import logger from '../Logger';
@@ -94,8 +93,10 @@ export default async function checkPackageAsync(
       }
       await runPackageScriptAsync(pkg, 'lint', args);
     }
-    if (options.dependencyCheck) {
-      await checkDependenciesAsync(pkg, options.checkPackageType);
+    if (options.dependencyCheck && options.checkPackageType === 'package') {
+      // The `depscheck` script (expo-module depscheck) validates the package and all of its
+      // sub-targets (plugin/cli/utils) in a single run, so it only needs to run once.
+      await runPackageScriptAsync(pkg, 'depscheck');
     }
     logger.log(`✨ ${green.bold(pkg.packageName)} checks passed`);
 
