@@ -2534,6 +2534,9 @@ importers:
       anser:
         specifier: ^1.4.9
         version: 1.4.10
+      expo:
+        specifier: '*'
+        version: link:../../expo
       expo-modules-core:
         specifier: workspace:~56.0.13
         version: link:../../expo-modules-core

@@ -52,7 +52,7 @@
     "start": "expo start",
     "lint": "expo-module lint",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json",
+    "typecheck": "tsc",
     "clean": "run-p clean:lib clean:bundle",
     "clean:lib": "rimraf build",
     "clean:bundle": "rimraf dist",
@@ -85,8 +85,14 @@
   },
   "peerDependencies": {
     "@expo/dom-webview": "workspace:^56.0.5",
+    "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "license": "MIT",
   "author": "Expo",
