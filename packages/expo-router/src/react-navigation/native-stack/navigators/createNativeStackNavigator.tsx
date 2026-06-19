@@ -37,7 +37,7 @@ function NativeStackNavigator({
   UNSTABLE_router,
   ...rest
 }: NativeStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -85,13 +85,7 @@ function NativeStackNavigator({
 
   return (
     <NavigationContent>
-      <NativeStackView
-        {...rest}
-        state={state}
-        navigation={navigation}
-        descriptors={descriptors}
-        describe={describe}
-      />
+      <NativeStackView {...rest} state={state} navigation={navigation} descriptors={descriptors} />
     </NavigationContent>
   );
 }

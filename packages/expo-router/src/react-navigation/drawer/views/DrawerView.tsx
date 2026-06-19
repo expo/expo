@@ -111,8 +111,9 @@ function DrawerViewBase({
     ) {
       const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
-      // A nested stack is identified structurally by its `preloadedRoutes`
-      if (prevRoute?.state && 'preloadedRoutes' in prevRoute.state && prevRoute.state.key) {
+      // Dispatch a best-effort popToTop at the previous route's nested navigator. POP_TO_TOP is
+      // only handled by stack navigators; it is a no-op for any other (non-stack) target.
+      if (prevRoute?.state?.key) {
         navigation.dispatch({
           ...StackActions.popToTop(),
           target: prevRoute.state.key,

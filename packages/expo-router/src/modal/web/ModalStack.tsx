@@ -37,7 +37,7 @@ function ModalStackNavigator({
   children,
   screenOptions,
 }: ModalStackNavigatorProps) {
-  const { state, navigation, descriptors, NavigationContent, describe } = useNavigationBuilder<
+  const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -73,17 +73,12 @@ function ModalStackNavigator({
 
   return (
     <NavigationContent>
-      <ModalStackView
-        state={state}
-        navigation={navigation}
-        descriptors={descriptors}
-        describe={describe}
-      />
+      <ModalStackView state={state} navigation={navigation} descriptors={descriptors} />
     </NavigationContent>
   );
 }
 
-const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStackViewProps) => {
+const ModalStackView = ({ state, navigation, descriptors }: ModalStackViewProps) => {
   const isWeb = process.env.EXPO_OS === 'web';
   const { colors } = useTheme();
   const { preventedRoutes } = usePreventRemoveContext();
@@ -112,12 +107,7 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
 
   return (
     <div style={{ flex: 1, display: 'flex' }}>
-      <NativeStackView
-        state={newStackState}
-        navigation={navigation}
-        descriptors={descriptors}
-        describe={describe}
-      />
+      <NativeStackView state={newStackState} navigation={navigation} descriptors={descriptors} />
       {isWeb &&
         overlayRoutes.map((route) => {
           const isTransparentModal = isTransparentModalPresentation(

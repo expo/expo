@@ -86,6 +86,12 @@ export function useOnAction<State extends NavigationState>({
           onDispatchAction(action, state === result);
 
           if (state !== result) {
+            // TODO(ENG-22012): Preloaded/inactive routes now live in `routes` after `index`. They
+            // still run their effects, so they can register `beforeRemove` listeners — which means
+            // dropping a preloaded route (e.g. re-preloading the same screen) can fire
+            // its `beforeRemove`, even though the user never visited it. Once inactive screens render inside a paused
+            // Activity (ENG-22012) their effects won't run, so they won't register listeners and
+            // this becomes a non-issue.
             const isPrevented = shouldPreventRemove(
               emitter,
               beforeRemoveListeners,
