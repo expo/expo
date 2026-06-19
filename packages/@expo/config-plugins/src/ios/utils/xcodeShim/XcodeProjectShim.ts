@@ -23,6 +23,17 @@ function unquoteForWrite(value: any): any {
 // `$(inherited)`, stored unquoted (`@bacons` re-quotes at serialize).
 const INHERITED = '$(inherited)';
 
+// Build settings written directly through a section view (bypassing
+// addBuildProperty) are unquoted on assignment so `@bacons` doesn't double-quote.
+function buildSettingsProxy(buildSettings: Record<string, any>): Record<string, any> {
+  return new Proxy(buildSettings, {
+    set(target, key, value) {
+      target[key as string] = typeof key === 'string' ? unquoteForWrite(value) : value;
+      return true;
+    },
+  });
+}
+
 // Strip outer quotes from build-setting values (and array elements) on write.
 function unquoteBuildSettings(buildSettings: Record<string, any> = {}): Record<string, any> {
   const out: Record<string, any> = {};
@@ -285,11 +296,42 @@ export class XcodeProjectShim {
     };
   }
 
+  // Legacy-shaped view of one object's props: references become UUID strings,
+  // ref arrays become live `{ value, comment }` arrays, and `buildSettings` is a
+  // write-through unquoting Proxy. Scalars/plain dicts are shared by reference so
+  // direct mutations (e.g. `obj.buildSettings.X = …`) reach the model.
+  private toLegacyObject(model: any): any {
+    const project = this.inner;
+    const out: Record<string, any> = {};
+    for (const key of Object.keys(model.props)) {
+      const value = model.props[key];
+      if (key === 'buildSettings' && value && typeof value === 'object' && !Array.isArray(value)) {
+        out[key] = buildSettingsProxy(value);
+      } else if (
+        value &&
+        typeof value === 'object' &&
+        !Array.isArray(value) &&
+        typeof value.uuid === 'string'
+      ) {
+        out[key] = value.uuid;
+      } else if (
+        Array.isArray(value) &&
+        value.length > 0 &&
+        value.every((v) => v && typeof v.uuid === 'string')
+      ) {
+        out[key] = legacyRefArray(value, project);
+      } else {
+        out[key] = value;
+      }
+    }
+    return out;
+  }
+
   /** Legacy section dict: `{ uuid: object, uuid_comment: name }` for each model of an isa. */
   private legacySection(isa: string): Record<string, any> {
     const section: Record<string, any> = {};
     for (const model of this.modelsOfIsa(isa)) {
-      section[model.uuid] = model.props;
+      section[model.uuid] = this.toLegacyObject(model);
       section[`${model.uuid}_comment`] = model.getDisplayName?.() ?? model.uuid;
     }
     return section;
@@ -362,14 +404,14 @@ export class XcodeProjectShim {
 
   // === Read / query ===
 
-  pbxProjectSection(..._args: any[]): any {
-    notImplemented('pbxProjectSection');
+  pbxProjectSection(): any {
+    return this.legacySection('PBXProject');
   }
-  pbxNativeTargetSection(..._args: any[]): any {
-    notImplemented('pbxNativeTargetSection');
+  pbxNativeTargetSection(): any {
+    return this.legacySection('PBXNativeTarget');
   }
-  pbxXCBuildConfigurationSection(..._args: any[]): any {
-    notImplemented('pbxXCBuildConfigurationSection');
+  pbxXCBuildConfigurationSection(): any {
+    return this.legacySection('XCBuildConfiguration');
   }
   pbxXCConfigurationList(): any {
     return this.legacySection('XCConfigurationList');

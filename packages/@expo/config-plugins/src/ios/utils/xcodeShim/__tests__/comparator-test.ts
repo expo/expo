@@ -53,6 +53,16 @@ describe('compareGraphs (semantic, UUID-independent)', () => {
     expect(diff.shim).toBe('fr');
   });
 
+  it('treats numeric-value quoting as cosmetic ("1" vs 1)', () => {
+    const mk = (value: any) => ({
+      rootObject: hex(1),
+      objects: {
+        [hex(1)]: { isa: 'XCBuildConfiguration', buildSettings: { TARGETED_DEVICE_FAMILY: value } },
+      },
+    });
+    expect(compareGraphs(mk('1'), mk(1)).equal).toBe(true);
+  });
+
   it('catches a missing object via the isa histogram', () => {
     const a = {
       rootObject: hex(1),

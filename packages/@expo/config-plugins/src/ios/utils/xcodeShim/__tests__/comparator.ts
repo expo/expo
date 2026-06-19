@@ -20,6 +20,11 @@ const EQUAL: Diff = { equal: true };
 // A reference is any string value that names an object in the graph. Detecting
 // refs by membership (not by UUID charset) is robust to both legacy's hex UUIDs
 // and `@bacons`'s `XX…XX` content-hash UUIDs.
+function isScalar(value: unknown): boolean {
+  const t = typeof value;
+  return t === 'string' || t === 'number' || t === 'boolean';
+}
+
 function isRef(value: unknown, objects: Record<string, any>): value is string {
   return typeof value === 'string' && value in objects;
 }
@@ -90,6 +95,9 @@ function fingerprintObject(obj: any, objects: Record<string, any>, stack: Set<st
  */
 function deepDiff(a: any, b: any, path: string): Diff {
   if (a === b) return EQUAL;
+  // Numeric-value quoting is cosmetic: legacy quotes e.g. TARGETED_DEVICE_FAMILY as
+  // `"1"` (string) while `@bacons` emits a bare `1` (number) — same value to Xcode.
+  if (isScalar(a) && isScalar(b) && String(a) === String(b)) return EQUAL;
   if (typeof a !== typeof b || a === null || b === null) {
     return { equal: false, path, legacy: a, shim: b };
   }
