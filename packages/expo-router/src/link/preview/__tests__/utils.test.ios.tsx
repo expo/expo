@@ -164,7 +164,6 @@ describe(getTabPathFromRootStateByHref, () => {
           key: '__root-fIzYvzoMkBMsXahmRCQXB',
         },
       ],
-      preloadedRoutes: [],
     };
     const href = '/faces/1e3a8a';
     const tabPath = getTabPathFromRootStateByHref(href, state as NavigationState);
@@ -233,7 +232,6 @@ describe(getTabPathFromRootStateByHref, () => {
           key: '__root-i4ih9bAW8jcq6MHWZNUhE',
         },
       ],
-      preloadedRoutes: [],
     };
     const href = '/faces/1e3a8a';
     const tabPath = getTabPathFromRootStateByHref(href, state as NavigationState);
@@ -322,7 +320,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
           key: '__root-fIzYvzoMkBMsXahmRCQXB',
         },
       ],
-      preloadedRoutes: [],
     };
     const href = '/faces/1e3a8a';
     const preloadedRoute = getPreloadedRouteFromRootStateByHref(href, state as NavigationState);
@@ -392,7 +389,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
           key: '__root-i4ih9bAW8jcq6MHWZNUhE',
         },
       ],
-      preloadedRoutes: [],
     };
     const href = '/faces/1e3a8a';
     const preloadedRoute = getPreloadedRouteFromRootStateByHref(href, state as NavigationState);

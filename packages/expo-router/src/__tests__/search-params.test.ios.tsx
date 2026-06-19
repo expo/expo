@@ -28,7 +28,6 @@ describe('push', () => {
     expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -38,7 +37,6 @@ describe('push', () => {
           state: {
             index: 5,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['page'],
             routes: [
               {
@@ -100,7 +98,6 @@ describe('push', () => {
     expect(store.state).toEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -110,7 +107,6 @@ describe('push', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['page'],
             routes: [
               {
@@ -155,7 +151,6 @@ describe('navigate', () => {
     expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -165,7 +160,6 @@ describe('navigate', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['page'],
             routes: [
               {
@@ -202,7 +196,6 @@ describe('navigate', () => {
     expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -212,7 +205,6 @@ describe('navigate', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['index', '[page]'],
             routes: [
               {
@@ -258,7 +250,6 @@ describe('navigate', () => {
     expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -268,7 +259,6 @@ describe('navigate', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['index', '[page]'],
             routes: [
               {
@@ -308,7 +298,6 @@ describe('replace', () => {
     expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -318,7 +307,6 @@ describe('replace', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['page'],
             routes: [
               {

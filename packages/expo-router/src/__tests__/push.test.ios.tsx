@@ -39,7 +39,6 @@ it('stacks should always push a new route', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -49,7 +48,6 @@ it('stacks should always push a new route', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
@@ -76,7 +74,6 @@ it('stacks should always push a new route', () => {
               state: {
                 index: 3,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['user/[id]', 'post/[id]'],
                 routes: [
                   {
@@ -93,7 +90,6 @@ it('stacks should always push a new route', () => {
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -122,7 +118,6 @@ it('stacks should always push a new route', () => {
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -151,7 +146,6 @@ it('stacks should always push a new route', () => {
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -180,7 +174,6 @@ it('stacks should always push a new route', () => {
                     state: {
                       index: 1,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -299,7 +292,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -309,7 +301,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
         state: {
           index: 2,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(tabs)', 'd'],
           routes: [
             {
@@ -351,7 +342,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                     state: {
                       index: 2,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['one', 'two'],
                       routes: [
                         {
@@ -438,7 +428,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -448,7 +437,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
         state: {
           index: 3,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['a', 'b', 'one'],
           routes: [
             {
@@ -474,7 +462,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
               state: {
                 index: 2,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['index', 'two', 'page'],
                 routes: [
                   {
@@ -500,7 +487,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                     state: {
                       index: 1,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index', 'page'],
                       routes: [
                         {
@@ -574,7 +560,6 @@ it('push should also add anchor routes', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -584,7 +569,6 @@ it('push should also add anchor routes', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
@@ -607,7 +591,6 @@ it('push should also add anchor routes', () => {
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['apple', 'index', 'orange'],
                 routes: [
                   {
@@ -652,7 +635,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -664,7 +646,6 @@ describe('singular', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -713,7 +694,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -725,7 +705,6 @@ describe('singular', () => {
           state: {
             index: 1,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -771,7 +750,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -783,7 +761,6 @@ describe('singular', () => {
           state: {
             index: 4,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -845,7 +822,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -857,7 +833,6 @@ describe('singular', () => {
           state: {
             index: 1,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
