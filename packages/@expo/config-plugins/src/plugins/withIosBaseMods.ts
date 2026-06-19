@@ -15,6 +15,7 @@ import { ensureApplicationTargetEntitlementsFileConfigured } from '../ios/Entitl
 import type { InfoPlist } from '../ios/IosConfig.types';
 import { getPbxproj } from '../ios/utils/Xcodeproj';
 import { getInfoPlistPathFromPbxproj } from '../ios/utils/getInfoPlistPath';
+import { openXcodeProject } from '../ios/utils/xcodeShim/backend';
 import { fileExists } from '../utils/modules';
 import { sortObject } from '../utils/sortObject';
 import { addWarningIOS } from '../utils/warnings';
@@ -118,9 +119,7 @@ const defaultProviders = {
       return Paths.getPBXProjectPath(projectRoot);
     },
     async read(filePath) {
-      const project = xcode.project(filePath);
-      project.parseSync();
-      return project;
+      return openXcodeProject(filePath);
     },
     async write(filePath, { modResults }) {
       await writeFile(filePath, modResults.writeSync());

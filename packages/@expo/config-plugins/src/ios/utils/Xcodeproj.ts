@@ -19,10 +19,10 @@ import type {
   XCConfigurationList,
   XcodeProject,
 } from 'xcode';
-import xcode from 'xcode';
 import pbxFile from 'xcode/lib/pbxFile';
 
 import { trimQuotes } from './string';
+import { openXcodeProject } from './xcodeShim/backend';
 import { addWarningIOS } from '../../utils/warnings';
 import * as Paths from '../Paths';
 
@@ -335,9 +335,7 @@ export function ensureGroupRecursively(project: XcodeProject, filepath: string):
  */
 export function getPbxproj(projectRoot: string): XcodeProject {
   const projectPath = Paths.getPBXProjectPath(projectRoot);
-  const project = xcode.project(projectPath);
-  project.parseSync();
-  return project;
+  return openXcodeProject(projectPath);
 }
 
 /**
