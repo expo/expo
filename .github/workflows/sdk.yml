@@ -11,17 +11,17 @@ on:
     branches: [main, 'sdk-*']
     paths:
       - .github/workflows/sdk.yml
-      - tools/**
       - packages/**
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
+      - turbo.json
   pull_request:
     paths:
       - .github/workflows/sdk.yml
-      - tools/**
       - packages/**
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
+      - turbo.json
   schedule:
     - cron: 0 14 * * *
 
@@ -42,13 +42,6 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
-      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
-        id: filter
-        with:
-          filters: |
-            module-scripts:
-              - 'packages/expo-module-scripts/**'
-              - 'packages/jest-expo/**'
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.base_ref || github.event.before || 'main' }}:${{ github.base_ref || github.event.before || 'main' }} --depth 100
         if: github.event_name == 'pull_request'
@@ -72,8 +65,7 @@ jobs:
 
       - name: 🧐 Check all packages
         if: github.event_name == 'schedule' ||
-          github.event.inputs.checkAll == 'check-all' ||
-          steps.filter.outputs.module-scripts == 'true'
+          github.event.inputs.checkAll == 'check-all'
         run: |
           pnpm turbo run build typecheck depscheck test lint \
             --filter="./packages/**" \
@@ -81,8 +73,7 @@ jobs:
 
       - name: 🧐 Check changed packages
         if: github.event_name != 'schedule' &&
-          github.event.inputs.checkAll != 'check-all' &&
-          steps.filter.outputs.module-scripts != 'true'
+          github.event.inputs.checkAll != 'check-all'
         env:
           TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
         run: |
