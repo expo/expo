@@ -1,11 +1,16 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-06-16T07:03:16.187Z",
-    "cliVersion": "20.2.0"
+    "fetchedAt": "2026-06-19T11:22:00.287Z",
+    "cliVersion": "20.3.0"
   },
-  "totalCommands": 123,
+  "totalCommands": 127,
   "commands": [
+    {
+      "command": "eas account:audit [ACCOUNT_NAME]",
+      "description": "view the audit logs for an account",
+      "usage": "USAGE\n  $ eas account:audit [ACCOUNT_NAME] [--limit <value>] [--after <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  [ACCOUNT_NAME]  Account name to view audit logs for. If not provided, the account will be selected interactively (or\n                  defaults to the only account if there is just one)\n\nFLAGS\n  --after=<value>    Cursor for pagination. Use the endCursor from a previous query to fetch the next page.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  view the audit logs for an account"
+    },
     {
       "command": "eas account:login",
       "description": "log in with your Expo account",
@@ -367,6 +372,21 @@
       "usage": "USAGE\n  $ eas integrations:convex:team:invite [CONVEX_TEAM] [--non-interactive]\n\nARGUMENTS\n  [CONVEX_TEAM]  Slug of the Convex team to invite yourself to\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  send a Convex team invitation to your verified email address"
     },
     {
+      "command": "eas integrations:posthog:connect",
+      "description": "connect PostHog to your Expo project",
+      "usage": "USAGE\n  $ eas integrations:posthog:connect [--json] [--non-interactive] [--region US|EU] [--session-replay] [--error-tracking]\n    [--posthog-cli-api-key <value>] [--overwrite]\n\nFLAGS\n  --[no-]error-tracking          Set up PostHog error tracking / source maps (requires a personal API key)\n  --json                         Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                 --non-interactive.\n  --non-interactive              Run the command in non-interactive mode.\n  --overwrite                    Overwrite existing PostHog environment variables without prompting\n  --posthog-cli-api-key=<value>  PostHog personal API key for error-tracking source-map uploads (enables error tracking\n                                 non-interactively)\n  --region=<option>              PostHog region\n                                 <options: US|EU>\n  --[no-]session-replay          Set up PostHog session replay (default: yes)\n\nDESCRIPTION\n  connect PostHog to your Expo project"
+    },
+    {
+      "command": "eas integrations:posthog:dashboard",
+      "description": "open the PostHog dashboard for the linked PostHog project",
+      "usage": "USAGE\n  $ eas integrations:posthog:dashboard [--json] [--non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  open the PostHog dashboard for the linked PostHog project"
+    },
+    {
+      "command": "eas integrations:posthog:disconnect",
+      "description": "remove the PostHog project link for the current Expo app from EAS servers",
+      "usage": "USAGE\n  $ eas integrations:posthog:disconnect [--json] [--non-interactive] [-y]\n\nFLAGS\n  -y, --yes              Skip confirmation prompt\n      --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  remove the PostHog project link for the current Expo app from EAS servers"
+    },
+    {
       "command": "eas login",
       "description": "log in with your Expo account",
       "usage": "USAGE\n  $ eas login [-s] [-b]\n\nFLAGS\n  -b, --[no-]browser  Log in with your browser (default; use --no-browser for CLI-based login)\n  -s, --sso           Log in with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
@@ -529,7 +549,7 @@
     {
       "command": "eas update:view GROUPID",
       "description": "update group details",
-      "usage": "USAGE\n  $ eas update:view GROUPID [--insights] [--days <value> | --start <value> | --end <value>] [--json]\n\nARGUMENTS\n  GROUPID  The ID of an update group.\n\nFLAGS\n  --days=<value>   Show insights from the last N days (default 7). Only used with --insights.\n  --end=<value>    End of insights time range (ISO date). Only used with --insights.\n  --insights       Also show insights (launches, crash rate, unique users, payload size) for the update group.\n  --json           Enable JSON output, non-JSON messages will be printed to stderr.\n  --start=<value>  Start of insights time range (ISO date). Only used with --insights.\n\nDESCRIPTION\n  update group details"
+      "usage": "USAGE\n  $ eas update:view GROUPID [--insights] [--days <value> | --start <value> | --end <value>] [--json]\n\nARGUMENTS\n  GROUPID  The ID of an update group, or the ID of a platform-specific update.\n\nFLAGS\n  --days=<value>   Show insights from the last N days (default 7). Only used with --insights.\n  --end=<value>    End of insights time range (ISO date). Only used with --insights.\n  --insights       Also show insights (launches, crash rate, unique users, payload size) for the update group.\n  --json           Enable JSON output, non-JSON messages will be printed to stderr.\n  --start=<value>  Start of insights time range (ISO date). Only used with --insights.\n\nDESCRIPTION\n  update group details"
     },
     {
       "command": "eas upload",
