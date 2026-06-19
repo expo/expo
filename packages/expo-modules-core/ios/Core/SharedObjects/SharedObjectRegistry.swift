@@ -174,8 +174,8 @@ public final class SharedObjectRegistry: Sendable {
    */
   @JavaScriptActor
   internal func toNativeObject(_ jsObject: borrowing JavaScriptObject) -> SharedObject? {
-    if let nativeState = jsObject.getNativeState(as: SharedObjectNativeState.self) {
-      return nativeState.native
+    if let native = try? SharedObject.native(from: jsObject) {
+      return native
     }
     // Fallback to the id-based lookup for cases where the JS object was registered
     // through a path that doesn't attach a `SharedObjectNativeState` (e.g. worklet
