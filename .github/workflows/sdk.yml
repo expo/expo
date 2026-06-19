@@ -69,18 +69,28 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
+
       - name: 🧐 Check all packages
         if: github.event_name == 'schedule' ||
           github.event.inputs.checkAll == 'check-all' ||
           steps.filter.outputs.module-scripts == 'true'
-        run: pnpm expotools check-packages --all
+        run: |
+          pnpm turbo run build typecheck depscheck test lint \
+            --filter="./packages/**" \
+            --continue=dependencies-successful
+
       - name: 🧐 Check changed packages
         if: github.event_name != 'schedule' &&
           github.event.inputs.checkAll != 'check-all' &&
           steps.filter.outputs.module-scripts != 'true'
         env:
-          SINCE: ${{ github.base_ref || github.event.before || 'main' }}
-        run: pnpm expotools check-packages --since $SINCE --core
+          TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
+        run: |
+          pnpm turbo run build typecheck depscheck test lint \
+            --affected \
+            --filter="./packages/**" \
+            --continue=dependencies-successful
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-')) && github.repository == 'expo/expo'
@@ -113,8 +123,13 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
+
       - name: 🧐 Check all packages
-        run: pnpm expotools check-packages --all
+        run: |
+          pnpm turbo run build typecheck depscheck test lint \
+            --filter="./packages/**" \
+            --continue=dependencies-successful
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-')) && github.repository == 'expo/expo'
