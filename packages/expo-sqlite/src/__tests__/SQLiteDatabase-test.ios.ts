@@ -2,7 +2,12 @@
 import fs from 'fs/promises';
 
 import type { SQLiteDatabase } from '../SQLiteDatabase';
-import { deserializeDatabaseAsync, openDatabaseAsync, openDatabaseSync } from '../SQLiteDatabase';
+import {
+  deserializeDatabaseAsync,
+  deserializeDatabaseSync,
+  openDatabaseAsync,
+  openDatabaseSync,
+} from '../SQLiteDatabase';
 
 jest.mock('expo/devtools', () => ({
   getDevToolsPluginClientAsync: jest.fn(),
@@ -324,17 +329,23 @@ describe('Database - Synchronous calls', () => {
   });
 });
 
-// node:sqlite (the test mock) doesn't implement serialize on Node 22. Skipping is safe: the JS
-// wrappers are pass-throughs and the native behavior is covered by the Swift/Kotlin unit tests.
+// Skipping is safe where node:sqlite lacks serialize/deserialize: the JS wrappers are pass-throughs
+// and the native behavior is covered by the Swift/Kotlin unit tests.
 function supportsSerialize(): boolean {
   const db = openDatabaseSync(':memory:');
+  let serialized: Uint8Array;
   try {
-    db.serializeSync();
-    return true;
+    serialized = db.serializeSync();
   } catch {
     return false;
   } finally {
     db.closeSync();
+  }
+  try {
+    deserializeDatabaseSync(serialized).closeSync();
+    return true;
+  } catch {
+    return false;
   }
 }
 

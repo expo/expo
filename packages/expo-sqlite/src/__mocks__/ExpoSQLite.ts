@@ -43,11 +43,16 @@ class NativeDatabase {
   private readonly nodeDb: DatabaseSync;
 
   constructor(databaseName: string, options?: SQLiteOpenOptions, serializedData?: Uint8Array) {
+    this.nodeDb = new DatabaseSync(databaseName);
     if (serializedData != null) {
-      // node:sqlite gained buffer construction after Node 22; unreachable while serialize is skipped.
-      this.nodeDb = new DatabaseSync(Buffer.from(serializedData) as unknown as string);
-    } else {
-      this.nodeDb = new DatabaseSync(databaseName);
+      const deserialize = (this.nodeDb as unknown as { deserialize?: (data: Uint8Array) => void })
+        .deserialize;
+      if (typeof deserialize !== 'function') {
+        throw new Error(
+          'node:sqlite does not implement deserialize() on this Node version, so the mock cannot deserialize the database.'
+        );
+      }
+      deserialize.call(this.nodeDb, serializedData);
     }
   }
 
