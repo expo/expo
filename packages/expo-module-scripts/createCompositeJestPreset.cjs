@@ -19,7 +19,14 @@ const basePreset = require('./jest-preset.cjs');
 //   external `--rootDir` (as `expo-module test <target>` does).
 // `opts.srcProjects` overrides the default `src` projects — used by packages whose `src`
 // tests are platform-specific (e.g. iOS-only) rather than the full multi-platform set.
-module.exports = function createCompositeJestPreset(rootDir, subdirs = [], { srcProjects } = {}) {
+// `opts.rsc` appends the React Server Component per-platform projects (from
+// `jest-expo/rsc/jest-preset`) so a package's `__rsc_tests__` run as part of the single `jest`
+// invocation instead of a separate `test:rsc` script.
+module.exports = function createCompositeJestPreset(
+  rootDir,
+  subdirs = [],
+  { srcProjects, rsc = false } = {}
+) {
   return {
     ...basePreset,
     projects: [
@@ -36,6 +43,9 @@ module.exports = function createCompositeJestPreset(rootDir, subdirs = [], { src
         // Name the project after its folder so failures are attributable in multi-project output.
         return { displayName: dir, ...config, rootDir: path.join(rootDir, dir) };
       }),
+      // RSC `__rsc_tests__` as their own per-platform projects (named `rsc/<platform>`). These
+      // only match `**/__rsc_tests__/**`, so they're inert for packages without such tests.
+      ...(rsc ? require('jest-expo/rsc/jest-preset').projects : []),
     ],
   };
 };
