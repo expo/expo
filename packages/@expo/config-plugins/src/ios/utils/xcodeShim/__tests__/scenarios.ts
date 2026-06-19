@@ -425,6 +425,27 @@ export const scenarios: Scenario[] = [
     },
   },
   {
+    name: 'build-phases/phase-lookup-by-comment',
+    description:
+      'buildPhaseObject finds a phase by its comment with no target (ios-stickers pattern)',
+    fixture: 'bareMinimum',
+    run({ project }) {
+      const ext = project.addTarget(
+        'Stickers',
+        'app_extension',
+        'Stickers',
+        'com.example.app.Stickers'
+      );
+      project.addBuildPhase([], 'PBXResourcesBuildPhase', 'Stickers Resources', ext.uuid);
+      const phase = project.buildPhaseObject(
+        'PBXResourcesBuildPhase',
+        'Stickers Resources',
+        undefined
+      );
+      return { found: !!phase, isa: phase?.isa, fileCount: phase?.files?.length ?? 0 };
+    },
+  },
+  {
     name: 'build-phases/build-phase-object',
     description: 'buildPhaseObject resolves an existing phase by name + target',
     fixture: 'bareMinimum',

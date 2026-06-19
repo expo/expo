@@ -211,6 +211,10 @@ export class XcodeProjectShim {
   // no empty sections, so track them here).
   private hashCreatedSections = new Set<string>();
 
+  // Comment a build phase was created with (legacy looks phases up by comment;
+  // `@bacons` doesn't store a comment on unnamed built-in phases like Resources).
+  private buildPhaseComments = new Map<string, string>();
+
   constructor(filePath: string) {
     this.filepath = path.resolve(filePath);
   }
@@ -630,19 +634,28 @@ export class XcodeProjectShim {
   buildPhase(..._args: any[]): any {
     notImplemented('buildPhase');
   }
-  buildPhaseObject(isa: string, name: string, target?: string): any {
-    const targetModel = (target && this.safeGetObject(target)) || this.firstTargetModel();
-    // Unnamed built-in phases (Sources/Frameworks/Resources) match by isa; named
-    // phases (copy-files, shell scripts) disambiguate by name.
-    let phase = (targetModel?.props?.buildPhases ?? []).find(
-      (p: any) => p.isa === isa && (p.props.name == null || trimQuotes(p.props.name) === name)
+  // The comment a phase is known by: its creation comment, else its `name` prop.
+  private phaseComment(phase: any): string | undefined {
+    return (
+      this.buildPhaseComments.get(phase.uuid) ??
+      (phase.props.name != null ? trimQuotes(phase.props.name) : undefined)
     );
-    // Legacy fallback: when the passed target doesn't own the named phase, match
-    // it by name across the whole section (e.g. a phase that lives on the app
-    // target is looked up via a freshly-created extension target).
-    if (!phase) {
-      phase = this.modelsOfIsa(isa).find((p) => trimQuotes(p.props.name ?? '') === name);
+  }
+
+  buildPhaseObject(isa: string, name: string, target?: string): any {
+    // Within the passed target, an unnamed built-in phase (no comment) matches the
+    // conventional name (Sources/Frameworks/Resources); a commented phase must match.
+    if (target) {
+      const t = this.safeGetObject(target);
+      const owned = (t?.props?.buildPhases ?? []).find((p: any) => {
+        if (p.isa !== isa) return false;
+        const comment = this.phaseComment(p);
+        return comment == null || comment === name;
+      });
+      if (owned) return this.legacyBuildPhase(owned);
     }
+    // No target (or not owned): legacy scans the whole section by comment.
+    const phase = this.modelsOfIsa(isa).find((p) => this.phaseComment(p) === name);
     return phase ? this.legacyBuildPhase(phase) : null;
   }
   getFirstProject(): any {
@@ -891,6 +904,7 @@ export class XcodeProjectShim {
       ...extra,
     });
     targetModel.props.buildPhases.push(phase);
+    this.buildPhaseComments.set(phase.uuid, comment);
 
     for (const filePath of filePathsArray) {
       const existing = this.modelsOfIsa('PBXBuildFile').find(

@@ -31,6 +31,7 @@ const IMPLEMENTED = new Set<string>([
   'build-phases/add-shell-script',
   'build-phases/add-copy-files',
   'build-phases/build-phase-object',
+  'build-phases/phase-lookup-by-comment',
   'frameworks/add-framework',
   'frameworks/add-framework-weak',
   'frameworks/add-custom-framework-embed-sign',
