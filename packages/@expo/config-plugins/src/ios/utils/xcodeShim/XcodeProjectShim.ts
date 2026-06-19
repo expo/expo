@@ -171,8 +171,13 @@ export class XcodeProjectShim {
   getPBXObject(..._args: any[]): any {
     notImplemented('getPBXObject');
   }
-  hasFile(..._args: any[]): any {
-    notImplemented('hasFile');
+  hasFile(filePath: string): any {
+    for (const ref of this.modelsOfIsa('PBXFileReference')) {
+      if (trimQuotes(ref.props.path) === filePath) {
+        return ref;
+      }
+    }
+    return false;
   }
   getBuildProperty(prop: string, build?: string, targetName?: string): any {
     const scoped = targetName ? this.configUuidsForTarget(this.findTargetByName(targetName)) : null;
