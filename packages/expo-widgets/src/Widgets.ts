@@ -1,6 +1,6 @@
 import type { EventSubscription } from 'expo-modules-core';
-
 import { Platform } from 'react-native';
+
 import ExpoWidgetsModule from './ExpoWidgets';
 import type {
   ExpoWidgetsEvents,

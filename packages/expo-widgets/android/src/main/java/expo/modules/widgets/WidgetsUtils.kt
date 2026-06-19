@@ -25,6 +25,17 @@ internal fun evaluateLayout(
   }
 }
 
+internal fun evaluateWidgetButtonPress(
+  context: Context,
+  layout: String,
+  props: Map<String, Any?>?,
+  environment: Map<String, Any?>
+): Map<String, Any?>? {
+  return runCatching {
+    WidgetsJSRuntime.handlePress(context, layout, props, environment)
+  }.getOrNull()
+}
+
 internal fun createErrorNode(message: String): ReadableMap {
   return Arguments.makeNativeMap(
     mapOf(

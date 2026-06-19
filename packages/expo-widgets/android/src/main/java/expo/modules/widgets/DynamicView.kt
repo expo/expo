@@ -15,51 +15,71 @@ import expo.modules.ui.RadioButtonProps
 import expo.modules.ui.SpacerProps
 import expo.modules.ui.SwitchProps
 import expo.modules.ui.TextProps
-import expo.modules.ui.button.ButtonProps
-import expo.modules.widgets.ui.ButtonView
-import expo.modules.widgets.ui.ElevatedButtonView
-import expo.modules.widgets.ui.FilledTonalButtonView
-import expo.modules.widgets.ui.OutlinedButtonView
 import expo.modules.widgets.ui.BoxView
+import expo.modules.widgets.ui.ButtonView
 import expo.modules.widgets.ui.CheckboxView
 import expo.modules.widgets.ui.CircularProgressIndicatorView
 import expo.modules.widgets.ui.ColumnView
+import expo.modules.widgets.ui.ElevatedButtonView
+import expo.modules.widgets.ui.FilledTonalButtonView
 import expo.modules.widgets.ui.LinearProgressIndicatorView
 import expo.modules.widgets.ui.LoadingIndicatorView
+import expo.modules.widgets.ui.OutlinedButtonView
 import expo.modules.widgets.ui.RadioButtonView
 import expo.modules.widgets.ui.RowView
 import expo.modules.widgets.ui.SpacerView
 import expo.modules.widgets.ui.SwitchView
 import expo.modules.widgets.ui.TextButtonView
 import expo.modules.widgets.ui.TextView
+import expo.modules.widgets.ui.WidgetButtonProps
 
 @Composable
-internal fun DynamicView(node: ReadableMap) {
+internal fun DynamicView(node: ReadableMap, source: String) {
   val type = if (node.hasKey("type")) node.getString("type") else null
   when (type) {
-    "Button" -> ButtonView(node.props<ButtonProps>(), node.children())
-    "FilledTonalButton" -> FilledTonalButtonView(node.props<ButtonProps>(), node.children())
-    "OutlinedButton" -> OutlinedButtonView(node.props<ButtonProps>(), node.children())
-    "ElevatedButton" -> ElevatedButtonView(node.props<ButtonProps>(), node.children())
-    "TextButton" -> TextButtonView(node.props<ButtonProps>(), node.children())
     "BoxView" -> BoxView(node.props<LayoutProps>()) {
-      node.children().forEach { DynamicView(it) }
+      node.children().forEach { DynamicView(it, source) }
     }
     "CheckboxView" -> CheckboxView(node.props<CheckboxProps>())
     "CircularProgressIndicatorView" -> CircularProgressIndicatorView(node.props<CircularProgressIndicatorProps>())
     "ColumnView" -> ColumnView(node.props<LayoutProps>()) {
-      node.children().forEach { DynamicView(it) }
+      node.children().forEach { DynamicView(it, source) }
     }
     "LinearProgressIndicatorView" -> LinearProgressIndicatorView(node.props<LinearProgressIndicatorProps>())
     "LoadingIndicatorView" -> LoadingIndicatorView(node.props<LoadingIndicatorProps>())
     "RadioButtonView" -> RadioButtonView(node.props<RadioButtonProps>())
-    "react.fragment" -> node.children().forEach { DynamicView(it) }
+    "react.fragment" -> node.children().forEach { DynamicView(it, source) }
     "RowView" -> RowView(node.props<LayoutProps>()) {
-      node.children().forEach { DynamicView(it) }
+      node.children().forEach { DynamicView(it, source) }
     }
     "SpacerView" -> SpacerView(node.props<SpacerProps>())
     "SwitchView" -> SwitchView(node.props<SwitchProps>())
     "TextView" -> TextView(node.props<TextProps>())
+    "Button" -> ButtonView(
+      props = node.props<WidgetButtonProps>(),
+      children = node.children(),
+      source = source,
+    )
+    "FilledTonalButton" -> FilledTonalButtonView(
+      props = node.props<WidgetButtonProps>(),
+      children = node.children(),
+      source = source,
+    )
+    "OutlinedButton" -> OutlinedButtonView(
+      props = node.props<WidgetButtonProps>(),
+      children = node.children(),
+      source = source,
+    )
+    "ElevatedButton" -> ElevatedButtonView(
+      props = node.props<WidgetButtonProps>(),
+      children = node.children(),
+      source = source,
+    )
+    "TextButton" -> TextButtonView(
+      props = node.props<WidgetButtonProps>(),
+      children = node.children(),
+      source = source,
+    )
     else -> TextView(TextProps("View not found"))
   }
 }

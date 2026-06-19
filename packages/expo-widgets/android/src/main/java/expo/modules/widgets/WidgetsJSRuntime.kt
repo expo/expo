@@ -22,6 +22,20 @@ internal object WidgetsJSRuntime {
     )
   }
 
+  @Synchronized
+  fun handlePress(
+    context: Context,
+    layout: String,
+    props: Map<String, Any?>?,
+    environment: Map<String, Any?>
+  ): Map<String, Any?>? {
+    return getRuntime(context).handlePress(
+      layout,
+      Arguments.makeNativeMap(props),
+      Arguments.makeNativeMap(environment)
+    )?.toHashMap()
+  }
+
   private fun getRuntime(context: Context): WidgetsHermesRuntime {
     return runtime ?: WidgetsHermesRuntime().also {
       it.evaluateBundle(readBundle(context))

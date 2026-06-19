@@ -13,6 +13,22 @@ class WidgetsModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoWidgets")
 
+    Events(ON_USER_INTERACTION)
+
+    OnStartObserving(ON_USER_INTERACTION) {
+      WidgetsEvents.startObservingUserInteractions { event ->
+        sendEvent(ON_USER_INTERACTION, event)
+      }
+    }
+
+    OnStopObserving(ON_USER_INTERACTION) {
+      WidgetsEvents.stopObservingUserInteractions()
+    }
+
+    OnDestroy {
+      WidgetsEvents.stopObservingUserInteractions()
+    }
+
     Constant("widgetsDirectory") {
       val directory = File(appContext.persistentFilesDirectory, "ExpoWidgets")
       if (directory.mkdirs() || directory.isDirectory) {

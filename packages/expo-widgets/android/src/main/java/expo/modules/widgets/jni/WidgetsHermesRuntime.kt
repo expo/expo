@@ -18,12 +18,17 @@ internal class WidgetsHermesRuntime : Closeable {
     return nativeRender(layout, props, environment)
   }
 
+  fun handlePress(layout: String, props: ReadableNativeMap?, environment: ReadableNativeMap): ReadableNativeMap? {
+    return nativeHandlePress(layout, props, environment)
+  }
+
   override fun close() {
     mHybridData.resetNative()
   }
 
   private external fun nativeEvaluateBundle(script: String, sourceUrl: String)
   private external fun nativeRender(layout: String, props: ReadableNativeMap?, environment: ReadableNativeMap): ReadableNativeMap
+  private external fun nativeHandlePress(layout: String, props: ReadableNativeMap?, environment: ReadableNativeMap): ReadableNativeMap?
 
   companion object {
     init {

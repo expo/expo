@@ -32,6 +32,6 @@ internal fun ExpoWidgetsGlanceContent(context: Context, widgetName: String) {
   } ?: createErrorNode("No layout found for $widgetName")
 
   Box(modifier = GlanceModifier.fillMaxSize()) {
-    DynamicView(node)
+    DynamicView(node, widgetName)
   }
 }
