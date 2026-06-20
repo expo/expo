@@ -74,8 +74,11 @@ export async function prebuildAsync(
 
   const { platforms } = getConfig(projectRoot).exp;
   if (platforms?.length) {
-    // Filter out platforms that aren't in the app.json.
-    const finalPlatforms = options.platforms.filter((platform) => platforms.includes(platform));
+    // Filter out platforms that aren't in the app.json. `platforms` from
+    // app.json is typed as ('android' | 'ios' | 'web')[] and doesn't yet
+    // include 'tvos', so widen for the .includes() check.
+    const appPlatforms = platforms as string[];
+    const finalPlatforms = options.platforms.filter((platform) => appPlatforms.includes(platform));
     if (finalPlatforms.length > 0) {
       options.platforms = finalPlatforms;
     } else {
