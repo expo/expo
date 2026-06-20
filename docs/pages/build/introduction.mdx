@@ -1,161 +1,1222 @@
----
-title: EAS Build
-sidebar_title: Introduction
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+import React, { useState, useMemo } from "react";
+import {
+  Car, Home, Smartphone, Shirt, UtensilsCrossed, Hotel, Pill,
+  Search, Bell, MapPin, ShoppingCart, User, Settings, BarChart3,
+  Building2, Wallet, ChevronLeft, ChevronRight, Star, Heart,
+  Plus, Minus, X, Check, Clock, TrendingUp, Users, Package,
+  CreditCard, LogOut, Filter, ArrowUpRight, ArrowDownRight,
+  LayoutGrid, FileText, DollarSign, ChevronDown, Phone, Mail,
+  Calendar, MoreVertical, Edit3, Trash2, Eye, Download, AlertCircle
+} from "lucide-react";
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+/* ============================== DESIGN TOKENS ==============================
+  Palette:
+    --navy:    #0E1B2C  (primary dark / app shell)
+    --sand:    #F2E8D8  (warm light surface)
+    --amber:   #D4862B  (signature accent)
+    --teal:    #1B4F4A  (secondary / finance / trust)
+    --paper:   #FAF7F1  (cards)
+    --ink:     #5C6470  (secondary text)
+  Sector tints:
+    cars: #3E5C76 | realestate: #C68A3F | electronics: #4B4E8C
+    fashion: #B5586B | dining: #C1542C | hotels: #1F6F66 | pharmacy: #5E8C5A
+=============================================================================*/
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { FAQ } from '~/ui/components/FAQ';
-import { Terminal } from '~/ui/components/Snippet';
+const SECTORS = [
+  { id: "cars", name: "سيارات", icon: Car, tint: "#3E5C76", tintBg: "#3E5C7618" },
+  { id: "realestate", name: "عقارات", icon: Home, tint: "#C68A3F", tintBg: "#C68A3F18" },
+  { id: "electronics", name: "إلكترونيات", icon: Smartphone, tint: "#4B4E8C", tintBg: "#4B4E8C18" },
+  { id: "fashion", name: "ملابس وعطور", icon: Shirt, tint: "#B5586B", tintBg: "#B5586B18" },
+  { id: "dining", name: "مطاعم", icon: UtensilsCrossed, tint: "#C1542C", tintBg: "#C1542C18" },
+  { id: "hotels", name: "فنادق", icon: Hotel, tint: "#1F6F66", tintBg: "#1F6F6618" },
+  { id: "pharmacy", name: "صيدليات", icon: Pill, tint: "#5E8C5A", tintBg: "#5E8C5A18" },
+];
 
-**EAS Build** is a hosted Expo Application Services (EAS) service that builds app binaries (also called [standalone apps](/more/glossary-of-terms/#standalone-app)) for your Expo and React Native projects.
+const PRODUCTS = {
+  cars: [
+    { id: "c1", name: "تويوتا كامري 2025", partner: "معرض الرياض للسيارات", price: 128000, img: "🚗", rating: 4.8, location: "الرياض - حي العليا", tag: "جديد" },
+    { id: "c2", name: "لكزس ES 350", partner: "صالة النخبة للسيارات", price: 215000, img: "🚙", rating: 4.9, location: "جدة - حي الروضة", tag: "مستعمل - ممتاز" },
+    { id: "c3", name: "جيب رانجلر 2024", partner: "معرض الصحراء", price: 175000, img: "🚙", rating: 4.6, location: "الدمام", tag: "جديد" },
+    { id: "c4", name: "مرسيدس C200", partner: "ستار موتورز", price: 245000, img: "🚘", rating: 4.7, location: "الرياض - حي السليمانية", tag: "جديد" },
+  ],
+  realestate: [
+    { id: "r1", name: "شقة 3 غرف - برج النخيل", partner: "عقارات الواحة", price: 850000, img: "🏢", rating: 4.7, location: "الرياض - حي الياسمين", tag: "للبيع" },
+    { id: "r2", name: "فيلا دوبلكس فاخرة", partner: "مجموعة التطوير العمراني", price: 1950000, img: "🏠", rating: 4.9, location: "جدة - حي الشاطئ", tag: "للبيع" },
+    { id: "r3", name: "استوديو مفروش", partner: "سكن السهل", price: 2800, img: "🏘️", rating: 4.4, location: "الخبر", tag: "إيجار شهري" },
+    { id: "r4", name: "مكتب تجاري 120م", partner: "عقارات الواحة", price: 65000, img: "🏬", rating: 4.5, location: "الرياض - طريق الملك فهد", tag: "إيجار سنوي" },
+  ],
+  electronics: [
+    { id: "e1", name: "آيفون 17 برو", partner: "متجر التقنية الذكية", price: 5299, img: "📱", rating: 4.9, location: "توصيل لكل المملكة", tag: "الأكثر مبيعاً" },
+    { id: "e2", name: "لابتوب ماك بوك إير M4", partner: "ايليت ستور", price: 5899, img: "💻", rating: 4.8, location: "توصيل لكل المملكة", tag: "جديد" },
+    { id: "e3", name: "تلفزيون سامسونج 65 QLED", partner: "متجر التقنية الذكية", price: 3899, img: "📺", rating: 4.6, location: "توصيل لكل المملكة", tag: "خصم 15%" },
+    { id: "e4", name: "سماعات بلاتنيوم برو", partner: "ساوند هب", price: 899, img: "🎧", rating: 4.7, location: "توصيل لكل المملكة", tag: "جديد" },
+  ],
+  fashion: [
+    { id: "f1", name: "عطر عود ملكي 100مل", partner: "دار العود الفاخر", price: 650, img: "🧴", rating: 4.9, location: "توصيل لكل المملكة", tag: "صناعة محلية" },
+    { id: "f2", name: "ثوب رجالي كلاسيك", partner: "بيت الأناقة", price: 320, img: "👔", rating: 4.5, location: "الرياض - حي الملز", tag: "الأكثر طلباً" },
+    { id: "f3", name: "حقيبة يد جلد طبيعي", partner: "ملتقى الموضة", price: 480, img: "👜", rating: 4.7, location: "جدة - تحلية", tag: "جديد" },
+    { id: "f4", name: "عباية تطريز يدوي", partner: "بيت الأناقة", price: 590, img: "🥻", rating: 4.8, location: "الرياض - حي الملز", tag: "تصميم حصري" },
+  ],
+  dining: [
+    { id: "d1", name: "مطعم نجد التراثي", partner: "نجد التراثي", price: 0, img: "🍽️", rating: 4.8, location: "الرياض - حي الدرعية", tag: "مأكولات سعودية" },
+    { id: "d2", name: "بيتزا فيلاجيو", partner: "فيلاجيو", price: 0, img: "🍕", rating: 4.5, location: "جدة - الكورنيش", tag: "إيطالي" },
+    { id: "d3", name: "مشاوي الأمير", partner: "مشاوي الأمير", price: 0, img: "🍖", rating: 4.7, location: "الدمام", tag: "مشاوي" },
+    { id: "d4", name: "صن سوشي بار", partner: "صن سوشي", price: 0, img: "🍣", rating: 4.6, location: "الرياض - حي العليا", tag: "ياباني" },
+  ],
+  hotels: [
+    { id: "h1", name: "فندق الواحة الذهبية", partner: "مجموعة فنادق الواحة", price: 650, img: "🏨", rating: 4.7, location: "مكة المكرمة", tag: "5 نجوم" },
+    { id: "h2", name: "منتجع شاطئ اللؤلؤة", partner: "منتجعات اللؤلؤة", price: 980, img: "🏖️", rating: 4.9, location: "جدة - كورنيش البحر", tag: "منتجع" },
+    { id: "h3", name: "فندق النخبة بزنس", partner: "فنادق النخبة", price: 420, img: "🏩", rating: 4.4, location: "الرياض - حي العليا", tag: "رجال أعمال" },
+    { id: "h4", name: "شاليه الواحة الخضراء", partner: "الواحة الخضراء", price: 750, img: "🏡", rating: 4.6, location: "الطائف", tag: "شاليه عائلي" },
+  ],
+  pharmacy: [
+    { id: "p1", name: "فيتامين د 1000 وحدة", partner: "صيدلية الشفاء", price: 45, img: "💊", rating: 4.8, location: "توصيل خلال ساعة", tag: "الأكثر مبيعاً" },
+    { id: "p2", name: "جهاز قياس ضغط الدم", partner: "صيدليات النهدي بلس", price: 220, img: "🩺", rating: 4.7, location: "توصيل خلال ساعة", tag: "جديد" },
+    { id: "p3", name: "كريم ترطيب يومي", partner: "صيدلية الشفاء", price: 89, img: "🧴", rating: 4.6, location: "توصيل خلال ساعة", tag: "عناية بالبشرة" },
+    { id: "p4", name: "مكمل غذائي أوميغا 3", partner: "صيدليات النهدي بلس", price: 95, img: "💊", rating: 4.5, location: "توصيل خلال ساعة", tag: "خصم 10%" },
+  ],
+};
 
-EAS Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+const PARTNERS = [
+  { id: "pt1", name: "معرض الرياض للسيارات", sector: "cars", orders: 142, revenue: 1840000, commission: 92000, status: "نشط", joined: "يناير 2025" },
+  { id: "pt2", name: "عقارات الواحة", sector: "realestate", orders: 38, revenue: 4250000, commission: 212500, status: "نشط", joined: "مارس 2025" },
+  { id: "pt3", name: "متجر التقنية الذكية", sector: "electronics", orders: 890, revenue: 980000, commission: 49000, status: "نشط", joined: "فبراير 2025" },
+  { id: "pt4", name: "بيت الأناقة", sector: "fashion", orders: 412, revenue: 320000, commission: 16000, status: "نشط", joined: "أبريل 2025" },
+  { id: "pt5", name: "نجد التراثي", sector: "dining", orders: 1230, revenue: 615000, commission: 30750, status: "نشط", joined: "يناير 2025" },
+  { id: "pt6", name: "مجموعة فنادق الواحة", sector: "hotels", orders: 268, revenue: 890000, commission: 44500, status: "نشط", joined: "مايو 2025" },
+  { id: "pt7", name: "صيدلية الشفاء", sector: "pharmacy", orders: 2140, revenue: 245000, commission: 12250, status: "نشط", joined: "يناير 2025" },
+  { id: "pt8", name: "ستار موتورز", sector: "cars", orders: 67, revenue: 980000, commission: 49000, status: "قيد المراجعة", joined: "يونيو 2026" },
+];
 
-EAS Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+const ORDERS = [
+  { id: "ORD-9931", customer: "عبدالله المطيري", item: "آيفون 17 برو", sector: "electronics", amount: 5299, status: "تم التوصيل", date: "18 يونيو" },
+  { id: "ORD-9932", customer: "نورة العتيبي", item: "حجز فندق الواحة الذهبية", sector: "hotels", amount: 1950, status: "مؤكد", date: "19 يونيو" },
+  { id: "ORD-9933", customer: "فهد القحطاني", item: "توصيل من نجد التراثي", sector: "dining", amount: 185, status: "قيد التحضير", date: "20 يونيو" },
+  { id: "ORD-9934", customer: "سارة الدوسري", item: "فيتامين د 1000 وحدة", sector: "pharmacy", amount: 45, status: "تم التوصيل", date: "20 يونيو" },
+  { id: "ORD-9935", customer: "خالد الشهري", item: "معاينة شقة - برج النخيل", sector: "realestate", amount: 0, status: "موعد محدد", date: "21 يونيو" },
+];
 
-## Quick start
+const fmt = (n) => new Intl.NumberFormat("ar-SA").format(n);
 
-> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+/* ============================== SHARED UI ============================== */
 
-To build your app, run the following command:
+function StatusPill({ status }) {
+  const map = {
+    "تم التوصيل": { bg: "#5E8C5A18", fg: "#446B41" },
+    "مؤكد": { bg: "#1F6F6618", fg: "#1F6F66" },
+    "قيد التحضير": { bg: "#D4862B18", fg: "#A8661E" },
+    "موعد محدد": { bg: "#4B4E8C18", fg: "#4B4E8C" },
+    "نشط": { bg: "#5E8C5A18", fg: "#446B41" },
+    "قيد المراجعة": { bg: "#D4862B18", fg: "#A8661E" },
+  };
+  const s = map[status] || { bg: "#5C647018", fg: "#5C6470" };
+  return (
+    <span
+      className="px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap"
+      style={{ background: s.bg, color: s.fg }}
+    >
+      {status}
+    </span>
+  );
+}
 
-<Terminal cmd={['$ eas build --platform all']} />
+function SectorBadge({ sectorId, size = "sm" }) {
+  const s = SECTORS.find((x) => x.id === sectorId);
+  if (!s) return null;
+  const Icon = s.icon;
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full font-semibold ${size === "sm" ? "px-2 py-0.5 text-[11px]" : "px-3 py-1 text-xs"}`}
+      style={{ background: s.tintBg, color: s.tint }}
+    >
+      <Icon size={size === "sm" ? 12 : 14} />
+      {s.name}
+    </span>
+  );
+}
 
-This command sends your project to EAS Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
+/* ============================== USER APP ============================== */
 
-## Key features
+function UserHome({ onSelectSector, onSelectProduct, cartCount, onOpenCart, onOpenNotifications, onOpenProfile }) {
+  const [activeSector, setActiveSector] = useState(null);
 
-- Cloud builds for Android and iOS with consistent environments
-- Automatically provision and manage app signing credentials or use your own
-- Share [internal distribution](/build/internal-distribution/) builds with a URL
-- Automate builds with [build profiles](/build/eas-json/#build-profiles) in **eas.json** (named sets of build settings) and integrations with [EAS Workflows](/eas/workflows/get-started/) or [CI pipelines](/build/building-on-ci/)
-- Auto-submit successful builds to app stores via [`--auto-submit`](/build/automate-submissions/) and EAS Submit
-- First-class [`expo-updates` integration](/build/updates/) with per-profile channels and [runtime version](/eas-update/runtime-versions/) guidance
-- Reuse [development builds](/develop/development-builds/introduction/) across your team. When two team members run `eas build:dev` and the project fingerprint matches, the existing build is downloaded from EAS instead of creating a new one
-- Faster builds via [dependency caching and custom cache paths](/build-reference/caching/)
-- Install builds and updates on devices with [Expo Orbit](https://expo.dev/orbit)
+  const visibleProducts = activeSector ? PRODUCTS[activeSector] : null;
 
-## When to use EAS Build
+  return (
+    <div className="min-h-full" style={{ background: "#FAF7F1" }}>
+      {/* Top bar */}
+      <div className="sticky top-0 z-20 px-5 pt-5 pb-3" style={{ background: "#0E1B2C" }}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-[11px]" style={{ color: "#D4862B" }}>مرحباً بك 👋</p>
+            <h1 className="text-lg font-bold text-white">عبدالله المطيري</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={onOpenNotifications} className="relative w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "#FFFFFF14" }}>
+              <Bell size={18} color="#F2E8D8" />
+              <span className="absolute -top-0.5 -left-0.5 w-2.5 h-2.5 rounded-full" style={{ background: "#D4862B" }} />
+            </button>
+            <button onClick={onOpenProfile} className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: "#D4862B", color: "#0E1B2C" }}>
+              ع
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 rounded-2xl px-4 py-3" style={{ background: "#FFFFFF12" }}>
+          <Search size={18} color="#9AA5B1" />
+          <span className="text-sm" style={{ color: "#9AA5B1" }}>ابحث عن سيارة، عقار، مطعم...</span>
+        </div>
+      </div>
 
-| Scenario                                                                             | Recommendation |
-| ------------------------------------------------------------------------------------ | -------------- |
-| Build production-ready binaries for app stores                                       | <YesIcon />    |
-| Share builds with testers via [internal distribution](/build/internal-distribution/) | <YesIcon />    |
-| Consistent builds across team members without local environment setup                | <YesIcon />    |
-| Automate builds from CI or [EAS Workflows](/eas/workflows/get-started/)              | <YesIcon />    |
-| Managed app signing credentials                                                      | <YesIcon />    |
-| Debugging native code locally                                                        | <NoIcon />     |
+      {/* Location strip */}
+      <div className="flex items-center gap-1.5 px-5 py-3 text-xs" style={{ color: "#5C6470" }}>
+        <MapPin size={14} style={{ color: "#D4862B" }} />
+        التوصيل إلى: <span className="font-semibold" style={{ color: "#0E1B2C" }}>الرياض، حي العليا</span>
+        <ChevronDown size={14} />
+      </div>
 
-## Frequently asked questions
+      {/* Sector grid */}
+      <div className="px-5">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold" style={{ color: "#0E1B2C" }}>كل الخدمات</h2>
+          {activeSector && (
+            <button onClick={() => setActiveSector(null)} className="text-xs font-semibold" style={{ color: "#D4862B" }}>
+              عرض الكل
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-4 gap-3 mb-6">
+          {SECTORS.map((s) => {
+            const Icon = s.icon;
+            const active = activeSector === s.id;
+            return (
+              <button
+                key={s.id}
+                onClick={() => setActiveSector(active ? null : s.id)}
+                className="flex flex-col items-center gap-2 transition-transform active:scale-95"
+              >
+                <div
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                  style={{
+                    background: active ? s.tint : s.tintBg,
+                    boxShadow: active ? `0 6px 16px -4px ${s.tint}88` : "none",
+                  }}
+                >
+                  <Icon size={22} color={active ? "#FAF7F1" : s.tint} />
+                </div>
+                <span className="text-[11px] font-semibold text-center leading-tight" style={{ color: "#0E1B2C" }}>
+                  {s.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
-<FAQ>
+      {/* Promo banner */}
+      {!activeSector && (
+        <div className="px-5 mb-6">
+          <div
+            className="rounded-2xl p-5 flex items-center justify-between overflow-hidden relative"
+            style={{ background: "linear-gradient(135deg, #1B4F4A, #0E1B2C)" }}
+          >
+            <div className="relative z-10">
+              <p className="text-[11px] font-bold mb-1" style={{ color: "#D4862B" }}>عرض الإطلاق</p>
+              <p className="text-white font-bold text-base leading-tight mb-1">صفر عمولة لأول طلب</p>
+              <p className="text-[11px]" style={{ color: "#9AA5B1" }}>على جميع الأقسام هذا الأسبوع</p>
+            </div>
+            <div className="text-4xl relative z-10">🎉</div>
+          </div>
+        </div>
+      )}
 
-<Collapsible summary="How do I share builds with my team before submitting to app stores?">
+      {/* Products feed */}
+      <div className="px-5 pb-28">
+        {(activeSector ? [activeSector] : SECTORS.map((s) => s.id)).map((sectorId) => {
+          const sector = SECTORS.find((s) => s.id === sectorId);
+          const Icon = sector.icon;
+          return (
+            <div key={sectorId} className="mb-7">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: sector.tintBg }}>
+                    <Icon size={14} color={sector.tint} />
+                  </div>
+                  <h3 className="font-bold text-sm" style={{ color: "#0E1B2C" }}>{sector.name}</h3>
+                </div>
+                <ChevronLeft size={16} style={{ color: "#5C6470" }} />
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+                {PRODUCTS[sectorId].map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => onSelectProduct(p, sectorId)}
+                    className="flex-shrink-0 w-40 rounded-2xl overflow-hidden text-right active:scale-95 transition-transform"
+                    style={{ background: "#FFFFFF", boxShadow: "0 1px 3px #0E1B2C14" }}
+                  >
+                    <div className="h-24 flex items-center justify-center text-4xl" style={{ background: sector.tintBg }}>
+                      {p.img}
+                    </div>
+                    <div className="p-2.5">
+                      <p className="text-[9px] font-bold mb-1 px-1.5 py-0.5 rounded inline-block" style={{ background: sector.tintBg, color: sector.tint }}>
+                        {p.tag}
+                      </p>
+                      <p className="text-xs font-bold leading-tight mb-1 line-clamp-2" style={{ color: "#0E1B2C" }}>{p.name}</p>
+                      <p className="text-[10px] mb-1.5" style={{ color: "#5C6470" }}>{p.partner}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-extrabold" style={{ color: "#0E1B2C" }}>
+                          {p.price > 0 ? `${fmt(p.price)} ر.س` : "عرض القائمة"}
+                        </span>
+                        <span className="flex items-center gap-0.5 text-[10px] font-semibold" style={{ color: "#D4862B" }}>
+                          <Star size={10} fill="#D4862B" /> {p.rating}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
-Use [internal distribution](/build/internal-distribution/) to share builds with a URL. Set `"distribution": "internal"` in your [build profile](/build/eas-json/#build-profiles) in **eas.json** to generate installable Android Package (APK) files for Android or [ad hoc builds](/build/internal-distribution/) for iOS.
+function ProductDetail({ product, sectorId, onBack, onAddToCart }) {
+  const sector = SECTORS.find((s) => s.id === sectorId);
+  const Icon = sector.icon;
+  const isBooking = sectorId === "dining" || sectorId === "hotels" || sectorId === "realestate";
 
-</Collapsible>
+  return (
+    <div className="min-h-full" style={{ background: "#FAF7F1" }}>
+      <div className="relative h-64 flex items-center justify-center text-7xl" style={{ background: sector.tintBg }}>
+        <button onClick={onBack} className="absolute top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "#FFFFFFCC" }}>
+          <ChevronRight size={18} color="#0E1B2C" />
+        </button>
+        <button className="absolute top-5 left-5 w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "#FFFFFFCC" }}>
+          <Heart size={16} color="#B5586B" />
+        </button>
+        {product.img}
+      </div>
 
-<Collapsible summary="Can I use EAS Build with existing React Native projects?">
+      <div className="px-5 pt-5 pb-32">
+        <SectorBadge sectorId={sectorId} size="md" />
+        <h1 className="text-xl font-extrabold mt-3 mb-1" style={{ color: "#0E1B2C" }}>{product.name}</h1>
+        <div className="flex items-center gap-3 text-xs mb-4" style={{ color: "#5C6470" }}>
+          <span className="flex items-center gap-1"><Star size={13} fill="#D4862B" color="#D4862B" /> {product.rating}</span>
+          <span className="flex items-center gap-1"><MapPin size={13} /> {product.location}</span>
+        </div>
 
-Yes. EAS Build works with existing React Native projects created with `npx react-native init` or similar tools. See [Overview of using Expo with existing React Native apps](/bare/overview/) for more information.
+        <div className="rounded-2xl p-4 mb-4 flex items-center gap-3" style={{ background: "#FFFFFF" }}>
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-sm" style={{ background: sector.tintBg, color: sector.tint }}>
+            {product.partner.charAt(0)}
+          </div>
+          <div className="flex-1">
+            <p className="text-xs font-bold" style={{ color: "#0E1B2C" }}>{product.partner}</p>
+            <p className="text-[11px]" style={{ color: "#5C6470" }}>شريك تجاري موثّق</p>
+          </div>
+          <Check size={16} color="#5E8C5A" />
+        </div>
 
-</Collapsible>
+        <div className="rounded-2xl p-4 mb-4" style={{ background: "#FFFFFF" }}>
+          <h3 className="text-xs font-bold mb-2" style={{ color: "#0E1B2C" }}>عن هذا العرض</h3>
+          <p className="text-xs leading-relaxed" style={{ color: "#5C6470" }}>
+            {sectorId === "cars" && "سيارة بحالة ممتازة، فحص شامل، ضمان وكالة، وإمكانية التمويل عبر شركاء مشاعر الماليين."}
+            {sectorId === "realestate" && "عقار موثق، صك إلكتروني، إمكانية المعاينة الميدانية وجدولة زيارة مباشرة من التطبيق."}
+            {sectorId === "electronics" && "منتج أصلي 100%، ضمان الوكيل المعتمد، توصيل سريع خلال 24 ساعة."}
+            {sectorId === "fashion" && "تصميم حصري، خامات عالية الجودة، إمكانية الاستبدال خلال 7 أيام."}
+            {sectorId === "dining" && "قائمة طعام كاملة متاحة، توصيل مباشر أو استلام من الفرع، تتبع لحظي للطلب."}
+            {sectorId === "hotels" && "إلغاء مجاني حتى 24 ساعة قبل الوصول، إفطار مجاني، تقييمات موثقة من نزلاء سابقين."}
+            {sectorId === "pharmacy" && "توصيل خلال ساعة، صيدلي مرخص متاح للاستشارة، دفع عند الاستلام متاح."}
+          </p>
+        </div>
 
-<Collapsible summary="Does EAS Build handle app signing credentials?">
+        {/* mini map placeholder */}
+        <div className="rounded-2xl p-4 mb-4 flex items-center justify-between" style={{ background: "#0E1B2C" }}>
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "#D4862B22" }}>
+              <MapPin size={16} color="#D4862B" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-white">عرض على الخريطة</p>
+              <p className="text-[10px]" style={{ color: "#9AA5B1" }}>{product.location}</p>
+            </div>
+          </div>
+          <ChevronLeft size={16} color="#9AA5B1" />
+        </div>
+      </div>
 
-Yes. EAS Build can generate and manage Android [keystores](/app-signing/app-credentials/#android), iOS [provisioning profiles](/app-signing/app-credentials/#ios) and [distribution certificates](/app-signing/app-credentials/#ios), or use credentials you provide. See [App signing credentials](/app-signing/app-credentials/) for more information.
+      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 flex items-center gap-3" style={{ background: "#FAF7F1", boxShadow: "0 -4px 16px #0E1B2C14" }}>
+        {product.price > 0 && (
+          <div>
+            <p className="text-[10px]" style={{ color: "#5C6470" }}>السعر</p>
+            <p className="text-base font-extrabold" style={{ color: "#0E1B2C" }}>{fmt(product.price)} ر.س</p>
+          </div>
+        )}
+        <button
+          onClick={() => onAddToCart(product, sectorId)}
+          className="flex-1 py-3.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          style={{ background: "#D4862B" }}
+        >
+          {isBooking ? <Calendar size={16} /> : <ShoppingCart size={16} />}
+          {isBooking ? "احجز الآن" : "أضف إلى السلة"}
+        </button>
+      </div>
+    </div>
+  );
+}
 
-</Collapsible>
+function CartView({ cart, onBack, onCheckout, onRemove }) {
+  const total = cart.reduce((sum, c) => sum + c.product.price, 0);
+  const fee = cart.length > 0 ? 15 : 0;
 
-<Collapsible summary="Can I run builds locally instead of in the cloud?">
+  return (
+    <div className="min-h-full" style={{ background: "#FAF7F1" }}>
+      <div className="sticky top-0 z-10 flex items-center gap-3 px-5 py-4" style={{ background: "#FAF7F1", borderBottom: "1px solid #0E1B2C0D" }}>
+        <button onClick={onBack}><ChevronRight size={20} color="#0E1B2C" /></button>
+        <h1 className="font-bold text-base" style={{ color: "#0E1B2C" }}>السلة والحجوزات ({cart.length})</h1>
+      </div>
 
-Yes. Use [local builds](/build-reference/local-builds/) with `eas build --local` to run builds on your machine. This is useful for debugging or for security policies that require local builds.
+      {cart.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 px-8 text-center">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: "#D4862B18" }}>
+            <ShoppingCart size={26} color="#D4862B" />
+          </div>
+          <p className="font-bold text-sm mb-1" style={{ color: "#0E1B2C" }}>السلة فارغة</p>
+          <p className="text-xs" style={{ color: "#5C6470" }}>تصفح الأقسام وابدأ بإضافة طلباتك وحجوزاتك</p>
+        </div>
+      ) : (
+        <div className="px-5 py-4 pb-40">
+          {cart.map((c, i) => {
+            const sector = SECTORS.find((s) => s.id === c.sectorId);
+            return (
+              <div key={i} className="flex items-center gap-3 rounded-2xl p-3 mb-3" style={{ background: "#FFFFFF" }}>
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl" style={{ background: sector.tintBg }}>
+                  {c.product.img}
+                </div>
+                <div className="flex-1">
+                  <SectorBadge sectorId={c.sectorId} />
+                  <p className="text-xs font-bold mt-1" style={{ color: "#0E1B2C" }}>{c.product.name}</p>
+                  <p className="text-xs font-extrabold mt-0.5" style={{ color: "#D4862B" }}>
+                    {c.product.price > 0 ? `${fmt(c.product.price)} ر.س` : "حسب القائمة"}
+                  </p>
+                </div>
+                <button onClick={() => onRemove(i)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#B5586B18" }}>
+                  <Trash2 size={14} color="#B5586B" />
+                </button>
+              </div>
+            );
+          })}
 
-</Collapsible>
+          <div className="rounded-2xl p-4 mt-4" style={{ background: "#FFFFFF" }}>
+            <div className="flex justify-between text-xs mb-2" style={{ color: "#5C6470" }}>
+              <span>المجموع الفرعي</span>
+              <span>{fmt(total)} ر.س</span>
+            </div>
+            <div className="flex justify-between text-xs mb-2" style={{ color: "#5C6470" }}>
+              <span>رسوم الخدمة</span>
+              <span>{fmt(fee)} ر.س</span>
+            </div>
+            <div className="h-px my-2" style={{ background: "#0E1B2C14" }} />
+            <div className="flex justify-between text-sm font-extrabold" style={{ color: "#0E1B2C" }}>
+              <span>الإجمالي</span>
+              <span>{fmt(total + fee)} ر.س</span>
+            </div>
+          </div>
+        </div>
+      )}
 
-<Collapsible summary="Can I use EAS Build with EAS Workflows or CI pipelines?">
+      {cart.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4" style={{ background: "#FAF7F1", boxShadow: "0 -4px 16px #0E1B2C14" }}>
+          <button
+            onClick={onCheckout}
+            className="w-full py-3.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-transform"
+            style={{ background: "#0E1B2C" }}
+          >
+            <CreditCard size={16} />
+            المتابعة للدفع · {fmt(total + fee)} ر.س
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
-Yes. EAS Build integrates with [EAS Workflows](/eas/workflows/get-started/) using the `build` job type. Add a build job to your workflow configuration, for example:
+function CheckoutView({ onBack, onComplete }) {
+  const [method, setMethod] = useState("mada");
+  const methods = [
+    { id: "mada", name: "مدى", icon: "💳" },
+    { id: "visa", name: "فيزا / ماستركارد", icon: "💳" },
+    { id: "applepay", name: "Apple Pay", icon: "🍎" },
+    { id: "tabby", name: "تابي - قسّطها", icon: "🗓️" },
+  ];
+  return (
+    <div className="min-h-full" style={{ background: "#FAF7F1" }}>
+      <div className="sticky top-0 z-10 flex items-center gap-3 px-5 py-4" style={{ background: "#FAF7F1", borderBottom: "1px solid #0E1B2C0D" }}>
+        <button onClick={onBack}><ChevronRight size={20} color="#0E1B2C" /></button>
+        <h1 className="font-bold text-base" style={{ color: "#0E1B2C" }}>الدفع</h1>
+      </div>
 
-```yaml
-jobs:
-  build_ios:
-    type: build
-    params:
-      platform: ios
-```
+      <div className="px-5 py-5">
+        <h3 className="text-xs font-bold mb-3" style={{ color: "#0E1B2C" }}>اختر طريقة الدفع</h3>
+        <div className="flex flex-col gap-2.5 mb-6">
+          {methods.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setMethod(m.id)}
+              className="flex items-center gap-3 rounded-2xl p-4 transition-all"
+              style={{
+                background: "#FFFFFF",
+                border: method === m.id ? "2px solid #D4862B" : "2px solid transparent",
+              }}
+            >
+              <span className="text-xl">{m.icon}</span>
+              <span className="flex-1 text-right text-sm font-semibold" style={{ color: "#0E1B2C" }}>{m.name}</span>
+              <div
+                className="w-5 h-5 rounded-full flex items-center justify-center"
+                style={{ border: `2px solid ${method === m.id ? "#D4862B" : "#0E1B2C22"}` }}
+              >
+                {method === m.id && <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#D4862B" }} />}
+              </div>
+            </button>
+          ))}
+        </div>
 
-The build job supports builds for both platforms or conditional builds based on the branch:
+        <div className="rounded-2xl p-4 flex items-start gap-2.5" style={{ background: "#1B4F4A0D" }}>
+          <Check size={16} color="#1B4F4A" className="mt-0.5 flex-shrink-0" />
+          <p className="text-[11px] leading-relaxed" style={{ color: "#1B4F4A" }}>
+            الدفع مشفّر وآمن بالكامل. سيتم تحويل العمولة المتفق عليها تلقائياً للشريك التجاري بعد إتمام الطلب.
+          </p>
+        </div>
+      </div>
 
-```yaml
-jobs:
-  build:
-    type: build
-    params:
-      platform: all
-      profile: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
-```
+      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4" style={{ background: "#FAF7F1", boxShadow: "0 -4px 16px #0E1B2C14" }}>
+        <button
+          onClick={onComplete}
+          className="w-full py-3.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          style={{ background: "#D4862B" }}
+        >
+          <Check size={16} />
+          تأكيد الدفع
+        </button>
+      </div>
+    </div>
+  );
+}
 
-For more information and other usage examples, see the [EAS Workflows build job](/eas/workflows/pre-packaged-jobs#build).
+function SuccessView({ onDone }) {
+  return (
+    <div className="min-h-full flex flex-col items-center justify-center px-8 text-center" style={{ background: "#FAF7F1" }}>
+      <div className="w-20 h-20 rounded-full flex items-center justify-center mb-5" style={{ background: "#5E8C5A18" }}>
+        <Check size={36} color="#5E8C5A" />
+      </div>
+      <h1 className="font-extrabold text-lg mb-2" style={{ color: "#0E1B2C" }}>تم تأكيد طلبك!</h1>
+      <p className="text-xs mb-8 leading-relaxed" style={{ color: "#5C6470" }}>
+        رقم الطلب ORD-9936 — يمكنك متابعة حالة الطلب من صفحة الإشعارات والطلبات
+      </p>
+      <button
+        onClick={onDone}
+        className="w-full py-3.5 rounded-xl font-bold text-sm text-white"
+        style={{ background: "#0E1B2C" }}
+      >
+        العودة للرئيسية
+      </button>
+    </div>
+  );
+}
 
-EAS Build supports [builds from GitHub](/build/building-from-github/) and [building on CI](/build/building-on-ci/) with any provider.
+function NotificationsView({ onBack }) {
+  const notifs = [
+    { icon: Check, color: "#5E8C5A", title: "تم توصيل طلبك", body: "آيفون 17 برو وصل إلى عنوانك", time: "قبل 10 دقائق" },
+    { icon: Calendar, color: "#1F6F66", title: "تذكير بالحجز", body: "حجزك في فندق الواحة الذهبية غداً", time: "قبل ساعة" },
+    { icon: DollarSign, color: "#D4862B", title: "عرض خاص", body: "خصم 15% على جميع المطاعم اليوم فقط", time: "قبل 3 ساعات" },
+    { icon: Clock, color: "#4B4E8C", title: "طلبك قيد التحضير", body: "مطعم نجد التراثي بدأ تحضير طلبك", time: "أمس" },
+  ];
+  return (
+    <div className="min-h-full" style={{ background: "#FAF7F1" }}>
+      <div className="sticky top-0 z-10 flex items-center gap-3 px-5 py-4" style={{ background: "#FAF7F1", borderBottom: "1px solid #0E1B2C0D" }}>
+        <button onClick={onBack}><ChevronRight size={20} color="#0E1B2C" /></button>
+        <h1 className="font-bold text-base" style={{ color: "#0E1B2C" }}>الإشعارات</h1>
+      </div>
+      <div className="px-5 py-4">
+        {notifs.map((n, i) => (
+          <div key={i} className="flex gap-3 rounded-2xl p-3.5 mb-3" style={{ background: "#FFFFFF" }}>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `${n.color}18` }}>
+              <n.icon size={16} color={n.color} />
+            </div>
+            <div className="flex-1">
+              <p className="text-xs font-bold" style={{ color: "#0E1B2C" }}>{n.title}</p>
+              <p className="text-[11px] mt-0.5" style={{ color: "#5C6470" }}>{n.body}</p>
+              <p className="text-[10px] mt-1.5" style={{ color: "#9AA5B1" }}>{n.time}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-</Collapsible>
+function ProfileView({ onBack }) {
+  const items = [
+    { icon: Package, label: "طلباتي وحجوزاتي" },
+    { icon: MapPin, label: "العناوين المحفوظة" },
+    { icon: CreditCard, label: "طرق الدفع" },
+    { icon: Heart, label: "المفضلة" },
+    { icon: Bell, label: "إعدادات الإشعارات" },
+    { icon: Settings, label: "إعدادات الحساب" },
+  ];
+  return (
+    <div className="min-h-full" style={{ background: "#FAF7F1" }}>
+      <div className="px-5 pt-6 pb-5" style={{ background: "#0E1B2C" }}>
+        <button onClick={onBack} className="mb-4"><ChevronRight size={20} color="#FAF7F1" /></button>
+        <div className="flex items-center gap-3">
+          <div className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold" style={{ background: "#D4862B", color: "#0E1B2C" }}>
+            ع
+          </div>
+          <div>
+            <p className="font-bold text-white text-base">عبدالله المطيري</p>
+            <p className="text-xs" style={{ color: "#9AA5B1" }}>0555 123 456</p>
+          </div>
+        </div>
+      </div>
+      <div className="px-5 py-5">
+        {items.map((it, i) => (
+          <button key={i} className="w-full flex items-center gap-3 py-3.5" style={{ borderBottom: i < items.length - 1 ? "1px solid #0E1B2C0D" : "none" }}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "#D4862B14" }}>
+              <it.icon size={16} color="#D4862B" />
+            </div>
+            <span className="flex-1 text-right text-sm font-semibold" style={{ color: "#0E1B2C" }}>{it.label}</span>
+            <ChevronLeft size={16} color="#9AA5B1" />
+          </button>
+        ))}
+        <button className="w-full flex items-center gap-3 py-3.5 mt-2">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "#B5586B14" }}>
+            <LogOut size={16} color="#B5586B" />
+          </div>
+          <span className="flex-1 text-right text-sm font-semibold" style={{ color: "#B5586B" }}>تسجيل الخروج</span>
+        </button>
+      </div>
+    </div>
+  );
+}
 
-<Collapsible summary="What build server infrastructure does EAS Build use?">
+function MapView({ onBack }) {
+  // simple stylized map placeholder with pins
+  const pins = [
+    { x: "30%", y: "35%", sectorId: "dining" },
+    { x: "55%", y: "20%", sectorId: "cars" },
+    { x: "70%", y: "55%", sectorId: "hotels" },
+    { x: "20%", y: "65%", sectorId: "pharmacy" },
+    { x: "45%", y: "70%", sectorId: "realestate" },
+  ];
+  return (
+    <div className="min-h-full" style={{ background: "#FAF7F1" }}>
+      <div className="sticky top-0 z-10 flex items-center gap-3 px-5 py-4" style={{ background: "#FAF7F1", borderBottom: "1px solid #0E1B2C0D" }}>
+        <button onClick={onBack}><ChevronRight size={20} color="#0E1B2C" /></button>
+        <h1 className="font-bold text-base" style={{ color: "#0E1B2C" }}>الخريطة</h1>
+      </div>
+      <div className="relative mx-5 mt-4 rounded-2xl overflow-hidden" style={{ height: "60vh", background: "#E5DFD0" }}>
+        <svg width="100%" height="100%" style={{ position: "absolute", inset: 0, opacity: 0.4 }}>
+          <defs>
+            <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+              <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#0E1B2C" strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
+        {pins.map((p, i) => {
+          const sector = SECTORS.find((s) => s.id === p.sectorId);
+          const Icon = sector.icon;
+          return (
+            <div key={i} className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center" style={{ left: p.x, top: p.y }}>
+              <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg" style={{ background: sector.tint }}>
+                <Icon size={16} color="#FAF7F1" />
+              </div>
+              <div className="w-0 h-0" style={{ borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: `7px solid ${sector.tint}` }} />
+            </div>
+          );
+        })}
+        <div className="absolute bottom-3 right-3 w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "#0E1B2C" }}>
+          <MapPin size={16} color="#D4862B" />
+        </div>
+      </div>
+      <p className="text-center text-[11px] mt-3" style={{ color: "#5C6470" }}>اعرض جميع الشركاء القريبين منك على الخريطة</p>
+    </div>
+  );
+}
 
-Android builds run on Linux runners hosted in Google Cloud Platform, and iOS builds run on macOS runners hosted in Expo's macOS cloud. See [Build server infrastructure](/build-reference/infrastructure/).
+/* ============================== BOTTOM NAV ============================== */
 
-</Collapsible>
+function BottomNav({ active, onChange, cartCount }) {
+  const items = [
+    { id: "home", icon: LayoutGrid, label: "الرئيسية" },
+    { id: "map", icon: MapPin, label: "الخريطة" },
+    { id: "cart", icon: ShoppingCart, label: "السلة", badge: cartCount },
+    { id: "notifications", icon: Bell, label: "الإشعارات" },
+    { id: "profile", icon: User, label: "حسابي" },
+  ];
+  return (
+    <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto flex items-center justify-around py-2.5 px-2 z-30" style={{ background: "#0E1B2C" }}>
+      {items.map((it) => {
+        const isActive = active === it.id;
+        return (
+          <button key={it.id} onClick={() => onChange(it.id)} className="flex flex-col items-center gap-1 px-3 py-1 relative">
+            <it.icon size={20} color={isActive ? "#D4862B" : "#7C8696"} />
+            {it.badge > 0 && (
+              <span className="absolute -top-1 left-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white" style={{ background: "#B5586B" }}>
+                {it.badge}
+              </span>
+            )}
+            <span className="text-[10px] font-semibold" style={{ color: isActive ? "#D4862B" : "#7C8696" }}>{it.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
-</FAQ>
+/* ============================== PARTNER DASHBOARD ============================== */
 
-## Get started
+function PartnerDashboard({ onSwitchRole }) {
+  const partner = PARTNERS[0];
+  const sector = SECTORS.find((s) => s.id === partner.sector);
+  const [tab, setTab] = useState("overview");
 
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
+  const stats = [
+    { label: "طلبات هذا الشهر", value: "142", change: "+18%", up: true, icon: Package },
+    { label: "إجمالي المبيعات", value: `${fmt(184000)} ر.س`, change: "+12%", up: true, icon: TrendingUp },
+    { label: "صافي الأرباح", value: `${fmt(92000)} ر.س`, change: "+9%", up: true, icon: Wallet },
+    { label: "تقييم العملاء", value: "4.8", change: "-0.1", up: false, icon: Star },
+  ];
 
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
+  const myOrders = [
+    { id: "ORD-9931", customer: "عبدالله المطيري", item: "تويوتا كامري 2025", amount: 128000, status: "تم التوصيل" },
+    { id: "ORD-9920", customer: "فيصل العنزي", item: "لكزس ES 350", amount: 215000, status: "قيد التحضير" },
+    { id: "ORD-9905", customer: "ريم الحربي", item: "جيب رانجلر 2024", amount: 175000, status: "مؤكد" },
+  ];
 
-<BoxLink
-  title="Automate submissions"
-  description="Learn how EAS Build can take your successful builds and handle uploading them to app stores automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
+  return (
+    <div className="min-h-full pb-10" style={{ background: "#FAF7F1" }}>
+      <div className="px-5 pt-6 pb-8" style={{ background: "#0E1B2C" }}>
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <p className="text-[11px]" style={{ color: "#D4862B" }}>لوحة الشريك التجاري</p>
+            <h1 className="text-lg font-bold text-white">{partner.name}</h1>
+          </div>
+          <button onClick={onSwitchRole} className="text-[11px] font-semibold px-3 py-2 rounded-lg" style={{ background: "#FFFFFF14", color: "#F2E8D8" }}>
+            تبديل الحساب
+          </button>
+        </div>
+        <SectorBadge sectorId={partner.sector} size="md" />
+      </div>
 
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
+      <div className="px-5 -mt-4">
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {stats.map((s, i) => (
+            <div key={i} className="rounded-2xl p-4" style={{ background: "#FFFFFF", boxShadow: "0 4px 12px #0E1B2C14" }}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: sector.tintBg }}>
+                  <s.icon size={14} color={sector.tint} />
+                </div>
+                <span className="flex items-center gap-0.5 text-[10px] font-bold" style={{ color: s.up ? "#5E8C5A" : "#B5586B" }}>
+                  {s.up ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                  {s.change}
+                </span>
+              </div>
+              <p className="text-base font-extrabold" style={{ color: "#0E1B2C" }}>{s.value}</p>
+              <p className="text-[10px] mt-0.5" style={{ color: "#5C6470" }}>{s.label}</p>
+            </div>
+          ))}
+        </div>
 
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
+        {/* commission summary */}
+        <div className="rounded-2xl p-4 mb-6" style={{ background: "#1B4F4A" }}>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-bold text-white">تقاسم الأرباح مع مشاعر</p>
+            <DollarSign size={16} color="#D4862B" />
+          </div>
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-[10px]" style={{ color: "#9AA5B1" }}>نسبة عمولة المنصة</p>
+              <p className="text-xl font-extrabold text-white">5%</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px]" style={{ color: "#9AA5B1" }}>صافي مستحقاتك القادمة</p>
+              <p className="text-base font-extrabold" style={{ color: "#D4862B" }}>{fmt(87400)} ر.س</p>
+            </div>
+          </div>
+        </div>
 
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+        {/* tabs */}
+        <div className="flex gap-2 mb-4">
+          {[{ id: "overview", label: "الطلبات" }, { id: "products", label: "منتجاتي" }, { id: "payouts", label: "المستحقات" }].map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className="px-4 py-2 rounded-full text-xs font-bold"
+              style={{ background: tab === t.id ? "#0E1B2C" : "#FFFFFF", color: tab === t.id ? "#FAF7F1" : "#5C6470" }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {tab === "overview" && (
+          <div className="flex flex-col gap-2.5">
+            {myOrders.map((o) => (
+              <div key={o.id} className="rounded-2xl p-3.5 flex items-center gap-3" style={{ background: "#FFFFFF" }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: sector.tintBg }}>
+                  <Package size={16} color={sector.tint} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-bold" style={{ color: "#0E1B2C" }}>{o.item}</p>
+                  <p className="text-[10px]" style={{ color: "#5C6470" }}>{o.customer} · {o.id}</p>
+                </div>
+                <div className="text-left">
+                  <p className="text-xs font-extrabold mb-1" style={{ color: "#0E1B2C" }}>{fmt(o.amount)} ر.س</p>
+                  <StatusPill status={o.status} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {tab === "products" && (
+          <div className="flex flex-col gap-2.5">
+            <button className="rounded-2xl p-4 flex items-center justify-center gap-2 font-bold text-sm" style={{ background: "#D4862B18", color: "#D4862B", border: "1.5px dashed #D4862B" }}>
+              <Plus size={16} /> إضافة منتج جديد
+            </button>
+            {PRODUCTS.cars.slice(0, 3).map((p) => (
+              <div key={p.id} className="rounded-2xl p-3 flex items-center gap-3" style={{ background: "#FFFFFF" }}>
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style={{ background: sector.tintBg }}>{p.img}</div>
+                <div className="flex-1">
+                  <p className="text-xs font-bold" style={{ color: "#0E1B2C" }}>{p.name}</p>
+                  <p className="text-[10px]" style={{ color: "#5C6470" }}>{fmt(p.price)} ر.س</p>
+                </div>
+                <button className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "#0E1B2C0D" }}><Edit3 size={13} color="#5C6470" /></button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {tab === "payouts" && (
+          <div className="flex flex-col gap-2.5">
+            {[
+              { date: "1 يونيو 2026", amount: 78200, status: "تم التحويل" },
+              { date: "1 مايو 2026", amount: 71500, status: "تم التحويل" },
+              { date: "1 أبريل 2026", amount: 65900, status: "تم التحويل" },
+            ].map((p, i) => (
+              <div key={i} className="rounded-2xl p-3.5 flex items-center justify-between" style={{ background: "#FFFFFF" }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "#5E8C5A18" }}>
+                    <Check size={14} color="#5E8C5A" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold" style={{ color: "#0E1B2C" }}>دفعة شهرية</p>
+                    <p className="text-[10px]" style={{ color: "#5C6470" }}>{p.date}</p>
+                  </div>
+                </div>
+                <p className="text-xs font-extrabold" style={{ color: "#0E1B2C" }}>{fmt(p.amount)} ر.س</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ============================== ADMIN DASHBOARD ============================== */
+
+function AdminDashboard({ onSwitchRole }) {
+  const [tab, setTab] = useState("overview");
+
+  const totalRevenue = PARTNERS.reduce((s, p) => s + p.revenue, 0);
+  const totalCommission = PARTNERS.reduce((s, p) => s + p.commission, 0);
+  const totalOrders = PARTNERS.reduce((s, p) => s + p.orders, 0);
+
+  const navItems = [
+    { id: "overview", icon: BarChart3, label: "نظرة عامة" },
+    { id: "partners", icon: Building2, label: "الشركاء التجاريون" },
+    { id: "orders", icon: Package, label: "الطلبات" },
+    { id: "users", icon: Users, label: "المستخدمون" },
+    { id: "revenue", icon: DollarSign, label: "تقاسم المبيعات" },
+  ];
+
+  return (
+    <div className="min-h-full" style={{ background: "#FAF7F1" }}>
+      <div className="px-5 pt-6 pb-4" style={{ background: "#0E1B2C" }}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-[11px]" style={{ color: "#D4862B" }}>لوحة إدارة مشاعر</p>
+            <h1 className="text-lg font-bold text-white">مرحباً، مدير المنصة</h1>
+          </div>
+          <button onClick={onSwitchRole} className="text-[11px] font-semibold px-3 py-2 rounded-lg" style={{ background: "#FFFFFF14", color: "#F2E8D8" }}>
+            تبديل الحساب
+          </button>
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+          {navItems.map((n) => (
+            <button
+              key={n.id}
+              onClick={() => setTab(n.id)}
+              className="flex items-center gap-1.5 flex-shrink-0 px-3.5 py-2 rounded-full text-xs font-bold"
+              style={{ background: tab === n.id ? "#D4862B" : "#FFFFFF14", color: tab === n.id ? "#0E1B2C" : "#F2E8D8" }}
+            >
+              <n.icon size={13} /> {n.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="px-5 py-5">
+        {tab === "overview" && (
+          <>
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {[
+                { label: "إجمالي المبيعات", value: `${fmt(totalRevenue)} ر.س`, icon: TrendingUp, tint: "#1F6F66" },
+                { label: "عمولة المنصة", value: `${fmt(totalCommission)} ر.س`, icon: Wallet, tint: "#D4862B" },
+                { label: "إجمالي الطلبات", value: fmt(totalOrders), icon: Package, tint: "#4B4E8C" },
+                { label: "الشركاء النشطون", value: PARTNERS.filter(p => p.status === "نشط").length, icon: Building2, tint: "#3E5C76" },
+              ].map((s, i) => (
+                <div key={i} className="rounded-2xl p-4" style={{ background: "#FFFFFF", boxShadow: "0 4px 12px #0E1B2C14" }}>
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-2" style={{ background: `${s.tint}18` }}>
+                    <s.icon size={14} color={s.tint} />
+                  </div>
+                  <p className="text-base font-extrabold" style={{ color: "#0E1B2C" }}>{s.value}</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: "#5C6470" }}>{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <h3 className="text-xs font-bold mb-3" style={{ color: "#0E1B2C" }}>توزيع المبيعات حسب القطاع</h3>
+            <div className="rounded-2xl p-4 mb-6" style={{ background: "#FFFFFF" }}>
+              {SECTORS.map((s) => {
+                const sectorPartners = PARTNERS.filter((p) => p.sector === s.id);
+                const rev = sectorPartners.reduce((sum, p) => sum + p.revenue, 0);
+                const pct = Math.round((rev / totalRevenue) * 100);
+                return (
+                  <div key={s.id} className="mb-3 last:mb-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: "#0E1B2C" }}>
+                        <s.icon size={12} color={s.tint} /> {s.name}
+                      </span>
+                      <span className="text-[11px] font-bold" style={{ color: "#5C6470" }}>{fmt(rev)} ر.س</span>
+                    </div>
+                    <div className="h-1.5 rounded-full" style={{ background: "#0E1B2C0D" }}>
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: s.tint }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <h3 className="text-xs font-bold mb-3" style={{ color: "#0E1B2C" }}>أحدث الطلبات</h3>
+            <div className="flex flex-col gap-2.5">
+              {ORDERS.map((o) => (
+                <div key={o.id} className="rounded-2xl p-3.5 flex items-center gap-3" style={{ background: "#FFFFFF" }}>
+                  <SectorBadge sectorId={o.sector} />
+                  <div className="flex-1">
+                    <p className="text-xs font-bold" style={{ color: "#0E1B2C" }}>{o.item}</p>
+                    <p className="text-[10px]" style={{ color: "#5C6470" }}>{o.customer}</p>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs font-extrabold mb-1" style={{ color: "#0E1B2C" }}>{o.amount > 0 ? `${fmt(o.amount)} ر.س` : "—"}</p>
+                    <StatusPill status={o.status} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {tab === "partners" && (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xs font-bold" style={{ color: "#0E1B2C" }}>{PARTNERS.length} شريك تجاري</h3>
+              <button className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-2 rounded-lg text-white" style={{ background: "#D4862B" }}>
+                <Plus size={13} /> إضافة شريك
+              </button>
+            </div>
+            <div className="flex flex-col gap-2.5">
+              {PARTNERS.map((p) => {
+                const sector = SECTORS.find((s) => s.id === p.sector);
+                return (
+                  <div key={p.id} className="rounded-2xl p-3.5" style={{ background: "#FFFFFF" }}>
+                    <div className="flex items-center gap-3 mb-2.5">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm" style={{ background: sector.tintBg, color: sector.tint }}>
+                        {p.name.charAt(0)}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-bold" style={{ color: "#0E1B2C" }}>{p.name}</p>
+                        <SectorBadge sectorId={p.sector} />
+                      </div>
+                      <StatusPill status={p.status} />
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div className="rounded-lg py-2" style={{ background: "#0E1B2C06" }}>
+                        <p className="text-xs font-extrabold" style={{ color: "#0E1B2C" }}>{p.orders}</p>
+                        <p className="text-[9px]" style={{ color: "#5C6470" }}>طلب</p>
+                      </div>
+                      <div className="rounded-lg py-2" style={{ background: "#0E1B2C06" }}>
+                        <p className="text-xs font-extrabold" style={{ color: "#0E1B2C" }}>{fmt(p.revenue / 1000)}ك</p>
+                        <p className="text-[9px]" style={{ color: "#5C6470" }}>مبيعات</p>
+                      </div>
+                      <div className="rounded-lg py-2" style={{ background: "#D4862B0D" }}>
+                        <p className="text-xs font-extrabold" style={{ color: "#D4862B" }}>{fmt(p.commission / 1000)}ك</p>
+                        <p className="text-[9px]" style={{ color: "#5C6470" }}>عمولة</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {tab === "orders" && (
+          <div className="flex flex-col gap-2.5">
+            {ORDERS.map((o) => (
+              <div key={o.id} className="rounded-2xl p-3.5" style={{ background: "#FFFFFF" }}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-bold" style={{ color: "#9AA5B1" }}>{o.id}</span>
+                  <StatusPill status={o.status} />
+                </div>
+                <p className="text-xs font-bold mb-1" style={{ color: "#0E1B2C" }}>{o.item}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px]" style={{ color: "#5C6470" }}>{o.customer} · {o.date}</span>
+                  <span className="text-xs font-extrabold" style={{ color: "#0E1B2C" }}>{o.amount > 0 ? `${fmt(o.amount)} ر.س` : "—"}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {tab === "users" && (
+          <>
+            <div className="grid grid-cols-3 gap-3 mb-5">
+              {[{ label: "إجمالي المستخدمين", value: "48,920" }, { label: "نشط هذا الشهر", value: "31,204" }, { label: "مستخدمون جدد", value: "+2,140" }].map((s, i) => (
+                <div key={i} className="rounded-2xl p-3 text-center" style={{ background: "#FFFFFF" }}>
+                  <p className="text-sm font-extrabold" style={{ color: "#0E1B2C" }}>{s.value}</p>
+                  <p className="text-[9px] mt-1" style={{ color: "#5C6470" }}>{s.label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-col gap-2.5">
+              {[
+                { name: "عبدالله المطيري", phone: "0555 123 456", orders: 24, joined: "يناير 2025" },
+                { name: "نورة العتيبي", phone: "0566 789 123", orders: 11, joined: "مارس 2025" },
+                { name: "فهد القحطاني", phone: "0501 234 567", orders: 37, joined: "ديسمبر 2024" },
+              ].map((u, i) => (
+                <div key={i} className="rounded-2xl p-3.5 flex items-center gap-3" style={{ background: "#FFFFFF" }}>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs" style={{ background: "#D4862B18", color: "#D4862B" }}>
+                    {u.name.charAt(0)}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-bold" style={{ color: "#0E1B2C" }}>{u.name}</p>
+                    <p className="text-[10px]" style={{ color: "#5C6470" }}>{u.phone} · انضم {u.joined}</p>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs font-extrabold" style={{ color: "#0E1B2C" }}>{u.orders}</p>
+                    <p className="text-[9px]" style={{ color: "#5C6470" }}>طلب</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {tab === "revenue" && (
+          <>
+            <div className="rounded-2xl p-5 mb-5" style={{ background: "#0E1B2C" }}>
+              <p className="text-[11px] mb-1" style={{ color: "#9AA5B1" }}>إجمالي عمولات المنصة (هذا العام)</p>
+              <p className="text-2xl font-extrabold mb-3" style={{ color: "#D4862B" }}>{fmt(totalCommission)} ر.س</p>
+              <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "#5E8C5A" }}>
+                <ArrowUpRight size={13} /> نمو 14% عن الربع الماضي
+              </div>
+            </div>
+
+            <h3 className="text-xs font-bold mb-3" style={{ color: "#0E1B2C" }}>نسبة العمولة حسب القطاع</h3>
+            <div className="flex flex-col gap-2.5 mb-5">
+              {[
+                { id: "cars", rate: "5%" }, { id: "realestate", rate: "5%" }, { id: "electronics", rate: "5%" },
+                { id: "fashion", rate: "5%" }, { id: "dining", rate: "5%" }, { id: "hotels", rate: "5%" }, { id: "pharmacy", rate: "5%" },
+              ].map((r) => {
+                const sector = SECTORS.find((s) => s.id === r.id);
+                const Icon = sector.icon;
+                return (
+                  <div key={r.id} className="rounded-2xl p-3.5 flex items-center gap-3" style={{ background: "#FFFFFF" }}>
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: sector.tintBg }}>
+                      <Icon size={15} color={sector.tint} />
+                    </div>
+                    <span className="flex-1 text-xs font-bold" style={{ color: "#0E1B2C" }}>{sector.name}</span>
+                    <span className="text-sm font-extrabold" style={{ color: "#D4862B" }}>{r.rate}</span>
+                    <button className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "#0E1B2C0D" }}>
+                      <Edit3 size={12} color="#5C6470" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            <h3 className="text-xs font-bold mb-3" style={{ color: "#0E1B2C" }}>أعلى الشركاء عمولةً</h3>
+            <div className="flex flex-col gap-2.5">
+              {[...PARTNERS].sort((a, b) => b.commission - a.commission).slice(0, 4).map((p) => (
+                <div key={p.id} className="rounded-2xl p-3.5 flex items-center justify-between" style={{ background: "#FFFFFF" }}>
+                  <div className="flex items-center gap-2">
+                    <SectorBadge sectorId={p.sector} />
+                    <span className="text-xs font-bold" style={{ color: "#0E1B2C" }}>{p.name}</span>
+                  </div>
+                  <span className="text-xs font-extrabold" style={{ color: "#D4862B" }}>{fmt(p.commission)} ر.س</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ============================== ROLE SWITCHER / SHELL ============================== */
+
+function RoleSelect({ onSelect }) {
+  const roles = [
+    { id: "user", title: "مستخدم", desc: "تصفح واطلب من جميع الخدمات", icon: User, tint: "#D4862B" },
+    { id: "partner", title: "شريك تجاري", desc: "أدر منتجاتك وطلباتك ومبيعاتك", icon: Building2, tint: "#1F6F66" },
+    { id: "admin", title: "إدارة المنصة", desc: "نظرة شاملة على كل شيء", icon: BarChart3, tint: "#4B4E8C" },
+  ];
+  return (
+    <div className="min-h-full flex flex-col justify-center px-6 py-10" style={{ background: "#0E1B2C" }}>
+      <div className="text-center mb-10">
+        <div className="w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-4 text-2xl font-extrabold" style={{ background: "#D4862B", color: "#0E1B2C" }}>
+          م
+        </div>
+        <h1 className="text-2xl font-extrabold text-white mb-1">مشاعر</h1>
+        <p className="text-xs" style={{ color: "#9AA5B1" }}>MASHA'ER Super App · منصّة واحدة لكل احتياجاتك</p>
+      </div>
+      <div className="flex flex-col gap-3">
+        {roles.map((r) => (
+          <button
+            key={r.id}
+            onClick={() => onSelect(r.id)}
+            className="flex items-center gap-4 rounded-2xl p-4 text-right active:scale-95 transition-transform"
+            style={{ background: "#FFFFFF0A", border: "1px solid #FFFFFF14" }}
+          >
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: `${r.tint}22` }}>
+              <r.icon size={20} color={r.tint} />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-sm text-white">{r.title}</p>
+              <p className="text-[11px]" style={{ color: "#9AA5B1" }}>{r.desc}</p>
+            </div>
+            <ChevronLeft size={16} color="#7C8696" />
+          </button>
+        ))}
+      </div>
+      <p className="text-center text-[10px] mt-8" style={{ color: "#5C6470" }}>نموذج تجريبي للعرض · جميع البيانات افتراضية</p>
+    </div>
+  );
+}
+
+export default function App() {
+  const [role, setRole] = useState(null);
+  const [userScreen, setUserScreen] = useState("home");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedSectorId, setSelectedSectorId] = useState(null);
+  const [cart, setCart] = useState([]);
+  const [flowStep, setFlowStep] = useState("browse"); // browse | detail | cart | checkout | success
+
+  const handleAddToCart = (product, sectorId) => {
+    setCart((c) => [...c, { product, sectorId }]);
+    setFlowStep("cart");
+  };
+
+  const handleSelectProduct = (product, sectorId) => {
+    setSelectedProduct(product);
+    setSelectedSectorId(sectorId);
+    setFlowStep("detail");
+  };
+
+  const resetToHome = () => {
+    setFlowStep("browse");
+    setUserScreen("home");
+    setSelectedProduct(null);
+  };
+
+  if (!role) {
+    return (
+      <div dir="rtl" className="max-w-md mx-auto min-h-screen" style={{ fontFamily: "'IBM Plex Sans Arabic', 'Noto Sans Arabic', sans-serif" }}>
+        <RoleSelect onSelect={setRole} />
+      </div>
+    );
+  }
+
+  return (
+    <div dir="rtl" className="max-w-md mx-auto min-h-screen relative" style={{ fontFamily: "'IBM Plex Sans Arabic', 'Noto Sans Arabic', sans-serif", background: "#FAF7F1" }}>
+      {role === "partner" && <PartnerDashboard onSwitchRole={() => setRole(null)} />}
+      {role === "admin" && <AdminDashboard onSwitchRole={() => setRole(null)} />}
+
+      {role === "user" && (
+        <>
+          {flowStep === "detail" && selectedProduct && (
+            <ProductDetail
+              product={selectedProduct}
+              sectorId={selectedSectorId}
+              onBack={() => setFlowStep("browse")}
+              onAddToCart={handleAddToCart}
+            />
+          )}
+
+          {flowStep === "cart" && (
+            <CartView
+              cart={cart}
+              onBack={() => setFlowStep("browse")}
+              onCheckout={() => setFlowStep("checkout")}
+              onRemove={(i) => setCart((c) => c.filter((_, idx) => idx !== i))}
+            />
+          )}
+
+          {flowStep === "checkout" && (
+            <CheckoutView onBack={() => setFlowStep("cart")} onComplete={() => { setCart([]); setFlowStep("success"); }} />
+          )}
+
+          {flowStep === "success" && <SuccessView onDone={resetToHome} />}
+
+          {flowStep === "browse" && (
+            <>
+              {userScreen === "home" && (
+                <UserHome
+                  onSelectProduct={handleSelectProduct}
+                  cartCount={cart.length}
+                  onOpenCart={() => setFlowStep("cart")}
+                  onOpenNotifications={() => setUserScreen("notifications")}
+                  onOpenProfile={() => setUserScreen("profile")}
+                />
+              )}
+              {userScreen === "map" && <MapView onBack={() => setUserScreen("home")} />}
+              {userScreen === "notifications" && <NotificationsView onBack={() => setUserScreen("home")} />}
+              {userScreen === "profile" && (
+                <div>
+                  <ProfileView onBack={() => setUserScreen("home")} />
+                  <button
+                    onClick={() => setRole(null)}
+                    className="fixed bottom-20 left-1/2 -translate-x-1/2 max-w-md text-[11px] font-bold px-4 py-2 rounded-full text-white z-40"
+                    style={{ background: "#1B4F4A" }}
+                  >
+                    تبديل نوع الحساب (للعرض)
+                  </button>
+                </div>
+              )}
+              <BottomNav
+                active={userScreen === "cart" ? "cart" : userScreen}
+                onChange={(id) => (id === "cart" ? setFlowStep("cart") : setUserScreen(id))}
+                cartCount={cart.length}
+              />
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
