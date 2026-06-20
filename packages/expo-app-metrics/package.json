@@ -10,6 +10,8 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "format": "oxfmt .",
     "swift:format": "../../scripts/swift-format.sh",
     "swift:lint": "../../scripts/swift-format.sh --lint",
     "prepublishOnly": "expo-module prepublishOnly",

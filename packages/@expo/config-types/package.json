@@ -20,6 +20,8 @@
     "clean": "expo-module clean",
     "generate": "node ./scripts/generate.js",
     "lint": "expo-module lint",
+    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "format": "oxfmt .",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "jest",
     "depscheck": "expo-module depscheck",

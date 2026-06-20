@@ -20,6 +20,8 @@
   },
   "scripts": {
     "lint": "eslint .",
+    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "format": "oxfmt .",
     "test": "jest",
     "build": "expo-build cjs:src",
     "depscheck": "expo-module depscheck",

@@ -12,6 +12,8 @@
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "format": "oxfmt .",
     "test": "jest",
     "test:e2e": "jest --config e2e/jest.config.js",
     "depscheck": "expo-module depscheck",

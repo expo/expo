@@ -22,6 +22,8 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "format": "oxfmt .",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "prepublishOnly": "pnpm run clean && pnpm run build"

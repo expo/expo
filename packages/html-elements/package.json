@@ -9,6 +9,8 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "format": "oxfmt .",
     "test": "pnpm test:babel && pnpm test:src",
     "test:src": "jest",
     "test:babel": "jest --config babel/jest.config.js",

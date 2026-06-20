@@ -13,6 +13,8 @@
   "scripts": {
     "build": "expo-build cjs:src",
     "lint": "expo-module lint",
+    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "format": "oxfmt .",
     "clean": "expo-module clean",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"

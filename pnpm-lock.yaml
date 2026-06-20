@@ -1820,6 +1820,9 @@ importers:
       '@types/semver':
         specifier: ^7.7.1
         version: 7.7.1
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../../packages/expo-module-scripts
 
   packages/@expo/cli:
     dependencies:

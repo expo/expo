@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
+    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "format": "oxfmt .",
     "tsc": "tsc --noEmit -p ./tsconfig.json",
     "test": "jest"
   },
@@ -86,7 +88,8 @@
     "@types/invariant": "^2.2.35",
     "@types/jasmine": "^5.1.15",
     "@types/react": "~19.2.0",
-    "@types/semver": "^7.7.1"
+    "@types/semver": "^7.7.1",
+    "expo-module-scripts": "workspace:*"
   },
   "browserslist": [
     ">0.2%",

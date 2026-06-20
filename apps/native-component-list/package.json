@@ -10,6 +10,8 @@
     "build:web": "expo export -p web",
     "web": "expo start --web",
     "lint": "eslint .",
+    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "format": "oxfmt .",
     "tsc": "tsc --noEmit -p ./tsconfig.json",
     "start": "expo start",
     "ios": "expo run:ios",
