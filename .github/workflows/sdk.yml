@@ -77,10 +77,20 @@ jobs:
         env:
           TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
         run: |
-          pnpm turbo run build typecheck depscheck test lint \
+          pnpm turbo run build typecheck test \
             --affected \
             --filter="./packages/**" \
             --continue=dependencies-successful
+
+      - name: ✨ Lint changed packages
+        if: github.event_name != 'schedule' &&
+          github.event.inputs.checkAll != 'check-all'
+        env:
+          TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
+        run: |
+          pnpm turbo run depscheck lint \
+            --filter="{./packages/**}[$TURBO_SCM_BASE...HEAD]"
+            --continue
 
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
