@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix infinite recursion in `findUpPackageJson` when no `package.json` exists up the tree on Windows. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@patrickwehbe](https://github.com/patrickwehbe))
+- Fix infinite recursion in `findUpPackageJson` when no `package.json` exists up the tree on Windows. ([#47095](https://github.com/expo/expo/pull/47095) by [@patrickwehbe](https://github.com/patrickwehbe))
 - Fix stack frame collapsing for Windows paths. ([#46645](https://github.com/expo/expo/pull/46645) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Bump `hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
 
