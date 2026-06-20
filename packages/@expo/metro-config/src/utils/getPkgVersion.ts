@@ -20,11 +20,18 @@ export function getPkgVersionFromPath(packageJsonPath: string): string | null {
 }
 
 export function findUpPackageJson(cwd: string): string | null {
-  if (['.', path.sep].includes(cwd)) return null;
+  // Stop when we reach a directory whose parent is itself, e.g. the POSIX root `/` or a
+  // Windows drive root like `D:\`. `path.dirname('D:\\')` returns `'D:\\'`, which is neither
+  // `.` nor `path.sep`, so checking only against those values would recurse forever on Windows
+  // when no package.json exists up the tree. The sibling helpers in
+  // serializer/findUpPackageJsonPath.ts and install-expo-modules/src/utils/projectRoot.ts use
+  // this same `path.dirname(dir) !== dir` idiom.
+  const parent = path.dirname(cwd);
+  if (parent === cwd || cwd === '.') return null;
 
   const found = resolveFrom.silent(cwd, './package.json');
   if (found) {
     return found;
   }
-  return findUpPackageJson(path.dirname(cwd));
+  return findUpPackageJson(parent);
 }

@@ -116,4 +116,19 @@ describe(findUpPackageJson, () => {
   it('should return null for relative root', () => {
     expect(findUpPackageJson('.')).toBeNull();
   });
+
+  it('should return null when reaching a Windows drive root without recursing forever', () => {
+    // On Windows `path.dirname('D:\\')` returns `'D:\\'` (a fixed point), which is neither `.`
+    // nor `path.sep`. Force Windows path semantics so the case is exercised on any host (CI runs
+    // on POSIX). Without the parent-equality guard this walk recurses until the stack overflows.
+    const win32Dirname = path.win32.dirname;
+    const dirnameSpy = jest.spyOn(path, 'dirname').mockImplementation((p) => win32Dirname(p));
+    jest.mocked(resolveFrom.silent).mockReturnValue(undefined as any);
+
+    try {
+      expect(findUpPackageJson('D:\\project\\node_modules\\expo\\build\\index.js')).toBeNull();
+    } finally {
+      dirnameSpy.mockRestore();
+    }
+  });
 });
