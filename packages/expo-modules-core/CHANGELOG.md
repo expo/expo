@@ -29,11 +29,11 @@
 - [iOS] Read iPad-specific supported orientations from `UISupportedInterfaceOrientations~ipad`. ([#46281](https://github.com/expo/expo/issues/46281) by [@bryandent](https://github.com/bryandent)) ([#46306](https://github.com/expo/expo/pull/46306) by [@mvincentong](https://github.com/mvincentong))
 - [iOS] Throw an actionable error when a worklet is used but `react-native-worklets`'s native adapter isn't linked, instead of a misleading "not an instance of Worklet" failure. ([#46571](https://github.com/expo/expo/pull/46571) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Fix `canAskAgain` returning `false` for re-requestable permissions in the "Ask every time" state. ([#46683](https://github.com/expo/expo/pull/46683) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android][compose] Guard `onLayout` against detached window to prevent `LayoutNode should be attached to an owner` crash. ([#46962](https://github.com/expo/expo/pull/46962) by [@roitium](https://github.com/roitium))
 - [Internal] Remove `EventEmitter` re-export global type indirection ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
 - [Android] Fixed Expo UI re-compose when switching screens in react-native-screens. ([#46650](https://github.com/expo/expo/pull/46650) by [@kudo](https://github.com/kudo))
 - [iOS] Fix Expo DevTools Network response bodies for JSON content types with parameters. ([#46336](https://github.com/expo/expo/pull/46336) by [@SJvaca30](https://github.com/SJvaca30))
 - [iOS] Resolve the key window across connected scenes in `currentViewController()` so it keeps working with multiple scenes, and expose `Utilities.keyWindow()` for modules to reuse. ([#46956](https://github.com/expo/expo/pull/46956) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android][compose] Guard `onLayout` against detached window to prevent `LayoutNode should be attached to an owner` crash.
 
 ### 💡 Others
 
