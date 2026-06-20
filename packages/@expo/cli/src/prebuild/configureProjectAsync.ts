@@ -24,7 +24,7 @@ export async function configureProjectAsync(
   }
 ): Promise<ExpoConfig> {
   let bundleIdentifier: string | undefined;
-  if (platforms.includes('ios')) {
+  if (platforms.includes('ios') || platforms.includes('tvos')) {
     // Check bundle ID before reading the config because it may mutate the config if the user is prompted to define it.
     bundleIdentifier = await getOrPromptForBundleIdentifierAsync(projectRoot, exp);
   }
@@ -46,10 +46,20 @@ export async function configureProjectAsync(
     config._internal.templateChecksum = templateChecksum;
   }
 
+  // tvOS shares the iOS mod registrations (withIosExpoPlugins registers mods
+  // under the `ios` key). compileModsAsync filters mods by platform, so a
+  // tvos-only prebuild needs `ios` in the list too — otherwise the iOS mods
+  // (including withBundleIdentifier) are skipped and the pbxproj is never
+  // touched.
+  const modPlatforms =
+    platforms.includes('tvos') && !platforms.includes('ios')
+      ? ([...platforms, 'ios'] as ModPlatform[])
+      : platforms;
+
   // compile all plugins and mods
   config = await compileModsAsync(config, {
     projectRoot,
-    platforms,
+    platforms: modPlatforms,
     assertMissingModProviders: false,
   });
 
