@@ -46,8 +46,12 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
       getPropertyNames: { [weak appContext] in
         return appContext?.getModuleNames() ?? []
       },
-      dealloc: { [weak appContext] in
-        appContext?.destroy()
+      dealloc: { [appContext] in
+        // Captured strongly so the host object owns the app context's lifetime: it's released
+        // during the runtime's own finalization, where `destroy()` clears the cached JSI objects
+        // while the runtime is still valid, rather than from a `reloadAsync()` race that could free
+        // them against a dying runtime on the wrong thread.
+        appContext.destroy()
       }
     )
 
