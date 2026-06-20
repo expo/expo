@@ -360,7 +360,11 @@ class AudioControlsService : MediaSessionService() {
         val sessionPlayer = MetadataInjectingPlayer(resolveSessionPlayer(player, options)).apply {
           updateMetadata(metadata)
         }
+        // Distinguish this lock-screen session from the basic session built in
+        // `buildBasicMediaSession` (and from sessions for other players); two
+        // MediaSession instances with the empty default ID throw on construction.
         val session = MediaSession.Builder(context, sessionPlayer)
+          .setId("ExpoAudioLockScreenSession_${player.hashCode()}")
           .setCallback(AudioMediaSessionCallback())
           .build()
 
@@ -440,6 +444,7 @@ class AudioControlsService : MediaSessionService() {
           updateMetadata(metadata)
         }
         val session = MediaSession.Builder(context, sessionPlayer)
+          .setId("ExpoAudioLockScreenSession_${player.hashCode()}")
           .setCallback(AudioMediaSessionCallback())
           .build()
 
