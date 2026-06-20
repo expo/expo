@@ -65,6 +65,12 @@ export const defaultRenameConfig = [
   'ios/**/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme',
   'ios/**/*.xcworkspace/contents.xcworkspacedata',
 
+  // tvOS
+  'tvos/Podfile',
+  'tvos/**/*.xcodeproj/project.pbxproj',
+  'tvos/**/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme',
+  'tvos/**/*.xcworkspace/contents.xcworkspacedata',
+
   // macOS
   'macos/Podfile',
   'macos/**/*.xcodeproj/project.pbxproj',

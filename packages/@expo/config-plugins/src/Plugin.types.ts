@@ -202,6 +202,12 @@ export interface ModConfig {
      */
     podfileProperties?: Mod<Record<string, string>>;
   };
+  /**
+   * tvOS shares the iOS mod shape. Mods registered under `ios` operate on
+   * either the `ios/` or `tvos/` directory depending on which platform is
+   * being prebuilt (see `getAllXcodeProjectPaths`).
+   */
+  tvos?: ModConfig['ios'];
 }
 
 export type ModPlatform = keyof ModConfig;
