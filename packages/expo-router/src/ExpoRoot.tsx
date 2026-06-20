@@ -173,12 +173,12 @@ function ContextNavigator({
 }
 
 function Content() {
-  const children = [<Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />];
+  const children = [<Screen key="SLOT" name={INTERNAL_SLOT_NAME} component={store.rootComponent} />];
   if (shouldAppendNotFound()) {
-    children.push(<Screen name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />);
+    children.push(<Screen key="NOT-FOUND" name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />);
   }
   if (shouldAppendSitemap()) {
-    children.push(<Screen name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
+    children.push(<Screen key="SITEMAP" name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
   }
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     children,
