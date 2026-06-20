@@ -248,7 +248,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
       // If the view is still attached when RN drops it, react-native-screens is keeping it
       // on-screen for an in-progress navigation transition (e.g. a pop). Disposing now blanks
       // the Compose content before the animation finishes (https://github.com/expo/expo/issues/47086).
-      // Defer to DisposeOnDetachedFromWindow, which disposes once the transition removes the view.
+      // View eventually gets decomposed when RN screen detatches view from window
       if (!it.isAttachedToWindow) {
         it.disposeComposition()
       }
