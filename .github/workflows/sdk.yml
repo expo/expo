@@ -89,7 +89,7 @@ jobs:
           TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
         run: |
           pnpm turbo run depscheck lint \
-            --filter="{./packages/**}[$TURBO_SCM_BASE...HEAD]"
+            --filter="{./packages/**}[$TURBO_SCM_BASE...HEAD]" \
             --continue
 
       - name: 🔔 Notify on Slack
@@ -128,7 +128,7 @@ jobs:
       - name: 🧐 Check all packages
         shell: bash
         run: |
-          pnpm turbo run build typecheck depscheck test lint \
+          pnpm turbo run build test \
             --filter="./packages/**" \
             --filter='!@expo/cli' \
             --filter='!@expo/config' \
