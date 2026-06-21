@@ -11,8 +11,10 @@
     }
   },
   "scripts": {
-    "build": "apple/scripts/build-xcframework.sh",
-    "test": "apple/scripts/test.sh"
+    "build:xcframework": "apple/scripts/build-xcframework.sh",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
+    "test:integration": "apple/scripts/test.sh"
   },
   "keywords": [
     "expo",

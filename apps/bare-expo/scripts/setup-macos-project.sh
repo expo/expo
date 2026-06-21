@@ -18,7 +18,7 @@ remove_dependencies() {
 echo " ☛  Ensuring macOS project is setup..."
 
 echo " Removing macOS incompatible dependencies..."
-remove_dependencies "@shopify/react-native-skia" "react-native-svg"
+remove_dependencies "react-native-svg"
 
 echo " Copying macOS patches..."
 cp -r ./scripts/fixtures/macos/patches/* ../../patches/
@@ -87,6 +87,17 @@ else
         pnpm add "react-native-macos@$latest_version"
 
     fi
+fi
+
+EXPECTED_REACT_VERSION=$(jq -r '.peerDependencies.react' node_modules/react-native-macos/package.json)
+CURRENT_REACT_VERSION=$(jq -r '.dependencies.react' package.json)
+if [[ "$EXPECTED_REACT_VERSION" == "null" || -z "$EXPECTED_REACT_VERSION" ]]; then
+    echo " ⚠️  Could not determine react peer dependency from react-native-macos, skipping react install"
+elif [[ "$CURRENT_REACT_VERSION" == "$EXPECTED_REACT_VERSION" ]]; then
+    echo " ✅ react@$CURRENT_REACT_VERSION already matches react-native-macos peer dependency"
+else
+    echo " ⚠️  Installing react@$EXPECTED_REACT_VERSION to match react-native-macos peer dependency (was $CURRENT_REACT_VERSION)..."
+    pnpm add "react@$EXPECTED_REACT_VERSION" --silent
 fi
 
 echo " Running pnpm from root..."

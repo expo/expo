@@ -1,16 +1,17 @@
 {
   "name": "expo-clipboard",
   "version": "56.0.3",
-  "description": "Provides an interface for getting and setting Clipboard content on Android, iOS and Web.",
+  "description": "Provides an interface for getting and setting Clipboard content on Android, iOS, macOS and Web.",
   "main": "build/Clipboard.js",
   "types": "build/Clipboard.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",

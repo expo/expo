@@ -13,7 +13,9 @@ import type {
   IosConfig,
   TasksConfigAndroid,
 } from './types';
-import { HOST_PROVIDED_FRAMEWORKS_KEY } from '../../../shared/build';
+
+// NOTE: Keep in sync with plugin/src/ios/plugins/withPodfilePropertiesPlugin.ts
+const HOST_PROVIDED_FRAMEWORKS_KEY = 'ios.brownfieldHostProvidedFrameworks';
 
 export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig => {
   const variant = resolveVariant(options);

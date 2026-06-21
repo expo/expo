@@ -2,36 +2,58 @@
   "name": "expo-modules-core",
   "version": "56.0.13",
   "description": "The core of Expo Modules architecture",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": [
     "*.fx.ts",
-    "./src/polyfill/*.ts"
+    "*.fx.js",
+    "./src/polyfill/*.ts",
+    "./build/polyfill/*.js"
   ],
   "exports": {
-    "./package.json": "./package.json",
     ".": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
     },
-    "./types": "./types.d.ts",
+    "./types": {
+      "types": {
+        "expo-source": "./src/types.ts",
+        "default": "./build/types.d.ts"
+      },
+      "expo-source": "./src/types.ts",
+      "default": "./build/types.js"
+    },
     "./src/polyfill/dangerous-internal": {
-      "types": "./build/polyfill/dangerous-internal.d.ts",
-      "default": "./src/polyfill/dangerous-internal.ts"
+      "types": {
+        "expo-source": "./src/polyfill/dangerous-internal.ts",
+        "default": "./build/polyfill/dangerous-internal.d.ts"
+      },
+      "expo-source": "./src/polyfill/dangerous-internal.ts",
+      "default": "./build/polyfill/dangerous-internal.js"
     },
     "./src/uuid": {
-      "types": "./build/uuid/index.d.ts",
-      "default": "./src/uuid/index.ts"
-    }
+      "types": {
+        "expo-source": "./src/uuid/index.ts",
+        "default": "./build/uuid/index.d.ts"
+      },
+      "expo-source": "./src/uuid/index.ts",
+      "default": "./build/uuid/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "test:rsc": "jest --config jest-rsc.config.js",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "expo",
@@ -51,18 +73,15 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-core",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "dependencies": {
-    "@expo/expo-modules-macros-plugin": "~0.0.9",
+    "@expo/expo-modules-macros-plugin": "0.3.0",
     "expo-modules-jsi": "workspace:~56.0.7",
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-worklets": "^0.7.4 || ^0.8.0"
+    "react-native-worklets": "^0.7.4 || ^0.8.0 || ^0.9.0"
   },
   "peerDependenciesMeta": {
     "react-native-worklets": {

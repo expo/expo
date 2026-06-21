@@ -4,7 +4,7 @@
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "main": "build/index",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
     "build",
@@ -20,14 +20,14 @@
   },
   "homepage": "https://docs.expo.dev/routing/introduction/",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "test:rsc": "jest --config jest-rsc.config.js",
-    "test:tsd": "EXPORT_ROUTER_JEST_TSD=true expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",
@@ -59,18 +59,16 @@
     }
   },
   "devDependencies": {
-    "@tsd/typescript": "^6.0.3",
     "@types/debug": "^4.1.7",
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "@types/react-dom": "^19.1.7",
-    "expo": "workspace:*",
+    "@typescript/vfs": "^1.6.4",
+    "expect-type": "^1.3.0",
+    "expo-module-scripts": "workspace:*",
     "expo-router": "workspace:*",
-    "jest-runner-tsd": "^6.0.0",
-    "react-server-dom-webpack": "~19.0.6",
-    "tsd": "^0.33.0",
-    "tsd-lite": "^0.9.0"
+    "react-server-dom-webpack": "~19.0.6"
   },
   "dependencies": {
     "debug": "^4.3.4"

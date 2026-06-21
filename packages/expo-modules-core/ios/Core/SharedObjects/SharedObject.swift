@@ -25,6 +25,13 @@ open class SharedObject: AnySharedObject {
   public internal(set) weak var appContext: AppContext?
 
   /**
+   Weak reference to the native state that owns this `SharedObject` and bridges
+   it to its JS counterpart. Populated by `SharedObjectRegistry.add` and used to
+   recover the paired JS object without going through the registry's id table.
+   */
+  internal weak var nativeState: SharedObjectNativeState?
+
+  /**
    The default public initializer of the shared object.
    */
   public init() {}
@@ -68,61 +75,6 @@ open class SharedObject: AnySharedObject {
   }
 
   /**
-   Schedules an event with the given name and a pre-converted JavaScript payload to be emitted
-   to the associated JavaScript object. This is the lowest-level emit overload — use it when the
-   value is already a `JavaScriptValue` to skip the native-to-JS conversion step.
-   */
-  public func emit(event: String, payload: JavaScriptValue) {
-    guard let appContext, let runtime = try? appContext.runtime else {
-      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
-      return
-    }
-    runtime.schedule { [weak appContext, sharedObjectId] in
-      guard let appContext else {
-        return
-      }
-      guard let jsValue = appContext.sharedObjectRegistry.toJavaScriptValue(sharedObjectId: sharedObjectId) else {
-        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
-        return
-      }
-      dispatch(event: event, payload: payload, to: jsValue, in: runtime)
-    }
-  }
-
-  /**
-   Schedules an event with the given name to be emitted to the associated JavaScript object.
-   */
-  public func emit(event: String) {
-    emit(event: event, payload: .undefined)
-  }
-
-  /**
-   Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
-   */
-  public func emit<P: AnyArgument>(event: String, payload: sending P) {
-    guard let appContext, let runtime = try? appContext.runtime else {
-      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
-      return
-    }
-    runtime.schedule { [weak appContext, sharedObjectId] in
-      guard let appContext else {
-        return
-      }
-      guard let jsValue = appContext.sharedObjectRegistry.toJavaScriptValue(sharedObjectId: sharedObjectId) else {
-        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
-        return
-      }
-      do {
-        let jsPayload = try (~P.self).castToJS(payload, appContext: appContext, in: runtime)
-        dispatch(event: event, payload: jsPayload, to: jsValue, in: runtime)
-      } catch {
-        log.warn("Failed to convert payload for event '\(event)' on \(P.self); the event will not be emitted: \(error)")
-        return
-      }
-    }
-  }
-
-  /**
    Backwards-compatible overload that forwards to `emit(event:payload:)`. Existing single-argument
    call sites keep working unchanged; the parameter has been renamed to `payload` to make the
    single-payload semantics explicit, so callers should migrate the label.
@@ -133,23 +85,75 @@ open class SharedObject: AnySharedObject {
   }
 }
 
-/**
- Sends a pre-converted event payload to the given JavaScript object via the JSI emitter helper.
- Must run on the JS thread; the public `emit` overloads schedule onto the runtime before calling in.
- */
-@JavaScriptActor
-private func dispatch(event: String, payload: JavaScriptValue, to value: JavaScriptValue, in runtime: JavaScriptRuntime) {
-  runtime.withUnsafePointee { runtimePtr in
-    value.withUnsafePointee { objectPtr in
-      payload.withUnsafePointee { payloadPtr in
-        JSUtils.emitEvent(
-          event,
-          runtimePointer: runtimePtr,
-          objectPointer: objectPtr,
-          argumentsPointer: payloadPtr,
-          argumentCount: 1
-        )
-      }
+extension SharedObject: EventEmitter {
+  @JavaScriptActor
+  public func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
+    guard let target = getJavaScriptObject() else {
+      return nil
+    }
+    return try body(target)
+  }
+}
+
+// MARK: - Recovering the native object from JS
+
+extension SharedObject {
+  /// Recovers the native shared object paired with the given JS object, reading it off the object's
+  /// `SharedObjectNativeState`. Callers holding a `JavaScriptValue` or borrowed `JavaScriptUnownedValue`
+  /// convert it first via `asObject()` / `asObject(in:)`.
+  ///
+  /// Returns the base `SharedObject`. Callers wanting a concrete subclass use the `as:` overload, which
+  /// performs a checked downcast.
+  ///
+  /// Throws `NotFoundException` when the object carries no native state.
+  @JavaScriptActor
+  public static func native(from jsObject: borrowing JavaScriptObject) throws -> SharedObject {
+    guard let native = jsObject.getNativeState(as: SharedObjectNativeState.self)?.native else {
+      throw NotFoundException()
+    }
+    return native
+  }
+
+  /// Recovers the native shared object and casts it to the given subclass, e.g.
+  /// `SharedObject.native(from: jsObject, as: Cache.self)`. The target type is an explicit argument
+  /// rather than inferred from the return type, so the checked cast can never be skipped by omitting a
+  /// contextual type. `@inlinable` so the `as?` specializes in the caller's module as a plain
+  /// concrete-class cast. Throws `TypeMismatchException` when the paired native object isn't `type`.
+  @JavaScriptActor
+  @inlinable
+  public static func native<SharedObjectType: SharedObject>(
+    from jsObject: borrowing JavaScriptObject,
+    as type: SharedObjectType.Type
+  ) throws -> SharedObjectType {
+    let native = try native(from: jsObject)
+    guard let typed = native as? SharedObjectType else {
+      throw TypeMismatchException((expected: SharedObjectType.self, actual: Swift.type(of: native)))
+    }
+    return typed
+  }
+
+  /// Thrown when a JS object has no paired native object, for example a foreign JS object that carries
+  /// no `SharedObjectNativeState`.
+  internal final class NotFoundException: Exception, @unchecked Sendable {
+    override var code: String {
+      "ERR_NATIVE_SHARED_OBJECT_NOT_FOUND"
+    }
+
+    override var reason: String {
+      "Unable to find the native shared object associated with given JavaScript object"
+    }
+  }
+
+  /// Thrown when the native shared object paired with a JS object exists but isn't the expected subclass.
+  /// `@usableFromInline` so `native(from:)`'s inlinable generic overloads can throw it.
+  @usableFromInline
+  internal final class TypeMismatchException: GenericException<(expected: Any.Type, actual: Any.Type)>, @unchecked Sendable {
+    override var code: String {
+      "ERR_NATIVE_SHARED_OBJECT_TYPE_MISMATCH"
+    }
+
+    override var reason: String {
+      "Expected the native shared object to be '\(param.expected)', but found '\(param.actual)'"
     }
   }
 }

@@ -4,6 +4,8 @@ import ExpoFontLoader from './ExpoFontLoader';
 import type { FontSource, ServerFontResourceDescriptor } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
 
+export { withServerContext } from './serverContext';
+
 /**
  * @returns the server resources that should be statically extracted.
  * @private
@@ -20,17 +22,6 @@ export function getServerResourceDescriptors(): ServerFontResourceDescriptor[] {
     throw new UnavailabilityError('expo-font', 'getServerResourceDescriptors');
   }
   return ExpoFontLoader.getServerResourceDescriptors();
-}
-
-/**
- * @returns clear the server resources from the global scope.
- * @private
- */
-export function resetServerContext() {
-  if (!ExpoFontLoader.resetServerContext) {
-    throw new UnavailabilityError('expo-font', 'resetServerContext');
-  }
-  return ExpoFontLoader.resetServerContext();
 }
 
 export function registerStaticFont(fontFamily: string, source?: FontSource | null) {

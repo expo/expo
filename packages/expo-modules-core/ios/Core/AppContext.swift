@@ -466,6 +466,11 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     // Install `global.expo`.
     let coreObject = installer.installCoreObject()
 
+    // Attach the native state that ties this app context's lifetime to the runtime and lets
+    // it be recovered from the runtime via `AppContext.from(runtime:)`. This is the main
+    // runtime, so its teardown owns the app context's `destroy()`.
+    installer.installAppContextNativeState(on: coreObject, ownsLifecycle: true)
+
     if let appIdentifier {
       coreObject.defineProperty("__expo_app_identifier__", value: appIdentifier)
     }
@@ -499,7 +504,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       let installer = ExpoRuntimeInstaller(appContext: self, runtime: try uiRuntime)
 
       // Install `global.expo`.
-      installer.installCoreObject()
+      let coreObject = installer.installCoreObject()
+
+      // Attach the native state that ties this app context's lifetime to the UI runtime and
+      // lets it be recovered from the runtime via `AppContext.from(runtime:)`. The UI runtime
+      // is subordinate, so its teardown must not destroy the app context.
+      installer.installAppContextNativeState(on: coreObject, ownsLifecycle: false)
 
       // Install `global.expo.EventEmitter`.
       installer.installEventEmitterClass()
@@ -529,8 +539,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   @JavaScriptActor
   private func installModuleClasses(in runtime: JavaScriptRuntime) throws {
-    let coreObject = runtime.global().getPropertyAsObject(EXGlobalCoreObjectPropertyName)
-    let sharedObjectClass = coreObject.getPropertyAsObject("SharedObject")
+    let coreObject = try runtime.global().getPropertyAsObject(globalCoreObjectPropertyName)
+    let sharedObjectClass = try coreObject.getPropertyAsObject("SharedObject")
     let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype")
 
     // Stored as JavaScriptValue (a class) because JavaScriptObject is ~Copyable
@@ -599,6 +609,71 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
     for module in moduleRegistry {
       module.releaseJavaScriptObject()
+    }
+  }
+
+  // MARK: - Recovery
+
+  /// Returns the app context that prepared the given runtime, or `nil` if no app context did
+  /// (its `global.expo` object carries no `NativeState`). Lets code that only has a runtime
+  /// recover the app context without capturing a reference to it.
+  @JavaScriptActor
+  internal static func from(runtime: JavaScriptRuntime) -> AppContext? {
+    // Recovery may happen on every conversion, so look the core object up through a cached
+    // prop name id to avoid re-interning the "expo" string into JSI on each call.
+    let coreObjectPropName = JavaScriptPropNameID.cached(runtime, globalCoreObjectPropertyName)
+    guard let coreObject = try? runtime.global().getPropertyAsObject(coreObjectPropName) else {
+      return nil
+    }
+    return coreObject.getNativeState(as: NativeState.self)?.appContext
+  }
+
+  /// Native state attached to the `global.expo` object that holds a strong reference to the
+  /// app context. It serves two purposes:
+  ///
+  /// - Lifetime: because the native state lives on the runtime's heap and is torn down only
+  ///   when the runtime finalizes, holding the app context strongly ties its lifetime to the
+  ///   runtime. This defers the app context's release (and its `destroy()` cleanup of cached
+  ///   JSI objects) to runtime finalization, avoiding a teardown-ordering crash during reloads
+  ///   where the context could otherwise deallocate while the runtime is still tearing down on
+  ///   another thread.
+  /// - Recovery: any code holding the runtime can recover the app context via
+  ///   `AppContext.from(runtime:)` (which reads this native state off `global.expo`) instead of
+  ///   capturing a reference to it.
+  ///
+  /// A single app context can prepare several runtimes (e.g. the main and the UI runtime),
+  /// each getting its own native state. Only the one whose runtime owns the app context's
+  /// lifecycle (the main runtime) runs `destroy()` when it dies, so a subordinate runtime
+  /// tearing down doesn't destroy an app context still backing the others.
+  ///
+  /// This forms a strong reference cycle that routes through the runtime heap
+  /// (`AppContext` -> runtime -> `global.expo` -> `NativeState` -> `AppContext`). That is
+  /// intentional: the cycle is broken only when the runtime is torn down (which frees the
+  /// native state and fires its deallocator), which is exactly what defers the app context's
+  /// release until the runtime is gone. The app context never holds the native state directly.
+  internal final class NativeState: JavaScriptNativeState {
+    internal let appContext: AppContext
+
+    /// Whether releasing this native state should tear the app context down. Set only for the
+    /// main runtime; subordinate runtimes pin the app context and enable recovery without
+    /// destroying it.
+    internal let ownsLifecycle: Bool
+
+    internal init(appContext: AppContext, ownsLifecycle: Bool) {
+      self.appContext = appContext
+      self.ownsLifecycle = ownsLifecycle
+      super.init()
+      setDeallocator { nativeState in
+        guard let nativeState = nativeState as? NativeState, nativeState.ownsLifecycle else {
+          return
+        }
+        // `destroy()` asserts it runs on the JS thread (`JavaScriptActor.assumeIsolated`). That
+        // holds for the intended path, where the native state dies as the runtime finalizes on
+        // its own thread. A future cross-runtime sharing path that could drop this state's last
+        // JSI slot from another thread (see `JavaScriptNativeState.acquireShared`) would need to
+        // hop back to the JS thread here first.
+        nativeState.appContext.destroy()
+      }
     }
   }
 

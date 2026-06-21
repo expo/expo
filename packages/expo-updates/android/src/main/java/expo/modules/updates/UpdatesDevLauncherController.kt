@@ -131,11 +131,18 @@ class UpdatesDevLauncherController(
   private val localAssetFiles: Map<AssetEntity, String>?
     get() = launcher?.localAssetFiles
 
+  private var _isUsingEmbeddedAssetsOverride: Boolean? = null
+
   private val isUsingEmbeddedAssets: Boolean
-    get() = launcher?.isUsingEmbeddedAssets ?: false
+    get() = _isUsingEmbeddedAssetsOverride ?: launcher?.isUsingEmbeddedAssets ?: false
 
   override fun reset() {
     launcher = null
+    _isUsingEmbeddedAssetsOverride = null
+  }
+
+  override fun setIsUsingEmbeddedAssets(isUsingEmbeddedAssets: Boolean) {
+    _isUsingEmbeddedAssetsOverride = isUsingEmbeddedAssets
   }
 
   override val runtimeVersion: String?
@@ -396,9 +403,5 @@ class UpdatesDevLauncherController(
 
   override fun shutdown() {
     controllerScope.cancel()
-  }
-
-  companion object {
-    private val TAG = UpdatesDevLauncherController::class.java.simpleName
   }
 }

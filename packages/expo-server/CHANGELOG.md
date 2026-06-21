@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
+
+- Detach from global `@types/node`, `undici-types`, and `@cloudflare/workers-types` ([#46728](https://github.com/expo/expo/pull/46728) by [@kitten](https://github.com/kitten))
 
 ## 56.0.4 — 2026-05-20
 

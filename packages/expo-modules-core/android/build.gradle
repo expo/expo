@@ -180,7 +180,7 @@ android {
 
   sourceSets {
     main {
-      java {
+      kotlin {
         if (shouldIncludeCompose) {
           srcDirs += 'src/compose'
         } else {

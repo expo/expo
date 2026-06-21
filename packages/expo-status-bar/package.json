@@ -2,24 +2,31 @@
   "name": "expo-status-bar",
   "version": "56.0.4",
   "description": "Provides the same interface as the React Native StatusBar API, but with slightly different defaults to work great in Expo environments.",
-  "main": "src/StatusBar",
+  "main": "build/StatusBar.js",
   "types": "build/StatusBar.d.ts",
   "exports": {
     ".": {
-      "types": "./build/StatusBar.d.ts",
-      "default": "./src/StatusBar.ts"
+      "types": {
+        "expo-source": "./src/StatusBar.ts",
+        "default": "./build/StatusBar.d.ts"
+      },
+      "expo-source": "./src/StatusBar.ts",
+      "default": "./build/StatusBar.js"
     },
     "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json",
     "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -42,6 +49,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.3.0",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
@@ -51,15 +59,5 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  },
-  "jest": {
-    "projects": [
-      {
-        "preset": "jest-expo/ios"
-      },
-      {
-        "preset": "jest-expo/android"
-      }
-    ]
   }
 }

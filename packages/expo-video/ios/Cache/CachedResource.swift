@@ -39,7 +39,7 @@ class CachedResource {
     self.dataPath = dataPath
     self.url = resourceUrl
     self.fileHandle = MediaFileHandle(filePath: dataFileUrl)
-    self.mediaInfo = MediaInfo(forResourceUrl: resourceUrl)
+    self.mediaInfo = MediaInfo(at: dataPath + VideoCacheManager.mediaInfoSuffix)
   }
 
   func onResponseReceived(response: HTTPURLResponse) {

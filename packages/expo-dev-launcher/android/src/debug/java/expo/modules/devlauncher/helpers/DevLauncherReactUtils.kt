@@ -31,6 +31,7 @@ fun injectReactInterceptor(
 ): Boolean {
   val (debugServerHost, appBundleName) = parseUrl(url)
 
+  setPackagerServerAccess(reactHost, true)
   injectDevSupportManager(reactHost)
 
   val result = injectDebugServerHost(
@@ -41,6 +42,18 @@ fun injectReactInterceptor(
   )
   (reactHost.devSupportManager as? DevLauncherBridgelessDevSupportManager)?.startInspectorWhenDevLauncherReady()
   return result
+}
+
+@OptIn(UnstableReactNativeAPI::class)
+private fun setPackagerServerAccess(reactHost: ReactHost, enabled: Boolean) {
+  try {
+    check(reactHost is ReactHostImpl)
+    val field = ReactHostImpl::class.java.getDeclaredField("allowPackagerServerAccess")
+    field.isAccessible = true
+    field[reactHost] = enabled
+  } catch (e: Exception) {
+    Log.e("DevLauncher", "Unable to set packager server access to $enabled", e)
+  }
 }
 
 private fun injectDevSupportManager(reactHost: ReactHost) {
@@ -97,17 +110,12 @@ fun injectBundleLoader(
   reactHost: ReactHost,
   jsBundleLoader: JSBundleLoader
 ): Boolean {
+  setPackagerServerAccess(reactHost, false)
+
   return try {
     check(reactHost is ReactHostImpl)
 
-    // [0] Disable `mAllowPackagerServerAccess`
-    // so that ReactHost could use jsBundlerLoader from ReactHostDelegate
     val reactHostClass = ReactHostImpl::class.java
-    val mAllowPackagerServerAccessField = reactHostClass.getDeclaredField("allowPackagerServerAccess")
-    mAllowPackagerServerAccessField.isAccessible = true
-    mAllowPackagerServerAccessField[reactHost] = false
-
-    // [1] Replace the ReactHostDelegate.jsBundlerLoader with our new loader
     val mReactHostDelegateField = reactHostClass.getDeclaredField("reactHostDelegate")
     mReactHostDelegateField.isAccessible = true
     val reactHostDelegate = mReactHostDelegateField[reactHost] as ReactHostDelegate

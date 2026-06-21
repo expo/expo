@@ -47,6 +47,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.CompositingStrategy
@@ -54,12 +56,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.onVisibilityChanged
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import expo.modules.kotlin.AppContext
@@ -82,12 +88,12 @@ typealias ModifierFactory = @Composable (ModifierType, ComposableScope?, AppCont
 // region Modifier Params
 
 @OptimizedRecord
-internal data class PaddingAllParams(
+data class PaddingAllParams(
   @Field val all: Int = 0
 ) : Record
 
 @OptimizedRecord
-internal data class PaddingParams(
+data class PaddingParams(
   @Field val start: Int = 0,
   @Field val top: Int = 0,
   @Field val end: Int = 0,
@@ -95,48 +101,48 @@ internal data class PaddingParams(
 ) : Record
 
 @OptimizedRecord
-internal data class SizeParams(
+data class SizeParams(
   @Field val width: Int = 0,
   @Field val height: Int = 0
 ) : Record
 
 @OptimizedRecord
-internal data class FillMaxSizeParams(
+data class FillMaxSizeParams(
   @Field val fraction: Float = 1.0f
 ) : Record
 
 @OptimizedRecord
-internal data class FillMaxWidthParams(
+data class FillMaxWidthParams(
   @Field val fraction: Float = 1.0f
 ) : Record
 
 @OptimizedRecord
-internal data class FillMaxHeightParams(
+data class FillMaxHeightParams(
   @Field val fraction: Float = 1.0f
 ) : Record
 
 @OptimizedRecord
-internal data class WidthParams(
+data class WidthParams(
   @Field val width: Int = 0
 ) : Record
 
 @OptimizedRecord
-internal data class HeightParams(
+data class HeightParams(
   @Field val height: Int = 0
 ) : Record
 
 @OptimizedRecord
-internal data class WrapContentWidthParams(
+data class WrapContentWidthParams(
   @Field val alignment: AlignmentType? = null
 ) : Record
 
 @OptimizedRecord
-internal data class WrapContentHeightParams(
+data class WrapContentHeightParams(
   @Field val alignment: AlignmentType? = null
 ) : Record
 
 @OptimizedRecord
-internal data class DefaultMinSizeParams(
+data class DefaultMinSizeParams(
   @Field val minWidth: Float? = null,
   @Field val minHeight: Float? = null
 ) : Record
@@ -148,7 +154,7 @@ internal data class OffsetParams(
 ) : Record
 
 @OptimizedRecord
-internal data class BackgroundParams(
+data class BackgroundParams(
   @Field val color: Color? = null
 ) : Record
 
@@ -179,6 +185,17 @@ internal data class BorderParams(
 @OptimizedRecord
 internal data class ShadowParams(
   @Field val elevation: Int = 0
+) : Record
+
+@OptimizedRecord
+internal data class ShadowGeometryParams(
+  @Field val shape: BuiltinShapeRecord? = null,
+  @Field val radius: Float = 0f,
+  @Field val spread: Float = 0f,
+  @Field val color: Color? = null,
+  @Field val offsetX: Float = 0f,
+  @Field val offsetY: Float = 0f,
+  @Field val alpha: Float = 1f
 ) : Record
 
 @OptimizedRecord
@@ -218,7 +235,7 @@ internal data class AlignParams(
 ) : Record
 
 @OptimizedRecord
-internal data class TestIDParams(
+data class TestIDParams(
   @Field val testID: String? = null
 ) : Record
 
@@ -502,6 +519,36 @@ object ModifierRegistry {
       Modifier.shadow(params.elevation.dp)
     }
 
+    register("dropShadow") { map, _, _, _ ->
+      val params = recordFromMap<ShadowGeometryParams>(map)
+      val shape = params.shape?.let { resolveShape(it) } ?: RectangleShape
+      Modifier.dropShadow(
+        shape,
+        Shadow(
+          radius = params.radius.dp,
+          spread = params.spread.dp,
+          color = params.color.composeOrNull ?: androidx.compose.ui.graphics.Color.Black,
+          offset = DpOffset(params.offsetX.dp, params.offsetY.dp),
+          alpha = params.alpha
+        )
+      )
+    }
+
+    register("innerShadow") { map, _, _, _ ->
+      val params = recordFromMap<ShadowGeometryParams>(map)
+      val shape = params.shape?.let { resolveShape(it) } ?: RectangleShape
+      Modifier.innerShadow(
+        shape,
+        Shadow(
+          radius = params.radius.dp,
+          spread = params.spread.dp,
+          color = params.color.composeOrNull ?: androidx.compose.ui.graphics.Color.Black,
+          offset = DpOffset(params.offsetX.dp, params.offsetY.dp),
+          alpha = params.alpha
+        )
+      )
+    }
+
     register("alpha") { map, _, _, _ ->
       val params = recordFromMap<AlphaParams>(map)
       Modifier.alpha(params.alpha)
@@ -641,6 +688,24 @@ object ModifierRegistry {
             mapOf(
               "width" to size.width.toDp().value,
               "height" to size.height.toDp().value
+            )
+          )
+        }
+      }
+    }
+
+    register("onGloballyPositioned") { _, _, _, eventDispatcher ->
+      val density = LocalDensity.current
+      Modifier.onGloballyPositioned { coordinates ->
+        val position = coordinates.positionInWindow()
+        with(density) {
+          eventDispatcher(
+            "onGloballyPositioned",
+            mapOf(
+              "x" to position.x.toDp().value,
+              "y" to position.y.toDp().value,
+              "width" to coordinates.size.width.toDp().value,
+              "height" to coordinates.size.height.toDp().value
             )
           )
         }

@@ -27,6 +27,13 @@ const Stack = createNativeStackNavigator();
 export const ScreensList: ScreenConfig[] = [
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/CameraPermissions/CameraPermissionsScreen'));
+    },
+    name: 'CameraPermissions',
+    options: { title: 'Camera Permissions' },
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/ModulesCore/ModulesCoreScreen'));
     },
     name: 'ModulesCore',
@@ -106,6 +113,13 @@ export const ScreensList: ScreenConfig[] = [
     },
     name: 'AppleAuthentication',
     options: { title: 'Apple Authentication' },
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/AppMetricsScreen'));
+    },
+    name: 'AppMetrics',
+    options: { title: 'App Metrics' },
   },
   {
     getComponent() {

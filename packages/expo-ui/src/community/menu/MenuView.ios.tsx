@@ -135,7 +135,7 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuCompo
   );
 
   return (
-    <Host matchContents style={style} testID={testID}>
+    <Host matchContents style={style} testID={testID} ignoreSafeArea="all">
       {shouldOpenOnLongPress ? (
         <ContextMenu>
           <ContextMenu.Trigger>{trigger}</ContextMenu.Trigger>

@@ -247,7 +247,7 @@ export class FileSystemFile {
   }
 
   writeSync(
-    content: string | Uint8Array,
+    content: string | Uint8Array | ArrayBuffer,
     options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
   ): void {
     assertParent(this.uri, false);
@@ -281,7 +281,7 @@ export class FileSystemFile {
   }
 
   async write(
-    content: string | Uint8Array,
+    content: string | Uint8Array | ArrayBuffer,
     options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
   ): Promise<void> {
     this.writeSync(content, options);
@@ -759,7 +759,10 @@ export class FileSystemWatcher {
 // so the handles provide SharedObject APIs while the public tasks expose only
 // their explicit facade methods.
 
-const { SharedObject } = globalThis.expo;
+// Annotate explicitly: the inferred type of the destructured constructor
+// otherwise references expo-modules-core's internal declaration path, which is
+// not portable in the emitted (composite) declarations.
+const SharedObject: (typeof globalThis.expo)['SharedObject'] = globalThis.expo.SharedObject;
 
 export class FileSystemUploadTask extends SharedObject {
   start(_url: string, _file: any, _options: any): Promise<any> {

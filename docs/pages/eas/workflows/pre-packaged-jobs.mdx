@@ -1267,11 +1267,11 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter   | Type   | Description                                                                                                                                                                |
-| ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| webhook_url | string | Required. The Slack webhook URL to send the message to. Currently only hardcoded strings are supported. Using webhooks stored in `env` are upcoming but not yet supported. |
-| message     | string | Required if payload is not provided. The message to send.                                                                                                                  |
-| payload     | object | Required if message is not provided. The [Slack Block Kit](https://docs.slack.dev/block-kit) payload to send.                                                              |
+| Parameter   | Type   | Description                                                                                                                                                                                 |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| webhook_url | string | Required. The Slack webhook URL to send the message to. Use an [environment variable](/eas/environment-variables/manage/#manage-environment-variables) with `${{ env.SLACK_WEBHOOK_URL }}`. |
+| message     | string | Required if payload is not provided. The message to send.                                                                                                                                   |
+| payload     | object | Required if message is not provided. The [Slack Block Kit](https://docs.slack.dev/block-kit) payload to send.                                                                               |
 
 ### Examples
 
@@ -1279,7 +1279,7 @@ Here are some practical examples of using the Slack job:
 
 <Collapsible summary="Basic build notification">
 
-This workflow builds an iOS app and then sends a notification with the app identifier and version from the build job outputs.
+This workflow builds an iOS app and then sends a notification with the app identifier and version from the build job outputs. The webhook URL is read from a `SLACK_WEBHOOK_URL` [environment variable](/eas/environment-variables/manage/#manage-environment-variables) set in the job's `environment`.
 
 ```yaml .eas/workflows/slack-build-notification.yml
 name: Build Notification
@@ -1296,8 +1296,9 @@ jobs:
     name: Notify Build Status
     needs: [build_ios]
     type: slack
+    environment: production
     params:
-      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       message: 'Build completed for app ${{ needs.build_ios.outputs.app_identifier }} (version ${{ needs.build_ios.outputs.app_version }})'
 ```
 
@@ -1322,8 +1323,9 @@ jobs:
     name: Notify Build Status
     needs: [build_android]
     type: slack
+    environment: production
     params:
-      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       payload:
         blocks:
           - type: header
@@ -1689,8 +1691,9 @@ jobs:
   notify_slack:
     needs: [register_device]
     type: slack
+    environment: production
     params:
-      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       message: 'Registered device ${{ needs.register_device.outputs.identifier }} (${{ needs.register_device.outputs.model }})'
 ```
 
@@ -1923,14 +1926,16 @@ Repack job is not suitable for the following use cases:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter           | Type    | Description                                                                                                                                 |
-| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| build_id            | string  | Required. The source build ID of the build to repack.                                                                                       |
-| profile             | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                  |
-| embed_bundle_assets | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build. |
-| js_bundle_only      | boolean | Optional. Whether to only repack the JavaScript bundle. Defaults to false, which means the entire app metadata will be updated.             |
-| message             | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                               |
-| repack_version      | string  | Optional. The version of the `@expo/repack-app` to use. Defaults to the latest version.                                                     |
+| Parameter                               | Type    | Description                                                                                                                                                                                                     |
+| --------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id                                | string  | Required. The source build ID of the build to repack.                                                                                                                                                           |
+| profile                                 | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                                                                                      |
+| embed_bundle_assets                     | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build.                                                                     |
+| js_bundle_only                          | boolean | Optional. Whether to only repack the JavaScript bundle. Defaults to false, which means the entire app metadata will be updated.                                                                                 |
+| message                                 | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                                                                                                   |
+| repack_version                          | string  | Optional. The version of the `@expo/repack-app` to use. Defaults to the latest version.                                                                                                                         |
+| ios_signing_use_source_app_entitlements | boolean | Optional. Whether to use fastlane resign `use_app_entitlements` behavior: extract app bundle code signing entitlements and combine them with entitlements from the new provisioning profile. Defaults to false. |
+| ios_signing_app_entitlements_path       | string  | Optional. Path to the entitlements file to use, for example, `myApp/MyApp.entitlements`. This is exclusive with `ios_signing_use_source_app_entitlements`                                                       |
 
 ### Examples
 

@@ -165,3 +165,10 @@ export async function setAssetFavoriteAsync(
 ): Promise<boolean> {
   throw errorOnLegacyMethodUse('setAssetFavoriteAsync');
 }
+
+/**
+ * @deprecated Import this method from `expo-media-library/legacy`. This method will throw in runtime.
+ */
+export async function getAssetContentUriAsync(asset: AssetRef): Promise<string> {
+  throw errorOnLegacyMethodUse('getAssetContentUriAsync');
+}

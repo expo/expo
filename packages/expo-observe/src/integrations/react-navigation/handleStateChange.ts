@@ -1,13 +1,13 @@
 import AppMetrics from 'expo-app-metrics';
 
 import { emitTTI } from './emitTTI';
+import { getPathname } from './getPathname';
 import { collectMountedKeys, findFocusedLeaf } from './stateTraversal';
 import type { ReactNavigationIntegrationStorage } from './storage';
-import type { GetPathname, NavigationStateLike } from './types';
+import type { NavigationStateLike } from './types';
 
 export function createStateChangeHandler(
   storage: ReactNavigationIntegrationStorage,
-  getPathname: GetPathname,
   appLaunchTime: number
 ): (state: NavigationStateLike | undefined) => void {
   let previousFocusedKey: string | null = null;
@@ -15,9 +15,8 @@ export function createStateChangeHandler(
   return async function handleStateChange(state) {
     if (!state) return;
     // Snapshot clocks once so every metric written below is stamped with
-    // the moment the focus actually fired, not the moment
-    // `addCustomMetricToSession` happens to run after the awaited
-    // `getMainSession()` round-trip.
+    // the moment the focus actually fired, not the moment `addMetric` happens
+    // to run after the surrounding async work.
     const now = performance.now();
     const timestamp = new Date().toISOString();
     // Mark all non-focused mounted screens as already rendered so a later
@@ -65,8 +64,9 @@ export function createStateChangeHandler(
     const routeParams = focused.route.params ?? {};
     const name = isInitial ? 'cold_ttr' : 'warm_ttr';
 
-    const mainSessionId = (await AppMetrics.getMainSession())?.id;
-    if (!mainSessionId) return;
+    // The main session is a static shared object, available synchronously and
+    // never null. Metrics are recorded against it directly via `addMetric`.
+    const mainSession = AppMetrics.getMainSession();
 
     if (isColdAppLaunch) {
       const appLaunchTtrSeconds = (now - appLaunchTime) / 1000;
@@ -77,8 +77,7 @@ export function createStateChangeHandler(
           lastInteractiveCall: now,
         };
       }
-      AppMetrics.addCustomMetricToSession({
-        sessionId: mainSessionId,
+      mainSession.addMetric({
         timestamp,
         category: 'navigation',
         name,
@@ -88,7 +87,7 @@ export function createStateChangeHandler(
       });
       if (hasPendingInteractive) {
         await emitTTI({
-          sessionId: mainSessionId,
+          session: mainSession,
           timestamp,
           routeName: pathname,
           value: appLaunchTtrSeconds,
@@ -108,8 +107,7 @@ export function createStateChangeHandler(
       };
     }
 
-    AppMetrics.addCustomMetricToSession({
-      sessionId: mainSessionId,
+    mainSession.addMetric({
       timestamp,
       category: 'navigation',
       name,
@@ -119,7 +117,7 @@ export function createStateChangeHandler(
     });
     if (hasPendingInteractive) {
       await emitTTI({
-        sessionId: mainSessionId,
+        session: mainSession,
         timestamp,
         routeName: pathname,
         value: ttrSeconds,

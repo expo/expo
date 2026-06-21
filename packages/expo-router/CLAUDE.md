@@ -302,7 +302,7 @@ Native tabs (`expo-router/unstable-native-tabs`) provide native bottom tab navig
 
 After developing a feature, run these commands in `packages/expo-router`:
 
-1. `CI=1 pnpm test` - Run all tests. During development use `pnpm test [test file]` for efficiency. For RSC tests: `pnpm test:rsc`
+1. `CI=1 pnpm test` - Run all tests, including the RSC `__rsc_tests__` (they run as the `rsc/<platform>` Jest projects). During development use `pnpm test [test file]` for efficiency, or `pnpm test --selectProjects rsc/web` to run only RSC tests.
 2. `pnpm build` - Build and verify TypeScript correctness. If you moved or deleted files, run `pnpm clean` first.
 3. `pnpm test:types` - Verify type correctness in tests
 4. `pnpm lint` - Run last to find linting issues

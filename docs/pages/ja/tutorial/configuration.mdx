@@ -1,0 +1,129 @@
+---
+title: ステータスバー、スプラッシュスクリーン、アプリアイコンを設定する
+description: このチュートリアルでは、ステータスバー、アプリアイコン、スプラッシュスクリーンを設定する基本を学びます。
+hasVideoLink: true
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、アプリストアへのデプロイ前に、ステータスバーのテーマ設定、アプリアイコンとスプラッシュスクリーンのカスタマイズなど、アプリの細部を整えていきます。
+
+<VideoBoxLink
+  videoId="OgGCYdElcZo"
+  title="視聴：ユニバーサル Expo アプリの仕上げを行う"
+  description="アプリストアへのデプロイ前に、ステータスバーを設定し、アプリアイコンをカスタマイズし、スプラッシュスクリーンを準備します。"
+/>
+
+---
+
+<Step label="1">
+
+## ステータスバーを設定する
+
+[`expo-status-bar`](/versions/latest/sdk/status-bar/) ライブラリは、`create-expo-app` で作成したすべてのプロジェクトにあらかじめインストールされています。このライブラリは、アプリのステータスバーのスタイルを設定するための `StatusBar` コンポーネントを提供します。
+
+**app/\_layout.tsx** で次の手順を行います。
+
+1. `expo-status-bar` から `StatusBar` をインポートします。
+2. `StatusBar` と既存の `Stack` コンポーネントを [React の Fragment コンポーネント](https://react.dev/reference/react/Fragment) でまとめます。
+
+{/* prettier-ignore */}
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+/* @tutinfo */
+import { StatusBar } from 'expo-status-bar';
+/* @end */
+
+export default function RootLayout() {
+  return (
+    /* @tutinfo `StatusBar` と既存の `Stack` コンポーネントを React の Fragment コンポーネントでまとめます。 */
+    <>
+    /* @end */
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+      /* @tutinfo */<StatusBar style="light" />
+    </>
+    /* @end */
+  );
+}
+```
+
+それでは、Android と iOS でアプリの様子を見てみましょう。
+
+<ContentSpotlight
+  alt="Android と iOS の両方で表示される、light スタイルの StatusBar。"
+  src="/static/images/tutorial/statusbar-example.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+<Step label="2">
+
+## アプリアイコン
+
+プロジェクト内の **assets/images** ディレクトリに **icon.png** ファイルがあります。これがアプリアイコンです。1024px × 1024px の画像で、見た目は次のとおりです。
+
+<ContentSpotlight src="/static/images/tutorial/icon.webp" className="max-w-[150px]" />
+
+スプラッシュスクリーン画像と同様に、**app.json** ファイルの `"icon"` プロパティでアプリアイコンのパスを設定します。デフォルトでは、新しい Expo プロジェクトには `"./assets/images/icon.png"` という正しいパスが設定されているため、何も変更する必要はありません。
+
+> アプリストア向けにアプリをビルドする段階になると、[Expo Application Services (EAS)](/eas/) がこの画像を使って、各デバイスに最適化されたアイコンを生成します。
+
+アプリアイコンは Expo Go のさまざまな場所で確認できます。次は Expo Go の開発者メニューに表示されるアプリアイコンの例です。
+
+<ContentSpotlight
+  alt="Expo Go アプリの開発者メニューに表示されるスプラッシュスクリーン。"
+  src="/static/images/tutorial/app-icon-visible.webp"
+  className="max-w-[240px]"
+/>
+
+</Step>
+
+<Step label="3">
+
+## スプラッシュスクリーン
+
+スプラッシュスクリーンは、アプリのコンテンツが読み込まれる前に表示されます。アプリアイコンのような小さな画像を中央に配置し、アプリのコンテンツが表示できる状態になると非表示になります。
+
+[`expo-splash-screen`](/versions/latest/sdk/splash-screen/) プラグインは、`create-expo-app` で作成したすべてのプロジェクトにあらかじめインストールされています。このライブラリは、スプラッシュスクリーンを設定するためのコンフィグプラグインを提供します。
+
+**app.json** では、アプリアイコン ([ダウンロード可能なアセット](/ja/tutorial/create-your-first-app/#download-assets) に含まれます) をスプラッシュスクリーン画像として使用するように、`expo-splash-screen` プラグインが次のスニペットですでに設定されています。何も変更する必要はありません。
+
+```json app.json
+{
+  "plugins": [
+    /* @hide ... */ /* @end */
+    [
+      "expo-splash-screen",
+      {
+        "image": "./assets/images/splash-icon.png"
+        /* @hide ... */ /* @end */
+      }
+    ]
+  ]
+}
+```
+
+ただし、**スプラッシュスクリーンをテストするには、Expo Go や [開発ビルド](/develop/development-builds/introduction/) は使用できません**。テストするには、アプリのプレビュービルドまたはプロダクションビルドを作成する必要があります。スプラッシュスクリーンの設定とテスト方法の詳細については、次のリソースを参照してみてください。
+
+- [スプラッシュスクリーンアイコンの作成](/develop/user-interface/splash-screen-and-app-icon/#splash-screen) ガイドで、スプラッシュスクリーンアイコンの設定方法を確認できます。
+- プレビュービルドの作成方法については、EAS チュートリアルの [内部配布](/tutorial/eas/internal-distribution-builds/) ガイドを参照してください。プロダクションビルドを作成する場合は、[Android](/tutorial/eas/android-production-build/) と [iOS](/tutorial/eas/ios-production-build/) のガイドを参照してください。
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterIndex={8}
+  name="GET_STARTED"
+  chapterTitle="第 9 章：ステータスバー、スプラッシュスクリーン、アプリアイコンを設定する"
+  summary="おつかれさまでした！同じコードベースから Android、iOS、web で動作するアプリを作り上げました。"
+  nextChapterDescription="次のセクションでは、ここで扱った概念や軽く触れたトピックについて、さらに詳しく学べるリソースを紹介します。"
+  nextChapterTitle="学習リソース"
+  nextChapterLink="/ja/tutorial/follow-up"
+/>

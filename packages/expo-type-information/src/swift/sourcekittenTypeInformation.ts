@@ -228,6 +228,7 @@ function mapSwiftTypeToTsType(type?: string): Type {
       returnType.type = BasicType.NUMBER;
       break;
     case 'Void':
+    case '()': // `()` type is the same as `Void` in Swift. SourceKit will somtimes output `()` instead of `Void` when queried about the type.
       returnType.type = BasicType.VOID;
       break;
     default:
@@ -1135,13 +1136,18 @@ function returnExpressionEnd(fileContent: string, returnIndex: number): number {
   return i;
 }
 
+type SourceKittenPreprocessingOptions = {
+  preprocessReturns?: boolean;
+  mapUnicodeCharacters?: boolean;
+};
+
 // Preprocessing to help sourcekitten functions
 // For now we create a new variable for each return statement,
 // we can find it's type easily with sourcekitten
 // TODO(@HubertBer): This has many problems which need fixing:
 // - return can be inside a string
 // - return Expression end parses incorrectly in case of some strings (check how it parses expo-video)
-export function preprocessSwiftFile(originalFileContent: string): string {
+function preprocessReturnStatements(originalFileContent: string): string {
   const newFileContent: string[] = [];
   const fileContent = removeComments(originalFileContent);
   const returnPositions: { start: number; end: number }[] = [];
@@ -1170,4 +1176,30 @@ export function preprocessSwiftFile(originalFileContent: string): string {
   }
   newFileContent.push(fileContent.substring(prevEnd, fileContent.length));
   return newFileContent.join('');
+}
+
+/**
+ * Maps all non-ASCII characters to ASCII strings.
+ * @param fileConent A string with Swift code.
+ * @returns the fileContent string with each non-ASCII character mapped to an ASCII string.
+ */
+function preprocessUnicodeCharacters(fileConent: string): string {
+  return fileConent.replace(/[^\x00-\x7F]/gu, (c) => {
+    const hex = c.codePointAt(0)?.toString(16)?.toUpperCase() ?? '_';
+    return `_u${hex}_`;
+  });
+}
+
+export function preprocessSwiftFile(
+  originalFileContent: string,
+  { preprocessReturns, mapUnicodeCharacters }: SourceKittenPreprocessingOptions
+): string {
+  let fileContent = originalFileContent;
+  if (preprocessReturns) {
+    fileContent = preprocessReturnStatements(fileContent);
+  }
+  if (mapUnicodeCharacters) {
+    fileContent = preprocessUnicodeCharacters(fileContent);
+  }
+  return fileContent;
 }

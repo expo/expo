@@ -33,6 +33,7 @@ describe(getDevToolsPluginClientAsync, () => {
   it('should return a DevToolsPluginClientImplApp client when sender is from app', async () => {
     mockGetConnectionInfo.mockReturnValue({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       sender: 'app',
       devServer: 'localhost:8081',
     });
@@ -43,6 +44,7 @@ describe(getDevToolsPluginClientAsync, () => {
   it('should return a DevToolsPluginClientImplApp client when sender is from browser', async () => {
     mockGetConnectionInfo.mockReturnValue({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       sender: 'browser',
       devServer: 'localhost:8081',
     });
@@ -53,6 +55,7 @@ describe(getDevToolsPluginClientAsync, () => {
   it('should return the same client from the same plugin name when called multiple times', async () => {
     mockGetConnectionInfo.mockReturnValue({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       sender: 'app',
       devServer: 'localhost:8081',
     });
@@ -66,6 +69,7 @@ describe(getDevToolsPluginClientAsync, () => {
   it('should return a new client from the same plugin name from disconnected', async () => {
     mockGetConnectionInfo.mockReturnValue({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       sender: 'app',
       devServer: 'localhost:8081',
     });
@@ -82,6 +86,7 @@ describe(getDevToolsPluginClientAsync, () => {
 
     mockGetConnectionInfo.mockReturnValueOnce({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       sender: 'app',
       devServer: 'localhost:8081',
     });
@@ -89,6 +94,7 @@ describe(getDevToolsPluginClientAsync, () => {
 
     mockGetConnectionInfo.mockReturnValueOnce({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       sender: 'app',
       devServer: 'localhost:8082',
     });
@@ -100,6 +106,7 @@ describe(getDevToolsPluginClientAsync, () => {
   it('should have at most one client per plugin name', async () => {
     mockGetConnectionInfo.mockReturnValue({
       protocolVersion: TEST_PROTOCOL_VERSION,
+      useWss: false,
       sender: 'app',
       devServer: 'localhost:8081',
     });

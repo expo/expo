@@ -66,6 +66,26 @@ export {
   type VectorIconProps,
 } from './primitives';
 
+export {
+  unstable_createStandardRouterNavigator,
+  unstable_integrateWithRouter,
+} from './standard-navigation';
+export type {
+  IntegrateWithRouterOptions,
+  NavigatorContentProps,
+  StandardNavigatorEventMapBase,
+  StandardUseNavigationBuilderOptions,
+} from './standard-navigation';
+
+// Router factories for use with `unstable_createStandardRouterNavigator` / `unstable_integrateWithRouter`.
+export { StackRouter, TabRouter } from './react-navigation/routers';
+export type {
+  StackNavigationState,
+  StackRouterOptions,
+  TabNavigationState,
+  TabRouterOptions,
+} from './react-navigation/routers';
+
 export { unstable_navigationEvents } from './navigationEvents';
 export type {
   PagePreloadedEvent,

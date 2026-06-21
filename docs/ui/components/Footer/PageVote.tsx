@@ -4,11 +4,13 @@ import { ThumbsUpDuotoneIcon } from '@expo/styleguide-icons/duotone/ThumbsUpDuot
 import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
 import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import { reportPageVote } from '~/providers/Analytics';
 import { CALLOUT } from '~/ui/components/Text';
 
 export const PageVote = () => {
+  const intl = useIntl();
   const [userVoted, setUserVoted] = useState(false);
 
   return (
@@ -19,11 +21,11 @@ export const PageVote = () => {
         'max-md:mx-auto max-md:mb-8 max-md:justify-center'
       )}>
       {userVoted ? (
-        <CALLOUT theme="secondary">Thank you for your vote! 💙</CALLOUT>
+        <CALLOUT theme="secondary">{intl.formatMessage({ id: 'footerThankYouForVote' })}</CALLOUT>
       ) : (
         <div className="flex flex-row items-center gap-2 max-md:flex-col">
           <CALLOUT theme="secondary" weight="medium">
-            Was this doc helpful?
+            {intl.formatMessage({ id: 'footerWasHelpful' })}
           </CALLOUT>
           <div>
             <Button

@@ -4,6 +4,7 @@ description: Learn how to monitor the usage of your Expo and React Native app af
 ---
 
 import { LogrocketIcon } from '@expo/styleguide-icons/custom/LogrocketIcon';
+import { PosthogIcon } from '@expo/styleguide-icons/custom/PosthogIcon';
 import { SentryIcon } from '@expo/styleguide-icons/custom/SentryIcon';
 import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -20,7 +21,7 @@ Expo provides the [`expo-insights`](/eas-insights/introduction/) library, which 
 
 <ContentSpotlight
   alt="Active user insights on the EAS dashboard."
-  src="/static/images/monitoring/monitor-your-app/expo-insights.png"
+  src="/static/images/monitoring/monitor-your-app/expo-insights.webp"
 />
 
 Get started with the following guide:
@@ -38,8 +39,8 @@ Get started with the following guide:
 
 <ContentSpotlight
   alt="Performance metrics on the EAS Observe dashboard."
-  src="/static/images/expo-observe/observe-dashboard-light.png"
-  darkSrc="/static/images/expo-observe/observe-dashboard-dark.png"
+  src="/static/images/expo-observe/observe-dashboard-light.webp"
+  darkSrc="/static/images/expo-observe/observe-dashboard-dark.webp"
 />
 
 Get started with the following guide:
@@ -57,7 +58,7 @@ You can get more insights with [LogRocket](https://logrocket.com). LogRocket rec
 
 <ContentSpotlight
   alt="User sessions on the LogRocket dashboard."
-  src="/static/images/monitoring/monitor-your-app/logrocket.png"
+  src="/static/images/monitoring/monitor-your-app/logrocket.webp"
 />
 
 Get started with the following guide:
@@ -77,7 +78,7 @@ It notifies you of exceptions or errors that your users run into while using you
 
 <ContentSpotlight
   alt="Issues on the Sentry dashboard."
-  src="/static/images/monitoring/monitor-your-app/sentry.png"
+  src="/static/images/monitoring/monitor-your-app/sentry.webp"
 />
 
 Get started with the following guide:
@@ -95,7 +96,7 @@ Get started with the following guide:
 
 <ContentSpotlight
   alt="The Vexo dashboard."
-  src="/static/images/monitoring/monitor-your-app/vexo.png"
+  src="/static/images/monitoring/monitor-your-app/vexo.webp"
 />
 
 Get started with the following guide:
@@ -118,4 +119,17 @@ Get started with the following guide:
   description="Learn how to use BugSnag to monitor your app."
   href="/guides/using-bugsnag/"
   Icon={BookOpen02Icon}
+/>
+
+## PostHog
+
+[PostHog](https://posthog.com/) is a product analytics platform with session replay, feature flags, and error tracking. The EAS CLI integration provisions a PostHog project, wires up the SDK, and lets you tag events by EAS Update through release tagging, so you can filter analytics and errors by release.
+
+Get started with the following guide:
+
+<BoxLink
+  title="Using PostHog"
+  description="Learn how to use PostHog to monitor your app."
+  href="/guides/using-posthog/"
+  Icon={PosthogIcon}
 />

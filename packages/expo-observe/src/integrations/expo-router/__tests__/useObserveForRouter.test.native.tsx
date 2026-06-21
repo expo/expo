@@ -8,14 +8,21 @@ import * as routerModule from '../router';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
 import { useObserveForRouter } from '../useObserveForRouter';
 
-jest.mock('expo-app-metrics', () => ({
-  __esModule: true,
-  default: {
-    markInteractive: jest.fn(),
-    getMainSession: jest.fn(() => ({ id: 'session-1' })),
-    addCustomMetricToSession: jest.fn(),
-  },
-}));
+jest.mock('expo-app-metrics', () => {
+  const mainSession = {
+    id: 'session-1',
+    type: 'main',
+    startDate: '2026-01-01T00:00:00.000Z',
+    addMetric: jest.fn(),
+  };
+  return {
+    __esModule: true,
+    default: {
+      markInteractive: jest.fn(),
+      getMainSession: jest.fn(() => mainSession),
+    },
+  };
+});
 
 jest.mock('../init', () => ({
   __esModule: true,
@@ -46,7 +53,7 @@ jest.mock('../router', () => {
   };
 });
 
-const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
+const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
 const mockUseRoute = (routerModule as unknown as { __useRoute: jest.Mock }).__useRoute;
 const mockUseNavigation = (routerModule as unknown as { __useNavigation: jest.Mock })
   .__useNavigation;
@@ -87,9 +94,8 @@ describe('useObserveForRouter', () => {
       await result.current!();
     });
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric).toHaveBeenCalledWith({
-      sessionId: 'session-1',
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric).toHaveBeenCalledWith({
       timestamp: expect.any(String),
       category: 'navigation',
       routeName: '/test',
@@ -127,8 +133,7 @@ describe('useObserveForRouter', () => {
         routeName: expectedRouteName,
         params: { url: pathname },
       });
-      expect(mockAddCustomMetric).toHaveBeenCalledWith({
-        sessionId: 'session-1',
+      expect(mockAddMetric).toHaveBeenCalledWith({
         timestamp: expect.any(String),
         category: 'navigation',
         routeName: expectedRouteName,
@@ -148,7 +153,7 @@ describe('useObserveForRouter', () => {
       await result.current!();
     });
 
-    expect(mockAddCustomMetric).toHaveBeenCalledWith(
+    expect(mockAddMetric).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'tti',
         value: 0.3,
@@ -185,7 +190,7 @@ describe('useObserveForRouter', () => {
       await result.current!();
     });
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
   });
 
   it('does not record TTI metric when the screen is re-focused after navigating away (A → B → A)', async () => {
@@ -211,8 +216,8 @@ describe('useObserveForRouter', () => {
       await result.current!();
     });
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric).toHaveBeenNthCalledWith(1, expect.objectContaining({ value: 0.3 }));
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric).toHaveBeenNthCalledWith(1, expect.objectContaining({ value: 0.3 }));
   });
 
   it('records lastInteractiveCall when the screen is not focused (skips markInteractive and TTI)', async () => {
@@ -226,7 +231,7 @@ describe('useObserveForRouter', () => {
     });
 
     expect(AppMetrics.markInteractive).not.toHaveBeenCalled();
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
     expect(storage.screenTimes['screen-a'].lastInteractiveCall).toBe(1300);
     expect(storage.interactiveScreensIds.has('screen-a')).toBe(false);
   });
@@ -241,7 +246,7 @@ describe('useObserveForRouter', () => {
     });
 
     expect(AppMetrics.markInteractive).toHaveBeenCalled();
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
     expect(storage.screenTimes['screen-a']).toEqual({ lastInteractiveCall: 1234 });
     expect(storage.interactiveScreensIds.has('screen-a')).toBe(true);
   });
@@ -252,7 +257,7 @@ describe('useObserveForRouter', () => {
     await act(async () => {
       await result.current!();
     });
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
     expect(warnSpy).not.toHaveBeenCalled();
   });
 

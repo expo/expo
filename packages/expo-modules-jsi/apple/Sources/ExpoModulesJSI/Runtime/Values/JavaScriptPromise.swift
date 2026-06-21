@@ -1,14 +1,12 @@
-internal import jsi
 internal import ExpoModulesJSI_Cxx
+internal import jsi
 
-/**
- A Swift representation of a JavaScript Promise.
-
- `JavaScriptPromise` bridges JavaScript promises with Swift's async/await, allowing you to create
- deferred promises that can be resolved or rejected from Swift, or wrap existing JavaScript promises
- to await their results. It provides type-safe access to promise resolution and rejection, integrating
- JavaScript's asynchronous patterns with Swift's concurrency model.
- */
+/// A Swift representation of a JavaScript Promise.
+///
+/// `JavaScriptPromise` bridges JavaScript promises with Swift's async/await, allowing you to create
+/// deferred promises that can be resolved or rejected from Swift, or wrap existing JavaScript promises
+/// to await their results. It provides type-safe access to promise resolution and rejection, integrating
+/// JavaScript's asynchronous patterns with Swift's concurrency model.
 public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private typealias PromiseContinuation = CheckedContinuation<JavaScriptValue.Ref, any Error>
 
@@ -21,10 +19,8 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private let resolveFunction = JavaScriptValue.Ref()
   private let rejectFunction = JavaScriptValue.Ref()
 
-  /**
-   Initializes a promise from the existing object. The promise may already be settled.
-   It cannot be resolved/rejected from the outside, i.e. `resolve` and `reject` functions are no-op.
-   */
+  /// Initializes a promise from the existing object. The promise may already be settled.
+  /// It cannot be resolved/rejected from the outside, i.e. `resolve` and `reject` functions are no-op.
   @JavaScriptActor
   public init(_ runtime: JavaScriptRuntime, _ object: consuming JavaScriptObject) throws {
     self.runtime = runtime
@@ -32,9 +28,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     try setUpCallbacks()
   }
 
-  /**
-   Creates a new promise whose resolver or rejecter must be called from the outside (also known as a deferred promise).
-   */
+  /// Creates a new promise whose resolver or rejecter must be called from the outside (also known as a deferred promise).
   @JavaScriptActor
   public init(_ runtime: JavaScriptRuntime) throws {
     self.runtime = runtime
@@ -49,7 +43,8 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       return .undefined
     }
 
-    self.object = try runtime
+    self.object =
+      try runtime
       .global()
       .getPropertyAsFunction(.cached(runtime, "Promise"))
       .callAsConstructor(setup.asValue())
@@ -80,15 +75,16 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     guard let runtime else {
       return
     }
-    guard !resolveFunction.isEmpty else {
-      preconditionFailure("Cannot settle a promise more than once")
-    }
 
     // `resolve` is not isolated, so make sure to jump to JS thread.
     runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
+      // If the promise is already settled, do nothing.
+      guard let resolver = resolveFunction.take() else {
+        return
+      }
       // Call the actual resolver given in the Promise setup.
       // This will also call `deferredPromise.resolve` in the `then` handler.
-      _ = try! resolveFunction.take().getFunction().call(arguments: value)
+      _ = try! resolver.getFunction().call(arguments: value)
 
       // Release the rejecter, we cannot call it anymore.
       rejectFunction.release()
@@ -99,19 +95,20 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     guard let runtime else {
       return
     }
-    guard !rejectFunction.isEmpty else {
-      preconditionFailure("Cannot settle a promise more than once")
-    }
 
     // `reject` is not isolated, so make sure to jump to JS thread.
     runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
+      // If the promise is already settled, do nothing.
+      guard let rejecter = rejectFunction.take() else {
+        return
+      }
       // Create a JS error from any (native) error.
       let errorMessage = String(describing: error)
       let errorValue = JavaScriptError(runtime, message: errorMessage).asValue()
 
       // Call the actual rejecter given in the Promise setup.
       // This will also call `deferredPromise.reject` in the `then` handler.
-      _ = try! rejectFunction.take().getFunction().call(arguments: errorValue)
+      _ = try! rejecter.getFunction().call(arguments: errorValue)
 
       // Release the resolver, we cannot call it anymore.
       resolveFunction.release()

@@ -8,7 +8,7 @@ import {
   useState,
   type ReactElement,
 } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { wrapNativeEvent, type PagerViewProps } from './types';
 import { worklets } from '../../State';
@@ -43,6 +43,11 @@ export function PagerView(props: PagerViewProps) {
     setScrollEnabledState(scrollEnabled);
   }, [scrollEnabled]);
 
+  // The pages overlap (see the absolute positioning below), so gate touches to
+  // the settled page; the rest are `pointerEvents="none"` so taps resolve to the
+  // page on screen (#46386).
+  const [settledPage, setSettledPage] = useState(initialPage);
+
   // Synthesize pager-view's `idle | dragging | settling` from Compose's raw
   // signals: `isScrollInProgress` (drag or snap-animation in flight) plus
   // drag interactions (start/stop/cancel).
@@ -72,8 +77,16 @@ export function PagerView(props: PagerViewProps) {
   const pages = Children.toArray(children)
     .filter((child): child is ReactElement => isValidElement(child))
     .map((child, index) => (
-      <RNHostView key={child.key ?? String(index)} modifiers={[fillMaxSize()]}>
-        {child}
+      <RNHostView
+        key={child.key ?? String(index)}
+        // Overlap pages at one origin so each page's RN shadow position matches
+        // where Compose draws it; otherwise `measure()`-based hit-testing
+        // (e.g. `Pressable`) misfires on pages after the first (#46386).
+        style={StyleSheet.absoluteFill}
+        modifiers={[fillMaxSize()]}>
+        <View style={styles.page} pointerEvents={index === settledPage ? 'auto' : 'none'}>
+          {child}
+        </View>
       </RNHostView>
     ));
 
@@ -101,6 +114,7 @@ export function PagerView(props: PagerViewProps) {
         beyondViewportPageCount={offscreenPageLimit}
         modifiers={pagerModifiers}
         onSettledPageChange={(page) => {
+          setSettledPage(page);
           onPageSelected?.(wrapNativeEvent({ position: page }));
         }}
         onPageScroll={pageScrollHandler}
@@ -222,3 +236,7 @@ function warnAboutStringBorderRadiusOnce(key: string, value: string): void {
       `Use a numeric pixel value, or omit the style key.`
   );
 }
+
+const styles = StyleSheet.create({
+  page: { flex: 1 },
+});

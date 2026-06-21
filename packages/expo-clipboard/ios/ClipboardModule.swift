@@ -1,7 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import UIKit
 
 let onClipboardChanged = "onClipboardChanged"
 
@@ -83,9 +82,11 @@ public class ClipboardModule: Module {
     }
 
     Property("isPasteButtonAvailable") { () -> Bool in
+      #if !os(macOS)
       if #available(iOS 16.0, *) {
         return true
       }
+      #endif
       return false
     }
 
@@ -93,6 +94,7 @@ public class ClipboardModule: Module {
 
     Events(onClipboardChanged)
 
+    #if !os(macOS)
     OnStartObserving {
       NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
       NotificationCenter.default.addObserver(
@@ -106,9 +108,11 @@ public class ClipboardModule: Module {
     OnStopObserving {
       NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
     }
+    #endif
 
     // MARK: - View
 
+    #if !os(macOS)
     View(ClipboardPasteButton.self) {
       Events("onPastePressed")
 
@@ -144,14 +148,17 @@ public class ClipboardModule: Module {
         view.update()
       }
     }
+    #endif
   }
 
+  #if !os(macOS)
   @objc
   func clipboardChangedListener() {
     sendEvent(onClipboardChanged, [
       "contentTypes": availableContentTypes()
     ])
   }
+  #endif
 }
 
 private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {

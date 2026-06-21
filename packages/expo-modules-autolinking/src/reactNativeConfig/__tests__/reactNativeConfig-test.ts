@@ -31,6 +31,7 @@ const BASE_AUTOLINKING_OPTIONS: AutolinkingOptions = {
   searchPaths: [],
   nativeModulesDir: null,
   exclude: [],
+  include: [],
 };
 
 const itWithMemoize = (name: string, fn: () => Promise<void>) => {
@@ -177,7 +178,7 @@ describe(createReactNativeConfigAsync, () => {
       },
     });
     expect(result.dependencies['react-native-test']).toBeDefined();
-    expect(result.dependencies['react-native-test'].root).toBe('/app/modules/react-native-test');
+    expect(result.dependencies['react-native-test']!.root).toBe('/app/modules/react-native-test');
   });
 
   itWithMemoize('should return config if local dependencies are not specified', async () => {
@@ -296,6 +297,22 @@ describe(resolveAppProjectConfigAsync, () => {
     `);
   });
 
+  itWithMemoize(
+    'should return tvos project config under its own key, falling back to ios',
+    async () => {
+      const config = await resolveAppProjectConfigAsync('/app', 'tvos');
+      expect(config).toEqual({ tvos: { sourceDir: '/app/ios' } });
+    }
+  );
+
+  itWithMemoize(
+    'should return macos project config under its own key with a custom sourceDir',
+    async () => {
+      const config = await resolveAppProjectConfigAsync('/app', 'macos', '/customNative');
+      expect(config).toEqual({ macos: { sourceDir: '/customNative' } });
+    }
+  );
+
   itWithMemoize('should return app project config with custom sourceDir', async () => {
     const androidResolver = require('../androidResolver');
     const mockFindGradleAndManifestAsync = jest.spyOn(
@@ -377,6 +394,67 @@ describe(resolveReactNativeModule, () => {
       }
     `);
   });
+
+  itWithMemoize('should report tvos and macos under their own platform key', async () => {
+    mockPlatformResolverIos.mockResolvedValue({
+      podspecPath: '/app/node_modules/react-native-test/RNTest.podspec',
+      version: '1.0.0',
+      configurations: [],
+      scriptPhases: [],
+    });
+    const resolution = {
+      name: 'react-native-test',
+      version: '',
+      path: '/app/node_modules/react-native-test',
+      originPath: '/app/node_modules/react-native-test',
+      source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+      duplicates: null,
+      depth: 0,
+    };
+    const macos = await resolveReactNativeModule(resolution, null, 'macos', new Set());
+    expect(macos?.platforms).toEqual({
+      macos: expect.objectContaining({
+        podspecPath: '/app/node_modules/react-native-test/RNTest.podspec',
+      }),
+    });
+    const tvos = await resolveReactNativeModule(resolution, null, 'tvos', new Set());
+    expect(tvos?.platforms).toEqual({
+      tvos: expect.objectContaining({
+        podspecPath: '/app/node_modules/react-native-test/RNTest.podspec',
+      }),
+    });
+  });
+
+  itWithMemoize(
+    'should honor an explicit per-platform null and fall back to ios when unset',
+    async () => {
+      mockLoadReactNativeConfigAsync.mockResolvedValue({
+        dependency: {
+          platforms: {
+            ios: { configurations: ['Debug'], scriptPhases: [] },
+            macos: null,
+          },
+        },
+      });
+      const resolution = {
+        name: 'react-native-test',
+        version: '',
+        path: '/app/node_modules/react-native-test',
+        originPath: '/app/node_modules/react-native-test',
+        source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+        duplicates: null,
+        depth: 0,
+      };
+      await resolveReactNativeModule(resolution, null, 'macos', new Set());
+      expect(mockPlatformResolverIos).toHaveBeenLastCalledWith(expect.anything(), null, undefined);
+      await resolveReactNativeModule(resolution, null, 'tvos', new Set());
+      expect(mockPlatformResolverIos).toHaveBeenLastCalledWith(
+        expect.anything(),
+        { configurations: ['Debug'], scriptPhases: [] },
+        undefined
+      );
+    }
+  );
 
   itWithMemoize('should call the platform resolver', async () => {
     await resolveReactNativeModule(

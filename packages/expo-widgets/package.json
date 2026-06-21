@@ -5,14 +5,16 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "expo-module build",
-    "build:plugin": "expo-module build plugin",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "build:bundle": "node ./scripts/build-bundle.mjs",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -36,11 +38,12 @@
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.8.0",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "react-native": "0.86.0-rc.2",
+    "react-native": "0.86.0",
     "resolve-workspace-root": "^2.0.0"
   },
   "peerDependencies": {

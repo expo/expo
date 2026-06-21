@@ -63,6 +63,12 @@ export type ModalBottomSheetProps = {
    */
   skipPartiallyExpanded?: boolean;
   /**
+   * Opens the sheet fully expanded on first composition. Ignored when `skipPartiallyExpanded` is `true`.
+   * @default false
+   * @platform android
+   */
+  initialFullyExpanded?: boolean;
+  /**
    * The background color of the bottom sheet.
    */
   containerColor?: ColorValue;
@@ -111,6 +117,7 @@ function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetPro
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     skipPartiallyExpanded: props.skipPartiallyExpanded ?? false,
+    initialFullyExpanded: props.initialFullyExpanded ?? false,
     onDismissRequest: () => {
       onDismissRequest?.();
     },

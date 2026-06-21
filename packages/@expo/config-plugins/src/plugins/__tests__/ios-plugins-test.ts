@@ -61,7 +61,7 @@ describe(createInfoPlistPluginWithPropertyGuard, () => {
       assertMissingModProviders: true,
     });
 
-    expect(results.ios.infoPlist.CFFakeValue).toEqual(false);
+    expect(results.ios!.infoPlist!.CFFakeValue).toEqual(false);
 
     expect(setter).not.toHaveBeenCalled();
     expect(addWarningIOS).toHaveBeenCalledWith(
@@ -102,7 +102,7 @@ describe(createInfoPlistPluginWithPropertyGuard, () => {
       assertMissingModProviders: true,
     });
 
-    expect(results.ios.infoPlist.CFFakeValue).toEqual(false);
+    expect(results.ios!.infoPlist!.CFFakeValue).toEqual(false);
 
     expect(setter).not.toHaveBeenCalled();
     expect(addWarningIOS).not.toHaveBeenCalled();

@@ -32,9 +32,6 @@
           ],
           "includeDirectories": [
             "."
-          ],
-          "compilerFlags": [
-            "-DEXPO_DISABLE_MOTION_PERMISSION=1"
           ]
         },
         {

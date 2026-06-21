@@ -1,76 +1,58 @@
+internal import ExpoModulesJSI_Cxx
 import Foundation
 internal import jsi
-internal import ExpoModulesJSI_Cxx
 
-/**
- Represents any JS value (undefined, null, boolean, number, bigint, symbol, string, or object).
- As opposed to other concrete types (e.g. `JavaScriptObject`, `JavaScriptFunction`),
- this one is a reference type so can be safely captured in closures, passed to other isolation context,
- and stored in containers that don't support non-copyable types etc.
- */
+/// Represents any JS value (undefined, null, boolean, number, bigint, symbol, string, or object).
+/// As opposed to other concrete types (e.g. `JavaScriptObject`, `JavaScriptFunction`),
+/// this one is a reference type so can be safely captured in closures, passed to other isolation context,
+/// and stored in containers that don't support non-copyable types etc.
 public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error {
   internal weak let runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.Value
 
-  /**
-   Initializer from the existing JSI value.
-   */
+  /// Initializer from the existing JSI value.
   internal init(_ runtime: JavaScriptRuntime?, _ pointee: consuming facebook.jsi.Value) {
     self.runtime = runtime
     self.pointee = pointee
   }
 
-  /**
-   Copy initializer from the existing JSI value.
-   */
+  /// Copy initializer from the existing JSI value.
   internal init(_ runtime: JavaScriptRuntime, _ pointee: borrowing facebook.jsi.Value) {
     self.runtime = runtime
     self.pointee = facebook.jsi.Value(runtime.pointee, pointee)
   }
 
-  /**
-   Creates a boolean JS value.
-   */
+  /// Creates a boolean JS value.
   public init(_ runtime: JavaScriptRuntime, _ bool: Bool) {
     self.runtime = runtime
     self.pointee = facebook.jsi.Value(bool)
   }
 
-  /**
-   Creates a BigInt JS value from an Int64.
-   */
+  /// Creates a BigInt JS value from an Int64.
   public init(_ runtime: JavaScriptRuntime, bigInt: Int64) {
     self.runtime = runtime
     self.pointee = facebook.jsi.Value(runtime.pointee, facebook.jsi.BigInt.fromInt64(runtime.pointee, bigInt))
   }
 
-  /**
-   Creates a BigInt JS value from a UInt64.
-   */
+  /// Creates a BigInt JS value from a UInt64.
   public init(_ runtime: JavaScriptRuntime, bigInt: UInt64) {
     self.runtime = runtime
     self.pointee = facebook.jsi.Value(runtime.pointee, facebook.jsi.BigInt.fromUint64(runtime.pointee, bigInt))
   }
 
-  /**
-   Creates a JS value from a JS representable.
-   */
+  /// Creates a JS value from a JS representable.
   public init(_ runtime: JavaScriptRuntime, _ value: JavaScriptRepresentable) {
     self.runtime = runtime
     self.pointee = value.toJavaScriptValue(in: runtime).toJSIValue(in: runtime.pointee)
   }
 
-  /**
-   Creates a JS value from a JSI representable.
-   */
+  /// Creates a JS value from a JSI representable.
   internal init(_ runtime: JavaScriptRuntime, _ value: JSIRepresentable) {
     self.runtime = runtime
     self.pointee = value.toJSIValue(in: runtime.pointee)
   }
 
-  /**
-   Copies the value.
-   */
+  /// Copies the value.
   public func copy() -> JavaScriptValue {
     if let runtime {
       return JavaScriptValue(runtime, facebook.jsi.Value(runtime.pointee, pointee))
@@ -90,10 +72,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     }
   }
 
-  /**
-   Provides scoped access to a raw pointer to the underlying `facebook.jsi.Value`.
-   The pointer is valid only for the duration of the closure and must not be stored or escaped.
-   */
+  /// Provides scoped access to a raw pointer to the underlying `facebook.jsi.Value`.
+  /// The pointer is valid only for the duration of the closure and must not be stored or escaped.
   public func withUnsafePointee<R>(_ body: (UnsafeRawPointer) throws -> R) rethrows -> R {
     // Using `withUnsafePointer(to:)` crashes the SIL optimizer in release builds
     // due to a Swift compiler bug with C++ interop value types.
@@ -159,9 +139,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return pointee.isObject() && expo.isTypedArray(jsiRuntime, pointee.getObject(jsiRuntime))
   }
 
-  /**
-   Checks whether the value is an `ArrayBuffer`.
-   */
+  /// Checks whether the value is an `ArrayBuffer`.
   public func isArrayBuffer() -> Bool {
     guard let jsiRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
@@ -169,19 +147,29 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return pointee.isObject() && pointee.getObject(jsiRuntime).isArrayBuffer(jsiRuntime)
   }
 
-  /**
-   Checks whether the value is an instance of a global class of the given name.
-   For example `value.is("Promise")` checks whether the value is a promise.
-   */
+  /// Checks whether the value is an instance of a global class of the given name.
+  /// For example `value.is("Promise")` checks whether the value is a promise.
   @JavaScriptActor
   public func `is`(_ typeName: String) -> Bool {
     guard let runtime else {
       FatalError.runtimeLost()
     }
+    // A primitive can't be an instance of anything, so bail out before touching globals — this keeps
+    // the predicate side-effect free for non-objects (e.g. it won't trigger a replaced constructor's getter).
+    guard isObject() else {
+      return false
+    }
+
     // Since the type names are limited to global constructors (Promise, Error, Array, etc.),
     // caching them to avoid creating new prop names on each call makes a lot of sense.
     let propName = JavaScriptPropNameID.cached(runtime, typeName)
-    return isObject() && getObject().instanceOf(runtime.global().getPropertyAsFunction(propName))
+
+    // A missing or non-callable global constructor means the value can't be its instance, so swallow
+    // the lookup error and report `false` rather than propagating it out of this predicate.
+    guard let constructor = try? runtime.global().getPropertyAsFunction(propName) else {
+      return false
+    }
+    return getObject().instanceOf(constructor)
   }
 
   // MARK: - Asserting conversions ("get functions")
@@ -230,33 +218,25 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     fatalError("Unsupported value kind: \(kind)")
   }
 
-  /**
-   Returns the value as a boolean, or asserts if not a boolean.
-   */
+  /// Returns the value as a boolean, or asserts if not a boolean.
   public func getBool() -> Bool {
     assert(isBool(), "Value is not a boolean")
     return pointee.getBool()
   }
 
-  /**
-   Returns the value as an integer, or asserts if not a number.
-   */
+  /// Returns the value as an integer, or asserts if not a number.
   public func getInt() -> Int {
     assert(isNumber(), "Value is not a number")
     return Int(pointee.getNumber())
   }
 
-  /**
-   Returns the value as a double, or asserts if not a number.
-   */
+  /// Returns the value as a double, or asserts if not a number.
   public func getDouble() -> Double {
     assert(isNumber(), "Value is not a number")
     return pointee.getNumber()
   }
 
-  /**
-   Returns the value as a string, or asserts if not a string.
-   */
+  /// Returns the value as a string, or asserts if not a string.
   public func getString() -> String {
     guard let jsiRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
@@ -265,9 +245,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return String(pointee.getString(jsiRuntime).utf8(jsiRuntime))
   }
 
-  /**
-   Returns the value as a BigInt, or asserts if not a BigInt.
-   */
+  /// Returns the value as a BigInt, or asserts if not a BigInt.
   public func getBigInt() -> JavaScriptBigInt {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -276,9 +254,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return JavaScriptBigInt(runtime, pointee.getBigInt(runtime.pointee))
   }
 
-  /**
-   Returns the value as an object, or asserts if not an object.
-   */
+  /// Returns the value as an object, or asserts if not an object.
   public func getObject() -> JavaScriptObject {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -287,9 +263,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return JavaScriptObject(runtime, pointee.getObject(runtime.pointee))
   }
 
-  /**
-   Returns the value as an array, or asserts if not an array.
-   */
+  /// Returns the value as an array, or asserts if not an array.
   public func getArray() -> JavaScriptArray {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -298,9 +272,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return JavaScriptArray(runtime, pointee.getObject(runtime.pointee).getArray(runtime.pointee))
   }
 
-  /**
-   Returns the value as a function, or asserts if not a function.
-   */
+  /// Returns the value as a function, or asserts if not a function.
   public func getFunction() -> JavaScriptFunction {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -309,9 +281,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return JavaScriptFunction(runtime, pointee.getObject(runtime.pointee).getFunction(runtime.pointee))
   }
 
-  /**
-   Returns the value as a typed array, or asserts if it is not a typed array.
-   */
+  /// Returns the value as a typed array, or asserts if it is not a typed array.
   public func getTypedArray() -> JavaScriptTypedArray {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -320,9 +290,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return JavaScriptTypedArray(runtime, pointee.getObject(runtime.pointee))
   }
 
-  /**
-   Returns the value as an array buffer, or asserts if it is not an array buffer.
-   */
+  /// Returns the value as an array buffer, or asserts if it is not an array buffer.
   public func getArrayBuffer() -> JavaScriptArrayBuffer {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -331,9 +299,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return JavaScriptArrayBuffer(runtime, pointee.getObject(runtime.pointee).getArrayBuffer(runtime.pointee))
   }
 
-  /**
-   Returns the value as a promise, or asserts if it is not a promise.
-   */
+  /// Returns the value as a promise, or asserts if it is not a promise.
   @JavaScriptActor
   public func getPromise() throws -> JavaScriptPromise {
     guard let runtime else {
@@ -425,10 +391,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return try getPromise()
   }
 
-  /**
-   Returns the value as a `JavaScriptArrayBuffer`.
-   Throws `TypeError` if the value is not an object or not an `ArrayBuffer`.
-   */
+  /// Returns the value as a `JavaScriptArrayBuffer`.
+  /// Throws `TypeError` if the value is not an object or not an `ArrayBuffer`.
   @JavaScriptActor
   public func asArrayBuffer() throws(TypeError) -> JavaScriptArrayBuffer {
     let object = try asObject()
@@ -440,9 +404,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
 
   // MARK: - Serializing
 
-  /**
-   Returns a string representing the value. Same as calling `toString()` in JS.
-   */
+  /// Returns a string representing the value. Same as calling `toString()` in JS.
   public func toString() -> String {
     guard let jsiRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
@@ -450,61 +412,59 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return String(pointee.toString(jsiRuntime).utf8(jsiRuntime))
   }
 
-  /**
-   Converts the JavaScript value to a JSON string representation.
-
-   This method is equivalent to calling `JSON.stringify()` in JavaScript with this value
-   as the first argument. It serializes the value into a JSON-formatted string, with
-   optional control over the serialization process through the replacer and space parameters.
-
-   - Parameters:
-     - replacer: An optional function or array that alters the behavior of the stringification process.
-       - If a function: Called for each property, receiving the key and value as arguments.
-       - If an array: Only properties whose names are in the array will be included in the result.
-       - If `nil`: All properties are included.
-     - space: An optional string or number that controls the indentation and spacing in the output.
-       - If a number: Indicates the number of spaces to use for indentation (clamped to 10).
-       - If a string: Used as the indentation string (truncated to 10 characters).
-       - If `nil`: No whitespace is added, resulting in compact output.
-
-   - Returns: A JSON string representation of the value, or `nil` if the value cannot be
-     serialized (e.g., functions, symbols, or undefined values in object properties).
-
-   - Throws: An error if the serialization fails (e.g., circular references, or if a
-     replacer function throws an error).
-
-   ## Examples
-   ```swift
-   let runtime = JavaScriptRuntime()
-
-   // Simple value
-   let number = JavaScriptValue(runtime, 42)
-   try number.jsonStringify() // "42"
-
-   // Object with pretty printing
-   let obj = runtime.eval("({ name: 'Alice', age: 30 })")
-   try obj.jsonStringify(space: JavaScriptValue(runtime, 2))
-   // Returns:
-   // {
-   //   "name": "Alice",
-   //   "age": 30
-   // }
-
-   // Using a replacer to filter properties
-   let replacer = runtime.eval("['name']") // Only include 'name' property
-   try obj.jsonStringify(replacer: replacer) // {"name":"Alice"}
-
-   // Undefined returns nil
-   let undefined = JavaScriptValue.undefined
-   try undefined.jsonStringify() // nil
-   ```
-
-   - Note: For simple values (undefined, null, boolean, number) that don't have an associated
-     runtime, this method can still produce a JSON representation without invoking JavaScript's
-     `JSON.stringify()`.
-
-   - SeeAlso: [MDN: JSON.stringify()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
-   */
+  /// Converts the JavaScript value to a JSON string representation.
+  ///
+  /// This method is equivalent to calling `JSON.stringify()` in JavaScript with this value
+  /// as the first argument. It serializes the value into a JSON-formatted string, with
+  /// optional control over the serialization process through the replacer and space parameters.
+  ///
+  /// - Parameters:
+  ///   - replacer: An optional function or array that alters the behavior of the stringification process.
+  ///     - If a function: Called for each property, receiving the key and value as arguments.
+  ///     - If an array: Only properties whose names are in the array will be included in the result.
+  ///     - If `nil`: All properties are included.
+  ///   - space: An optional string or number that controls the indentation and spacing in the output.
+  ///     - If a number: Indicates the number of spaces to use for indentation (clamped to 10).
+  ///     - If a string: Used as the indentation string (truncated to 10 characters).
+  ///     - If `nil`: No whitespace is added, resulting in compact output.
+  ///
+  /// - Returns: A JSON string representation of the value, or `nil` if the value cannot be
+  ///   serialized (e.g., functions, symbols, or undefined values in object properties).
+  ///
+  /// - Throws: An error if the serialization fails (e.g., circular references, or if a
+  ///   replacer function throws an error).
+  ///
+  /// ## Examples
+  /// ```swift
+  /// let runtime = JavaScriptRuntime()
+  ///
+  /// // Simple value
+  /// let number = JavaScriptValue(runtime, 42)
+  /// try number.jsonStringify() // "42"
+  ///
+  /// // Object with pretty printing
+  /// let obj = runtime.eval("({ name: 'Alice', age: 30 })")
+  /// try obj.jsonStringify(space: JavaScriptValue(runtime, 2))
+  /// // Returns:
+  /// // {
+  /// //   "name": "Alice",
+  /// //   "age": 30
+  /// // }
+  ///
+  /// // Using a replacer to filter properties
+  /// let replacer = runtime.eval("['name']") // Only include 'name' property
+  /// try obj.jsonStringify(replacer: replacer) // {"name":"Alice"}
+  ///
+  /// // Undefined returns nil
+  /// let undefined = JavaScriptValue.undefined
+  /// try undefined.jsonStringify() // nil
+  /// ```
+  ///
+  /// - Note: For simple values (undefined, null, boolean, number) that don't have an associated
+  ///   runtime, this method can still produce a JSON representation without invoking JavaScript's
+  ///   `JSON.stringify()`.
+  ///
+  /// - SeeAlso: [MDN: JSON.stringify()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
   public func jsonStringify(replacer: JavaScriptValue? = nil, space: JavaScriptValue? = nil) throws -> String? {
     guard let runtime else {
       // Some types do not need the runtime. Handle them before crashing due to missing runtime.
@@ -521,7 +481,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
         FatalError.runtimeLost()
       }
     }
-    let value = try runtime
+    let value =
+      try runtime
       .global()
       .getPropertyAsObject("JSON")
       .getPropertyAsFunction("stringify")
@@ -596,9 +557,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
 
   // MARK: - Equality
 
-  /**
-   Tests whether two values are strictly equal, according to https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
-   */
+  /// Tests whether two values are strictly equal, according to https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
   public func isEqual(to another: JavaScriptValue) -> Bool {
     if let jsiRuntime = runtime?.pointee ?? another.runtime?.pointee {
       return facebook.jsi.Value.strictEquals(jsiRuntime, pointee, another.pointee)
@@ -620,61 +579,47 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     }
   }
 
-  /**
-   Same as `isEqual(to:)`.
-   */
+  /// Same as `isEqual(to:)`.
   public static func == (lhs: JavaScriptValue, rhs: JavaScriptValue) -> Bool {
     return lhs.isEqual(to: rhs)
   }
 
-  /**
-   Negates the result of `isEqual(to:)`.
-   */
+  /// Negates the result of `isEqual(to:)`.
   public static func != (lhs: JavaScriptValue, rhs: JavaScriptValue) -> Bool {
     return !lhs.isEqual(to: rhs)
   }
 
   // MARK: - Runtime-free initializers
 
-  /**
-   This is a lightweight way to create an undefined value that can be used in contexts
-   where a runtime is not available or needed. The resulting value can be passed to
-   JavaScript functions or used in comparisons.
-   */
+  /// This is a lightweight way to create an undefined value that can be used in contexts
+  /// where a runtime is not available or needed. The resulting value can be passed to
+  /// JavaScript functions or used in comparisons.
   public static var undefined: JavaScriptValue {
     JavaScriptValue(nil, facebook.jsi.Value.undefined())
   }
 
-  /**
-   This is a lightweight way to create a null value that can be used in contexts
-   where a runtime is not available or needed. The resulting value represents
-   JavaScript's `null`, which is distinct from `undefined`.
-   */
+  /// This is a lightweight way to create a null value that can be used in contexts
+  /// where a runtime is not available or needed. The resulting value represents
+  /// JavaScript's `null`, which is distinct from `undefined`.
   public static var null: JavaScriptValue {
     JavaScriptValue(nil, facebook.jsi.Value.null())
   }
 
-  /**
-   This is a lightweight way to create a boolean true value that can be used in contexts
-   where a runtime is not available or needed.
-   */
+  /// This is a lightweight way to create a boolean true value that can be used in contexts
+  /// where a runtime is not available or needed.
   public static func `true`() -> JavaScriptValue {
     return JavaScriptValue(nil, facebook.jsi.Value(true))
   }
 
-  /**
-   This is a lightweight way to create a boolean false value that can be used in contexts
-   where a runtime is not available or needed.
-   */
+  /// This is a lightweight way to create a boolean false value that can be used in contexts
+  /// where a runtime is not available or needed.
   public static func `false`() -> JavaScriptValue {
     return JavaScriptValue(nil, facebook.jsi.Value(false))
   }
 
-  /**
-   This is a lightweight way to create a numeric value that can be used in contexts
-   where a runtime is not available or needed. JavaScript numbers are represented
-   as double-precision floating-point values following the IEEE 754 standard.
-   */
+  /// This is a lightweight way to create a numeric value that can be used in contexts
+  /// where a runtime is not available or needed. JavaScript numbers are represented
+  /// as double-precision floating-point values following the IEEE 754 standard.
   public static func number(_ number: Double) -> JavaScriptValue {
     return JavaScriptValue(nil, facebook.jsi.Value(number))
   }
@@ -704,7 +649,8 @@ extension JavaScriptValue: JavaScriptRepresentable {
 }
 
 extension JavaScriptValue: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptValue {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptValue
+  {
     FatalError.unimplemented()
   }
 

@@ -130,16 +130,24 @@ public final class SharedObjectRegistry: Sendable {
     // Attach the C++ shared-object native state. Because `expo::SharedObject::NativeState`
     // inherits from `expo::EventEmitter::NativeState`, later `addListener` calls see an
     // existing native state (via the inheritance check) and don't overwrite it.
-    try? appContext?.runtime.withUnsafePointee { runtimePointer in
-      jsObject.asValue().withUnsafePointee { valuePointer in
-        SharedObjectUtils.setNativeState(
-          runtimePointer: runtimePointer,
-          valuePointer: UnsafeMutableRawPointer(mutating: valuePointer),
-          objectId: id,
-          releaser: delete(_:)
-        )
-      }
+    let releaser: ObjectReleaser = { [weak self] id in
+      self?.delete(id)
     }
+    let nativeState = SharedObjectNativeState(native: nativeObject) { context, deallocator in
+      return SharedObjectUtils.makeSharedObjectNativeStatePtr(
+        objectId: id,
+        releaser: releaser,
+        context: context,
+        contextDeallocator: deallocator
+      )
+    }
+    // setNativeState calls acquireShared() synchronously, which retains `nativeState`
+    // via Unmanaged.passRetained. That's the wrapper's only strong reference — once
+    // the C++ pointee dies, the contextDeallocator releases it. The local going out
+    // of scope here is intentional.
+    jsObject.setNativeState(nativeState)
+    nativeState.pairedWeakObject = jsObject.createWeak()
+    nativeObject.nativeState = nativeState
 
     return id
   }
@@ -166,6 +174,12 @@ public final class SharedObjectRegistry: Sendable {
    */
   @JavaScriptActor
   internal func toNativeObject(_ jsObject: borrowing JavaScriptObject) -> SharedObject? {
+    if let native = try? SharedObject.native(from: jsObject) {
+      return native
+    }
+    // Fallback to the id-based lookup for cases where the JS object was registered
+    // through a path that doesn't attach a `SharedObjectNativeState` (e.g. worklet
+    // proxies that currently rely on the `__expo_shared_object_id__` property).
     if let objectId = try? jsObject.getProperty(sharedObjectIdPropertyName).asInt() {
       return state.withLock { state in
         return state.pairs[objectId]?.native
@@ -196,6 +210,11 @@ public final class SharedObjectRegistry: Sendable {
    Gets the JS shared object that is paired with a given native object.
    */
   internal func toJavaScriptObject(_ nativeObject: SharedObject) -> JavaScriptObject? {
+    if let pairedObject = nativeObject.nativeState?.pairedWeakObject?.lock() {
+      return pairedObject
+    }
+    // Fallback to the id-based lookup for cases where the native object was registered
+    // through a path that doesn't attach a `SharedObjectNativeState`.
     let pair = state.withLock { state in
       return state.pairs[nativeObject.sharedObjectId]
     }

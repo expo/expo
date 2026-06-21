@@ -1,4 +1,4 @@
-import { type ExpoConfig, getConfig } from '@expo/config';
+import { type ExpoConfig, getConfig, getPlatformsFromConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import type { Reporter } from '@expo/metro/metro';
 import type Bundler from '@expo/metro/metro/Bundler';
@@ -31,6 +31,8 @@ import { events, shouldReduceLogs } from '../../../events';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
+import type DevToolsPluginManager from '../DevToolsPluginManager';
+import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
@@ -194,9 +196,15 @@ export async function loadMetroConfigAsync(
   const serverRoot = getMetroServerRoot(projectRoot);
   const isWorkspace = serverRoot !== projectRoot;
 
-  // Autolinking Module Resolution will be enabled by default when we're in a monorepo
+  // Out-of-tree platforms (tvos/macos) rely on the autolinking module resolver to remap the
+  // react-native package to their support package, and require autolinking module resolution
+  const targetsOutOfTreePlatform = getPlatformsFromConfig(projectRoot, exp).some(
+    (platform) => platform === 'tvos' || platform === 'macos'
+  );
+
+  // Autolinking Module Resolution is enabled by default in a monorepo or for out-of-tree platforms.
   const autolinkingModuleResolutionEnabled =
-    exp.experiments?.autolinkingModuleResolution ?? isWorkspace;
+    exp.experiments?.autolinkingModuleResolution ?? (isWorkspace || targetsOutOfTreePlatform);
 
   const serverActionsEnabled =
     exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
@@ -342,7 +350,12 @@ export async function instantiateMetroAsync(
     exp = getConfig(metroBundler.projectRoot, {
       skipSDKVersionRequirement: true,
     }).exp,
-  }: { isExporting: boolean; exp?: ExpoConfig }
+    devToolsPluginManager,
+  }: {
+    isExporting: boolean;
+    exp?: ExpoConfig;
+    devToolsPluginManager: DevToolsPluginManager;
+  }
 ): Promise<{
   metro: MetroServer;
   hmrServer: MetroHmrServer<MetroHmrClient> | null;
@@ -404,6 +417,25 @@ export async function instantiateMetroAsync(
 
     const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint();
     Object.assign(websocketEndpoints, devtoolsWebsocketEndpoints);
+
+    // Register WebSocket endpoints contributed by DevTools plugins. A plugin's `serverEntryPoint`
+    // exports a `webSocketHandlers` map (route -> connection handler); each becomes a `ws` server
+    // mounted at `/_expo/plugins/<name>/<route>`, reusing Metro's exact-path upgrade dispatch (and
+    // its shutdown cleanup). Endpoints must be known before the server starts, so unlike the
+    // fetch-based request handler, plugin server modules are loaded eagerly here.
+    for (const plugin of await devToolsPluginManager.queryPluginsAsync()) {
+      try {
+        for (const [route, server] of Object.entries(await plugin.getWebSocketServersAsync())) {
+          Object.assign(websocketEndpoints, {
+            [`${DevToolsPluginEndpoint}/${plugin.packageName}${route}`]: server,
+          });
+        }
+      } catch (error: any) {
+        Log.warn(
+          `Skipping WebSocket endpoints for DevTools plugin "${plugin.packageName}": ${error.message ?? error}`
+        );
+      }
+    }
   }
 
   // Attach Expo Atlas if enabled
@@ -628,7 +660,7 @@ function pruneCustomTransformOptions(
   if (typeof routerRoot === 'string') {
     const isRouterEntry = /\/expo-router\/_ctx/.test(filePath);
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
-    const isRouterModule = /\/expo-router\/build\//.test(filePath);
+    const isRouterModule = /\/expo-router\/(?:build|src)\//.test(filePath);
     // Any page/router inside the expo-router app folder may access the `routerRoot` option to determine whether it's in the app folder
     const resolvedRouterRoot = path.resolve(projectRoot, routerRoot).split(path.sep).join('/');
     const isRouterRoute = path.isAbsolute(filePath) && filePath.startsWith(resolvedRouterRoot);
@@ -643,7 +675,7 @@ function pruneCustomTransformOptions(
   if (
     transformOptions.customTransformOptions?.asyncRoutes &&
     // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
-    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
+    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/(?:build|src)\//))
   ) {
     delete transformOptions.customTransformOptions.asyncRoutes;
   }

@@ -21,9 +21,19 @@ Expo Skills are structured instruction files that teach AI agents how to build, 
 
 <Tab label="Claude Code">
 
-Run the following commands to add and install Expo Skills from the plugin marketplace:
+Run the following command to install the official Expo plugin from the `claude-plugins-official` marketplace:
 
-<Terminal cmd={['$ /plugin marketplace add expo/skills', '', '$ /plugin install expo']} />
+<Terminal cmd={['$ /plugin install expo@claude-plugins-official']} />
+
+</Tab>
+
+<Tab label="Codex">
+
+From the command line, run the following command to install the official Expo plugin:
+
+<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+
+You can also open `/plugins` in Codex and install `expo` from the `openai-curated` marketplace.
 
 </Tab>
 
@@ -110,6 +120,6 @@ Try the following prompts after installing Expo Skills. Your AI agent will autom
 <BoxLink
   title="Expo MCP Server"
   description="Companion AI tooling that gives coding agents direct access to Expo and EAS services."
-  href="/eas/ai/mcp/"
+  href="/mcp/"
   Icon={BookOpen02Icon}
 />

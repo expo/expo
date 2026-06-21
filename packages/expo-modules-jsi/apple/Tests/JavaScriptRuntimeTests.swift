@@ -1,6 +1,6 @@
-import Testing
 import ExpoModulesJSI
 import Foundation
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -281,9 +281,10 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
-    """)
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
+      """)
 
     #expect(result.getString().contains("set failed"))
   }
@@ -302,9 +303,11 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
+      """
+    ).getArray()
 
     #expect(result[0].getString() == "read only")
     #expect(result[1].getString() == "ERR_READ_ONLY")
@@ -322,9 +325,10 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo; 'no error' } catch (e) { e.message }
-    """)
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo; 'no error' } catch (e) { e.message }
+      """)
 
     #expect(result.getString().contains("get failed"))
   }
@@ -342,9 +346,11 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
+      """
+    ).getArray()
 
     #expect(result[0].getString() == "missing")
     #expect(result[1].getString() == "ERR_MISSING")
@@ -372,17 +378,19 @@ struct JavaScriptRuntimeTests {
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
     // First write throws and is caught in JS.
-    let firstAttempt = try runtime.eval("""
-      try { globalThis.hostObj.value = 1; 'no error' } catch (e) { e.message }
-    """)
+    let firstAttempt = try runtime.eval(
+      """
+        try { globalThis.hostObj.value = 1; 'no error' } catch (e) { e.message }
+      """)
     #expect(firstAttempt.getString().contains("boom"))
 
     // Subsequent write must succeed — verifies the C++ thread-local error
     // state is cleared after being rethrown, not leaked to the next call.
     shouldThrow = false
-    let secondAttempt = try runtime.eval("""
-      try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
-    """)
+    let secondAttempt = try runtime.eval(
+      """
+        try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
+      """)
     #expect(secondAttempt.getInt() == 7)
   }
 
@@ -407,10 +415,11 @@ struct JavaScriptRuntimeTests {
 
     // A failing set followed by a successful get must not surface the
     // earlier set error — checks the thread-local error slot is cleared.
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.value = 1 } catch (e) {}
-      globalThis.hostObj.ok
-    """)
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.value = 1 } catch (e) {}
+        globalThis.hostObj.ok
+      """)
 
     #expect(result.getInt() == 123)
   }
@@ -425,9 +434,10 @@ struct JavaScriptRuntimeTests {
 
     // No `set` was provided — the C++ side raises a `jsi::JSError` directly,
     // without crossing the Swift boundary.
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
-    """)
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
+      """)
     let message = result.getString()
 
     #expect(message.contains("read-only host object"))
@@ -445,23 +455,25 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
-    """)
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
+      """)
 
     #expect(result.getInt() == 7)
   }
 
   @Test
   func `host getter that calls failing JS preserves the original error`() throws {
-    try runtime.eval("""
-      globalThis.throwTagged = function () {
-        const e = new Error('inner failure');
-        e.code = 'ERR_INNER';
-        throw e;
-      };
-    """)
-    let throwTagged = runtime.global().getPropertyAsFunction("throwTagged")
+    try runtime.eval(
+      """
+        globalThis.throwTagged = function () {
+          const e = new Error('inner failure');
+          e.code = 'ERR_INNER';
+          throw e;
+        };
+      """)
+    let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged")
 
     let hostObject = runtime.createHostObject(
       get: { _ in
@@ -473,9 +485,11 @@ struct JavaScriptRuntimeTests {
     )
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
+      """
+    ).getArray()
 
     #expect(result[0].getString() == "inner failure")
     #expect(result[1].getString() == "ERR_INNER")
@@ -483,14 +497,15 @@ struct JavaScriptRuntimeTests {
 
   @Test
   func `host setter that calls failing JS preserves the original error`() throws {
-    try runtime.eval("""
-      globalThis.throwTagged = function () {
-        const e = new Error('inner setter failure');
-        e.code = 'ERR_SETTER';
-        throw e;
-      };
-    """)
-    let throwTagged = runtime.global().getPropertyAsFunction("throwTagged")
+    try runtime.eval(
+      """
+        globalThis.throwTagged = function () {
+          const e = new Error('inner setter failure');
+          e.code = 'ERR_SETTER';
+          throw e;
+        };
+      """)
+    let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged")
 
     let hostObject = runtime.createHostObject(
       get: { _ in .undefined },
@@ -500,9 +515,11 @@ struct JavaScriptRuntimeTests {
     )
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
+      """
+    ).getArray()
 
     #expect(result[0].getString() == "inner setter failure")
     #expect(result[1].getString() == "ERR_SETTER")
@@ -522,9 +539,10 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("failing", value: fn.asValue())
 
-    let result = try runtime.eval("""
-      try { failing(); 'no error' } catch (e) { e.message }
-    """)
+    let result = try runtime.eval(
+      """
+        try { failing(); 'no error' } catch (e) { e.message }
+      """)
 
     #expect(result.getString().contains("something went wrong"))
   }
@@ -541,12 +559,14 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("throwIt", value: fn.asValue())
 
-    let result = try runtime.eval("""
-      var caught = false;
-      var message = '';
-      try { throwIt(); } catch (e) { caught = true; message = e.message; }
-      [caught, message]
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        var caught = false;
+        var message = '';
+        try { throwIt(); } catch (e) { caught = true; message = e.message; }
+        [caught, message]
+      """
+    ).getArray()
 
     #expect(result[0].getBool() == true)
     #expect(result[1].getString().contains("custom error message"))
@@ -753,6 +773,22 @@ struct JavaScriptRuntimeTests {
     }
     let result = try newRuntime.eval("1 + 2")
     #expect(result.getInt() == 3)
+  }
+
+  @Test
+  func `id is equal across wrappers of the same underlying runtime`() {
+    // A second wrapper around the same underlying `jsi::Runtime` shares the runtime's identity, even
+    // though it is a distinct `JavaScriptRuntime` instance (so `===` differs). This is the guarantee
+    // `id` provides over wrapper identity.
+    let otherWrapper = runtime.withUnsafePointee { JavaScriptRuntime(unsafePointer: $0) }
+    #expect(otherWrapper.id == runtime.id)
+    #expect(otherWrapper !== runtime)
+  }
+
+  @Test
+  func `id differs between distinct runtimes`() {
+    let otherRuntime = JavaScriptRuntime()
+    #expect(otherRuntime.id != runtime.id)
   }
 }
 

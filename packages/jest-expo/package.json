@@ -31,7 +31,9 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "jest": {
     "preset": "jest-expo/universal"
@@ -65,7 +67,7 @@
     }
   },
   "devDependencies": {
-    "@react-native/jest-preset": "0.86.0-rc.2",
+    "@react-native/jest-preset": "0.86.0",
     "@types/react": "~19.2.0",
     "react-server-dom-webpack": "~19.0.6"
   }

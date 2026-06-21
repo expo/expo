@@ -90,7 +90,7 @@ describe('expo-file-system new API', () => {
       configurable: true,
       get: () => 'multipart/form-data; boundary=test',
     });
-    global.Response = ResponseMock as typeof Response;
+    global.Response = ResponseMock as unknown as typeof Response;
 
     try {
       await expect(file.formData()).resolves.toBe(formData);
@@ -196,7 +196,7 @@ describe('expo-file-system behavioral mock', () => {
     const children = dir.list();
     expect(children).toHaveLength(1);
     expect(children[0]).toBeInstanceOf(File);
-    expect(children[0].uri).toBe(file.uri);
+    expect(children[0]!.uri).toBe(file.uri);
   });
 
   it('Directory.info returns child names, size, and deterministic metadata', () => {
@@ -234,6 +234,14 @@ describe('expo-file-system behavioral mock', () => {
     file.writeSync(payload);
     expect(Array.from(file.bytesSync())).toEqual([1, 2, 3, 4, 5]);
     await expect(file.bytes()).resolves.toEqual(payload);
+  });
+
+  it('File.writeSync(ArrayBuffer) and File.bytes() roundtrip byte-for-byte', async () => {
+    const file = new File(Paths.cache, 'bin-buffer.dat');
+    const payload = Uint8Array.from([6, 7, 8, 9]).buffer;
+    file.writeSync(payload);
+    expect(Array.from(file.bytesSync())).toEqual([6, 7, 8, 9]);
+    await expect(file.bytes()).resolves.toEqual(new Uint8Array(payload));
   });
 
   it('File.writeSync with append option appends to existing bytes', () => {

@@ -4,12 +4,15 @@
   "description": "The Expo CLI",
   "main": "main.js",
   "bin": {
-    "expo-internal": "main.js"
+    "expo-internal": "bin/cli.js"
   },
   "exports": {
     "./package.json": "./package.json",
     "./static/template/*": "./static/template/*",
-    ".": "./build/bin/cli",
+    ".": {
+      "expo-source": "./src/index.ts",
+      "default": "./build/src/index.js"
+    },
     "./ts-declarations/react-server-dom-webpack": "./ts-declarations/react-server-dom-webpack/index.d.ts",
     "./ts-declarations/*": "./ts-declarations/*",
     "./*": "./*.js",
@@ -23,15 +26,16 @@
     "build"
   ],
   "scripts": {
-    "build": "taskr",
-    "prepare": "taskr release",
+    "build": "pnpm run build:cli && pnpm run build:metro-require",
+    "build:cli": "expo-build cjs:src=build/src",
+    "build:metro-require": "expo-build script:metro-require=build/metro-require",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
-    "test": "expo-module test",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
     "test:e2e": "jest --config e2e/jest.config.js",
-    "test:playwright": "playwright test --config e2e/playwright.config.ts",
-    "expo-module": "expo-module"
+    "test:playwright": "playwright test --config e2e/playwright.config.ts"
   },
   "repository": {
     "type": "git",
@@ -58,6 +62,7 @@
     "@expo/inline-modules": "workspace:^0.0.10",
     "@expo/json-file": "workspace:^10.2.0",
     "@expo/log-box": "workspace:^56.0.12",
+    "@expo/log-box-utils": "workspace:^56.0.0",
     "@expo/metro": "~56.0.0",
     "@expo/metro-config": "workspace:~56.0.13",
     "@expo/metro-file-map": "workspace:^56.0.3",
@@ -69,9 +74,9 @@
     "@expo/router-server": "workspace:^56.0.12",
     "@expo/schema-utils": "workspace:^56.0.0",
     "@expo/spawn-async": "^1.8.0",
-    "@expo/ws-tunnel": "^1.0.1",
+    "@expo/ws-tunnel": "^2.0.0",
     "@expo/xcpretty": "^4.4.4",
-    "@react-native/dev-middleware": "0.86.0-rc.2",
+    "@react-native/dev-middleware": "0.86.0",
     "accepts": "^1.3.8",
     "arg": "^5.0.2",
     "bplist-creator": "0.1.0",
@@ -107,11 +112,6 @@
     "ws": "^8.12.1",
     "zod": "^3.25.76"
   },
-  "taskr": {
-    "requires": [
-      "./taskfile-swc.js"
-    ]
-  },
   "peerDependencies": {
     "expo": "*",
     "expo-router": "*",
@@ -126,16 +126,14 @@
     }
   },
   "devDependencies": {
+    "@babel/core": "^7.20.0",
     "@expo/fingerprint": "workspace:*",
     "@expo/mcp-tunnel": "~0.2.3",
     "@expo/ngrok": "^4.1.3",
     "@jest/globals": "^29.7.0",
     "@playwright/test": "^1.59.0",
-    "@swc/core": "^1.11.11",
-    "@taskr/clear": "^1.1.0",
-    "@taskr/esnext": "^1.1.0",
-    "@taskr/watch": "^1.1.0",
     "@types/accepts": "^1.3.5",
+    "@types/babel__core": "^7.20.5",
     "@types/connect": "^3.4.33",
     "@types/cross-spawn": "^6.0.6",
     "@types/debug": "^4.1.7",
@@ -154,11 +152,12 @@
     "@types/send": "^0.17.1",
     "@types/webpack": "~4.41.32",
     "@types/webpack-dev-server": "^3.11.0",
+    "@types/react": "~19.2.0",
+    "@types/react-test-renderer": "^19.1.0",
     "@types/wrap-ansi": "^3.0.0",
     "@types/ws": "^8.5.4",
     "devtools-protocol": "^0.0.1113120",
     "expect": "^29.7.0",
-    "expo": "workspace:*",
     "expo-atlas": "^0.4.1",
     "expo-module-scripts": "workspace:*",
     "expo-modules-autolinking": "workspace:*",
@@ -170,7 +169,9 @@
     "nock": "^14.0.10",
     "node-html-parser": "^6.1.5",
     "playwright": "^1.59.0",
-    "taskr": "^1.1.0",
+    "react": "*",
+    "react-refresh": "^0.14.2",
+    "react-test-renderer": "19.2.3",
     "tree-kill": "^1.2.2"
   }
 }

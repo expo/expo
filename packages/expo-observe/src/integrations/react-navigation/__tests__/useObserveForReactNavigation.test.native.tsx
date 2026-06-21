@@ -10,14 +10,21 @@ import {
 } from '../storage';
 import { useObserveForReactNavigation } from '../useObserveForReactNavigation';
 
-jest.mock('expo-app-metrics', () => ({
-  __esModule: true,
-  default: {
-    markInteractive: jest.fn(),
-    getMainSession: jest.fn(() => ({ id: 'session-1' })),
-    addCustomMetricToSession: jest.fn(),
-  },
-}));
+jest.mock('expo-app-metrics', () => {
+  const mainSession = {
+    id: 'session-1',
+    type: 'main',
+    startDate: '2026-01-01T00:00:00.000Z',
+    addMetric: jest.fn(),
+  };
+  return {
+    __esModule: true,
+    default: {
+      markInteractive: jest.fn(),
+      getMainSession: jest.fn(() => mainSession),
+    },
+  };
+});
 
 jest.mock('../init', () => ({
   __esModule: true,
@@ -37,7 +44,6 @@ jest.mock('@react-navigation/native', () => {
     useRoute,
     useNavigation,
     useStateForPath,
-    getPathFromState: jest.fn(() => '/from-linking'),
     __useRoute: useRoute,
     __useNavigation: useNavigation,
   };
@@ -53,19 +59,10 @@ const mockUseNavigation = reactNavigationModule.__useNavigation;
 const mockUseStateForPath = reactNavigationModule.useStateForPath;
 const initModule = require('../init') as { isInitialized: jest.Mock };
 
-const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
+const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
 
 function wrapper(value: { storage: ReactNavigationIntegrationStorage } | null) {
-  const contextValue = value
-    ? {
-        storage: value.storage,
-        getPathname: (state: any) => {
-          if (!state) return undefined;
-          const route = state.routes?.[state.index ?? 0];
-          return route ? `/${route.name}` : undefined;
-        },
-      }
-    : null;
+  const contextValue = value ? { storage: value.storage } : null;
   return ({ children }: { children: ReactNode }) => (
     <ObserveReactNavigationIntegrationContext.Provider value={contextValue}>
       {children}
@@ -101,9 +98,8 @@ describe('useObserveForReactNavigation', () => {
       await result.current!();
     });
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric).toHaveBeenCalledWith({
-      sessionId: 'session-1',
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric).toHaveBeenCalledWith({
       timestamp: expect.any(String),
       category: 'navigation',
       routeName: '/A',
@@ -140,7 +136,7 @@ describe('useObserveForReactNavigation', () => {
     });
 
     expect(AppMetrics.markInteractive).not.toHaveBeenCalled();
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
     expect(storage.screenTimes['screen-a'].lastInteractiveCall).toBe(1300);
     expect(storage.interactiveScreensIds.has('screen-a')).toBe(true);
   });
@@ -153,7 +149,7 @@ describe('useObserveForReactNavigation', () => {
     await act(async () => {
       await result.current!();
     });
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
@@ -230,7 +226,7 @@ describe('useObserveForReactNavigation', () => {
     await act(async () => {
       await result.current!();
     });
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
   });
 
   it('falls back to route.name when useStateForPath returns undefined', async () => {
@@ -259,7 +255,7 @@ describe('useObserveForReactNavigation', () => {
       await result.current!();
     });
 
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
     expect(storage.screenTimes['screen-a']).toEqual({ lastInteractiveCall: 1234 });
     expect(storage.interactiveScreensIds.has('screen-a')).toBe(true);
   });

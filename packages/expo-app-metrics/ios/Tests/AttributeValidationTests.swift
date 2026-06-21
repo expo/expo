@@ -35,7 +35,7 @@ struct AttributeValidationTests {
     let result = sanitizeLogEventAttributes([
       "": "x",
       "   ": "y",
-      "valid": "z"
+      "valid": "z",
     ])
     #expect(result.droppedCount == 2)
     let attributes = try! #require(result.attributes)
@@ -48,7 +48,7 @@ struct AttributeValidationTests {
     let result = sanitizeLogEventAttributes([
       "expo.app.name": "spoofed",
       "expo.eas_client.id": "spoofed",
-      "userId": "u_42"
+      "userId": "u_42",
     ])
     #expect(result.droppedCount == 2)
     let attributes = try! #require(result.attributes)
@@ -61,7 +61,7 @@ struct AttributeValidationTests {
     let result = sanitizeLogEventAttributes([
       "event.name": "spoofed",
       "session.id": "spoofed",
-      "ok": true
+      "ok": true,
     ])
     #expect(result.droppedCount == 2)
     let attributes = try! #require(result.attributes)
@@ -89,7 +89,7 @@ struct AttributeValidationTests {
       "expoFoo": "ok",
       "expo": "ok",
       "session.idx": "ok",
-      "event.name.extra": "ok"
+      "event.name.extra": "ok",
     ])
     #expect(result.droppedCount == 0)
     let attributes = try! #require(result.attributes)
@@ -117,7 +117,7 @@ struct AttributeValidationTests {
   func `returns nil attributes when every entry is dropped`() {
     let result = sanitizeLogEventAttributes([
       "expo.foo": "x",
-      "expo.bar": "y"
+      "expo.bar": "y",
     ])
     #expect(result.attributes == nil)
     #expect(result.droppedCount == 2)
@@ -129,7 +129,7 @@ struct AttributeValidationTests {
       "": "empty-key-drop",
       "expo.foo": "namespace-drop",
       "session.id": "sdk-drop",
-      "valid": "ok"
+      "valid": "ok",
     ])
     #expect(result.droppedCount == 3)
     let attributes = try! #require(result.attributes)
