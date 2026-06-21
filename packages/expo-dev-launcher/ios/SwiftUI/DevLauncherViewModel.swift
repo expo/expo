@@ -13,6 +13,11 @@ private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 private let BONJOUR_TYPE = "_expo._tcp"
 private let networkPermissionGrantedKey = "expo.devlauncher.hasGrantedNetworkPermission"
 
+/// How often we re-resolve the currently advertised servers. Each tick re-probes
+/// every browsed endpoint's `/status`, so a server that stopped falls out of the
+/// list within one interval and a server that started is picked up just as fast.
+private let reconcileInterval: Duration = .seconds(3)
+
 enum LocalNetworkPermissionStatus: Equatable, Sendable {
   case unknown
   case checking
@@ -57,14 +62,20 @@ class DevLauncherViewModel: ObservableObject {
   @Published var isLoadingServer: Bool = false
   @Published var isLoadingLocalBundle: Bool = false
   @Published var permissionStatus: LocalNetworkPermissionStatus = .unknown
-
   @Published var devServers: [DevServer] = []
 
   private var browser: NWBrowser?
-  private var pingTask: Task<Void, Never>?
-  private var periodicRefreshTask: Task<Void, Never>?
-  private var pendingEmptyVerification = false
-  private static let refreshInterval: UInt64 = 10_000_000_000
+  private var reconcileTask: Task<Void, Never>?
+
+  /// Bumped at the start of every `reconcile()`. Reconciles can overlap (timer
+  /// tick, browse callback, pull-to-refresh), so a slower pass over a now-stale
+  /// browsed set must not publish after a newer pass has started. Each reconcile
+  /// captures this on entry and refuses to publish if it's been superseded.
+  private var reconcileGeneration = 0
+
+  /// The full set of endpoints the browser currently advertises, refreshed on
+  /// every browse callback. The reconcile loop reads this each tick.
+  private var browsedResults: [DiscoveryResult] = []
 
   #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
@@ -97,20 +108,6 @@ class DevLauncherViewModel: ObservableObject {
     loadData()
     checkAuthenticationStatus()
     checkForStoredCrashes()
-  }
-
-  private func updateDevServers(_ servers: [DevServer]) {
-    if servers.isEmpty && !devServers.isEmpty && !pendingEmptyVerification {
-      pendingEmptyVerification = true
-      stopServerDiscovery()
-      startServerDiscovery()
-      return
-    }
-    pendingEmptyVerification = false
-    if !servers.isEmpty {
-      markNetworkPermissionGranted()
-    }
-    devServers = servers.sorted(by: <)
   }
 
   private func extractPort(from url: String) -> String? {
@@ -210,66 +207,39 @@ class DevLauncherViewModel: ObservableObject {
     return runtimeVersion == structuredBuildInfo.runtimeVersion
   }
 
+  // MARK: - Dev server discovery
+  //
+  // Detection is poll-based rather than purely event-driven. `NWBrowser` only
+  // tells us when records change, and a stopped dev server often never emits an
+  // mDNS goodbye (and the simulator caches records), so the only reliable way to
+  // know a server is still up (or gone) is to keep probing its `/status`
+  // endpoint. A reconcile loop re-resolves the full browsed set on a fixed
+  // cadence: a newly started server appears within one tick, a stopped one drops
+  // out once its probe fails.
+
   func startServerDiscovery() {
-    if browser != nil {
+    // Restart unless the browser is genuinely active. A browser stuck in
+    // `.waiting`/`.failed` (e.g. after a permission grant or network change)
+    // must be recreated, otherwise discovery wedges permanently.
+    if let browser, browser.state == .ready || browser.state == .setup {
       return
     }
 
     stopServerDiscovery()
     startDevServerBrowser()
-    startPeriodicRefresh()
+    startReconcileLoop()
+  }
+
+  func stopServerDiscovery() {
+    reconcileTask?.cancel()
+    browser?.cancel()
+    reconcileTask = nil
+    browser = nil
+    browsedResults = []
   }
 
   func refreshDevServers() async {
-    await restartBrowser()
-  }
-
-  private func restartBrowser() async {
-    pingTask?.cancel()
-    browser?.cancel()
-    pingTask = nil
-    browser = nil
-    startDevServerBrowser()
-    try? await Task.sleep(nanoseconds: 3_000_000_000)
-    await pingCurrentBrowseResults()
-  }
-
-  private func pingCurrentBrowseResults() async {
-    guard let browser, !browser.browseResults.isEmpty else {
-      return
-    }
-    await pingDiscoveryResults(browser.browseResults.map { result in
-      DiscoveryResult(
-        name: NetworkUtilities.getNWBrowserResultName(result),
-        endpoint: result.endpoint
-      )
-    })
-  }
-
-  private func startPeriodicRefresh() {
-    periodicRefreshTask?.cancel()
-    periodicRefreshTask = Task { [weak self] in
-      while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: Self.refreshInterval)
-        guard !Task.isCancelled else {
-          return
-        }
-        await self?.refreshIfNeeded()
-      }
-    }
-  }
-
-  private func refreshIfNeeded() async {
-    guard let browser else {
-      return
-    }
-    if devServers.isEmpty {
-      await restartBrowser()
-    } else if browser.browseResults.isEmpty {
-      updateDevServers([])
-    } else {
-      await pingCurrentBrowseResults()
-    }
+    await reconcile()
   }
 
   func markNetworkPermissionGranted() {
@@ -281,7 +251,7 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   var hasGrantedNetworkPermission: Bool {
-    UserDefaults.standard.bool(forKey: networkPermissionGrantedKey)
+    return UserDefaults.standard.bool(forKey: networkPermissionGrantedKey)
   }
 
   func refreshPermissionStatus() {
@@ -307,7 +277,9 @@ class DevLauncherViewModel: ObservableObject {
 
       let browser = NWBrowser(for: .bonjour(type: serviceType, domain: nil), using: .tcp)
       browser.browseResultsChangedHandler = { results, _ in
-        guard !done else { return }
+        guard !done else {
+          return
+        }
         if !results.isEmpty {
           done = true
           continuation.resume(returning: true)
@@ -317,7 +289,9 @@ class DevLauncherViewModel: ObservableObject {
       }
 
       browser.stateUpdateHandler = { state in
-        guard !done else { return }
+        guard !done else {
+          return
+        }
         if case .waiting(let error) = state,
            case .dns(let dnsError) = error,
            dnsError == kDNSServiceErr_PolicyDenied {
@@ -331,7 +305,9 @@ class DevLauncherViewModel: ObservableObject {
       browser.start(queue: queue)
 
       queue.asyncAfter(deadline: .now() + 2) {
-        guard !done else { return }
+        guard !done else {
+          return
+        }
         done = true
         continuation.resume(returning: false)
         browser.cancel()
@@ -340,19 +316,7 @@ class DevLauncherViewModel: ObservableObject {
     }
   }
 
-  func stopServerDiscovery() {
-    periodicRefreshTask?.cancel()
-    pingTask?.cancel()
-    browser?.cancel()
-    periodicRefreshTask = nil
-    pingTask = nil
-    browser = nil
-  }
-
   private func startDevServerBrowser() {
-    pingTask?.cancel()
-    browser?.cancel()
-
     let params = NWParameters()
     params.includePeerToPeer = true
     params.allowLocalEndpointReuse = true
@@ -364,7 +328,9 @@ class DevLauncherViewModel: ObservableObject {
 
     browser?.stateUpdateHandler = { [weak self] state in
       Task { @MainActor [weak self] in
-        guard let self else { return }
+        guard let self else {
+          return
+        }
         switch state {
         case .waiting(let error):
           if case .dns(let dnsError) = error, dnsError == kDNSServiceErr_PolicyDenied {
@@ -381,30 +347,44 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     browser?.browseResultsChangedHandler = { [weak self] results, _ in
-      guard let self else { return }
       Task { @MainActor [weak self, results] in
-        guard let self else { return }
-        self.markNetworkPermissionGranted()
-        self.pingTask?.cancel()
-        self.pingTask = Task {
-          defer { self.pingTask = nil }
-          await self.pingDiscoveryResults(results.map { result in
-            DiscoveryResult(
-              name: NetworkUtilities.getNWBrowserResultName(result),
-              endpoint: result.endpoint
-            )
-          })
+        guard let self else {
+          return
         }
+        self.markNetworkPermissionGranted()
+        // Store the full current set (not just the delta) and resolve it right
+        // away so newly advertised servers show up without waiting a tick.
+        self.browsedResults = results.map { result in
+          DiscoveryResult(
+            name: NetworkUtilities.getNWBrowserResultName(result),
+            endpoint: result.endpoint
+          )
+        }
+        await self.reconcile()
       }
     }
 
     browser?.start(queue: DispatchQueue(label: "expo.devlauncher.discovery"))
   }
 
-  private func pingDiscoveryResults(_ results: [DiscoveryResult]) async {
-    guard !Task.isCancelled else {
-      return
+  private func startReconcileLoop() {
+    reconcileTask?.cancel()
+    reconcileTask = Task { [weak self] in
+      while !Task.isCancelled {
+        await self?.reconcile()
+        try? await Task.sleep(for: reconcileInterval)
+      }
     }
+  }
+
+  /// Re-probe every advertised endpoint and publish only the ones currently
+  /// reachable. A full replace is correct here because we resolve the entire
+  /// browsed set each pass: a stopped server fails its `/status` probe and drops
+  /// out, a started one resolves and appears.
+  private func reconcile() async {
+    reconcileGeneration += 1
+    let generation = reconcileGeneration
+    let results = browsedResults
 
     var discoveredServers: [DevServer] = []
     await withTaskGroup(of: DevServer?.self) { group in
@@ -424,10 +404,13 @@ class DevLauncherViewModel: ObservableObject {
     guard !Task.isCancelled else {
       return
     }
-
-    await MainActor.run {
-      self.updateDevServers(discoveredServers)
+    // A newer reconcile started while we were probing, so its (fresher) browsed
+    // set supersedes ours. Bail rather than overwrite it with a stale list.
+    guard generation == reconcileGeneration else {
+      return
     }
+
+    updateDevServers(discoveredServers)
   }
 
   private func resolveDevServer(_ result: DiscoveryResult) async -> DevServer? {
@@ -445,6 +428,21 @@ class DevLauncherViewModel: ObservableObject {
     } catch {}
 
     return nil
+  }
+
+  private func updateDevServers(_ servers: [DevServer]) {
+    let sorted = servers.sorted(by: <)
+    // Avoid republishing an unchanged list so the view doesn't redraw every tick.
+    // `DevServer.==` compares the url alone, so compare the displayed fields too:
+    // a server can keep its url while advertising a new name (description).
+    let unchanged = sorted.count == devServers.count
+      && zip(sorted, devServers).allSatisfy { new, old in
+        new.url == old.url && new.description == old.description && new.source == old.source
+      }
+    guard !unchanged else {
+      return
+    }
+    devServers = sorted
   }
 
   func showError(_ error: EXDevLauncherAppError) {

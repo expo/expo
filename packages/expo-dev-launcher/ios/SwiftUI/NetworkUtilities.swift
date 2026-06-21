@@ -150,7 +150,24 @@ class NetworkUtilities {
   ) async throws -> String? {
     return try await withThrowingTaskGroup(of: String?.self) { group in
       group.addTask {
-        return try await performBundlerEndpointResolution(endpoint: endpoint, queue: queue)
+        do {
+          // Prefer the interface the service was discovered on; correct on
+          // devices and multi-interface setups.
+          return try await performBundlerEndpointResolution(
+            endpoint: endpoint,
+            requiredInterface: endpoint.interface,
+            queue: queue
+          )
+        } catch {
+          // The simulator often reaches the host via NAT rather than the
+          // advertised interface, so a pinned interface never connects. Retry
+          // without the constraint before giving up.
+          return try await performBundlerEndpointResolution(
+            endpoint: endpoint,
+            requiredInterface: nil,
+            queue: queue
+          )
+        }
       }
 
       group.addTask {
@@ -166,13 +183,14 @@ class NetworkUtilities {
 
   private static func performBundlerEndpointResolution(
     endpoint: NWEndpoint,
+    requiredInterface: NWInterface?,
     queue: DispatchQueue
   ) async throws -> String? {
     let params = NWParameters.tcp
     params.includePeerToPeer = true
     params.allowLocalEndpointReuse = true
     params.preferNoProxies = true
-    params.requiredInterface = endpoint.interface
+    params.requiredInterface = requiredInterface
     params.expiredDNSBehavior = NWParameters.ExpiredDNSBehavior.allow
 
     let connection = NWConnection(to: endpoint, using: params)

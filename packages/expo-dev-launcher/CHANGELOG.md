@@ -19,6 +19,8 @@
 - [iOS] Make the development server list reliable, keep discovery running across tab switches, periodically re-verify discovered servers, add pull-to-refresh on the Home tab, and show a searching state instead of "No development servers found". ([#46811](https://github.com/expo/expo/pull/46811) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Explain why a project failed to load instead of showing a generic "Failed to connect" message. ([#46866](https://github.com/expo/expo/pull/46866) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix tvOS compile error in DevServersView. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
+- [iOS] Keep the dev server list in sync by reconciling discovery against each server's `/status` on a fixed cadence, so a server that has stopped is removed and a missed one is recovered within a few seconds. ([#47116](https://github.com/expo/expo/pull/47116) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Match the Recently Opened "online" indicator on host and port instead of port alone, so a recent app no longer shows green just because another server is running on the same port. ([#47116](https://github.com/expo/expo/pull/47116) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
