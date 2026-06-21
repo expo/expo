@@ -68,6 +68,7 @@ export interface SnippetError extends Error {
 }
 
 export interface TerminalReporterInterface {
+  // oxlint-disable-next-line typescript/no-misused-new
   new (terminal: Terminal): TerminalReporterInterface;
 
   /**

@@ -80,6 +80,7 @@ const memoLog = memoize(Log.log);
 
 async function promptForBundleIdWithInitialAsync(
   projectRoot: string,
+  // oxlint-disable-next-line oxc/only-used-in-recursion
   exp: ExpoConfig,
   bundleIdentifier?: string
 ): Promise<string> {
@@ -223,6 +224,7 @@ async function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Prom
 
 async function promptForPackageWithInitialAsync(
   projectRoot: string,
+  // oxlint-disable-next-line oxc/only-used-in-recursion
   exp: ExpoConfig,
   packageName?: string
 ): Promise<string> {

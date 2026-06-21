@@ -97,6 +97,7 @@ export default class WatchmanWatcher extends AbstractWatcher {
       this.#client.removeAllListeners();
     }
 
+    // oxlint-disable-next-line typescript/no-this-alias
     const self = this;
     this.#client = new watchman.Client();
     this.#client.on('error', (error: Error) => {
@@ -237,6 +238,7 @@ export default class WatchmanWatcher extends AbstractWatcher {
     changeDescriptor: WatchmanFileChange,
     rawClock: WatchmanSubscriptionEvent['clock']
   ) {
+    // oxlint-disable-next-line typescript/no-this-alias
     const self = this;
     const watchProjectInfo = self.#watchProjectInfo;
 

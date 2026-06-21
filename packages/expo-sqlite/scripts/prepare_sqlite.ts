@@ -31,11 +31,11 @@ async function runAsync() {
     console.log(`Copying SQLite source to ${outputDir}`);
     await fs.mkdir(outputDir, { recursive: true });
     const outputFiles = ['sqlite3.c', 'sqlite3.h'];
-    await Promise.all([
+    await Promise.all(
       outputFiles.map((file) =>
         fs.copyFile(path.join(workingDir, file), path.join(outputDir, file))
       ),
-    ]);
+    );
   } finally {
     await fs.unlink(tarballOutputPath).catch(() => {});
     await fs.rm(workingDir, { recursive: true }).catch(() => {});

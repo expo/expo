@@ -97,6 +97,7 @@ export function useWebBarcodeScanner(
     } finally {
       if (interval === 0) {
         stop();
+        // oxlint-disable-next-line no-unsafe-finally
         return;
       }
       const intervalToUse = !interval || interval < 0 ? 16 : interval;
