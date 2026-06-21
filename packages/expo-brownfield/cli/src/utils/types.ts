@@ -49,7 +49,7 @@ export interface ModuleXCFramework {
   /** Absolute path to the `<name>.xcframework` directory. */
   xcframeworkPath: string;
   /**
-   * The pod's main product name — the one that matches the `artifacts/<product>-{debug,release}.tar.gz`
+   * The pod's main product name — the one that matches the `artifacts/<product>-{debug,release}.tar.{xz,gz}`
    * tarball pattern. Differs from `name` for SPM-dependency xcframeworks (e.g. SDWebImage bundled
    * alongside ExpoImage has `name: "SDWebImage"` but `mainProduct: "ExpoImage"`).
    */

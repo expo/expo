@@ -18,8 +18,8 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 │                                                    │                        │
 │                                                    ▼                        │
 │                                   packages/precompile/.build/<pkg>/output/  │
-│                                   ├── debug/xcframeworks/<Product>.tar.gz   │
-│                                   └── release/xcframeworks/<Product>.tar.gz │
+│                                   ├── debug/xcframeworks/<Product>.tar.xz   │
+│                                   └── release/xcframeworks/<Product>.tar.xz │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
                                     │
@@ -37,7 +37,7 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 │                                     (compile from source as usual)          │
 │                                                                             │
 │   sandbox.rb hook:  patch_spec_for_prebuilt(spec)  [auto-patching]        │
-│     - Sets spec.source = {:http => "file:///...tar.gz", :flatten => false} │
+│     - Sets spec.source = {:http => "file:///...tar.xz", :flatten => false} │
 │     - Sets spec.vendored_frameworks                                        │
 │     - Strips bundled SPM dependencies                                      │
 │     - Adds script phases for build-time switching                          │
@@ -51,8 +51,8 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 │                                                                             │
 │   Result in Pods/<PodName>/:                                               │
 │     <Product>.xcframework/            (extracted by CocoaPods)             │
-│     artifacts/<Product>-debug.tar.gz  (copied by ensure_artifacts)        │
-│     artifacts/<Product>-release.tar.gz                                     │
+│     artifacts/<Product>-debug.tar.xz  (copied by ensure_artifacts)        │
+│     artifacts/<Product>-release.tar.xz                                     │
 │     artifacts/.last_build_configuration                                    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -595,7 +595,7 @@ This means **most podspecs don't need manual modification** to support precompil
 | Variable                       | Values             | Description                                    |
 | ------------------------------ | ------------------ | ---------------------------------------------- |
 | `EXPO_USE_PRECOMPILED_MODULES` | `0`, `1`           | Enable/disable precompiled modules             |
-| `EXPO_PRECOMPILED_MODULES_PATH`| path               | Custom base directory for prebuilt XCFrameworks (replaces `packages/precompile/.build/`). Structure: `<pkg>/output/<flavor>/xcframeworks/<Product>.tar.gz` |
+| `EXPO_PRECOMPILED_MODULES_PATH`| path               | Custom base directory for prebuilt XCFrameworks (replaces `packages/precompile/.build/`). Structure: `<pkg>/output/<flavor>/xcframeworks/<Product>.tar.xz` |
 | `EXPO_PRECOMPILED_FLAVOR`      | `debug`, `release` | Which XCFramework flavor to use (default: debug) |
 | `USE_FRAMEWORKS`               | `dynamic`, `static`| CocoaPods framework linking mode               |
 | `RCT_USE_PREBUILT_RNCORE`      | `1`                | Indicates prebuilt React.xcframework is active  |
@@ -615,9 +615,9 @@ packages/precompile/.build/<package-name>/    # Build artifacts (gitignored)
 │   └── <TargetName>/          # Symlinked sources
 ├── output/
 │   ├── debug/xcframeworks/
-│   │   └── <ProductName>.tar.gz   # Debug flavor tarball (source of truth)
+│   │   └── <ProductName>.tar.xz   # Debug flavor tarball (source of truth)
 │   └── release/xcframeworks/
-│       └── <ProductName>.tar.gz   # Release flavor tarball (source of truth)
+│       └── <ProductName>.tar.xz   # Release flavor tarball (source of truth)
 └── codegen/                   # React Native codegen output
 ```
 
@@ -636,8 +636,8 @@ Pods/<PodName>/
 │       ├── <ProductName>.framework/
 │       └── dSYMs/
 └── artifacts/                        # Copied by ensure_artifacts (post-install)
-    ├── <ProductName>-debug.tar.gz
-    ├── <ProductName>-release.tar.gz
+    ├── <ProductName>-debug.tar.xz
+    ├── <ProductName>-release.tar.xz
     └── .last_build_configuration     # Tracks current flavor for incremental builds
 ```
 

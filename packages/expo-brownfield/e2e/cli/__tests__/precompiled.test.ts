@@ -55,7 +55,7 @@ describe('enumeratePrecompiledModules', () => {
   it('picks up an Expo module that has both an xcframework and matching artifact tarballs', () => {
     seedPod(tmpDir, 'ExpoModulesCore', {
       xcframework: 'ExpoModulesCore',
-      tarballs: ['ExpoModulesCore-debug.tar.gz', 'ExpoModulesCore-release.tar.gz'],
+      tarballs: ['ExpoModulesCore-debug.tar.xz', 'ExpoModulesCore-release.tar.xz'],
     });
 
     const modules = enumeratePrecompiledModules(tmpDir);
@@ -66,6 +66,22 @@ describe('enumeratePrecompiledModules', () => {
       podDir: path.join(tmpDir, 'Pods', 'ExpoModulesCore'),
       xcframeworkPath: path.join(tmpDir, 'Pods', 'ExpoModulesCore', 'ExpoModulesCore.xcframework'),
     });
+  });
+
+  it('accepts both the current .tar.xz and legacy .tar.gz artifact tarballs', () => {
+    // ensure_artifacts writes .tar.xz today, but an in-place upgrade can leave a stale .tar.gz
+    // next to it; the enumerator must recognize either extension.
+    seedPod(tmpDir, 'ExpoXz', {
+      xcframework: 'ExpoXz',
+      tarballs: ['ExpoXz-release.tar.xz'],
+    });
+    seedPod(tmpDir, 'ExpoGz', {
+      xcframework: 'ExpoGz',
+      tarballs: ['ExpoGz-release.tar.gz'],
+    });
+
+    const modules = enumeratePrecompiledModules(tmpDir);
+    expect(modules.map((m) => m.name).sort()).toEqual(['ExpoGz', 'ExpoXz']);
   });
 
   it('excludes the reserved Hermes / React / ReactNativeDependencies pods', () => {

@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Recognize precompiled XCFramework artifacts compressed with xz (`.tar.xz`), in addition to the legacy `.tar.gz`, when enumerating prebuilt modules.
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26

@@ -639,7 +639,8 @@ const copySPMDependencyXCFrameworksAsync = async (
  * (present on CI/dev machines); consumers extract with libarchive's `tar -xf` and need no `xz`.
  *
  * tar and xz run as two piped processes; the archive is only considered written once tar exits
- * 0, xz exits 0, and the output file stream has flushed.
+ * 0, xz exits 0, and the output file descriptor has closed. On any failure the partial archive
+ * is removed so a later step can't mistake a truncated `.tar.xz` for a complete one.
  */
 const createXzTarballAsync = (tarballPath: string, cwd: string, entries: string[]): Promise<void> =>
   new Promise<void>((resolve, reject) => {
@@ -660,6 +661,14 @@ const createXzTarballAsync = (tarballPath: string, cwd: string, entries: string[
       settled = true;
       tar.kill();
       xz.kill();
+      // Close the output fd and delete the partial/corrupt archive so it can't be mistaken
+      // for a complete tarball by a later step or a subsequent run.
+      out.destroy();
+      try {
+        fs.removeSync(tarballPath);
+      } catch {
+        // Best-effort cleanup; the original error is what matters.
+      }
       reject(error);
     };
     const maybeResolve = () => {
@@ -713,7 +722,9 @@ const createXzTarballAsync = (tarballPath: string, cwd: string, entries: string[
       xzDone = true;
       maybeResolve();
     });
-    out.on('finish', () => {
+    // Resolve on 'close' (fd fully closed), not 'finish' (data flushed) — avoids a race where a
+    // later step reads the archive before the descriptor is released.
+    out.on('close', () => {
       outDone = true;
       maybeResolve();
     });
