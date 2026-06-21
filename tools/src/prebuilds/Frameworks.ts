@@ -638,9 +638,11 @@ const copySPMDependencyXCFrameworksAsync = async (
  * the work across all cores. The standalone `xz` binary is needed only here at build time
  * (present on CI/dev machines); consumers extract with libarchive's `tar -xf` and need no `xz`.
  *
- * tar and xz run as two piped processes; the archive is only considered written once tar exits
- * 0, xz exits 0, and the output file descriptor has closed. On any failure the partial archive
- * is removed so a later step can't mistake a truncated `.tar.xz` for a complete one.
+ * tar and xz run as two piped processes writing to a temp file; the archive is renamed into
+ * place only once tar exits 0, xz exits 0, and the output fd has closed — so a truncated
+ * `.tar.xz` can never appear at the final path (even on a crash) and be mistaken for a complete
+ * one. Pipe-level stream errors (e.g. EPIPE when xz dies before tar finishes) are funneled
+ * through the same failure path as process spawn/exit errors.
  */
 const createXzTarballAsync = (tarballPath: string, cwd: string, entries: string[]): Promise<void> =>
   new Promise<void>((resolve, reject) => {
@@ -648,7 +650,11 @@ const createXzTarballAsync = (tarballPath: string, cwd: string, entries: string[
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     const xz = spawn('xz', ['-9', '-T0', '-c'], { stdio: ['pipe', 'pipe', 'pipe'] });
-    const out = fs.createWriteStream(tarballPath);
+    // Write to a temp file and rename on success so a partial/corrupt archive can never appear
+    // at `tarballPath` (reads here go through `tar -xf` with no integrity check, so a leftover
+    // truncated file would otherwise look like a valid cache hit).
+    const tmpPath = `${tarballPath}.${process.pid}.tmp`;
+    const out = fs.createWriteStream(tmpPath);
 
     let stderr = '';
     let tarDone = false;
@@ -661,21 +667,31 @@ const createXzTarballAsync = (tarballPath: string, cwd: string, entries: string[
       settled = true;
       tar.kill();
       xz.kill();
-      // Close the output fd and delete the partial/corrupt archive so it can't be mistaken
-      // for a complete tarball by a later step or a subsequent run.
+      // Close the output fd and delete the partial temp archive. The final `tarballPath` is
+      // only ever produced by the atomic rename on success, so it's never left half-written.
       out.destroy();
       try {
-        fs.removeSync(tarballPath);
+        fs.removeSync(tmpPath);
       } catch {
         // Best-effort cleanup; the original error is what matters.
       }
       reject(error);
     };
     const maybeResolve = () => {
-      if (tarDone && xzDone && outDone && !settled) {
-        settled = true;
-        resolve();
+      if (settled || !tarDone || !xzDone || !outDone) {
+        return;
       }
+      // Publish the completed archive atomically — only a fully-written tarball reaches the
+      // final path.
+      try {
+        fs.renameSync(tmpPath, tarballPath);
+      } catch (e) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        fail(new Error(`Failed to finalize ${path.basename(tarballPath)}: ${err.message}`));
+        return;
+      }
+      settled = true;
+      resolve();
     };
 
     tar.stderr.on('data', (d) => (stderr += d));
@@ -696,6 +712,12 @@ const createXzTarballAsync = (tarballPath: string, cwd: string, entries: string[
       )
     );
     out.on('error', fail);
+    // Funnel pipe-level stream errors through fail() too. Without these, if xz dies before tar
+    // finishes (SIGPIPE/EPIPE, OOM-kill, disk full), the unhandled 'error' on the writable side
+    // throws as an uncaught exception and crashes the whole prebuild with a raw stack trace.
+    tar.stdout.on('error', fail);
+    xz.stdin.on('error', fail);
+    xz.stdout.on('error', fail);
 
     tar.stdout.pipe(xz.stdin);
     xz.stdout.pipe(out);
