@@ -252,6 +252,49 @@ describe(getNavigateAction, () => {
     expect(params.params.params.initial).toBe(false);
   });
 
+  it('withAnchor does not set initial on a navigator whose initial route is the target (self-anchor)', () => {
+    // Issue #47114: don't anchor a route to itself; it seeds a param-less duplicate.
+    const usersRoute = {
+      name: 'users',
+      state: { routes: [{ name: '[userId]', params: { userId: '1' } }] },
+    };
+    (store.linking!.getStateFromPath as jest.Mock).mockReturnValue({ routes: [usersRoute] });
+    mockFindDivergentState.mockReturnValue({
+      actionState: { routes: [usersRoute] },
+      navigationState: {
+        key: 'nav-key',
+        type: 'stack',
+        routes: [{ key: 'root-key', name: '__root' }],
+        index: 0,
+        routeNames: ['__root'],
+        stale: false,
+      },
+      // Same object as the state above so identity matching can find it.
+      actionStateRoute: usersRoute,
+      navigationRoutes: [],
+    });
+    mockGetPayload.mockReturnValue({
+      screen: 'users',
+      params: { userId: '1', screen: '[userId]', params: { userId: '1' } },
+    });
+    // Root node maps to the top level; its only child `[userId]` is the initial route.
+    (store as any).routeNode = {
+      route: 'users',
+      initialRouteName: undefined,
+      children: [{ route: '[userId]', dynamic: [{ name: 'userId', deep: false }], children: [] }],
+    };
+
+    const result = getNavigateAction('/users/1', {}, 'PUSH', true);
+
+    const params = result!.payload.params as Record<string, any>;
+    // Initial route `[userId]` is the target, so `initial` must not be set here.
+    expect(params.initial).toBeUndefined();
+    // Deeper levels with no self-anchor keep the anchor behavior.
+    expect(params.params.initial).toBe(false);
+
+    (store as any).routeNode = undefined;
+  });
+
   it('isPreviewNavigation adds preview and no-animation params', () => {
     const isPreviewNavigation = true;
     const result = getNavigateAction(

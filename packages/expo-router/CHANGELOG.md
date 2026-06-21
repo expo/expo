@@ -17,6 +17,7 @@
 - Allow async routes to rehydrate synchronously by carrying through preloaded modules preventing FOUC in production output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
 - Fix type inference for `unstable_createStandardRouterNavigator` ([#46737](https://github.com/expo/expo/pull/46737) by [@Ubax](https://github.com/Ubax))
 - Preserve a system time mocked with `jest.setSystemTime` across `renderRouter` ([#46978](https://github.com/expo/expo/pull/46978) by [@Ubax](https://github.com/Ubax))
+- Fix `withAnchor` navigation seeding a duplicate, param-less screen when a nested stack's only (initial) route is a dynamic route (e.g. `[userId]`). ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Elalfy74](https://github.com/Elalfy74))
 
 ### 💡 Others
 
