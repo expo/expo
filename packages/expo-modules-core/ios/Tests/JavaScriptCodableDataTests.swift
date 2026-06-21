@@ -20,16 +20,16 @@ struct JavaScriptCodableDataTests {
   func `decodes Data from a Uint8Array`() throws {
     let runtime = try runtime
     let value = try runtime.eval("new Uint8Array([0, 255, 16])")
-    let decoded = try Data.decode(value, appContext: appContext, runtime: runtime)
+    let decoded = try Data.decode(value, in: runtime)
     #expect(Array(decoded) == [0, 255, 16])
   }
 
   @Test
   func `encodes Data to a Uint8Array`() throws {
     let runtime = try runtime
-    let encoded = try Data.encode(Data([1, 2, 3]), appContext: appContext, runtime: runtime)
+    let encoded = try Data.encode(Data([1, 2, 3]), in: runtime)
     #expect(encoded.isTypedArray() == true)
-    let roundTripped = try Data.decode(encoded, appContext: appContext, runtime: runtime)
+    let roundTripped = try Data.decode(encoded, in: runtime)
     #expect(Array(roundTripped) == [1, 2, 3])
   }
 
@@ -37,11 +37,11 @@ struct JavaScriptCodableDataTests {
   func `round-trips empty Data`() throws {
     let runtime = try runtime
     // Exercises the `byteLength == 0` decode guard and the `count > 0` encode guard.
-    let decoded = try Data.decode(runtime.eval("new Uint8Array([])"), appContext: appContext, runtime: runtime)
+    let decoded = try Data.decode(runtime.eval("new Uint8Array([])"), in: runtime)
     #expect(decoded.isEmpty)
-    let encoded = try Data.encode(Data(), appContext: appContext, runtime: runtime)
+    let encoded = try Data.encode(Data(), in: runtime)
     #expect(encoded.isTypedArray() == true)
-    #expect(try Data.decode(encoded, appContext: appContext, runtime: runtime).isEmpty)
+    #expect(try Data.decode(encoded, in: runtime).isEmpty)
   }
 
   @Test
@@ -51,7 +51,7 @@ struct JavaScriptCodableDataTests {
     let runtime = try runtime
     let value = try runtime.eval("new Uint8Array([1, 2, 3])")
     let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [value])
-    let decoded = try Data.decode(buffer.unownedValue(at: 0), appContext: appContext, runtime: runtime)
+    let decoded = try Data.decode(buffer.unownedValue(at: 0), in: runtime)
     #expect(Array(decoded) == [1, 2, 3])
   }
 
@@ -61,10 +61,10 @@ struct JavaScriptCodableDataTests {
   func `Data decode throws on a non-Uint8Array`() throws {
     let runtime = try runtime
     #expect(throws: DataNotUint8ArrayException.self) {
-      _ = try Data.decode(runtime.eval("[1, 2, 3]"), appContext: appContext, runtime: runtime)
+      _ = try Data.decode(runtime.eval("[1, 2, 3]"), in: runtime)
     }
     #expect(throws: DataNotUint8ArrayException.self) {
-      _ = try Data.decode(runtime.eval("new Float64Array([1, 2])"), appContext: appContext, runtime: runtime)
+      _ = try Data.decode(runtime.eval("new Float64Array([1, 2])"), in: runtime)
     }
   }
 }

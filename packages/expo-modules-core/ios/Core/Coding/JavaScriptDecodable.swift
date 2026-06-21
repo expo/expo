@@ -9,9 +9,9 @@ import ExpoModulesJSI
 /// `JavaScriptCodable`.
 ///
 /// The conversion runs on the JavaScript thread; conformers are called under `@JavaScriptActor`.
-/// The `appContext` and `runtime` are both `borrowing` because the conversions only read them.
-/// A conversion that needs to store or escape the context (e.g. a shared object retaining it)
-/// makes an owned copy with `copy appContext`.
+/// The `runtime` is `borrowing` because the conversions only read it. A conversion that needs the
+/// app context recovers it from the runtime with `AppContext.from(runtime:)`; one that needs to
+/// store or escape that context makes an owned copy with `copy appContext`.
 public protocol JavaScriptDecodable {
   /// Decodes an owning `JavaScriptValue` into `Self`.
   ///
@@ -19,7 +19,7 @@ public protocol JavaScriptDecodable {
   /// correct entry point for any value that must outlive the call (stored, captured, handed to a
   /// `Promise`).
   @JavaScriptActor
-  static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Self
+  static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self
 
   /// Decodes a non-owning `JavaScriptUnownedValue` into `Self` without copying the underlying
   /// `jsi::Value`.
@@ -29,7 +29,7 @@ public protocol JavaScriptDecodable {
   /// extension below), so conformers get it for free by materializing an owning value; types that
   /// can read straight from the borrowed value override it to stay zero-copy.
   @JavaScriptActor
-  static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Self
+  static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Self
 }
 
 extension JavaScriptDecodable {
@@ -41,7 +41,7 @@ extension JavaScriptDecodable {
   /// (library-evolution) boundary instead of dispatching through the prebuilt binary.
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Self {
-    return try decode(value.copied(in: runtime), appContext: appContext, runtime: runtime)
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Self {
+    return try decode(value.copied(in: runtime), in: runtime)
   }
 }

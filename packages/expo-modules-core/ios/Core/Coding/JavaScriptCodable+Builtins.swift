@@ -14,13 +14,13 @@ import ExpoModulesJSI
 extension JavaScriptValue: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return value
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return value
   }
 }
