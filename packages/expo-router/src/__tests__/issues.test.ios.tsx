@@ -257,3 +257,29 @@ it('push withAnchor still seeds the real initial route of a nested stack with mu
   expect(screen).toHavePathname('/shop');
   expect(screen.getByTestId('shop-index')).toBeVisible();
 });
+
+it('push withAnchor seeds an anchor under a dynamic segment with its dynamic params', () => {
+  // Issue #47114: when the seeded anchor lives under a dynamic segment (e.g.
+  // `[id]/index` reached via `/posts/1/details`), the anchor must carry the
+  // dynamic param, otherwise back lands on a param-less screen.
+  renderRouter({
+    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/index': () => <Text testID="home">home</Text>,
+    '(tabs)/posts/_layout': () => <Stack />,
+    '(tabs)/posts/[id]/_layout': () => <Stack />,
+    '(tabs)/posts/[id]/index': function PostDetail() {
+      const { id } = useLocalSearchParams<{ id: string }>();
+      return <Text testID="detail">id: {id}</Text>;
+    },
+    '(tabs)/posts/[id]/details': () => <Text testID="details">details</Text>,
+  });
+
+  act(() => router.push('/posts/1/details', { withAnchor: true }));
+  expect(screen.getByTestId('details')).toBeVisible();
+
+  // Back lands on the seeded anchor, which keeps the dynamic `id` param.
+  act(() => router.back());
+
+  expect(screen).toHavePathname('/posts/1');
+  expect(screen.getByTestId('detail')).toHaveTextContent('id: 1');
+});
