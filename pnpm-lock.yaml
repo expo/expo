@@ -5809,9 +5809,9 @@ importers:
       dot:
         specifier: ^2.0.0-beta.1
         version: 2.0.0-beta.1
-      node-fetch:
-        specifier: ^2.6.1
-        version: 2.7.0(encoding@0.1.13)
+      fetch-nodeshim:
+        specifier: ^0.4.10
+        version: 0.4.10
       temp-dir:
         specifier: ~2.0.0
         version: 2.0.0
@@ -5825,9 +5825,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      '@types/node-fetch':
-        specifier: ^2.5.12
-        version: 2.6.13
       eslint-config-universe:
         specifier: workspace:*
         version: link:../eslint-config-universe
