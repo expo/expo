@@ -688,7 +688,9 @@ const createXzTarballAsync = async (
           resolve();
         } else {
           reject(
-            new Error(describe(code != null ? `exited with code ${code}` : `was terminated by ${signal}`))
+            new Error(
+              describe(code != null ? `exited with code ${code}` : `was terminated by ${signal}`)
+            )
           );
         }
       });
@@ -707,7 +709,11 @@ const createXzTarballAsync = async (
     await Promise.all([
       pipeline(tar.stdout, xz.stdin).catch(suppressPipeSymptom),
       pipeline(xz.stdout, fs.createWriteStream(tmpPath)).catch(suppressPipeSymptom),
-      childExited(tar, 'tar', (r) => `tar ${r} while archiving ${base}${tarErr ? `:\n${tarErr}` : ''}`),
+      childExited(
+        tar,
+        'tar',
+        (r) => `tar ${r} while archiving ${base}${tarErr ? `:\n${tarErr}` : ''}`
+      ),
       childExited(
         xz,
         'xz',
