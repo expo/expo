@@ -6,12 +6,9 @@ import url from 'node:url';
 import type * as ts from 'typescript';
 
 import { annotateError, formatDiagnostic } from './codeframe';
-import { createDebug } from './debug';
 import { importAsync } from './import-util';
 import { installSourceMapStackTrace } from './stacktrace';
 import { toCommonJS } from './transform';
-
-const debug = createDebug('expo:require-utils:load');
 
 declare module 'node:module' {
   export function _nodeModulePaths(base: string): readonly string[];
@@ -340,13 +337,11 @@ function evalModule(
 
 async function requireOrImport(filename: string) {
   try {
-    debug('require %s', filename);
     return require(filename);
   } catch {
     const importFilename = path.isAbsolute(filename)
       ? url.pathToFileURL(filename).toString()
       : filename;
-    debug('import %s', importFilename);
     return await importAsync(importFilename);
   }
 }
@@ -372,7 +367,6 @@ function loadModuleSync(filename: string) {
     format === 'module-typescript' || format === 'commonjs-typescript' || format === 'typescript';
   try {
     if (format !== 'module' && !isTypeScript) {
-      debug('require %s', filename);
       return require(filename);
     }
   } catch (error: any) {
@@ -394,7 +388,6 @@ function loadModuleSync(filename: string) {
   }
 
   const code = fs.readFileSync(filename, 'utf8');
-  debug('eval %s', filename);
   return evalModule(code, filename, {}, format);
 }
 
