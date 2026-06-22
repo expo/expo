@@ -103,7 +103,6 @@ export class DevToolsPlugin {
     if (!this._requestHandler) {
       this._requestHandler = await loadRequestHandlerAsync({
         packageName: this.plugin.packageName,
-        packageRoot: this.plugin.packageRoot,
         serverEntryPoint: this.plugin.serverEntryPoint,
       });
     }
@@ -127,7 +126,6 @@ export class DevToolsPlugin {
     if (!this._webSocketServers) {
       this._webSocketServers = await loadWebSocketServerAsync({
         packageName: this.plugin.packageName,
-        packageRoot: this.plugin.packageRoot,
         serverEntryPoint: this.plugin.serverEntryPoint,
       });
     }
