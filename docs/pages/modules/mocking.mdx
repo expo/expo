@@ -130,18 +130,18 @@ jest.mock('../ExpoMyModule', () => ({
 }));
 
 describe('useMyHook', () => {
-  it('calls native methods on mount and unmount', () => {
-    const hook = renderHook(useMyHook);
+  it('calls native methods on mount and unmount', async () => {
+    const hook = await renderHook(useMyHook);
     expect(ExpoMyModule.startOperation).toHaveBeenCalledTimes(1);
 
-    hook.unmount();
+    await hook.unmount();
     expect(ExpoMyModule.stopOperation).toHaveBeenCalledTimes(1);
   });
 
-  it('handles parameter changes', () => {
-    const hook = renderHook(useMyHook, { initialProps: 'param1' });
+  it('handles parameter changes', async () => {
+    const hook = await renderHook(useMyHook, { initialProps: 'param1' });
 
-    hook.rerender('param2');
+    await hook.rerender('param2');
 
     expect(ExpoMyModule.startOperation).toHaveBeenCalledTimes(2);
     expect(ExpoMyModule.stopOperation).toHaveBeenCalledTimes(1);
