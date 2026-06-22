@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
   env_vars = ENV['PROJECT_ROOT'] ? "PROJECT_ROOT=#{ENV['PROJECT_ROOT']} " : ""
   script_phase = {
     :name => 'Generate app.config for prebuilt Constants.manifest',
-    :script => "bash -l -c \"#{env_vars}$PODS_TARGET_SRCROOT/../scripts/get-app-config-ios.sh\"",
+    :script => "bash -l -c \"#{env_vars}bash '$PODS_TARGET_SRCROOT/../scripts/get-app-config-ios.sh'\"",
     :execution_position => :before_compile
   }
   # :always_out_of_date is only available in CocoaPods 1.13.0 and later
