@@ -58,6 +58,31 @@ export function getAdvertisingId(): string | null {
   return advertisingId;
 }
 
+/**
+ * Asynchronously gets the advertising ID. This is the recommended way to read the advertising ID:
+ * see [`getAdvertisingId()`](#getadvertisingid) for details on the returned value.
+ *
+ * On Android, reading the advertising ID requires a IPC call to Google Play Services.
+ * The synchronous [`getAdvertisingId()`](#getadvertisingid) can block the JavaScript thread for hundreds of milliseconds.
+ * This function offloads the lookup from the JavaScript thread
+ *
+ * @return A promise that resolves to either a UUID `string` or `null`. It resolves to `null` in the
+ * same cases described for [`getAdvertisingId()`](#getadvertisingid).
+ *
+ * @example
+ * ```ts
+ * await TrackingTransparency.getAdvertisingIdAsync();
+ * // "E9228286-4C4E-4789-9D95-15827DCB291B"
+ * ```
+ */
+export async function getAdvertisingIdAsync(): Promise<string | null> {
+  const advertisingId = await ExpoTrackingTransparency.getAdvertisingIdAsync();
+  if (advertisingId === '00000000-0000-0000-0000-000000000000') {
+    return null;
+  }
+  return advertisingId;
+}
+
 const androidAndWebPermissionsResponse: PermissionResponse = {
   granted: true,
   expires: 'never',
