@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add a `tryToLaunchLastBundle` preference backing the dev launcher auto-launch toggle.
+
 ### 🐛 Bug fixes
 
 - [iOS] Show the floating Tools button at its final position instead of animating in from the top-left corner.
