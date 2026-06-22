@@ -276,14 +276,16 @@ extension AppContextTests {
 
   @Test
   func `module provider class names preserves order and deduplicates across CFBundleName and CFBundleExecutable`() {
-    // When CFBundleName == CFBundleExecutable (already a valid identifier), only one candidate is produced.
+    // When CFBundleExecutable differs from CFBundleName (e.g. dotted bundle name), both candidates
+    // are emitted with the executable-derived one first, since it is the Swift module name by construction.
     let classNames = AppContext.moduleProviderClassNames(
       withName: "ExpoModulesProvider",
-      bundleNames: ["UniversalApp", "UniversalApp"]
+      bundleNames: ["Universal_internal", "Universal.internal"]
     )
 
     #expect(classNames == [
-      "UniversalApp.ExpoModulesProvider"
+      "Universal_internal.ExpoModulesProvider",
+      "Universal.internal.ExpoModulesProvider"
     ])
   }
 }
