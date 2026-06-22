@@ -1,23 +1,43 @@
 import { Image } from 'expo-image';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../components/Button';
 import MonoText from '../../components/MonoText';
 import { Colors } from '../../constants';
 
-export default function ImagePlaceholderScreen() {
+const CACHE_KEY = 'CUSTOM_CONSTANT_CACHE_KEY';
+
+export default function ImageCacheKeyScreen() {
   const [uri, setUri] = useState<string>(getRandomImageUri());
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  // Set while seeding so the top view's `onLoad` reports where it loaded the seeded image from.
+  const reportSeedResult = useRef<boolean>(false);
 
   const loadRandomImage = useCallback(() => {
     setIsLoading(true);
     setUri(getRandomImageUri());
   }, [uri]);
 
+  const seedCache = useCallback(async () => {
+    setIsLoading(true);
+    // Start from an empty cache so the reload below has to go through the disk cache.
+    await Image.clearDiskCache();
+    await Image.clearMemoryCache();
+
+    // Load a random image into memory and write it to the disk cache under the constant key.
+    const randomUri = getRandomImageUri();
+    const image = await Image.loadAsync({ uri: randomUri });
+    await Image.writeToCacheAsync(image, CACHE_KEY);
+
+    // Render the seeded image at the top via the cache key source and report how it loaded.
+    reportSeedResult.current = true;
+    setUri(randomUri);
+  }, []);
+
   const source = {
     uri,
-    cacheKey: 'CUSTOM_CONSTANT_CACHE_KEY',
+    cacheKey: CACHE_KEY,
   };
 
   return (
@@ -27,7 +47,14 @@ export default function ImagePlaceholderScreen() {
         source={source}
         cachePolicy="disk"
         onLoad={({ cacheType }) => {
-          if (cacheType === 'disk') {
+          if (reportSeedResult.current) {
+            reportSeedResult.current = false;
+            alert(
+              cacheType === 'disk' || cacheType === 'memory'
+                ? `Seeded image was served from the ${cacheType} cache`
+                : `Seeded image was not served from the cache (cacheType: ${cacheType})`
+            );
+          } else if (cacheType === 'disk') {
             alert('Image was loaded from the disk cache');
           }
           setIsLoading(false);
@@ -61,6 +88,21 @@ export default function ImagePlaceholderScreen() {
           style={styles.actionButton}
           title="Set random source uri"
           onPress={loadRandomImage}
+        />
+
+        <Text style={styles.text}>
+          You can also seed the cache yourself.{'\n'}
+          This clears the cache, writes a random image{'\n'}
+          to it under the constant key, renders it above,{'\n'}
+          and reports where it was loaded from{'\n'}
+          👇
+        </Text>
+
+        <Button
+          disabled={isLoading}
+          style={styles.actionButton}
+          title="Seed cache"
+          onPress={seedCache}
         />
       </ScrollView>
     </View>
