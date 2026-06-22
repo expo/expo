@@ -77,6 +77,7 @@
 - [iOS] Fix `TextField` and `SecureField` worklet `onTextChange` firing more than once per keystroke (when a change triggers reformatting) and on programmatic text updates. ([#46483](https://github.com/expo/expo/pull/46483) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `font` modifier dropping Dynamic Type scaling (`relativeTo`) and `weight` on concatenated `Text` runs. The Text-concatenation path now resolves the same `Font` as the view path. ([#46509](https://github.com/expo/expo/pull/46509) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [android] Fix universal `TextInput` ignoring `style` `backgroundColor` / `borderWidth` and not applying `textAlign` to the placeholder. ([#46441](https://github.com/expo/expo/pull/46441) by [@duyanhv](https://github.com/duyanhv))
+- [android] Fix `Switch` alignment when `label` is provided ([#47088](https://github.com/expo/expo/pull/47088) by [@rklomp](https://github.com/rklomp))
 
 ## 56.0.15 — 2026-05-29
 
