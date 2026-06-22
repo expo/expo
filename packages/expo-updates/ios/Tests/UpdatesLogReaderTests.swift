@@ -67,10 +67,15 @@ struct UpdatesLogReaderTests {
     // Use reader to retrieve messages
     let logReader = UpdatesLogReader()
 
+    // Other suites write to the same shared persistent log and run in parallel,
+    // so filter down to only the two entries written by this test before asserting on order.
     let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
+      .filter { entryString in
+        entryString.contains("Failed to load all assets") || entryString.contains("Warning message")
+      }
 
     // Verify number of log entries and decoded values
-    #expect(logEntries.count >= 2)
+    #expect(logEntries.count == 2)
 
     // Check number of entries and values in each entry
 
@@ -114,8 +119,12 @@ struct UpdatesLogReaderTests {
 
     try await Task.sleep(nanoseconds: 100_000_000)
 
-    // Use reader to retrieve messages
+    // Use reader to retrieve messages. Other suites write to the same shared persistent log
+    // and run in parallel, so filter down to only the entry written by this test.
     let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
+      .filter { entryString in
+        entryString.contains("testlabel")
+      }
 
     // Verify number of log entries and decoded values
     #expect(logEntries.count == 1)
