@@ -10,8 +10,8 @@ import ExpoModulesJSI
 /// It is the native → JS half of `JavaScriptCodable`.
 ///
 /// The conversion runs on the JavaScript thread; conformers are called under `@JavaScriptActor`.
-/// See `JavaScriptDecodable` for why `appContext` and `runtime` are both `borrowing`.
+/// See `JavaScriptDecodable` for why `runtime` is `borrowing` and how to recover the app context.
 public protocol JavaScriptEncodable {
   @JavaScriptActor
-  static func encode(_ value: Self, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue
+  static func encode(_ value: Self, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue
 }

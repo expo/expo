@@ -11,7 +11,7 @@ import ExpoModulesJSI
 extension Data: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Data {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Data {
     guard value.isTypedArray() else {
       throw DataNotUint8ArrayException()
     }
@@ -29,7 +29,7 @@ extension Data: JavaScriptCodable {
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Data, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: Data, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     let arrayBuffer = runtime.createArrayBuffer(size: value.count)
     value.withUnsafeBytes { rawBuffer in
       if let baseAddress = rawBuffer.baseAddress, value.count > 0 {
