@@ -351,7 +351,7 @@ async function requireOrImport(filename: string) {
   }
 }
 
-async function loadModule(filename: string) {
+async function loadModule<T = any>(filename: string): Promise<T> {
   try {
     return await requireOrImport(filename);
   } catch (error: any) {
