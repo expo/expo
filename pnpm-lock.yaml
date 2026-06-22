@@ -407,8 +407,8 @@ importers:
         specifier: ~19.2.2
         version: 19.2.14
       typescript:
-        specifier: ~5.9.2
-        version: 5.9.3
+        specifier: ~6.0.3
+        version: 6.0.3
 
   apps/common:
     dependencies:
@@ -14562,11 +14562,6 @@ packages:
     peerDependencies:
       typescript: 5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x || 5.7.x || 5.8.x || 5.9.x || 6.0.x
 
-  typescript@5.9.3:
-    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
   typescript@6.0.3:
     resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
@@ -17636,7 +17631,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
@@ -24299,8 +24296,6 @@ snapshots:
       minimatch: 10.2.5
       typescript: 6.0.3
       yaml: 2.8.3
-
-  typescript@5.9.3: {}
 
   typescript@6.0.3: {}
 
