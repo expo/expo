@@ -2,24 +2,31 @@
   "name": "expo-navigation-bar",
   "version": "56.0.3",
   "description": "Modify and observe the native navigation bar on Android devices.",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json",
     "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -35,9 +42,6 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/navigation-bar",
@@ -46,6 +50,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",

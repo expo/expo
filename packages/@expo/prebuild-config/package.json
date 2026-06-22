@@ -3,13 +3,15 @@
   "version": "56.0.12",
   "description": "Get the prebuild config",
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck"
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -31,7 +33,6 @@
     "build"
   ],
   "devDependencies": {
-    "@babel/cli": "^7.23.4",
     "@expo/plist": "workspace:*",
     "@types/debug": "^4.1.5",
     "@types/semver": "^7.5.8",
@@ -44,7 +45,7 @@
     "@expo/config-types": "workspace:^56.0.5",
     "@expo/image-utils": "workspace:^0.10.1",
     "@expo/json-file": "workspace:^10.2.0",
-    "@react-native/normalize-colors": "0.86.0-rc.3",
+    "@react-native/normalize-colors": "0.86.0",
     "debug": "^4.3.1",
     "expo-modules-autolinking": "workspace:~56.0.13",
     "resolve-from": "^5.0.0",

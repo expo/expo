@@ -11,8 +11,11 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))
+- [Android] Fix recording crash in apps wrapped with Microsoft Intune. ([#47005](https://github.com/expo/expo/pull/47005) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+- [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`). ([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
 
 ## 56.0.11 — 2026-05-26
 

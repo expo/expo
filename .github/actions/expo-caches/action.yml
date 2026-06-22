@@ -168,8 +168,17 @@ runs:
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: ${{ runner.temp }}/.ccache
-        key: ${{ runner.os }}-ccache-${{ hashFiles('pnpm-lock.yaml', 'packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle') }}
-        restore-keys: ${{ runner.os }}-ccache-
+        # The key is divided into two parts:
+        #
+        # PART 1 - used in key and restore-keys
+        # pnpm-lock.yaml keeps track of the react native version, which tracks the NDK version, if it changes, we need to invalidate the cache.
+        #
+        # PART 2 - used only in the exact key
+        # ccache tracks these files without any sloppiness issues.
+        # - C/C++ source files
+        # - Gradle files: see https://github.com/expo/expo/pull/44884
+        key: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle', 'apps/bare-expo/android/app/src/main/jni/pch.h') }}
+        restore-keys: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}
 
     - name: 🔍️ Get cache key of Git LFS files
       if: inputs.git-lfs == 'true'

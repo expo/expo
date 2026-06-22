@@ -26,9 +26,6 @@ public final class ObserveModule: Module {
       // which is not great as it requires the app context. Ideally if we move EAS-specific config to `expo-eas-client` at some point.
       if let manifest = getManifest(appContext), let projectId = getProjectId(manifest: manifest) {
         let baseUrl = getBaseUrl(manifest)
-        let useOpenTelemetry = getUseOpenTelemetry(manifest)
-        ObservabilityManager.setUseOpenTelemetry(useOpenTelemetry)
-        // Set the endpoint URL after enabling Open Telemetry
         ObservabilityManager.setEndpointUrl(baseUrl, projectId: projectId)
       }
     }
@@ -91,10 +88,6 @@ private func getProjectId(manifest: [String: Any]) -> String? {
 
 private func getBaseUrl(_ manifest: [String: Any]) -> String? {
   return getManifestProperty("extra.eas.observe.endpointUrl", manifest) as? String
-}
-
-private func getUseOpenTelemetry(_ manifest: [String: Any]) -> Bool? {
-  return getManifestProperty("extra.eas.observe.useOpenTelemetry", manifest) as? Bool
 }
 
 /// Traverses the manifest using a dot-separated property chain.

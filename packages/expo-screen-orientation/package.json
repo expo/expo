@@ -6,12 +6,15 @@
   "types": "build/ScreenOrientation.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -31,10 +34,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-orientation/",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

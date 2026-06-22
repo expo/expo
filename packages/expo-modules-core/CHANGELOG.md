@@ -4,14 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Removed the deprecated `AppContext.hostingRuntimeContext` property. Use `AppContext.runtime` instead. ([#46964](https://github.com/expo/expo/pull/46964) by [@wenszel](https://github.com/wenszel))
+- [Android] Removed the deprecated `AppContext.errorManager` property. Use `AppContext.jsLogger` instead. ([#46964](https://github.com/expo/expo/pull/46964) by [@wenszel](https://github.com/wenszel))
+
 ### 🎉 New features
 
 - [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added the `@Event` macro that turns a function-typed `var` on a module or shared object into a typed JavaScript event. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `@ExpoModule` now synthesizes the module's JavaScript name from the class name or its `@ExpoModule("CustomName")` argument, so a `Name(…)` definition entry is no longer required. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added `Module.emit` that sends an event directly to the module's own JavaScript object, mirroring `SharedObject.emit`. Both now share an `EventEmitter` protocol. ([#46555](https://github.com/expo/expo/pull/46555) by [@tsapeta](https://github.com/tsapeta))
 - Add `useReleasingSharedObjectWithLifecycle` hook. ([#46494](https://github.com/expo/expo/pull/46494) by [@behenate](https://github.com/behenate))
+- [iOS] Added `SharedObject.native(from:)` that recovers the native shared object paired with a JavaScript object, with a generic overload that returns the concrete subclass directly. ([#47054](https://github.com/expo/expo/pull/47054) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `Record` arguments crashing with a `NullPointerException` in R8-optimized release builds when converted through the reflection fallback path. ([#46852](https://github.com/expo/expo/pull/46852) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Keep the `Record` marker interface so its consumer ProGuard rule keeps matching after R8 optimization removes empty marker interfaces. ([#46852](https://github.com/expo/expo/pull/46852) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix `ExpoModulesProvider` lookup failing for bundle names with non-identifier characters (e.g. dots). ([#46424](https://github.com/expo/expo/pull/46424) by [@shawnthye-guru](https://github.com/shawnthye-guru))
 - [android] Add a synchronous shadow node size update path, fixing a layout shift for `Host` `matchContents` views. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `NullPointerException` crash when a `matchContents` view is unmounted while a shadow node size update is pending (e.g. closing a bottom sheet mid-resize). ([#46785](https://github.com/expo/expo/pull/46785) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Accept JS `Double` timestamps in `Date` Convertible. JS numbers arrive across the JSI bridge as Swift `Double`; the prior `as? Int` branch never matched, throwing `ConvertingException<Date>` whenever a JS caller passed `someDate.getTime()` to a `Date` / `Date?` argument. ([#46340](https://github.com/expo/expo/pull/46340) by [@kyleasaff](https://github.com/kyleasaff))
@@ -24,15 +33,23 @@
 - [Internal] Remove `EventEmitter` re-export global type indirection ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
 - [Android] Fixed Expo UI re-compose when switching screens in react-native-screens. ([#46650](https://github.com/expo/expo/pull/46650) by [@kudo](https://github.com/kudo))
 - [iOS] Fix Expo DevTools Network response bodies for JSON content types with parameters. ([#46336](https://github.com/expo/expo/pull/46336) by [@SJvaca30](https://github.com/SJvaca30))
+- [iOS] Resolve the key window across connected scenes in `currentViewController()` so it keeps working with multiple scenes, and expose `Utilities.keyWindow()` for modules to reuse. ([#46956](https://github.com/expo/expo/pull/46956) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix a crash on `Updates.reloadAsync()` where the previous `AppContext` could deallocate before the old runtime finished tearing down, releasing cached JSI objects against a dying runtime on the wrong thread. Its lifetime is now tied to the runtime via native state attached to the `global.expo` object. ([#47051](https://github.com/expo/expo/issues/47051) by [@HaiyiMei](https://github.com/HaiyiMei)) ([#47080](https://github.com/expo/expo/pull/47080), [#47098](https://github.com/expo/expo/pull/47098) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
+- Allow `react-native-worklets` `^0.9.0` in peer dependencies. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 - [Android] Make `expo-module-gradle-plugin` compatible with Android Gradle Plugin 9. ([#46769](https://github.com/expo/expo/pull/46769) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Added `JavaScriptDecodable` / `JavaScriptEncodable` (composed as `JavaScriptCodable`), a statically-dispatched, non-erasing conversion path between JavaScript and native values for Expo Modules v2, with conformances for primitives, containers, records, enumerables and `Data`. ([#46893](https://github.com/expo/expo/pull/46893) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `JavaScriptCodable` now maps `Int64`/`UInt64` to a JS `BigInt` for lossless 64-bit round-tripping, and `Int`/`UInt` throw when encoding a value outside JavaScript's safe-integer range. ([#46939](https://github.com/expo/expo/pull/46939) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `@ExpoModule` now synthesizes a `_decorateModule` that binds the module's `@JS` functions directly onto the JS object, letting the module holder skip the dynamic definition path for synthesized modules. ([#46612](https://github.com/expo/expo/pull/46612) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added the public `Exceptions.ArgumentsRangeMismatch` exception, thrown by synthesized `@JS` function bindings when a JavaScript caller passes a number of arguments outside the accepted range. ([#46901](https://github.com/expo/expo/pull/46901) by [@tsapeta](https://github.com/tsapeta))
 - Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
 - `NativeArrayBuffer` arguments no longer copy the buffer when it's already native-backed. ([#46448](https://github.com/expo/expo/pull/46448) by [@barthap](https://github.com/barthap))
 - [iOS] `SharedObject::NativeState` now derives from `expo::NativeState` so the Swift wrapper can be recovered from the JS side via `getNativeState`, laying the groundwork for native-state-based shared object lookup. ([#46330](https://github.com/expo/expo/pull/46330) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Ignore already-settled promises. ([#46770](https://github.com/expo/expo/pull/46770) by [@jakex7](https://github.com/jakex7))
+- [iOS] `SharedObject` is now paired with its JS counterpart through a `SharedObjectNativeState` attached to the JS object, so registry lookups in both directions go through the native state and fall back to the legacy id-based path. ([#46712](https://github.com/expo/expo/pull/46712) by [@tsapeta](https://github.com/tsapeta))
+- [iOS][android] Resolve the worklet UI runtime from its `react-native-worklets` holder instead of the reanimated `_WORKLET_RUNTIME` global; `installOnUIRuntime` now takes the holder from `getUIRuntimeHolder()`. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 56.0.13 — 2026-05-26
 

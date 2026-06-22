@@ -1,18 +1,10 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
-buildscript {
-  repositories {
-    google()
-    mavenCentral()
-  }
-  dependencies {
-    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
-  }
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+  id 'org.jetbrains.kotlin.plugin.compose' version "$kotlinVersion"
 }
-
-apply plugin: 'com.android.library'
-apply plugin: 'expo-module-gradle-plugin'
-apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'expo.modules.widgets'
 version = '56.0.15'
@@ -20,10 +12,15 @@ version = '56.0.15'
 def expoWidgetsPackageDirFile = project.projectDir.parentFile
 def expoWidgetsPackageDir = expoWidgetsPackageDirFile.absolutePath
 def expoWidgetsProjectRoot = rootDir.absoluteFile.parentFile.absolutePath
+def expoWidgetsLayoutRegistryConfigFile = file("$expoWidgetsProjectRoot/android/app/src/main/expo-widgets-layout-registry.config.json")
 def expoWidgetsGeneratedResDir = objects.directoryProperty()
 expoWidgetsGeneratedResDir.set(layout.buildDirectory.dir("generated/expo-widgets/res"))
 def expoWidgetsBundleOutput = expoWidgetsGeneratedResDir
   .file("raw/expo_widgets_bundle.bundle")
+  .get()
+  .asFile
+def expoWidgetsLayoutRegistryOutput = expoWidgetsGeneratedResDir
+  .file("raw/expo_widgets_layout_registry.json")
   .get()
   .asFile
 
@@ -34,16 +31,46 @@ expoModule {
   canBePublished false
 }
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
   namespace "expo.modules.widgets"
   defaultConfig {
     versionCode 1
     versionName '56.0.15'
+
+    externalNativeBuild {
+      cmake {
+        def cppArguments = [
+          "-DANDROID_STL=c++_shared",
+          "-DREACT_NATIVE_DIR=${expoModule.reactNativeDir}",
+        ]
+
+        abiFilters(*reactNativeArchitectures())
+        arguments(*cppArguments)
+      }
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
   }
 
   buildFeatures {
     prefab true
     compose true
+  }
+
+  packagingOptions {
+    excludes += [
+      "**/libc++_shared.so",
+      "**/libhermesvm.so",
+    ]
   }
 }
 
@@ -55,7 +82,7 @@ def generateExpoWidgetsBundle = tasks.register("generateExpoWidgetsBundle", Exec
   }
   inputs.file file("$expoWidgetsPackageDir/metro.config.js")
   inputs.file file("$expoWidgetsPackageDir/scripts/build-bundle.mjs")
-  outputs.dir(expoWidgetsGeneratedResDir)
+  outputs.file(expoWidgetsBundleOutput)
 
   def command = [
     *nodeExecutableAndArgs,
@@ -72,15 +99,53 @@ def generateExpoWidgetsBundle = tasks.register("generateExpoWidgetsBundle", Exec
   }
 }
 
+def generateExpoWidgetsLayoutRegistry = tasks.register("generateExpoWidgetsLayoutRegistry", Exec) {
+  description = "expo-widgets: Generate the Android widget layout registry resource."
+
+  inputs.dir project.fileTree(file("$expoWidgetsPackageDir/bundle")) {
+    exclude "build/**"
+  }
+  inputs.file file("$expoWidgetsPackageDir/layout-registry.metro.config.js")
+  inputs.file file("$expoWidgetsPackageDir/metro.config.js")
+  inputs.file file("$expoWidgetsPackageDir/scripts/build-layout-registry.mjs")
+  inputs.file file("$expoWidgetsPackageDir/bundle/layout-registry-entry.js")
+  inputs.file(expoWidgetsLayoutRegistryConfigFile).optional()
+  outputs.file(expoWidgetsLayoutRegistryOutput)
+
+  def command = [
+    *nodeExecutableAndArgs,
+    "$expoWidgetsPackageDir/scripts/build-layout-registry.mjs",
+    expoWidgetsProjectRoot,
+    "android",
+    expoWidgetsLayoutRegistryOutput.absolutePath
+  ]
+
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    commandLine("cmd", "/c", *command)
+  } else {
+    commandLine(*command)
+  }
+}
+
+def generateExpoWidgetsResources = tasks.register("generateExpoWidgetsResources") {
+  dependsOn(generateExpoWidgetsBundle, generateExpoWidgetsLayoutRegistry)
+  outputs.dir(expoWidgetsGeneratedResDir)
+}
+
 androidComponents {
   onVariants(selector().all()) { variant ->
-    variant.sources.res.addGeneratedSourceDirectory(generateExpoWidgetsBundle) {
+    variant.sources.res.addGeneratedSourceDirectory(generateExpoWidgetsResources) {
       expoWidgetsGeneratedResDir
     }
   }
 }
 
 dependencies {
+  implementation 'com.facebook.react:react-android'
+  implementation 'com.facebook.react:hermes-android'
+  implementation expoModule.getExpoDependency("expo-ui")
+  implementation 'androidx.compose.foundation:foundation-android:1.10.6'
+  implementation 'androidx.compose.ui:ui-android:1.10.6'
   api 'androidx.glance:glance:1.2.0-rc01'
   api 'androidx.glance:glance-appwidget:1.2.0-rc01'
 }

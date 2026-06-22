@@ -196,15 +196,6 @@ export type LogEventOptions = {
 
 export type SessionType = 'main' | 'foreground' | 'screen' | 'custom' | 'unknown';
 
-export type CrashKind =
-  | 'badAccess'
-  | 'fatalError'
-  | 'divideByZero'
-  | 'forceUnwrapNil'
-  | 'arrayOutOfBounds'
-  | 'objcException'
-  | 'stackOverflow';
-
 /**
  * Payload accepted by `Session.addMetric`. The owning session is implied by the
  * receiver, so the input carries every `Metric` field except `sessionId`.
@@ -466,27 +457,19 @@ export interface ExpoAppMetricsModuleType {
   getInactiveSessions(): Promise<DebugSession[]>;
 
   /**
-   * Simulates a crash report, attributing it to the current main session.
-   * Intended for development and debugging only.
+   * Reports an unhandled JavaScript error captured by the JS-side `global.ErrorUtils`
+   * handler, recorded natively as an `exception` log event following OpenTelemetry's
+   * exception conventions. Called by `installErrorHandler`; not intended to be called directly.
    *
    * @private This API is unstable and may change without notice.
-   * @platform ios
    */
-  simulateCrashReport(): void;
-
-  /**
-   * Intentionally crashes the app to produce a real MetricKit diagnostic.
-   * Intended for development and debugging only.
-   *
-   * @private This API is unstable and may change without notice.
-   * @platform ios
-   */
-  triggerCrash(kind: CrashKind): void;
-
-  /**
-   * @private This API is unstable and may change without notice.
-   */
-  addCustomMetricToSession(metric: Metric): Promise<void>;
+  reportError(error: {
+    source: string;
+    type?: string;
+    message: string;
+    stacktrace?: string;
+    isFatal: boolean;
+  }): void;
 
   /**
    * Returns the main session — the per-launch session that tracks the entire

@@ -5,18 +5,25 @@
   "main": "build/withBuildProperties.js",
   "types": "build/withBuildProperties.d.ts",
   "exports": {
-    ".": "./build/withBuildProperties.js",
-    "./plugin": "./build/index.js",
+    ".": {
+      "expo-source": "./src/withBuildProperties.ts",
+      "default": "./build/withBuildProperties.js"
+    },
+    "./plugin": {
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
     "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",

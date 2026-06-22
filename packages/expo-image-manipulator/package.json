@@ -2,16 +2,17 @@
   "name": "expo-image-manipulator",
   "version": "56.0.15",
   "description": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",
@@ -29,6 +30,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/imagemanipulator/",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "dependencies": {
     "expo-image-loader": "workspace:~56.0.3"
   },
@@ -38,5 +42,16 @@
   },
   "peerDependencies": {
     "expo": "*"
+  },
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
   }
 }

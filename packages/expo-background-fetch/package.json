@@ -6,12 +6,14 @@
   "types": "build/BackgroundFetch.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "expo",
@@ -35,6 +37,7 @@
     "expo-task-manager": "workspace:~56.0.15"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

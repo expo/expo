@@ -31,6 +31,11 @@ jobs:
           pnpm-docs: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🛠 Build expotools
+        run: pnpm turbo build --filter expotools...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🧐 Check diffs
         run: |
           echo "Checking that expo-template-bare-minimum diffs are updated"

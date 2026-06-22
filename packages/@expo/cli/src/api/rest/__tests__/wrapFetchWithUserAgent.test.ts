@@ -63,7 +63,7 @@ describe(wrapFetchWithUserAgent, () => {
   it('adds user-agent with header array', async () => {
     const fetch = jest.fn();
     const wrapped = wrapFetchWithUserAgent(fetch);
-    const headers = [['Authorization', 'bearer some-token']];
+    const headers: [string, string][] = [['Authorization', 'bearer some-token']];
 
     await wrapped('https://example.com', { headers });
 
@@ -80,7 +80,7 @@ describe(wrapFetchWithUserAgent, () => {
   it('adds user-agent with header array with existing user-agent', async () => {
     const fetch = jest.fn();
     const wrapped = wrapFetchWithUserAgent(fetch);
-    const headers = [
+    const headers: [string, string][] = [
       ['Authorization', 'bearer some-token'],
       ['User-Agent', 'test'],
     ];

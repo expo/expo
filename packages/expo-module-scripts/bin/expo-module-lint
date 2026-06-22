@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import fs from 'node:fs';
 import path from 'node:path';
 import { commandRunner, getArgs } from '../utils/commandUtils.js';
 import { fileURLToPath } from 'node:url';
@@ -16,7 +17,17 @@ if (EXTRA_MODULE_BUILD_TARGETS.includes(args[0])) {
   const target = args[0];
   args = [...args.slice(1), `${target}/src`];
 } else {
-  args = [...args, 'src'];
+  // By default, lint `src` plus each build sub-target's `src` (e.g. `plugin/src`, `cli/src`)
+  // that exists, so a single `lint` task covers the whole package in one ESLint invocation.
+  // Mirrors the composite `test` task that runs every sub-folder's tests at once.
+  const cwd = process.cwd();
+  const targets = ['src'];
+  for (const target of EXTRA_MODULE_BUILD_TARGETS) {
+    if (fs.existsSync(path.join(cwd, target, 'src'))) {
+      targets.push(`${target}/src`);
+    }
+  }
+  args = [...args, ...targets];
 }
 
 await commandRunner(path.join(dirname, 'expo-module-eslint'), args);

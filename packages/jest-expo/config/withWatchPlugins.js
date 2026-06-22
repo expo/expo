@@ -21,6 +21,18 @@ function getWatchPlugins({ projects = [] } = {}) {
 
 function withWatchPlugins({ watchPlugins = [], ...config }) {
   const customPlugins = getWatchPlugins(config);
+  if (Array.isArray(config.projects)) {
+    let projectsWantPass = false;
+    config.projects = config.projects.map((project) => {
+      if (project && typeof project === 'object' && 'passWithNoTests' in project) {
+        const { passWithNoTests, ...rest } = project;
+        projectsWantPass ||= passWithNoTests;
+        return rest;
+      }
+      return project;
+    });
+    config.passWithNoTests ??= projectsWantPass;
+  }
   return {
     ...config,
     watchPlugins: [...watchPlugins, ...customPlugins],

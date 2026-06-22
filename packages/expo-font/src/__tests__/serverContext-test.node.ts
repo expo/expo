@@ -1,7 +1,6 @@
 import { addServerFont, getServerResourceDescriptors, withServerContext } from '../serverContext';
 
 const fontA = { name: 'A', css: '@font-face{font-family:"A"}', resourceId: 'a.ttf' };
-const fontB = { name: 'B', css: '@font-face{font-family:"B"}', resourceId: 'b.ttf' };
 
 it('throws when font registry is read or written outside a scope', () => {
   expect(() => addServerFont(fontA)).toThrow(/outside of withServerContext/);

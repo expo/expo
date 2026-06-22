@@ -6,8 +6,8 @@ import type { NavigatorArgs } from 'standard-navigation';
 
 import type {
   IntegrateWithRouterOptions,
+  NavigatorContentProps,
   StandardNavigator,
-  StandardNavigatorContentProps,
   StandardNavigatorEventMapBase,
   StandardRouterNavigatorProps,
   StandardUseNavigationBuilderOptions,
@@ -26,7 +26,12 @@ import {
   type RouterFactory,
 } from '../react-navigation/native';
 
-export type { IntegrateWithRouterOptions, StandardUseNavigationBuilderOptions } from './types';
+export type {
+  IntegrateWithRouterOptions,
+  NavigatorContentProps,
+  StandardNavigatorEventMapBase,
+  StandardUseNavigationBuilderOptions,
+} from './types';
 
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
@@ -58,7 +63,7 @@ export function unstable_createStandardRouterNavigator<
   RouterOptions extends DefaultRouterOptions,
 >(
   NavigatorContent: ComponentType<
-    StandardNavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps>
+    NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps>
   >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
   options?: IntegrateWithRouterOptions<State, NavigatorProps>

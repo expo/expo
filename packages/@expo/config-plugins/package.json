@@ -6,32 +6,63 @@
   "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./build/android": {
-      "types": "./build/android/index.d.ts",
+      "types": {
+        "expo-source": "./src/android/index.ts",
+        "default": "./build/android/index.d.ts"
+      },
+      "expo-source": "./src/android/index.ts",
       "default": "./build/android/index.js"
     },
     "./build/ios": {
-      "types": "./build/ios/index.d.ts",
+      "types": {
+        "expo-source": "./src/ios/index.ts",
+        "default": "./build/ios/index.d.ts"
+      },
+      "expo-source": "./src/ios/index.ts",
       "default": "./build/ios/index.js"
     },
     "./build": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
-    "./build/*.js": "./build/*.js",
-    "./build/*": "./build/*.js",
+    "./build/*.js": {
+      "types": {
+        "expo-source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "expo-source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./build/*": {
+      "types": {
+        "expo-source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "expo-source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\",\"src/**/__integration_tests__/*\"",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck"
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -69,12 +100,12 @@
     "xml2js": "0.6.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.4",
     "@types/debug": "^4.1.5",
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.7.0",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
   },
   "publishConfig": {
     "access": "public"

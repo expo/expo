@@ -78,7 +78,8 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
         open={isOpen}
         onToggle={event => {
           setIsOpen(event.currentTarget.open);
-        }}>
+        }}
+        data-md="prerequisites">
         <summary
           className={mergeClasses(
             'group m-0 flex cursor-pointer items-center justify-between rounded-md p-1.5 py-3 pr-4',
@@ -117,7 +118,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             </LinkBase>
           </div>
           <div>
-            <p className="text-sm text-secondary">
+            <p className="text-sm text-secondary" data-md="skip">
               {numberOfRequirements}{' '}
               {intl.formatMessage({
                 id:
@@ -141,7 +142,9 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
                 key={index}
                 className={mergeClasses('flex items-baseline gap-1.5 border-t border-default p-5')}>
                 {numberOfRequirements > 1 && (
-                  <p className="mb-2 text-right font-medium">{index + 1}.</p>
+                  <p className="mb-2 text-right font-medium" data-md="skip">
+                    {index + 1}.
+                  </p>
                 )}
                 {child}
               </div>

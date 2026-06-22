@@ -6,18 +6,23 @@
   "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "typecheck": "expo-module typecheck"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",

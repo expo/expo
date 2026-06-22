@@ -3,14 +3,26 @@
   "version": "10.2.0",
   "description": "A module for reading, writing, and manipulating JSON files",
   "main": "build/JsonFile.js",
+  "types": "build/JsonFile.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/JsonFile.ts",
+        "default": "./build/JsonFile.d.ts"
+      },
+      "expo-source": "./src/JsonFile.ts",
+      "default": "./build/JsonFile.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch --preserveWatchOutput"
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -34,6 +46,7 @@
   },
   "devDependencies": {
     "@types/babel__code-frame": "^7.27.0",
+    "@types/jest": "^29.2.1",
     "@types/json5": "^2.2.0",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",

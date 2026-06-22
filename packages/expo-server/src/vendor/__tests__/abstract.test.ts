@@ -131,7 +131,7 @@ describe(createRequestHandler, () => {
       };
 
       const loaderData = { message: 'Hello from loader', count: 42 };
-      const getLoaderData = jest.fn(async () => Response.json(loaderData));
+      const getLoaderData = jest.fn(async (request: Request) => Response.json(loaderData));
 
       const handler = createRequestHandler({
         getRoutesManifest: jest.fn(async () => manifest),
@@ -144,7 +144,7 @@ describe(createRequestHandler, () => {
       const request = new Request('http://localhost/_expo/loaders/second');
       const response = await handler(request);
 
-      const [loaderRequest] = getLoaderData.mock.calls[0];
+      const [loaderRequest] = getLoaderData.mock.calls[0]!;
       expect(response.status).toBe(200);
       expect(response.headers.get('Content-Type')).toBe('application/json');
       expect(await response.json()).toEqual(loaderData);
@@ -168,7 +168,7 @@ describe(createRequestHandler, () => {
         rewrites: [],
       };
 
-      const getLoaderData = jest.fn(async () => Response.json({}));
+      const getLoaderData = jest.fn(async (request: Request) => Response.json({}));
 
       const handler = createRequestHandler({
         getRoutesManifest: jest.fn(async () => manifest),
@@ -181,7 +181,7 @@ describe(createRequestHandler, () => {
       const request = new Request('http://localhost/_expo/loaders/about?foo=bar');
       await handler(request);
 
-      const [loaderRequest] = getLoaderData.mock.calls[0];
+      const [loaderRequest] = getLoaderData.mock.calls[0]!;
       expect(new URL(loaderRequest.url).pathname).toBe('/about');
       expect(new URL(loaderRequest.url).search).toBe('?foo=bar');
     });
@@ -217,7 +217,7 @@ describe(createRequestHandler, () => {
         rewrites: [],
       };
 
-      const getLoaderData = jest.fn(async () => Response.json('loaded'));
+      const getLoaderData = jest.fn(async (request: Request) => Response.json('loaded'));
 
       const handler = createRequestHandler({
         getRoutesManifest: jest.fn(async () => manifest),
@@ -229,19 +229,19 @@ describe(createRequestHandler, () => {
 
       let request = new Request('http://localhost/_expo/loaders/posts/123');
       let response = await handler(request);
-      const [singleParamRequest] = getLoaderData.mock.calls[0];
+      const [singleParamRequest] = getLoaderData.mock.calls[0]!;
       expect(response.status).toBe(200);
       expect(new URL(singleParamRequest.url).pathname).toBe('/posts/123');
 
       request = new Request('http://localhost/_expo/loaders/users/123/posts/456');
       response = await handler(request);
-      const [nestedParamsRequest] = getLoaderData.mock.calls[1];
+      const [nestedParamsRequest] = getLoaderData.mock.calls[1]!;
       expect(response.status).toBe(200);
       expect(new URL(nestedParamsRequest.url).pathname).toBe('/users/123/posts/456');
 
       request = new Request('http://localhost/_expo/loaders/docs/foo/bar/baz/quud');
       response = await handler(request);
-      const [catchAllRequest] = getLoaderData.mock.calls[2];
+      const [catchAllRequest] = getLoaderData.mock.calls[2]!;
       expect(response.status).toBe(200);
       expect(new URL(catchAllRequest.url).pathname).toBe('/docs/foo/bar/baz/quud');
     });
@@ -294,7 +294,7 @@ describe(createRequestHandler, () => {
       };
 
       const getHtml = jest.fn(async () => '<html>Second Page</html>');
-      const getLoaderData = jest.fn(async () => Response.json('loader'));
+      const getLoaderData = jest.fn(async (request: Request) => Response.json('loader'));
 
       const handler = createRequestHandler({
         getRoutesManifest: jest.fn(async () => manifest),
@@ -332,7 +332,7 @@ describe(createRequestHandler, () => {
       };
 
       const loaderData = { message: 'Index loader data' };
-      const getLoaderData = jest.fn(async () => Response.json(loaderData));
+      const getLoaderData = jest.fn(async (request: Request) => Response.json(loaderData));
 
       const handler = createRequestHandler({
         getRoutesManifest: jest.fn(async () => manifest),
@@ -349,7 +349,7 @@ describe(createRequestHandler, () => {
       expect(response.headers.get('Content-Type')).toBe('application/json');
       expect(await response.json()).toEqual(loaderData);
 
-      const [loaderRequest] = getLoaderData.mock.calls[0];
+      const [loaderRequest] = getLoaderData.mock.calls[0]!;
       expect(new URL(loaderRequest.url).pathname).toBe('/');
     });
 
@@ -371,7 +371,7 @@ describe(createRequestHandler, () => {
       };
 
       const loaderData = { page: 'nested' };
-      const getLoaderData = jest.fn(async () => Response.json(loaderData));
+      const getLoaderData = jest.fn(async (request: Request) => Response.json(loaderData));
 
       const handler = createRequestHandler({
         getRoutesManifest: jest.fn(async () => manifest),
@@ -387,7 +387,7 @@ describe(createRequestHandler, () => {
       expect(response.status).toBe(200);
       expect(await response.json()).toEqual(loaderData);
 
-      const [loaderRequest] = getLoaderData.mock.calls[0];
+      const [loaderRequest] = getLoaderData.mock.calls[0]!;
       expect(new URL(loaderRequest.url).pathname).toBe('/nested/');
     });
   });

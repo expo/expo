@@ -3,29 +3,38 @@
   "title": "Expo Observe",
   "version": "56.0.16",
   "description": "Expo module that dispatches collected app metrics to EAS Observe",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     "./integrations/react-navigation": {
-      "types": "./build/integrations/react-navigation/index.d.ts",
-      "default": "./src/integrations/react-navigation/index.ts"
+      "types": {
+        "expo-source": "./src/integrations/react-navigation/index.ts",
+        "default": "./build/integrations/react-navigation/index.d.ts"
+      },
+      "expo-source": "./src/integrations/react-navigation/index.ts",
+      "default": "./build/integrations/react-navigation/index.js"
     }
   },
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "swift:format": "../../scripts/swift-format.sh",
     "swift:lint": "../../scripts/swift-format.sh --lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "homepage": "https://docs.expo.dev/",
   "repository": {

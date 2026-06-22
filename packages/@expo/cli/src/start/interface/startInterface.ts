@@ -52,7 +52,7 @@ export async function startInterfaceAsync(
     ...options,
   };
 
-  actions.printDevServerInfo(usageOptions);
+  await actions.printDevServerInfoAsync(usageOptions);
 
   const onPressAsync = async (key: string) => {
     // Auxillary commands all escape.
@@ -147,7 +147,7 @@ export async function startInterfaceAsync(
         Log.clear();
         if (await devServerManager.toggleRuntimeMode()) {
           usageOptions.devClient = devServerManager.options.devClient;
-          actions.printDevServerInfo(usageOptions);
+          await actions.printDevServerInfoAsync(usageOptions);
           return;
         }
         break;
@@ -176,7 +176,7 @@ export async function startInterfaceAsync(
           debug('Starting up webpack dev server');
           await devServerManager.ensureWebDevServerRunningAsync();
           // When this is the first time webpack is started, reprint the connection info.
-          actions.printDevServerInfo(usageOptions);
+          await actions.printDevServerInfoAsync(usageOptions);
         }
 
         Log.log(`${BLT} Open in the web browser...`);
@@ -192,7 +192,7 @@ export async function startInterfaceAsync(
       }
       case 'c':
         Log.clear();
-        actions.printDevServerInfo(usageOptions);
+        await actions.printDevServerInfoAsync(usageOptions);
         return;
       case 'j':
         return actions.openJsInspectorAsync();

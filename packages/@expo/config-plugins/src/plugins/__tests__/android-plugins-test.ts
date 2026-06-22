@@ -1,4 +1,4 @@
-import type { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';

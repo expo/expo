@@ -874,6 +874,43 @@ jobs:
 
 </Collapsible>
 
+## Branch delete
+
+Delete an [EAS Update](/eas-update/introduction/) branch in the current project. The same as [`eas branch:delete`](/eas-update/eas-cli/#delete-a-branch). Pass the EAS Update branch name in `branch_name`.
+
+### Syntax
+
+```yaml
+jobs:
+  delete_branch:
+    type: branch-delete
+    params:
+      branch_name: string # required
+      fail_on_missing: boolean # optional, default: false
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter       | Type    | Description                                                                                                                                                    |
+| --------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| branch_name     | string  | Required. Name of the EAS Update branch to delete.                                                                                                             |
+| fail_on_missing | boolean | If `false`, the job succeeds when the branch does not exist. If `true`, the job fails with a validation error when the branch is missing. Defaults to `false`. |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output      | Type   | Description                                                                                       |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------- |
+| branch_id   | string | UUID of the deleted branch, or `null` if the branch was missing and `fail_on_missing` is `false`. |
+| branch_name | string | The branch name from `params.branch_name`.                                                        |
+
+### Examples
+
+See [Clean up update branches example](/eas/workflows/examples/branch-cleanup) for a workflow that uses [`on.ref_delete`](/eas/workflows/syntax/#onref_delete) with the `branch-delete` job.
+
 ## Maestro
 
 Run Maestro tests on an Android Emulator or iOS Simulator build.
@@ -1267,11 +1304,11 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter   | Type   | Description                                                                                                                                                                |
-| ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| webhook_url | string | Required. The Slack webhook URL to send the message to. Currently only hardcoded strings are supported. Using webhooks stored in `env` are upcoming but not yet supported. |
-| message     | string | Required if payload is not provided. The message to send.                                                                                                                  |
-| payload     | object | Required if message is not provided. The [Slack Block Kit](https://docs.slack.dev/block-kit) payload to send.                                                              |
+| Parameter   | Type   | Description                                                                                                                                                                                 |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| webhook_url | string | Required. The Slack webhook URL to send the message to. Use an [environment variable](/eas/environment-variables/manage/#manage-environment-variables) with `${{ env.SLACK_WEBHOOK_URL }}`. |
+| message     | string | Required if payload is not provided. The message to send.                                                                                                                                   |
+| payload     | object | Required if message is not provided. The [Slack Block Kit](https://docs.slack.dev/block-kit) payload to send.                                                                               |
 
 ### Examples
 
@@ -1279,7 +1316,7 @@ Here are some practical examples of using the Slack job:
 
 <Collapsible summary="Basic build notification">
 
-This workflow builds an iOS app and then sends a notification with the app identifier and version from the build job outputs.
+This workflow builds an iOS app and then sends a notification with the app identifier and version from the build job outputs. The webhook URL is read from a `SLACK_WEBHOOK_URL` [environment variable](/eas/environment-variables/manage/#manage-environment-variables) set in the job's `environment`.
 
 ```yaml .eas/workflows/slack-build-notification.yml
 name: Build Notification
@@ -1296,8 +1333,9 @@ jobs:
     name: Notify Build Status
     needs: [build_ios]
     type: slack
+    environment: production
     params:
-      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       message: 'Build completed for app ${{ needs.build_ios.outputs.app_identifier }} (version ${{ needs.build_ios.outputs.app_version }})'
 ```
 
@@ -1322,8 +1360,9 @@ jobs:
     name: Notify Build Status
     needs: [build_android]
     type: slack
+    environment: production
     params:
-      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       payload:
         blocks:
           - type: header
@@ -1689,8 +1728,9 @@ jobs:
   notify_slack:
     needs: [register_device]
     type: slack
+    environment: production
     params:
-      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       message: 'Registered device ${{ needs.register_device.outputs.identifier }} (${{ needs.register_device.outputs.model }})'
 ```
 

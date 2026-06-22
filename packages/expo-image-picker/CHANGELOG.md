@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [ios] Fix broken bounds when cropping images when launching with `launchCameraAsync`. ([#45554](https://github.com/expo/expo/pull/45554) by [@behenate](https://github.com/behenate))
+- [Android] Grant the camera app explicit access to the output URI, so image capture keeps working as Android removes the implicit URI grant for `ACTION_IMAGE_CAPTURE`. ([#46954](https://github.com/expo/expo/pull/46954) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

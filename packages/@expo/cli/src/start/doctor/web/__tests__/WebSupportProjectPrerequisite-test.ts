@@ -22,7 +22,7 @@ jest.mock('@expo/config', () => ({
 }));
 
 async function expectThrowsErrorStrippedMessageMatching(fn: Function, test: RegExp) {
-  let error;
+  let error: unknown;
   try {
     await fn();
   } catch (e) {
@@ -31,7 +31,7 @@ async function expectThrowsErrorStrippedMessageMatching(fn: Function, test: RegE
   if (error === undefined) {
     throw new Error('did not throw');
   }
-  expect(stripAnsi(error.message)).toMatch(test);
+  expect(stripAnsi((error as Error).message)).toMatch(test);
 }
 
 describe(isWebPlatformExcluded, () => {

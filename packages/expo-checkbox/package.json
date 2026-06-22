@@ -5,12 +5,13 @@
   "main": "build/Checkbox.js",
   "types": "build/Checkbox.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",

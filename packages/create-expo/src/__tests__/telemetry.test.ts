@@ -59,9 +59,9 @@ describe('telemetry', () => {
       await flushAsync();
       expect(fetchAsMock.mock.calls.length).toEqual(1);
       const [fetchRequestArgs] = fetchAsMock.mock.calls;
-      const [url, request] = fetchRequestArgs;
+      const [url, request] = fetchRequestArgs!;
       expect(url).toEqual('https://cdp.expo.dev/v1/batch');
-      const { body } = request;
+      const { body } = request!;
       expect(request).toEqual(
         expect.objectContaining({
           headers: {
@@ -172,9 +172,9 @@ describe('telemetry', () => {
       await flushAsync();
       expect(fetchAsMock.mock.calls.length).toEqual(1);
       const [fetchRequestArgs] = fetchAsMock.mock.calls;
-      const [url, request] = fetchRequestArgs;
+      const [url, request] = fetchRequestArgs!;
       expect(url).toEqual('https://cdp.expo.dev/v1/batch');
-      const { body } = request;
+      const { body } = request!;
       expect(request).toEqual(
         expect.objectContaining({
           headers: {
@@ -260,8 +260,8 @@ describe('telemetry', () => {
       await flushAsync();
       expect(fetchAsMock.mock.calls.length).toEqual(1);
       const [fetchRequestArgs] = fetchAsMock.mock.calls;
-      const [, request] = fetchRequestArgs;
-      const { batch }: { batch: any[] } = JSON.parse(String(request.body));
+      const [, request] = fetchRequestArgs!;
+      const { batch }: { batch: any[] } = JSON.parse(String(request!.body));
       batch.every(
         (message) =>
           message.anonymousId === existingAnonymousId && message.userId === existingUserId

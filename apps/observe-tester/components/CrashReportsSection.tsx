@@ -1,7 +1,7 @@
-import AppMetrics, { type CrashKind } from 'expo-app-metrics';
 import { StyleSheet, Text } from 'react-native';
 
 import { Button } from '@/components/Button';
+import CrashTester, { type CrashKind } from '@/modules/crash-tester';
 import { useTheme } from '@/utils/theme';
 
 const CRASH_TRIGGERS: { kind: CrashKind; title: string; description: string }[] = [
@@ -14,10 +14,19 @@ const CRASH_TRIGGERS: { kind: CrashKind; title: string; description: string }[] 
   { kind: 'stackOverflow', title: 'Stack overflow', description: 'Unbounded recursion' },
 ];
 
+// Throws from a timer callback so the error is genuinely uncaught: it unwinds to React Native's
+// global error handler (where expo-app-metrics' handler is chained) instead of being swallowed by
+// the press handler or a React error boundary.
+function triggerUncaughtError() {
+  setTimeout(() => {
+    throw new Error('Intentional uncaught JS error from observe-tester');
+  }, 0);
+}
+
 export function CrashReportsSection() {
   const theme = useTheme();
 
-  if (typeof AppMetrics.triggerCrash !== 'function') {
+  if (CrashTester == null) {
     return null;
   }
 
@@ -25,13 +34,13 @@ export function CrashReportsSection() {
     <>
       <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Crash reports</Text>
       <Text style={[styles.sectionHint, { color: theme.text.secondary }]}>
-        Trigger real crashes to produce MetricKit diagnostics, or simulate a crash report attached
-        to the current session.
+        Trigger real crashes to produce crash diagnostics, or throw an uncaught JS error to exercise
+        the JavaScript error handler.
       </Text>
       <Button
-        title="Simulate crash report"
-        description="Adds a fake crash report to the current session"
-        onPress={() => AppMetrics.simulateCrashReport()}
+        title="Throw JS error"
+        description="Uncaught JS error captured by the global handler (RedBox in dev)"
+        onPress={triggerUncaughtError}
         theme="secondary"
       />
       {CRASH_TRIGGERS.map(({ kind, title, description }) => (
@@ -39,7 +48,7 @@ export function CrashReportsSection() {
           key={kind}
           title={title}
           description={description}
-          onPress={() => AppMetrics.triggerCrash(kind)}
+          onPress={() => CrashTester?.triggerCrash(kind)}
           theme="secondary"
         />
       ))}

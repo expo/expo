@@ -5,14 +5,17 @@
   "main": "build/DevClient.js",
   "types": "build/DevClient.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
     "e2e": "expo-test-runner run-test -t e2e",
-    "latest-e2e": "expo-test-runner run-test -t latest-e2e"
+    "latest-e2e": "expo-test-runner run-test -t latest-e2e",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -38,15 +41,12 @@
     "expo-updates-interface": "workspace:~56.0.1"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "expo-test-runner": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   }
 }

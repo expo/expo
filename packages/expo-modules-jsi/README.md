@@ -60,8 +60,8 @@ The build is wired up in `apple/ExpoModulesJSI.podspec`:
 You can also build and test the package directly:
 
 ```sh
-pnpm build   # rebuild the xcframework outside of a Pods install
-pnpm test    # run the Swift Testing suite on an iOS Simulator
+pnpm build:xcframework   # rebuild the xcframework outside of a Pods install
+pnpm test                # run the Swift Testing suite on an iOS Simulator
 ```
 
 `pnpm test` runs against an installed host app's `Pods` directory (defaults to `apps/bare-expo`); set `PODS_ROOT` to point at a different one. Extra arguments are forwarded to `xcodebuild` (e.g. `pnpm test -only-testing TestName`).

@@ -114,8 +114,8 @@ describe(getMalformedNativeProjectsAsync, () => {
     const projectRoot = '/';
     vol.fromJSON(
       {
-        'ios/foo': undefined,
-        'android/foo': undefined,
+        'ios/foo': null,
+        'android/foo': null,
       },
       projectRoot
     );

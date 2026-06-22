@@ -1,12 +1,19 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
 
 import logger from '../Logger';
-import checkPackageAsync from '../check-packages/checkPackageAsync';
-import getPackagesToCheckAsync from '../check-packages/getPackagesToCheckAsync';
-import { ActionOptions } from '../check-packages/types';
+import { runTurboTasksAsync } from '../Turbo';
 
-const { green, magenta, yellow } = chalk;
+type CheckOptions = {
+  since: string;
+  all: boolean;
+  core: boolean;
+  test: boolean;
+  lint: boolean;
+  fixLint: boolean;
+  dependencyCheck: boolean;
+};
+
+const CORE_PACKAGES = ['expo', 'expo-modules-core'];
 
 export default (program: Command) => {
   program
@@ -18,46 +25,67 @@ export default (program: Command) => {
       'main'
     )
     .option('-a, --all', 'Whether to check all packages and ignore `--since` option.', false)
-    .option('-c, --core', 'Whether to add core packages to check.', false)
-    .option('--no-build', 'Whether to skip `pnpm build` check.', false)
-    .option('--no-test', 'Whether to skip `pnpm test` check.', false)
-    .option('--no-lint', 'Whether to skip `pnpm lint` check.', false)
-    .option('--fix-lint', 'Whether to run `pnpm lint --fix` instead of `pnpm lint`.', false)
-    .option(
-      '--no-uniformity-check',
-      'Whether to check the uniformity of committed and generated build files.',
-      false
-    )
-    .option('--no-dependency-check', 'Whether to skip the valid dependency chain check.', false)
-    .description('Checks if packages build successfully and their tests pass.')
+    .option('-c, --core', 'Whether to always check core packages (expo, expo-modules-core).', false)
+    .option('--no-test', 'Whether to skip the `test` task.', false)
+    .option('--no-lint', 'Whether to skip the `lint` task.', false)
+    .option('--fix-lint', 'Whether to run `lint` with `--fix`.', false)
+    .option('--no-dependency-check', 'Whether to skip the `depscheck` task.', false)
+    .description('Checks if packages build successfully and their tests pass (via Turborepo).')
     .asyncAction(main);
 };
 
-async function main(packageNames: string[], options: ActionOptions): Promise<void> {
-  options.packageNames = packageNames;
+async function main(packageNames: string[], options: CheckOptions): Promise<void> {
+  // `build` regenerates the committed build output, so it always runs.
+  const tasks = ['build', 'typecheck'];
+  if (options.dependencyCheck) {
+    tasks.push('depscheck');
+  }
+  if (options.test) {
+    tasks.push('test');
+  }
+  if (options.lint && !options.fixLint) {
+    tasks.push('lint');
+  }
 
-  const packages = await getPackagesToCheckAsync(options);
-  const failedPackages: string[] = [];
-  let passCount = 0;
+  let filters: string[];
+  let affected = false;
+  let scmBase: string | undefined;
+  if (options.all) {
+    filters = ['./packages/**'];
+  } else if (packageNames.length > 0) {
+    filters = [...packageNames];
+  } else {
+    filters = ['./packages/**'];
+    affected = true;
+    scmBase = options.since;
+  }
 
-  for (const pkg of packages) {
-    if (await checkPackageAsync(pkg, { ...options, checkPackageType: 'package' })) {
-      passCount++;
-    } else {
-      failedPackages.push(pkg.packageName);
+  if (options.core && !affected) {
+    filters.push(...CORE_PACKAGES);
+  }
+
+  try {
+    await runTurboTasksAsync(tasks, { filters, affected, scmBase, continueOnError: true });
+
+    // `--affected` gates explicit filters, so core packages need their own batch to run unconditionally.
+    if (options.core && affected) {
+      await runTurboTasksAsync(tasks, { filters: CORE_PACKAGES, continueOnError: true });
     }
-    logger.log();
+
+    // Run lint alone so `--fix` is not forwarded to the other tasks.
+    if (options.lint && options.fixLint) {
+      await runTurboTasksAsync(['lint'], {
+        filters,
+        affected,
+        scmBase,
+        passthroughArgs: ['--fix'],
+      });
+    }
+  } catch (error: any) {
+    // Turbo already printed the failure; exit without a stack trace.
+    logger.error('🛑 One or more package checks failed. See the output above.');
+    process.exit(error.status ?? 1);
   }
 
-  const failureCount = failedPackages.length;
-
-  if (failureCount !== 0) {
-    logger.log(
-      `${green(`🏁 ${passCount} packages passed`)},`,
-      `${magenta(`${failureCount} ${failureCount === 1 ? 'package' : 'packages'} failed:`)}`,
-      failedPackages.map((failedPackage) => yellow(failedPackage)).join(', ')
-    );
-    process.exit(1);
-  }
-  logger.success('🏁 All packages passed.');
+  logger.success('🏁 All checks passed.');
 }

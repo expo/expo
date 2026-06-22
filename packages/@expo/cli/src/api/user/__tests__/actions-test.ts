@@ -2,7 +2,7 @@ import { isInteractive } from '../../../utils/interactive';
 import { promptAsync } from '../../../utils/prompts';
 import { ApiV2Error } from '../../rest/client';
 import { showLoginPromptAsync } from '../actions';
-import { retryUsernamePasswordAuthWithOTPAsync, UserSecondFactorDeviceMethod } from '../otp';
+import { retryUsernamePasswordAuthWithOTPAsync } from '../otp';
 import { loginAsync, browserLoginAsync } from '../user';
 
 jest.mock('../../../log');
@@ -46,34 +46,14 @@ describe(showLoginPromptAsync, () => {
         throw new ApiV2Error({
           message: 'An OTP is required',
           code: 'ONE_TIME_PASSWORD_REQUIRED',
-          metadata: {
-            secondFactorDevices: [
-              {
-                id: 'p0',
-                is_primary: true,
-                method: UserSecondFactorDeviceMethod.SMS,
-                sms_phone_number: 'testphone',
-              },
-            ],
-            smsAutomaticallySent: true,
-          },
+          requestId: '1',
         });
       })
       .mockImplementation(async () => {});
 
     await showLoginPromptAsync();
 
-    expect(retryUsernamePasswordAuthWithOTPAsync).toHaveBeenCalledWith('hello', 'world', {
-      secondFactorDevices: [
-        {
-          id: 'p0',
-          is_primary: true,
-          method: UserSecondFactorDeviceMethod.SMS,
-          sms_phone_number: 'testphone',
-        },
-      ],
-      smsAutomaticallySent: true,
-    });
+    expect(retryUsernamePasswordAuthWithOTPAsync).toHaveBeenCalledWith('hello', 'world');
   });
 
   it('does not prompt if all required credentials are provided', async () => {
