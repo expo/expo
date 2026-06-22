@@ -105,7 +105,7 @@ on:
 
 Runs your workflow when a GitHub branch or tag is deleted. Requires a [linked GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events) on your EAS project.
 
-With the `branches` list, you can trigger the workflow only when those specified branches are deleted. For example, if you use `branches: ['main']`, only deletion of the `main` branch triggers the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it). See [`on.push`](#onpush) for details on glob and negation pattern matching.
+With the `branches` list, you can trigger the workflow only when those specified branches are deleted. For example, if you use `branches: ['feat/**']`, only deletion of branches matching `feat/**` triggers the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it). See [`on.push`](#onpush) for details on glob and negation pattern matching.
 
 With the `tags` list, you can trigger the workflow only when those specified tags are deleted. Supports globs and `!` negation with the same rules as branches.
 
