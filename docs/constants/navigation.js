@@ -475,6 +475,7 @@ export const eas = [
       makePage('eas/workflows/examples/introduction.mdx'),
       makePage('eas/workflows/examples/create-development-builds.mdx'),
       makePage('eas/workflows/examples/publish-preview-update.mdx'),
+      makePage('eas/workflows/examples/branch-cleanup.mdx'),
       makePage('eas/workflows/examples/deploy-to-production.mdx'),
       makePage('eas/workflows/examples/e2e-tests.mdx'),
     ]),
@@ -607,7 +608,12 @@ export const eas = [
       { expanded: false }
     ),
   ]),
-  makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
+  makeSection('EAS Insights', [
+    makePage('eas-insights/introduction.mdx'),
+    makePage('eas-insights/app-usage.mdx'),
+    makePage('eas-insights/workflows.mdx'),
+    makePage('eas-insights/maestro.mdx'),
+  ]),
   makeSection('EAS Observe', [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),

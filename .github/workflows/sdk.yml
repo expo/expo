@@ -32,6 +32,9 @@ concurrency:
 env:
   # JS-only jobs, so skip the ~685 MB @shopify/react-native-skia prebuilt-binary download.
   SKIP_SKIA_DOWNLOAD: '1'
+  # Turborepo remote cache
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: expo
 
 jobs:
   check-packages:
@@ -57,11 +60,9 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: latest
+
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: expo
 
       - name: 🧐 Check all packages
         if: github.event_name == 'schedule' ||
@@ -77,10 +78,20 @@ jobs:
         env:
           TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
         run: |
-          pnpm turbo run build typecheck depscheck test lint \
+          pnpm turbo run build typecheck test \
             --affected \
             --filter="./packages/**" \
             --continue=dependencies-successful
+
+      - name: ✨ Lint changed packages
+        if: github.event_name != 'schedule' &&
+          github.event.inputs.checkAll != 'check-all'
+        env:
+          TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
+        run: |
+          pnpm turbo run depscheck lint \
+            --filter="{./packages/**}[$TURBO_SCM_BASE...HEAD]" \
+            --continue
 
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
@@ -109,16 +120,14 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: latest
+
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: expo
 
       - name: 🧐 Check all packages
         shell: bash
         run: |
-          pnpm turbo run build typecheck depscheck test lint \
+          pnpm turbo run build test \
             --filter="./packages/**" \
             --filter='!@expo/cli' \
             --filter='!@expo/config' \

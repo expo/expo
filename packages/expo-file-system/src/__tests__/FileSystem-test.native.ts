@@ -1,6 +1,6 @@
-import { DownloadTask, File, Directory, Paths, UploadTask } from '../..';
 import { __resetMockFileSystem } from '../../mocks/FileSystem';
 import { FileMode } from '../File.types';
+import { DownloadTask, File, Directory, Paths, UploadTask } from '../index';
 
 beforeEach(() => {
   __resetMockFileSystem();

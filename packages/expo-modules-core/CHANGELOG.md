@@ -18,8 +18,10 @@
 
 ### 🐛 Bug fixes
 
+- [Android][compose] Guard `onLayout` against detached window to prevent `LayoutNode should be attached to an owner` crash. ([#47085](https://github.com/expo/expo/pull/47085) by [@roitium](https://github.com/roitium))
 - [Android] Fix `Record` arguments crashing with a `NullPointerException` in R8-optimized release builds when converted through the reflection fallback path. ([#46852](https://github.com/expo/expo/pull/46852) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Keep the `Record` marker interface so its consumer ProGuard rule keeps matching after R8 optimization removes empty marker interfaces. ([#46852](https://github.com/expo/expo/pull/46852) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix `ExpoModulesProvider` lookup failing for bundle names with non-identifier characters (e.g. dots). ([#46424](https://github.com/expo/expo/pull/46424) by [@shawnthye-guru](https://github.com/shawnthye-guru))
 - [android] Add a synchronous shadow node size update path, fixing a layout shift for `Host` `matchContents` views. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `NullPointerException` crash when a `matchContents` view is unmounted while a shadow node size update is pending (e.g. closing a bottom sheet mid-resize). ([#46785](https://github.com/expo/expo/pull/46785) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Accept JS `Double` timestamps in `Date` Convertible. JS numbers arrive across the JSI bridge as Swift `Double`; the prior `as? Int` branch never matched, throwing `ConvertingException<Date>` whenever a JS caller passed `someDate.getTime()` to a `Date` / `Date?` argument. ([#46340](https://github.com/expo/expo/pull/46340) by [@kyleasaff](https://github.com/kyleasaff))
@@ -33,7 +35,7 @@
 - [Android] Fixed Expo UI re-compose when switching screens in react-native-screens. ([#46650](https://github.com/expo/expo/pull/46650) by [@kudo](https://github.com/kudo))
 - [iOS] Fix Expo DevTools Network response bodies for JSON content types with parameters. ([#46336](https://github.com/expo/expo/pull/46336) by [@SJvaca30](https://github.com/SJvaca30))
 - [iOS] Resolve the key window across connected scenes in `currentViewController()` so it keeps working with multiple scenes, and expose `Utilities.keyWindow()` for modules to reuse. ([#46956](https://github.com/expo/expo/pull/46956) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android][compose] Guard `onLayout` against detached window to prevent `LayoutNode should be attached to an owner` crash. ([#47085](https://github.com/expo/expo/pull/47085) by [@roitium](https://github.com/roitium))
+- [iOS] Fix a crash on `Updates.reloadAsync()` where the previous `AppContext` could deallocate before the old runtime finished tearing down, releasing cached JSI objects against a dying runtime on the wrong thread. Its lifetime is now tied to the runtime via native state attached to the `global.expo` object. ([#47051](https://github.com/expo/expo/issues/47051) by [@HaiyiMei](https://github.com/HaiyiMei)) ([#47080](https://github.com/expo/expo/pull/47080), [#47098](https://github.com/expo/expo/pull/47098) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
