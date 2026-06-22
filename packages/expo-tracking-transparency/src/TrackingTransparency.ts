@@ -64,7 +64,7 @@ export function getAdvertisingId(): string | null {
  *
  * On Android, reading the advertising ID requires a IPC call to Google Play Services.
  * The synchronous [`getAdvertisingId()`](#getadvertisingid) can block the JavaScript thread for hundreds of milliseconds.
- * This function offloads the lookup from the JavaScript thread
+ * This function offloads the lookup from the JavaScript thread.
  *
  * @return A promise that resolves to either a UUID `string` or `null`. It resolves to `null` in the
  * same cases described for [`getAdvertisingId()`](#getadvertisingid).
