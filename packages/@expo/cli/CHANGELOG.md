@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Remove the deprecated `@expo/cli/add-module` entry point.
+- Remove the deprecated `@expo/cli/add-module` entry point. ([#47140](https://github.com/expo/expo/pull/47140) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Make browser-based login the default for `expo login`. Use `--no-browser` (or pass `--username`/`--password`) for username/password login. Non-interactive environments such as CI continue to use username/password login. ([#46832](https://github.com/expo/expo/pull/46832) by [@byronkarlen](https://github.com/byronkarlen))
 
 ### 🎉 New features
