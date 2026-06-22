@@ -334,7 +334,7 @@
     "immer": "^10.1.1",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-reanimated": "~4.4.1",
-    "react-native-safe-area-context": "~5.6.2",
+    "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "^4.25.2",
     "react-native-web": "~0.21.0",
     "react-server-dom-webpack": "~19.0.6"
