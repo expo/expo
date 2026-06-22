@@ -235,8 +235,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return;
   }
 
-  NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
-  BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
+  // A runtime preference set in Settings overrides the build-time default from the config plugin.
+  id tryToLaunchLastBundleValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"EXDevLauncherTryToLaunchLastBundle"]
+    ?: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
+  BOOL shouldTryToLaunchLastOpenedBundle = tryToLaunchLastBundleValue ? [tryToLaunchLastBundleValue boolValue] : YES;
   BOOL useDefaultLaunchUrlFallback = self.useDefaultLaunchUrlFallback;
 
   if (!hasGrantedNetworkPermission) {

@@ -50,6 +50,11 @@ class DevLauncherViewModel: ObservableObject {
       DevMenuManager.shared.setShowsAtLaunch(showOnLaunch)
     }
   }
+  @Published var autoLaunchMostRecent = true {
+    didSet {
+      UserDefaults.standard.set(autoLaunchMostRecent, forKey: "EXDevLauncherTryToLaunchLastBundle")
+    }
+  }
   @Published var isAuthenticated = false
   @Published var isAuthenticating = false
   @Published var user: User?
@@ -482,6 +487,8 @@ class DevLauncherViewModel: ObservableObject {
     shakeDevice = defaults.object(forKey: "EXDevMenuMotionGestureEnabled") as? Bool ?? true
     threeFingerLongPress = defaults.object(forKey: "EXDevMenuTouchGestureEnabled") as? Bool ?? true
     showOnLaunch = defaults.object(forKey: "EXDevMenuShowsAtLaunch") as? Bool ?? false
+    let tryToLaunchLastBundleDefault = Bundle.main.object(forInfoDictionaryKey: "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE") as? Bool ?? true
+    autoLaunchMostRecent = defaults.object(forKey: "EXDevLauncherTryToLaunchLastBundle") as? Bool ?? tryToLaunchLastBundleDefault
   }
 
   private func checkAuthenticationStatus() {
