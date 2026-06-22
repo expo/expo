@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add Components section to swap the active AppRegistry component ([#46613](https://github.com/expo/expo/pull/46613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add a `tryToLaunchLastBundle` preference backing the dev launcher auto-launch toggle. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
