@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
+import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.core.view.doOnDetach
@@ -281,8 +282,11 @@ class ExpoImageModule : Module() {
             .submit()
             .get()
           return@withContext Image(drawable)
-        } catch (_: Exception) {
-          // `onlyRetrieveFromCache` makes Glide fail the request when the image isn't cached.
+        } catch (exception: Exception) {
+          // `onlyRetrieveFromCache` makes Glide fail the request when the image isn't cached, which
+          // is the expected miss path. A decode failure of a corrupt or partial cached entry surfaces
+          // here too, so log it to keep that case diagnosable rather than indistinguishable from a miss.
+          Log.d("ExpoImage", "readFromCacheAsync failed for key \"$cacheKey\"", exception)
           return@withContext null
         }
       }

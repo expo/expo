@@ -97,7 +97,11 @@ struct ImageCacheSeedingTests {
     }
 
     #expect(exists)
-    #expect(SDImageCache.shared.cachePath(forKey: cacheKey) != nil)
+    // `cachePath(forKey:)` derives a path string from the key deterministically, so assert the file
+    // it points at actually exists on disk to make this specific to the seeded entry.
+    let cachePath = SDImageCache.shared.cachePath(forKey: cacheKey)
+    #expect(cachePath != nil)
+    #expect(FileManager.default.fileExists(atPath: cachePath ?? ""))
     removeImage(forKey: cacheKey)
   }
 }

@@ -160,6 +160,9 @@ export class Image extends React.PureComponent<ImageProps> {
    * downloaded with `expo-file-system`. A later image load that uses the same `cacheKey`
    * in its [`source`](#imagesource) will then be served straight from the cache.
    * @param source - The image to cache, either a local file URI (`string`) or an [`ImageRef`](#imageref).
+   * > **Note:** Caching an animated image (GIF, APNG, animated WebP) from an `ImageRef` flattens
+   * > it to a single frame, because the reference holds the decoded image rather than the original
+   * > encoded bytes. To seed an animated image losslessly, pass its local file URI instead.
    * @param cacheKey - The cache key to store the image under. Pass the same value in the
    * `cacheKey` of the [`source`](#imagesource) when you later render the image.
    * @platform android
