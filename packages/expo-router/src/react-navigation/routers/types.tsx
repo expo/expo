@@ -23,10 +23,6 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
    */
   routeNames: Extract<keyof ParamList, string>[];
   /**
-   * Alternative entries for history.
-   */
-  history?: unknown[];
-  /**
    * List of rendered routes.
    */
   routes: NavigationRoute<ParamList, keyof ParamList>[];

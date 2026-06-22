@@ -12,7 +12,6 @@ import {
   useFrameSize,
 } from '../../elements';
 import {
-  DrawerActions,
   type DrawerNavigationState,
   type DrawerStatus,
   type ParamListBase,
@@ -28,10 +27,10 @@ import type {
   DrawerNavigationHelpers,
   DrawerNavigationProp,
 } from '../types';
+import { DrawerActionsContext, type DrawerActions } from '../utils/DrawerActionsContext';
 import { DrawerPositionContext } from '../utils/DrawerPositionContext';
 import { DrawerStatusContext } from '../utils/DrawerStatusContext';
 import { addCancelListener } from '../utils/addCancelListener';
-import { getDrawerStatusFromState } from '../utils/getDrawerStatusFromState';
 import { DrawerContent } from './DrawerContent';
 import { DrawerToggleButton } from './DrawerToggleButton';
 import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
@@ -62,6 +61,24 @@ function DrawerViewBase({
   const { direction } = useLocale();
 
   const focusedRouteKey = state.routes[state.index]!.key;
+
+  const [drawerStatus, setStatus] = React.useState<DrawerStatus>(defaultStatus);
+
+  const drawerActions = React.useMemo<DrawerActions>(
+    () => ({
+      openDrawer: () => setStatus('open'),
+      closeDrawer: () => setStatus('closed'),
+      toggleDrawer: () => setStatus((current) => (current === 'open' ? 'closed' : 'open')),
+    }),
+    []
+  );
+
+  // Navigating to another route returns the drawer to its default status. Keyed on the focused
+  // route, so it's a no-op on mount and while the drawer is opened/closed in place.
+  React.useEffect(() => {
+    setStatus(defaultStatus);
+  }, [focusedRouteKey, defaultStatus]);
+
   const {
     drawerHideStatusBarOnOpen,
     drawerPosition = direction === 'rtl' ? 'right' : 'left',
@@ -110,21 +127,7 @@ function DrawerViewBase({
 
   const { colors } = useTheme();
 
-  const drawerStatus = getDrawerStatusFromState(state);
-
-  const handleDrawerOpen = useLatestCallback(() => {
-    navigation.dispatch({
-      ...DrawerActions.openDrawer(),
-      target: state.key,
-    });
-  });
-
-  const handleDrawerClose = useLatestCallback(() => {
-    navigation.dispatch({
-      ...DrawerActions.closeDrawer(),
-      target: state.key,
-    });
-  });
+  const { openDrawer, closeDrawer } = drawerActions;
 
   const handleGestureStart = useLatestCallback(() => {
     navigation.emit({
@@ -176,9 +179,9 @@ function DrawerViewBase({
       }
 
       if (defaultStatus === 'open') {
-        handleDrawerOpen();
+        openDrawer();
       } else {
-        handleDrawerClose();
+        closeDrawer();
       }
 
       return true;
@@ -188,7 +191,7 @@ function DrawerViewBase({
     // This way we can make sure that the listener is added as late as possible
     // This will make sure that our handler will run first when back button is pressed
     return addCancelListener(handleHardwareBack);
-  }, [defaultStatus, drawerStatus, drawerType, handleDrawerClose, handleDrawerOpen, navigation]);
+  }, [defaultStatus, drawerStatus, drawerType, closeDrawer, openDrawer, navigation]);
 
   const renderDrawerContent = () => {
     return (
@@ -273,63 +276,65 @@ function DrawerViewBase({
   };
 
   return (
-    <DrawerStatusContext.Provider value={drawerStatus}>
-      <Drawer
-        open={drawerStatus !== 'closed'}
-        onOpen={handleDrawerOpen}
-        onClose={handleDrawerClose}
-        onGestureStart={handleGestureStart}
-        onGestureEnd={handleGestureEnd}
-        onGestureCancel={handleGestureCancel}
-        onTransitionStart={handleTransitionStart}
-        onTransitionEnd={handleTransitionEnd}
-        layout={dimensions}
-        direction={direction}
-        configureGestureHandler={configureGestureHandler}
-        swipeEnabled={swipeEnabled}
-        swipeEdgeWidth={swipeEdgeWidth}
-        swipeMinDistance={swipeMinDistance}
-        hideStatusBarOnOpen={drawerHideStatusBarOnOpen}
-        statusBarAnimation={drawerStatusBarAnimation}
-        keyboardDismissMode={keyboardDismissMode}
-        drawerType={drawerType}
-        overlayAccessibilityLabel={overlayAccessibilityLabel}
-        drawerPosition={drawerPosition}
-        drawerStyle={[
-          { backgroundColor: colors.card },
-          drawerType === 'permanent' &&
-            ((
-              Platform.OS === 'web'
-                ? drawerPosition === 'right'
-                : (direction === 'rtl' && drawerPosition !== 'right') ||
-                  (direction !== 'rtl' && drawerPosition === 'right')
-            )
-              ? {
-                  borderLeftColor: colors.border,
-                  borderLeftWidth: StyleSheet.hairlineWidth,
-                }
-              : {
-                  borderRightColor: colors.border,
-                  borderRightWidth: StyleSheet.hairlineWidth,
-                }),
+    <DrawerActionsContext.Provider value={drawerActions}>
+      <DrawerStatusContext.Provider value={drawerStatus}>
+        <Drawer
+          open={drawerStatus !== 'closed'}
+          onOpen={openDrawer}
+          onClose={closeDrawer}
+          onGestureStart={handleGestureStart}
+          onGestureEnd={handleGestureEnd}
+          onGestureCancel={handleGestureCancel}
+          onTransitionStart={handleTransitionStart}
+          onTransitionEnd={handleTransitionEnd}
+          layout={dimensions}
+          direction={direction}
+          configureGestureHandler={configureGestureHandler}
+          swipeEnabled={swipeEnabled}
+          swipeEdgeWidth={swipeEdgeWidth}
+          swipeMinDistance={swipeMinDistance}
+          hideStatusBarOnOpen={drawerHideStatusBarOnOpen}
+          statusBarAnimation={drawerStatusBarAnimation}
+          keyboardDismissMode={keyboardDismissMode}
+          drawerType={drawerType}
+          overlayAccessibilityLabel={overlayAccessibilityLabel}
+          drawerPosition={drawerPosition}
+          drawerStyle={[
+            { backgroundColor: colors.card },
+            drawerType === 'permanent' &&
+              ((
+                Platform.OS === 'web'
+                  ? drawerPosition === 'right'
+                  : (direction === 'rtl' && drawerPosition !== 'right') ||
+                    (direction !== 'rtl' && drawerPosition === 'right')
+              )
+                ? {
+                    borderLeftColor: colors.border,
+                    borderLeftWidth: StyleSheet.hairlineWidth,
+                  }
+                : {
+                    borderRightColor: colors.border,
+                    borderRightWidth: StyleSheet.hairlineWidth,
+                  }),
 
-          drawerType === 'front' &&
-            (drawerPosition === 'left'
-              ? {
-                  borderTopRightRadius: DRAWER_BORDER_RADIUS,
-                  borderBottomRightRadius: DRAWER_BORDER_RADIUS,
-                }
-              : {
-                  borderTopLeftRadius: DRAWER_BORDER_RADIUS,
-                  borderBottomLeftRadius: DRAWER_BORDER_RADIUS,
-                }),
-          drawerStyle,
-        ]}
-        overlayStyle={{ backgroundColor: overlayColor }}
-        renderDrawerContent={renderDrawerContent}>
-        {renderSceneContent()}
-      </Drawer>
-    </DrawerStatusContext.Provider>
+            drawerType === 'front' &&
+              (drawerPosition === 'left'
+                ? {
+                    borderTopRightRadius: DRAWER_BORDER_RADIUS,
+                    borderBottomRightRadius: DRAWER_BORDER_RADIUS,
+                  }
+                : {
+                    borderTopLeftRadius: DRAWER_BORDER_RADIUS,
+                    borderBottomLeftRadius: DRAWER_BORDER_RADIUS,
+                  }),
+            drawerStyle,
+          ]}
+          overlayStyle={{ backgroundColor: overlayColor }}
+          renderDrawerContent={renderDrawerContent}>
+          {renderSceneContent()}
+        </Drawer>
+      </DrawerStatusContext.Provider>
+    </DrawerActionsContext.Provider>
   );
 }
 
