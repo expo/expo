@@ -7,7 +7,12 @@ import { Button, View } from 'react-native';
 import { NavigationContainer } from '../../../fork/NavigationContainer';
 import { Text } from '../../elements';
 import { createNavigationContainerRef } from '../../native';
-import { createDrawerNavigator, type DrawerScreenProps } from '../index';
+import {
+  createDrawerNavigator,
+  type DrawerScreenProps,
+  useDrawerActions,
+  useDrawerStatus,
+} from '../index';
 
 jest.mock('react-native-drawer-layout', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -71,4 +76,108 @@ test('handles screens preloading', async () => {
   expect(queryByText('Screen B', { includeHiddenElements: true })).toBeNull();
   act(() => navigation.preload('B'));
   expect(queryByText('Screen B', { includeHiddenElements: true })).not.toBeNull();
+});
+
+const StatusScreen = ({ route, navigation }: DrawerScreenProps<DrawerParamList>) => {
+  const status = useDrawerStatus();
+  const { openDrawer, closeDrawer, toggleDrawer } = useDrawerActions();
+
+  return (
+    <View>
+      <Text>Screen {route.name}</Text>
+      <Text>Status: {status}</Text>
+      <Button onPress={openDrawer} title="open" />
+      <Button onPress={closeDrawer} title="close" />
+      <Button onPress={toggleDrawer} title="toggle" />
+      <Button onPress={() => navigation.navigate('B')} title="Go to B" />
+    </View>
+  );
+};
+
+test('opens, closes, and toggles the drawer via useDrawerActions', async () => {
+  const Drawer = createDrawerNavigator<DrawerParamList>();
+
+  const { getByText, findByText } = render(
+    <NavigationContainer>
+      <Drawer.Navigator>
+        <Drawer.Screen name="A" component={StatusScreen} />
+        <Drawer.Screen name="B" component={StatusScreen} />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
+
+  expect(getByText('Status: closed')).not.toBeNull();
+
+  fireEvent(await findByText('open'), 'press');
+  expect(getByText('Status: open')).not.toBeNull();
+
+  fireEvent(getByText('close'), 'press');
+  expect(getByText('Status: closed')).not.toBeNull();
+
+  fireEvent(getByText('toggle'), 'press');
+  expect(getByText('Status: open')).not.toBeNull();
+
+  fireEvent(getByText('toggle'), 'press');
+  expect(getByText('Status: closed')).not.toBeNull();
+});
+
+test('navigating to another route closes an open drawer', async () => {
+  const Drawer = createDrawerNavigator<DrawerParamList>();
+
+  const { getByText, findByText } = render(
+    <NavigationContainer>
+      <Drawer.Navigator>
+        <Drawer.Screen name="A" component={StatusScreen} />
+        <Drawer.Screen name="B" component={StatusScreen} />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
+
+  fireEvent(await findByText('open'), 'press');
+  expect(getByText('Status: open')).not.toBeNull();
+
+  fireEvent(getByText('Go to B'), 'press');
+
+  expect(getByText('Screen B')).not.toBeNull();
+  expect(getByText('Status: closed')).not.toBeNull();
+});
+
+test("defaultStatus 'open' starts open and can be toggled closed", async () => {
+  const Drawer = createDrawerNavigator<DrawerParamList>();
+
+  const { getByText, findByText } = render(
+    <NavigationContainer>
+      <Drawer.Navigator defaultStatus="open">
+        <Drawer.Screen name="A" component={StatusScreen} />
+        <Drawer.Screen name="B" component={StatusScreen} />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
+
+  expect(getByText('Status: open')).not.toBeNull();
+
+  fireEvent(await findByText('toggle'), 'press');
+  expect(getByText('Status: closed')).not.toBeNull();
+});
+
+test("defaultStatus 'open': navigating returns the drawer to its open default", async () => {
+  const Drawer = createDrawerNavigator<DrawerParamList>();
+
+  const { getByText, findByText } = render(
+    <NavigationContainer>
+      <Drawer.Navigator defaultStatus="open">
+        <Drawer.Screen name="A" component={StatusScreen} />
+        <Drawer.Screen name="B" component={StatusScreen} />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
+
+  // Close it, then navigate: the drawer returns to its default (open) status.
+  fireEvent(await findByText('close'), 'press');
+  expect(getByText('Status: closed')).not.toBeNull();
+
+  fireEvent(getByText('Go to B'), 'press');
+
+  expect(getByText('Screen B')).not.toBeNull();
+  expect(getByText('Status: open')).not.toBeNull();
 });

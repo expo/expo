@@ -4,13 +4,13 @@ import * as React from 'react';
 import { useStableTabOrder } from '../../core/useStableTabOrder';
 import {
   CommonActions,
-  DrawerActions,
   type DrawerNavigationState,
   type ParamListBase,
   useLinkBuilder,
 } from '../../native';
 import type { DrawerDescriptorMap, DrawerNavigationHelpers } from '../types';
 import { DrawerItem } from './DrawerItem';
+import { useDrawerActions } from '../utils/useDrawerActions';
 
 type Props = {
   state: DrawerNavigationState<ParamListBase>;
@@ -23,6 +23,7 @@ type Props = {
  */
 export function DrawerItemList({ state, navigation, descriptors }: Props) {
   const { buildHref } = useLinkBuilder();
+  const { closeDrawer } = useDrawerActions();
 
   const focusedRoute = state.routes[state.index]!;
   const focusedDescriptor = descriptors[focusedRoute!.key]!;
@@ -50,10 +51,16 @@ export function DrawerItemList({ state, navigation, descriptors }: Props) {
       });
 
       if (!event.defaultPrevented) {
-        navigation.dispatch({
-          ...(focused ? DrawerActions.closeDrawer() : CommonActions.navigate(route)),
-          target: state.key,
-        });
+        if (focused) {
+          // Tapping the focused route just closes the drawer; navigating elsewhere closes it via
+          // the navigator's navigate-close effect.
+          closeDrawer();
+        } else {
+          navigation.dispatch({
+            ...CommonActions.navigate(route),
+            target: state.key,
+          });
+        }
       }
     };
 

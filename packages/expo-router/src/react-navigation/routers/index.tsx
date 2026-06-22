@@ -10,7 +10,7 @@ export type {
   DrawerRouterOptions,
   DrawerStatus,
 } from './DrawerRouter';
-export { DrawerActions, DrawerRouter } from './DrawerRouter';
+export { DrawerRouter } from './DrawerRouter';
 export type {
   StackActionHelpers,
   StackActionType,

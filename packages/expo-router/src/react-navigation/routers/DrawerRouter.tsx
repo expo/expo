@@ -8,153 +8,40 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import type { CommonNavigationAction, ParamListBase, PartialState, Router } from './types';
+import type { CommonNavigationAction, ParamListBase, Router } from './types';
+
 export type DrawerStatus = 'open' | 'closed';
 
-export type DrawerActionType =
-  | TabActionType
-  | {
-      type: 'OPEN_DRAWER' | 'CLOSE_DRAWER' | 'TOGGLE_DRAWER';
-      source?: string;
-      target?: string;
-    };
+export type DrawerActionType = TabActionType;
 
 export type DrawerRouterOptions = TabRouterOptions & {
   defaultStatus?: DrawerStatus;
 };
 
-export type DrawerNavigationState<ParamList extends ParamListBase> = Omit<
-  TabNavigationState<ParamList>,
-  'history'
-> & {
-  /**
-   * Default status of the drawer.
-   */
-  default: DrawerStatus;
-  /**
-   * List of previously visited route keys and drawer open status.
-   */
-  history: ({ type: 'route'; key: string } | { type: 'drawer'; status: DrawerStatus })[];
-};
+// Drawer state has the same shape as tab state. The drawer's open/closed status is owned by the
+// drawer navigator's local React state, not stored in navigation state.
+export type DrawerNavigationState<ParamList extends ParamListBase> = TabNavigationState<ParamList>;
 
-export type DrawerActionHelpers<ParamList extends ParamListBase> = TabActionHelpers<ParamList> & {
-  /**
-   * Open the drawer sidebar.
-   */
-  openDrawer(): void;
-
-  /**
-   * Close the drawer sidebar.
-   */
-  closeDrawer(): void;
-
-  /**
-   * Open the drawer sidebar if closed, or close if opened.
-   */
-  toggleDrawer(): void;
-};
-
-export const DrawerActions = {
-  ...TabActions,
-  openDrawer() {
-    return { type: 'OPEN_DRAWER' } as const satisfies DrawerActionType;
-  },
-  closeDrawer() {
-    return { type: 'CLOSE_DRAWER' } as const satisfies DrawerActionType;
-  },
-  toggleDrawer() {
-    return { type: 'TOGGLE_DRAWER' } as const satisfies DrawerActionType;
-  },
-};
+export type DrawerActionHelpers<ParamList extends ParamListBase> = TabActionHelpers<ParamList>;
 
 /**
  * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
  */
-export function DrawerRouter({
-  defaultStatus = 'closed',
-  ...rest
-}: DrawerRouterOptions): Router<
-  DrawerNavigationState<ParamListBase>,
-  DrawerActionType | CommonNavigationAction
-> {
-  const router = TabRouter(rest) as unknown as Router<
+export function DrawerRouter(
+  options: DrawerRouterOptions
+): Router<DrawerNavigationState<ParamListBase>, DrawerActionType | CommonNavigationAction> {
+  const router = TabRouter(options) as unknown as Router<
     DrawerNavigationState<ParamListBase>,
-    TabActionType | CommonNavigationAction
+    DrawerActionType | CommonNavigationAction
   >;
-
-  const isDrawerInHistory = (
-    state: DrawerNavigationState<ParamListBase> | PartialState<DrawerNavigationState<ParamListBase>>
-  ) => Boolean(state.history?.some((it) => it.type === 'drawer'));
-
-  const addDrawerToHistory = (
-    state: DrawerNavigationState<ParamListBase>
-  ): DrawerNavigationState<ParamListBase> => {
-    if (isDrawerInHistory(state)) {
-      return state;
-    }
-
-    return {
-      ...state,
-      history: [
-        ...state.history,
-        {
-          type: 'drawer',
-          status: defaultStatus === 'open' ? 'closed' : 'open',
-        },
-      ],
-    };
-  };
-
-  const removeDrawerFromHistory = (
-    state: DrawerNavigationState<ParamListBase>
-  ): DrawerNavigationState<ParamListBase> => {
-    if (!isDrawerInHistory(state)) {
-      return state;
-    }
-
-    return {
-      ...state,
-      history: state.history.filter((it) => it.type !== 'drawer'),
-    };
-  };
-
-  const openDrawer = (
-    state: DrawerNavigationState<ParamListBase>
-  ): DrawerNavigationState<ParamListBase> => {
-    if (defaultStatus === 'open') {
-      return removeDrawerFromHistory(state);
-    }
-
-    return addDrawerToHistory(state);
-  };
-
-  const closeDrawer = (
-    state: DrawerNavigationState<ParamListBase>
-  ): DrawerNavigationState<ParamListBase> => {
-    if (defaultStatus === 'open') {
-      return addDrawerToHistory(state);
-    }
-
-    return removeDrawerFromHistory(state);
-  };
 
   return {
     ...router,
 
     getInitialState({ routeNames, routeParamList, routeGetIdList }) {
-      const state = router.getInitialState({
-        routeNames,
-        routeParamList,
-        routeGetIdList,
-      });
+      const state = router.getInitialState({ routeNames, routeParamList, routeGetIdList });
 
-      return {
-        ...state,
-        history: [],
-        default: defaultStatus,
-        stale: false,
-        key: `drawer-${nanoid()}`,
-      };
+      return { ...state, key: `drawer-${nanoid()}` };
     },
 
     getRehydratedState(partialState, { routeNames, routeParamList, routeGetIdList }) {
@@ -162,78 +49,15 @@ export function DrawerRouter({
         return partialState;
       }
 
-      const tabState = router.getRehydratedState(partialState, {
+      const state = router.getRehydratedState(partialState, {
         routeNames,
         routeParamList,
         routeGetIdList,
       });
 
-      let state: DrawerNavigationState<ParamListBase> = {
-        ...tabState,
-        history: [],
-        default: defaultStatus,
-        key: `drawer-${nanoid()}`,
-      };
-
-      if (isDrawerInHistory(partialState)) {
-        // Restore the open drawer that was persisted.
-        state = addDrawerToHistory(state);
-      }
-
-      return state;
+      return { ...state, key: `drawer-${nanoid()}` };
     },
 
-    getStateForRouteFocus(state, key) {
-      const result = router.getStateForRouteFocus(state, key);
-
-      return closeDrawer(result);
-    },
-
-    getStateForAction(state, action, options) {
-      switch (action.type) {
-        case 'OPEN_DRAWER':
-          return openDrawer(state);
-
-        case 'CLOSE_DRAWER':
-          return closeDrawer(state);
-
-        case 'TOGGLE_DRAWER':
-          if (isDrawerInHistory(state)) {
-            return removeDrawerFromHistory(state);
-          }
-
-          return addDrawerToHistory(state);
-
-        case 'JUMP_TO':
-        case 'NAVIGATE':
-        case 'NAVIGATE_DEPRECATED': {
-          const result = router.getStateForAction(state, action, options);
-
-          // A tab change closes the drawer. The focused route is identified by key —
-          // its index in `routes` depends on the active back behavior.
-          if (
-            result != null &&
-            result.index != null &&
-            result.routes[result.index]?.key !== state.routes[state.index]?.key
-          ) {
-            return closeDrawer(result as DrawerNavigationState<ParamListBase>);
-          }
-
-          return result;
-        }
-
-        case 'GO_BACK':
-          if (isDrawerInHistory(state)) {
-            return removeDrawerFromHistory(state);
-          }
-
-          return router.getStateForAction(state, action, options);
-
-        default:
-          return router.getStateForAction(state, action, options);
-      }
-    },
-
-    actionCreators: DrawerActions,
+    actionCreators: TabActions,
   };
 }

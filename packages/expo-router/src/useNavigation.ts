@@ -9,8 +9,8 @@ import type { Href } from './types';
 /**
  * Returns the navigation object for the current route. Mirrors the React Navigation
  * [`navigation` object](https://reactnavigation.org/docs/navigation-object). Use it to
- * imperatively access layout-specific functionality like `navigation.openDrawer()` in a
- * [Drawer](/router/advanced/drawer/) layout.
+ * imperatively dispatch navigation actions. To control a [Drawer](/router/advanced/drawer/)
+ * layout, use the `useDrawerActions()` hook from `expo-router/drawer` instead.
  *
  * @example
  * ```tsx app/index.tsx
@@ -22,12 +22,7 @@ import type { Href } from './types';
  *
  *   return (
  *     <View>
- *       <Text onPress={() => {
- *         // Open the drawer view.
- *         navigation.openDrawer();
- *       }}>
- *         Open Drawer
- *       </Text>
+ *       <Text onPress={() => navigation.goBack()}>Go back</Text>
  *     </View>
  *   );
  * }
