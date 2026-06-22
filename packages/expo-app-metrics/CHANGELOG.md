@@ -9,6 +9,7 @@
 - Observe HTTP requests on iOS and Android and expose them to JS via the `NetworkRequestObserver` class and `useNetworkRequestObserver` hook. The TTI metric also carries an `expo.network.requests.*` summary for requests that completed in the launch window. ([#46475](https://github.com/expo/expo/pull/46475) by [@tsapeta](https://github.com/tsapeta))
 - Add native-side filtering to `NetworkRequestObserver` by host and method, configurable at construction or at runtime via `setFilter`, so non-matching requests never cross into JS. ([#46775](https://github.com/expo/expo/pull/46775) by [@tsapeta](https://github.com/tsapeta))
 - Capture unhandled JavaScript errors on iOS and Android by wrapping React Native's `global.ErrorUtils` handler, recording each as an `exception` log event following OpenTelemetry's exception conventions (`exception.type`/`exception.message`/`exception.stacktrace`). Fatal errors are written to disk synchronously before the process terminates and ingested on the next launch. ([#46923](https://github.com/expo/expo/pull/46923) by [@tsapeta](https://github.com/tsapeta))
+- Add android crash reports ([#46869](https://github.com/expo/expo/pull/46869) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

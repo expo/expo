@@ -21,8 +21,6 @@ import kotlinx.serialization.json.JsonObject
  *
  * TODO(@ubax): surface all session types — add a real `type` column and lifecycle
  *   hooks for foreground/screen/custom sessions.
- * TODO(@ubax): add crash report support on Android — `crashReport` is an iOS-only
- *   MetricKit feature today, so the record omits it (optional in the TS type).
  */
 @OptimizedRecord
 data class JsDebugSession(
@@ -31,17 +29,19 @@ data class JsDebugSession(
   @Field val startDate: String,
   @Field val endDate: String?,
   @Field val metrics: List<JsMetric>,
-  @Field val logs: List<JsLogRecord>
+  @Field val logs: List<JsLogRecord>,
+  @Field val crashReport: Map<String, Any?>? = null
 ) : Record {
   companion object {
-    fun fromSessionWithMetrics(value: SessionWithMetrics): JsDebugSession =
+    fun fromSessionWithChildren(value: SessionWithChildren): JsDebugSession =
       JsDebugSession(
         id = value.session.id,
         type = "main",
         startDate = value.session.startTimestamp,
         endDate = value.session.endTimestamp,
         metrics = value.metrics.map { JsMetric.fromMetric(it) },
-        logs = value.logs.map { JsLogRecord.fromLogRecord(it) }
+        logs = value.logs.map { JsLogRecord.fromLogRecord(it) },
+        crashReport = decodeJsonObject(value.crashReportPayload)
       )
   }
 }
