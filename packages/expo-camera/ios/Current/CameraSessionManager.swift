@@ -132,6 +132,9 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     } else {
       self.cleanupMovieFileCapture(withSessionConfiguration: false)
       self.updateSessionPreset(preset: delegate.pictureSize.toCapturePreset(), withSessionConfiguration: false)
+      if let photoOutput {
+        self.configureResponsiveCapture(photoOutput)
+      }
     }
   }
 
@@ -360,6 +363,16 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     return AVCaptureDevice.default(for: .video) != nil
   }
 
+  private func configureResponsiveCapture(_ photoOutput: AVCapturePhotoOutput) {
+    guard #available(iOS 17.0, *), photoOutput.isResponsiveCaptureSupported else {
+      return
+    }
+    photoOutput.isResponsiveCaptureEnabled = true
+    if photoOutput.isFastCapturePrioritizationSupported {
+      photoOutput.isFastCapturePrioritizationEnabled = true
+    }
+  }
+
   private func startSession() {
     guard hasAvailableCameraDevice else {
       return
@@ -389,6 +402,8 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     ? delegate.videoQuality.toPreset()
     : delegate.pictureSize.toCapturePreset()
     updateSessionPreset(preset: preset, withSessionConfiguration: false)
+
+    configureResponsiveCapture(photoOutput)
 
     session.commitConfiguration()
     addErrorNotification()
