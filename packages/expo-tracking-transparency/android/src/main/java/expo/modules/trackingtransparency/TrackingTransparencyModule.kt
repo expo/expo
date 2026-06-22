@@ -2,9 +2,12 @@ package expo.modules.trackingtransparency
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.functions.Coroutine
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import android.content.Context
 import expo.modules.kotlin.exception.Exceptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class TrackingTransparencyModule : Module() {
   private val context: Context
@@ -18,8 +21,8 @@ class TrackingTransparencyModule : Module() {
       return@Function getAdvertisingId()
     }
 
-    AsyncFunction("getAdvertisingIdAsync") {
-      return@AsyncFunction getAdvertisingId()
+    AsyncFunction("getAdvertisingIdAsync") Coroutine { ->
+      withContext(Dispatchers.IO) { getAdvertisingId() }
     }
   }
 
