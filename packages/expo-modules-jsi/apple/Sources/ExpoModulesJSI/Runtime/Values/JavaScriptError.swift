@@ -2,7 +2,7 @@ internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 public struct JavaScriptError: JavaScriptType, ~Copyable {
-  private weak let runtime: JavaScriptRuntime?
+  private nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   nonisolated(unsafe) private let pointee: facebook.jsi.JSError
 
   internal init(_ runtime: JavaScriptRuntime, _ error: facebook.jsi.JSError) {

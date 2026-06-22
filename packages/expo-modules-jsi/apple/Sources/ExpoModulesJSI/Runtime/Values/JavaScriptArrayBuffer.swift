@@ -6,7 +6,7 @@ internal import jsi
 /// A Swift representation of a JavaScript array buffer. Provides access to the
 /// underlying raw data pointer and size of the buffer.
 public struct JavaScriptArrayBuffer: ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  internal nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.ArrayBuffer
 
   internal init(_ runtime: JavaScriptRuntime, _ arrayBuffer: consuming facebook.jsi.ArrayBuffer) {

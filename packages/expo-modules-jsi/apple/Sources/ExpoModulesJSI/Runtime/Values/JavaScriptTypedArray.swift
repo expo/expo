@@ -8,7 +8,7 @@ internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 public struct JavaScriptTypedArray: ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  internal nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.Object
 
   /// The underlying `ArrayBuffer` backing this typed array. Stored alongside `pointee`

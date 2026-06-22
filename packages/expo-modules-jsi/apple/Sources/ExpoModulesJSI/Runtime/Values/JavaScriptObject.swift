@@ -6,7 +6,7 @@ internal import jsi
 /// A Swift representation of a JavaScript object. Provides access to JavaScript object properties and methods,
 /// supporting property access, modification, enumeration, prototype manipulation, and function calling.
 public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  internal nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   internal var pointee: facebook.jsi.Object
 
   /// Creates a new object in the given runtime.

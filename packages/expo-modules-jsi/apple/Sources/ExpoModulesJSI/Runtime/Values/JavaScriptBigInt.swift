@@ -37,7 +37,7 @@ internal import jsi
 /// - Note: BigInt values cannot be mixed with Number values in arithmetic operations in JavaScript.
 /// You must explicitly convert between them.
 public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  internal nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   internal var pointee: facebook.jsi.BigInt
 
   /// Creates a BigInt from an existing JSI BigInt.

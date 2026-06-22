@@ -10,7 +10,7 @@ internal import jsi
 public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private typealias PromiseContinuation = CheckedContinuation<JavaScriptValue.Ref, any Error>
 
-  private weak let runtime: JavaScriptRuntime?
+  private nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   private var object: JavaScriptObject
   private let deferredPromise = DeferredPromise()
 

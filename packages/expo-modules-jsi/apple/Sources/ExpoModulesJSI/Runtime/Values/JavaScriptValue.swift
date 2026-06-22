@@ -7,7 +7,7 @@ internal import jsi
 /// this one is a reference type so can be safely captured in closures, passed to other isolation context,
 /// and stored in containers that don't support non-copyable types etc.
 public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error {
-  internal weak let runtime: JavaScriptRuntime?
+  internal nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.Value
 
   /// Initializer from the existing JSI value.

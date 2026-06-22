@@ -5,7 +5,7 @@ internal final class HostObjectContext: Sendable {
   typealias PropertyNamesGetter = @JavaScriptActor () -> [String]
   typealias Deallocator = @JavaScriptActor () -> Void
 
-  weak let runtime: JavaScriptRuntime?
+  nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   let get: Getter
   let set: Setter?
   let getPropertyNames: PropertyNamesGetter

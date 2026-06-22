@@ -76,7 +76,7 @@ internal class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
 
 /// An actor that is dedicated for the specific runtime.
 internal actor JavaScriptRuntimeActor {
-  private weak let runtime: JavaScriptRuntime?
+  private nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   nonisolated private let executor: JavaScriptExecutor
 
   init(runtime: JavaScriptRuntime) {
@@ -95,7 +95,7 @@ internal actor JavaScriptRuntimeActor {
 
 /// Serial executor dedicated for the specific runtime.
 internal final class JavaScriptRuntimeExecutor: JavaScriptExecutor, @unchecked Sendable {
-  private weak let runtime: JavaScriptRuntime?
+  private nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
 
   init(runtime: JavaScriptRuntime) {
     self.runtime = runtime

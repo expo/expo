@@ -4,7 +4,7 @@ internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 public struct JavaScriptFunction: JavaScriptType, ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  internal nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.Function
 
   internal init(_ runtime: JavaScriptRuntime, _ pointee: consuming facebook.jsi.Function) {

@@ -2,7 +2,7 @@ internal import jsi
 
 /// Represents something that can be a JS property key.
 public final class JavaScriptPropNameID: JavaScriptType {
-  private weak let runtime: JavaScriptRuntime?
+  private nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.PropNameID
 
   /// Creates a PropNameID from existing `facebook.jsi.PropNameID`.

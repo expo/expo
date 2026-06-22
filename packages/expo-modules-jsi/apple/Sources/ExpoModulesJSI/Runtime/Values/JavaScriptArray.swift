@@ -5,7 +5,7 @@ internal import jsi
 /// and Swift, allowing you to access and manipulate JavaScript array elements from Swift code. It maintains a reference
 /// to the underlying JavaScript array and provides Swift-friendly APIs for common array operations.
 public struct JavaScriptArray: JavaScriptType, ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  internal nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.Array
 
   /// Creates a new JavaScript array with the specified length.

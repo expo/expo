@@ -5,7 +5,7 @@ internal import jsi
 /// Represents a weak reference to an object. If the only references to an object are these,
 /// the object is eligible for GC. Method names are inspired by C++ `std::weak_ptr`.
 public struct JavaScriptWeakObject: JavaScriptType, ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  internal nonisolated(unsafe) weak var runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.WeakObject
 
   /// Initializes a weak object with the underlying JSI weak object.
