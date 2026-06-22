@@ -17,6 +17,10 @@ class TrackingTransparencyModule : Module() {
     Function("getAdvertisingId") {
       return@Function getAdvertisingId()
     }
+
+    AsyncFunction("getAdvertisingIdAsync") {
+      return@AsyncFunction getAdvertisingId()
+    }
   }
 
   private fun getAdvertisingId(): String? {
