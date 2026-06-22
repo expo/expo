@@ -12,6 +12,7 @@ import {
 } from './Examples';
 import * as Template from './Template';
 import { generateAgentFiles } from './generateAgentFiles';
+import { maybeInstallAgentSkillsAsync } from './installAgentSkills';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
 import { applySdkVersionToTemplateAsync } from './promptSdkVersion';
@@ -38,6 +39,7 @@ export type Options = {
   example?: string | true;
   yes: boolean;
   agentsMd: boolean;
+  agentSkills?: boolean;
 };
 
 const debug = require('debug')('expo:init:create') as typeof console.log;
@@ -57,7 +59,10 @@ async function resolveProjectRootArgAsync(
   }
 }
 
-async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
+async function setupDependenciesAsync(
+  projectRoot: string,
+  props: Pick<Options, 'install'>
+): Promise<PackageManagerName> {
   const shouldInstall = props.install;
   const packageManager = resolvePackageManager();
 
@@ -79,6 +84,7 @@ async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 
   if (!shouldInstall) {
     logNodeInstallWarning(cdPath, packageManager, needsPodsInstalled && !podsInstalled);
   }
+  return packageManager;
 }
 
 export async function createAsync(inputPath: string, options: Options): Promise<void> {
@@ -135,7 +141,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     }
   );
 
-  await setupDependenciesAsync(projectRoot, props);
+  const packageManager = await setupDependenciesAsync(projectRoot, props);
 
   if (props.agentsMd) {
     generateAgentFiles(projectRoot);
@@ -153,6 +159,8 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     debug(`Error initializing git: %O`, error);
     // todo: check if git is installed, bail out
   }
+
+  await maybeInstallAgentSkillsAsync(projectRoot, props, packageManager);
 }
 
 async function createExampleAsync(inputPath: string, props: Options): Promise<void> {
@@ -224,7 +232,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
       `Something went wrong in downloading and extracting the example files: ${error.message}`,
   });
 
-  await setupDependenciesAsync(projectRoot, props);
+  const packageManager = await setupDependenciesAsync(projectRoot, props);
 
   if (props.agentsMd) {
     generateAgentFiles(projectRoot);
@@ -242,6 +250,8 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     debug(`Error initializing git: %O`, error);
     // todo: check if git is installed, bail out
   }
+
+  await maybeInstallAgentSkillsAsync(projectRoot, props, packageManager);
 }
 
 function getChangeDirectoryPath(projectRoot: string): string {
