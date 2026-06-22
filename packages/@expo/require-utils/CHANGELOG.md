@@ -6,9 +6,9 @@
 
 ### 🎉 New features
 
-- Add an `importAsync` utility and use it for dynamic ESM imports in `loadModule`. ([#47139](https://github.com/expo/expo/pull/47139) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 🐛 Bug fixes
+
+- Add an `importAsync` utility and use it for dynamic ESM imports in `loadModule`. ([#47139](https://github.com/expo/expo/pull/47139) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
