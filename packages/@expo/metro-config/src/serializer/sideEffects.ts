@@ -15,7 +15,7 @@ import fs from 'fs';
 import path from 'path';
 import picomatch from 'picomatch';
 
-import { findUpPackageJsonPath } from './findUpPackageJsonPath';
+import { findUpPackageJsonPath } from '../utils/findUpPackageJsonPath';
 
 const debug = require('debug')('expo:side-effects') as typeof console.log;
 

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Internal] Align find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
+
 ## 29.0.18 — 2026-05-28
 
 ### 🐛 Bug fixes
