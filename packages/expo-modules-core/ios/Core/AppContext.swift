@@ -722,9 +722,18 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public static func modulesProvider(withName providerName: String = "ExpoModulesProvider") -> ModulesProvider {
     // [0] When ExpoModulesCore is built as separated framework/module,
     // we should explicitly load main bundle's `ExpoModulesProvider` class.
-    if let bundleName = Bundle.main.infoDictionary?["CFBundleName"],
-       let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
-      return providerClass.init()
+    // CFBundleExecutable is tried first: it equals $(PRODUCT_NAME:c99extidentifier) and
+    // directly matches the Swift module name. CFBundleName is kept as a fallback for the
+    // uncommon case where both values are identical valid identifiers.
+    let mainBundleNames = [
+      Bundle.main.infoDictionary?["CFBundleExecutable"],
+      Bundle.main.infoDictionary?["CFBundleName"]
+    ].compactMap { $0 as? String }
+
+    for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: mainBundleNames) {
+      if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+        return providerClass.init()
+      }
     }
 
     // [1] Fallback to `ExpoModulesProvider` class from the current module.
@@ -734,14 +743,28 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
     // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
-      guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
-      if let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
-        return providerClass.init()
+      let frameworkBundleNames = [
+        bundle.infoDictionary?["CFBundleExecutable"],
+        bundle.infoDictionary?["CFBundleName"]
+      ].compactMap { $0 as? String }
+
+      for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: frameworkBundleNames) {
+        if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+          return providerClass.init()
+        }
       }
     }
 
     // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
+  }
+
+  internal static func moduleProviderClassNames(withName providerName: String, bundleNames: [String]) -> [String] {
+    var seen = Set<String>()
+    return bundleNames.compactMap { bundleName in
+      let candidate = "\(bundleName).\(providerName)"
+      return seen.insert(candidate).inserted ? candidate : nil
+    }
   }
 
   public func reloadAppAsync(_ reason: String = "Reload from appContext") {
