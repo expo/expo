@@ -59,7 +59,6 @@ data class ExitRecord(
       terminationReason = description,
       appVersion = appVersion,
       timestampBegin = crashTimestamp,
-      timestampEnd = crashTimestamp,
       ingestedAt = ingestedAt
     )
   }

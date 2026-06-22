@@ -34,6 +34,11 @@ class JvmCrashHandler internal constructor(
   companion object {
     private val installed = java.util.concurrent.atomic.AtomicBoolean(false)
 
+    // The handler `install` displaced, kept so `resetForTesting` can put it back.
+    // Without restoring it, the next `install` would capture our own leftover
+    // handler as its previous one and stack a second instance in front of it.
+    private var displacedHandler: Thread.UncaughtExceptionHandler? = null
+
     /**
      * The current main session id, stamped into pending-crash files. `null` from
      * process start until the module creates its main session, so a crash before
@@ -51,14 +56,17 @@ class JvmCrashHandler internal constructor(
       if (!installed.compareAndSet(false, true)) {
         return
       }
-      val current = Thread.getDefaultUncaughtExceptionHandler()
+      displacedHandler = Thread.getDefaultUncaughtExceptionHandler()
       Thread.setDefaultUncaughtExceptionHandler(
-        JvmCrashHandler(fileWriter, current)
+        JvmCrashHandler(fileWriter, displacedHandler)
       )
     }
 
     internal fun resetForTesting() {
-      installed.set(false)
+      if (installed.getAndSet(false)) {
+        Thread.setDefaultUncaughtExceptionHandler(displacedHandler)
+        displacedHandler = null
+      }
       currentSessionId = null
     }
   }

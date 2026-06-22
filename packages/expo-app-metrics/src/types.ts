@@ -302,13 +302,18 @@ export type CrashReport = {
   appVersion: string;
   /**
    * Start of the diagnostic window. On iOS this is MetricKit's payload window
-   * (typically a 24-hour bucket); on Android the exact crash moment
-   * (`timestampBegin` equals `timestampEnd`). ISO 8601 — sub-second precision
-   * differs between platforms, so parse rather than string-compare.
+   * (typically a 24-hour bucket); on Android the exact crash moment. ISO 8601 —
+   * sub-second precision differs between platforms, so parse rather than
+   * string-compare.
    */
   timestampBegin: string;
-  /** End of the diagnostic window. See `timestampBegin`. */
-  timestampEnd: string;
+  /**
+   * End of the diagnostic window. Present on iOS (the window end). Absent on
+   * Android, which captures the exact crash moment — treat a missing value as
+   * equal to `timestampBegin` (a zero-width window).
+   * @platform ios
+   */
+  timestampEnd?: string;
   /**
    * When this device learned about the crash and constructed the report —
    * the next launch after the crash, not the crash moment itself.

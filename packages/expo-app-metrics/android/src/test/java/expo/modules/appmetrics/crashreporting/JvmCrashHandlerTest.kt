@@ -31,12 +31,14 @@ class JvmCrashHandlerTest {
 
   @After
   fun restoreDefaultHandler() {
-    Thread.setDefaultUncaughtExceptionHandler(originalHandler)
+    // Reset first: it restores the handler `install` displaced. Then force the
+    // real original back, so a test that set a custom default can't leak it.
     JvmCrashHandler.resetForTesting()
+    Thread.setDefaultUncaughtExceptionHandler(originalHandler)
   }
 
   private fun writer(directory: File = tmp.root): CrashFileWriter =
-    CrashFileWriter(directory).also { it.prepare() }
+    CrashFileWriter(directory)
 
   private fun reader(directory: File = tmp.root): CrashFileReader = CrashFileReader(directory)
 
@@ -124,6 +126,20 @@ class JvmCrashHandlerTest {
     JvmCrashHandler.install(writer())
 
     assertSame(first, Thread.getDefaultUncaughtExceptionHandler())
+  }
+
+  @Test
+  fun `resetForTesting restores the handler that was installed in front of`() {
+    // Without restoring it, our handler stays the process default after reset, so
+    // the next install would wrap it — stacking two handlers that each record the
+    // same crash.
+    val original = RecordingHandler()
+    Thread.setDefaultUncaughtExceptionHandler(original)
+    JvmCrashHandler.install(writer())
+
+    JvmCrashHandler.resetForTesting()
+
+    assertSame(original, Thread.getDefaultUncaughtExceptionHandler())
   }
 
   @Test

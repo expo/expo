@@ -16,10 +16,12 @@ data class CrashReport(
   val callStackTree: CallStackTree? = null,
   /** App version at the time of the crash. */
   val appVersion: String,
-  /** Crash window start. Android knows the exact crash moment, so begin == end. */
+  /**
+   * The exact crash moment. iOS reports a diagnostic window (`timestampBegin`..`timestampEnd`);
+   * Android knows the precise instant, so it emits only the start and the cross-platform
+   * `timestampEnd` is resolved from it in JS.
+   */
   val timestampBegin: String,
-  /** Crash window end. Android knows the exact crash moment, so begin == end. */
-  val timestampEnd: String,
   /**
    * When this device processed the crash and constructed the report — the next
    * launch after the crash, not the crash moment itself.
@@ -55,8 +57,8 @@ data class CrashReport(
 
     /**
      * Builds a report from a JVM throwable caught by the uncaught-exception handler.
-     * `crashTimestamp` is the crash moment (used as a zero-width window); `ingestedAt`
-     * is when the report was assembled on the next launch.
+     * `crashTimestamp` is the crash moment; `ingestedAt` is when the report was
+     * assembled on the next launch.
      */
     fun fromThrowable(
       throwable: Throwable,
@@ -69,7 +71,6 @@ data class CrashReport(
         callStackTree = CallStackTreeBuilder.fromStackTrace(throwable.stackTrace),
         appVersion = appVersion,
         timestampBegin = crashTimestamp,
-        timestampEnd = crashTimestamp,
         ingestedAt = ingestedAt
       )
 

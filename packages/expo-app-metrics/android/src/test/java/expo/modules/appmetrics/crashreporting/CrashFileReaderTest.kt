@@ -7,19 +7,24 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.io.File
 
 /**
  * Reads back what `CrashFileWriter` wrote: every test writes a fixture with a real writer and parses
  * it with a `CrashFileReader` over the same directory, so the two stay honest about the shared
- * `CrashFileFormat`.
+ * `CrashFileFormat`. Robolectric for the real `android.util.AtomicFile` the writer commits through.
  */
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE, sdk = [28])
 class CrashFileReaderTest {
   @get:Rule
   val tmp = TemporaryFolder()
 
   private fun writer(directory: File = tmp.root): CrashFileWriter =
-    CrashFileWriter(directory).also { it.prepare() }
+    CrashFileWriter(directory)
 
   private fun reader(directory: File = tmp.root): CrashFileReader = CrashFileReader(directory)
 
@@ -183,7 +188,7 @@ class CrashFileReaderTest {
 
   @Test
   fun `ignores temp files and unrelated files`() {
-    tmp.newFile("crash-1-2.json.tmp").writeText("partial write")
+    tmp.newFile("crash-1-2.json.new").writeText("partial write")
     tmp.newFile("unrelated.json").writeText("{}")
 
     assertEquals(emptyList<PendingJvmCrash>(), reader().listPendingCrashes())
@@ -211,7 +216,7 @@ class CrashFileReaderTest {
 
   @Test
   fun `deletes orphaned temp files left by a dead process`() {
-    val orphan = tmp.newFile("crash-1-2.json.tmp").apply { writeText("partial write") }
+    val orphan = tmp.newFile("crash-1-2.json.new").apply { writeText("partial write") }
 
     reader().deleteOrphanedTempFiles(currentPid = 999)
 
@@ -222,7 +227,7 @@ class CrashFileReaderTest {
   fun `keeps temp files belonging to the current process`() {
     // The current process may be writing this temp file right now (a crash while
     // processing); deleting it would drop a live crash report.
-    val inFlight = tmp.newFile("crash-999-2.json.tmp").apply { writeText("partial write") }
+    val inFlight = tmp.newFile("crash-999-2.json.new").apply { writeText("partial write") }
 
     reader().deleteOrphanedTempFiles(currentPid = 999)
 
@@ -231,9 +236,9 @@ class CrashFileReaderTest {
 
   @Test
   fun `sweeps every foreign-pid orphan while keeping the current pid's temp`() {
-    val orphanA = tmp.newFile("crash-1-2.json.tmp").apply { writeText("a") }
-    val orphanB = tmp.newFile("crash-2-3.json.tmp").apply { writeText("b") }
-    val inFlight = tmp.newFile("crash-999-4.json.tmp").apply { writeText("c") }
+    val orphanA = tmp.newFile("crash-1-2.json.new").apply { writeText("a") }
+    val orphanB = tmp.newFile("crash-2-3.json.new").apply { writeText("b") }
+    val inFlight = tmp.newFile("crash-999-4.json.new").apply { writeText("c") }
 
     reader().deleteOrphanedTempFiles(currentPid = 999)
 
@@ -286,7 +291,7 @@ class CrashFileReaderTest {
 
   @Test
   fun `leaves temp files and unrelated files untouched`() {
-    val temp = tmp.newFile("crash-1-2.json.tmp").apply { writeText("partial write") }
+    val temp = tmp.newFile("crash-1-2.json.new").apply { writeText("partial write") }
     val unrelated = tmp.newFile("unrelated.json").apply { writeText("{}") }
 
     reader().deleteMalformedFiles()

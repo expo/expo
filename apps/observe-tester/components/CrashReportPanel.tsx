@@ -29,7 +29,8 @@ export function CrashReportPanel({ report }: { report: CrashReport }) {
       {report.exceptionReason != null ? <ExceptionReason reason={report.exceptionReason} /> : null}
       <View style={styles.timing}>
         <Text style={[styles.timingText, { color: theme.text.secondary }]}>
-          Window: {formatDate(report.timestampBegin)} → {formatDate(report.timestampEnd)}
+          Window: {formatDate(report.timestampBegin)} →{' '}
+          {report.timestampEnd ? formatDate(report.timestampEnd) : ''}
         </Text>
         <Text style={[styles.timingText, { color: theme.text.secondary }]}>
           Ingested: {formatDate(report.ingestedAt)}

@@ -1,21 +1,25 @@
 package expo.modules.appmetrics.crashreporting
 
-import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.io.File
 
+// Robolectric for the real `android.util.AtomicFile` the writer commits through.
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE, sdk = [28])
 class CrashFileWriterTest {
   @get:Rule
   val tmp = TemporaryFolder()
 
   private fun writer(directory: File = tmp.root): CrashFileWriter =
-    CrashFileWriter(directory).also { it.prepare() }
+    CrashFileWriter(directory)
 
   private fun throwable(message: String? = "boom"): Throwable = IllegalStateException(message)
 
@@ -35,7 +39,6 @@ class CrashFileWriterTest {
     assertTrue(file!!.exists())
     assertTrue(file.name.startsWith("crash-123-1700000000000"))
     assertTrue(file.name.endsWith(".json"))
-    assertFalse(file.name.endsWith(".tmp"))
   }
 
   @Test
@@ -44,20 +47,8 @@ class CrashFileWriterTest {
 
     writer.write(throwable(), "main", "session-1", 123, 1_700_000_000_000)
 
-    assertTrue(tmp.root.listFiles()!!.none { it.name.endsWith(".tmp") })
-  }
-
-  @Test
-  fun `prepare creates the directory off the calling thread`() = runTest {
-    val dir = File(tmp.root, "crashes")
-    val writer = CrashFileWriter(dir, backgroundScope)
-
-    val job = writer.prepare()
-    // StandardTestDispatcher defers the launch, so nothing has run yet.
-    assertFalse(dir.exists())
-
-    job.join()
-    assertTrue(dir.isDirectory)
+    // No `AtomicFile` staging artifacts survive a committed write.
+    assertTrue(tmp.root.listFiles()!!.none { it.name.endsWith(".new") || it.name.endsWith(".bak") })
   }
 
   @Test
@@ -65,7 +56,6 @@ class CrashFileWriterTest {
     // Point the writer at a path occupied by a regular file so every write fails.
     val blocked = tmp.newFile("not-a-directory")
     val writer = CrashFileWriter(blocked)
-    writer.prepare()
 
     val file = writer.write(throwable(), "main", "session-1", 123, 1_700_000_000_000)
 

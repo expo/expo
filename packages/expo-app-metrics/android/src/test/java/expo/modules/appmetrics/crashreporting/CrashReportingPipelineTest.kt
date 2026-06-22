@@ -61,7 +61,7 @@ class CrashReportingPipelineTest {
       // Launch 1: session starts, handler is installed, the app crashes.
       sessionManager.startSessionWithIdAt(crashedSessionId, "2023-11-14T22:00:00.000Z")
       JvmCrashHandler.currentSessionId = crashedSessionId
-      val writer = CrashFileWriter(tmp.root).also { it.prepare() }
+      val writer = CrashFileWriter(tmp.root)
       val reader = CrashFileReader(tmp.root)
       val handler = JvmCrashHandler(
         fileWriter = writer,

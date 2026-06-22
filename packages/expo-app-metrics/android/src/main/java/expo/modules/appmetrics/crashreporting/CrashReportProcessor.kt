@@ -3,6 +3,7 @@ package expo.modules.appmetrics.crashreporting
 import android.content.Context
 import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.utils.TimeUtils
+import java.lang.ref.WeakReference
 
 /**
  * Where a crash report came from. Lets the attribution callback treat an id-less
@@ -24,11 +25,14 @@ interface LastProcessedExitStore {
   fun set(timestampMillis: Long)
 }
 
-class PreferencesLastProcessedExitStore(private val context: Context) : LastProcessedExitStore {
-  override fun get(): Long = AppMetricsPreferences.getLastProcessedExitTimestampMillis(context)
+class PreferencesLastProcessedExitStore(context: Context) : LastProcessedExitStore {
+  private val contextRef = WeakReference(context)
+
+  override fun get(): Long =
+    contextRef.get()?.let { AppMetricsPreferences.getLastProcessedExitTimestampMillis(it) } ?: 0L
 
   override fun set(timestampMillis: Long) {
-    AppMetricsPreferences.setLastProcessedExitTimestampMillis(context, timestampMillis)
+    contextRef.get()?.let { AppMetricsPreferences.setLastProcessedExitTimestampMillis(it, timestampMillis) }
   }
 }
 

@@ -1,29 +1,18 @@
 package expo.modules.appmetrics.crashreporting
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import android.util.AtomicFile
 import kotlinx.serialization.encodeToString
 import java.io.File
 
 /**
  * Crash-time persistence for JVM crashes. The write path runs inside a dying
  * process, so it stays minimal: build a `PendingJvmCrashPayload`, JSON-encode it,
- * write to a temp file and atomically rename.
+ * and hand it to `AtomicFile`, which stages the bytes, fsyncs, then commits.
  *
  * One file per pid+timestamp, so a crash burst (crash → relaunch → crash)
  * can't overwrite a file the processor hasn't read yet.
  */
-class CrashFileWriter(
-  private val directory: File,
-  private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-) {
-  /**
-   * Creates the crash directory, to keep the write path leaner.
-   */
-  fun prepare(): Job = scope.launch { runCatching { directory.mkdirs() } }
-
+class CrashFileWriter(private val directory: File) {
   /**
    * Writes one pending-crash file. Returns the file, or `null` on any failure —
    * this runs on the crash path and must never throw into the handler chain.
@@ -40,7 +29,6 @@ class CrashFileWriter(
         return null
       }
       val file = File(directory, "crash-$pid-$crashedAtMillis.json")
-      val tempFile = File(directory, file.name + CrashFileFormat.TEMP_SUFFIX)
       val payload = PendingJvmCrashPayload(
         sessionId = sessionId,
         pid = pid,
@@ -51,16 +39,21 @@ class CrashFileWriter(
         // Same frame source `fromThrowable` uses.
         stackFrames = throwable.stackTrace.map { it.toString() }
       )
-      tempFile.writeText(CrashFileFormat.json.encodeToString(payload))
-      // Commit with an atomic rename: the reader only matches the final
-      // `.json` name, so it never sees a half-written file. A crash mid-write
-      // leaves the `.json.tmp` behind, swept later by `deleteOrphanedTempFiles`.
-      if (tempFile.renameTo(file)) {
-        file
-      } else {
-        tempFile.delete()
-        null
+      // `AtomicFile` stages the bytes in a sibling temp, fsyncs, then renames it
+      // onto `file`. The reader only matches the final `.json`, so it never sees a
+      // half-written file; a crash mid-write leaves only an orphaned temp, swept
+      // later by `deleteOrphanedTempFiles`. The fsync also survives a power loss
+      // the bare rename wouldn't.
+      val atomicFile = AtomicFile(file)
+      val stream = atomicFile.startWrite()
+      try {
+        stream.write(CrashFileFormat.json.encodeToString(payload).toByteArray())
+        atomicFile.finishWrite(stream)
+      } catch (e: Throwable) {
+        atomicFile.failWrite(stream)
+        return null
       }
+      file
     } catch (_: Throwable) {
       null
     }

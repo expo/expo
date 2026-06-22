@@ -1,5 +1,6 @@
 package expo.modules.appmetrics.crashreporting
 
+import android.content.Context
 import expo.modules.appmetrics.utils.TimeUtils
 import kotlinx.serialization.decodeFromString
 import java.io.File
@@ -12,17 +13,17 @@ import java.io.File
 class CrashFileReader(private val directory: File) {
   /**
    * Parses every pending-crash file in the directory. Corrupt or partially
-   * written files are skipped (a `.tmp` that never got renamed is invisible by
-   * construction, and is later reclaimed by `deleteOrphanedTempFiles`).
+   * written files are skipped (an `AtomicFile` temp that never got committed is
+   * invisible by construction, and is later reclaimed by `deleteOrphanedTempFiles`).
    */
   fun listPendingCrashes(): List<PendingJvmCrash> = finalCrashFiles().mapNotNull { parse(it) }
 
   /**
-   * Deletes `.tmp` files orphaned by a process that died mid-write.
+   * Deletes the temp files `AtomicFile` orphans when a process dies mid-write.
    *
-   * A completed write atomically renames its temp to a `.json`, so any `.tmp` still on disk is dead
-   * weight the reader will never parse. Skips temp files for `currentPid`, which may belong to an
-   * in-flight crash write happening right now — deleting it would drop a live crash report.
+   * A completed write atomically renames its temp onto the final `.json`, so any temp still on disk
+   * is dead weight the reader will never parse. Skips temp files for `currentPid`, which may belong
+   * to an in-flight crash write happening right now — deleting it would drop a live crash report.
    */
   fun deleteOrphanedTempFiles(currentPid: Int = android.os.Process.myPid()) {
     val files = directory.listFiles() ?: return
@@ -54,7 +55,7 @@ class CrashFileReader(private val directory: File) {
     }
   }
 
-  /** Final pending-crash files (`.json`); excludes `.tmp` and unrelated files by name. */
+  /** Final pending-crash files (`.json`); excludes `AtomicFile` temps and unrelated files by name. */
   private fun finalCrashFiles(): List<File> =
     directory.listFiles { file -> CrashFileFormat.FILE_NAME_PATTERN.matches(file.name) }?.toList() ?: emptyList()
 
@@ -74,7 +75,7 @@ class CrashFileReader(private val directory: File) {
     }.getOrNull()
 
   companion object {
-    fun forContext(context: android.content.Context): CrashFileReader =
+    fun forContext(context: Context): CrashFileReader =
       CrashFileReader(CrashFileFormat.crashesDir(context))
   }
 }
@@ -99,20 +100,17 @@ data class PendingJvmCrash(
 ) {
   /**
    * Normalizes the parsed file into the cross-platform `CrashReport` shape.
-   * Timestamps use the package's millisecond ISO format so they compare
+   * `timestampBegin` uses the package's millisecond ISO format so it compares
    * lexicographically against session rows. (iOS emits whole-second ISO in the
-   * same fields — both are valid ISO 8601 and consumers must parse, not
+   * same field — both are valid ISO 8601 and consumers must parse, not
    * string-compare, across platforms.)
    */
-  fun toCrashReport(ingestedAt: String, appVersion: String): CrashReport {
-    val crashTimestamp = TimeUtils.millisToTimestamp(crashedAtMillis)
-    return CrashReport(
+  fun toCrashReport(ingestedAt: String, appVersion: String): CrashReport =
+    CrashReport(
       exceptionReason = composedMessage,
       callStackTree = CallStackTreeBuilder.fromSymbols(stackFrames),
       appVersion = appVersion,
-      timestampBegin = crashTimestamp,
-      timestampEnd = crashTimestamp,
+      timestampBegin = TimeUtils.millisToTimestamp(crashedAtMillis),
       ingestedAt = ingestedAt
     )
-  }
 }

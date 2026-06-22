@@ -55,7 +55,7 @@ class CrashReportProcessorTest {
 
   @Before
   fun setUp() {
-    crashFileWriter = CrashFileWriter(tmp.root).also { it.prepare() }
+    crashFileWriter = CrashFileWriter(tmp.root)
     crashFileReader = CrashFileReader(tmp.root)
   }
 
@@ -174,11 +174,11 @@ class CrashReportProcessorTest {
   @Test
   fun `sweeps temp files orphaned by a dead process`() =
     runTest {
-      // A `.tmp` from a process that died mid-write is never read; the processor
-      // must reclaim it so it doesn't leak. Use a foreign pid so it isn't treated
-      // as an in-flight write by the current process.
+      // An `AtomicFile` temp from a process that died mid-write is never read; the
+      // processor must reclaim it so it doesn't leak. Use a foreign pid so it isn't
+      // treated as an in-flight write by the current process.
       val foreignPid = android.os.Process.myPid() + 1
-      val orphan = java.io.File(tmp.root, "crash-$foreignPid-1.json.tmp").apply { writeText("partial") }
+      val orphan = java.io.File(tmp.root, "crash-$foreignPid-1.json.new").apply { writeText("partial") }
 
       processor().process()
 

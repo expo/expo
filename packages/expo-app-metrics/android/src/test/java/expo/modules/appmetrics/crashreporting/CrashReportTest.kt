@@ -76,11 +76,10 @@ class CrashReportTest {
   }
 
   @Test
-  fun `fromThrowable uses the crash moment as a zero-width window`() {
+  fun `fromThrowable stamps the crash moment and metadata`() {
     val report = reportFromThrowable()
 
     assertEquals(crashTimestamp, report.timestampBegin)
-    assertEquals(crashTimestamp, report.timestampEnd)
     assertEquals(ingestedAt, report.ingestedAt)
     assertEquals("1.2.3", report.appVersion)
   }
@@ -107,7 +106,9 @@ class CrashReportTest {
     assertTrue("exceptionReason" in element)
     assertTrue("callStackTree" in element)
     assertEquals(crashTimestamp, element["timestampBegin"]?.jsonPrimitive?.content)
-    assertEquals(crashTimestamp, element["timestampEnd"]?.jsonPrimitive?.content)
+    // Android collapses the window to the exact moment: only the start is emitted,
+    // and JS resolves the end from it.
+    assertFalse("timestampEnd" in element)
     assertEquals(ingestedAt, element["ingestedAt"]?.jsonPrimitive?.content)
     assertEquals("1.2.3", element["appVersion"]?.jsonPrimitive?.content)
 

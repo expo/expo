@@ -17,22 +17,20 @@ internal object CrashFileFormat {
   }
 
   /**
-   * Suffix for the temp file the writer fills in before atomically renaming it to its final
-   * `crash-{pid}-{timestamp}.json` name. The write happens on the crash path inside a dying process,
-   * so a write can be truncated or orphaned at any point; staging under `.tmp` and committing with a
-   * rename makes the final file appear all-at-once or not at all. Because `FILE_NAME_PATTERN` only
-   * matches the final `.json` name, the reader never picks up a `.tmp` file that is still being
-   * written (or was left behind by a process that died mid-write), so it only ever parses complete
-   * files. An orphan left by a mid-write death is swept on the next launch by
-   * `CrashFileReader.deleteOrphanedTempFiles`.
+   * Matches a finished pending-crash file (`crash-{pid}-{timestamp}.json`). The writer commits
+   * through `AtomicFile`, so the final `.json` only appears after the atomic rename — an interrupted
+   * write never matches this, and the reader only ever parses complete files.
    */
-  const val TEMP_SUFFIX = ".tmp"
-
-  /** Matches a finished pending-crash file (`crash-{pid}-{timestamp}.json`); skips `.tmp` by design. */
   val FILE_NAME_PATTERN = Regex("""crash-\d+-\d+\.json""")
 
-  /** Matches an orphaned/in-progress temp file (`crash-{pid}-{timestamp}.json.tmp`); group 1 is the pid. */
-  val TEMP_FILE_PATTERN = Regex("""crash-(\d+)-\d+\.json\.tmp""")
+  /**
+   * Matches any non-final sibling of a crash file: a `crash-{pid}-{timestamp}.json` base name with
+   * an extra extension. `AtomicFile` stages and backs up under suffixes like `.new`/`.bak`, but
+   * rather than enumerate them, anything carrying a crash base name that isn't the final `.json` is
+   * a temp the reader can sweep. Group 1 is the pid, so the current process's in-flight temp is
+   * spared.
+   */
+  val TEMP_FILE_PATTERN = Regex("""crash-(\d+)-\d+\.json\..+""")
 
   /**
    * The canonical pending-crash directory — `noBackupFilesDir` so stale crash

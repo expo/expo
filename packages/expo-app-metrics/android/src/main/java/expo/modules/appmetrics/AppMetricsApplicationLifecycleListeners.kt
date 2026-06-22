@@ -16,7 +16,7 @@ class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleListener {
     // during startup would otherwise be missed entirely. The session id is null
     // until the module creates its main session (see `JvmCrashHandler.currentSessionId`),
     // so a crash before then is captured as an orphan rather than misattributed.
-    JvmCrashHandler.install(CrashFileWriter.forContext(application).also { it.prepare() })
+    JvmCrashHandler.install(CrashFileWriter.forContext(application))
     // Install the OkHttp factory hook as early as possible - before React Native lazily caches
     // its client. See `OkHttpClientProviderHook` for the race we're trying to win.
     //
