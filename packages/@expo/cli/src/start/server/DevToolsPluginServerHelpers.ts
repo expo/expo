@@ -23,6 +23,16 @@ export type DevToolsPluginWebSocketHandler = (
   server: WebSocketServer
 ) => void;
 
+type DevToolsPluginRequestHandlerModule =
+  | DevToolsPluginRequestHandler
+  | { default?: DevToolsPluginRequestHandler };
+
+type DevToolsPluginWebSocketHandlerModule = {
+  webSocketHandlers?: Record<string, DevToolsPluginWebSocketHandler>;
+};
+
+const loadModuleAsync = loadModule as <T>(moduleName: string) => Promise<T>;
+
 export async function loadRequestHandlerAsync({
   packageName,
   serverEntryPoint,
@@ -30,7 +40,7 @@ export async function loadRequestHandlerAsync({
   packageName: string;
   serverEntryPoint: string;
 }): Promise<DevToolsPluginRequestHandler> {
-  const serverModule = await loadModule(serverEntryPoint);
+  const serverModule = await loadModuleAsync<DevToolsPluginRequestHandlerModule>(serverEntryPoint);
   const handler = typeof serverModule === 'function' ? serverModule : serverModule?.default;
   if (typeof handler !== 'function') {
     throw new Error(
@@ -50,7 +60,8 @@ export async function loadWebSocketServerAsync({
   packageName: string;
   serverEntryPoint: string;
 }): Promise<Record<string, WebSocketServer>> {
-  const serverModule = await loadModule(serverEntryPoint);
+  const serverModule =
+    await loadModuleAsync<DevToolsPluginWebSocketHandlerModule>(serverEntryPoint);
   const handlers: Record<string, DevToolsPluginWebSocketHandler> =
     serverModule?.webSocketHandlers ?? {};
 
