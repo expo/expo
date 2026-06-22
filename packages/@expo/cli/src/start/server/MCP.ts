@@ -60,12 +60,12 @@ export async function maybeCreateMCPServerAsync({
 
   try {
     debug(`Loading MCP modules: expo-mcp=${mcpPackagePath}, mcp-tunnel=${mcpTunnelPackagePath}`);
-    const { addMcpCapabilities } = await (loadModule as <T>(moduleName: string) => Promise<T>)<{
+    const { addMcpCapabilities } = (await loadModule(mcpPackagePath)) as {
       addMcpCapabilities: (server: McpServerProxy, projectRoot: string) => void;
-    }>(mcpPackagePath);
-    const { TunnelMcpServerProxy } = await (loadModule as <T>(moduleName: string) => Promise<T>)<{
+    };
+    const { TunnelMcpServerProxy } = (await loadModule(mcpTunnelPackagePath)) as {
       TunnelMcpServerProxy: typeof TunnelMcpServerProxyType;
-    }>(mcpTunnelPackagePath);
+    };
 
     const logger = {
       ...Log,
