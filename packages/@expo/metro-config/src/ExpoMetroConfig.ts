@@ -28,6 +28,7 @@ import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { toPosixPath } from './utils/filePath';
+import { getPkgVersion } from './utils/getPkgVersion';
 import { setOnReadonly } from './utils/setOnReadonly';
 
 const debug = require('debug')('expo:metro:config') as typeof console.log;
@@ -444,32 +445,6 @@ export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 
 // re-export for legacy cases.
 export const EXPO_DEBUG = env.EXPO_DEBUG;
-
-function getPkgVersion(projectRoot: string, pkgName: string): string | null {
-  const targetPkg = resolveFrom.silent(projectRoot, pkgName);
-  if (!targetPkg) return null;
-  const targetPkgJson = findUpPackageJson(targetPkg);
-  if (!targetPkgJson) return null;
-  const pkg = JsonFile.read(targetPkgJson);
-
-  debug(`${pkgName} package.json:`, targetPkgJson);
-  const pkgVersion = pkg.version;
-  if (typeof pkgVersion === 'string') {
-    return pkgVersion;
-  }
-
-  return null;
-}
-
-function findUpPackageJson(cwd: string): string | null {
-  if (['.', path.sep].includes(cwd)) return null;
-
-  const found = resolveFrom.silent(cwd, './package.json');
-  if (found) {
-    return found;
-  }
-  return findUpPackageJson(path.dirname(cwd));
-}
 
 function getExpoOptional(projectRoot: string, subModule = 'package.json'): string | undefined {
   return resolveFrom.silent(projectRoot, `expo/${subModule}`);

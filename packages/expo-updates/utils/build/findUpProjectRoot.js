@@ -7,13 +7,14 @@ exports.findUpProjectRoot = findUpProjectRoot;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 function findUpProjectRoot(cwd) {
-    if (['.', path_1.default.sep].includes(cwd)) {
+    if (cwd === path_1.default.sep || cwd === '.') {
         return null;
     }
-    if (fs_1.default.existsSync(path_1.default.join(cwd, 'package.json'))) {
-        return cwd;
+    for (let dir = cwd; path_1.default.dirname(dir) !== dir; dir = path_1.default.dirname(dir)) {
+        const file = path_1.default.resolve(dir, 'package.json');
+        if (fs_1.default.existsSync(file)) {
+            return dir;
+        }
     }
-    else {
-        return findUpProjectRoot(path_1.default.dirname(cwd));
-    }
+    return null;
 }
