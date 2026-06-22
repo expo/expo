@@ -167,4 +167,26 @@ internal enum DispatchUtils {
     }
     return nil
   }
+
+  /// Computes the cursor value the dispatch loop should persist after a single dispatch attempt.
+  ///
+  /// - `.success` advances to `highestId` — the rows have been accepted by the server.
+  /// - `.nonRetryable` ALSO advances to `highestId` — the server has refused these rows
+  ///   permanently, so retrying would just produce the same answer; advancing the cursor drops
+  ///   the batch so it can't wedge subsequent rounds. This is the acceptance-criterion behavior:
+  ///   a 400/403 must not be re-sent on the next cycle.
+  /// - `.retryable` leaves the cursor at its current value so the next dispatch attempt picks
+  ///   the same rows up again.
+  internal static func nextCursor(
+    for result: DispatchResult,
+    currentCursor: Int64,
+    highestId: Int64
+  ) -> Int64 {
+    switch result {
+    case .success, .nonRetryable:
+      return highestId
+    case .retryable:
+      return currentCursor
+    }
+  }
 }

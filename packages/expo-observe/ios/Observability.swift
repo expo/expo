@@ -51,16 +51,21 @@ internal struct ObservabilityManager {
     }
     let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
     let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
-    // Commit A1 wiring: the classifier already returns a 3-way result, but the cursor still
-    // moves only on `.success`. `.retryable` and `.nonRetryable` are both treated as "retain",
-    // matching the pre-classifier behavior. The `.nonRetryable` branch lands its drop semantics
-    // (advance the cursor) in commit B1.
+    ObserveUserDefaults.lastDispatchedMetricId = DispatchUtils.nextCursor(
+      for: result,
+      currentCursor: cursor,
+      highestId: highestId
+    )
     switch result {
     case .success:
       ObserveUserDefaults.lastDispatchDate = Date.now
-      ObserveUserDefaults.lastDispatchedMetricId = highestId
-    case .retryable, .nonRetryable:
+    case .retryable:
       break
+    case .nonRetryable(let reason):
+      observeLogger.warn(
+        "[EAS Observe] Dropping batch of \(events.count) metric event(s) past id "
+          + "\(highestId): \(reason)"
+      )
     }
   }
 
@@ -103,12 +108,19 @@ internal struct ObservabilityManager {
     }
     let body = OTLogsRequestBody(resourceLogs: resourceLogs)
     let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
-    // Same pre-B1 behavior as `dispatchMetrics`: only `.success` advances the cursor.
+    ObserveUserDefaults.lastDispatchedLogId = DispatchUtils.nextCursor(
+      for: result,
+      currentCursor: cursor,
+      highestId: highestId
+    )
     switch result {
-    case .success:
-      ObserveUserDefaults.lastDispatchedLogId = highestId
-    case .retryable, .nonRetryable:
+    case .success, .retryable:
       break
+    case .nonRetryable(let reason):
+      observeLogger.warn(
+        "[EAS Observe] Dropping batch of \(resourceLogs.count) log event(s) past id "
+          + "\(highestId): \(reason)"
+      )
     }
   }
 
