@@ -14,7 +14,7 @@ export {
   DrawerItemList,
   DrawerToggleButton,
   DrawerView,
-  getDrawerStatusFromState,
+  useDrawerActions,
   useDrawerStatus,
   useDrawerProgress,
 } from '../react-navigation/drawer';

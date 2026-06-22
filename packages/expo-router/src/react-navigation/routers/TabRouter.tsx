@@ -34,10 +34,7 @@ export type TabRouterOptions = DefaultRouterOptions & {
   backBehavior?: BackBehavior;
 };
 
-export type TabNavigationState<ParamList extends ParamListBase> = Omit<
-  NavigationState<ParamList>,
-  'history'
-> & {
+export type TabNavigationState<ParamList extends ParamListBase> = NavigationState<ParamList> & {
   /**
    * List of routes' key, which are supposed to be preloaded before navigating to.
    */
