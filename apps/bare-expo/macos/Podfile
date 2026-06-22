@@ -41,6 +41,17 @@ target 'BareExpo-macOS' do
       end
     end
 
+    # Disable fmt's consteval format-string checks, which hit a compiler bug on Xcode 26's Apple Clang.
+    fmt_base_header = File.join(installer.sandbox.root, "fmt", "include", "fmt", "base.h")
+    if File.exist?(fmt_base_header)
+      contents = File.read(fmt_base_header)
+      patched = contents.gsub(
+        "#elif defined(__apple_build_version__) && __apple_build_version__ < 14000029L",
+        "#elif defined(__apple_build_version__)"
+      )
+      File.write(fmt_base_header, patched) if patched != contents
+    end
+
     react_native_post_install(installer)
   end
 end
