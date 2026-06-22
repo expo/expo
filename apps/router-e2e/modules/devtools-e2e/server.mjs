@@ -1,7 +1,7 @@
 
 // Top-level async to ensure esm modules are loaded correctly
-// require of esm in modern Node doesn't throw error (it "just" works)
-await asyncLog('E2E DevTools Server started.');
+// require of esm in modern Node works(*)
+await undefined;
 
 export default async function handler(request) {
   const url = new URL(request.url);
@@ -30,7 +30,3 @@ export const webSocketHandlers = {
     });
   },
 };
-
-async function asyncLog(message) {
-  console.log(message);
-}
