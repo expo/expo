@@ -49,15 +49,18 @@ internal struct ObservabilityManager {
       ObserveUserDefaults.lastDispatchedMetricId = highestId
       return
     }
-    do {
-      let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
-      let success = try await sendRequest(to: endpointUrl, body: body)
-      if success {
-        ObserveUserDefaults.lastDispatchDate = Date.now
-        ObserveUserDefaults.lastDispatchedMetricId = highestId
-      }
-    } catch {
-      observeLogger.warn("[EAS Observe] Dispatching the metrics has thrown an error: \(error)")
+    let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
+    let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+    // Commit A1 wiring: the classifier already returns a 3-way result, but the cursor still
+    // moves only on `.success`. `.retryable` and `.nonRetryable` are both treated as "retain",
+    // matching the pre-classifier behavior. The `.nonRetryable` branch lands its drop semantics
+    // (advance the cursor) in commit B1.
+    switch result {
+    case .success:
+      ObserveUserDefaults.lastDispatchDate = Date.now
+      ObserveUserDefaults.lastDispatchedMetricId = highestId
+    case .retryable, .nonRetryable:
+      break
     }
   }
 
@@ -98,14 +101,14 @@ internal struct ObservabilityManager {
       ObserveUserDefaults.lastDispatchedLogId = highestId
       return
     }
-    do {
-      let body = OTLogsRequestBody(resourceLogs: resourceLogs)
-      let success = try await sendRequest(to: endpointUrl, body: body)
-      if success {
-        ObserveUserDefaults.lastDispatchedLogId = highestId
-      }
-    } catch {
-      observeLogger.warn("[EAS Observe] Dispatching the logs has thrown an error: \(error)")
+    let body = OTLogsRequestBody(resourceLogs: resourceLogs)
+    let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+    // Same pre-B1 behavior as `dispatchMetrics`: only `.success` advances the cursor.
+    switch result {
+    case .success:
+      ObserveUserDefaults.lastDispatchedLogId = highestId
+    case .retryable, .nonRetryable:
+      break
     }
   }
 
@@ -134,44 +137,6 @@ internal struct ObservabilityManager {
       }
       return Event.from(session: session, metrics: [], logs: sessionLogs)
     }
-  }
-
-  private static func sendRequest(to endpointUrl: URL, body: any Encodable) async throws -> Bool {
-    var request = URLRequest(url: endpointUrl)
-    request.httpMethod = "POST"
-    request.allHTTPHeaderFields = [
-      "Content-Type": "application/json",
-      // Tells `NetworkRequestURLProtocol` to skip observation so our own telemetry uploads don't
-      // get logged back into the network-request stream. The header reaches o.expo.dev unchanged
-      // (we control that endpoint, so the harmless overhead is fine). The name is duplicated here
-      // rather than imported: expo-observe must not depend on expo-app-metrics internals. Keep it
-      // in sync with `NetworkRequestURLProtocol.internalHeaderName` in expo-app-metrics.
-      "Expo-AppMetrics-Skip": "1",
-    ]
-    request.httpBody = try body.toJSONData([])
-
-    #if DEBUG
-    observeLogger.debug("[EAS Observe] Sending the request to \(endpointUrl) with body:")
-    // Use `print` so the JSON can be copied without including the log level emojis. Wrapped in
-    // `#if DEBUG` so release builds don't pay for a second pretty-printed encode of the payload.
-    print(try body.toJSONString(.prettyPrinted))
-    #endif
-
-    let (responseData, urlResponse) = try await URLSession.shared.data(for: request)
-
-    guard let urlResponse = urlResponse as? HTTPURLResponse else {
-      return false
-    }
-    guard (200...299).contains(urlResponse.statusCode) else {
-      observeLogger.warn(
-        "[EAS Observe] Server responded with \(urlResponse.statusCode) status code and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
-      )
-      return false
-    }
-    observeLogger.debug(
-      "[EAS Observe] Server responded successfully with \(urlResponse.statusCode) status code and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
-    )
-    return true
   }
 
   internal nonisolated static func setEndpointUrl(_ urlString: String?, projectId: String) {
