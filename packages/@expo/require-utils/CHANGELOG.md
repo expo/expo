@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add an `importAsync` utility and use it for dynamic ESM imports in `loadModule`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
