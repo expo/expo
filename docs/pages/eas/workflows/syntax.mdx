@@ -113,6 +113,8 @@ When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` 
 
 > **info** Workflow files are read from the default branch HEAD at the time of deletion, not from the deleted ref.
 
+Pair this trigger with the [`branch-delete`](/eas/workflows/pre-packaged-jobs#branch-delete) job to remove EAS Update branches when GitHub branches are deleted. See the [Clean up update branches example](/eas/workflows/examples/branch-cleanup) for a complete workflow.
+
 ```yaml
 on:
   # @info #
@@ -1270,6 +1272,30 @@ This job outputs the following properties:
 {
   "first_update_group_id": string, // ID of the first update group. You can use it to e.g. construct the update URL for a development client deep link.
   "updates_json": string // Stringified JSON array of update groups. Output of `eas update --json`.
+}
+```
+
+#### `branch-delete`
+
+Deletes an EAS Update branch and all of its updates. See [Branch delete job documentation](/eas/workflows/pre-packaged-jobs#branch-delete) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: branch-delete
+    # @end #
+    params:
+      branch_name: string # required
+      fail_on_missing: boolean # optional, default: false
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "branch_id": string | null,
+  "branch_name": string
 }
 ```
 

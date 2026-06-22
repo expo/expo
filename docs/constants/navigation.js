@@ -475,6 +475,7 @@ export const eas = [
       makePage('eas/workflows/examples/introduction.mdx'),
       makePage('eas/workflows/examples/create-development-builds.mdx'),
       makePage('eas/workflows/examples/publish-preview-update.mdx'),
+      makePage('eas/workflows/examples/branch-cleanup.mdx'),
       makePage('eas/workflows/examples/deploy-to-production.mdx'),
       makePage('eas/workflows/examples/e2e-tests.mdx'),
     ]),
