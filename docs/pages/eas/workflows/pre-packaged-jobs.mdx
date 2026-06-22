@@ -902,11 +902,10 @@ You can pass the following parameters into the `params` list:
 
 You can reference the following outputs in subsequent jobs:
 
-| Output                    | Type   | Description                                                                                       |
-| ------------------------- | ------ | ------------------------------------------------------------------------------------------------- |
-| branch_id                 | string | UUID of the deleted branch, or `null` if the branch was missing and `fail_on_missing` is `false`. |
-| branch_name               | string | The branch name from `params.branch_name`.                                                        |
-| background_job_receipt_id | string | Set once background deletion is dispatched.                                                       |
+| Output      | Type   | Description                                                                                       |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------- |
+| branch_id   | string | UUID of the deleted branch, or `null` if the branch was missing and `fail_on_missing` is `false`. |
+| branch_name | string | The branch name from `params.branch_name`.                                                        |
 
 ### Examples
 
