@@ -128,17 +128,31 @@ struct RecentlyOpenedAppRow: View {
 
   private var isServerActive: Bool {
     guard let url = URL(string: app.url),
-    let port = url.port else {
+      let host = url.host,
+      let port = url.port else {
       return false
     }
 
     return viewModel.devServers.contains { server in
       guard let serverURL = URL(string: server.url),
+        let serverHost = serverURL.host,
         let serverPort = serverURL.port else {
         return false
       }
-      return serverPort == port
+      // Match on both host and port: every Metro server defaults to port 8081,
+      // so matching on port alone marks a recent app green whenever any server
+      // is running, even one on a different machine.
+      return serverPort == port && hostsMatch(serverHost, host)
     }
+  }
+
+  private func hostsMatch(_ lhs: String, _ rhs: String) -> Bool {
+    if lhs == rhs {
+      return true
+    }
+    // Treat loopback forms as the same host.
+    let loopback: Set<String> = ["localhost", "127.0.0.1", "::1"]
+    return loopback.contains(lhs) && loopback.contains(rhs)
   }
 
   var body: some View {
