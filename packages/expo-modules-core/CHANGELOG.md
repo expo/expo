@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `ExpoModulesProvider` lookup failing for bundle names with non-identifier characters (e.g. dots). ([#46424](https://github.com/expo/expo/pull/46424) by [@shawnthye-guru](https://github.com/shawnthye-guru))
+
 ### 💡 Others
 
 ## 56.0.18 — 2026-07-01
