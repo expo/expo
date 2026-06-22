@@ -10,8 +10,8 @@ const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependen
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const picomatch_1 = __importDefault(require("picomatch"));
-const findUpPackageJsonPath_1 = require("./findUpPackageJsonPath");
 const filePath_1 = require("../utils/filePath");
+const findUpPackageJsonPath_1 = require("../utils/findUpPackageJsonPath");
 const debug = require('debug')('expo:side-effects');
 function hasSideEffectWithDebugTrace(options, graph, value, parentTrace = [value.path], checked = new Set()) {
     const currentModuleHasSideEffect = getShallowSideEffect(options, value);
