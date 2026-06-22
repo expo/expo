@@ -11,8 +11,6 @@ import { Log } from '../../log';
 import { env } from '../../utils/env';
 import { installExitHooks } from '../../utils/exit';
 
-const loadModuleAsync = loadModule as <T>(moduleName: string) => Promise<T>;
-
 const debug = require('debug')('expo:start:server:mcp') as typeof console.log;
 
 /**
@@ -62,10 +60,10 @@ export async function maybeCreateMCPServerAsync({
 
   try {
     debug(`Loading MCP modules: expo-mcp=${mcpPackagePath}, mcp-tunnel=${mcpTunnelPackagePath}`);
-    const { addMcpCapabilities } = await loadModuleAsync<{
+    const { addMcpCapabilities } = await (loadModule as <T>(moduleName: string) => Promise<T>)<{
       addMcpCapabilities: (server: McpServerProxy, projectRoot: string) => void;
     }>(mcpPackagePath);
-    const { TunnelMcpServerProxy } = await loadModuleAsync<{
+    const { TunnelMcpServerProxy } = await (loadModule as <T>(moduleName: string) => Promise<T>)<{
       TunnelMcpServerProxy: typeof TunnelMcpServerProxyType;
     }>(mcpTunnelPackagePath);
 
