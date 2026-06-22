@@ -2,6 +2,7 @@ import type {
   McpServerProxy,
   TunnelMcpServerProxy as TunnelMcpServerProxyType,
 } from '@expo/mcp-tunnel' with { 'resolution-mode': 'import' };
+import { loadModule } from '@expo/require-utils';
 import path from 'node:path';
 import resolveFrom from 'resolve-from';
 
@@ -10,7 +11,7 @@ import { Log } from '../../log';
 import { env } from '../../utils/env';
 import { installExitHooks } from '../../utils/exit';
 
-const importESM = require('@expo/cli/add-module') as <T>(moduleName: string) => Promise<T>;
+const importESM = loadModule as <T>(moduleName: string) => Promise<T>;
 
 const debug = require('debug')('expo:start:server:mcp') as typeof console.log;
 
@@ -60,6 +61,7 @@ export async function maybeCreateMCPServerAsync({
   debug(`Creating MCP tunnel - server URL: ${mcpServerUrl}`);
 
   try {
+    debug(`Loading MCP modules: expo-mcp=${mcpPackagePath}, mcp-tunnel=${mcpTunnelPackagePath}`);
     const { addMcpCapabilities } = await importESM<{
       addMcpCapabilities: (server: McpServerProxy, projectRoot: string) => void;
     }>(mcpPackagePath);
