@@ -18,6 +18,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix Jetpack Compose `Host` content disappearing before a react-native-screens pop animation finishes, by deferring composition disposal to window detach while the view is still on-screen for a transition. ([#45914](https://github.com/expo/expo/issues/45914), [#47086](https://github.com/expo/expo/issues/47086) by [@aubrey-wodonga](https://github.com/aubrey-wodonga)) ([#47099](https://github.com/expo/expo/pull/47099) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `Record` arguments crashing with a `NullPointerException` in R8-optimized release builds when converted through the reflection fallback path. ([#46852](https://github.com/expo/expo/pull/46852) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Keep the `Record` marker interface so its consumer ProGuard rule keeps matching after R8 optimization removes empty marker interfaces. ([#46852](https://github.com/expo/expo/pull/46852) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix `ExpoModulesProvider` lookup failing for bundle names with non-identifier characters (e.g. dots). ([#46424](https://github.com/expo/expo/pull/46424) by [@shawnthye-guru](https://github.com/shawnthye-guru))
