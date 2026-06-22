@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed image staying blank when its `source` changes while a `transition` cross-fade is still running. ([#46752](https://github.com/expo/expo/pull/46752) by [@zoontek](https://github.com/zoontek))
+- [Android] Replaced the deprecated RenderScript-based `blurRadius` blur with a software stack blur to fix a use-after-free crash under concurrent image loads (aborts under GrapheneOS hardened_malloc). ([#PR](https://github.com/expo/expo/pull/PR) by [@DimitrisTzimikas](https://github.com/DimitrisTzimikas))
 
 ### 💡 Others
 
