@@ -21,7 +21,8 @@ import ExpoModulesJSI
 extension Record {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self {
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self
+  {
     guard let appContext = AppContext.from(runtime: runtime) else {
       throw Exceptions.AppContextNotFound()
     }
