@@ -2,6 +2,7 @@
 
 package expo.modules.observe
 
+import expo.modules.appmetrics.utils.TimeUtils
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -90,24 +91,44 @@ object DispatchUtils {
   /**
    * Parses an HTTP `Retry-After` header into a delay in milliseconds from now. Accepts both
    * formats permitted by RFC 7231: an integer delta-seconds, or an HTTP-date.
-   * Returns `null` if the header is absent or unparseable. Clamps negative / past values to 0
-   * so a misbehaving server can't make us schedule the next dispatch in the past.
+   * Returns `null` if the header is absent or unparseable, so the caller can fall through to
+   * `computeBackoffDelay` for a client-driven delay.
+   *
+   * A successfully parsed value is clamped to `[base, cap]` so a misbehaving server can't
+   * drive us to either extreme: a value below `base` (including `0`, negatives, or HTTP-dates
+   * in the past) floors to `base` so we don't hammer; a value above `cap` (or a date far in
+   * the future) ceilings to `cap` so we don't snooze for hours. Non-finite floating-point
+   * values (`Infinity`, `NaN`) are treated as garbage and return `null`.
    */
-  fun parseRetryAfter(header: String?, now: Long = System.currentTimeMillis()): Long? {
+  fun parseRetryAfter(
+    header: String?,
+    base: Long = backoffBaseMs,
+    cap: Long = backoffCapMs,
+    now: Long = TimeUtils.getWallClockMillis()
+  ): Long? {
     val raw = header?.trim() ?: return null
     if (raw.isEmpty()) return null
 
-    raw.toLongOrNull()?.let { return maxOf(it * 1000L, 0L) }
-    raw.toDoubleOrNull()?.let { return maxOf((it * 1000L).toLong(), 0L) }
+    raw.toLongOrNull()?.let { return clampToBounds(it * 1000L, base, cap) }
+    raw.toDoubleOrNull()?.let {
+      if (!it.isFinite()) return null
+      return clampToBounds((it * 1000L).toLong(), base, cap)
+    }
 
     val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
     formatter.timeZone = TimeZone.getTimeZone("GMT")
     val parsed = runCatching { formatter.parse(raw) }.getOrNull()
     if (parsed != null) {
-      return maxOf(parsed.time - now, 0L)
+      return clampToBounds(parsed.time - now, base, cap)
     }
     return null
   }
+
+  /**
+   * Clamps a server-supplied retry delay into the client's `[base, cap]` window. Used by
+   * `parseRetryAfter` so the gate is bounded regardless of what the server sent.
+   */
+  private fun clampToBounds(ms: Long, base: Long, cap: Long): Long = ms.coerceIn(base, cap)
 
   /**
    * First `limit` bytes of the response body, for inclusion in error log lines. Bounded so a

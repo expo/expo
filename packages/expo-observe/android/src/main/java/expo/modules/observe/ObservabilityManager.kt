@@ -6,6 +6,7 @@ import expo.modules.easclient.EASClientID
 import expo.modules.observe.storage.PendingLogsManager
 import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
 
 class ObservabilityManager(
@@ -78,7 +79,7 @@ class BaseObservabilityManager(
   private val deterministicUniformValueProvider: () -> Double = {
     EASClientID.deterministicUniformValue(EASClientID(context).uuid)
   },
-  private val currentTimeMs: () -> Long = { System.currentTimeMillis() }
+  private val currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() }
 ) {
   private val eventDispatcher = EventDispatcher(
     context = context,

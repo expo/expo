@@ -10,6 +10,14 @@ import java.util.TimeZone
 object TimeUtils {
   fun getCurrentTimeInMillis(): Long = SystemClock.uptimeMillis()
 
+  /**
+   * Wall-clock time in milliseconds since the Unix epoch. Use this when comparing against
+   * another wall-clock timestamp — HTTP `Retry-After` deadlines, server-supplied dates, file
+   * modification times. For measuring elapsed intervals within the process, prefer
+   * [getCurrentTimeInMillis], which is monotonic and immune to wall-clock adjustments.
+   */
+  fun getWallClockMillis(): Long = System.currentTimeMillis()
+
   fun getProcessStartTimeInMillis(): Long = Process.getStartUptimeMillis()
 
   fun getProcessStartTimestamp(): String {

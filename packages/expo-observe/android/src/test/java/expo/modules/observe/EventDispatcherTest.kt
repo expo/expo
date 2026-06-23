@@ -163,6 +163,8 @@ class EventDispatcherTest {
   @Test
   fun `dispatch returns Retryable on 503 with Retry-After header`() =
     runTest {
+      // Server says 5 s; that's below the client's 60 s base, so `parseRetryAfter` clamps
+      // up to base — the client wouldn't dispatch faster than that anyway.
       mockServer.enqueue(
         MockResponse()
           .setResponseCode(503)
@@ -175,7 +177,10 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       assertTrue("expected Retryable, got $result", result is DispatchResult.Retryable)
-      assertEquals(5_000L, (result as DispatchResult.Retryable).retryAfterMs)
+      assertEquals(
+        DispatchUtils.backoffBaseMs,
+        (result as DispatchResult.Retryable).retryAfterMs
+      )
     }
 
   @Test

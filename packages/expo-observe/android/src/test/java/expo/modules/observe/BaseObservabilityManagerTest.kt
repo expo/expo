@@ -6,6 +6,7 @@ import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.Session
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.storage.SessionWithMetrics
+import expo.modules.appmetrics.utils.TimeUtils
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.buildJsonObject
@@ -1130,7 +1131,7 @@ class BaseObservabilityManagerTest {
   private fun createManager(
     isDebugBuild: Boolean = false,
     deterministicUniformValue: Double = 0.0,
-    currentTimeMs: () -> Long = { System.currentTimeMillis() }
+    currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() }
   ): BaseObservabilityManager {
     val manager = BaseObservabilityManager(
       context = mockContext,

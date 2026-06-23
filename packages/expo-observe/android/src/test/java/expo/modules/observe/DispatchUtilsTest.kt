@@ -116,23 +116,26 @@ class DispatchUtilsClassifyResponseTest {
   }
 
   @Test
-  fun `429 with Retry-After seconds parses to milliseconds`() {
+  fun `429 with Retry-After inside client bounds is parsed as-is`() {
+    // 120 s sits between base (60) and cap (900), so it propagates unchanged.
     val result = DispatchUtils.classifyResponse(
       statusCode = 429,
-      retryAfterHeader = "30",
+      retryAfterHeader = "120",
       responseBody = null
     )
-    assertEquals(DispatchResult.Retryable(retryAfterMs = 30_000L), result)
+    assertEquals(DispatchResult.Retryable(retryAfterMs = 120_000L), result)
   }
 
   @Test
-  fun `503 propagates Retry-After`() {
+  fun `503 Retry-After below base clamps up to base`() {
+    // 5 s is below the 60 s floor — the client wouldn't dispatch faster than that anyway, so
+    // honor the server's intent to slow down by snapping up to base.
     val result = DispatchUtils.classifyResponse(
       statusCode = 503,
       retryAfterHeader = "5",
       responseBody = null
     )
-    assertEquals(DispatchResult.Retryable(retryAfterMs = 5_000L), result)
+    assertEquals(DispatchResult.Retryable(retryAfterMs = DispatchUtils.backoffBaseMs), result)
   }
 
   @Test
@@ -258,66 +261,149 @@ class DispatchUtilsShouldRemovePendingTest {
 }
 
 class DispatchUtilsParseRetryAfterTest {
+  // Test-local bounds passed explicitly to every call so the suite is independent of the
+  // production constants. A separate test verifies the default-argument path.
+  private val base: Long = 60_000L
+  private val cap: Long = 900_000L
+
+  // MARK: -- Missing / unparseable inputs return null (caller falls through to backoff)
+
   @Test
   fun `null header returns null`() {
-    assertNull(DispatchUtils.parseRetryAfter(null))
+    assertNull(DispatchUtils.parseRetryAfter(null, base = base, cap = cap))
   }
 
   @Test
   fun `empty or whitespace header returns null`() {
-    assertNull(DispatchUtils.parseRetryAfter(""))
-    assertNull(DispatchUtils.parseRetryAfter("   "))
+    assertNull(DispatchUtils.parseRetryAfter("", base = base, cap = cap))
+    assertNull(DispatchUtils.parseRetryAfter("   ", base = base, cap = cap))
+    assertNull(DispatchUtils.parseRetryAfter("\t\n", base = base, cap = cap))
   }
 
   @Test
-  fun `integer seconds parses to milliseconds`() {
-    assertEquals(0L, DispatchUtils.parseRetryAfter("0"))
-    assertEquals(30_000L, DispatchUtils.parseRetryAfter("30"))
-    assertEquals(3_600_000L, DispatchUtils.parseRetryAfter("3600"))
+  fun `garbage header returns null`() {
+    // Neither a Long/Double nor an RFC 7231 HTTP-date — caller should fall through to backoff.
+    val cases = listOf(
+      "tomorrow morning",
+      "Mon Jun 16",  // partial date, missing time + year + zone
+      "30 minutes",  // delta-seconds doesn't accept units
+      "30s",
+      "abc",
+      "300/600",
+      ", 30",
+      "30,"
+    )
+    for (header in cases) {
+      assertNull(
+        "expected null for garbage header \"$header\"",
+        DispatchUtils.parseRetryAfter(header, base = base, cap = cap)
+      )
+    }
   }
 
   @Test
-  fun `negative seconds clamps to zero`() {
-    // Defensive: a misbehaving server shouldn't be able to schedule the next dispatch in the
-    // past (or, worse, give us a negative sleep).
-    assertEquals(0L, DispatchUtils.parseRetryAfter("-1"))
+  fun `non-finite numeric tokens return null`() {
+    // `toDoubleOrNull` accepts `Infinity` / `NaN` strings — but feeding either into the gate
+    // deadline is a bug. Reject as garbage so the caller falls through to `computeBackoffDelay`,
+    // which is bounded by construction.
+    for (header in listOf("Infinity", "-Infinity", "NaN")) {
+      assertNull(
+        "expected null for non-finite numeric \"$header\"",
+        DispatchUtils.parseRetryAfter(header, base = base, cap = cap)
+      )
+    }
+  }
+
+  // MARK: -- delta-seconds (numeric)
+
+  @Test
+  fun `delta-seconds inside base and cap returns the parsed value unchanged`() {
+    assertEquals(60_000L, DispatchUtils.parseRetryAfter("60", base = base, cap = cap))
+    assertEquals(120_000L, DispatchUtils.parseRetryAfter("120", base = base, cap = cap))
+    assertEquals(900_000L, DispatchUtils.parseRetryAfter("900", base = base, cap = cap))
   }
 
   @Test
-  fun `fractional seconds parse`() {
-    // RFC 7231 mandates integer delta-seconds; real servers sometimes emit decimals and
-    // there's no harm in honoring them. 0.5 s → 500 ms.
-    assertEquals(500L, DispatchUtils.parseRetryAfter("0.5"))
+  fun `delta-seconds below base clamps up to base`() {
+    // `Retry-After: 0` is the most common misbehavior — a server that wants us to retry
+    // immediately. Snap to base so we don't hammer the recovering endpoint.
+    assertEquals(base, DispatchUtils.parseRetryAfter("0", base = base, cap = cap))
+    assertEquals(base, DispatchUtils.parseRetryAfter("1", base = base, cap = cap))
+    assertEquals(base, DispatchUtils.parseRetryAfter("30", base = base, cap = cap))
+    assertEquals(base, DispatchUtils.parseRetryAfter("0.5", base = base, cap = cap))
   }
 
   @Test
-  fun `HTTP-date header parses to delta from injected now`() {
-    val now = 1_700_000_000_000L  // fixed wall-clock for repeatability
-    val futureMs = now + 60_000L
+  fun `delta-seconds above cap clamps down to cap`() {
+    // A pathological server response shouldn't be able to wedge us in a multi-hour snooze.
+    assertEquals(cap, DispatchUtils.parseRetryAfter("901", base = base, cap = cap))
+    assertEquals(cap, DispatchUtils.parseRetryAfter("3600", base = base, cap = cap))
+    assertEquals(cap, DispatchUtils.parseRetryAfter("86400", base = base, cap = cap))
+    assertEquals(cap, DispatchUtils.parseRetryAfter("1e9", base = base, cap = cap))
+  }
+
+  @Test
+  fun `negative delta-seconds clamps up to base`() {
+    // A negative delta would otherwise schedule the next dispatch in the past — bounce it to
+    // the floor so the gate is still a real pause.
+    assertEquals(base, DispatchUtils.parseRetryAfter("-1", base = base, cap = cap))
+    assertEquals(base, DispatchUtils.parseRetryAfter("-3600", base = base, cap = cap))
+  }
+
+  @Test
+  fun `leading and trailing whitespace is trimmed before parsing`() {
+    assertEquals(120_000L, DispatchUtils.parseRetryAfter("  120  ", base = base, cap = cap))
+    assertEquals(120_000L, DispatchUtils.parseRetryAfter("\n120\t", base = base, cap = cap))
+  }
+
+  // MARK: -- HTTP-date
+
+  @Test
+  fun `HTTP-date inside bounds parses to a delta near the actual offset`() {
+    // Build a header 5 minutes (300 s) in the future — comfortably inside [60, 900].
+    val now = 1_700_000_000_000L
+    val futureMs = now + 300_000L
     val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
     formatter.timeZone = TimeZone.getTimeZone("GMT")
     val header = formatter.format(Date(futureMs))
 
-    val parsed = DispatchUtils.parseRetryAfter(header, now = now)
+    val parsed = DispatchUtils.parseRetryAfter(header, base = base, cap = cap, now = now)
     assertNotNull(parsed)
-    // SimpleDateFormat with second precision drops sub-second portions; allow ±1 s slop.
-    assertTrue("expected ~60_000 ms, got $parsed", parsed!! in 59_000L..61_000L)
+    assertTrue("expected ~300_000 ms, got $parsed", parsed!! in 295_000L..305_000L)
   }
 
   @Test
-  fun `HTTP-date in the past clamps to zero`() {
+  fun `HTTP-date in the past clamps up to base`() {
     val now = 1_700_000_000_000L
     val pastMs = now - 3_600_000L
     val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
     formatter.timeZone = TimeZone.getTimeZone("GMT")
     val header = formatter.format(Date(pastMs))
 
-    assertEquals(0L, DispatchUtils.parseRetryAfter(header, now = now))
+    assertEquals(base, DispatchUtils.parseRetryAfter(header, base = base, cap = cap, now = now))
   }
 
   @Test
-  fun `garbage header returns null`() {
-    assertNull(DispatchUtils.parseRetryAfter("tomorrow morning"))
-    assertNull(DispatchUtils.parseRetryAfter("Mon Jun 16"))
+  fun `HTTP-date far in the future clamps down to cap`() {
+    // Two hours from now is well past the 15-minute cap.
+    val now = 1_700_000_000_000L
+    val farFutureMs = now + 7_200_000L
+    val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
+    formatter.timeZone = TimeZone.getTimeZone("GMT")
+    val header = formatter.format(Date(farFutureMs))
+
+    assertEquals(cap, DispatchUtils.parseRetryAfter(header, base = base, cap = cap, now = now))
+  }
+
+  // MARK: -- Custom client bounds
+
+  @Test
+  fun `custom base and cap override the defaults`() {
+    // The same input ("100") clamps differently depending on the bounds passed in: with the
+    // default [60 s, 900 s] it sits inside, but a stricter [120 s, 600 s] window snaps it up
+    // to 120 s.
+    assertEquals(100_000L, DispatchUtils.parseRetryAfter("100"))
+    assertEquals(120_000L, DispatchUtils.parseRetryAfter("100", base = 120_000L, cap = 600_000L))
+    assertEquals(50_000L, DispatchUtils.parseRetryAfter("100", base = 10_000L, cap = 50_000L))
   }
 }
