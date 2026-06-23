@@ -38,19 +38,25 @@ export function DrawerRouter(
   return {
     ...router,
 
-    getInitialState({ routeNames, routeParamList, routeGetIdList }) {
-      const state = router.getInitialState({ routeNames, routeParamList, routeGetIdList });
+    getInitialState({ routeNames, pathname, routeParamList, routeGetIdList }) {
+      const state = router.getInitialState({
+        routeNames,
+        pathname,
+        routeParamList,
+        routeGetIdList,
+      });
 
       return { ...state, key: `drawer-${nanoid()}` };
     },
 
-    getRehydratedState(partialState, { routeNames, routeParamList, routeGetIdList }) {
+    getRehydratedState(partialState, { routeNames, pathname, routeParamList, routeGetIdList }) {
       if (partialState.stale === false) {
         return partialState;
       }
 
       const state = router.getRehydratedState(partialState, {
         routeNames,
+        pathname,
         routeParamList,
         routeGetIdList,
       });

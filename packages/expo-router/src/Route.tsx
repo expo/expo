@@ -89,6 +89,12 @@ export function useContextKey(): string {
   return getContextKey(node.contextKey);
 }
 
+/** Like `useContextKey` but returns `undefined` outside a route boundary (e.g. bare navigators in tests). */
+export function useOptionalContextKey(): string | undefined {
+  const node = useRouteNode();
+  return node ? getContextKey(node.contextKey) : undefined;
+}
+
 export type RouteProps = PropsWithChildren<{
   node: RouteNode;
   params: object | undefined;

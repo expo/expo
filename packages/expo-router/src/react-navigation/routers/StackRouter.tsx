@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import { createRouteFromAction } from './createRouteFromAction';
+import { getNextRouteKeyFromState, getRouteKey } from './getRouteKey';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -163,7 +164,7 @@ export function StackRouter(options: StackRouterOptions) {
   > = {
     ...BaseRouter,
 
-    getInitialState({ routeNames, routeParamList }) {
+    getInitialState({ routeNames, pathname, routeParamList }) {
       const initialRouteName =
         options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
           ? options.initialRouteName
@@ -176,7 +177,7 @@ export function StackRouter(options: StackRouterOptions) {
         routeNames,
         routes: [
           {
-            key: `${initialRouteName}-${nanoid()}`,
+            key: getRouteKey(pathname, initialRouteName),
             name: initialRouteName,
             params: routeParamList[initialRouteName],
           },
@@ -184,7 +185,7 @@ export function StackRouter(options: StackRouterOptions) {
       };
     },
 
-    getRehydratedState(partialState, { routeNames, routeParamList }) {
+    getRehydratedState(partialState, { routeNames, pathname, routeParamList }) {
       const state = partialState;
 
       if (state.stale === false) {
@@ -193,24 +194,29 @@ export function StackRouter(options: StackRouterOptions) {
 
       const routes = state.routes
         .filter((route) => routeNames.includes(route.name))
-        .map((route) => ({
-          ...route,
-          key: route.key || `${route.name}-${nanoid()}`,
-          params:
-            routeParamList[route.name] !== undefined
-              ? {
-                  ...routeParamList[route.name],
-                  ...route.params,
-                }
-              : route.params,
-        }));
+        .reduce<Route<string>[]>((built, route) => {
+          const key =
+            route.key || getNextRouteKeyFromState(pathname, route.name, { routes: built });
+          built.push({
+            ...route,
+            key,
+            params:
+              routeParamList[route.name] !== undefined
+                ? {
+                    ...routeParamList[route.name],
+                    ...route.params,
+                  }
+                : route.params,
+          });
+          return built;
+        }, []);
 
       if (routes.length === 0) {
         const initialRouteName =
           options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0]!;
 
         routes.push({
-          key: `${initialRouteName}-${nanoid()}`,
+          key: getRouteKey(pathname, initialRouteName),
           name: initialRouteName,
           params: routeParamList[initialRouteName],
         });
@@ -225,7 +231,7 @@ export function StackRouter(options: StackRouterOptions) {
       };
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
+    getStateForRouteNamesChange(state, { routeNames, pathname, routeParamList, routeKeyChanges }) {
       const keep = (route: Route<string>) =>
         routeNames.includes(route.name) && !routeKeyChanges.includes(route.name);
 
@@ -239,7 +245,7 @@ export function StackRouter(options: StackRouterOptions) {
             : routeNames[0]!;
 
         activeRoutes.push({
-          key: `${initialRouteName}-${nanoid()}`,
+          key: getRouteKey(pathname, initialRouteName),
           name: initialRouteName,
           params: routeParamList[initialRouteName],
         });
@@ -269,7 +275,7 @@ export function StackRouter(options: StackRouterOptions) {
     },
 
     getStateForAction(state, action, options) {
-      const { routeParamList } = options;
+      const { routeParamList, pathname } = options;
 
       switch (action.type) {
         case 'REPLACE': {
@@ -297,7 +303,7 @@ export function StackRouter(options: StackRouterOptions) {
           );
 
           if (!route) {
-            route = createRouteFromAction({ action, routeParamList });
+            route = createRouteFromAction({ action, routeParamList }, pathname, state);
           }
 
           return {
@@ -406,7 +412,7 @@ export function StackRouter(options: StackRouterOptions) {
             routes = [
               ...activeRoutes,
               {
-                key: `${action.payload.name}-${nanoid()}`,
+                key: getNextRouteKeyFromState(pathname, action.payload.name, state),
                 name: action.payload.name,
                 path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
                 params,
@@ -459,7 +465,10 @@ export function StackRouter(options: StackRouterOptions) {
           }
 
           if (index === -1) {
-            const routes = [...activeRoutes, createRouteFromAction({ action, routeParamList })];
+            const routes = [
+              ...activeRoutes,
+              createRouteFromAction({ action, routeParamList }, pathname, state),
+            ];
             return {
               ...state,
               index: routes.length - 1,
@@ -574,7 +583,7 @@ export function StackRouter(options: StackRouterOptions) {
             );
 
             if (!route) {
-              route = createRouteFromAction({ action, routeParamList });
+              route = createRouteFromAction({ action, routeParamList }, pathname, state);
             }
 
             const routes = activeRoutes.slice(0, currentIndex).concat(route);
@@ -669,7 +678,7 @@ export function StackRouter(options: StackRouterOptions) {
                 .filter(
                   (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
                 )
-                .concat(createRouteFromAction({ action, routeParamList })),
+                .concat(createRouteFromAction({ action, routeParamList }, pathname, state)),
             ],
           };
         }
