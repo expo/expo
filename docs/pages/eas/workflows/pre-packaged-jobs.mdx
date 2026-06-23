@@ -639,6 +639,33 @@ jobs:
 
 Distribute iOS builds to TestFlight internal and external testing groups. This is an alternative to the iOS submit job for when you need more advanced TestFlight features. If you need to control test groups, changelog, or Beta App Review submission, use the `testflight` job instead of submit.
 
+The job supports two approaches. With `build_id`, you upload an EAS iOS build and distribute it to TestFlight. With `asc_build_id`, you operate on a build that is already in App Store Connect and handle TestFlight beta distribution — adding the build to groups, setting "What to Test" notes, and submitting for Beta App Review. Provide exactly one of `build_id` or `asc_build_id`.
+
+<Prerequisites>
+  <Requirement title="TestFlight test information for external distribution">
+    When distributing to external groups or submitting for Beta App Review (`external_groups` and/or
+    `submit_beta_review: true`), the build must have the required TestFlight test information
+    completed in App Store Connect before the job can succeed. See [Provide test
+    information](https://developer.apple.com/help/app-store-connect/test-a-beta-version/provide-test-information/)
+    in Apple's documentation.
+  </Requirement>
+</Prerequisites>
+
+### Shared parameters
+
+Both paths accept the following parameters in `params`:
+
+| Parameter          | Type     | Description                                                                                                                                                                                                                                                             |
+| ------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| internal_groups    | string[] | Optional. An array of TestFlight internal group names to add the build to. Only include groups without automatic distribution enabled.                                                                                                                                  |
+| external_groups    | string[] | Optional. An array of TestFlight external group names to add the build to.                                                                                                                                                                                              |
+| changelog          | string   | Optional. Test notes ("What to Test") for TestFlight testers.                                                                                                                                                                                                           |
+| submit_beta_review | boolean  | Optional. Whether to submit for Beta App Review. If not specified, defaults to `true` when `external_groups` are provided, `false` otherwise. Set to `false` to update the changelog or groups on an already-submitted build without re-submitting for Beta App Review. |
+
+### Fastlane approach
+
+Upload an EAS iOS build to App Store Connect and distribute it to TestFlight using fastlane, all in the same workflow job.
+
 <Prerequisites>
   <Requirement title="An iOS store build and Apple Developer account">
     TestFlight jobs require an iOS build created with `distribution: store` and an Apple Developer
@@ -647,7 +674,7 @@ Distribute iOS builds to TestFlight internal and external testing groups. This i
   </Requirement>
 </Prerequisites>
 
-### Syntax
+#### Syntax
 
 ```yaml
 jobs:
@@ -668,15 +695,13 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter                       | Type     | Description                                                                                                                                 |
-| ------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| build_id                        | string   | Required. The ID of the iOS build to distribute.                                                                                            |
-| profile                         | string   | Optional. The submit profile to use. Defaults to `production`.                                                                              |
-| internal_groups                 | string[] | Optional. An array of TestFlight internal group names to add the build to. Only include groups without automatic distribution enabled.      |
-| external_groups                 | string[] | Optional. An array of TestFlight external group names to add the build to.                                                                  |
-| changelog                       | string   | Optional. Test notes ("What to Test") for TestFlight testers.                                                                               |
-| submit_beta_review              | boolean  | Optional. Whether to submit for Beta App Review. If not specified, defaults to `true` when external_groups are provided, `false` otherwise. |
-| wait_processing_timeout_seconds | number   | Optional. Timeout in seconds to wait for App Store Connect build processing. Defaults to `1800` (30 minutes).                               |
+| Parameter                       | Type   | Description                                                                                                                                                           |
+| ------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id                        | string | Required. The ID of the iOS EAS Build to distribute.                                                                                                                  |
+| profile                         | string | Optional. The submit profile to use. Defaults to `production`.                                                                                                        |
+| wait_processing_timeout_seconds | number | Optional. Timeout in seconds to wait for App Store Connect build processing. Defaults to `1800` (30 minutes). Only applies when distributing via groups or changelog. |
+
+You can also pass any of the [shared parameters](#shared-parameters).
 
 #### Outputs
 
@@ -687,7 +712,7 @@ You can reference the following outputs in subsequent jobs:
 | apple_app_id          | string | The Apple App ID of the submitted build.          |
 | ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
 
-### Examples
+#### Examples
 
 Here are some practical examples of using the TestFlight job:
 
@@ -737,6 +762,79 @@ jobs:
       build_id: ${{ needs.build_ios.outputs.build_id }}
       changelog: "${{ github.commit_message || 'Bug fixes' }}"
       # github.commit_message only available in push & schedule events.
+```
+
+</Collapsible>
+
+### Direct App Store Connect approach
+
+Distribute an already uploaded build to TestFlight groups, set "What to Test" notes, and submit for Beta App Review.
+
+<Prerequisites>
+  <Requirement title="App Store Connect integration">
+    Configure your App Store Connect connection in [Project settings >
+    Connections](https://expo.dev/accounts/[account]/projects/[project]/settings). The build must
+    already exist in App Store Connect and be ready for submission.
+  </Requirement>
+</Prerequisites>
+
+#### Syntax
+
+```yaml
+jobs:
+  testflight_distribution:
+    type: testflight
+    params:
+      asc_build_id: string # required
+      internal_groups: string[]
+      external_groups: string[]
+      changelog: string
+      submit_beta_review: boolean
+```
+
+#### Parameters
+
+| Parameter    | Type   | Description                                                           |
+| ------------ | ------ | --------------------------------------------------------------------- |
+| asc_build_id | string | Required. The ID of a build that already exists in App Store Connect. |
+
+You can also pass any of the [shared parameters](#shared-parameters).
+
+#### Outputs
+
+| Output       | Type   | Description                     |
+| ------------ | ------ | ------------------------------- |
+| asc_build_id | string | The App Store Connect build ID. |
+
+#### Examples
+
+<Collapsible summary="Auto-distribute to TestFlight after App Store Connect upload">
+
+When a build is uploaded to App Store Connect outside EAS Workflows, this workflow automatically adds the build to TestFlight groups, sets "What to Test" notes, and submits for Beta App Review. Configure your App Store Connect connection before using this trigger. See [Trigger workflows from App Store Connect events](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events).
+
+`${{ app_store_connect.build_upload.build.id }}` is only available when the workflow is triggered by a `build_upload` event and App Store Connect has associated a build with the upload. `build_upload.state: complete` means the upload finished, not that App Store Connect finished processing the build. When using `external_groups`, complete the required TestFlight test information in App Store Connect first.
+
+```yaml .eas/workflows/testflight-after-asc-upload.yml
+name: Distribute to TestFlight after ASC upload
+
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  distribute_to_testflight:
+    name: Distribute to TestFlight
+    type: testflight
+    params:
+      asc_build_id: ${{ app_store_connect.build_upload.build.id }}
+      internal_groups:
+        - QA Team
+      external_groups:
+        - Public Beta
+      changelog: Build from CI
+      submit_beta_review: true
 ```
 
 </Collapsible>
