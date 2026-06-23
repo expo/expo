@@ -28,6 +28,13 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     self.pointee = facebook.jsi.Value(bool)
   }
 
+  /// Creates a string JS value.
+  public init(_ runtime: JavaScriptRuntime, _ string: String) {
+    self.runtime = runtime
+    self.pointee = facebook.jsi.Value(
+      runtime.pointee, facebook.jsi.String.createFromUtf8(runtime.pointee, std.string(string)))
+  }
+
   /// Creates a BigInt JS value from an Int64.
   public init(_ runtime: JavaScriptRuntime, bigInt: Int64) {
     self.runtime = runtime
