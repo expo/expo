@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid/non-secure';
 import type { StackActionType } from '../core';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
+import { getNextRouteKeyFromState, getRouteKey } from './getRouteKey';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -155,7 +156,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
   > = {
     ...BaseRouter,
 
-    getInitialState({ routeNames, routeParamList }) {
+    getInitialState({ routeNames, pathname, routeParamList }) {
       const initialIndex =
         initialRouteName !== undefined && routeNames.includes(initialRouteName)
           ? routeNames.indexOf(initialRouteName)
@@ -163,7 +164,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
 
       const declarationRoutes = routeNames.map((name) => ({
         name,
-        key: `${name}-${nanoid()}`,
+        key: getRouteKey(pathname, name),
         params: routeParamList[name],
       }));
 
@@ -194,7 +195,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       };
     },
 
-    getRehydratedState(partialState, { routeNames, routeParamList }) {
+    getRehydratedState(partialState, { routeNames, pathname, routeParamList }) {
       const state = partialState;
 
       if (state.stale === false) {
@@ -207,7 +208,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
         ({
           ...route,
           name,
-          key: route && route.name === name && route.key ? route.key : `${name}-${nanoid()}`,
+          key: route && route.name === name && route.key ? route.key : getRouteKey(pathname, name),
           params:
             routeParamList[name] !== undefined
               ? {
@@ -260,7 +261,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       };
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
+    getStateForRouteNamesChange(state, { routeNames, pathname, routeParamList, routeKeyChanges }) {
       const seen = new Set<string>();
       const rebuilt: Route<string>[] = [];
 
@@ -280,7 +281,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           seen.add(name);
           rebuilt.push({
             name,
-            key: `${name}-${nanoid()}`,
+            key: getRouteKey(pathname, name),
             params: routeParamList[name],
           });
         }
@@ -322,7 +323,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       return { ...state, routes, index };
     },
 
-    getStateForAction(state, action, { routeNames, routeParamList, routeGetIdList }) {
+    getStateForAction(state, action, { routeNames, pathname, routeParamList, routeGetIdList }) {
       switch (action.type) {
         case 'JUMP_TO':
         case 'NAVIGATE':
@@ -342,7 +343,12 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           const currentId = getId?.({ params: route.params });
           const nextId = getId?.({ params: action.payload.params });
 
-          const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
+          // A changed id means a changed identity, so the route gets a fresh key (forcing a
+          // remount) at the next free index past its current key.
+          const key =
+            currentId === nextId
+              ? route.key
+              : getNextRouteKeyFromState(pathname, route.name, state);
 
           let params;
 
@@ -429,7 +435,12 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           const currentId = getId?.({ params: route.params });
           const nextId = getId?.({ params: action.payload.params });
 
-          const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
+          // A changed id means a changed identity, so the route gets a fresh key (forcing a
+          // remount) at the next free index past its current key.
+          const key =
+            currentId === nextId
+              ? route.key
+              : getNextRouteKeyFromState(pathname, route.name, state);
 
           const params = createParamsFromAction({ action, routeParamList });
           const newRoute = params !== route.params ? { ...route, key, params } : route;

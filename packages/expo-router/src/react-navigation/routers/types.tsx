@@ -122,6 +122,12 @@ export type RouterFactory<
 
 export type RouterConfigOptions = {
   routeNames: string[];
+  /**
+   * The navigator's location in the route tree (its contextKey, e.g. `/(tabs)`). Used to derive
+   * deterministic route keys via `getRouteKey`. `useNavigationBuilder` supplies it to every router;
+   * `undefined` outside a route boundary (keys then fall back to name-only).
+   */
+  pathname: string | undefined;
   routeParamList: ParamListBase;
   routeGetIdList: Record<
     string,

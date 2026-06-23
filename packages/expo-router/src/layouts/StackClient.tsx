@@ -1,5 +1,4 @@
 'use client';
-import { nanoid } from 'nanoid/non-secure';
 import type { ComponentProps } from 'react';
 import { Children, useMemo } from 'react';
 
@@ -31,6 +30,7 @@ import type {
   NativeStackNavigationOptions,
 } from '../react-navigation/native-stack';
 import { getActiveRoutes, getInactiveRoutes } from '../react-navigation/routers/StackRouter';
+import { getNextRouteKeyFromState } from '../react-navigation/routers/getRouteKey';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../useScreens';
 import { isChildOfType } from '../utils/children';
@@ -331,7 +331,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               // For preloaded route, we want to use the same key, so that preloaded screen is used.
               const key =
                 routes.length === activeRoutes.length && !isPreloadedRoute
-                  ? `${action.payload.name}-${nanoid()}`
+                  ? getNextRouteKeyFromState(options.pathname, action.payload.name, state)
                   : route.key;
 
               routes.push({
@@ -359,7 +359,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             routes = [
               ...activeRoutes,
               {
-                key: `${action.payload.name}-${nanoid()}`,
+                key: getNextRouteKeyFromState(options.pathname, action.payload.name, state),
                 name: action.payload.name,
                 path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
                 params,
@@ -467,7 +467,11 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             };
           } else {
             // START FORK
-            const preloadedRouteKey = `${action.payload.name}-${nanoid()}`;
+            const preloadedRouteKey = getNextRouteKeyFromState(
+              options.pathname,
+              action.payload.name,
+              state
+            );
             const preloadedRouteParams =
               routeParamList[action.payload.name] !== undefined
                 ? {
