@@ -32,9 +32,9 @@ enum class CppType {
   NULLABLE = 1 << 20,
   VALUE_OR_UNDEFINED = 1 << 21,
   JS_ARRAY_BUFFER = 1 << 22,
-  ARRAY_BUFFER = 1 << 23,
-  NATIVE_ARRAY_BUFFER = 1 << 24,
-  SERIALIZABLE = 1 << 25,
+  NATIVE_ARRAY_BUFFER = 1 << 23,
+  SERIALIZABLE = 1 << 24,
+  ARRAY_BUFFER = 1 << 25,
 };
 
 } // namespace expo
