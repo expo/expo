@@ -17,9 +17,20 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   internal var permissionsManager: EXPermissionsInterface?
 
   internal var barcodeScanner: BarcodeScanner?
-  internal lazy var previewLayer = AVCaptureVideoPreviewLayer(session: self.session)
+
+  public override class var layerClass: AnyClass {
+    AVCaptureVideoPreviewLayer.self
+  }
+
+  internal var previewLayer: AVCaptureVideoPreviewLayer {
+    // swiftlint:disable:next force_cast
+    layer as! AVCaptureVideoPreviewLayer
+  }
 
   internal var physicalOrientation: UIDeviceOrientation = .unknown
+  // Typed as Any? because AVCaptureDevice.RotationCoordinator is iOS 17+.
+  private var rotationCoordinator: Any?
+  private var previewRotationObservation: NSKeyValueObservation?
   private var motionManager: CMMotionManager = {
     let mm = CMMotionManager()
     mm.accelerometerUpdateInterval = 0.2
@@ -173,9 +184,10 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   private func setupPreview() {
-    previewLayer = AVCaptureVideoPreviewLayer(session: sessionManager.session)
+    previewLayer.session = sessionManager.session
     previewLayer.videoGravity = .resizeAspectFill
     previewLayer.needsDisplayOnBoundsChange = true
+    // backgroundColor = .black
   }
 
   public func onAppForegrounded() {
@@ -288,15 +300,10 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     videoRecording.toggleRecording(videoFileOutput: videoFileOutput)
   }
 
-  public override func layoutSubviews() {
-    super.layoutSubviews()
-    self.backgroundColor = .black
-    previewLayer.frame = self.bounds
-    if previewLayer.superlayer == nil {
-      self.layer.insertSublayer(previewLayer, at: 0)
-    } else if previewLayer.superlayer !== self.layer {
-      previewLayer.removeFromSuperlayer()
-      self.layer.insertSublayer(previewLayer, at: 0)
+  public override func didMoveToWindow() {
+    super.didMoveToWindow()
+    if window != nil {
+      configurePreviewRotation()
     }
   }
 
@@ -309,6 +316,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     lifecycleManager?.unregisterAppLifecycleListener(self)
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
+    previewRotationObservation?.invalidate()
+    previewRotationObservation = nil
+    rotationCoordinator = nil
   }
 
   func stopRecording() {
@@ -324,10 +334,58 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   @objc func orientationChanged() {
-    changePreviewOrientation()
+    // On iOS 17+ the RotationCoordinator's KVO drives preview rotation; the legacy
+    // notification path is only needed on iOS 16.
+    if #available(iOS 17.0, *) {
+      return
+    }
+    applyLegacyPreviewOrientation()
   }
 
-  func changePreviewOrientation() {
+  func configurePreviewRotation() {
+    if #available(iOS 17.0, *) {
+      Task { @MainActor in
+        self.setUpRotationCoordinator()
+      }
+    } else {
+      applyLegacyPreviewOrientation()
+    }
+  }
+
+  @available(iOS 17.0, *)
+  private func setUpRotationCoordinator() {
+    previewRotationObservation?.invalidate()
+    previewRotationObservation = nil
+
+    guard let device = sessionManager.currentDevice else {
+      rotationCoordinator = nil
+      return
+    }
+
+    let coordinator = AVCaptureDevice.RotationCoordinator(device: device, previewLayer: previewLayer)
+    rotationCoordinator = coordinator
+    applyPreviewRotationAngle(from: coordinator)
+
+    previewRotationObservation = coordinator.observe(
+      \.videoRotationAngleForHorizonLevelPreview,
+      options: [.new]
+    ) { [weak self] coordinator, _ in
+      self?.applyPreviewRotationAngle(from: coordinator)
+    }
+  }
+
+  @available(iOS 17.0, *)
+  private func applyPreviewRotationAngle(from coordinator: AVCaptureDevice.RotationCoordinator) {
+    guard let connection = previewLayer.connection else {
+      return
+    }
+    let angle = coordinator.videoRotationAngleForHorizonLevelPreview
+    if connection.isVideoRotationAngleSupported(angle) {
+      connection.videoRotationAngle = angle
+    }
+  }
+
+  private func applyLegacyPreviewOrientation() {
     // We shouldn't access the device orientation anywhere but on the main thread
     Task { @MainActor in
       let videoOrientation = ExpoCameraUtils.videoOrientation(for: deviceOrientation)
@@ -355,6 +413,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   deinit {
+    previewRotationObservation?.invalidate()
     motionManager.stopAccelerometerUpdates()
     photoCapture.cleanup()
     videoRecording.cleanup()
