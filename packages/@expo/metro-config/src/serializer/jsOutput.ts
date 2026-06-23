@@ -8,8 +8,8 @@ import type { types as t } from '@babel/core';
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
 
-import type { PackedMap, SerializableSourceMap } from './packedMap';
 import type { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
+import type { PackedMap, SerializableSourceMap } from './packedMap';
 
 export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
 

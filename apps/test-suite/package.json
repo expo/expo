@@ -2,6 +2,8 @@
   "name": "test-suite",
   "version": "1.0.0",
   "description": "Test suite for the Expo SDK",
+  "license": "MIT",
+  "author": "",
   "main": "index.js",
   "scripts": {
     "lint": "oxlint --config oxlint.config.mjs .",
@@ -9,8 +11,6 @@
     "tsc": "tsc --noEmit -p ./tsconfig.json",
     "test": "jest"
   },
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "@expo/html-elements": "workspace:*",
     "@expo/styleguide-base": "^1.0.1",

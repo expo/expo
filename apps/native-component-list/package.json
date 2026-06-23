@@ -1,9 +1,9 @@
 {
   "name": "native-component-list",
   "version": "0.0.0",
+  "private": true,
   "description": "A list of the various APIs you can use with the Expo Go",
   "author": "Expo",
-  "private": true,
   "main": "index.js",
   "scripts": {
     "prebuild": "TEMPLATE_DIR=\"../../templates/expo-template-bare-minimum\" && cd \"$TEMPLATE_DIR\" && PACKED_FILE=$(npm pack) && mv \"$PACKED_FILE\" pack.tgz && cd - && npx expo prebuild --clean --template \"$TEMPLATE_DIR/pack.tgz\"",
@@ -15,22 +15,6 @@
     "start": "expo start",
     "ios": "expo run:ios",
     "android": "expo run:android"
-  },
-  "expo": {
-    "autolinking": {
-      "exclude": [
-        "expo-module-template"
-      ],
-      "ios": {
-        "flags": {
-          "inhibit_warnings": false
-        }
-      },
-      "android": {
-        "configuration": "api",
-        "target": "react-native"
-      }
-    }
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
@@ -180,5 +164,21 @@
     "expo-module-scripts": "workspace:*",
     "jest": "^29.2.1",
     "react-test-renderer": "19.2.3"
+  },
+  "expo": {
+    "autolinking": {
+      "exclude": [
+        "expo-module-template"
+      ],
+      "ios": {
+        "flags": {
+          "inhibit_warnings": false
+        }
+      },
+      "android": {
+        "configuration": "api",
+        "target": "react-native"
+      }
+    }
   }
 }

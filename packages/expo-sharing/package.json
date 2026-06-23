@@ -2,9 +2,25 @@
   "name": "expo-sharing",
   "version": "56.0.14",
   "description": "Provides a way to share files directly with other compatible applications.",
+  "keywords": [
+    "android",
+    "expo",
+    "expo-sharing",
+    "ios",
+    "react-native",
+    "web"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/sharing/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-sharing"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -17,25 +33,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-sharing",
-    "android",
-    "ios",
-    "web"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-sharing"
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/sharing/",
   "dependencies": {
     "@expo/config-plugins": "workspace:^56.0.8",
     "@expo/config-types": "workspace:^56.0.5",
@@ -52,5 +49,8 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

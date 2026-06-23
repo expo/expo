@@ -2,6 +2,22 @@
   "name": "expo-dev-client",
   "version": "56.0.16",
   "description": "Expo Development Client",
+  "keywords": [
+    "expo",
+    "expo-dev-client",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/dev-client/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-dev-client"
+  },
   "main": "build/DevClient.js",
   "types": "build/DevClient.d.ts",
   "scripts": {
@@ -18,22 +34,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-dev-client"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-dev-client"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/dev-client/",
   "dependencies": {
     "expo-dev-launcher": "workspace:~56.0.16",
     "expo-dev-menu": "workspace:~56.0.15",

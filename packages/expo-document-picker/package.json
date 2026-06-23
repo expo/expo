@@ -2,9 +2,26 @@
   "name": "expo-document-picker",
   "version": "56.0.4",
   "description": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
+  "keywords": [
+    "document-picker",
+    "expo",
+    "expo-document-picker",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/document-picker/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-document-picker"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -17,23 +34,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-document-picker",
-    "document-picker"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-document-picker"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/document-picker/",
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",

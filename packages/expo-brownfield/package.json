@@ -2,9 +2,26 @@
   "name": "expo-brownfield",
   "version": "56.0.15",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
+  "keywords": [
+    "brownfield",
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/unversioned/sdk/brownfield/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-brownfield"
+  },
+  "bin": "./bin/cli.js",
+  "sideEffects": false,
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
-  "bin": "./bin/cli.js",
   "exports": {
     ".": {
       "types": {
@@ -18,7 +35,6 @@
     "./app.plugin.js": "./app.plugin.js",
     "./plugin": "./plugin/build/index.js"
   },
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:cli",
     "build:lib": "expo-build src",
@@ -36,25 +52,6 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "brownfield"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-brownfield"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/unversioned/sdk/brownfield/",
-  "jest": {
-    "preset": "expo-module-scripts"
   },
   "dependencies": {
     "@expo/env": "workspace:~2.3.0",
@@ -82,5 +79,8 @@
   "peerDependencies": {
     "expo": "*",
     "react": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

@@ -11,11 +11,11 @@ import type { Client, FileChange, SubscribeResponse, WatchProjectResponse } from
 import watchman from 'fb-watchman';
 import invariant from 'invariant';
 
+import normalizePathSeparatorsToSystem from '../lib/normalizePathSeparatorsToSystem';
 import { AbstractWatcher } from './AbstractWatcher';
 import RecrawlWarning from './RecrawlWarning';
 import * as common from './common';
 import type { WatcherOptions } from './common';
-import normalizePathSeparatorsToSystem from '../lib/normalizePathSeparatorsToSystem';
 
 // NOTE(@kitten): Local type aliases for Watchman types not exported by @types/fb-watchman
 interface WatchmanClockResponse {

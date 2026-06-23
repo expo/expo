@@ -2,6 +2,22 @@
   "name": "expo-screen-capture",
   "version": "56.0.4",
   "description": "Protects screens in your app from being captured or recorded, and notifies if a screenshot is taken.",
+  "keywords": [
+    "expo",
+    "expo-screen-capture",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-capture",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-screen-capture"
+  },
   "main": "build/ScreenCapture.js",
   "types": "build/ScreenCapture.d.ts",
   "scripts": {
@@ -14,25 +30,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-screen-capture"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-screen-capture"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-capture",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "dependencies": {},
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
@@ -43,5 +40,8 @@
   "peerDependencies": {
     "expo": "*",
     "react": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

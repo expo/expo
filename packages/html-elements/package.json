@@ -2,9 +2,46 @@
   "name": "@expo/html-elements",
   "version": "56.0.1",
   "description": "Universal semantic HTML React components for iOS, Android, web, and desktop",
+  "keywords": [
+    "expo",
+    "expo-web",
+    "html",
+    "react-native",
+    "react-native-web"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/html-elements",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/html-elements"
+  },
+  "sideEffects": false,
   "main": "build/Elements.js",
   "types": "build/Elements.d.ts",
-  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/Elements.tsx",
+        "default": "./build/Elements.d.ts"
+      },
+      "expo-source": "./src/Elements.tsx",
+      "default": "./build/Elements.js"
+    },
+    "./primitives/*": {
+      "types": {
+        "expo-source": "./src/primitives/*.tsx",
+        "default": "./build/primitives/*.d.ts"
+      },
+      "expo-source": "./src/primitives/*.tsx",
+      "default": "./build/primitives/*.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
@@ -17,24 +54,24 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "expo",
-    "expo-web",
-    "react-native",
-    "react-native-web",
-    "html"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/html-elements"
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/react-native": "^13.3.0",
+    "@types/react": "~19.2.2",
+    "expo-module-scripts": "workspace:*"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-web": "*"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/html-elements",
+  "peerDependenciesMeta": {
+    "react-native-web": {
+      "optional": true
+    }
+  },
   "jest": {
     "projects": [
       {
@@ -59,42 +96,5 @@
         ]
       }
     ]
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*",
-    "react-native-web": "*"
-  },
-  "peerDependenciesMeta": {
-    "react-native-web": {
-      "optional": true
-    }
-  },
-  "devDependencies": {
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/react-native": "^13.3.0",
-    "@types/react": "~19.2.2",
-    "expo-module-scripts": "workspace:*"
-  },
-  "exports": {
-    ".": {
-      "types": {
-        "expo-source": "./src/Elements.tsx",
-        "default": "./build/Elements.d.ts"
-      },
-      "expo-source": "./src/Elements.tsx",
-      "default": "./build/Elements.js"
-    },
-    "./primitives/*": {
-      "types": {
-        "expo-source": "./src/primitives/*.tsx",
-        "default": "./build/primitives/*.d.ts"
-      },
-      "expo-source": "./src/primitives/*.tsx",
-      "default": "./build/primitives/*.js"
-    },
-    "./package.json": "./package.json"
   }
 }

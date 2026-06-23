@@ -1,9 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 
-import type { MaskedViewProps } from './types';
 import { Host } from '../../swift-ui/Host';
 import { Mask } from '../../swift-ui/Mask';
 import { RNHostView } from '../../swift-ui/RNHostView';
+import type { MaskedViewProps } from './types';
 
 /**
  * iOS implementation of `MaskedView`. Bridges arbitrary React Native children

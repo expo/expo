@@ -2,6 +2,22 @@
   "name": "@expo/plist",
   "version": "0.7.0",
   "description": "Mac OS X Plist parser/builder for Node.js and browsers",
+  "keywords": [
+    "plist"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/plist#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/plist"
+  },
+  "files": [
+    "build"
+  ],
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -15,6 +31,9 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
@@ -25,22 +44,6 @@
     "test": "jest",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/plist"
-  },
-  "keywords": [
-    "plist"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/plist#readme",
-  "files": [
-    "build"
-  ],
   "dependencies": {
     "@xmldom/xmldom": "^0.8.8",
     "base64-js": "^1.5.1",
@@ -50,8 +53,5 @@
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

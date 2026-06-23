@@ -15,10 +15,10 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import AudioInputSelector from './AudioInputSelector';
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
+import AudioInputSelector from './AudioInputSelector';
 
 type RecorderProps = {
   onDone?: (uri: string) => void;

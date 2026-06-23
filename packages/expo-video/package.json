@@ -1,11 +1,24 @@
 {
   "name": "expo-video",
-  "title": "Expo Video",
   "version": "56.1.2",
   "description": "A cross-platform, performant video component for React Native and Expo with Web support",
+  "keywords": [
+    "expo",
+    "player",
+    "react-native",
+    "video"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/video/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-video"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -17,20 +30,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/video/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-video"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "video",
-    "player"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
@@ -42,5 +41,6 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  }
+  },
+  "title": "Expo Video"
 }

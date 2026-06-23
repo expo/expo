@@ -4,9 +4,6 @@
   "compilerOptions": {
     "rootDir": "./src",
     "noEmit": true,
-    "types": [
-      "jest",
-      "node"
-    ]
+    "types": ["jest", "node"]
   }
 }

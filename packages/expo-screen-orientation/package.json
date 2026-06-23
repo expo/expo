@@ -2,9 +2,27 @@
   "name": "expo-screen-orientation",
   "version": "56.0.5",
   "description": "Expo universal module for managing device's screen orientation",
+  "keywords": [
+    "expo",
+    "expo-screen-orientation",
+    "orientation",
+    "react-native",
+    "screen"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-orientation/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-screen-orientation"
+  },
+  "sideEffects": false,
   "main": "build/ScreenOrientation.js",
   "types": "build/ScreenOrientation.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -17,24 +35,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-screen-orientation",
-    "orientation",
-    "screen"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-screen-orientation"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-orientation/",
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",

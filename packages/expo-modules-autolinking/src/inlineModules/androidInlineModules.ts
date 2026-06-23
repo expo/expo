@@ -2,8 +2,8 @@ import { error } from 'console';
 import fs from 'fs';
 import path from 'path';
 
-import type { InlineModulesMirror } from './inlineModules';
 import { taskAll } from '../concurrency';
+import type { InlineModulesMirror } from './inlineModules';
 
 export async function createSymlinksToKotlinFiles(
   mirrorPath: string,

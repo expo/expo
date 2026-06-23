@@ -2,8 +2,30 @@
   "name": "expo-widgets",
   "version": "56.0.15",
   "description": "Widgets.",
+  "keywords": [
+    "expo",
+    "expo-widgets",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/widgets/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-widgets"
+  },
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/with-node.sh",
+      "./scripts/xcode-build-bundle.sh"
+    ]
+  },
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -17,22 +39,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-widgets"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-widgets"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/widgets/",
   "dependencies": {
     "@expo/plist": "workspace:^0.7.0",
     "@expo/ui": "workspace:~56.0.14"
@@ -51,11 +57,5 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  },
-  "publishConfig": {
-    "executableFiles": [
-      "./scripts/with-node.sh",
-      "./scripts/xcode-build-bundle.sh"
-    ]
   }
 }

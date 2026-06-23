@@ -2,11 +2,11 @@
 import { Badge, Box, Icon, IconButton, Text as ComposeText } from '@expo/ui/jetpack-compose';
 import { alpha as alphaModifier } from '@expo/ui/jetpack-compose/modifiers';
 
-import type { NativeToolbarButtonProps } from './types';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { convertFontWeightToComposeFontWeight } from '../../../../utils/font';
 import { useToolbarColors } from '../context';
 import { DEFAULT_TOOLBAR_TINT_COLOR } from '../defaults';
+import type { NativeToolbarButtonProps } from './types';
 
 /**
  * Native toolbar button component for Android bottom toolbar.

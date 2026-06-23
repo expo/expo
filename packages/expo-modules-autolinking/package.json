@@ -2,6 +2,26 @@
   "name": "expo-modules-autolinking",
   "version": "56.0.13",
   "description": "Scripts that autolink Expo modules.",
+  "keywords": [
+    "autolinking",
+    "expo",
+    "expo-module",
+    "unimodules"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-modules-autolinking"
+  },
+  "bin": {
+    "expo-modules-autolinking": "bin/expo-modules-autolinking.js"
+  },
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -38,34 +58,14 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "bin": {
-    "expo-modules-autolinking": "bin/expo-modules-autolinking.js"
-  },
-  "keywords": [
-    "expo",
-    "expo-module",
-    "autolinking",
-    "unimodules"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-modules-autolinking"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
-  "devDependencies": {
-    "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
-  },
   "dependencies": {
     "@expo/require-utils": "workspace:^56.1.3",
     "@expo/spawn-async": "^1.8.0",
     "chalk": "^4.1.0",
     "commander": "^7.2.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
   }
 }

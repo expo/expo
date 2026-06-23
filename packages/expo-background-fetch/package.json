@@ -2,9 +2,27 @@
   "name": "expo-background-fetch",
   "version": "56.0.15",
   "description": "Expo universal module for BackgroundFetch API",
+  "keywords": [
+    "background",
+    "background-fetch",
+    "expo",
+    "fetch",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/background-fetch/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-background-fetch"
+  },
+  "sideEffects": false,
   "main": "build/BackgroundFetch.js",
   "types": "build/BackgroundFetch.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -16,24 +34,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "keywords": [
-    "expo",
-    "react-native",
-    "fetch",
-    "background",
-    "background-fetch"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-background-fetch"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/background-fetch/",
   "dependencies": {
     "expo-task-manager": "workspace:~56.0.15"
   },

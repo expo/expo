@@ -2,9 +2,27 @@
   "name": "expo-speech",
   "version": "56.0.3",
   "description": "Provides text-to-speech functionality.",
+  "keywords": [
+    "expo",
+    "expo-speech",
+    "react-native",
+    "speech",
+    "voice"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/speech/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-speech"
+  },
+  "sideEffects": false,
   "main": "build/Speech.js",
   "types": "build/Speech.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
@@ -15,27 +33,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-speech",
-    "speech",
-    "voice"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-speech"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/speech/",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "dependencies": {},
   "devDependencies": {
     "expo": "workspace:*",
@@ -43,5 +40,8 @@
   },
   "peerDependencies": {
     "expo": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

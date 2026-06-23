@@ -2,8 +2,28 @@
   "name": "@expo/metro-file-map",
   "version": "56.0.3",
   "description": "A metro-file-map fork for Expo used with the Metro bundler",
+  "keywords": [
+    "expo",
+    "metro"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-file-map#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/metro-file-map"
+  },
+  "files": [
+    "build"
+  ],
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
@@ -14,23 +34,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/metro-file-map"
-  },
-  "keywords": [
-    "expo",
-    "metro"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-file-map#readme",
-  "files": [
-    "build"
-  ],
   "dependencies": {
     "debug": "^4.3.4",
     "fb-watchman": "^2.0.2",
@@ -48,8 +51,5 @@
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

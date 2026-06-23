@@ -2,10 +2,6 @@ import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState 
 import { useWindowDimensions, View, StyleSheet } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import { BottomSheetContext, BottomSheetInternalContext } from './context';
-import { SheetScrollContextReset } from './scrollContextReset';
-import type { BottomSheetMethods, BottomSheetProps } from './types';
-import { parseSnapPoint } from './types';
 import { BottomSheet as NativeBottomSheet } from '../../swift-ui/BottomSheet';
 import { Group } from '../../swift-ui/Group';
 import { Host } from '../../swift-ui/Host';
@@ -18,6 +14,10 @@ import {
   presentationDragIndicator,
   presentationSizing,
 } from '../../swift-ui/modifiers/presentationModifiers';
+import { BottomSheetContext, BottomSheetInternalContext } from './context';
+import { SheetScrollContextReset } from './scrollContextReset';
+import type { BottomSheetMethods, BottomSheetProps } from './types';
+import { parseSnapPoint } from './types';
 
 export { useBottomSheet } from './context';
 

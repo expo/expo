@@ -1,11 +1,26 @@
 {
   "name": "expo-audio",
-  "title": "Expo Audio",
   "version": "56.0.11",
   "description": "A cross-platform audio library for React Native and Expo apps.",
+  "keywords": [
+    "android",
+    "audio",
+    "expo",
+    "expo-audio",
+    "ios",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/audio/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-audio"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -17,22 +32,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/audio/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-audio"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-audio",
-    "audio",
-    "ios",
-    "android"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
@@ -46,5 +45,6 @@
     "expo-asset": "*",
     "react": "*",
     "react-native": "*"
-  }
+  },
+  "title": "Expo Audio"
 }

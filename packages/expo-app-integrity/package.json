@@ -2,8 +2,28 @@
   "name": "@expo/app-integrity",
   "version": "56.0.3",
   "description": "A native module that helps assert app integrity on mobile platforms",
+  "keywords": [
+    "android",
+    "app-integrity",
+    "expo",
+    "integrity",
+    "ios",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/app-integrity/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-app-integrity"
+  },
   "sideEffects": false,
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
@@ -14,28 +34,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/app-integrity/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-app-integrity"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "integrity",
-    "app-integrity",
-    "ios",
-    "android"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "dependencies": {},
   "devDependencies": {
     "expo": "workspace:*",
@@ -45,5 +43,7 @@
     "expo": "*",
     "react-native": "*"
   },
-  "types": "build/index.d.ts"
+  "jest": {
+    "preset": "expo-module-scripts"
+  }
 }

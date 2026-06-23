@@ -2,9 +2,27 @@
   "name": "expo-dev-menu",
   "version": "56.0.15",
   "description": "Expo/React Native module with the developer menu.",
+  "keywords": [
+    "dev",
+    "dev-menu",
+    "expo",
+    "menu",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-dev-menu"
+  },
+  "sideEffects": false,
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -16,24 +34,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "keywords": [
-    "expo",
-    "react-native",
-    "dev-menu",
-    "dev",
-    "menu"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-dev-menu"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev",
   "dependencies": {
     "expo-dev-menu-interface": "workspace:~56.0.0"
   },

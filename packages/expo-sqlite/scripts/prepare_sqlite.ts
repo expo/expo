@@ -34,7 +34,7 @@ async function runAsync() {
     await Promise.all(
       outputFiles.map((file) =>
         fs.copyFile(path.join(workingDir, file), path.join(outputDir, file))
-      ),
+      )
     );
   } finally {
     await fs.unlink(tarballOutputPath).catch(() => {});

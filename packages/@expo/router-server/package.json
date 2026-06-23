@@ -2,23 +2,30 @@
   "name": "@expo/router-server",
   "version": "56.0.12",
   "description": "Expo Router is a file-based router for React Native and web applications.",
-  "author": "650 Industries, Inc.",
+  "keywords": [
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/routing/introduction/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "license": "MIT",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/router-server"
+  },
   "files": [
     "build",
     "node"
   ],
-  "repository": {
-    "url": "https://github.com/expo/expo.git",
-    "type": "git",
-    "directory": "packages/@expo/router-server"
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://docs.expo.dev/routing/introduction/",
   "scripts": {
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
@@ -30,10 +37,21 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo"
-  ],
+  "dependencies": {
+    "debug": "^4.3.4"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "@types/react-dom": "^19.1.7",
+    "@typescript/vfs": "^1.6.4",
+    "expect-type": "^1.3.0",
+    "expo-module-scripts": "workspace:*",
+    "expo-router": "workspace:*",
+    "react-server-dom-webpack": "~19.0.6"
+  },
   "peerDependencies": {
     "@expo/metro-runtime": "workspace:^56.0.13",
     "expo": "*",
@@ -58,23 +76,5 @@
     "react-server-dom-webpack": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "@types/debug": "^4.1.7",
-    "@types/jest": "^29.2.1",
-    "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
-    "@types/react-dom": "^19.1.7",
-    "@typescript/vfs": "^1.6.4",
-    "expect-type": "^1.3.0",
-    "expo-module-scripts": "workspace:*",
-    "expo-router": "workspace:*",
-    "react-server-dom-webpack": "~19.0.6"
-  },
-  "dependencies": {
-    "debug": "^4.3.4"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

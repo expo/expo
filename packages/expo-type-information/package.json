@@ -2,10 +2,23 @@
   "name": "expo-type-information",
   "version": "0.0.5",
   "keywords": [
-    "react-native",
     "expo",
-    "expo-modules"
+    "expo-modules",
+    "react-native"
   ],
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-type-information"
+  },
+  "bin": {
+    "expo-type-information": "./bin/cli.js"
+  },
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -30,25 +43,12 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "bin": {
-    "expo-type-information": "./bin/cli.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-type-information"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.0",
     "commander": "^12.1.0",
     "prettier": "^3.8.3",
-    "yaml": "^2.3.2",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "yaml": "^2.3.2"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

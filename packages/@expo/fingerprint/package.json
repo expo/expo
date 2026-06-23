@@ -2,6 +2,32 @@
   "name": "@expo/fingerprint",
   "version": "0.19.3",
   "description": "A library to generate a fingerprint from a React Native project",
+  "keywords": [
+    "expo",
+    "fingerprint",
+    "hash",
+    "node",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/fingerprint#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/fingerprint"
+  },
+  "bin": {
+    "fingerprint": "bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "build",
+    "cli/build"
+  ],
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -19,32 +45,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "bin": {
-    "fingerprint": "bin/cli.js"
-  },
-  "files": [
-    "bin",
-    "build",
-    "cli/build"
-  ],
-  "keywords": [
-    "expo",
-    "react-native",
-    "fingerprint",
-    "hash",
-    "node"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/fingerprint"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/fingerprint#readme",
   "dependencies": {
     "@expo/env": "workspace:^2.3.0",
     "@expo/spawn-async": "^1.8.0",
@@ -59,13 +59,13 @@
     "semver": "^7.6.0"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.5",
-    "@types/getenv": "^1.0.0",
-    "@types/semver": "^7.5.8",
-    "@types/node": "^22.14.0",
-    "@types/require-from-string": "^1.2.3",
     "@expo/config": "workspace:~55.0.8",
     "@expo/require-utils": "workspace:~55.0.2",
+    "@types/debug": "^4.1.5",
+    "@types/getenv": "^1.0.0",
+    "@types/node": "^22.14.0",
+    "@types/require-from-string": "^1.2.3",
+    "@types/semver": "^7.5.8",
     "expo-module-scripts": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "memfs": "^3.2.0",

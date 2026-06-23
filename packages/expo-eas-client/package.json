@@ -2,9 +2,26 @@
   "name": "expo-eas-client",
   "version": "56.0.1",
   "description": "Stable client identifier for EAS services",
+  "keywords": [
+    "EASClient",
+    "eas-client",
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-eas-client",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/eas-client"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
@@ -15,27 +32,10 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "eas-client",
-    "EASClient"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/eas-client"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-eas-client",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "devDependencies": {
     "expo-module-scripts": "workspace:*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

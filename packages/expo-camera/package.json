@@ -2,9 +2,25 @@
   "name": "expo-camera",
   "version": "56.0.7",
   "description": "A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With expo-camera, one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.",
+  "keywords": [
+    "camera",
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/camera/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-camera"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -16,25 +32,6 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "camera"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-camera"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/camera/",
-  "jest": {
-    "preset": "expo-module-scripts"
   },
   "dependencies": {
     "barcode-detector": "^3.0.0"
@@ -56,5 +53,8 @@
     "react-native-web": {
       "optional": true
     }
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

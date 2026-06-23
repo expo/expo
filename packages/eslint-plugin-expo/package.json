@@ -4,20 +4,21 @@
   "description": "ESLint rules for Expo apps",
   "keywords": [
     "eslint",
-    "eslintplugin",
-    "eslint-plugin"
+    "eslint-plugin",
+    "eslintplugin"
   ],
+  "license": "MIT",
   "author": "Expo",
-  "main": "./build/index.js",
-  "files": [
-    "README.md",
-    "build"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/expo/expo.git",
     "directory": "packages/eslint-plugin-expo"
   },
+  "files": [
+    "README.md",
+    "build"
+  ],
+  "main": "./build/index.js",
   "scripts": {
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "oxfmt .",
@@ -40,11 +41,10 @@
     "expo-module-scripts": "workspace:*",
     "jest": "^29.7.0"
   },
-  "engines": {
-    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
-  },
   "peerDependencies": {
     "eslint": ">=8.10"
   },
-  "license": "MIT"
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
+  }
 }

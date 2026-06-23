@@ -2,9 +2,32 @@
   "name": "expo-sensors",
   "version": "56.0.5",
   "description": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
+  "keywords": [
+    "accelerometer",
+    "barometer",
+    "devicemotion",
+    "expo",
+    "gyroscope",
+    "lightsensor",
+    "magnetometer",
+    "pedometer",
+    "react-native",
+    "sensors"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/sensors/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-sensors"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -16,32 +39,6 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "sensors",
-    "accelerometer",
-    "devicemotion",
-    "gyroscope",
-    "lightsensor",
-    "magnetometer",
-    "pedometer",
-    "barometer"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-sensors"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/sensors/",
-  "jest": {
-    "preset": "expo-module-scripts"
   },
   "dependencies": {
     "invariant": "^2.2.4"
@@ -56,5 +53,8 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

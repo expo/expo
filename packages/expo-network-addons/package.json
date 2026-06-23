@@ -1,11 +1,27 @@
 {
   "name": "expo-network-addons",
-  "title": "Expo Networking Addons",
   "version": "56.0.5",
   "description": "Expo module that provides extra functionalities for networking",
+  "keywords": [
+    "EAS",
+    "ExpoNetworkAddons",
+    "addons",
+    "expo",
+    "expo-network-addons",
+    "network",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-network-addons"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
@@ -15,23 +31,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "homepage": "https://docs.expo.dev/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-network-addons"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-network-addons",
-    "ExpoNetworkAddons",
-    "network",
-    "addons",
-    "EAS"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "dependencies": {},
   "devDependencies": {
     "expo": "workspace:*",
@@ -39,5 +38,6 @@
   },
   "peerDependencies": {
     "expo": "*"
-  }
+  },
+  "title": "Expo Networking Addons"
 }

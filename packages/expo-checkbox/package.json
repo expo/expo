@@ -2,6 +2,22 @@
   "name": "expo-checkbox",
   "version": "56.0.1",
   "description": "Basic boolean input for Android, iOS and web.",
+  "keywords": [
+    "expo",
+    "expo-checkbox",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/checkbox",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-checkbox"
+  },
   "main": "build/Checkbox.js",
   "types": "build/Checkbox.d.ts",
   "scripts": {
@@ -14,22 +30,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-checkbox"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-checkbox"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/checkbox",
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

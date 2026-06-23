@@ -2,6 +2,23 @@
   "name": "expo-build-properties",
   "version": "56.0.15",
   "description": "Config plugin to customize native build properties on prebuild",
+  "keywords": [
+    "build",
+    "build-properties",
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/build-properties",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-build-properties"
+  },
   "main": "build/withBuildProperties.js",
   "types": "build/withBuildProperties.d.ts",
   "exports": {
@@ -26,23 +43,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "build",
-    "build-properties"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-build-properties"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/build-properties",
   "dependencies": {
     "@expo/schema-utils": "workspace:^56.0.0",
     "resolve-from": "^5.0.0",

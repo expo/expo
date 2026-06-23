@@ -1,8 +1,8 @@
 import type { Endpoints } from '@octokit/types';
 
+import { createGlobFilter } from '../createFileTransform';
 import { fetch } from './fetch';
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
-import { createGlobFilter } from '../createFileTransform';
 
 const debug = require('debug')('expo:init:github') as typeof console.log;
 

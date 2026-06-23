@@ -2,6 +2,25 @@
   "name": "expo-store-review",
   "version": "56.0.3",
   "description": "Provides access to native APIs for in-app reviews.",
+  "keywords": [
+    "app-store",
+    "expo",
+    "expo-store-review",
+    "google-play-store",
+    "react-native",
+    "reviews"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-store-review"
+  },
   "main": "build/StoreReview.js",
   "types": "build/StoreReview.d.ts",
   "scripts": {
@@ -13,25 +32,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-store-review",
-    "reviews",
-    "app-store",
-    "google-play-store"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-store-review"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
   "dependencies": {},
   "devDependencies": {
     "expo": "workspace:*",

@@ -2,6 +2,22 @@
   "name": "expo-device",
   "version": "56.0.4",
   "description": "A universal module that gets physical information about the device running the application",
+  "keywords": [
+    "expo",
+    "expo-device",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/device/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-device"
+  },
   "main": "build/Device.js",
   "types": "build/Device.d.ts",
   "scripts": {
@@ -14,25 +30,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-device"
-  ],
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-device"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/device/",
   "dependencies": {
     "ua-parser-js": "^0.7.33"
   },
@@ -43,5 +40,8 @@
   },
   "peerDependencies": {
     "expo": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

@@ -173,7 +173,9 @@ function ContextNavigator({
 }
 
 function Content() {
-  const children = [<Screen key="SLOT" name={INTERNAL_SLOT_NAME} component={store.rootComponent} />];
+  const children = [
+    <Screen key="SLOT" name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
+  ];
   if (shouldAppendNotFound()) {
     children.push(<Screen key="NOT-FOUND" name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />);
   }

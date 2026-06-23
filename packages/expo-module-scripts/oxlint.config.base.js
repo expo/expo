@@ -1,5 +1,5 @@
-import native from 'oxlint-config-universe/native';
 import { defineConfig } from 'oxlint';
+import native from 'oxlint-config-universe/native';
 
 export default defineConfig({
   extends: [native],
@@ -113,6 +113,9 @@ export default defineConfig({
     'unicorn/no-useless-spread': 'off',
 
     // React props that pass JSX should always be wrapped by curly braces.
-    'react/jsx-curly-brace-presence': ['warn', { props: 'never', children: 'never', propElementValues: 'always' }],
+    'react/jsx-curly-brace-presence': [
+      'warn',
+      { props: 'never', children: 'never', propElementValues: 'always' },
+    ],
   },
 });

@@ -2,9 +2,25 @@
   "name": "expo-constants",
   "version": "56.0.16",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
+  "keywords": [
+    "constants",
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/constants/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-constants"
+  },
+  "sideEffects": false,
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
-  "sideEffects": false,
   "exports": {
     ".": {
       "react-server": {
@@ -24,6 +40,12 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/get-app-config-ios.sh",
+      "./scripts/with-node.sh"
+    ]
+  },
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
@@ -34,22 +56,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "constants"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-constants"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/constants/",
   "dependencies": {
     "@expo/env": "workspace:~2.3.0"
   },
@@ -62,11 +68,5 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
-  },
-  "publishConfig": {
-    "executableFiles": [
-      "./scripts/get-app-config-ios.sh",
-      "./scripts/with-node.sh"
-    ]
   }
 }

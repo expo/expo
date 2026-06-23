@@ -2,6 +2,10 @@ import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { UnexpectedServerError, UnexpectedServerData } from '../api/graphql/client';
+import { AppQuery } from '../api/graphql/queries/AppQuery';
+import { getSettings } from '../api/user/UserSettings';
+import * as Log from '../log';
 import { memoize } from './fn';
 import { learnMore } from './link';
 import { attemptModification } from './modifyConfigAsync';
@@ -17,10 +21,6 @@ import {
   validatePackage,
   validatePackageWithWarning,
 } from './validateApplicationId';
-import { UnexpectedServerError, UnexpectedServerData } from '../api/graphql/client';
-import { AppQuery } from '../api/graphql/queries/AppQuery';
-import { getSettings } from '../api/user/UserSettings';
-import * as Log from '../log';
 
 const debug = require('debug')('expo:app-id') as typeof console.log;
 

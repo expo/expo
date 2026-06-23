@@ -2,6 +2,26 @@
   "name": "expo-auth-session",
   "version": "56.0.12",
   "description": "Expo module for browser-based authentication",
+  "keywords": [
+    "auth",
+    "auth-session",
+    "authentication",
+    "expo",
+    "expo-auth-session",
+    "oauth",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-auth-session"
+  },
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -73,26 +93,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-auth-session",
-    "auth",
-    "oauth",
-    "authentication",
-    "auth-session"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-auth-session"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
   "dependencies": {
     "expo-application": "workspace:~56.0.3",
     "expo-constants": "workspace:~56.0.16",
@@ -102,8 +102,8 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0",
     "@types/invariant": "^2.2.33",
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

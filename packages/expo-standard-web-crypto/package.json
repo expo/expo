@@ -2,9 +2,21 @@
   "name": "expo-standard-web-crypto",
   "version": "56.0.3",
   "description": "A partial implementation of the W3C Crypto API for Expo",
+  "keywords": [
+    "crypto",
+    "expo"
+  ],
+  "homepage": "https://github.com/expo/expo/blob/main/packages/expo-standard-web-crypto",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-standard-web-crypto"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
@@ -15,21 +27,7 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
-  "homepage": "https://github.com/expo/expo/blob/main/packages/expo-standard-web-crypto",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-standard-web-crypto"
-  },
-  "keywords": [
-    "expo",
-    "crypto"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
+  "dependencies": {},
   "devDependencies": {
     "expo-crypto": "workspace:*",
     "expo-module-scripts": "workspace:*"
@@ -37,5 +35,7 @@
   "peerDependencies": {
     "expo-crypto": "workspace:^56.0.4"
   },
-  "dependencies": {}
+  "jest": {
+    "preset": "expo-module-scripts"
+  }
 }

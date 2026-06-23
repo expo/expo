@@ -2,6 +2,27 @@
   "name": "pod-install",
   "version": "1.0.17",
   "description": "A fast, zero-dependency package for cutting down on common issues developers have when running pod install.",
+  "keywords": [
+    "cocoapods",
+    "ios",
+    "npx",
+    "pod-install"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/pod-install",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo <support@expo.dev>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bin": "./bin/pod-install.js",
+  "files": [
+    "bin",
+    "build"
+  ],
   "main": "./build/index.js",
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
@@ -12,27 +33,6 @@
     "prepublishOnly": "pnpm run clean && pnpm run build:prod",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
-  },
-  "bin": "./bin/pod-install.js",
-  "files": [
-    "bin",
-    "build"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git"
-  },
-  "keywords": [
-    "cocoapods",
-    "pod-install",
-    "npx",
-    "ios"
-  ],
-  "author": "Expo <support@expo.dev>",
-  "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/pod-install",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
   },
   "devDependencies": {
     "@expo/package-manager": "workspace:*",

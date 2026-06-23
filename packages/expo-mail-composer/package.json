@@ -2,9 +2,26 @@
   "name": "expo-mail-composer",
   "version": "56.0.4",
   "description": "Provides an API to compose mails using OS specific UI",
+  "keywords": [
+    "composer",
+    "expo",
+    "mail",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/mail-composer/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-mail-composer"
+  },
+  "sideEffects": false,
   "main": "build/MailComposer.js",
   "types": "build/MailComposer.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -17,26 +34,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "mail",
-    "composer"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-mail-composer"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/mail-composer/",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
@@ -45,5 +42,8 @@
   },
   "peerDependencies": {
     "expo": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

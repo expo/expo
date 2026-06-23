@@ -64,10 +64,7 @@ export default function ImageCacheKeyScreen() {
       <MonoText>{`const source = ${JSON.stringify(source, null, 2)}`}</MonoText>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.actionsContainer}>
-        <Text style={styles.text}>
-          At first let's make sure the disk cache is cleared{'\n'}
-          👇
-        </Text>
+        <Text style={styles.text}>At first let's make sure the disk cache is cleared{'\n'}👇</Text>
 
         <Button
           style={styles.actionButton}
@@ -79,8 +76,7 @@ export default function ImageCacheKeyScreen() {
           Now load a new random source that{'\n'}
           uses the constant as a cache key.{'\n'}
           Do it multiple times and notice the image{'\n'}
-          is not changing when the source changes{'\n'}
-          👇
+          is not changing when the source changes{'\n'}👇
         </Text>
 
         <Button
@@ -94,8 +90,7 @@ export default function ImageCacheKeyScreen() {
           You can also seed the cache yourself.{'\n'}
           This clears the cache, writes a random image{'\n'}
           to it under the constant key, renders it above,{'\n'}
-          and reports where it was loaded from{'\n'}
-          👇
+          and reports where it was loaded from{'\n'}👇
         </Text>
 
         <Button

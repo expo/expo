@@ -2,9 +2,28 @@
   "name": "expo-print",
   "version": "56.0.3",
   "description": "Provides an API for Android and iOS (AirPrint) printing functionality.",
+  "keywords": [
+    "airprint",
+    "android",
+    "expo",
+    "ios",
+    "print",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/print/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-print"
+  },
+  "sideEffects": false,
   "main": "build/Print.js",
   "types": "build/Print.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
@@ -15,28 +34,6 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "print",
-    "android",
-    "ios",
-    "airprint"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-print"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/print/",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "dependencies": {},
   "devDependencies": {
     "expo": "workspace:*",
@@ -45,5 +42,8 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

@@ -2,13 +2,24 @@
   "name": "@expo/metro-runtime",
   "version": "56.0.13",
   "description": "Tools for making advanced Metro bundler features work",
+  "keywords": [],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "files": [
+    "build",
+    "src",
+    "rsc",
+    "assets",
+    "!**/__tests__"
+  ],
   "sideEffects": true,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
-  "keywords": [],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "exports": {
     ".": {
       "types": {
@@ -22,13 +33,6 @@
     "./rsc/runtime": "./rsc/runtime.js",
     "./package.json": "./package.json"
   },
-  "files": [
-    "build",
-    "src",
-    "rsc",
-    "assets",
-    "!**/__tests__"
-  ],
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
@@ -40,9 +44,18 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git"
+  "dependencies": {
+    "@expo/log-box": "workspace:^56.0.12",
+    "anser": "^1.4.9",
+    "pretty-format": "^29.7.0",
+    "stacktrace-parser": "^0.1.10",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.0",
+    "expo-constants": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "react-dom": "19.2.3"
   },
   "peerDependencies": {
     "@expo/log-box": "workspace:^56.0.12",
@@ -55,18 +68,5 @@
     "react-dom": {
       "optional": true
     }
-  },
-  "dependencies": {
-    "@expo/log-box": "workspace:^56.0.12",
-    "anser": "^1.4.9",
-    "stacktrace-parser": "^0.1.10",
-    "pretty-format": "^29.7.0",
-    "whatwg-fetch": "^3.0.0"
-  },
-  "devDependencies": {
-    "@types/react": "~19.2.0",
-    "expo-constants": "workspace:*",
-    "expo-module-scripts": "workspace:*",
-    "react-dom": "19.2.3"
   }
 }
