@@ -220,6 +220,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Add `EXPO_IOS_SIMULATOR_UDID` env var to target a specific iOS simulator when running `expo start --ios` or pressing `i` in the dev server. Useful for running multiple simulators against multiple dev servers in parallel. by [@sstur](https://github.com/sstur) ([#45226](https://github.com/expo/expo/pull/45226) by [@sstur](https://github.com/sstur))
 - Output logs to `.expo` folder for agent processes. ([#44146](https://github.com/expo/expo/pull/44146) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `--output` option to `expo run:ios` to copy built app binary to a specified directory. ([#43529](https://github.com/expo/expo/pull/43529) by [@evanbacon](https://github.com/evanbacon))
 - Add `--device generic` support to `expo run:ios` for build-only workflows without targeting a specific device. ([#43529](https://github.com/expo/expo/pull/43529) by [@evanbacon](https://github.com/evanbacon))
