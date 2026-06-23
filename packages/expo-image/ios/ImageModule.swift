@@ -245,6 +245,49 @@ public final class ImageModule: Module {
       }
     }
 
+    AsyncFunction("writeToCacheAsync") { (source: Either<Image, URL>, cacheKey: String) async throws in
+      // UIImage isn't Sendable, but SDWebImage's store is internally thread-safe, so it's safe to hand off.
+      nonisolated(unsafe) let image: UIImage?
+      let imageData: Data?
+
+      if let imageRef: Image = source.get() {
+        // The ref carries no original encoded data, so let SDWebImage encode the image when storing.
+        image = imageRef.ref
+        imageData = nil
+      } else if let url: URL = source.get() {
+        guard url.isFileURL else {
+          throw WriteToCacheRemoteSourceException(url.absoluteString)
+        }
+        do {
+          imageData = try Data(contentsOf: url)
+        } catch {
+          throw WriteToCacheReadException(url.absoluteString).causedBy(error)
+        }
+        image = nil
+      } else {
+        throw WriteToCacheSourceException()
+      }
+
+      await withCheckedContinuation { continuation in
+        SDImageCache.shared.store(image, imageData: imageData, forKey: cacheKey, toDisk: true) {
+          continuation.resume()
+        }
+      }
+    }
+
+    AsyncFunction("readFromCacheAsync") { (cacheKey: String) async -> Image? in
+      let cachedImage: UIImage? = await withCheckedContinuation { continuation in
+        // Queries the memory cache first and falls back to disk, decoding the image if needed.
+        SDImageCache.shared.queryCacheOperation(forKey: cacheKey) { image, _, _ in
+          continuation.resume(returning: image)
+        }
+      }
+      guard let cachedImage else {
+        return nil
+      }
+      return Image(cachedImage)
+    }
+
     AsyncFunction("loadAsync") { (source: ImageSource, options: ImageLoadOptions?) -> Image? in
       let image = try await ImageLoadTask(source, options: options ?? ImageLoadOptions()).load()
       return Image(image)

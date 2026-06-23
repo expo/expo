@@ -18,19 +18,19 @@ import ExpoModulesJSI
 extension Bool: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Bool {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Bool {
     return try value.asBool()
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Bool {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Bool {
     return try value.asBool()
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Bool, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: Bool, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return value ? .true() : .false()
   }
 }
@@ -40,19 +40,19 @@ extension Bool: JavaScriptCodable {
 extension String: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> String {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> String {
     return try value.asString()
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> String {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> String {
     return try value.asString()
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: String, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: String, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     // The `JavaScriptValue(_:_:)` initializer takes the runtime by owned convention (it stores it),
     // so an owned copy is needed from the borrowed parameter.
     return JavaScriptValue(copy runtime, value)
@@ -70,19 +70,19 @@ extension String: JavaScriptCodable {
 extension Double: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Double {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Double {
     return try value.asDouble()
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Double {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Double {
     return try value.asDouble()
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Double, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: Double, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(value)
   }
 }
@@ -90,19 +90,19 @@ extension Double: JavaScriptCodable {
 extension Float: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Float {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Float {
     return try Float(value.asDouble())
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Float {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Float {
     return try Float(value.asDouble())
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Float, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: Float, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
   }
 }
@@ -110,19 +110,19 @@ extension Float: JavaScriptCodable {
 extension CGFloat: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> CGFloat {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> CGFloat {
     return try CGFloat(value.asDouble())
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> CGFloat {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> CGFloat {
     return try CGFloat(value.asDouble())
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: CGFloat, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: CGFloat, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
   }
 }
@@ -151,19 +151,19 @@ extension CGFloat: JavaScriptCodable {
 extension Int: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Int {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int {
     return try decodeWideInteger(value, as: Int.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Int {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Int {
     return try decodeWideInteger(value, as: Int.self, runtime: runtime)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Int, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: Int, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return try encodeSafeInteger(value)
   }
 }
@@ -171,19 +171,19 @@ extension Int: JavaScriptCodable {
 extension Int8: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Int8 {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int8 {
     return try decodeInteger(value.asDouble(), as: Int8.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Int8 {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Int8 {
     return try decodeInteger(value.asDouble(), as: Int8.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Int8, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: Int8, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
   }
 }
@@ -191,19 +191,19 @@ extension Int8: JavaScriptCodable {
 extension Int16: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Int16 {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int16 {
     return try decodeInteger(value.asDouble(), as: Int16.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Int16 {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Int16 {
     return try decodeInteger(value.asDouble(), as: Int16.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Int16, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: Int16, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
   }
 }
@@ -211,19 +211,19 @@ extension Int16: JavaScriptCodable {
 extension Int32: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Int32 {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int32 {
     return try decodeInteger(value.asDouble(), as: Int32.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Int32 {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Int32 {
     return try decodeInteger(value.asDouble(), as: Int32.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Int32, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: Int32, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
   }
 }
@@ -231,19 +231,19 @@ extension Int32: JavaScriptCodable {
 extension Int64: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Int64 {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int64 {
     return try decodeWideInteger(value, as: Int64.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Int64 {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Int64 {
     return try decodeWideInteger(value, as: Int64.self, runtime: runtime)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Int64, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: Int64, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return JavaScriptValue(copy runtime, bigInt: value)
   }
 }
@@ -251,19 +251,19 @@ extension Int64: JavaScriptCodable {
 extension UInt: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> UInt {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt {
     return try decodeWideInteger(value, as: UInt.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> UInt {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt {
     return try decodeWideInteger(value, as: UInt.self, runtime: runtime)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: UInt, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: UInt, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return try encodeSafeInteger(value)
   }
 }
@@ -271,19 +271,19 @@ extension UInt: JavaScriptCodable {
 extension UInt8: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> UInt8 {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt8 {
     return try decodeInteger(value.asDouble(), as: UInt8.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> UInt8 {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt8 {
     return try decodeInteger(value.asDouble(), as: UInt8.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: UInt8, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: UInt8, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
   }
 }
@@ -291,19 +291,19 @@ extension UInt8: JavaScriptCodable {
 extension UInt16: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> UInt16 {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt16 {
     return try decodeInteger(value.asDouble(), as: UInt16.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> UInt16 {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt16 {
     return try decodeInteger(value.asDouble(), as: UInt16.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: UInt16, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: UInt16, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
   }
 }
@@ -311,19 +311,19 @@ extension UInt16: JavaScriptCodable {
 extension UInt32: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> UInt32 {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt32 {
     return try decodeInteger(value.asDouble(), as: UInt32.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> UInt32 {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt32 {
     return try decodeInteger(value.asDouble(), as: UInt32.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: UInt32, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: UInt32, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
   }
 }
@@ -331,19 +331,19 @@ extension UInt32: JavaScriptCodable {
 extension UInt64: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> UInt64 {
+  public static func decode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt64 {
     return try decodeWideInteger(value, as: UInt64.self)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> UInt64 {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt64 {
     return try decodeWideInteger(value, as: UInt64.self, runtime: runtime)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: UInt64, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: UInt64, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return JavaScriptValue(copy runtime, bigInt: value)
   }
 }

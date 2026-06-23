@@ -65,6 +65,14 @@ class ImageModule extends NativeModule implements ImageNativeModule {
     return Promise.resolve(null);
   }
 
+  writeToCacheAsync(_: string | ImageRef, __: string): Promise<void> {
+    throw new Error('Writing to the cache is not supported on Web.');
+  }
+
+  readFromCacheAsync(_: string): Promise<ImageRef | null> {
+    return Promise.resolve(null);
+  }
+
   generateBlurhashAsync(
     _: string | ImageRef,
     __: [number, number] | { width: number; height: number }

@@ -47,6 +47,7 @@ android {
         def cppArguments = [
           "-DANDROID_STL=c++_shared",
           "-DREACT_NATIVE_DIR=${expoModule.reactNativeDir}",
+          "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
         ]
 
         abiFilters(*reactNativeArchitectures())

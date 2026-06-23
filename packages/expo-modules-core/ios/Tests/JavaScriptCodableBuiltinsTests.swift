@@ -22,9 +22,9 @@ struct JavaScriptCodableBuiltinsTests {
   func `passes a JavaScriptValue through`() throws {
     let runtime = try runtime
     let value = try runtime.eval("123")
-    let decoded = try JavaScriptValue.decode(value, appContext: appContext, runtime: runtime)
+    let decoded = try JavaScriptValue.decode(value, in: runtime)
     #expect(decoded.getInt() == 123)
-    let encoded = try JavaScriptValue.encode(decoded, appContext: appContext, runtime: runtime)
+    let encoded = try JavaScriptValue.encode(decoded, in: runtime)
     #expect(encoded.getInt() == 123)
   }
 }
