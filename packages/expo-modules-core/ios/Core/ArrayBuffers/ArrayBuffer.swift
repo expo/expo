@@ -200,31 +200,57 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
    Converts a JavaScript ArrayBuffer or TypedArray to Expo's safe native ArrayBuffer representation.
    */
   internal static func from(jsValue: JavaScriptValue) throws -> ArrayBuffer {
-    if jsValue.isTypedArray() {
-      let typedArray = jsValue.getTypedArray()
-      let count = typedArray.byteLength
-
-      if count == 0 {
-        return ArrayBuffer.allocate(size: 0)
-      }
-      return try typedArray.withUnsafeBytes { bytes in
-        let backingBuffer = typedArray.getArrayBuffer()
-        if let borrowed = backingBuffer.tryBorrowMutableBuffer() {
-          return ArrayBuffer(
-            borrowing: UnsafeMutableRawPointer(borrowed.data.advanced(by: typedArray.byteOffset)),
-            count: count,
-            cleanup: {
-              _ = borrowed
-            })
-        }
-        return ArrayBuffer.copy(of: bytes.baseAddress!, count: count)
-      }
-    }
-    guard jsValue.isArrayBuffer() else {
+    guard jsValue.isObject() else {
       throw ArrayBufferJavaScriptValueConversionException(jsValue.kind)
     }
-    let jsArrayBuffer = jsValue.getArrayBuffer()
+    return try ArrayBuffer.from(jsObject: jsValue.getObject())
+  }
 
+  /**
+   Converts a borrowed JavaScript ArrayBuffer or TypedArray without materializing an owning JavaScriptValue.
+   */
+  internal static func from(
+    unownedValue: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> ArrayBuffer {
+    guard unownedValue.isObject() else {
+      throw ArrayBufferJavaScriptValueConversionException(unownedValue.copied(in: runtime).kind)
+    }
+    return try ArrayBuffer.from(jsObject: unownedValue.getObject(in: runtime))
+  }
+
+  private static func from(jsObject: consuming JavaScriptObject) throws -> ArrayBuffer {
+    if jsObject.isArrayBuffer() {
+      return ArrayBuffer.from(jsArrayBuffer: jsObject.getArrayBuffer())
+    }
+    let jsValue = jsObject.asValue()
+    guard jsValue.isTypedArray() else {
+      throw ArrayBufferJavaScriptValueConversionException(.object)
+    }
+    return try ArrayBuffer.from(typedArray: jsValue.getTypedArray())
+  }
+
+  private static func from(typedArray: consuming JavaScriptTypedArray) throws -> ArrayBuffer {
+    let count = typedArray.byteLength
+
+    if count == 0 {
+      return ArrayBuffer.allocate(size: 0)
+    }
+    return typedArray.withUnsafeBytes { bytes in
+      let backingBuffer = typedArray.getArrayBuffer()
+      if let borrowed = backingBuffer.tryBorrowMutableBuffer() {
+        return ArrayBuffer(
+          borrowing: UnsafeMutableRawPointer(borrowed.data.advanced(by: typedArray.byteOffset)),
+          count: count,
+          cleanup: {
+            _ = borrowed
+          })
+      }
+      return ArrayBuffer.copy(of: bytes.baseAddress!, count: count)
+    }
+  }
+
+  private static func from(jsArrayBuffer: consuming JavaScriptArrayBuffer) -> ArrayBuffer {
     if jsArrayBuffer.size == 0 {
       return ArrayBuffer.allocate(size: 0)
     }
@@ -241,20 +267,28 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
 }
 
 extension ArrayBuffer: JavaScriptDecodable, JavaScriptEncodable {
+  // MARK: - JavaScriptDecodable
   @JavaScriptActor
   public static func decode(
     _ value: JavaScriptValue,
-    appContext: borrowing AppContext,
-    runtime: borrowing JavaScriptRuntime
+    in runtime: borrowing JavaScriptRuntime
   ) throws -> ArrayBuffer {
     return try ArrayBuffer.from(jsValue: value)
   }
 
   @JavaScriptActor
+  public static func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> ArrayBuffer {
+    return try ArrayBuffer.from(unownedValue: value, in: runtime)
+  }
+
+  // MARK: - JavaScriptEncodable
+  @JavaScriptActor
   public static func encode(
     _ value: ArrayBuffer,
-    appContext: borrowing AppContext,
-    runtime: borrowing JavaScriptRuntime
+    in runtime: borrowing JavaScriptRuntime
   ) throws -> JavaScriptValue {
     return value.asJavaScriptArrayBuffer(runtime: copy runtime).asValue()
   }

@@ -21,11 +21,29 @@ struct JavaScriptCodableArrayBufferTests {
   func `decodes JS-backed ArrayBuffer as owned copy`() throws {
     let runtime = try runtime
     let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
-    let decoded = try ArrayBuffer.decode(value, appContext: appContext, runtime: runtime)
+    let decoded = try ArrayBuffer.decode(value, in: runtime)
 
     #expect(decoded.byteLength == 3)
     #expect(decoded.isOwned == true)
     #expect(Array(decoded.data) == [1, 2, 3])
+  }
+
+  @Test
+  func `decodes borrowed JavaScript value without changing ArrayBuffer ownership semantics`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
+        new Uint8Array(buffer, 1, 2);
+      """
+    )
+    let values = JavaScriptValuesBuffer.copying(in: runtime, values: [value])
+
+    let decoded = try ArrayBuffer.decode(values.unownedValue(at: 0), in: runtime)
+
+    #expect(decoded.byteLength == 2)
+    #expect(decoded.isOwned == true)
+    #expect(Array(decoded.data) == [2, 3])
   }
 
   @Test
@@ -37,7 +55,7 @@ struct JavaScriptCodableArrayBufferTests {
         new Uint8Array(buffer, 1, 2);
       """
     )
-    let decoded = try ArrayBuffer.decode(value, appContext: appContext, runtime: runtime)
+    let decoded = try ArrayBuffer.decode(value, in: runtime)
 
     #expect(decoded.byteLength == 2)
     #expect(decoded.isOwned == true)
@@ -50,7 +68,7 @@ struct JavaScriptCodableArrayBufferTests {
     let nativeBuffer = try makeArrayBuffer(bytes: [1, 2, 3])
     let value = nativeBuffer.asJavaScriptArrayBuffer(runtime: runtime).asValue()
 
-    let decoded = try ArrayBuffer.decode(value, appContext: appContext, runtime: runtime)
+    let decoded = try ArrayBuffer.decode(value, in: runtime)
 
     #expect(decoded.byteLength == 3)
     #expect(decoded.isOwned == false)
@@ -64,7 +82,7 @@ struct JavaScriptCodableArrayBufferTests {
     runtime.global().setProperty("nativeBuffer", value: nativeBuffer.asJavaScriptArrayBuffer(runtime: runtime).asValue())
     let value = try runtime.eval("new Uint8Array(nativeBuffer, 1, 2)")
 
-    let decoded = try ArrayBuffer.decode(value, appContext: appContext, runtime: runtime)
+    let decoded = try ArrayBuffer.decode(value, in: runtime)
 
     #expect(decoded.byteLength == 2)
     #expect(decoded.isOwned == false)
@@ -76,7 +94,7 @@ struct JavaScriptCodableArrayBufferTests {
     let runtime = try runtime
     let buffer = try makeArrayBuffer(bytes: [4, 5, 6])
 
-    let encoded = try ArrayBuffer.encode(buffer, appContext: appContext, runtime: runtime)
+    let encoded = try ArrayBuffer.encode(buffer, in: runtime)
     runtime.global().setProperty("encodedBuffer", value: encoded)
     let values = try runtime.eval("Array.from(new Uint8Array(encodedBuffer))").getArray().map { try $0.asInt() }
 
@@ -89,7 +107,7 @@ struct JavaScriptCodableArrayBufferTests {
     let runtime = try runtime
     let value = try runtime.eval("({ payload: new Uint8Array([7, 8, 9]).buffer })")
 
-    let decoded = try [String: ArrayBuffer].decode(value, appContext: appContext, runtime: runtime)
+    let decoded = try [String: ArrayBuffer].decode(value, in: runtime)
     let buffer = try #require(decoded["payload"])
 
     #expect(buffer.byteLength == 3)
@@ -102,7 +120,7 @@ struct JavaScriptCodableArrayBufferTests {
     let runtime = try runtime
     let value = try runtime.eval("[new Uint8Array([10, 11]).buffer]")
 
-    let decoded = try [ArrayBuffer].decode(value, appContext: appContext, runtime: runtime)
+    let decoded = try [ArrayBuffer].decode(value, in: runtime)
 
     #expect(decoded.count == 1)
     #expect(decoded[0].byteLength == 2)
