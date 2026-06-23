@@ -1,14 +1,16 @@
 import { mergeClasses } from '@expo/styleguide';
-import { TabList, TabPanels, Tabs as ReachTabs, TabsProps } from '@reach/tabs';
+import { TabList, TabPanelProps, TabPanels, Tabs as ReachTabs, TabsProps } from '@reach/tabs';
 import {
   Children,
   Fragment,
   PropsWithChildren,
   ReactElement,
+  cloneElement,
   isValidElement,
   useState,
   useContext,
   ReactNode,
+  useId,
   useMemo,
 } from 'react';
 
@@ -21,7 +23,7 @@ type Props = PropsWithChildren<TabsProps> & {
   tabs?: string[];
 };
 
-type TabChild = ReactElement<{ label?: string }>;
+type TabChild = ReactElement<TabPanelProps & { label?: string; hidden?: boolean }>;
 
 const collectTabPanels = (nodes: ReactNode): TabChild[] => {
   const panels: TabChild[] = [];
@@ -67,10 +69,7 @@ const InnerTabs = ({
   const tabPanels = useMemo(() => collectTabPanels(children), [children]);
   const tabTitles = tabs?.length === tabPanels.length ? tabs : generateTabLabels(tabPanels);
 
-  const layoutId = useMemo(
-    () => tabTitles.reduce((acc, tab) => acc + tab, `${Math.random().toString(36).slice(5)}-`),
-    []
-  );
+  const layoutId = useId();
 
   return (
     <ReachTabs
@@ -90,7 +89,9 @@ const InnerTabs = ({
             '[&_figure:first-child]:mt-1 [&_pre:first-child]:mt-1',
             '[&>div>*:last-child]:mb-0!'
           )}>
-          {tabPanels}
+          {tabPanels.map((panel, index) =>
+            cloneElement(panel, { key: index, index, hidden: index !== tabIndex })
+          )}
         </TabPanels>
       </InsideTabsContext.Provider>
     </ReachTabs>
