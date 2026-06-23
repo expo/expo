@@ -12,6 +12,10 @@ import {
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
 
+// Route keys are now deterministic (see `getRouteKey`): with no navigator `id` passed, a generated
+// key is just the route name (index 0), or `name-N` for repeated same-name routes. Container keys
+// still use the mocked nanoid (`tab-test`). Persisted keys fed into rehydration/route-name-change
+// are preserved verbatim.
 const names = (state: { routes: { name: string }[] }) => state.routes.map((r) => r.name);
 
 // --- getInitialState ---------------------------------------------------------
@@ -26,6 +30,7 @@ test('gets initial state focusing the first route', () => {
         baz: { answer: 42 },
         qux: { name: 'Jane' },
       },
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
@@ -33,9 +38,9 @@ test('gets initial state focusing the first route', () => {
     key: 'tab-test',
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -53,6 +58,7 @@ test('gets initial state with initialRouteName, anchoring the first route', () =
         baz: { answer: 42 },
         qux: { name: 'Jane' },
       },
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
@@ -60,9 +66,9 @@ test('gets initial state with initialRouteName, anchoring the first route', () =
     key: 'tab-test',
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -76,6 +82,7 @@ test('gets initial state placing the initial route after the firstRoute anchor',
   const state = router.getInitialState({
     routeNames: ['bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   });
 
@@ -91,6 +98,7 @@ test('gets initial state anchored on the initial route with initialRoute back be
   const state = router.getInitialState({
     routeNames: ['a', 'b', 'c'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   });
 
@@ -107,6 +115,7 @@ test('gets initial state in declaration order for order and none back behaviors'
       router.getInitialState({
         routeNames: ['a', 'b', 'c'],
         routeParamList: {},
+        pathname: undefined,
         routeGetIdList: {},
       })
     ).toEqual({
@@ -114,9 +123,9 @@ test('gets initial state in declaration order for order and none back behaviors'
       key: 'tab-test',
       routeNames: ['a', 'b', 'c'],
       routes: [
-        { key: 'a-test', name: 'a' },
-        { key: 'b-test', name: 'b' },
-        { key: 'c-test', name: 'c' },
+        { key: 'a', name: 'a' },
+        { key: 'b', name: 'b' },
+        { key: 'c', name: 'c' },
       ],
       stale: false,
       preloadedRouteKeys: [],
@@ -132,6 +141,7 @@ test('gets initial state moving a non-first initial route to the front with hist
     router.getInitialState({
       routeNames: ['a', 'b', 'c'],
       routeParamList: {},
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
@@ -139,9 +149,9 @@ test('gets initial state moving a non-first initial route to the front with hist
     key: 'tab-test',
     routeNames: ['a', 'b', 'c'],
     routes: [
-      { key: 'c-test', name: 'c' },
-      { key: 'a-test', name: 'a' },
-      { key: 'b-test', name: 'b' },
+      { key: 'c', name: 'c' },
+      { key: 'a', name: 'a' },
+      { key: 'b', name: 'b' },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -155,6 +165,7 @@ test('gets initial state in declaration order when the initial route is already 
     router.getInitialState({
       routeNames: ['a', 'b', 'c'],
       routeParamList: {},
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
@@ -162,13 +173,28 @@ test('gets initial state in declaration order when the initial route is already 
     key: 'tab-test',
     routeNames: ['a', 'b', 'c'],
     routes: [
-      { key: 'a-test', name: 'a' },
-      { key: 'b-test', name: 'b' },
-      { key: 'c-test', name: 'c' },
+      { key: 'a', name: 'a' },
+      { key: 'b', name: 'b' },
+      { key: 'c', name: 'c' },
     ],
     stale: false,
     preloadedRouteKeys: [],
   });
+});
+
+test('derives deterministic route keys from the navigator pathname so tabs are precomputable', () => {
+  const router = TabRouter({});
+
+  const state = router.getInitialState({
+    routeNames: ['home', 'settings'],
+    pathname: '/(tabs)',
+    routeParamList: {},
+    routeGetIdList: {},
+  });
+
+  // Each tab name appears once (index 0), so its key is a stable function of pathname + name —
+  // a tab bar can compute `/(tabs)-home` before the route is materialized.
+  expect(state.routes.map((r) => r.key)).toEqual(['/(tabs)-home', '/(tabs)-settings']);
 });
 
 // --- getRehydratedState ------------------------------------------------------
@@ -182,6 +208,7 @@ test('rehydrates partial state, appending newly-declared tabs at the end', () =>
       baz: { answer: 42 },
       qux: { name: 'Jane' },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -204,7 +231,7 @@ test('rehydrates partial state, appending newly-declared tabs at the end', () =>
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
       { key: 'bar-0', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
+      { key: 'baz', name: 'baz', params: { answer: 42 } },
       { key: 'qux-1', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
@@ -225,9 +252,9 @@ test('rehydrates partial state, appending newly-declared tabs at the end', () =>
     key: 'tab-test',
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
-      { key: 'bar-test', name: 'bar' },
+      { key: 'bar', name: 'bar' },
       { key: 'baz-0', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -243,6 +270,7 @@ test('rehydrates with history, preserving persisted order and indexing by focuse
       baz: { answer: 42 },
       qux: { name: 'Jane' },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -266,7 +294,7 @@ test('rehydrates with history, preserving persisted order and indexing by focuse
     routes: [
       { key: 'qux-9', name: 'qux', params: { name: 'Jane' } },
       { key: 'bar-9', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
+      { key: 'baz', name: 'baz', params: { answer: 42 } },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -291,7 +319,7 @@ test('rehydrates with history, preserving persisted order and indexing by focuse
     routes: [
       { key: 'qux-9', name: 'qux', params: { name: 'Jane' } },
       { key: 'bar-9', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
+      { key: 'baz', name: 'baz', params: { answer: 42 } },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -311,9 +339,9 @@ test('rehydrates with history, preserving persisted order and indexing by focuse
     key: 'tab-test',
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -340,6 +368,7 @@ test("doesn't rehydrate state if it's not stale", () => {
     router.getRehydratedState(state, {
       routeNames: [],
       routeParamList: {},
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toBe(state);
@@ -351,6 +380,7 @@ test('rehydrates with history, preserving persisted route order verbatim', () =>
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -410,6 +440,7 @@ test('keeps surviving order and appends new tabs on route names change with hist
           qux: { name: 'John' },
           fiz: { fruit: 'apple' },
         },
+        pathname: undefined,
         routeGetIdList: {},
         routeKeyChanges: [],
       }
@@ -421,8 +452,8 @@ test('keeps surviving order and appends new tabs on route names change with hist
     routes: [
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'foo-test', name: 'foo' },
-      { key: 'fiz-test', name: 'fiz', params: { fruit: 'apple' } },
+      { key: 'foo', name: 'foo' },
+      { key: 'fiz', name: 'fiz', params: { fruit: 'apple' } },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -445,6 +476,7 @@ test('keeps surviving order and appends new tabs on route names change with hist
       {
         routeNames: ['foo', 'fiz'],
         routeParamList: {},
+        pathname: undefined,
         routeGetIdList: {},
         routeKeyChanges: [],
       }
@@ -454,8 +486,8 @@ test('keeps surviving order and appends new tabs on route names change with hist
     key: 'tab-test',
     routeNames: ['foo', 'fiz'],
     routes: [
-      { key: 'foo-test', name: 'foo' },
-      { key: 'fiz-test', name: 'fiz' },
+      { key: 'foo', name: 'foo' },
+      { key: 'fiz', name: 'fiz' },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -487,6 +519,7 @@ test('preserves the focused route and indexes by name on route names change with
           qux: { name: 'John' },
           fiz: { fruit: 'apple' },
         },
+        pathname: undefined,
         routeGetIdList: {},
         routeKeyChanges: [],
       }
@@ -498,8 +531,8 @@ test('preserves the focused route and indexes by name on route names change with
     routes: [
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'foo-test', name: 'foo' },
-      { key: 'fiz-test', name: 'fiz', params: { fruit: 'apple' } },
+      { key: 'foo', name: 'foo' },
+      { key: 'fiz', name: 'fiz', params: { fruit: 'apple' } },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -529,6 +562,7 @@ test('appends key-changed tabs at the end on route names change', () => {
       {
         routeNames: ['bar', 'baz', 'qux'],
         routeParamList: {},
+        pathname: undefined,
         routeGetIdList: {},
         routeKeyChanges: ['bar'],
       }
@@ -540,7 +574,7 @@ test('appends key-changed tabs at the end on route names change', () => {
     routes: [
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'bar-test', name: 'bar', params: undefined },
+      { key: 'bar', name: 'bar', params: undefined },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -570,6 +604,7 @@ test('re-arranges the back stack around the anchor on route names change with fi
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
         routeParamList: {},
+        pathname: undefined,
         routeGetIdList: {},
         routeKeyChanges: [],
       }
@@ -581,8 +616,8 @@ test('re-arranges the back stack around the anchor on route names change with fi
     routes: [
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'foo-test', name: 'foo' },
-      { key: 'fiz-test', name: 'fiz' },
+      { key: 'foo', name: 'foo' },
+      { key: 'fiz', name: 'fiz' },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -612,6 +647,7 @@ test('falls back to the first rebuilt tab when the focused route is removed on r
           qux: { name: 'John' },
           fiz: { fruit: 'apple' },
         },
+        pathname: undefined,
         routeGetIdList: {},
         routeKeyChanges: [],
       }
@@ -622,8 +658,8 @@ test('falls back to the first rebuilt tab when the focused route is removed on r
     routeNames: ['qux', 'foo', 'fiz'],
     routes: [
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'foo-test', name: 'foo' },
-      { key: 'fiz-test', name: 'fiz', params: { fruit: 'apple' } },
+      { key: 'foo', name: 'foo' },
+      { key: 'fiz', name: 'fiz', params: { fruit: 'apple' } },
     ],
     stale: false,
     preloadedRouteKeys: [],
@@ -637,6 +673,7 @@ test('navigates keeping declaration order and focusing the target with order', (
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -675,6 +712,7 @@ test('jumps to a tab keeping declaration order, no-op when already focused with 
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -728,6 +766,7 @@ test('navigates arranging [first, focused, ...rest] with firstRoute', () => {
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -767,6 +806,7 @@ test('navigates arranging [initial, focused, ...rest] with initialRoute', () => 
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -797,6 +837,7 @@ test("doesn't navigate to nonexistent screen", () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -825,6 +866,7 @@ test("doesn't jump to nonexistent screen", () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -854,14 +896,15 @@ test('ensures a fresh key for navigate when the route id changes with order', ()
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {
       baz: ({ params }) => params?.foo,
       bar: ({ params }) => params?.foo,
     },
   };
 
-  // Navigate bar; declaration order [baz, bar, ...] -> [baz, bar] with bar focused
-  // at index 1 and a fresh key.
+  // Navigate bar; its id changes, so it gets a fresh deterministic key. The current
+  // route still holds `bar` (index 0), so the free key is `bar-1`.
   expect(
     router.getStateForAction(
       {
@@ -886,7 +929,7 @@ test('ensures a fresh key for navigate when the route id changes with order', ()
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar-1', name: 'bar', params: { foo: 'a' } },
     ],
   });
 });
@@ -896,6 +939,7 @@ test('adds path on navigate if provided with order', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -966,6 +1010,7 @@ test("doesn't remove existing path on navigate if not provided with order", () =
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1007,6 +1052,7 @@ test("doesn't merge params on navigate to an existing screen with order", () => 
     routeParamList: {
       qux: { color: 'indigo' },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1078,6 +1124,7 @@ test('merges params on navigate to an existing screen if merge: true with order'
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1119,6 +1166,7 @@ test('navigates splicing the target into the back-stack with history', () => {
   const options: RouterConfigOptions = {
     routeNames: ['A', 'B', 'C', 'D', 'E'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1171,6 +1219,7 @@ test('walks the visit order on back with history', () => {
   const options: RouterConfigOptions = {
     routeNames: ['A', 'B', 'C', 'D', 'E'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1207,6 +1256,7 @@ test('walks back then navigates with history', () => {
   const options: RouterConfigOptions = {
     routeNames: ['A', 'B', 'C'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1255,6 +1305,7 @@ test('returns null on back when at index 0 with history', () => {
   const options: RouterConfigOptions = {
     routeNames: ['bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1270,6 +1321,7 @@ test('walks to the declaration-previous tab on back with order', () => {
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1307,6 +1359,7 @@ test('goes to the first route on back with firstRoute, null when already first',
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1343,6 +1396,7 @@ test('goes to the initial route on back with initialRoute, null when already ini
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1379,6 +1433,7 @@ test('returns null on back with none', () => {
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1403,6 +1458,7 @@ test('GO_BACK drops the target key from preloadedRouteKeys without reordering', 
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1438,6 +1494,7 @@ test('drops the replaced route so back is blocked with firstRoute', () => {
   const options: RouterConfigOptions = {
     routeNames: ['one', 'two'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1473,6 +1530,7 @@ test('drops the replaced route so back skips it with history', () => {
   const options: RouterConfigOptions = {
     routeNames: ['one', 'two', 'three'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1570,6 +1628,7 @@ test('setParams updates the focused route without reordering', () => {
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1602,6 +1661,7 @@ test('handles screen preloading in place without reordering', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => `bar-${params?.answer}`,
     },
@@ -1638,7 +1698,7 @@ test('handles screen preloading in place without reordering', () => {
     ],
   });
 
-  // Preload bar with a new id -> fresh key, params updated in place.
+  // Preload bar with a new id -> fresh deterministic key, params updated in place.
   expect(
     router.getStateForAction(
       {
@@ -1658,13 +1718,13 @@ test('handles screen preloading in place without reordering', () => {
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: ['bar-test'],
+    preloadedRouteKeys: ['bar-1'],
     key: 'root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz-test', name: 'baz' },
-      { key: 'bar-test', name: 'bar', params: { answer: 43 } },
+      { key: 'bar-1', name: 'bar', params: { answer: 43 } },
       { key: 'qux-test', name: 'qux' },
     ],
   });
@@ -1689,13 +1749,13 @@ test('handles screen preloading in place without reordering', () => {
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: ['bar-test'],
+    preloadedRouteKeys: ['bar-1'],
     key: 'root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz-test', name: 'baz' },
-      { key: 'bar-test', name: 'bar', params: { answer: 43 } },
+      { key: 'bar-1', name: 'bar', params: { answer: 43 } },
       { key: 'qux-test', name: 'qux' },
     ],
   });
@@ -1737,6 +1797,7 @@ test('navigates to a preloaded route, focusing it and dropping it from preloaded
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1776,6 +1837,7 @@ test("doesn't preload a nonexistent screen", () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 

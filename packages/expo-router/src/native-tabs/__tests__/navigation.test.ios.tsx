@@ -45,19 +45,19 @@ describe('Native Bottom Tabs Navigation', () => {
   }
 
   function expectIndexTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/(^|-)index$/);
     expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(
-      /^second-[-\w]+/
+      /(^|-)second$/
     );
-    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
+    expect(lastHostSelectedKey()).toMatch(/(^|-)index$/);
   }
 
   function expectSecondTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/(^|-)index$/);
     expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(
-      /^second-[-\w]+/
+      /(^|-)second$/
     );
-    expect(lastHostSelectedKey()).toMatch(/^second-[-\w]+/);
+    expect(lastHostSelectedKey()).toMatch(/(^|-)second$/);
   }
 
   beforeEach(() => {

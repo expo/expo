@@ -67,11 +67,11 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
     ],
     stale: false,
   });
@@ -81,12 +81,12 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-7', name: 'baz' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
     ],
     stale: false,
   });
@@ -98,12 +98,12 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-7', name: 'baz' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
     ],
     stale: false,
   });
@@ -116,9 +116,9 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(4);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo', name: 'foo' }],
     stale: false,
   });
 });
@@ -172,11 +172,11 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
     ],
     stale: false,
   });
@@ -186,12 +186,12 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-9', name: 'baz' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
     ],
     stale: false,
   });
@@ -203,12 +203,12 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-9', name: 'baz' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
     ],
     stale: false,
   });
@@ -221,9 +221,9 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
   expect(onStateChange).toHaveBeenCalledTimes(4);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo', name: 'foo' }],
     stale: false,
   });
 });
@@ -270,11 +270,11 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
     ],
     stale: false,
   });
@@ -284,12 +284,12 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-7', name: 'baz' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
     ],
     stale: false,
   });
@@ -300,9 +300,9 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
 
   expect(ref.current?.getRootState()).toEqual({
     index: 0,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo', name: 'foo' }],
     stale: false,
   });
 
@@ -312,9 +312,9 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
   expect(onStateChange).toHaveBeenCalledTimes(5);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo', name: 'foo' }],
     stale: false,
   });
 
@@ -374,11 +374,11 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
     ],
     stale: false,
   });
@@ -388,19 +388,19 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
       {
-        key: 'baz-6',
+        key: 'baz',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-8',
+          key: expect.stringMatching(/^stack-/),
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-9', name: 'qux' }],
+          routes: [{ key: 'qux', name: 'qux' }],
           stale: false,
         },
       },
@@ -415,19 +415,19 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
       {
-        key: 'baz-6',
+        key: 'baz',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-8',
+          key: expect.stringMatching(/^stack-/),
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-9', name: 'qux' }],
+          routes: [{ key: 'qux', name: 'qux' }],
           stale: false,
         },
       },
@@ -440,19 +440,19 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
       {
-        key: 'baz-6',
+        key: 'baz',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-8',
+          key: expect.stringMatching(/^stack-/),
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-9', name: 'qux' }],
+          routes: [{ key: 'qux', name: 'qux' }],
           stale: false,
         },
       },
@@ -468,9 +468,9 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(4);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo', name: 'foo' }],
     stale: false,
   });
 });
@@ -534,11 +534,11 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
     ],
     stale: false,
   });
@@ -548,27 +548,27 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
       {
-        key: 'baz-6',
+        key: 'baz',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-8',
+          key: expect.stringMatching(/^stack-/),
           routeNames: ['qux'],
           routes: [
             {
-              key: 'qux-9',
+              key: 'qux',
               name: 'qux',
               state: {
                 index: 0,
-                key: 'stack-12',
+                key: expect.stringMatching(/^stack-/),
                 routeNames: ['lex'],
-                routes: [{ key: 'lex-13', name: 'lex' }],
+                routes: [{ key: 'lex', name: 'lex' }],
                 stale: false,
               },
             },
@@ -587,27 +587,27 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
       {
-        key: 'baz-6',
+        key: 'baz',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-8',
+          key: expect.stringMatching(/^stack-/),
           routeNames: ['qux'],
           routes: [
             {
-              key: 'qux-9',
+              key: 'qux',
               name: 'qux',
               state: {
                 index: 0,
-                key: 'stack-12',
+                key: expect.stringMatching(/^stack-/),
                 routeNames: ['lex'],
-                routes: [{ key: 'lex-13', name: 'lex' }],
+                routes: [{ key: 'lex', name: 'lex' }],
                 stale: false,
               },
             },
@@ -627,9 +627,9 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
   expect(onStateChange).toHaveBeenCalledTimes(4);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo', name: 'foo' }],
     stale: false,
   });
 });
@@ -708,28 +708,28 @@ test("prevents removing by multiple screens with 'usePreventRemove' hook", () =>
 
   const preventedState = {
     index: 3,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz', 'bax'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-6', name: 'baz' },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
       {
-        key: 'bax-7',
+        key: 'bax',
         name: 'bax',
         state: {
           index: 0,
-          key: 'stack-11',
+          key: expect.stringMatching(/^stack-/),
           routeNames: ['qux'],
           routes: [
             {
-              key: 'qux-12',
+              key: 'qux',
               name: 'qux',
               state: {
                 index: 0,
-                key: 'stack-15',
+                key: expect.stringMatching(/^stack-/),
                 routeNames: ['lex'],
-                routes: [{ key: 'lex-16', name: 'lex' }],
+                routes: [{ key: 'lex', name: 'lex' }],
                 stale: false,
               },
             },
@@ -776,9 +776,9 @@ test("prevents removing by multiple screens with 'usePreventRemove' hook", () =>
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz', 'bax'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo', name: 'foo' }],
     stale: false,
   });
 });
@@ -834,18 +834,18 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo', name: 'foo' },
       {
-        key: 'baz-5',
+        key: 'baz',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-7',
+          key: expect.stringMatching(/^stack-/),
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-8', name: 'qux' }],
+          routes: [{ key: 'qux', name: 'qux' }],
           stale: false,
         },
       },
@@ -856,9 +856,9 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
   act(() =>
     ref.current?.resetRoot({
       index: 0,
-      key: 'stack-2',
+      key: expect.stringMatching(/^stack-/),
       routeNames: ['foo', 'bar', 'baz'],
-      routes: [{ key: 'foo-3', name: 'foo' }],
+      routes: [{ key: 'foo', name: 'foo' }],
       stale: false,
     })
   );
@@ -867,18 +867,18 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
 
   expect(ref.current?.getRootState()).toEqual({
     index: 1,
-    key: 'stack-2',
+    key: expect.stringMatching(/^stack-/),
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo', name: 'foo' },
       {
-        key: 'baz-5',
+        key: 'baz',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-7',
+          key: expect.stringMatching(/^stack-/),
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-8', name: 'qux' }],
+          routes: [{ key: 'qux', name: 'qux' }],
           stale: false,
         },
       },

@@ -23,6 +23,7 @@ test('gets initial state from route names and params with initialRouteName', () 
         baz: { answer: 42 },
         qux: { name: 'Jane' },
       },
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
@@ -31,9 +32,9 @@ test('gets initial state from route names and params with initialRouteName', () 
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
     routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
   });
@@ -49,6 +50,7 @@ test('gets initial state from route names and params without initialRouteName', 
         baz: { answer: 42 },
         qux: { name: 'Jane' },
       },
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
@@ -57,9 +59,9 @@ test('gets initial state from route names and params without initialRouteName', 
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
     routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
   });
@@ -72,6 +74,7 @@ test('defaultStatus does not affect navigation state', () => {
     router.getInitialState({
       routeNames: ['bar', 'baz'],
       routeParamList: {},
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
@@ -80,8 +83,8 @@ test('defaultStatus does not affect navigation state', () => {
     routeNames: ['bar', 'baz'],
     preloadedRouteKeys: [],
     routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz' },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
     ],
     stale: false,
   });
@@ -96,6 +99,7 @@ test('rehydrates preserving the persisted route order and appending new tabs', (
       baz: { answer: 42 },
       qux: { name: 'Jane' },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -120,7 +124,7 @@ test('rehydrates preserving the persisted route order and appending new tabs', (
     routes: [
       { key: 'bar-0', name: 'bar' },
       { key: 'qux-1', name: 'qux', params: { name: 'Jane' } },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
+      { key: 'baz', name: 'baz', params: { answer: 42 } },
     ],
     stale: false,
   });
@@ -135,6 +139,7 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
       baz: { answer: 42 },
       qux: { name: 'Jane' },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -154,9 +159,9 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
     routes: [
-      { key: 'bar-test', name: 'bar' },
+      { key: 'bar', name: 'bar' },
       { key: 'baz-0', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
   });
@@ -176,9 +181,9 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
     routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
   });
@@ -204,6 +209,7 @@ test("doesn't rehydrate state if it's not stale", () => {
     router.getRehydratedState(state, {
       routeNames: [],
       routeParamList: {},
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toBe(state);
@@ -214,6 +220,7 @@ test('handles navigate action by focusing the target route in place', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -255,6 +262,7 @@ test('GO_BACK delegates to the tab router', () => {
   const options: RouterConfigOptions = {
     routeNames: ['bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
