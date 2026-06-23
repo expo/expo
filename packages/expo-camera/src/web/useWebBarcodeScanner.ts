@@ -97,13 +97,12 @@ export function useWebBarcodeScanner(
     } finally {
       if (interval === 0) {
         stop();
-        // oxlint-disable-next-line no-unsafe-finally
-        return;
+      } else {
+        const intervalToUse = !interval || interval < 0 ? 16 : interval;
+        timeout.current = setTimeout(() => {
+          scanAsync();
+        }, intervalToUse);
       }
-      const intervalToUse = !interval || interval < 0 ? 16 : interval;
-      timeout.current = setTimeout(() => {
-        scanAsync();
-      }, intervalToUse);
     }
   }
 
