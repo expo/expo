@@ -3,7 +3,6 @@ package expo.modules.cellular
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.sip.SipManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -26,10 +25,6 @@ class CellularModule : Module() {
         Log.w(moduleName, "READ_PHONE_STATE permission is required to acquire network type", e)
         CellularGeneration.UNKNOWN.value
       }
-    }
-
-    AsyncFunction<Boolean>("allowsVoipAsync") {
-      SipManager.isVoipSupported(context)
     }
 
     AsyncFunction<String?>("getIsoCountryCodeAsync") {

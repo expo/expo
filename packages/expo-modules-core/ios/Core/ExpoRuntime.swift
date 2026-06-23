@@ -9,7 +9,7 @@ import ExpoModulesJSI
 public class ExpoRuntime: JavaScriptRuntime, @unchecked Sendable {
   @JavaScriptActor
   internal func getCoreObject() throws -> JavaScriptObject {
-    return try global().getProperty(EXGlobalCoreObjectPropertyName).asObject()
+    return try global().getProperty(globalCoreObjectPropertyName).asObject()
   }
 
   @JavaScriptActor

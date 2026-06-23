@@ -32,7 +32,7 @@ jest.mock('fs');
 // Weird issues with Android Icon module make it hard to mock test.
 jest.mock('../icons/withAndroidIcons', () => {
   return {
-    withAndroidIcons(config) {
+    withAndroidIcons(config: ExportedConfig) {
       return config;
     },
     setIconAsync() {},
@@ -40,7 +40,10 @@ jest.mock('../icons/withAndroidIcons', () => {
 });
 
 function getLargeConfig(): ExportedConfig {
-  // A very extensive Expo Config.
+  // A very extensive Expo Config. It intentionally includes legacy keys (e.g.
+  // packagerOpts, facebook*, googleMobileAds*, branch) that are no longer part of
+  // the public types but are still handled by the unversioned plugins, so it is
+  // asserted as ExportedConfig.
   return {
     name: 'my cool app',
     slug: 'mycoolapp',
@@ -148,7 +151,7 @@ function getLargeConfig(): ExportedConfig {
     },
     _internal: { projectRoot: '/app' },
     mods: null,
-  };
+  } as ExportedConfig;
 }
 
 function getPrebuildConfig() {
@@ -160,6 +163,7 @@ function getPrebuildConfig() {
   });
   config = withAndroidExpoPlugins(config, {
     package: 'com.bacon.todo',
+    projectRoot: '/app',
   });
   return config;
 }
@@ -294,8 +298,9 @@ describe('built-in plugins', () => {
 
     // Google Sign In
     expect(
-      config.ios?.infoPlist?.CFBundleURLTypes?.find(({ CFBundleURLSchemes }) =>
-        CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
+      config.ios?.infoPlist?.CFBundleURLTypes?.find(
+        ({ CFBundleURLSchemes }: { CFBundleURLSchemes: string[] }) =>
+          CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
 
@@ -451,8 +456,9 @@ describe('built-in plugins', () => {
 
     // Google Sign In
     expect(
-      config.ios?.infoPlist?.CFBundleURLTypes?.find(({ CFBundleURLSchemes }) =>
-        CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
+      config.ios?.infoPlist?.CFBundleURLTypes?.find(
+        ({ CFBundleURLSchemes }: { CFBundleURLSchemes: string[] }) =>
+          CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
 
@@ -555,7 +561,7 @@ describe('built-in plugins', () => {
       rnFixture['android/app/src/main/java/com/helloworld/MainActivity.kt']
     );
     expect(after['android/app/src/main/res/values/styles.xml']).toMatch(
-      rnFixture['android/app/src/main/res/values/styles.xml']
+      rnFixture['android/app/src/main/res/values/styles.xml']!
     );
 
     // for (const [name, contents] of Object.entries(rnFixture)) {
@@ -602,8 +608,9 @@ describe('built-in plugins', () => {
 
     // Google Sign In
     expect(
-      config.ios?.infoPlist?.CFBundleURLTypes?.find(({ CFBundleURLSchemes }) =>
-        CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
+      config.ios?.infoPlist?.CFBundleURLTypes?.find(
+        ({ CFBundleURLSchemes }: { CFBundleURLSchemes: string[] }) =>
+          CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
 

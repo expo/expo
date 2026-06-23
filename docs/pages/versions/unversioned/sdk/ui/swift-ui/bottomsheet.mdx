@@ -22,6 +22,8 @@ Expo UI BottomSheet matches the official SwiftUI [sheet API](<https://developer.
   alt="A BottomSheet at medium detent showing a Sort By list with Most Recent selected"
 />
 
+> **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
+
 ## Installation
 
 <APIInstallSection />

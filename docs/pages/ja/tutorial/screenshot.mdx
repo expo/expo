@@ -29,7 +29,14 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 `react-native-view-shot` と `expo-media-library` をインストールするには、次のコマンドを実行します。
 
-<Terminal cmd={['$ npx expo install react-native-view-shot expo-media-library']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-native-view-shot expo-media-library'],
+    yarn: ['$ yarn expo install react-native-view-shot expo-media-library'],
+    pnpm: ['$ pnpm expo install react-native-view-shot expo-media-library'],
+    bun: ['$ bun expo install react-native-view-shot expo-media-library'],
+  }}
+/>
 
 </Step>
 
@@ -51,7 +58,7 @@ import * as ImagePicker from 'expo-image-picker';
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @tutinfo フックから権限のレスポンスと <CODE>requestPermission()</CODE> メソッドをインポートするため、この文を追加します。 */const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();/* @end */
+  /* @tutinfo フックから権限のレスポンスと `requestPermission()` メソッドをインポートするため、この文を追加します。 */const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();/* @end */
   // ...rest of the code remains same
 
   /* @tutinfo 権限の状態を確認するため、if 文を追加します。requestPermission() メソッドは、ユーザーが権限を許可または拒否するためのダイアログを表示します。 */
@@ -80,8 +87,8 @@ export default function Index() {
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
-import { useState, /* @tutinfo <CODE>react</CODE> から <CODE>useRef</CODE> フックをインポートします。 */useRef/* @end */ } from 'react';
-/* @tutinfo <CODE>react-native-view-shot</CODE> から <CODE>captureRef</CODE> をインポートします。 */import { captureRef } from 'react-native-view-shot';/* @end */
+import { useState, /* @tutinfo `react` から `useRef` フックをインポートします。 */useRef/* @end */ } from 'react';
+/* @tutinfo `react-native-view-shot` から `captureRef` をインポートします。 */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
   /* @tutinfo imageRef 変数を作成します。 */ const imageRef = useRef<View>(null);/* @end */
@@ -119,7 +126,7 @@ export default function Index() {
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { useEffect, useRef, useState } from 'react';
 import { ImageSourcePropType, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

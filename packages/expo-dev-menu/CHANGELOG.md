@@ -7,9 +7,11 @@
 ### 🎉 New features
 
 - Add Components section to swap the active AppRegistry component ([#46613](https://github.com/expo/expo/pull/46613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add a `tryToLaunchLastBundle` preference backing the dev launcher auto-launch toggle. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
+- [Android] Restore the "Open React Native dev menu" entry in the dev menu's Tools section (regressed in [#38759](https://github.com/expo/expo/pull/38759)). ([#47047](https://github.com/expo/expo/pull/47047) by [@lindboe](https://github.com/lindboe))
 - [iOS] Show the floating Tools button at its final position instead of animating in from the top-left corner. ([#46762](https://github.com/expo/expo/pull/46762) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others

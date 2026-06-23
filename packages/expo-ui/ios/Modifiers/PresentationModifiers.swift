@@ -219,3 +219,33 @@ internal struct PresentationBackgroundModifier: ViewModifier, Record {
     }
   }
 }
+
+// MARK: - Presentation Sizing
+
+internal enum PresentationSizingOption: String, Enumerable {
+  case automatic
+  case fitted
+  case form
+  case page
+}
+
+internal struct PresentationSizingModifier: ViewModifier, Record {
+  @Field var sizing: PresentationSizingOption = .automatic
+
+  func body(content: Content) -> some View {
+    if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
+      switch sizing {
+      case .automatic:
+        content.presentationSizing(.automatic)
+      case .fitted:
+        content.presentationSizing(.fitted)
+      case .form:
+        content.presentationSizing(.form)
+      case .page:
+        content.presentationSizing(.page)
+      }
+    } else {
+      content
+    }
+  }
+}

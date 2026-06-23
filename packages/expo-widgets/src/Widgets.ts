@@ -1,4 +1,5 @@
 import type { EventSubscription } from 'expo-modules-core';
+import { Platform } from 'react-native';
 
 import ExpoWidgetsModule from './ExpoWidgets';
 import type {
@@ -49,6 +50,9 @@ export class Widget<
    * @param entries Timeline entries, each specifying a date and the props to display at that time.
    */
   updateTimeline(entries: WidgetTimelineEntry<PropsType>[]) {
+    if (Platform.OS === 'android') {
+      return;
+    }
     this.nativeWidgetObject.updateTimeline(
       entries.map((entry) => ({ timestamp: entry.date.getTime(), props: entry.props }))
     );
@@ -59,7 +63,11 @@ export class Widget<
    * @param props The properties to display in the widget.
    */
   updateSnapshot(props: PropsType) {
-    this.nativeWidgetObject.updateTimeline([{ timestamp: Date.now(), props }]);
+    if (Platform.OS === 'android') {
+      this.nativeWidgetObject.updateSnapshot(props as Record<string, any>);
+    } else {
+      this.nativeWidgetObject.updateTimeline([{ timestamp: Date.now(), props }]);
+    }
   }
 
   /**

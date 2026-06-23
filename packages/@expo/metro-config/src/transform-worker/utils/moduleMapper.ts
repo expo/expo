@@ -144,6 +144,6 @@ export const patchNodeModuleResolver = () => {
         isInCustomResolver = false;
       }
     }
-    return originalResolveFilename.call(this, request, parent, isMain, options);
+    return originalResolveFilename.call(this, request, parent ?? null, isMain, options);
   };
 };

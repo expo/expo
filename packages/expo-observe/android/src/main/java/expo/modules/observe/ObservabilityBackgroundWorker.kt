@@ -33,7 +33,6 @@ class ObservabilityBackgroundWorker(
   private val observabilityManager: BaseObservabilityManager? = run {
     val projectId = inputData.getString("projectId")
     val baseUrl = inputData.getString("baseUrl")
-    val useOpenTelemetry = inputData.getBoolean("useOpenTelemetry", false)
 
     if (projectId == null || baseUrl == null) {
       return@run null
@@ -53,8 +52,7 @@ class ObservabilityBackgroundWorker(
       pendingMetricsManager = pendingMetricsManager,
       pendingLogsManager = pendingLogsManager,
       baseUrl = baseUrl,
-      isDebugBuild = BuildConfig.DEBUG,
-      useOpenTelemetry = useOpenTelemetry
+      isDebugBuild = BuildConfig.DEBUG
     )
   }
 
@@ -100,8 +98,7 @@ class ObservabilityBackgroundWorker(
     fun scheduleBackgroundDispatch(
       context: Context,
       projectId: String,
-      baseUrl: String,
-      useOpenTelemetry: Boolean = false
+      baseUrl: String
     ) {
       val constraints = Constraints
         .Builder()
@@ -110,8 +107,7 @@ class ObservabilityBackgroundWorker(
 
       val data = workDataOf(
         Pair("projectId", projectId),
-        Pair("baseUrl", baseUrl),
-        Pair("useOpenTelemetry", useOpenTelemetry)
+        Pair("baseUrl", baseUrl)
       )
 
       val periodicWork = OneTimeWorkRequestBuilder<ObservabilityBackgroundWorker>()

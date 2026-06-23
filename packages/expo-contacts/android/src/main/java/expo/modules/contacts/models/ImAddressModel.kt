@@ -4,6 +4,8 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.provider.ContactsContract.CommonDataKinds
 
+// Legacy API supports IM addresses, deprecated since Android API 35. The new Contacts API removes these fields.
+@Suppress("DEPRECATION")
 class ImAddressModel : BaseModel() {
   override val contentType: String = CommonDataKinds.Im.CONTENT_ITEM_TYPE
 

@@ -45,6 +45,7 @@
           }
         }
       ],
+      ["./plugins/withCrashOnLaunch", { "android": false, "ios": false }],
       [
         "expo-build-properties",
         {

@@ -10,12 +10,16 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "default": "./build/index.js",
-      "types": "./build/index.d.ts"
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     "./kv-store": {
-      "default": "./kv-store.js",
-      "types": "./kv-store.d.ts"
+      "types": "./kv-store.d.ts",
+      "default": "./kv-store.js"
     },
     "./localStorage/install": {
       "default": "./localStorage/install.js"
@@ -24,13 +28,16 @@
     "./plugin": "./plugin/build/index.js"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "bundle:webui": "pushd dev-plugin-webui && bun run build && popd && rm -rf dev-plugin-dist && mv dev-plugin-webui/dist dev-plugin-dist",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -59,10 +66,9 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
-    "@types/better-sqlite3": "^7.6.6",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "better-sqlite3": "^11.6.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react-error-boundary": "^4.0.11"

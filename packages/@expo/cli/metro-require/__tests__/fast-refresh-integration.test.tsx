@@ -38,7 +38,7 @@ describe('Fast Refresh integration with require()', () => {
 
     // Initial render
     const Component = metroRequire(ids['Component.js']);
-    let rendered;
+    let rendered: ReturnType<typeof renderer.create> | undefined;
     await renderer.act(async () => {
       rendered = renderer.create(<Component />);
     });
@@ -94,7 +94,7 @@ describe('Fast Refresh integration with require()', () => {
 
     // Initial render
     const Component = metroRequire(ids['Component.js']);
-    let rendered;
+    let rendered: ReturnType<typeof renderer.create> | undefined;
     await renderer.act(async () => {
       rendered = renderer.create(<Component />);
     });
@@ -122,7 +122,7 @@ describe('Fast Refresh integration with require()', () => {
 
     // Full refresh: The component does not rerender. Instead, we signal a
     // reload.
-    expect(rendered.toJSON()).toBe('version1: initialState1');
+    expect(rendered?.toJSON()).toBe('version1: initialState1');
     expect(events.onFastRefresh).not.toHaveBeenCalled();
     expect(events.onFullReload).toHaveBeenCalled();
     expect(events.onFullReload.mock.calls).toEqual([

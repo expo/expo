@@ -6,17 +6,29 @@
   "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
       "require": "./build/index.js",
       "default": "./build/index.js"
     },
     "./babel-transformer": {
-      "types": "./build/babel-transformer.d.ts",
+      "types": {
+        "expo-source": "./src/babel-transformer.ts",
+        "default": "./build/babel-transformer.d.ts"
+      },
+      "expo-source": "./src/babel-transformer.ts",
       "require": "./build/babel-transformer.js",
       "default": "./build/babel-transformer.js"
     },
     "./file-store": {
-      "types": "./build/file-store.d.ts",
+      "types": {
+        "expo-source": "./src/file-store.ts",
+        "default": "./build/file-store.d.ts"
+      },
+      "expo-source": "./src/file-store.ts",
       "require": "./build/file-store.js",
       "default": "./build/file-store.js"
     },
@@ -27,13 +39,13 @@
     "./*.js": "./*.js"
   },
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch --preserveWatchOutput"
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -95,8 +107,8 @@
     "@types/getenv": "^1.0.0",
     "@types/picomatch": "^4.0.2",
     "dedent": "^1.5.3",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0",
     "metro-minify-terser": "^0.84.2",
     "sass": "^1.60.0"
   },

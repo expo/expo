@@ -5,27 +5,37 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
-    "./package.json": "./package.json",
     ".": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
       "require": "./build/index.js",
       "default": "./build/index.js"
     },
     "./exports": {
-      "types": "./build/exports.d.ts",
+      "types": {
+        "expo-source": "./src/exports.ts",
+        "default": "./build/exports.d.ts"
+      },
+      "expo-source": "./src/exports.ts",
       "require": "./build/exports.js",
       "default": "./build/exports.js"
     },
+    "./package.json": "./package.json",
     "./*": "./*.js",
     "./*.js": "./*.js"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {
     "expo-modules-autolinking": "bin/expo-modules-autolinking.js"

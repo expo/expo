@@ -33,11 +33,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
 // ... rest of the import statements remain same
-/* @tutinfo <CODE>react-native-gesture-handler-library</CODE> から <CODE>GestureHandlerRootView</CODE> をインポートします。 */import { GestureHandlerRootView } from 'react-native-gesture-handler';/* @end */
+/* @tutinfo `react-native-gesture-handler-library` から `GestureHandlerRootView` をインポートします。 */import { GestureHandlerRootView } from 'react-native-gesture-handler';/* @end */
 
 export default function Index() {
   return (
-    /* @tutinfo ルートレベルの <CODE>View</CODE> コンポーネントを <CODE>GestureHandlerRootView</CODE> に置き換えます。 */
+    /* @tutinfo ルートレベルの `View` コンポーネントを `GestureHandlerRootView` に置き換えます。 */
     <GestureHandlerRootView style={styles.container}>
     /* @end */
       {/* ...rest of the code remains */}
@@ -62,7 +62,7 @@ export default function Index() {
 {/* prettier-ignore */}
 ```tsx components/EmojiSticker.tsx
 import { ImageSourcePropType, View } from 'react-native';
-/* @tutinfo <CODE>react-native-reanimated</CODE> から <CODE>Animated</CODE> をインポートします。 */import Animated from 'react-native-reanimated';/* @end */
+/* @tutinfo `react-native-reanimated` から `Animated` をインポートします。 */import Animated from 'react-native-reanimated';/* @end */
 
 type Props = {
   imageSize: number;
@@ -72,7 +72,7 @@ type Props = {
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
   return (
     <View style={{ top: -350 }}>
-      /* @tutinfo <CODE>Image</CODE> コンポーネントを <CODE>Animated.Image</CODE> に置き換えます。 */
+      /* @tutinfo `Image` コンポーネントを `Animated.Image` に置き換えます。 */
       <Animated.Image
         source={stickerSource}
         resizeMode="contain"
@@ -100,13 +100,14 @@ React Native Gesture Handler を使うと、ダブルタップイベントなど
 2. ステッカーのタップを認識するために、`react-native-reanimated` から `useAnimatedStyle`、`useSharedValue`、`withSpring` をインポートし、`<Animated.Image>` のスタイルをアニメーションさせます。
 3. `EmojiSticker` コンポーネント内で、`useSharedValue()` フックを使って `scaleImage` という参照を作成します。初期値には `imageSize` の値を使用します。
 
+{/* prettier-ignore */}
 ```tsx components/EmojiSticker.tsx
 // ...rest of the import statements remain same
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+/* @tutinfo `react-native-gesture-handler` から `Gesture` と `GestureDetector` をインポートします。 */import { Gesture, GestureDetector } from 'react-native-gesture-handler';/* @end */
+/* @tutinfo `react-native-reanimated` から `useAnimatedStyle`、`useSharedValue`、`withSpring` をインポートします。 */import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';/* @end */
 
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
-  const scaleImage = useSharedValue(imageSize);
+  /* @tutinfo `scaleImage` という shared value を作成し、初期値に `imageSize` を設定します。 */const scaleImage = useSharedValue(imageSize);/* @end */
 
   return (
     // ...rest of the code remains same
@@ -180,11 +181,11 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
 
   return (
     <View style={{ top: -350 }}>
-      /* @tutinfo <CODE>Animated.Image</CODE> コンポーネントを <CODE>GestureDetector</CODE> でラップします。*/ <GestureDetector gesture={doubleTap}>/* @end */
+      /* @tutinfo `Animated.Image` コンポーネントを `GestureDetector` でラップします。*/ <GestureDetector gesture={doubleTap}>/* @end */
         <Animated.Image
           source={stickerSource}
           resizeMode="contain"
-          style={/* @tutinfo <CODE>imageStyle</CODE> を渡すため、<CODE>Animated.Image</CODE> の <CODE>style</CODE> プロパティを変更します。 */[imageStyle, { width: imageSize, height: imageSize }]/* @end */}
+          style={/* @tutinfo `imageStyle` を渡すため、`Animated.Image` の `style` プロパティを変更します。 */[imageStyle, { width: imageSize, height: imageSize }]/* @end */}
         />
       /* @tutinfo */
       </GestureDetector>
@@ -217,14 +218,14 @@ Android、iOS、web でアプリを確認してみましょう。
 ```tsx components/EmojiSticker.tsx
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
   const scaleImage = useSharedValue(imageSize);
-  /* @tutinfo <CODE>translateX</CODE> と <CODE>translateY</CODE> の shared values を追加します。*/
+  /* @tutinfo `translateX` と `translateY` の shared values を追加します。*/
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   /* @end */
   // ...rest of the code remains same
 
   return (
-    /* @tutinfo <CODE>View</CODE> コンポーネントを <CODE>Animated.View</CODE> に置き換えます。 */<Animated.View style={{ top: -350 }}>/* @end */
+    /* @tutinfo `View` コンポーネントを `Animated.View` に置き換えます。 */<Animated.View style={{ top: -350 }}>/* @end */
       <GestureDetector gesture={doubleTap}>
         {/* ...rest of the code remains same */}
       </GestureDetector>
@@ -320,8 +321,8 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
   });
 
   return (
-    /* @tutinfo すべてのコンポーネントを <CODE>GestureDetector</CODE> でラップします。 */<GestureDetector gesture={drag}>/* @end */
-      <Animated.View style={/* @tutinfo <CODE>Animated.View</CODE> の style プロパティに <CODE>containerStyle</CODE> を追加します。 */[containerStyle, { top: -350 }]/* @end */}>
+    /* @tutinfo すべてのコンポーネントを `GestureDetector` でラップします。 */<GestureDetector gesture={drag}>/* @end */
+      <Animated.View style={/* @tutinfo `Animated.View` の style プロパティに `containerStyle` を追加します。 */[containerStyle, { top: -350 }]/* @end */}>
         <GestureDetector gesture={doubleTap}>
           <Animated.Image
             source={stickerSource}

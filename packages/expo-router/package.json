@@ -4,8 +4,199 @@
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "main": "build/index",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.tsx",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.tsx",
+      "default": "./build/index.js"
+    },
+    "./internal/*": {
+      "types": {
+        "expo-source": "./src/internal/*.ts",
+        "default": "./build/internal/*.d.ts"
+      },
+      "expo-source": "./src/internal/*.ts",
+      "default": "./build/internal/*.js"
+    },
+    "./build/Route": {
+      "types": {
+        "expo-source": "./src/Route.tsx",
+        "default": "./build/Route.d.ts"
+      },
+      "expo-source": "./src/Route.tsx",
+      "default": "./build/Route.js"
+    },
+    "./build/matchers": {
+      "types": {
+        "expo-source": "./src/matchers.tsx",
+        "default": "./build/matchers.d.ts"
+      },
+      "expo-source": "./src/matchers.tsx",
+      "default": "./build/matchers.js"
+    },
+    "./build/*.js": {
+      "types": {
+        "expo-source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "expo-source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./build/*": {
+      "types": {
+        "expo-source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "expo-source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./drawer": {
+      "types": {
+        "expo-source": "./src/layouts/Drawer.tsx",
+        "default": "./build/layouts/Drawer.d.ts"
+      },
+      "expo-source": "./src/layouts/Drawer.tsx",
+      "default": "./build/layouts/Drawer.js"
+    },
+    "./head": {
+      "types": {
+        "expo-source": "./src/head/ExpoHead.tsx",
+        "default": "./build/head/ExpoHead.d.ts"
+      },
+      "expo-source": "./src/head/ExpoHead.tsx",
+      "default": "./build/head/ExpoHead.js"
+    },
+    "./html": {
+      "types": {
+        "expo-source": "./src/html.ts",
+        "default": "./build/html.d.ts"
+      },
+      "expo-source": "./src/html.ts",
+      "default": "./build/html.js"
+    },
+    "./js-stack": {
+      "types": {
+        "expo-source": "./src/layouts/JSStack.tsx",
+        "default": "./build/layouts/JSStack.d.ts"
+      },
+      "expo-source": "./src/layouts/JSStack.tsx",
+      "default": "./build/layouts/JSStack.js"
+    },
+    "./js-tabs": {
+      "types": {
+        "expo-source": "./src/layouts/Tabs.tsx",
+        "default": "./build/layouts/Tabs.d.ts"
+      },
+      "expo-source": "./src/layouts/Tabs.tsx",
+      "default": "./build/layouts/Tabs.js"
+    },
+    "./js-top-tabs": {
+      "types": {
+        "expo-source": "./src/layouts/TopTabs.tsx",
+        "default": "./build/layouts/TopTabs.d.ts"
+      },
+      "expo-source": "./src/layouts/TopTabs.tsx",
+      "default": "./build/layouts/TopTabs.js"
+    },
+    "./stack": {
+      "types": {
+        "expo-source": "./src/layouts/Stack.tsx",
+        "default": "./build/layouts/Stack.d.ts"
+      },
+      "expo-source": "./src/layouts/Stack.tsx",
+      "default": "./build/layouts/Stack.js"
+    },
+    "./tabs": {
+      "types": {
+        "expo-source": "./src/layouts/Tabs.tsx",
+        "default": "./build/layouts/Tabs.d.ts"
+      },
+      "expo-source": "./src/layouts/Tabs.tsx",
+      "default": "./build/layouts/Tabs.js"
+    },
+    "./testing-library": {
+      "types": {
+        "expo-source": "./src/testing-library/index.tsx",
+        "default": "./build/testing-library/index.d.ts"
+      },
+      "expo-source": "./src/testing-library/index.tsx",
+      "default": "./build/testing-library/index.js"
+    },
+    "./ui": {
+      "types": {
+        "expo-source": "./src/ui/index.ts",
+        "default": "./build/ui/index.d.ts"
+      },
+      "expo-source": "./src/ui/index.ts",
+      "default": "./build/ui/index.js"
+    },
+    "./unstable-native-tabs": {
+      "types": {
+        "expo-source": "./src/native-tabs/index.ts",
+        "default": "./build/native-tabs/index.d.ts"
+      },
+      "expo-source": "./src/native-tabs/index.ts",
+      "default": "./build/native-tabs/index.js"
+    },
+    "./split-view": {
+      "types": {
+        "expo-source": "./src/split-view/index.ts",
+        "default": "./build/split-view/index.d.ts"
+      },
+      "expo-source": "./src/split-view/index.ts",
+      "default": "./build/split-view/index.js"
+    },
+    "./rsc": {
+      "types": {
+        "expo-source": "./src/rsc/exports.tsx",
+        "default": "./build/rsc/exports.d.ts"
+      },
+      "expo-source": "./src/rsc/exports.tsx",
+      "default": "./build/rsc/exports.js"
+    },
+    "./rsc/internal": {
+      "types": {
+        "expo-source": "./src/rsc/router/host.tsx",
+        "default": "./build/rsc/router/host.d.ts"
+      },
+      "expo-source": "./src/rsc/router/host.tsx",
+      "default": "./build/rsc/router/host.js"
+    },
+    "./link": {
+      "types": "./link/index.d.ts",
+      "default": "./link/index.js"
+    },
+    "./rsc/headers": {
+      "types": "./rsc/headers.d.ts",
+      "default": "./rsc/headers.js"
+    },
+    "./rsc/headers.js": {
+      "types": "./rsc/headers.d.ts",
+      "default": "./rsc/headers.js"
+    },
+    "./_ctx-html": "./_ctx-html.js",
+    "./_ctx-shared": "./_ctx-shared.js",
+    "./_ctx": {
+      "types": "./_ctx.d.ts",
+      "browser": "./_ctx.web.js",
+      "default": "./_ctx.js"
+    },
+    "./_error.js": "./_error.js",
+    "./entry-classic.js": "./entry-classic.js",
+    "./entry-classic": "./entry-classic.js",
+    "./entry.js": "./entry.js",
+    "./entry": "./entry.js",
+    "./rsc/entry": "./rsc/entry.js",
+    "./rsc/entry.js": "./rsc/entry.js",
+    "./assets/*": "./assets/*",
+    "./app.plugin.js": "./app.plugin.js",
+    "./package.json": "./package.json"
+  },
   "sideEffects": [
     "rsc/entry.js",
     "entry-classic.js",
@@ -74,14 +265,16 @@
   },
   "homepage": "https://docs.expo.dev/routing/introduction/",
   "scripts": {
-    "build": "node ./scripts/build.js",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build cjs:src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "test:rsc": "jest --config jest-rsc.config.js",
-    "test:types": "expo-module build -p tsconfig.test.json",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "keywords": [
     "react-native",
@@ -129,7 +322,6 @@
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.3.0",
-    "@tsd/typescript": "^5.9.3",
     "@types/color": "^4.2.0",
     "@types/debug": "^4.1.7",
     "@types/jest": "^29.2.1",
@@ -138,15 +330,14 @@
     "@types/react-dom": "^19.1.7",
     "@types/react-is": "^19.0.0",
     "@types/react-test-renderer": "^19.1.0",
-    "expo": "workspace:*",
+    "expect-type": "^1.3.0",
     "immer": "^10.1.1",
     "react-native-gesture-handler": "~2.32.0",
-    "react-native-reanimated": "~4.3.1",
-    "react-native-safe-area-context": "~5.6.2",
+    "react-native-reanimated": "~4.4.1",
+    "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "^4.25.2",
     "react-native-web": "~0.21.0",
-    "react-server-dom-webpack": "~19.0.6",
-    "tsd": "^0.33.0"
+    "react-server-dom-webpack": "~19.0.6"
   },
   "dependencies": {
     "@expo/log-box": "workspace:^56.0.12",

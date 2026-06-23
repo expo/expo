@@ -30,10 +30,6 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::SHARED_OBJECT_ID, SharedObjectIdConverter);
   RegisterConverter(CppType::ANY, AnyFrontendConvert);
 
-#if WORKLETS_ENABLED
-  RegisterConverter(CppType::SERIALIZABLE, SynchronizableFrontendConverter);
-#endif
-
 #undef RegisterConverter
 
   auto registerPolyConverter = [this](const std::vector<CppType> &types) {
@@ -50,6 +46,13 @@ void FrontendConverterProvider::createConverters() {
 
   // Enums
   registerPolyConverter({CppType::STRING, CppType::INT});
+}
+
+void FrontendConverterProvider::registerConverter(
+  CppType type,
+  std::shared_ptr<FrontendConverter> converter
+) {
+  simpleConverters.insert({type, std::move(converter)});
 }
 
 std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(

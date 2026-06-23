@@ -47,7 +47,6 @@ jest.mock('expo-app-metrics', () => ({
   default: {
     markInteractive: jest.fn(),
     getMainSession: jest.fn(() => ({ id: 'session-1' })),
-    addCustomMetricToSession: jest.fn(),
   },
 }));
 

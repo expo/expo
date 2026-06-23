@@ -108,7 +108,7 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
-    const message = result.issues[0];
+    const message = result.issues[0]!;
     const nativeIdx = message.indexOf('@react-navigation/native');
     const stackIdx = message.indexOf('@react-navigation/stack');
     const tabsIdx = message.indexOf('@react-navigation/bottom-tabs');
@@ -150,7 +150,7 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
-    const occurrences = result.issues[0].match(/@react-navigation\/native/g) ?? [];
+    const occurrences = result.issues[0]!.match(/@react-navigation\/native/g) ?? [];
     expect(occurrences).toHaveLength(1);
   });
 

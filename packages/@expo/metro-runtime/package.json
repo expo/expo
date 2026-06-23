@@ -3,16 +3,20 @@
   "version": "56.0.13",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
-  "main": "src/index.ts",
-  "types": "build",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
   "keywords": [],
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     "./rsc/runtime.js": "./rsc/runtime.js",
     "./rsc/runtime": "./rsc/runtime.js",
@@ -26,12 +30,14 @@
     "!**/__tests__"
   ],
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -58,7 +64,6 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
-    "expo": "workspace:*",
     "expo-constants": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react-dom": "19.2.3"

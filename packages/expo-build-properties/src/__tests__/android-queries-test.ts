@@ -51,7 +51,7 @@ describe(withAndroidQueries, () => {
         },
       }
     );
-    expect(androidModResults.manifest.queries[0].intent).toHaveLength(1);
+    expect(androidModResults.manifest.queries![0]!.intent).toHaveLength(1);
   });
 
   it('adds the provider if defined', async () => {
@@ -81,9 +81,9 @@ describe(withAndroidQueries, () => {
         },
       }
     );
-    const result = androidModResults.manifest.queries[0];
+    const result = androidModResults.manifest.queries![0]!;
     expect(result.provider).toBeDefined();
-    expect(result.provider?.[0].$['android:authorities']).toBe('com.expo.provider');
+    expect(result.provider?.[0]?.$['android:authorities']).toBe('com.expo.provider');
   });
 
   it('does not add the provider if undefined', async () => {
@@ -113,7 +113,7 @@ describe(withAndroidQueries, () => {
         },
       }
     );
-    const result = androidModResults.manifest.queries[0];
+    const result = androidModResults.manifest.queries![0]!;
     expect(result.provider).toHaveLength(0);
   });
 
@@ -143,7 +143,7 @@ describe(withAndroidQueries, () => {
         },
       }
     );
-    const result = androidModResults.manifest.queries[0];
+    const result = androidModResults.manifest.queries![0]!;
     expect(result.package).toBeDefined();
     expect(result.package?.some((p) => p.$['android:name'] === 'com.expo.dev')).toBe(true);
     expect(result.package?.some((p) => p.$['android:name'] === 'com.expo.test')).toBe(true);
@@ -182,7 +182,7 @@ describe(withAndroidQueries, () => {
         },
       }
     );
-    const result = androidModResults.manifest.queries[0];
+    const result = androidModResults.manifest.queries![0]!;
     expect(result?.intent).toHaveLength(2);
   });
 
@@ -224,7 +224,7 @@ describe(withAndroidQueries, () => {
         },
       }
     );
-    const result = androidModResults.manifest.queries[0];
+    const result = androidModResults.manifest.queries![0]!;
     expect(result.intent).toHaveLength(3);
   });
 
@@ -271,7 +271,7 @@ describe(withAndroidQueries, () => {
         },
       }
     );
-    const result = androidModResults.manifest.queries[0];
+    const result = androidModResults.manifest.queries![0]!;
     expect(result.intent).toHaveLength(4);
   });
 });

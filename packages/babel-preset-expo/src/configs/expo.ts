@@ -315,5 +315,12 @@ function getInlinesFromOptions(
     inlines['process.env.EXPO_BASE_URL'] = options.baseUrl;
   }
 
+  // `EXPO_PUBLIC_USE_RN_FETCH` isn't inlined in `node_modules`
+  // https://github.com/expo/expo/issues/46982
+  // TODO(@kitten): Handle it in `getInlineEnvVarsEnabled` during the env var refactor.
+  if (options.isNodeModule && process.env.EXPO_PUBLIC_USE_RN_FETCH != null) {
+    inlines['process.env.EXPO_PUBLIC_USE_RN_FETCH'] = process.env.EXPO_PUBLIC_USE_RN_FETCH;
+  }
+
   return inlines;
 }

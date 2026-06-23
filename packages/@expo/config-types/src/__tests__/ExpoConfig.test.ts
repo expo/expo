@@ -13,7 +13,7 @@ it('is not manually edited', async () => {
     // to the API-side XDL schemas!
     expect(actual).toBe(expected);
   } catch (error) {
-    error.message =
+    (error as Error).message =
       'Expected src/ExpoConfig.ts and src/__tests__/fixtures/ExpoConfig.ts to match.\n' +
       'Was the file manually edited instad of being regenerated with "pnpm generate"?';
     throw error;

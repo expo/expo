@@ -5,16 +5,11 @@
   "main": "index.js",
   "type": "module",
   "bin": {
+    "expo-build": "bin/expo-build",
     "expo-module": "bin/expo-module.js"
   },
   "exports": {
     "./package.json": "./package.json",
-    "./babel.config.*": {
-      "require": "./babel.config.*.cjs"
-    },
-    "./babel.config.*.js": {
-      "require": "./babel.config.*.cjs"
-    },
     "./eslintrc.base.js": {
       "require": "./eslintrc.base.cjs"
     },
@@ -33,6 +28,14 @@
       "import": "./jest-preset.cjs",
       "require": "./jest-preset.cjs"
     },
+    "./createJestPreset": {
+      "import": "./createJestPreset.cjs",
+      "require": "./createJestPreset.cjs"
+    },
+    "./createCompositeJestPreset": {
+      "import": "./createCompositeJestPreset.cjs",
+      "require": "./createCompositeJestPreset.cjs"
+    },
     "./jest-preset.js": {
       "import": "./jest-preset.cjs",
       "require": "./jest-preset.cjs"
@@ -50,7 +53,8 @@
     "./tsconfig": "./tsconfig.json"
   },
   "scripts": {
-    "lint": "expo-module eslint ."
+    "lint": "expo-module eslint .",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -69,15 +73,13 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-module-scripts#readme",
   "dependencies": {
-    "@babel/cli": "^7.23.4",
-    "@babel/plugin-transform-export-namespace-from": "^7.23.4",
-    "@babel/preset-env": "^7.23.8",
-    "@babel/preset-typescript": "^7.23.3",
     "@expo/spawn-async": "^1.8.0",
-    "@react-native/jest-preset": "0.86.0-rc.3",
+    "@react-native/jest-preset": "0.86.0",
+    "@swc-contrib/mut-cjs-exports": "^14.13.0",
+    "@swc/core": "^1.15.18",
+    "@swc/jest": "^0.2.39",
     "@testing-library/react-native": "^13.3.0",
     "@types/jest": "^29.2.1",
-    "babel-plugin-dynamic-import-node": "^2.3.3",
     "commander": "^12.1.0",
     "eslint-config-universe": "workspace:^15.2.0",
     "glob": "^13.0.0",
@@ -85,18 +87,18 @@
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
     "resolve-workspace-root": "^2.0.0",
-    "ts-jest": "~29.4.7"
+    "typescript": "^6.0.2"
   },
   "devDependencies": {
-    "@expo/metro": "~56.0.0",
-    "@babel/core": "^7.26.0"
+    "@babel/core": "^7.26.0",
+    "@expo/metro": "~56.0.0"
   },
   "publishConfig": {
     "executableFiles": [
-      "./bin/expo-module-babel",
       "./bin/expo-module-build",
       "./bin/expo-module-clean",
       "./bin/expo-module-configure",
+      "./bin/expo-module-depscheck",
       "./bin/expo-module-eslint",
       "./bin/expo-module-jest",
       "./bin/expo-module-lint",

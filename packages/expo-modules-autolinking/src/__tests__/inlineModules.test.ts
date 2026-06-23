@@ -134,7 +134,10 @@ describe('inlineModules.ts', () => {
       expect(result.kotlinClasses).toEqual(['app.valid.ValidAndroid1', 'app.valid.ValidAndroid2']);
 
       expect(result.files).toHaveLength(4);
-      const sortingFunction = (o1, o2) => o2.filePath.length - o1.filePath.length;
+      const sortingFunction = (
+        o1: { filePath: string; watchedDir: string },
+        o2: { filePath: string; watchedDir: string }
+      ) => o2.filePath.length - o1.filePath.length;
       expect(result.files.sort(sortingFunction)).toEqual(
         [
           {

@@ -4,13 +4,73 @@
   "description": "Expo module for browser-based authentication",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./providers/facebook": {
+      "types": {
+        "expo-source": "./src/providers/Facebook.ts",
+        "default": "./build/providers/Facebook.d.ts"
+      },
+      "expo-source": "./src/providers/Facebook.ts",
+      "default": "./build/providers/Facebook.js"
+    },
+    "./providers/facebook.js": {
+      "types": {
+        "expo-source": "./src/providers/Facebook.ts",
+        "default": "./build/providers/Facebook.d.ts"
+      },
+      "expo-source": "./src/providers/Facebook.ts",
+      "default": "./build/providers/Facebook.js"
+    },
+    "./providers/google": {
+      "types": {
+        "expo-source": "./src/providers/Google.ts",
+        "default": "./build/providers/Google.d.ts"
+      },
+      "expo-source": "./src/providers/Google.ts",
+      "default": "./build/providers/Google.js"
+    },
+    "./providers/google.js": {
+      "types": {
+        "expo-source": "./src/providers/Google.ts",
+        "default": "./build/providers/Google.d.ts"
+      },
+      "expo-source": "./src/providers/Google.ts",
+      "default": "./build/providers/Google.js"
+    },
+    "./build/PKCE": {
+      "types": {
+        "expo-source": "./src/PKCE.ts",
+        "default": "./build/PKCE.d.ts"
+      },
+      "expo-source": "./src/PKCE.ts",
+      "default": "./build/PKCE.js"
+    },
+    "./build/PKCE.js": {
+      "types": {
+        "expo-source": "./src/PKCE.ts",
+        "default": "./build/PKCE.d.ts"
+      },
+      "expo-source": "./src/PKCE.ts",
+      "default": "./build/PKCE.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "keywords": [
     "react-native",

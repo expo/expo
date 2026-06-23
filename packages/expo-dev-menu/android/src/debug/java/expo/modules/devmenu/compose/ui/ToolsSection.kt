@@ -114,6 +114,26 @@ fun ToolsSection(
         }
       )
 
+      Divider(thickness = 0.5.dp)
+
+      NewMenuButton(
+        withSurface = false,
+        icon = {
+          MenuIcons.Gear(
+            size = 20.dp,
+            tint = NewAppTheme.colors.icon.tertiary
+          )
+        },
+        content = {
+          NewText(
+            text = "Open React Native dev menu"
+          )
+        },
+        onClick = {
+          onAction(DevMenuAction.OpenReactNativeDevMenu)
+        }
+      )
+
       // TODO(@lukmccall): Re-enable when toggling fast refresh is not longer crashing app
 //      Divider(thickness = 0.5.dp)
 //
