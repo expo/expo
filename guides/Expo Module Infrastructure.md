@@ -63,7 +63,7 @@ The `postinstall` script auto-generates configuration files in the package when 
 
 ## Directory Structure
 
-`expo-module-scripts` expects modules to be written in TypeScript under a directory named `src` and will compile the modules to a directory named `build`. **In a module package, commit the `build` directory to Git.** Only the people working on a module need to compile it instead of everyone needing to run `tsc` in each package whenever their local Git repository changes.
+`expo-module-scripts` expects modules to be written in TypeScript under a directory named `src` and will compile the modules to a directory named `build`. **The `build` directory is not committed to Git** — it is in `.gitignore`. [Turborepo](https://turborepo.com/) compiles packages on demand and caches the output (locally and via a shared remote cache), so contributors don't need to rebuild every package whenever their local Git repository changes.
 
 In package.json, define the main module of the package to be the compiled entry point under `build`:
 
@@ -77,7 +77,7 @@ Running `yarn clean` will delete the `build` directory.
 
 ## Compiling TypeScript
 
-Run `yarn build` to compile the source code. This command starts a file watcher and compiles source files as they are edited and saved. You can also run `yarn expo-module tsc` to run `tsc` directly.
+Run `yarn build` to compile the source code from `src` to `build`. Run `yarn typecheck` to type-check the package with `tsc` without emitting output. When working across the monorepo, prefer running these through Turborepo from the repo root (`pnpm build`, `pnpm typecheck`) so only affected packages are rebuilt and results are cached.
 
 The `postinstall` script generates a small tsconfig.json file that extends the main configuration file inside of `expo-module-scripts`.
 
