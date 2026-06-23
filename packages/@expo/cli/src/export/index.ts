@@ -77,6 +77,10 @@ export const expoExport: Command = async (argv) => {
   const { installEventLogger, getWellKnownTemporaryLogFile } = await import('../events/index.js');
   installEventLogger(getWellKnownTemporaryLogFile(projectRoot, 'export'));
 
+  const { setNodeEnv, loadEnvFiles } = await import('../utils/nodeEnv.js');
+  setNodeEnv(args['--dev'] ? 'development' : 'production');
+  loadEnvFiles(projectRoot);
+
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, {
     ...args,
