@@ -6,6 +6,8 @@ import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
+import kotlin.math.pow
+import kotlin.random.Random
 
 /**
  * Outcome of a single dispatch attempt to the OTLP endpoint. Modeled after the OTLP retry
@@ -124,5 +126,83 @@ object DispatchUtils {
     return runCatching {
       responseJson.decodeFromString(OTServiceResponse.serializer(), body).partialSuccess
     }.getOrNull()
+  }
+
+  // MARK: -- Retry gate + exponential backoff
+
+  /**
+   * Base delay (in ms) for the exponential backoff when the server doesn't supply a
+   * `Retry-After`. The cap (`backoffCapMs`) bounds the worst-case wait so we don't end up
+   * snoozing for hours after a long string of failures.
+   */
+  const val backoffBaseMs: Long = 60_000L
+  const val backoffCapMs: Long = 900_000L
+
+  /**
+   * Computes a backoff delay (in ms) for the next dispatch attempt when the server didn't
+   * supply `Retry-After`. Exponential growth (base × 2^(attempt-1)), capped, with full jitter
+   * so a fleet of devices recovering from the same transient backend outage doesn't
+   * thunder-herd the recovery.
+   *
+   * `attempt` is 1-based; the helper is defensive for `0` / negative inputs and returns 0
+   * rather than producing a negative exponent.
+   */
+  fun computeBackoffDelay(
+    attempt: Int,
+    base: Long = backoffBaseMs,
+    cap: Long = backoffCapMs,
+    random: () -> Double = { Random.nextDouble() }
+  ): Long {
+    if (attempt < 1) return 0L
+    val unjittered = minOf((base.toDouble() * 2.0.pow(attempt - 1)).toLong(), cap)
+    return (unjittered.toDouble() * random()).toLong()
+  }
+
+  /**
+   * Snapshot of the retry-gate state carried across dispatch rounds. `dispatchAfterMs` is the
+   * wall-clock deadline (ms since epoch) before which the dispatch entry point should
+   * short-circuit (set by a retryable response, naturally expires); `consecutiveRetryableFailures`
+   * is the counter that drives `computeBackoffDelay` when the server didn't supply a
+   * `Retry-After`.
+   */
+  data class RetryGateState(
+    val dispatchAfterMs: Long?,
+    val consecutiveRetryableFailures: Int
+  ) {
+    companion object {
+      val initial = RetryGateState(dispatchAfterMs = null, consecutiveRetryableFailures = 0)
+    }
+  }
+
+  /**
+   * Pure helper that computes the next `RetryGateState` after a single dispatch result.
+   *
+   * - `Success` resets the counter to 0 and leaves the gate alone. The gate either already
+   *   expired (we wouldn't have dispatched otherwise) or was never set — either way, success
+   *   doesn't introduce a new pause.
+   * - `NonRetryable` also resets the counter. A permanent drop isn't a sign that the server
+   *   is unhealthy and shouldn't pause subsequent rounds.
+   * - `Retryable` increments the counter and sets the gate to `now + delay`, where `delay`
+   *   is the server-supplied `retryAfterMs` if present, otherwise `backoff(nextCount)`.
+   *
+   * `backoff` is injected so tests can drive it deterministically without going through
+   * `computeBackoffDelay`'s random source.
+   */
+  fun nextRetryGateState(
+    result: DispatchResult,
+    currentState: RetryGateState,
+    now: Long,
+    backoff: (Int) -> Long
+  ): RetryGateState = when (result) {
+    is DispatchResult.Success, is DispatchResult.NonRetryable ->
+      currentState.copy(consecutiveRetryableFailures = 0)
+    is DispatchResult.Retryable -> {
+      val nextCount = currentState.consecutiveRetryableFailures + 1
+      val delay = result.retryAfterMs ?: backoff(nextCount)
+      RetryGateState(
+        dispatchAfterMs = now + delay,
+        consecutiveRetryableFailures = nextCount
+      )
+    }
   }
 }

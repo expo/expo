@@ -77,7 +77,8 @@ class BaseObservabilityManager(
   private val isDebugBuild: Boolean = false,
   private val deterministicUniformValueProvider: () -> Double = {
     EASClientID.deterministicUniformValue(EASClientID(context).uuid)
-  }
+  },
+  private val currentTimeMs: () -> Long = { System.currentTimeMillis() }
 ) {
   private val eventDispatcher = EventDispatcher(
     context = context,
@@ -85,9 +86,49 @@ class BaseObservabilityManager(
     baseUrl = baseUrl
   )
 
+  /**
+   * In-memory retry-gate state. Reset implicitly when the process restarts — a relaunch
+   * usually means enough time passed that the transient cause has cleared anyway, and
+   * persisting the gate would mean an extra disk write on every retryable response. The gate
+   * is shared between the metrics and logs paths so when the server asks us to slow down on
+   * one signal, the other one waits too.
+   */
+  private var retryGateState: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
+
+  /**
+   * Returns true and logs when an active retry gate suppresses this dispatch round. Mirrors
+   * the `dispatch()` entry-point gate check on the iOS side.
+   */
+  private fun retryGateBlocks(): Boolean {
+    val until = retryGateState.dispatchAfterMs ?: return false
+    val now = currentTimeMs()
+    if (until <= now) return false
+    Log.d(OBSERVE_TAG, "Dispatch suppressed by retry gate until $until (now $now)")
+    return true
+  }
+
+  /**
+   * Applies a per-signal dispatch outcome to the shared retry-gate state. Reads/writes the
+   * manager's `retryGateState` field so call sites stay concise. Called from both
+   * `dispatchUnsentMetrics` and `dispatchUnsentLogs` after each `eventDispatcher.dispatch*`
+   * call so the gate reflects the latest signal's response.
+   */
+  private fun applyRetryOutcome(result: DispatchResult) {
+    retryGateState = DispatchUtils.nextRetryGateState(
+      result = result,
+      currentState = retryGateState,
+      now = currentTimeMs(),
+      backoff = { DispatchUtils.computeBackoffDelay(it) }
+    )
+  }
+
   suspend fun dispatchUnsentMetrics() {
     val pendingIds = pendingMetricsManager.getAllPendingMetricIds()
     if (pendingIds.isEmpty()) {
+      return
+    }
+
+    if (retryGateBlocks()) {
       return
     }
 
@@ -117,6 +158,7 @@ class BaseObservabilityManager(
     }
 
     val result = eventDispatcher.dispatch(events)
+    applyRetryOutcome(result)
     val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
     if (DispatchUtils.shouldRemovePending(result)) {
       pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
@@ -136,6 +178,10 @@ class BaseObservabilityManager(
   suspend fun dispatchUnsentLogs() {
     val pendingIds = pendingLogsManager.getAllPendingLogIds()
     if (pendingIds.isEmpty()) {
+      return
+    }
+
+    if (retryGateBlocks()) {
       return
     }
 
@@ -167,6 +213,7 @@ class BaseObservabilityManager(
     }
 
     val result = eventDispatcher.dispatchLogs(events)
+    applyRetryOutcome(result)
     val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
     if (DispatchUtils.shouldRemovePending(result)) {
       pendingLogsManager.removePendingLogs(dispatchedLogIds)

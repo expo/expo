@@ -1035,11 +1035,102 @@ class BaseObservabilityManagerTest {
 
   // endregion
 
+  // region Retry-gate tests
+
+  @Test
+  fun `dispatchUnsentMetrics is suppressed when retry gate is active`() =
+    runTest {
+      // First dispatch returns Retryable with Retry-After=60s; that sets the gate. Second
+      // dispatch (same simulated clock) should short-circuit before calling the dispatcher
+      // again. Verifies the C2 acceptance criterion: a Retryable response must defer the
+      // next round, not just leave the rows pending.
+      val metric = createMetric("metric1", metricId = "id1")
+      val session = createSessionWithMetrics(
+        sessionId = "session-1",
+        environment = "production",
+        metrics = listOf(metric)
+      )
+
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns
+        DispatchResult.Retryable(retryAfterMs = 60_000L)
+
+      val fixedNow = 1_700_000_000_000L
+      val manager = createManager(currentTimeMs = { fixedNow })
+
+      manager.dispatchUnsentMetrics()
+      manager.dispatchUnsentMetrics()
+
+      // The second call must NOT reach the dispatcher — only one call total.
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+    }
+
+  @Test
+  fun `dispatchUnsentLogs is suppressed when retry gate is active (shared with metrics)`() =
+    runTest {
+      // The gate is shared between metrics and logs: a Retryable response to a metrics
+      // dispatch must defer the next logs dispatch too. Otherwise we'd hammer the same
+      // server endpoint with the logs side while it's asking us to slow down.
+      val metric = createMetric("metric1", metricId = "id1")
+      val metricSession = createSessionWithMetrics(
+        sessionId = "session-1",
+        environment = "production",
+        metrics = listOf(metric)
+      )
+
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(metricSession)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns
+        DispatchResult.Retryable(retryAfterMs = 60_000L)
+      coEvery { mockPendingLogsManager.getAllPendingLogIds() } returns listOf("log-1")
+
+      val fixedNow = 1_700_000_000_000L
+      val manager = createManager(currentTimeMs = { fixedNow })
+
+      manager.dispatchUnsentMetrics()
+      manager.dispatchUnsentLogs()
+
+      coVerify(exactly = 0) { mockEventDispatcher.dispatchLogs(any()) }
+    }
+
+  @Test
+  fun `dispatchUnsentMetrics resumes after the retry gate expires`() =
+    runTest {
+      // First dispatch sets a gate at now+60s. We then advance the simulated clock past the
+      // gate; the second dispatch should proceed.
+      val metric = createMetric("metric1", metricId = "id1")
+      val session = createSessionWithMetrics(
+        sessionId = "session-1",
+        environment = "production",
+        metrics = listOf(metric)
+      )
+
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
+      coEvery { mockEventDispatcher.dispatch(any()) } returnsMany listOf(
+        DispatchResult.Retryable(retryAfterMs = 60_000L),
+        DispatchResult.Success
+      )
+
+      var nowMs = 1_700_000_000_000L
+      val manager = createManager(currentTimeMs = { nowMs })
+
+      manager.dispatchUnsentMetrics()
+      nowMs += 120_000L  // jump past the 60-second gate
+      manager.dispatchUnsentMetrics()
+
+      coVerify(exactly = 2) { mockEventDispatcher.dispatch(any()) }
+    }
+
+  // endregion
+
   // region Helper methods
 
   private fun createManager(
     isDebugBuild: Boolean = false,
-    deterministicUniformValue: Double = 0.0
+    deterministicUniformValue: Double = 0.0,
+    currentTimeMs: () -> Long = { System.currentTimeMillis() }
   ): BaseObservabilityManager {
     val manager = BaseObservabilityManager(
       context = mockContext,
@@ -1049,7 +1140,8 @@ class BaseObservabilityManagerTest {
       projectId = testProjectId,
       baseUrl = testBaseUrl,
       isDebugBuild = isDebugBuild,
-      deterministicUniformValueProvider = { deterministicUniformValue }
+      deterministicUniformValueProvider = { deterministicUniformValue },
+      currentTimeMs = currentTimeMs
     )
     // Replace the internal EventDispatcher with our mock
     val field = BaseObservabilityManager::class.java.getDeclaredField("eventDispatcher")
