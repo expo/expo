@@ -332,6 +332,10 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       return
     }
 
+    if captureDeviceInput?.device.uniqueID == device.uniqueID {
+      return
+    }
+
     session.beginConfiguration()
     defer {
       session.commitConfiguration()
@@ -410,10 +414,6 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     addErrorNotification()
     delegate.configurePreviewRotation()
     delegate.barcodeScanner?.maybeStartBarcodeScanning()
-    updateCameraIsActive()
-    DispatchQueue.main.async { [weak delegate] in
-      delegate?.onCameraReady()
-    }
     enableTorch()
   }
 }

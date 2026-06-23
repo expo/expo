@@ -31,6 +31,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   // Typed as Any? because AVCaptureDevice.RotationCoordinator is iOS 17+.
   private var rotationCoordinator: Any?
   private var previewRotationObservation: NSKeyValueObservation?
+  private var didStartSession = false
   private var motionManager: CMMotionManager = {
     let mm = CMMotionManager()
     mm.accelerometerUpdateInterval = 0.2
@@ -97,7 +98,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     }
   }
 
-  var pictureSize = PictureSize.high {
+  var pictureSize = PictureSize.photo {
     didSet {
       updatePictureSize()
     }
@@ -187,7 +188,22 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     previewLayer.session = sessionManager.session
     previewLayer.videoGravity = .resizeAspectFill
     previewLayer.needsDisplayOnBoundsChange = true
-    // backgroundColor = .black
+  }
+
+  func startSessionIfNeeded() {
+    guard !didStartSession else {
+      return
+    }
+    didStartSession = true
+    sessionQueue.async { [weak self] in
+      guard let self else {
+        return
+      }
+      self.sessionManager.updateCameraIsActive()
+      DispatchQueue.main.async {
+        self.onCameraReady()
+      }
+    }
   }
 
   public func onAppForegrounded() {
@@ -304,6 +320,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     super.didMoveToWindow()
     if window != nil {
       configurePreviewRotation()
+      startSessionIfNeeded()
     }
   }
 
