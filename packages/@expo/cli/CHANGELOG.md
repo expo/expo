@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- [Internal] Unify the sync realpath helper and make fallback handling explicit. ([#47175](https://github.com/expo/expo/pull/47175) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Add server functions and startup banners to DevTools plugins. Plugins can define a `serverEntryPoint` that handles HTTP requests and WebSocket connections in the Expo CLI process, and a `bannerTitle` shown in the CLI startup banner. ([#46764](https://github.com/expo/expo/pull/46764) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 57.0.4 — 2026-07-03
