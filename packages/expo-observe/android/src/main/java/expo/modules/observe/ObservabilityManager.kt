@@ -173,11 +173,20 @@ class BaseObservabilityManager(
     if (DispatchUtils.shouldRemovePending(result)) {
       pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
     }
-    if (result is DispatchResult.NonRetryable) {
-      Log.w(
-        OBSERVE_TAG,
-        "Dropping batch of ${dispatchedMetricIds.size} metric event(s): ${result.reason}"
-      )
+    when (result) {
+      is DispatchResult.PartialSuccess ->
+        Log.w(
+          OBSERVE_TAG,
+          "Partial success on batch of ${dispatchedMetricIds.size} metric event(s): " +
+            "server rejected ${result.partial.rejectedCount} " +
+            "(${result.partial.errorMessage ?: "no error message"})"
+        )
+      is DispatchResult.NonRetryableFailure ->
+        Log.w(
+          OBSERVE_TAG,
+          "Dropping batch of ${dispatchedMetricIds.size} metric event(s): ${result.reason}"
+        )
+      is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
     }
   }
 
@@ -228,11 +237,20 @@ class BaseObservabilityManager(
     if (DispatchUtils.shouldRemovePending(result)) {
       pendingLogsManager.removePendingLogs(dispatchedLogIds)
     }
-    if (result is DispatchResult.NonRetryable) {
-      Log.w(
-        OBSERVE_TAG,
-        "Dropping batch of ${dispatchedLogIds.size} log event(s): ${result.reason}"
-      )
+    when (result) {
+      is DispatchResult.PartialSuccess ->
+        Log.w(
+          OBSERVE_TAG,
+          "Partial success on batch of ${dispatchedLogIds.size} log event(s): " +
+            "server rejected ${result.partial.rejectedCount} " +
+            "(${result.partial.errorMessage ?: "no error message"})"
+        )
+      is DispatchResult.NonRetryableFailure ->
+        Log.w(
+          OBSERVE_TAG,
+          "Dropping batch of ${dispatchedLogIds.size} log event(s): ${result.reason}"
+        )
+      is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
     }
   }
 

@@ -11,18 +11,29 @@ import kotlin.math.pow
 import kotlin.random.Random
 
 /**
- * Outcome of a single dispatch attempt to the OTLP endpoint. Modeled after the OTLP retry
- * guidance: a 3-way classification distinguishes transient failures (retry the same batch)
- * from permanent ones (drop the batch so it can't wedge the queue).
+ * Outcome of a single dispatch attempt to the OTLP endpoint. Four cases, modeled after the
+ * OTLP retry guidance:
  *
- * `Retryable.retryAfterMs` carries the parsed `Retry-After` header value in milliseconds (or
- * `null` when the server didn't supply one). `NonRetryable.reason` carries a short diagnostic
- * string for the `warn`-level log line.
+ * - `Success` — server accepted the batch without rejections.
+ * - `PartialSuccess` — server accepted the batch but rejected some records (the OTLP
+ *   `partial_success` body with `rejectedCount > 0`). The rows DID land on the server, so
+ *   pending-ID removal and counter reset match `Success`; the case stays distinct so the
+ *   call site can log the rejected count and `errorMessage` clearly rather than describing
+ *   it as a drop.
+ * - `RetryableFailure` — transient failure (408/429/502/503/504 or transport error); retry
+ *   the same batch after `retryAfterMs` or a client-computed backoff.
+ * - `NonRetryableFailure` — permanent failure (4xx/5xx outside the retryable set, encoding
+ *   error); drop the batch so it can't wedge the queue.
+ *
+ * `RetryableFailure.retryAfterMs` carries the parsed `Retry-After` header value in
+ * milliseconds (or `null` when the server didn't supply one). `NonRetryableFailure.reason`
+ * carries a short diagnostic string for the warn log.
  */
 sealed class DispatchResult {
   object Success : DispatchResult()
-  data class Retryable(val retryAfterMs: Long? = null) : DispatchResult()
-  data class NonRetryable(val reason: String) : DispatchResult()
+  data class PartialSuccess(val partial: OTPartialSuccess) : DispatchResult()
+  data class RetryableFailure(val retryAfterMs: Long? = null) : DispatchResult()
+  data class NonRetryableFailure(val reason: String) : DispatchResult()
 }
 
 /**
@@ -49,26 +60,25 @@ object DispatchUtils {
     val retryAfter = parseRetryAfter(retryAfterHeader)
 
     if (statusCode in 200..299) {
-      // The OTLP spec also allows `partial_success` to carry a warning-only payload —
+      // The OTLP spec allows `partial_success` to carry a warning-only payload —
       // `rejectedCount == 0` with a non-empty `errorMessage`. Treat that as a successful send
-      // (the records DID land) so we don't double-drop. The caller may still want to log the
-      // warning.
+      // (the records DID land) so we don't double-drop. When `rejectedCount > 0`, the records
+      // still landed server-side but a subset was rejected; surface that as `PartialSuccess`
+      // so the caller can log the count and message clearly. Pending-ID removal and gate
+      // behavior for `PartialSuccess` match `Success`.
       val partial = responseBody?.let { parsePartialSuccess(it) }
       if (partial != null && partial.rejectedCount > 0) {
-        val detail = partial.errorMessage ?: "no error message"
-        return DispatchResult.NonRetryable(
-          reason = "partial_success: rejected ${partial.rejectedCount} ($detail)"
-        )
+        return DispatchResult.PartialSuccess(partial)
       }
       return DispatchResult.Success
     }
 
     return when (statusCode) {
-      408, 429, 502, 503, 504 -> DispatchResult.Retryable(retryAfter)
+      408, 429, 502, 503, 504 -> DispatchResult.RetryableFailure(retryAfter)
       else -> {
         val excerpt = bodyExcerpt()
         val suffix = if (excerpt.isEmpty()) "" else ": $excerpt"
-        DispatchResult.NonRetryable(reason = "HTTP $statusCode$suffix")
+        DispatchResult.NonRetryableFailure(reason = "HTTP $statusCode$suffix")
       }
     }
   }
@@ -76,16 +86,20 @@ object DispatchUtils {
   /**
    * Whether the dispatch caller should remove the just-sent pending IDs from the queue.
    *
-   * - `Success` removes them — the rows have been accepted by the server.
-   * - `NonRetryable` ALSO removes them — the server has refused these rows permanently, so
-   *   retrying would produce the same answer; removing them drops the batch so it can't
-   *   wedge subsequent rounds. This is the acceptance-criterion behavior: a 400/403 must
-   *   not be re-sent on the next cycle.
-   * - `Retryable` keeps them so the next dispatch round picks the same rows up again.
+   * - `Success` and `PartialSuccess` remove them — the rows have been accepted by the server
+   *   (partial success rejects a subset server-side, but the bytes still landed; re-sending
+   *   them would just re-trip the same rejection).
+   * - `NonRetryableFailure` ALSO removes them — the server has refused these rows
+   *   permanently, so retrying would produce the same answer; removing them drops the batch
+   *   so it can't wedge subsequent rounds. This is the acceptance-criterion behavior: a
+   *   400/403 must not be re-sent on the next cycle.
+   * - `RetryableFailure` keeps them so the next dispatch round picks the same rows up again.
    */
   fun shouldRemovePending(result: DispatchResult): Boolean = when (result) {
-    is DispatchResult.Success, is DispatchResult.NonRetryable -> true
-    is DispatchResult.Retryable -> false
+    is DispatchResult.Success,
+    is DispatchResult.PartialSuccess,
+    is DispatchResult.NonRetryableFailure -> true
+    is DispatchResult.RetryableFailure -> false
   }
 
   /**
@@ -198,13 +212,14 @@ object DispatchUtils {
   /**
    * Pure helper that computes the next `RetryGateState` after a single dispatch result.
    *
-   * - `Success` resets the counter to 0 and leaves the gate alone. The gate either already
-   *   expired (we wouldn't have dispatched otherwise) or was never set — either way, success
-   *   doesn't introduce a new pause.
-   * - `NonRetryable` also resets the counter. A permanent drop isn't a sign that the server
-   *   is unhealthy and shouldn't pause subsequent rounds.
-   * - `Retryable` increments the counter and sets the gate to `now + delay`, where `delay`
-   *   is the server-supplied `retryAfterMs` if present, otherwise `backoff(nextCount)`.
+   * - `Success` and `PartialSuccess` reset the counter to 0 and leave the gate alone. The
+   *   gate either already expired (we wouldn't have dispatched otherwise) or was never set
+   *   — either way, a server response that ACCEPTED the bytes (even if it rejected a subset
+   *   server-side) doesn't introduce a new pause.
+   * - `NonRetryableFailure` also resets the counter. A permanent drop isn't a sign that the
+   *   server is unhealthy and shouldn't pause subsequent rounds.
+   * - `RetryableFailure` increments the counter and sets the gate to `now + delay`, where
+   *   `delay` is the server-supplied `retryAfterMs` if present, otherwise `backoff(nextCount)`.
    *
    * `backoff` is injected so tests can drive it deterministically without going through
    * `computeBackoffDelay`'s random source.
@@ -215,9 +230,11 @@ object DispatchUtils {
     now: Long,
     backoff: (Int) -> Long
   ): RetryGateState = when (result) {
-    is DispatchResult.Success, is DispatchResult.NonRetryable ->
+    is DispatchResult.Success,
+    is DispatchResult.PartialSuccess,
+    is DispatchResult.NonRetryableFailure ->
       currentState.copy(consecutiveRetryableFailures = 0)
-    is DispatchResult.Retryable -> {
+    is DispatchResult.RetryableFailure -> {
       val nextCount = currentState.consecutiveRetryableFailures + 1
       val delay = result.retryAfterMs ?: backoff(nextCount)
       RetryGateState(

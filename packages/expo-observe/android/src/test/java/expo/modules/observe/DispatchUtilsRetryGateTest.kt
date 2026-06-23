@@ -36,9 +36,28 @@ class DispatchUtilsRetryGateTest {
     assertEquals(state.dispatchAfterMs, next.dispatchAfterMs)  // untouched
   }
 
-  /// `NonRetryable` is treated the same as success for gate purposes: a permanent drop
-  /// doesn't suggest the server is unhealthy, so the counter resets and we don't introduce a
-  /// new pause for subsequent batches.
+  /// `PartialSuccess` is treated the same as success for gate purposes: the bytes landed on
+  /// the server, so the gate stays where it is and the counter resets.
+  @Test
+  fun `PartialSuccess resets the counter and leaves the gate alone`() {
+    val state = DispatchUtils.RetryGateState(
+      dispatchAfterMs = now + 60_000L,
+      consecutiveRetryableFailures = 4
+    )
+    val partial = OTPartialSuccess(rejectedDataPoints = 2)
+    val next = DispatchUtils.nextRetryGateState(
+      result = DispatchResult.PartialSuccess(partial),
+      currentState = state,
+      now = now,
+      backoff = stubbedBackoff
+    )
+    assertEquals(0, next.consecutiveRetryableFailures)
+    assertEquals(state.dispatchAfterMs, next.dispatchAfterMs)
+  }
+
+  /// `NonRetryableFailure` is treated the same as success for gate purposes: a permanent
+  /// drop doesn't suggest the server is unhealthy, so the counter resets and we don't
+  /// introduce a new pause for subsequent batches.
   @Test
   fun `NonRetryable resets the counter and leaves the gate alone`() {
     val state = DispatchUtils.RetryGateState(
@@ -46,7 +65,7 @@ class DispatchUtilsRetryGateTest {
       consecutiveRetryableFailures = 2
     )
     val next = DispatchUtils.nextRetryGateState(
-      result = DispatchResult.NonRetryable("HTTP 400"),
+      result = DispatchResult.NonRetryableFailure("HTTP 400"),
       currentState = state,
       now = now,
       backoff = stubbedBackoff
@@ -61,7 +80,7 @@ class DispatchUtilsRetryGateTest {
   @Test
   fun `first retryable with no Retry-After uses computed backoff`() {
     val next = DispatchUtils.nextRetryGateState(
-      result = DispatchResult.Retryable(),
+      result = DispatchResult.RetryableFailure(),
       currentState = DispatchUtils.RetryGateState.initial,
       now = now,
       backoff = stubbedBackoff
@@ -80,7 +99,7 @@ class DispatchUtilsRetryGateTest {
       consecutiveRetryableFailures = 2
     )
     val next = DispatchUtils.nextRetryGateState(
-      result = DispatchResult.Retryable(),
+      result = DispatchResult.RetryableFailure(),
       currentState = state,
       now = now,
       backoff = stubbedBackoff
@@ -94,7 +113,7 @@ class DispatchUtilsRetryGateTest {
   @Test
   fun `retryable with server Retry-After uses the server delay`() {
     val next = DispatchUtils.nextRetryGateState(
-      result = DispatchResult.Retryable(retryAfterMs = 90_000L),
+      result = DispatchResult.RetryableFailure(retryAfterMs = 90_000L),
       currentState = DispatchUtils.RetryGateState.initial,
       now = now,
       backoff = stubbedBackoff
@@ -110,7 +129,7 @@ class DispatchUtilsRetryGateTest {
   @Test
   fun `retryable with zero Retry-After still increments counter`() {
     val next = DispatchUtils.nextRetryGateState(
-      result = DispatchResult.Retryable(retryAfterMs = 0L),
+      result = DispatchResult.RetryableFailure(retryAfterMs = 0L),
       currentState = DispatchUtils.RetryGateState.initial,
       now = now,
       backoff = stubbedBackoff
@@ -126,7 +145,7 @@ class DispatchUtilsRetryGateTest {
   fun `retryable with server Retry-After does not invoke the backoff function`() {
     var backoffCalled = false
     DispatchUtils.nextRetryGateState(
-      result = DispatchResult.Retryable(retryAfterMs = 5_000L),
+      result = DispatchResult.RetryableFailure(retryAfterMs = 5_000L),
       currentState = DispatchUtils.RetryGateState.initial,
       now = now,
       backoff = {
@@ -143,13 +162,13 @@ class DispatchUtilsRetryGateTest {
   @Test
   fun `retryable then retryable then success drives counter back to zero`() {
     val after1 = DispatchUtils.nextRetryGateState(
-      result = DispatchResult.Retryable(),
+      result = DispatchResult.RetryableFailure(),
       currentState = DispatchUtils.RetryGateState.initial,
       now = now,
       backoff = stubbedBackoff
     )
     val after2 = DispatchUtils.nextRetryGateState(
-      result = DispatchResult.Retryable(),
+      result = DispatchResult.RetryableFailure(),
       currentState = after1,
       now = now,
       backoff = stubbedBackoff

@@ -47,7 +47,7 @@ class EventDispatcher(
         ).toJson(prettyPrint = true)
       } catch (e: Exception) {
         Log.w(OBSERVE_TAG, "Encoding metrics request body failed: ${e.message}")
-        continuation.resume(DispatchResult.NonRetryable("encoding error: ${e.message}"))
+        continuation.resume(DispatchResult.NonRetryableFailure("encoding error: ${e.message}"))
         return@suspendCancellableCoroutine Unit
       }
       executePost(continuation, metricsEndpointUrl(), body)
@@ -71,7 +71,7 @@ class EventDispatcher(
         OTLogsRequestBody(resourceLogs = resourceLogs).toJson(prettyPrint = true)
       } catch (e: Exception) {
         Log.w(OBSERVE_TAG, "Encoding logs request body failed: ${e.message}")
-        continuation.resume(DispatchResult.NonRetryable("encoding error: ${e.message}"))
+        continuation.resume(DispatchResult.NonRetryableFailure("encoding error: ${e.message}"))
         return@suspendCancellableCoroutine Unit
       }
       executePost(continuation, logsEndpointUrl(), body)
@@ -109,7 +109,7 @@ class EventDispatcher(
       call.execute()
     } catch (e: Exception) {
       Log.w(OBSERVE_TAG, "Transport error talking to $endpointUrl: ${e.message}")
-      continuation.resume(DispatchResult.Retryable(retryAfterMs = null))
+      continuation.resume(DispatchResult.RetryableFailure(retryAfterMs = null))
       return
     }
 
@@ -125,9 +125,16 @@ class EventDispatcher(
     when (result) {
       is DispatchResult.Success ->
         Log.d(OBSERVE_TAG, "Server responded successfully with ${response.code} and data: $responseBody")
-      is DispatchResult.Retryable ->
+      is DispatchResult.PartialSuccess ->
+        Log.w(
+          OBSERVE_TAG,
+          "Server responded with ${response.code} (partial success, rejected " +
+            "${result.partial.rejectedCount}: ${result.partial.errorMessage ?: "no error message"}) " +
+            "and data: $responseBody"
+        )
+      is DispatchResult.RetryableFailure ->
         Log.w(OBSERVE_TAG, "Server responded with ${response.code} (retryable) and data: $responseBody")
-      is DispatchResult.NonRetryable ->
+      is DispatchResult.NonRetryableFailure ->
         Log.w(
           OBSERVE_TAG,
           "Server responded with ${response.code} (non-retryable, ${result.reason}) and data: $responseBody"

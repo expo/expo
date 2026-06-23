@@ -743,7 +743,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "id2")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.NonRetryable("HTTP 400")
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.NonRetryableFailure("HTTP 400")
 
       val removedIds = mutableListOf<String>()
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
@@ -774,7 +774,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "id2")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Retryable()
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.RetryableFailure()
 
       val manager = createManager()
 
@@ -1057,7 +1057,7 @@ class BaseObservabilityManagerTest {
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
       coEvery { mockEventDispatcher.dispatch(any()) } returns
-        DispatchResult.Retryable(retryAfterMs = 60_000L)
+        DispatchResult.RetryableFailure(retryAfterMs = 60_000L)
 
       val fixedNow = 1_700_000_000_000L
       val manager = createManager(currentTimeMs = { fixedNow })
@@ -1092,7 +1092,7 @@ class BaseObservabilityManagerTest {
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(metricSession)
       coEvery { mockEventDispatcher.dispatch(any()) } returns
-        DispatchResult.Retryable(retryAfterMs = 60_000L)
+        DispatchResult.RetryableFailure(retryAfterMs = 60_000L)
 
       coEvery { mockPendingLogsManager.getAllPendingLogIds() } returns listOf("log-1")
       coEvery { mockSessionManager.getSessionsWithLogs(any()) } returns listOf(logSession)
@@ -1128,7 +1128,7 @@ class BaseObservabilityManagerTest {
       coEvery { mockPendingLogsManager.getAllPendingLogIds() } returns listOf("log-1")
       coEvery { mockSessionManager.getSessionsWithLogs(any()) } returns listOf(logSession)
       coEvery { mockEventDispatcher.dispatchLogs(any()) } returns
-        DispatchResult.Retryable(retryAfterMs = 60_000L)
+        DispatchResult.RetryableFailure(retryAfterMs = 60_000L)
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(metricSession)
@@ -1158,7 +1158,7 @@ class BaseObservabilityManagerTest {
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
       coEvery { mockEventDispatcher.dispatch(any()) } returnsMany listOf(
-        DispatchResult.Retryable(retryAfterMs = 60_000L),
+        DispatchResult.RetryableFailure(retryAfterMs = 60_000L),
         DispatchResult.Success
       )
 

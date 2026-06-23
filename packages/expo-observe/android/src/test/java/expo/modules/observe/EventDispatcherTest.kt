@@ -134,8 +134,8 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryable)
-      assertTrue((result as DispatchResult.NonRetryable).reason.contains("400"))
+      assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryableFailure)
+      assertTrue((result as DispatchResult.NonRetryableFailure).reason.contains("400"))
       assertEquals(1, mockServer.requestCount)
     }
 
@@ -156,7 +156,7 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryable)
+      assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryableFailure)
       assertEquals(1, mockServer.requestCount)
     }
 
@@ -176,10 +176,10 @@ class EventDispatcherTest {
 
       val result = eventDispatcher.dispatch(events)
 
-      assertTrue("expected Retryable, got $result", result is DispatchResult.Retryable)
+      assertTrue("expected Retryable, got $result", result is DispatchResult.RetryableFailure)
       assertEquals(
         DispatchUtils.backoffBaseMs,
-        (result as DispatchResult.Retryable).retryAfterMs
+        (result as DispatchResult.RetryableFailure).retryAfterMs
       )
     }
 
@@ -194,8 +194,8 @@ class EventDispatcherTest {
 
       val result = eventDispatcher.dispatch(listOf(createTestEvent()))
 
-      assertTrue("expected Retryable, got $result", result is DispatchResult.Retryable)
-      assertEquals(null, (result as DispatchResult.Retryable).retryAfterMs)
+      assertTrue("expected Retryable, got $result", result is DispatchResult.RetryableFailure)
+      assertEquals(null, (result as DispatchResult.RetryableFailure).retryAfterMs)
     }
 
   @Test
@@ -292,8 +292,8 @@ class EventDispatcherTest {
 
       val result = eventDispatcher.dispatch(events)
 
-      assertTrue("expected Retryable, got $result", result is DispatchResult.Retryable)
-      assertEquals(null, (result as DispatchResult.Retryable).retryAfterMs)
+      assertTrue("expected Retryable, got $result", result is DispatchResult.RetryableFailure)
+      assertEquals(null, (result as DispatchResult.RetryableFailure).retryAfterMs)
     }
 
   @Test
@@ -381,11 +381,12 @@ class EventDispatcherTest {
     }
 
   @Test
-  fun `dispatch returns NonRetryable on 200 with partial_success that rejected records`() =
+  fun `dispatch returns PartialSuccess on 200 with partial_success that rejected records`() =
     runTest {
       // A 2xx body that includes `partialSuccess` with rejectedDataPoints > 0 means the
-      // collector permanently refused those rows. Treat as NonRetryable so the caller drops
-      // them instead of looping.
+      // collector accepted the batch but rejected those rows server-side. Surface as
+      // `PartialSuccess` so the caller logs the per-record rejection without describing it
+      // as a wholesale drop.
       mockServer.enqueue(
         MockResponse()
           .setResponseCode(200)
@@ -394,9 +395,12 @@ class EventDispatcherTest {
 
       val result = eventDispatcher.dispatch(listOf(createTestEvent()))
 
-      assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryable)
-      assertTrue((result as DispatchResult.NonRetryable).reason.contains("rejected 3"))
-      assertTrue(result.reason.contains("metric_kind_mismatch"))
+      assertEquals(
+        DispatchResult.PartialSuccess(
+          OTPartialSuccess(rejectedDataPoints = 3, errorMessage = "metric_kind_mismatch")
+        ),
+        result
+      )
     }
 
   // Helper function to create test events

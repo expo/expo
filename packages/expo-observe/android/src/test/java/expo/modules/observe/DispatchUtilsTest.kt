@@ -39,21 +39,23 @@ class DispatchUtilsClassifyResponseTest {
   }
 
   @Test
-  fun `2xx with partialSuccess rejectedDataPoints returns NonRetryable`() {
+  fun `2xx with partialSuccess rejectedDataPoints returns PartialSuccess`() {
     val body = """{"partialSuccess":{"rejectedDataPoints":3,"errorMessage":"metric_kind_mismatch"}}"""
     val result = DispatchUtils.classifyResponse(
       statusCode = 200,
       retryAfterHeader = null,
       responseBody = body
     )
-    assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryable)
-    val reason = (result as DispatchResult.NonRetryable).reason
-    assertTrue(reason.contains("rejected 3"))
-    assertTrue(reason.contains("metric_kind_mismatch"))
+    assertEquals(
+      DispatchResult.PartialSuccess(
+        OTPartialSuccess(rejectedDataPoints = 3, errorMessage = "metric_kind_mismatch")
+      ),
+      result
+    )
   }
 
   @Test
-  fun `2xx with partialSuccess rejectedLogRecords returns NonRetryable`() {
+  fun `2xx with partialSuccess rejectedLogRecords returns PartialSuccess`() {
     // The same response struct serves both metrics and logs endpoints; the logs response uses
     // `rejectedLogRecords` instead of `rejectedDataPoints`.
     val body = """{"partialSuccess":{"rejectedLogRecords":1,"errorMessage":"log_too_large"}}"""
@@ -62,10 +64,12 @@ class DispatchUtilsClassifyResponseTest {
       retryAfterHeader = null,
       responseBody = body
     )
-    assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryable)
-    val reason = (result as DispatchResult.NonRetryable).reason
-    assertTrue(reason.contains("rejected 1"))
-    assertTrue(reason.contains("log_too_large"))
+    assertEquals(
+      DispatchResult.PartialSuccess(
+        OTPartialSuccess(rejectedLogRecords = 1, errorMessage = "log_too_large")
+      ),
+      result
+    )
   }
 
   @Test
@@ -112,7 +116,7 @@ class DispatchUtilsClassifyResponseTest {
       retryAfterHeader = null,
       responseBody = null
     )
-    assertEquals(DispatchResult.Retryable(retryAfterMs = null), result)
+    assertEquals(DispatchResult.RetryableFailure(retryAfterMs = null), result)
   }
 
   @Test
@@ -123,7 +127,7 @@ class DispatchUtilsClassifyResponseTest {
       retryAfterHeader = "120",
       responseBody = null
     )
-    assertEquals(DispatchResult.Retryable(retryAfterMs = 120_000L), result)
+    assertEquals(DispatchResult.RetryableFailure(retryAfterMs = 120_000L), result)
   }
 
   @Test
@@ -135,7 +139,7 @@ class DispatchUtilsClassifyResponseTest {
       retryAfterHeader = "5",
       responseBody = null
     )
-    assertEquals(DispatchResult.Retryable(retryAfterMs = DispatchUtils.backoffBaseMs), result)
+    assertEquals(DispatchResult.RetryableFailure(retryAfterMs = DispatchUtils.backoffBaseMs), result)
   }
 
   @Test
@@ -148,7 +152,7 @@ class DispatchUtilsClassifyResponseTest {
       )
       assertTrue(
         "status $code should be Retryable, got $result",
-        result is DispatchResult.Retryable
+        result is DispatchResult.RetryableFailure
       )
     }
   }
@@ -163,8 +167,8 @@ class DispatchUtilsClassifyResponseTest {
       responseBody = "bad request",
       bodyExcerpt = { "bad request" }
     )
-    assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryable)
-    val reason = (result as DispatchResult.NonRetryable).reason
+    assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryableFailure)
+    val reason = (result as DispatchResult.NonRetryableFailure).reason
     assertTrue(reason.contains("400"))
     assertTrue(reason.contains("bad request"))
   }
@@ -176,7 +180,7 @@ class DispatchUtilsClassifyResponseTest {
       retryAfterHeader = null,
       responseBody = null
     )
-    assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryable)
+    assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryableFailure)
   }
 
   @Test
@@ -186,7 +190,7 @@ class DispatchUtilsClassifyResponseTest {
       retryAfterHeader = null,
       responseBody = null
     )
-    assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryable)
+    assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryableFailure)
   }
 
   @Test
@@ -196,7 +200,7 @@ class DispatchUtilsClassifyResponseTest {
       retryAfterHeader = null,
       responseBody = null
     )
-    assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryable)
+    assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryableFailure)
   }
 
   @Test
@@ -211,7 +215,7 @@ class DispatchUtilsClassifyResponseTest {
       )
       assertTrue(
         "status $code should be NonRetryable, got $result",
-        result is DispatchResult.NonRetryable
+        result is DispatchResult.NonRetryableFailure
       )
     }
   }
@@ -247,8 +251,17 @@ class DispatchUtilsShouldRemovePendingTest {
   /// rows up again. This is what keeps an in-flight outage from losing telemetry.
   @Test
   fun `Retryable keeps pending IDs`() {
-    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.Retryable()))
-    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.Retryable(retryAfterMs = 30_000L)))
+    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure()))
+    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure(retryAfterMs = 30_000L)))
+  }
+
+  /// `PartialSuccess` removes pending IDs like `Success` does: the bytes landed on the
+  /// server (a subset was rejected server-side, but the batch as a whole was accepted), so
+  /// re-sending the same rows would just trip the same rejection.
+  @Test
+  fun `PartialSuccess removes pending IDs`() {
+    val partial = OTPartialSuccess(rejectedDataPoints = 1, errorMessage = "x")
+    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.PartialSuccess(partial)))
   }
 
   /// The acceptance-criterion behavior: a non-retryable response (e.g. 400, 403) drops the
@@ -256,7 +269,7 @@ class DispatchUtilsShouldRemovePendingTest {
   /// server would refuse them again, wedging the queue indefinitely.
   @Test
   fun `NonRetryable removes pending IDs`() {
-    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.NonRetryable("HTTP 400")))
+    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.NonRetryableFailure("HTTP 400")))
   }
 }
 
