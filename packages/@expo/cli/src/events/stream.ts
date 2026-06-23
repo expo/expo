@@ -22,6 +22,7 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
 
   #writing = false;
   #ending = false;
+  #closing = false;
   #flushPending = false;
   #destroyed = false;
   #opening = false;
@@ -76,7 +77,11 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
         this.#len -= this.#output.length;
         this.#output = '';
 
-        if (this.#lines.length - this.#head > this.#partialLine) {
+        if (this.#closing && !this.#ending) {
+          // destroy(): the in-flight write has landed, drop any queued lines and close
+          this.#writing = false;
+          this.#close();
+        } else if (this.#lines.length - this.#head > this.#partialLine) {
           this.#writeLine();
         } else if (this.#ending) {
           this.#writing = false;
@@ -99,7 +104,12 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
           this.#output = '';
         }
 
-        if (this.#output || this.#lines.length - this.#head > this.#partialLine) {
+        if (this.#output) {
+          this.#writeLine();
+        } else if (this.#closing && !this.#ending) {
+          this.#writing = false;
+          this.#close();
+        } else if (this.#lines.length - this.#head > this.#partialLine) {
           this.#writeLine();
         } else if (this.#ending) {
           this.#writing = false;
@@ -131,6 +141,8 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
         this.emit('ready');
         if (this.#destroyed) {
           // do nothing when we're already closing the file
+        } else if (this.#closing) {
+          this.#close();
         } else if (
           (!this.writing && this.#lines.length - this.#head > this.#partialLine) ||
           this.#flushPending
@@ -235,7 +247,12 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
   }
 
   destroy() {
-    if (!this.#destroyed) this.#close();
+    if (this.#destroyed || this.#closing) {
+    } else if (this.#writing || this.#opening) {
+      this.#closing = true;
+    } else {
+      this.#close();
+    }
   }
 
   flush(cb?: (error?: Error | null) => void) {
