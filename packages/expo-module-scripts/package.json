@@ -10,12 +10,6 @@
   },
   "exports": {
     "./package.json": "./package.json",
-    "./eslintrc.base.js": {
-      "require": "./eslintrc.base.cjs"
-    },
-    "./eslint.config.base": {
-      "require": "./eslint.config.base.cjs"
-    },
     "./oxlint.config.base": {
       "import": "./oxlint.config.base.js"
     },
@@ -107,9 +101,7 @@
       "./bin/expo-module-clean",
       "./bin/expo-module-configure",
       "./bin/expo-module-depscheck",
-      "./bin/expo-module-eslint",
       "./bin/expo-module-jest",
-      "./bin/expo-module-lint",
       "./bin/expo-module-prepare",
       "./bin/expo-module-prepublishOnly",
       "./bin/expo-module-readme",
