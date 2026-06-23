@@ -55,7 +55,7 @@
   "scripts": {
     "start": "expo start",
     "lint": "oxlint --config oxlint.config.mjs .",
-    "format": "oxfmt .",
+    "format": "expo-module format",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc",
     "clean": "run-p clean:lib clean:bundle",

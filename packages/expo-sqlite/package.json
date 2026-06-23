@@ -53,7 +53,7 @@
     "bundle:webui": "pushd dev-plugin-webui && bun run build && popd && rm -rf dev-plugin-dist && mv dev-plugin-webui/dist dev-plugin-dist",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
-    "format": "oxfmt .",
+    "format": "expo-module format",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",

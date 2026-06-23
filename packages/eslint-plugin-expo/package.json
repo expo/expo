@@ -21,7 +21,7 @@
   "main": "./build/index.js",
   "scripts": {
     "lint": "oxlint --config oxlint.config.mjs .",
-    "format": "oxfmt .",
+    "format": "expo-module format",
     "test": "jest",
     "build": "expo-build cjs:src",
     "depscheck": "expo-module depscheck",

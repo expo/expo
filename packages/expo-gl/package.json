@@ -27,7 +27,7 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
-    "format": "oxfmt .",
+    "format": "expo-module format",
     "test": "jest",
     "test:snapshots": "jest --updateSnapshot",
     "prepublishOnly": "expo-module prepublishOnly",

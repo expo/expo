@@ -43,7 +43,7 @@
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "lint:fix": "oxlint --config oxlint.config.mjs . --fix",
-    "format": "oxfmt .",
+    "format": "expo-module format",
     "test": "jest",
     "test:e2e-cli": "jest --config e2e/cli/jest.config.js",
     "test:e2e-plugin": "jest --config e2e/plugin/jest.config.js",

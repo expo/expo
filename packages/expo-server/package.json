@@ -87,7 +87,7 @@
     "clean": "rimraf build",
     "prepublishOnly": "run-s clean build",
     "lint": "oxlint --config oxlint.config.mjs .",
-    "format": "oxfmt .",
+    "format": "expo-module format",
     "test": "jest",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"

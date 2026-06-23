@@ -192,7 +192,7 @@
     "build": "../expo-module-scripts/bin/expo-build src",
     "clean": "rimraf build",
     "lint": "oxlint --config oxlint.config.mjs .",
-    "format": "oxfmt .",
+    "format": "expo-module format",
     "test": "jest",
     "prepublishOnly": "run-s clean build",
     "depscheck": "expo-module depscheck",

@@ -44,7 +44,7 @@
     "clean": "expo-module clean",
     "generate": "node ./scripts/generate.js",
     "lint": "oxlint --config oxlint.config.mjs .",
-    "format": "oxfmt .",
+    "format": "expo-module format",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "jest",
     "depscheck": "expo-module depscheck",

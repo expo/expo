@@ -87,7 +87,7 @@
   },
   "scripts": {
     "lint": "oxlint --config oxlint.config.mjs .",
-    "format": "oxfmt .",
+    "format": "expo-module format",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {

@@ -28,7 +28,7 @@
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
-    "format": "oxfmt .",
+    "format": "expo-module format",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "jest",
     "depscheck": "expo-module depscheck",
