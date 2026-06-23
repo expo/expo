@@ -81,7 +81,8 @@ it('renders tabs correctly', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
+  // Eager preload mounts every tab; the preload effect adds one extra render pass, so 2 tabs => 4 renders.
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
 });
 
 describe('Tabs visibility', () => {
@@ -101,7 +102,8 @@ describe('Tabs visibility', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(screen.queryByTestId('third')).toBeNull();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // 2 mounted tabs, each rendered twice under eager preload.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
   });
 
   it('does not render hidden tabs', () => {
@@ -126,7 +128,8 @@ describe('Tabs visibility', () => {
     expect(screen.queryByTestId('third')).toBeNull();
     expect(screen.queryByTestId('fourth')).toBeNull();
     expect(screen.getByTestId('fifth')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(3);
+    // 3 visible tabs, each rendered twice under eager preload.
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
   });
 
   it('does not render tabs, when route does not exist', () => {
@@ -165,10 +168,11 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)index$/);
     expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)second$/);
-    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)index$/);
   });
 
@@ -186,10 +190,11 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)second$/);
     expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)index$/);
-    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)index$/);
   });
 
@@ -227,7 +232,8 @@ describe('First focused tab', () => {
       expect(screen.getByTestId('first')).toBeVisible();
       expect(screen.getByTestId('second')).toBeVisible();
       expect(screen.queryByTestId('index')).toBeNull();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      // Eager preload adds one extra render pass of the tabs view.
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -271,10 +277,11 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)first$/);
     expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)second$/);
-    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)second$/);
   });
 
@@ -300,10 +307,11 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)first$/);
     expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)second$/);
-    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)second$/);
   });
 
@@ -359,10 +367,11 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)index$/);
     expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)second$/);
-    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)index$/);
 
     TabsScreen.mockClear();
@@ -955,7 +964,8 @@ describe('Misc', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(1);
+    // Eager preload adds one extra render pass of the host.
+    expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].tabBarHidden).toBe(expected);
   });
 });

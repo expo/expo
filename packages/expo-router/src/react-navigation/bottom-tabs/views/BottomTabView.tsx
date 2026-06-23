@@ -227,17 +227,16 @@ export function BottomTabView(props: Props) {
         {routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const {
-            lazy = true,
             animation = 'none',
             sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation]!.sceneStyleInterpolator,
           } = descriptor.options;
           const isFocused = state.index === index;
-          const isPreloaded = state.preloadedRouteKeys.includes(route.key);
+          // A route present in `state.routes` but never focused in this view is a
+          // preloaded-but-unvisited tab. Presence is the loaded/preloaded signal now.
+          const isPreloaded = !isFocused && !loaded.includes(route.key);
 
-          if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
-            // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
-            return null;
-          }
+          // Every route present in `state.routes` is meant to render (it was either
+          // navigated to or preloaded), so the lazy gate never trips here.
 
           const {
             freezeOnBlur,

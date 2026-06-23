@@ -88,7 +88,9 @@ describe('Native Bottom Tabs Navigation', () => {
       hidden: () => <View testID="hidden" />,
       notSpecified: () => <View testID="not-specified" />,
     });
-    expectOneRender();
+    // Initial mount is eager: every tab mounts and the preload effect adds one extra render pass,
+    // so the two visible tabs render twice (4 calls) rather than once.
+    expectTwoRenders();
     expectIndexTabFocused();
     TabsScreen.mockClear();
   });

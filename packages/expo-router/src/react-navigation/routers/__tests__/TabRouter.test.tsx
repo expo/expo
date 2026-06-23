@@ -12,15 +12,19 @@ import {
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
 
-// Route keys are now deterministic (see `getRouteKey`): with no navigator `id` passed, a generated
-// key is just the route name (index 0), or `name-N` for repeated same-name routes. Container keys
-// still use the mocked nanoid (`tab-test`). Persisted keys fed into rehydration/route-name-change
-// are preserved verbatim.
+// New model: a route's presence in `state.routes` IS the loaded/preloaded signal, so `routes` is a
+// SUBSET of `routeNames`. getInitialState materializes only the focused route (plus the back-stack
+// anchor required by firstRoute/initialRoute); navigating to an absent route creates it; PRELOAD
+// inserts a route without focusing it. There is no `preloadedRouteKeys` field anymore.
+//
+// Route keys are deterministic (see `getRouteKey`): with no navigator `pathname`, a generated key is
+// just the route name (index 0), or `name-N` for repeated same-name routes. Container keys still use
+// the mocked nanoid (`tab-test`). Persisted keys fed into rehydration/route-name-change are kept.
 const names = (state: { routes: { name: string }[] }) => state.routes.map((r) => r.name);
 
 // --- getInitialState ---------------------------------------------------------
 
-test('gets initial state focusing the first route', () => {
+test('gets initial state materializing only the focused route', () => {
   const router = TabRouter({});
 
   expect(
@@ -37,18 +41,13 @@ test('gets initial state focusing the first route', () => {
     index: 0,
     key: 'tab-test',
     routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
-      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
-    ],
+    routes: [{ key: 'bar', name: 'bar' }],
     stale: false,
-    preloadedRouteKeys: [],
   });
 });
 
 test('gets initial state with initialRouteName, anchoring the first route', () => {
-  // anchor = first route (bar), focused = baz -> [bar, baz, qux] index 1.
+  // anchor = first route (bar), focused = baz -> [bar, baz] index 1 (subset of routeNames).
   const router = TabRouter({ initialRouteName: 'baz' });
 
   expect(
@@ -68,15 +67,13 @@ test('gets initial state with initialRouteName, anchoring the first route', () =
     routes: [
       { key: 'bar', name: 'bar' },
       { key: 'baz', name: 'baz', params: { answer: 42 } },
-      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   });
 });
 
 test('gets initial state placing the initial route after the firstRoute anchor', () => {
-  // declaration [bar, baz, qux], anchor = bar, focused = qux -> [bar, qux, baz] index 1.
+  // declaration [bar, baz, qux], anchor = bar, focused = qux -> subset [bar, qux] index 1.
   const router = TabRouter({ backBehavior: 'firstRoute', initialRouteName: 'qux' });
 
   const state = router.getInitialState({
@@ -86,13 +83,12 @@ test('gets initial state placing the initial route after the firstRoute anchor',
     routeGetIdList: {},
   });
 
-  expect(names(state)).toEqual(['bar', 'qux', 'baz']);
+  expect(names(state)).toEqual(['bar', 'qux']);
   expect(state.index).toBe(1);
 });
 
 test('gets initial state anchored on the initial route with initialRoute back behavior', () => {
-  // declaration [a, b, c], initialRoute b, focused = b (the initial = anchor) ->
-  // [b, a, c] index 0.
+  // declaration [a, b, c], initialRoute b, focused = b (initial === anchor) -> subset [b] index 0.
   const router = TabRouter({ backBehavior: 'initialRoute', initialRouteName: 'b' });
 
   const state = router.getInitialState({
@@ -102,12 +98,12 @@ test('gets initial state anchored on the initial route with initialRoute back be
     routeGetIdList: {},
   });
 
-  expect(names(state)).toEqual(['b', 'a', 'c']);
+  expect(names(state)).toEqual(['b']);
   expect(state.index).toBe(0);
 });
 
-test('gets initial state in declaration order for order and none back behaviors', () => {
-  // declaration [a, b, c], initial c -> stay [a, b, c], index 2.
+test('gets initial state with only the focused route for order and none back behaviors', () => {
+  // declaration [a, b, c], initial c -> subset [c], index 0.
   for (const backBehavior of ['order', 'none'] as const) {
     const router = TabRouter({ backBehavior, initialRouteName: 'c' });
 
@@ -119,22 +115,17 @@ test('gets initial state in declaration order for order and none back behaviors'
         routeGetIdList: {},
       })
     ).toEqual({
-      index: 2,
+      index: 0,
       key: 'tab-test',
       routeNames: ['a', 'b', 'c'],
-      routes: [
-        { key: 'a', name: 'a' },
-        { key: 'b', name: 'b' },
-        { key: 'c', name: 'c' },
-      ],
+      routes: [{ key: 'c', name: 'c' }],
       stale: false,
-      preloadedRouteKeys: [],
     });
   }
 });
 
-test('gets initial state moving a non-first initial route to the front with history', () => {
-  // declaration [a, b, c], initial c, history -> [c, a, b] index 0.
+test('gets initial state with only the focused route for history', () => {
+  // declaration [a, b, c], initial c, history -> subset [c] index 0.
   const router = TabRouter({ backBehavior: 'history', initialRouteName: 'c' });
 
   expect(
@@ -148,37 +139,8 @@ test('gets initial state moving a non-first initial route to the front with hist
     index: 0,
     key: 'tab-test',
     routeNames: ['a', 'b', 'c'],
-    routes: [
-      { key: 'c', name: 'c' },
-      { key: 'a', name: 'a' },
-      { key: 'b', name: 'b' },
-    ],
+    routes: [{ key: 'c', name: 'c' }],
     stale: false,
-    preloadedRouteKeys: [],
-  });
-});
-
-test('gets initial state in declaration order when the initial route is already first with history', () => {
-  const router = TabRouter({ backBehavior: 'history' });
-
-  expect(
-    router.getInitialState({
-      routeNames: ['a', 'b', 'c'],
-      routeParamList: {},
-      pathname: undefined,
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    index: 0,
-    key: 'tab-test',
-    routeNames: ['a', 'b', 'c'],
-    routes: [
-      { key: 'a', name: 'a' },
-      { key: 'b', name: 'b' },
-      { key: 'c', name: 'c' },
-    ],
-    stale: false,
-    preloadedRouteKeys: [],
   });
 });
 
@@ -192,14 +154,14 @@ test('derives deterministic route keys from the navigator pathname so tabs are p
     routeGetIdList: {},
   });
 
-  // Each tab name appears once (index 0), so its key is a stable function of pathname + name —
-  // a tab bar can compute `/(tabs)-home` before the route is materialized.
-  expect(state.routes.map((r) => r.key)).toEqual(['/(tabs)-home', '/(tabs)-settings']);
+  // The focused tab's key is a stable function of pathname + name — a tab bar can compute
+  // `/(tabs)-home` before the route is materialized.
+  expect(state.routes.map((r) => r.key)).toEqual(['/(tabs)-home']);
 });
 
 // --- getRehydratedState ------------------------------------------------------
 
-test('rehydrates partial state, appending newly-declared tabs at the end', () => {
+test('rehydrates the persisted subset without appending undeclared-yet-absent tabs', () => {
   const router = TabRouter({});
 
   const options: RouterConfigOptions = {
@@ -212,9 +174,8 @@ test('rehydrates partial state, appending newly-declared tabs at the end', () =>
     routeGetIdList: {},
   };
 
-  // Persisted [bar, qux] (baz missing). Persisted keys are preserved, but firstRoute
-  // re-arranges into the declaration-order back-stack: anchor = first declared (bar),
-  // focused = bar -> [bar, baz, qux] index 0.
+  // Persisted [bar, qux] (baz never loaded). routes stays the persisted subset; firstRoute
+  // keeps the anchor (bar) leading. Focused falls back to first -> [bar, qux] index 0.
   expect(
     router.getRehydratedState(
       {
@@ -231,15 +192,13 @@ test('rehydrates partial state, appending newly-declared tabs at the end', () =>
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
       { key: 'bar-0', name: 'bar' },
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
       { key: 'qux-1', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   });
 
-  // Single persisted tab baz; missing tabs appended in declaration order. firstRoute
-  // anchor = first declared (bar), focused = baz -> [bar, baz, qux] index 1.
+  // Single persisted tab baz. firstRoute anchor = first declared (bar) is added in front of
+  // the focused baz -> subset [bar, baz] index 1.
   expect(
     router.getRehydratedState(
       {
@@ -254,14 +213,12 @@ test('rehydrates partial state, appending newly-declared tabs at the end', () =>
     routes: [
       { key: 'bar', name: 'bar' },
       { key: 'baz-0', name: 'baz', params: { answer: 42 } },
-      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   });
 });
 
-test('rehydrates with history, preserving persisted order and indexing by focused name', () => {
+test('rehydrates with history, preserving the persisted subset and indexing by focused name', () => {
   const router = TabRouter({ backBehavior: 'history' });
 
   const options: RouterConfigOptions = {
@@ -274,8 +231,7 @@ test('rehydrates with history, preserving persisted order and indexing by focuse
     routeGetIdList: {},
   };
 
-  // history keeps the persisted visit order; missing baz appended at the end.
-  // Focused persisted index 0 = qux -> position 0.
+  // history keeps the persisted subset verbatim; focused persisted index 0 = qux -> position 0.
   expect(
     router.getRehydratedState(
       {
@@ -294,10 +250,8 @@ test('rehydrates with history, preserving persisted order and indexing by focuse
     routes: [
       { key: 'qux-9', name: 'qux', params: { name: 'Jane' } },
       { key: 'bar-9', name: 'bar' },
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   });
 
   // Focused persisted index 1 = bar -> resolves to bar's position 1.
@@ -319,13 +273,11 @@ test('rehydrates with history, preserving persisted order and indexing by focuse
     routes: [
       { key: 'qux-9', name: 'qux', params: { name: 'Jane' } },
       { key: 'bar-9', name: 'bar' },
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   });
 
-  // Empty persisted routes -> declaration order, index falls back to 0.
+  // Empty persisted routes -> materialize the first declared route, index 0.
   expect(
     router.getRehydratedState(
       {
@@ -338,13 +290,8 @@ test('rehydrates with history, preserving persisted order and indexing by focuse
     index: 0,
     key: 'tab-test',
     routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
-      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
-    ],
+    routes: [{ key: 'bar', name: 'bar' }],
     stale: false,
-    preloadedRouteKeys: [],
   });
 });
 
@@ -361,7 +308,6 @@ test("doesn't rehydrate state if it's not stale", () => {
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   };
 
   expect(
@@ -374,7 +320,7 @@ test("doesn't rehydrate state if it's not stale", () => {
   ).toBe(state);
 });
 
-test('rehydrates with history, preserving persisted route order verbatim', () => {
+test('rehydrates with history, dropping persisted routes whose name no longer exists', () => {
   const router = TabRouter({ backBehavior: 'history', initialRouteName: 'bar' });
 
   const options: RouterConfigOptions = {
@@ -408,18 +354,54 @@ test('rehydrates with history, preserving persisted route order verbatim', () =>
       { key: 'qux-0', name: 'qux' },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   });
+});
+
+test('rehydrates empty persisted state honoring initialRouteName/back behavior (no spurious anchor)', () => {
+  // backBehavior initialRoute + non-first initial (b). Nothing persisted survives, so the result
+  // must match getInitialState: focus the initial route, no extra anchor route.
+  const router = TabRouter({ backBehavior: 'initialRoute', initialRouteName: 'b' });
+
+  const state = router.getRehydratedState(
+    { stale: true, routes: [] },
+    {
+      routeNames: ['a', 'b', 'c'],
+      routeParamList: {},
+      pathname: undefined,
+      routeGetIdList: {},
+    }
+  );
+
+  expect(names(state)).toEqual(['b']);
+  expect(state.index).toBe(0);
+});
+
+test('rehydrates empty persisted state with firstRoute matching getInitialState', () => {
+  const router = TabRouter({ backBehavior: 'firstRoute', initialRouteName: 'c' });
+  const options: RouterConfigOptions = {
+    routeNames: ['a', 'b', 'c'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  const rehydrated = router.getRehydratedState({ stale: true, routes: [] }, options);
+  const initial = router.getInitialState(options);
+
+  // firstRoute anchor (a) + initial focused (c) -> subset [a, c] index 1, same as a fresh start.
+  expect(names(rehydrated)).toEqual(['a', 'c']);
+  expect(rehydrated.index).toBe(1);
+  expect(names(rehydrated)).toEqual(names(initial));
+  expect(rehydrated.index).toBe(initial.index);
 });
 
 // --- getStateForRouteNamesChange ---------------------------------------------
 
-test('keeps surviving order and appends new tabs on route names change with history', () => {
+test('keeps the surviving subset and drops removed tabs on route names change with history', () => {
   const router = TabRouter({ backBehavior: 'history' });
 
-  // Surviving tabs (baz, qux) keep their existing order; new tabs (foo, fiz)
-  // appended at the end in declaration order. Focused bar removed -> fall back to
-  // first rebuilt tab (baz) at index 0.
+  // Surviving tabs (baz, qux) keep their existing order; new tabs are NOT materialized (presence
+  // is the loaded signal). Focused bar removed -> fall back to the first surviving tab (baz).
   expect(
     router.getStateForRouteNamesChange(
       {
@@ -432,7 +414,6 @@ test('keeps surviving order and appends new tabs on route names change with hist
           { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
         ],
         stale: false,
-        preloadedRouteKeys: [],
       },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
@@ -452,14 +433,11 @@ test('keeps surviving order and appends new tabs on route names change with hist
     routes: [
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'foo', name: 'foo' },
-      { key: 'fiz', name: 'fiz', params: { fruit: 'apple' } },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   });
 
-  // No surviving tabs -> all new, declaration order.
+  // No surviving tabs -> materialize the first declared route.
   expect(
     router.getStateForRouteNamesChange(
       {
@@ -471,7 +449,6 @@ test('keeps surviving order and appends new tabs on route names change with hist
           { key: 'baz-test', name: 'baz', params: { answer: 42 } },
         ],
         stale: false,
-        preloadedRouteKeys: [],
       },
       {
         routeNames: ['foo', 'fiz'],
@@ -485,19 +462,15 @@ test('keeps surviving order and appends new tabs on route names change with hist
     index: 0,
     key: 'tab-test',
     routeNames: ['foo', 'fiz'],
-    routes: [
-      { key: 'foo', name: 'foo' },
-      { key: 'fiz', name: 'fiz' },
-    ],
+    routes: [{ key: 'foo', name: 'foo' }],
     stale: false,
-    preloadedRouteKeys: [],
   });
 });
 
 test('preserves the focused route and indexes by name on route names change with history', () => {
   const router = TabRouter({ backBehavior: 'history' });
 
-  // Focused baz survives; surviving baz, qux keep old order (baz then qux), so
+  // Focused baz survives; surviving baz, qux keep their old order (baz then qux), so the
   // focused baz lands at index 0.
   expect(
     router.getStateForRouteNamesChange(
@@ -511,7 +484,6 @@ test('preserves the focused route and indexes by name on route names change with
           { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
         ],
         stale: false,
-        preloadedRouteKeys: [],
       },
       {
         routeNames: ['qux', 'foo', 'fiz', 'baz'],
@@ -531,20 +503,17 @@ test('preserves the focused route and indexes by name on route names change with
     routes: [
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'foo', name: 'foo' },
-      { key: 'fiz', name: 'fiz', params: { fruit: 'apple' } },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   });
 });
 
-test('appends key-changed tabs at the end on route names change', () => {
+test('drops key-changed tabs from the subset on route names change', () => {
   const router = TabRouter({ backBehavior: 'history' });
 
-  // bar is listed in routeKeyChanges -> treated as new and appended at the end
-  // with a fresh key, even though its name still exists. Focused name is still bar
-  // -> resolves by name to bar's new position (2).
+  // bar is listed in routeKeyChanges -> treated as removed and dropped from the present subset
+  // (it can be re-created on the next navigate). Focused name was bar -> falls back to the first
+  // surviving route (baz).
   expect(
     router.getStateForRouteNamesChange(
       {
@@ -557,7 +526,6 @@ test('appends key-changed tabs at the end on route names change', () => {
           { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
         ],
         stale: false,
-        preloadedRouteKeys: [],
       },
       {
         routeNames: ['bar', 'baz', 'qux'],
@@ -568,25 +536,23 @@ test('appends key-changed tabs at the end on route names change', () => {
       }
     )
   ).toEqual({
-    index: 2,
+    index: 0,
     key: 'tab-test',
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'bar', name: 'bar', params: undefined },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   });
 });
 
-test('re-arranges the back stack around the anchor on route names change with firstRoute', () => {
+test('re-arranges the present subset around the anchor on route names change with firstRoute', () => {
   const router = TabRouter({ backBehavior: 'firstRoute' });
 
-  // Focused baz survives. Surviving order is [baz, qux]; rebuilt with appended
-  // foo, fiz -> [baz, qux, foo, fiz]. firstRoute anchor = first declared (qux),
-  // focused = baz -> [qux, baz, foo, fiz] index 1.
+  // Focused baz survives. Surviving subset is [baz, qux]. firstRoute anchor = first declared
+  // present route. Declaration order is [qux, baz, foo, fiz]; among the present subset, qux comes
+  // first, so anchor = qux, focused = baz -> [qux, baz] index 1.
   expect(
     router.getStateForRouteNamesChange(
       {
@@ -599,7 +565,6 @@ test('re-arranges the back stack around the anchor on route names change with fi
           { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
         ],
         stale: false,
-        preloadedRouteKeys: [],
       },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
@@ -616,15 +581,12 @@ test('re-arranges the back stack around the anchor on route names change with fi
     routes: [
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'foo', name: 'foo' },
-      { key: 'fiz', name: 'fiz' },
     ],
     stale: false,
-    preloadedRouteKeys: [],
   });
 });
 
-test('falls back to the first rebuilt tab when the focused route is removed on route names change', () => {
+test('falls back to the first surviving tab when the focused route is removed on route names change', () => {
   const router = TabRouter({ backBehavior: 'history' });
 
   expect(
@@ -639,7 +601,6 @@ test('falls back to the first rebuilt tab when the focused route is removed on r
           { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
         ],
         stale: false,
-        preloadedRouteKeys: [],
       },
       {
         routeNames: ['qux', 'foo', 'fiz'],
@@ -656,19 +617,68 @@ test('falls back to the first rebuilt tab when the focused route is removed on r
     index: 0,
     key: 'tab-test',
     routeNames: ['qux', 'foo', 'fiz'],
-    routes: [
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'foo', name: 'foo' },
-      { key: 'fiz', name: 'fiz', params: { fruit: 'apple' } },
-    ],
+    routes: [{ key: 'qux-test', name: 'qux', params: { name: 'Jane' } }],
     stale: false,
-    preloadedRouteKeys: [],
   });
 });
 
-// --- navigate / JUMP_TO: order keeps declaration layout ----------------------
+test('route names change with no survivors honors initialRouteName/back behavior (no spurious anchor)', () => {
+  // backBehavior initialRoute + non-first initial (b). All present routes are dropped, so the
+  // result must match getInitialState: focus the initial route, no extra anchor route.
+  const router = TabRouter({ backBehavior: 'initialRoute', initialRouteName: 'b' });
 
-test('navigates keeping declaration order and focusing the target with order', () => {
+  const state = router.getStateForRouteNamesChange(
+    {
+      index: 0,
+      key: 'tab-test',
+      routeNames: ['x', 'y'],
+      routes: [
+        { key: 'x-test', name: 'x' },
+        { key: 'y-test', name: 'y' },
+      ],
+      stale: false,
+    },
+    {
+      routeNames: ['a', 'b', 'c'],
+      routeParamList: {},
+      pathname: undefined,
+      routeGetIdList: {},
+      routeKeyChanges: [],
+    }
+  );
+
+  expect(names(state)).toEqual(['b']);
+  expect(state.index).toBe(0);
+});
+
+test('route names change with no survivors and firstRoute focuses the first declared route', () => {
+  const router = TabRouter({ backBehavior: 'firstRoute', initialRouteName: 'c' });
+
+  const state = router.getStateForRouteNamesChange(
+    {
+      index: 0,
+      key: 'tab-test',
+      routeNames: ['x', 'y'],
+      routes: [{ key: 'x-test', name: 'x' }],
+      stale: false,
+    },
+    {
+      routeNames: ['a', 'b', 'c'],
+      routeParamList: {},
+      pathname: undefined,
+      routeGetIdList: {},
+      routeKeyChanges: [],
+    }
+  );
+
+  // firstRoute anchor (a) + initial focused (c) -> subset [a, c] index 1.
+  expect(names(state)).toEqual(['a', 'c']);
+  expect(state.index).toBe(1);
+});
+
+// --- navigate / JUMP_TO: order keeps declaration layout of present routes -----
+
+test('navigates keeping present order and focusing the target with order', () => {
   const router = TabRouter({ backBehavior: 'order' });
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar'],
@@ -677,12 +687,11 @@ test('navigates keeping declaration order and focusing the target with order', (
     routeGetIdList: {},
   };
 
-  // Navigate baz (declaration position 0). routes stay [baz, bar]; index 0.
+  // Navigate baz (already present). routes stay [baz, bar]; index 0.
   expect(
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 1,
         routeNames: ['baz', 'bar'],
@@ -696,7 +705,6 @@ test('navigates keeping declaration order and focusing the target with order', (
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 0,
     routeNames: ['baz', 'bar'],
@@ -707,7 +715,42 @@ test('navigates keeping declaration order and focusing the target with order', (
   });
 });
 
-test('jumps to a tab keeping declaration order, no-op when already focused with order', () => {
+test('navigates creating an absent route and focusing it with order', () => {
+  const router = TabRouter({ backBehavior: 'order' });
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  // qux is declared but absent from routes. Navigating creates it; order places present routes
+  // in declaration order -> [baz, qux] focused qux.
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 0,
+        routeNames: ['baz', 'bar', 'qux'],
+        routes: [{ key: 'baz', name: 'baz' }],
+      },
+      CommonActions.navigate('qux', { answer: 42 }),
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'root',
+    index: 1,
+    routeNames: ['baz', 'bar', 'qux'],
+    routes: [
+      { key: 'baz', name: 'baz' },
+      { key: 'qux', name: 'qux', params: { answer: 42 } },
+    ],
+  });
+});
+
+test('jumps to a tab keeping order, no-op when already focused with order', () => {
   const router = TabRouter({ backBehavior: 'order' });
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar'],
@@ -720,7 +763,6 @@ test('jumps to a tab keeping declaration order, no-op when already focused with 
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 1,
         routeNames: ['baz', 'bar'],
@@ -734,7 +776,6 @@ test('jumps to a tab keeping declaration order, no-op when already focused with 
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 0,
     routeNames: ['baz', 'bar'],
@@ -747,7 +788,6 @@ test('jumps to a tab keeping declaration order, no-op when already focused with 
   // jumpTo the already-focused tab with no change -> returns the same state.
   const state: TabNavigationState<ParamListBase> = {
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 1,
     routeNames: ['baz', 'bar'],
@@ -761,7 +801,7 @@ test('jumps to a tab keeping declaration order, no-op when already focused with 
 
 // --- navigate / JUMP_TO: firstRoute / initialRoute arrange [anchor, focused, ...] --
 
-test('navigates arranging [first, focused, ...rest] with firstRoute', () => {
+test('navigates arranging [first, focused, ...rest present] with firstRoute', () => {
   const router = TabRouter({ backBehavior: 'firstRoute' });
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
@@ -770,11 +810,10 @@ test('navigates arranging [first, focused, ...rest] with firstRoute', () => {
     routeGetIdList: {},
   };
 
-  // Focus c -> [a, c, b] index 1.
+  // Present [a, b, c], focus c -> [a, c, b] index 1.
   const next = router.getStateForAction(
     {
       stale: false,
-      preloadedRouteKeys: [],
       key: 'root',
       index: 0,
       routeNames: ['a', 'b', 'c'],
@@ -801,7 +840,33 @@ test('navigates arranging [first, focused, ...rest] with firstRoute', () => {
   expect(backToAnchor.index).toBe(0);
 });
 
-test('navigates arranging [initial, focused, ...rest] with initialRoute', () => {
+test('navigates creating an absent route arranged after the anchor with firstRoute', () => {
+  const router = TabRouter({ backBehavior: 'firstRoute' });
+  const options: RouterConfigOptions = {
+    routeNames: ['a', 'b', 'c'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  // Present only [a]. Navigate c (absent) -> create it, anchor a leads -> [a, c] index 1.
+  const next = router.getStateForAction(
+    {
+      stale: false,
+      key: 'root',
+      index: 0,
+      routeNames: ['a', 'b', 'c'],
+      routes: [{ key: 'a-test', name: 'a' }],
+    },
+    CommonActions.navigate('c'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  expect(names(next)).toEqual(['a', 'c']);
+  expect(next.index).toBe(1);
+});
+
+test('navigates arranging [initial, focused, ...rest present] with initialRoute', () => {
   const router = TabRouter({ backBehavior: 'initialRoute', initialRouteName: 'b' });
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
@@ -810,13 +875,12 @@ test('navigates arranging [initial, focused, ...rest] with initialRoute', () => 
     routeGetIdList: {},
   };
 
-  // Focus c, anchor b -> [b, c, a] index 1.
+  // Present [b, a, c], focus c, anchor b -> [b, c, a] index 1.
   const next = router.getStateForAction(
     {
       stale: false,
-      preloadedRouteKeys: [],
       key: 'root',
-      index: 1,
+      index: 0,
       routeNames: ['a', 'b', 'c'],
       routes: [
         { key: 'b-test', name: 'b' },
@@ -832,7 +896,7 @@ test('navigates arranging [initial, focused, ...rest] with initialRoute', () => 
   expect(next.index).toBe(1);
 });
 
-test("doesn't navigate to nonexistent screen", () => {
+test("doesn't navigate to a screen that isn't a declared route name", () => {
   const router = TabRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar'],
@@ -843,7 +907,6 @@ test("doesn't navigate to nonexistent screen", () => {
 
   const state: TabNavigationState<ParamListBase> = {
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 1,
     routeNames: ['baz', 'bar'],
@@ -861,7 +924,7 @@ test("doesn't navigate to nonexistent screen", () => {
   ).toBeNull();
 });
 
-test("doesn't jump to nonexistent screen", () => {
+test("doesn't jump to a screen that isn't a declared route name", () => {
   const router = TabRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar'],
@@ -874,7 +937,6 @@ test("doesn't jump to nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 1,
         routeNames: ['baz', 'bar'],
@@ -909,7 +971,6 @@ test('ensures a fresh key for navigate when the route id changes with order', ()
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
@@ -923,7 +984,6 @@ test('ensures a fresh key for navigate when the route id changes with order', ()
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
@@ -947,7 +1007,6 @@ test('adds path on navigate if provided with order', () => {
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
@@ -962,7 +1021,6 @@ test('adds path on navigate if provided with order', () => {
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
@@ -978,7 +1036,6 @@ test('adds path on navigate if provided with order', () => {
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
@@ -993,7 +1050,6 @@ test('adds path on navigate if provided with order', () => {
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
@@ -1018,7 +1074,6 @@ test("doesn't remove existing path on navigate if not provided with order", () =
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
@@ -1033,7 +1088,6 @@ test("doesn't remove existing path on navigate if not provided with order", () =
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
@@ -1061,7 +1115,6 @@ test("doesn't merge params on navigate to an existing screen with order", () => 
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
@@ -1076,7 +1129,6 @@ test("doesn't merge params on navigate to an existing screen with order", () => 
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
@@ -1092,7 +1144,6 @@ test("doesn't merge params on navigate to an existing screen with order", () => 
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
@@ -1107,7 +1158,6 @@ test("doesn't merge params on navigate to an existing screen with order", () => 
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
@@ -1132,7 +1182,6 @@ test('merges params on navigate to an existing screen if merge: true with order'
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
@@ -1147,7 +1196,6 @@ test('merges params on navigate to an existing screen if merge: true with order'
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 1,
     routeNames: ['baz', 'bar', 'qux'],
@@ -1170,45 +1218,45 @@ test('navigates splicing the target into the back-stack with history', () => {
     routeGetIdList: {},
   };
 
-  // Start: routes [A, B, C, D, E], focus A (index 0).
+  // Start: only A is materialized (focused).
   let state = router.getInitialState(options) as TabNavigationState<ParamListBase>;
-  expect(names(state)).toEqual(['A', 'B', 'C', 'D', 'E']);
+  expect(names(state)).toEqual(['A']);
   expect(state.index).toBe(0);
 
-  // navigate B (from 1 > focused 0 -> insert at 1) -> order unchanged, index 1.
+  // navigate B (absent) -> create it, append after focused A -> [A, B] index 1.
   state = router.getStateForAction(
     state,
     CommonActions.navigate('B'),
     options
   ) as TabNavigationState<ParamListBase>;
-  expect(names(state)).toEqual(['A', 'B', 'C', 'D', 'E']);
+  expect(names(state)).toEqual(['A', 'B']);
   expect(state.index).toBe(1);
 
-  // navigate C (from 2 > focused 1 -> insert at 2) -> order unchanged, index 2.
+  // navigate C (absent) -> [A, B, C] index 2.
   state = router.getStateForAction(
     state,
     CommonActions.navigate('C'),
     options
   ) as TabNavigationState<ParamListBase>;
-  expect(names(state)).toEqual(['A', 'B', 'C', 'D', 'E']);
+  expect(names(state)).toEqual(['A', 'B', 'C']);
   expect(state.index).toBe(2);
 
-  // navigate A (from 0 <= focused 2 -> remove A, insert at 2) -> [B, C, A, D, E], index 2.
+  // navigate A (present, from 0 <= focused 2 -> remove A, insert at 2) -> [B, C, A] index 2.
   state = router.getStateForAction(
     state,
     CommonActions.navigate('A'),
     options
   ) as TabNavigationState<ParamListBase>;
-  expect(names(state)).toEqual(['B', 'C', 'A', 'D', 'E']);
+  expect(names(state)).toEqual(['B', 'C', 'A']);
   expect(state.index).toBe(2);
 
-  // navigate D (from 3 > focused 2 -> insert at 3) -> order unchanged, index 3.
+  // navigate D (absent) -> appended after focused A -> [B, C, A, D] index 3.
   state = router.getStateForAction(
     state,
     CommonActions.navigate('D'),
     options
   ) as TabNavigationState<ParamListBase>;
-  expect(names(state)).toEqual(['B', 'C', 'A', 'D', 'E']);
+  expect(names(state)).toEqual(['B', 'C', 'A', 'D']);
   expect(state.index).toBe(3);
 });
 
@@ -1231,19 +1279,18 @@ test('walks the visit order on back with history', () => {
       options
     ) as TabNavigationState<ParamListBase>;
   }
-  // After A->B->C->A->D: routes [B, C, A, D, E], focus D (index 3).
-  expect(names(state)).toEqual(['B', 'C', 'A', 'D', 'E']);
+  // After A->B->C->A->D: present routes [B, C, A, D], focus D (index 3).
+  expect(names(state)).toEqual(['B', 'C', 'A', 'D']);
   expect(state.routes[state.index]!.name).toBe('D');
 
-  // Visit order [B, C, A, D] (A re-visited, so it moved to the top).
-  // back walks D -> A -> C -> B, routes order never changes.
+  // back walks D -> A -> C -> B over the present routes; order never changes.
   for (const expectedName of ['A', 'C', 'B']) {
     state = router.getStateForAction(
       state,
       CommonActions.goBack(),
       options
     ) as TabNavigationState<ParamListBase>;
-    expect(names(state)).toEqual(['B', 'C', 'A', 'D', 'E']);
+    expect(names(state)).toEqual(['B', 'C', 'A', 'D']);
     expect(state.routes[state.index]!.name).toBe(expectedName);
   }
 
@@ -1268,7 +1315,7 @@ test('walks back then navigates with history', () => {
       options
     ) as TabNavigationState<ParamListBase>;
   }
-  // routes [A, B, C], focus C (index 2).
+  // present [A, B, C], focus C (index 2).
   expect(names(state)).toEqual(['A', 'B', 'C']);
   expect(state.index).toBe(2);
 
@@ -1281,7 +1328,7 @@ test('walks back then navigates with history', () => {
   expect(state.routes[state.index]!.name).toBe('B');
   expect(state.index).toBe(1);
 
-  // navigate A (from 0 <= focused 1 -> remove A, insert at 1) -> [B, A, C], index 1.
+  // navigate A (present, from 0 <= focused 1 -> remove A, insert at 1) -> [B, A, C] index 1.
   state = router.getStateForAction(
     state,
     CommonActions.navigate('A'),
@@ -1314,9 +1361,9 @@ test('returns null on back when at index 0 with history', () => {
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 });
 
-// --- GO_BACK: position-based behaviors (uniformly index - 1, no reorder) ------
+// --- GO_BACK: position-based behaviors (uniformly index - 1 over present routes) ---
 
-test('walks to the declaration-previous tab on back with order', () => {
+test('walks to the previous present tab on back with order', () => {
   const router = TabRouter({ backBehavior: 'order' });
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
@@ -1325,10 +1372,9 @@ test('walks to the declaration-previous tab on back with order', () => {
     routeGetIdList: {},
   };
 
-  // order layout is declaration order; focus c (index 2). back -> b (index 1).
+  // Present [a, b, c]; focus c (index 2). back -> b (index 1).
   const state: TabNavigationState<ParamListBase> = {
     stale: false,
-    preloadedRouteKeys: [],
     key: 'tab-test',
     index: 2,
     routeNames: ['a', 'b', 'c'],
@@ -1348,13 +1394,13 @@ test('walks to the declaration-previous tab on back with order', () => {
   expect(next.routes[next.index]!.name).toBe('b');
   expect(next.index).toBe(1);
 
-  // From the first declared tab (index 0) there's nowhere to go -> null.
+  // From the first present tab (index 0) there's nowhere to go -> null.
   expect(
     router.getStateForAction({ ...state, index: 0 }, CommonActions.goBack(), options)
   ).toBeNull();
 });
 
-test('goes to the first route on back with firstRoute, null when already first', () => {
+test('goes to the present anchor on back with firstRoute, null when already first', () => {
   const router = TabRouter({ backBehavior: 'firstRoute' });
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
@@ -1366,7 +1412,6 @@ test('goes to the first route on back with firstRoute, null when already first',
   // firstRoute layout [a, focused, ...]; focus b at index 1. back -> a (index 0).
   const state: TabNavigationState<ParamListBase> = {
     stale: false,
-    preloadedRouteKeys: [],
     key: 'tab-test',
     index: 1,
     routeNames: ['a', 'b', 'c'],
@@ -1403,7 +1448,6 @@ test('goes to the initial route on back with initialRoute, null when already ini
   // initialRoute layout [b, focused, ...]; focus c at index 1. back -> b (index 0).
   const state: TabNavigationState<ParamListBase> = {
     stale: false,
-    preloadedRouteKeys: [],
     key: 'tab-test',
     index: 1,
     routeNames: ['a', 'b', 'c'],
@@ -1439,7 +1483,6 @@ test('returns null on back with none', () => {
 
   const state: TabNavigationState<ParamListBase> = {
     stale: false,
-    preloadedRouteKeys: [],
     key: 'tab-test',
     index: 2,
     routeNames: ['a', 'b', 'c'],
@@ -1453,7 +1496,7 @@ test('returns null on back with none', () => {
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 });
 
-test('GO_BACK drops the target key from preloadedRouteKeys without reordering', () => {
+test('GO_BACK moves focus over present routes without reordering', () => {
   const router = TabRouter({ backBehavior: 'firstRoute' });
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
@@ -1462,10 +1505,9 @@ test('GO_BACK drops the target key from preloadedRouteKeys without reordering', 
     routeGetIdList: {},
   };
 
-  // firstRoute layout [a, c, b]; focus c at index 1. back -> a (index 0).
+  // firstRoute layout [a, c, b]; focus c at index 1. back -> a (index 0). Routes untouched.
   const state: TabNavigationState<ParamListBase> = {
     stale: false,
-    preloadedRouteKeys: ['a-test', 'b-test'],
     key: 'tab-test',
     index: 1,
     routeNames: ['a', 'b', 'c'],
@@ -1483,8 +1525,6 @@ test('GO_BACK drops the target key from preloadedRouteKeys without reordering', 
   ) as TabNavigationState<ParamListBase>;
   expect(next.index).toBe(0);
   expect(names(next)).toEqual(['a', 'c', 'b']);
-  // a's key (the new focused route) is removed from preloadedRouteKeys.
-  expect(next.preloadedRouteKeys).toEqual(['b-test']);
 });
 
 // --- REPLACE: prunes the replaced route from the back stack ------------------
@@ -1503,7 +1543,6 @@ test('drops the replaced route so back is blocked with firstRoute', () => {
   // [two, one] index 0. GO_BACK -> null.
   const state: TabNavigationState<ParamListBase> = {
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 0,
     routeNames: ['one', 'two'],
@@ -1534,18 +1573,18 @@ test('drops the replaced route so back skips it with history', () => {
     routeGetIdList: {},
   };
 
-  // Start [one, two, three] focus one. navigate two -> index 1 (back stack one->two).
+  // Start present [one] focus one. navigate two -> [one, two] index 1.
   let state = router.getInitialState(options) as TabNavigationState<ParamListBase>;
   state = router.getStateForAction(
     state,
     CommonActions.navigate('two'),
     options
   ) as TabNavigationState<ParamListBase>;
-  expect(names(state)).toEqual(['one', 'two', 'three']);
+  expect(names(state)).toEqual(['one', 'two']);
   expect(state.index).toBe(1);
 
-  // replace three: JUMP_TO three (from 2 > focused 1 -> insert at 2) -> [one, two,
-  // three] index 2; then prune the route at index 1 (two) past focused ->
+  // replace three: JUMP_TO three (absent) -> created, appended after focused two ->
+  // [one, two, three] index 2; then prune the route at index 1 (two) past focused ->
   // [one, three, two] index 1. GO_BACK -> one.
   state = router.getStateForAction(
     state,
@@ -1571,7 +1610,6 @@ test('focuses a route arranging [anchor, focused, ...] with firstRoute', () => {
 
   const state: TabNavigationState<ParamListBase> = {
     stale: false,
-    preloadedRouteKeys: [],
     key: 'tab-test',
     index: 0,
     routeNames: ['a', 'b', 'c'],
@@ -1596,11 +1634,10 @@ test('focuses a route arranging [anchor, focused, ...] with firstRoute', () => {
 test('focuses a route splicing into the back-stack with history', () => {
   const router = TabRouter({ backBehavior: 'history' });
 
-  // routes [A, B, C, D, E], focus C (index 2). Focus A (from 0 <= 2) -> remove A,
+  // present [A, B, C, D, E], focus C (index 2). Focus A (from 0 <= 2) -> remove A,
   // insert at 2 -> [B, C, A, D, E], index 2.
   const state: TabNavigationState<ParamListBase> = {
     stale: false,
-    preloadedRouteKeys: [],
     key: 'tab-test',
     index: 2,
     routeNames: ['A', 'B', 'C', 'D', 'E'],
@@ -1635,7 +1672,6 @@ test('setParams updates the focused route without reordering', () => {
   const next = router.getStateForAction(
     {
       stale: false,
-      preloadedRouteKeys: [],
       key: 'tab-test',
       index: 1,
       routeNames: ['a', 'b', 'c'],
@@ -1656,7 +1692,78 @@ test('setParams updates the focused route without reordering', () => {
 
 // --- PRELOAD -----------------------------------------------------------------
 
-test('handles screen preloading in place without reordering', () => {
+test('preloads an absent route by inserting it without changing focus', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  // qux is declared but absent. Preload inserts it (deterministic key) without touching index.
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 0,
+        routeNames: ['baz', 'bar', 'qux'],
+        routes: [
+          { key: 'baz', name: 'baz' },
+          { key: 'bar', name: 'bar', params: { answer: 42 } },
+        ],
+      },
+      CommonActions.preload('qux'),
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'root',
+    index: 0,
+    routeNames: ['baz', 'bar', 'qux'],
+    routes: [
+      { key: 'baz', name: 'baz' },
+      { key: 'bar', name: 'bar', params: { answer: 42 } },
+      { key: 'qux', name: 'qux' },
+    ],
+  });
+});
+
+test('preloads an absent route with params', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 0,
+        routeNames: ['baz', 'bar', 'qux'],
+        routes: [{ key: 'baz-test', name: 'baz' }],
+      },
+      CommonActions.preload('qux', { answer: 43 }),
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'root',
+    index: 0,
+    routeNames: ['baz', 'bar', 'qux'],
+    routes: [
+      { key: 'baz-test', name: 'baz' },
+      { key: 'qux', name: 'qux', params: { answer: 43 } },
+    ],
+  });
+});
+
+test('preloads an already-present route by updating its params in place', () => {
   const router = TabRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
@@ -1667,43 +1774,12 @@ test('handles screen preloading in place without reordering', () => {
     },
   };
 
-  // Preload qux -> added to preloadedRouteKeys, routes unchanged, index unchanged.
+  // bar is present with a stale id; preload with a new id assigns a fresh deterministic key
+  // (bar already occupies index 0 -> bar-1) and updates params, in place, without changing focus.
   expect(
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
-        key: 'root',
-        index: 0,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-          { key: 'qux', name: 'qux' },
-        ],
-      },
-      CommonActions.preload('qux'),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    preloadedRouteKeys: ['qux'],
-    key: 'root',
-    index: 0,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar', params: { answer: 42 } },
-      { key: 'qux', name: 'qux' },
-    ],
-  });
-
-  // Preload bar with a new id -> fresh deterministic key, params updated in place.
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
@@ -1718,38 +1794,6 @@ test('handles screen preloading in place without reordering', () => {
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: ['bar-1'],
-    key: 'root',
-    index: 0,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'baz-test', name: 'baz' },
-      { key: 'bar-1', name: 'bar', params: { answer: 43 } },
-      { key: 'qux-test', name: 'qux' },
-    ],
-  });
-
-  // Preload bar replacing an existing preloaded entry (key changes -> old key dropped).
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        preloadedRouteKeys: ['bar-test-old'],
-        key: 'root',
-        index: 0,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz-test', name: 'baz' },
-          { key: 'bar-test-old', name: 'bar', params: { answer: 42, willBe: 'removed' } },
-          { key: 'qux-test', name: 'qux' },
-        ],
-      },
-      CommonActions.preload('bar', { answer: 43 }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    preloadedRouteKeys: ['bar-1'],
     key: 'root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
@@ -1765,7 +1809,6 @@ test('handles screen preloading in place without reordering', () => {
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
@@ -1780,7 +1823,6 @@ test('handles screen preloading in place without reordering', () => {
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: ['bar-some'],
     key: 'root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
@@ -1792,7 +1834,7 @@ test('handles screen preloading in place without reordering', () => {
   });
 });
 
-test('navigates to a preloaded route, focusing it and dropping it from preloadedRouteKeys with order', () => {
+test('navigates to a preloaded route, focusing it with order', () => {
   const router = TabRouter({ backBehavior: 'order' });
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
@@ -1801,11 +1843,11 @@ test('navigates to a preloaded route, focusing it and dropping it from preloaded
     routeGetIdList: {},
   };
 
+  // qux was preloaded (present). Navigating just focuses it; order keeps declaration layout.
   expect(
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: ['qux-test'],
         key: 'root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],
@@ -1820,7 +1862,6 @@ test('navigates to a preloaded route, focusing it and dropping it from preloaded
     )
   ).toEqual({
     stale: false,
-    preloadedRouteKeys: [],
     key: 'root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
@@ -1832,7 +1873,7 @@ test('navigates to a preloaded route, focusing it and dropping it from preloaded
   });
 });
 
-test("doesn't preload a nonexistent screen", () => {
+test("doesn't preload a screen that isn't a declared route name", () => {
   const router = TabRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
@@ -1845,7 +1886,6 @@ test("doesn't preload a nonexistent screen", () => {
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 0,
         routeNames: ['baz', 'bar', 'qux'],

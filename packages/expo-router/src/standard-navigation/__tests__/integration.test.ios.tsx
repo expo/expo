@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { createStandardNavigator, type NavigatorArgs } from 'standard-navigation';
 
@@ -75,12 +75,17 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       second: () => <View testID="second" />,
     });
 
+    // `state.routes` is a subset: only the focused `index` is present until another route loads.
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index', 'second']);
+    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
     expect(lastArgs().state.index).toBe(0);
+
+    // After navigating, `second` enters `state.routes` and becomes the focused route.
+    act(() => lastArgs().actions.navigate('second'));
+    expect(lastArgs().state.routes.map((r) => r.name).sort()).toEqual(['index', 'second']);
   });
 
-  it('builds an href for every route', () => {
+  it('builds an href for every route once it has loaded', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -92,6 +97,11 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       second: () => <View testID="second" />,
     });
 
+    // Only the focused route is loaded initially, so only its href is projected.
+    expect(hrefByName()).toEqual({ index: '/' });
+
+    // Loading `second` projects its href too.
+    act(() => lastArgs().actions.navigate('second'));
     expect(hrefByName()).toEqual({ index: '/', second: '/second' });
   });
 
@@ -215,6 +225,11 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       second: () => <View testID="second" />,
     });
 
+    // `second` is undeclared but matched: it's an available route name, so it can be navigated to
+    // and then appears in the subset `state.routes`.
+    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
+
+    act(() => lastArgs().actions.navigate('second'));
     expect(
       lastArgs()
         .state.routes.map((r) => r.name)
@@ -522,10 +537,20 @@ describe('assertStandardNavigator (via unstable_integrateWithRouter)', () => {
 });
 
 describe('custom-navigators guide example', () => {
-  type TabsContentProps = NavigatorContentProps<{ title?: string }>;
+  // Mirrors the "minimal tab navigator" snippet in docs/pages/router/advanced/custom-navigators.mdx.
+  // `state.routes` is a subset, so the example preloads every declared screen via `createProps` to
+  // render all tabs from the first frame.
+  // Props injected by `createProps` are optional so they aren't required on the `<Tabs>` element
+  // (it's rendered without them); the content still receives them at runtime.
+  type CreateProps = { routeNames?: string[]; preload?: (name: string) => void };
+  type TabsContentProps = NavigatorContentProps<{ title?: string }, Record<string, never>, CreateProps>;
 
-  function TabsContent({ state, descriptors, actions }: TabsContentProps) {
+  function TabsContent({ state, descriptors, actions, routeNames, preload }: TabsContentProps) {
     const focusedRoute = state.routes[state.index]!;
+
+    useEffect(() => {
+      routeNames?.forEach((name) => preload?.(name));
+    }, [routeNames, preload]);
 
     return (
       <View style={{ flex: 1 }}>
@@ -547,7 +572,18 @@ describe('custom-navigators guide example', () => {
     );
   }
 
-  const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter);
+  const Tabs = unstable_createStandardRouterNavigator<
+    { title?: string },
+    TabNavigationState<ParamListBase>,
+    Record<string, never>,
+    CreateProps,
+    TabRouterOptions
+  >(TabsContent, TabRouter, {
+    createProps: ({ state, dispatch }) => ({
+      routeNames: state.routeNames,
+      preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
+    }),
+  });
 
   const renderExample = () =>
     renderRouter({
@@ -587,8 +623,9 @@ describe('custom-navigators guide example', () => {
   // (only StackRouter handles it), so a copy-paste user got a button that did nothing.
   //
   // `preloadedNames` is derived from the raw `state` — exactly the "router-specific information that
-  // is not part of the standard state" that `createProps` exists to expose (TabRouter keeps preloaded
-  // routes in `preloadedRouteKeys`, which the standard contract does not project).
+  // is not part of the standard state" that `createProps` exists to expose. Preloaded routes live in
+  // `state.routes` after `index` (PRELOAD appends to the tail without moving focus), which the
+  // standard contract does not project.
   // Props supplied by `createProps` are declared optional so they are not required on the `<Tabs>`
   // element (it is rendered without them); the content still receives them at runtime.
   type CreatePropsProps = {
@@ -622,9 +659,7 @@ describe('custom-navigators guide example', () => {
     createProps: ({ state, dispatch }) => ({
       activeRouteKey: state.routes[state.index]!.key,
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
-      preloadedNames: state.preloadedRouteKeys
-        .map((key) => state.routes.find((route) => route.key === key)?.name)
-        .filter((name): name is string => name !== undefined),
+      preloadedNames: state.routes.slice(state.index + 1).map((route) => route.name),
     }),
   });
 
