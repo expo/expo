@@ -35,8 +35,7 @@ class EventDispatcher(
   suspend fun dispatch(events: List<Event>): DispatchResult =
     suspendCancellableCoroutine { continuation ->
       if (events.isEmpty()) {
-        // Empty input isn't a server response — keep the old "nothing to do" semantics by
-        // signaling success so the call site removes (nothing) and moves on.
+        // Empty input isn't a server response - signal success.
         continuation.resume(DispatchResult.Success)
         return@suspendCancellableCoroutine Unit
       }
