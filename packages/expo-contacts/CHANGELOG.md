@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- [iOS] Add `cancelButtonTitle` and `showsCancelButton` options to contact forms. ([#46960](https://github.com/expo/expo/pull/46960) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `preventAnimation` option to `presentCreateForm`. ([#46960](https://github.com/expo/expo/pull/46960) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🐛 Bug fixes
 
 - Fix `getDetails` throwing NPE on malformed label ([#46405](https://github.com/expo/expo/pull/46405) by [@Wenszel](https://github.com/Wenszel))
