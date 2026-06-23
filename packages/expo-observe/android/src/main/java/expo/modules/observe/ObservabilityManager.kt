@@ -115,7 +115,8 @@ class BaseObservabilityManager(
       )
     }
 
-    if (eventDispatcher.dispatch(events)) {
+    val result = eventDispatcher.dispatch(events)
+    if (result is DispatchResult.Success) {
       val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
       pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
     }
@@ -158,7 +159,8 @@ class BaseObservabilityManager(
       )
     }
 
-    if (eventDispatcher.dispatchLogs(events)) {
+    val result = eventDispatcher.dispatchLogs(events)
+    if (result is DispatchResult.Success) {
       val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
       pendingLogsManager.removePendingLogs(dispatchedLogIds)
     }

@@ -94,7 +94,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("dev-metric-id")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val removedIds = mutableListOf<String>()
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
@@ -132,7 +132,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("dev-metric-id")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val removedIds = mutableListOf<String>()
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
@@ -170,7 +170,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("prod-metric-id")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(prodSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val manager = createManager(isDebugBuild = false)
 
@@ -205,7 +205,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("dev-metric-id")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val removedIds = mutableListOf<String>()
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
@@ -260,7 +260,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("prod-metric-id")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(prodSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val manager = createManager(isDebugBuild = false)
 
@@ -332,7 +332,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("dev-metric-id")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
 
       val manager = createManager(isDebugBuild = true)
@@ -360,7 +360,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("prod-metric-id")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(prodSession)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
 
       val manager = createManager(isDebugBuild = false)
@@ -408,7 +408,7 @@ class BaseObservabilityManagerTest {
       )
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       // `deterministicUniformValue` must not matter when sampleRate is null.
       val manager = createManager(deterministicUniformValue = 0.999)
@@ -433,7 +433,7 @@ class BaseObservabilityManagerTest {
       )
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val manager = createManager(deterministicUniformValue = 0.2)
 
@@ -521,7 +521,7 @@ class BaseObservabilityManagerTest {
       )
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val manager = createManager(deterministicUniformValue = 0.9999999)
 
@@ -545,7 +545,7 @@ class BaseObservabilityManagerTest {
       )
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val manager = createManager(deterministicUniformValue = 0.95)
 
@@ -644,7 +644,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "orphaned-id")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val removedIdBatches = mutableListOf<List<String>>()
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
@@ -706,7 +706,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "id2", "id3")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session1, session2)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val removedIds = mutableListOf<String>()
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
@@ -726,9 +726,10 @@ class BaseObservabilityManagerTest {
     }
 
   @Test
-  fun `dispatchUnsentMetrics does not remove metric IDs from pending when dispatch fails`() =
+  fun `dispatchUnsentMetrics does not remove metric IDs from pending on Retryable result`() =
     runTest {
-      // Arrange
+      // A retryable response (e.g. 503, transport error) should leave the pending IDs alone
+      // so the next dispatch round picks the same rows up again.
       val metric1 = createMetric("metric1", metricId = "id1")
       val metric2 = createMetric("metric2", metricId = "id2")
       val session = createSessionWithMetrics(
@@ -739,14 +740,14 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "id2")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns false
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Retryable()
 
       val manager = createManager()
 
       // Act
       manager.dispatchUnsentMetrics()
 
-      // Assert - NO metric IDs should be removed from pending when dispatch fails
+      // Assert
       coVerify(exactly = 0) { mockPendingMetricsManager.removePendingMetrics(any()) }
     }
 
@@ -928,7 +929,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("m1", "m2")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val manager = createManager()
 
@@ -972,7 +973,7 @@ class BaseObservabilityManagerTest {
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("metric-id-1", "metric-id-2")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session1, session2)
-      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
 
       val removedIds = mutableListOf<String>()
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {

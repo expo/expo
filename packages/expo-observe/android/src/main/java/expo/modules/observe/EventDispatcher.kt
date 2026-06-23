@@ -9,7 +9,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 // TODO: Make this safe for concurrent usage
 class EventDispatcher(
@@ -28,60 +27,62 @@ class EventDispatcher(
 
   private fun logsEndpointUrl(): String = "$baseProjectUrl/v1/logs"
 
-  suspend fun dispatch(events: List<Event>): Boolean =
+  /**
+   * POSTs `events` to the metrics endpoint and classifies the response per the OTLP retry
+   * spec. Non-throwing: payload-encoding errors collapse to `NonRetryable` (same bytes will
+   * fail again), transport errors collapse to `Retryable(null)` (transient by definition).
+   */
+  suspend fun dispatch(events: List<Event>): DispatchResult =
     suspendCancellableCoroutine { continuation ->
       if (events.isEmpty()) {
-        continuation.resume(false)
+        // Empty input isn't a server response — keep the old "nothing to do" semantics by
+        // signaling success so the call site removes (nothing) and moves on.
+        continuation.resume(DispatchResult.Success)
         return@suspendCancellableCoroutine Unit
       }
       val easId = EASClientID(context).uuid.toString()
-      try {
-        val body = OTRequestBody(
+      val body = try {
+        OTRequestBody(
           resourceMetrics = events.map { it.toOTEvent(easId) }
         ).toJson(prettyPrint = true)
-
-        executePost(continuation, metricsEndpointUrl(), body)
       } catch (e: Exception) {
-        Log.w(
-          TAG,
-          "Dispatching the events has thrown an error: ${e.message}"
-        )
-        continuation.resumeWithException(e)
+        Log.w(OBSERVE_TAG, "Encoding metrics request body failed: ${e.message}")
+        continuation.resume(DispatchResult.NonRetryable("encoding error: ${e.message}"))
+        return@suspendCancellableCoroutine Unit
       }
+      executePost(continuation, metricsEndpointUrl(), body)
     }
 
   /**
    * Dispatches log records to `{baseUrl}/{projectId}/v1/logs`. Always uses the
    * OTLP wire shape — there is no legacy logs endpoint.
    */
-  suspend fun dispatchLogs(events: List<Event>): Boolean =
+  suspend fun dispatchLogs(events: List<Event>): DispatchResult =
     suspendCancellableCoroutine { continuation ->
       val easId = EASClientID(context).uuid.toString()
       val resourceLogs = events
         .filter { it.logs.isNotEmpty() }
         .map { it.toOTResourceLogs(easId) }
       if (resourceLogs.isEmpty()) {
-        continuation.resume(false)
+        continuation.resume(DispatchResult.Success)
         return@suspendCancellableCoroutine Unit
       }
-      try {
-        val body = OTLogsRequestBody(resourceLogs = resourceLogs).toJson(prettyPrint = true)
-        executePost(continuation, logsEndpointUrl(), body)
+      val body = try {
+        OTLogsRequestBody(resourceLogs = resourceLogs).toJson(prettyPrint = true)
       } catch (e: Exception) {
-        Log.w(
-          TAG,
-          "Dispatching the logs has thrown an error: ${e.message}"
-        )
-        continuation.resumeWithException(e)
+        Log.w(OBSERVE_TAG, "Encoding logs request body failed: ${e.message}")
+        continuation.resume(DispatchResult.NonRetryable("encoding error: ${e.message}"))
+        return@suspendCancellableCoroutine Unit
       }
+      executePost(continuation, logsEndpointUrl(), body)
     }
 
   private fun executePost(
-    continuation: kotlinx.coroutines.CancellableContinuation<Boolean>,
+    continuation: kotlinx.coroutines.CancellableContinuation<DispatchResult>,
     endpointUrl: String,
     body: String
   ) {
-    Log.d(TAG, "Sending events to $endpointUrl")
+    Log.d(OBSERVE_TAG, "Sending events to $endpointUrl")
 
     val request = Request
       .Builder()
@@ -96,7 +97,7 @@ class EventDispatcher(
       .post(body.toRequestBody("application/json".toMediaType()))
       .build()
 
-    Log.d(TAG, body)
+    Log.d(OBSERVE_TAG, body)
 
     val call = httpClient.newCall(request)
 
@@ -104,13 +105,35 @@ class EventDispatcher(
       call.cancel()
     }
 
-    val response = call.execute()
-    Log.d(TAG, "Server responded with: ${response.body?.string()}")
+    val response = try {
+      call.execute()
+    } catch (e: Exception) {
+      Log.w(OBSERVE_TAG, "Transport error talking to $endpointUrl: ${e.message}")
+      continuation.resume(DispatchResult.Retryable(retryAfterMs = null))
+      return
+    }
 
-    continuation.resume(response.code in 200..299)
-  }
+    val responseBody = response.body?.string()
+    val retryAfterHeader = response.header("Retry-After")
+    val result = DispatchUtils.classifyResponse(
+      statusCode = response.code,
+      retryAfterHeader = retryAfterHeader,
+      responseBody = responseBody,
+      bodyExcerpt = { DispatchUtils.bodyExcerpt(responseBody) }
+    )
 
-  companion object {
-    private const val TAG = "EasObserve"
+    when (result) {
+      is DispatchResult.Success ->
+        Log.d(OBSERVE_TAG, "Server responded successfully with ${response.code} and data: $responseBody")
+      is DispatchResult.Retryable ->
+        Log.w(OBSERVE_TAG, "Server responded with ${response.code} (retryable) and data: $responseBody")
+      is DispatchResult.NonRetryable ->
+        Log.w(
+          OBSERVE_TAG,
+          "Server responded with ${response.code} (non-retryable, ${result.reason}) and data: $responseBody"
+        )
+    }
+
+    continuation.resume(result)
   }
 }
