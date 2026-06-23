@@ -40,6 +40,14 @@ export enum TestEnum {
   caseWithArgs1 = 'caseWithArgs1',
   caseWithArgs2 = 'caseWithArgs2'
 }
+export enum IntBackedEnum1 {
+  simpleCase,
+  multipleCases1,
+  multipleCases2
+}
+export enum IntBackedEnum2 {
+  simpleCase
+}
 
 export declare class TestClassWithConstructor {
   constructor(a: number);
@@ -220,6 +228,8 @@ import { requireNativeModule, NativeModule } from 'expo';
 
 import {
   TestEnum,
+  IntBackedEnum1,
+  IntBackedEnum2,
   TestRecord,
   TestRecord2,
   TestRecordClass,
@@ -318,6 +328,14 @@ export enum TestEnum {
   caseWithArgs1 = 'caseWithArgs1',
   caseWithArgs2 = 'caseWithArgs2'
 }
+export enum IntBackedEnum1 {
+  simpleCase,
+  multipleCases1,
+  multipleCases2
+}
+export enum IntBackedEnum2 {
+  simpleCase
+}
 
 export declare class TestClassWithConstructor {
   constructor(a: number);
@@ -414,6 +432,14 @@ export enum TestEnum {
     caseWithArgs1 = "caseWithArgs1",
     caseWithArgs2 = "caseWithArgs2"
 }
+export enum IntBackedEnum1 {
+    simpleCase,
+    multipleCases1,
+    multipleCases2
+}
+export enum IntBackedEnum2 {
+    simpleCase
+}
 
 
 export function SimpleFunction(a: number, b: number): number { return 0; }
@@ -482,6 +508,16 @@ export var TestEnum;
     TestEnum["caseWithArgs1"] = "caseWithArgs1";
     TestEnum["caseWithArgs2"] = "caseWithArgs2";
 })(TestEnum || (TestEnum = {}));
+export var IntBackedEnum1;
+(function (IntBackedEnum1) {
+    IntBackedEnum1[IntBackedEnum1["simpleCase"] = 0] = "simpleCase";
+    IntBackedEnum1[IntBackedEnum1["multipleCases1"] = 1] = "multipleCases1";
+    IntBackedEnum1[IntBackedEnum1["multipleCases2"] = 2] = "multipleCases2";
+})(IntBackedEnum1 || (IntBackedEnum1 = {}));
+export var IntBackedEnum2;
+(function (IntBackedEnum2) {
+    IntBackedEnum2[IntBackedEnum2["simpleCase"] = 0] = "simpleCase";
+})(IntBackedEnum2 || (IntBackedEnum2 = {}));
 export function SimpleFunction(a, b) { return 0; }
 export function TestUntypedFunction() { return ""; }
 export function TestUnicodeCharacters() { return; }
@@ -545,6 +581,14 @@ export enum TestEnum {
   multipleCases2 = 'multipleCases2',
   caseWithArgs1 = 'caseWithArgs1',
   caseWithArgs2 = 'caseWithArgs2'
+}
+export enum IntBackedEnum1 {
+  simpleCase,
+  multipleCases1,
+  multipleCases2
+}
+export enum IntBackedEnum2 {
+  simpleCase
 }
 
 export declare class TestClassWithConstructor {
@@ -642,6 +686,8 @@ export default _default;
 exports[`Same type information 1`] = `
 {
   "declaredTypeIdentifiersList": [
+    "IntBackedEnum1",
+    "IntBackedEnum2",
     "TestBasicClass",
     "TestClassWithConstructor",
     "TestEmptyClass",
@@ -660,6 +706,23 @@ exports[`Same type information 1`] = `
         "caseWithArgs2",
       ],
       "name": "TestEnum",
+      "stringBacked": true,
+    },
+    {
+      "cases": [
+        "simpleCase",
+        "multipleCases1",
+        "multipleCases2",
+      ],
+      "name": "IntBackedEnum1",
+      "stringBacked": false,
+    },
+    {
+      "cases": [
+        "simpleCase",
+      ],
+      "name": "IntBackedEnum2",
+      "stringBacked": false,
     },
   ],
   "inferredTypeParametersCountList": [
@@ -1458,6 +1521,34 @@ exports[`Same type information 1`] = `
   ],
   "typeIdentifierDefinitionList": [
     [
+      "IntBackedEnum1",
+      {
+        "definition": {
+          "cases": [
+            "simpleCase",
+            "multipleCases1",
+            "multipleCases2",
+          ],
+          "name": "IntBackedEnum1",
+          "stringBacked": false,
+        },
+        "kind": 1,
+      },
+    ],
+    [
+      "IntBackedEnum2",
+      {
+        "definition": {
+          "cases": [
+            "simpleCase",
+          ],
+          "name": "IntBackedEnum2",
+          "stringBacked": false,
+        },
+        "kind": 1,
+      },
+    ],
+    [
       "TestEnum",
       {
         "definition": {
@@ -1469,6 +1560,7 @@ exports[`Same type information 1`] = `
             "caseWithArgs2",
           ],
           "name": "TestEnum",
+          "stringBacked": true,
         },
         "kind": 1,
       },
