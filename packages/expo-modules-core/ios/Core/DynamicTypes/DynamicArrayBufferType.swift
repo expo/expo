@@ -19,11 +19,9 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
   /// Converts JS array buffer to its native representation.
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
     do {
-      return try ArrayBuffer.from(jsValue: jsValue)
+      return try ArrayBuffer.from(value: jsValue)
     } catch is ArrayBufferJavaScriptValueConversionException {
       throw NotArrayBufferException(innerType)
-    } catch {
-      throw error
     }
   }
 

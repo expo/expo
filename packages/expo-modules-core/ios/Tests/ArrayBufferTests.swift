@@ -6,7 +6,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("ArrayBuffer")
-struct NativeArrayBufferTests {
+struct ArrayBufferTests {
 
   // MARK: - Allocation
 
@@ -275,14 +275,16 @@ struct NativeArrayBufferTests {
 
     @Test
     func `copies JS-backed ArrayBuffer when using ArrayBuffer argument`() throws {
-      let processedBuffer = try runtime.eval([
-        "originalBuffer = new ArrayBuffer(4)",
-        "originalView = new Uint8Array(originalBuffer)",
-        "originalView.fill(42)",
-        "isOwned = expo.modules.ArrayBufferTests.isOwned(originalBuffer)",
-        "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(originalBuffer, 99)",
-        "processedBuffer",
-      ]).asArrayBuffer()
+      let processedBuffer = try runtime.eval(
+        """
+        originalBuffer = new ArrayBuffer(4)
+        originalView = new Uint8Array(originalBuffer)
+        originalView.fill(42)
+        isOwned = expo.modules.ArrayBufferTests.isOwned(originalBuffer)
+        processedBuffer = expo.modules.ArrayBufferTests.processBuffer(originalBuffer, 99)
+        processedBuffer
+        """
+      ).asArrayBuffer()
 
       let originalValues = try runtime.eval([
         "Array.from(originalView)"
