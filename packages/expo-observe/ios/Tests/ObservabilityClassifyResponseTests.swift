@@ -99,23 +99,26 @@ struct ObservabilityClassifyResponseTests {
   }
 
   @Test
-  func `429 with Retry-After seconds is parsed`() {
+  func `429 with Retry-After inside client bounds is parsed as-is`() {
+    // 120 s sits between base (60) and cap (900), so it propagates unchanged.
     let result = DispatchUtils.classifyResponse(
       statusCode: 429,
-      retryAfterHeader: "30",
+      retryAfterHeader: "120",
       partialSuccess: nil
     )
-    #expect(result == .retryable(retryAfter: 30))
+    #expect(result == .retryable(retryAfter: 120))
   }
 
   @Test
-  func `503 returns retryable and propagates Retry-After`() {
+  func `503 Retry-After below base clamps up to base`() {
+    // 5 s is below the 60 s floor — the client wouldn't dispatch faster than that anyway, so
+    // honor the server's intent to slow down by snapping up to base.
     let result = DispatchUtils.classifyResponse(
       statusCode: 503,
       retryAfterHeader: "5",
       partialSuccess: nil
     )
-    #expect(result == .retryable(retryAfter: 5))
+    #expect(result == .retryable(retryAfter: DispatchUtils.backoffBaseSeconds))
   }
 
   @Test
@@ -224,69 +227,149 @@ struct ObservabilityClassifyResponseTests {
 
 @Suite("DispatchUtils.parseRetryAfter")
 struct ObservabilityParseRetryAfterTests {
+  /// Test-local bounds passed explicitly to every call so the suite is independent of the
+  /// production constants. Tests using the default-argument values are listed separately.
+  private let base: TimeInterval = 60
+  private let cap: TimeInterval = 900
+
+  // MARK: - Missing / unparseable inputs return nil (caller falls through to backoff)
+
   @Test
   func `nil header returns nil`() {
-    #expect(DispatchUtils.parseRetryAfter(nil) == nil)
+    #expect(DispatchUtils.parseRetryAfter(nil, base: base, cap: cap) == nil)
   }
 
   @Test
   func `empty or whitespace header returns nil`() {
-    #expect(DispatchUtils.parseRetryAfter("") == nil)
-    #expect(DispatchUtils.parseRetryAfter("   ") == nil)
+    #expect(DispatchUtils.parseRetryAfter("", base: base, cap: cap) == nil)
+    #expect(DispatchUtils.parseRetryAfter("   ", base: base, cap: cap) == nil)
+    #expect(DispatchUtils.parseRetryAfter("\t\n", base: base, cap: cap) == nil)
   }
 
   @Test
-  func `integer seconds parses to TimeInterval`() {
-    #expect(DispatchUtils.parseRetryAfter("0") == 0)
-    #expect(DispatchUtils.parseRetryAfter("30") == 30)
-    #expect(DispatchUtils.parseRetryAfter("3600") == 3600)
-  }
-
-  @Test
-  func `negative seconds clamps to zero`() {
-    // Defensive: a misbehaving server shouldn't be able to make us schedule the next dispatch
-    // in the past (or, worse, give us a negative sleep).
-    #expect(DispatchUtils.parseRetryAfter("-1") == 0)
-  }
-
-  @Test
-  func `fractional seconds parse`() {
-    // `TimeInterval` is `Double`; the RFC technically requires an integer but real servers
-    // sometimes emit `Retry-After: 0.5` and there's no harm in honoring it.
-    #expect(DispatchUtils.parseRetryAfter("0.5") == 0.5)
-  }
-
-  @Test
-  func `HTTP-date header parses to delta from now`() {
-    // Build a header that points 60 seconds in the future and verify the parsed delta is in
-    // the [55, 65] range (allowing for clock drift / test latency).
-    let formatter = DateFormatter()
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    formatter.timeZone = TimeZone(identifier: "GMT")
-    formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
-    let future = Date().addingTimeInterval(60)
-    let header = formatter.string(from: future)
-
-    let parsed = DispatchUtils.parseRetryAfter(header)
-    #expect(parsed != nil)
-    if let parsed {
-      #expect(parsed >= 55 && parsed <= 65, "expected ~60 s, got \(parsed)")
+  func `garbage header returns nil`() {
+    // Neither a Double nor an RFC 7231 HTTP-date — caller should fall through to backoff.
+    let cases = [
+      "tomorrow morning",
+      "Mon Jun 16",  // partial date, missing time + year + zone
+      "30 minutes",  // delta-seconds doesn't accept units
+      "30s",
+      "abc",
+      "300/600",
+      ", 30",
+      "30,",
+    ]
+    for header in cases {
+      #expect(
+        DispatchUtils.parseRetryAfter(header, base: base, cap: cap) == nil,
+        "expected nil for garbage header \"\(header)\""
+      )
     }
   }
 
   @Test
-  func `HTTP-date in the past clamps to zero`() {
+  func `non-finite numeric tokens return nil`() {
+    // `Double(_:)` happily parses `inf`, `-inf`, `nan`, `infinity` — but feeding any of those
+    // into the gate deadline is a bug. Reject them as garbage so the caller falls through to
+    // `computeBackoffDelay`, which is bounded by construction.
+    for header in ["inf", "Inf", "infinity", "Infinity", "-inf", "nan", "NaN"] {
+      #expect(
+        DispatchUtils.parseRetryAfter(header, base: base, cap: cap) == nil,
+        "expected nil for non-finite numeric \"\(header)\""
+      )
+    }
+  }
+
+  // MARK: - delta-seconds (numeric)
+
+  @Test
+  func `delta-seconds inside [base, cap] returns the parsed value unchanged`() {
+    #expect(DispatchUtils.parseRetryAfter("60", base: base, cap: cap) == 60)
+    #expect(DispatchUtils.parseRetryAfter("120", base: base, cap: cap) == 120)
+    #expect(DispatchUtils.parseRetryAfter("900", base: base, cap: cap) == 900)
+  }
+
+  @Test
+  func `delta-seconds below base clamps up to base`() {
+    // `Retry-After: 0` is the most common misbehavior — a server that wants us to retry
+    // immediately. Snap to base so we don't hammer the recovering endpoint.
+    #expect(DispatchUtils.parseRetryAfter("0", base: base, cap: cap) == base)
+    #expect(DispatchUtils.parseRetryAfter("1", base: base, cap: cap) == base)
+    #expect(DispatchUtils.parseRetryAfter("30", base: base, cap: cap) == base)
+    #expect(DispatchUtils.parseRetryAfter("0.5", base: base, cap: cap) == base)
+  }
+
+  @Test
+  func `delta-seconds above cap clamps down to cap`() {
+    // A pathological server response shouldn't be able to wedge us in a multi-hour snooze.
+    #expect(DispatchUtils.parseRetryAfter("901", base: base, cap: cap) == cap)
+    #expect(DispatchUtils.parseRetryAfter("3600", base: base, cap: cap) == cap)
+    #expect(DispatchUtils.parseRetryAfter("86400", base: base, cap: cap) == cap)
+    #expect(DispatchUtils.parseRetryAfter("1e9", base: base, cap: cap) == cap)
+  }
+
+  @Test
+  func `negative delta-seconds clamps up to base`() {
+    // A negative delta would otherwise schedule the next dispatch in the past — bounce it
+    // to the floor so the gate is still a real pause.
+    #expect(DispatchUtils.parseRetryAfter("-1", base: base, cap: cap) == base)
+    #expect(DispatchUtils.parseRetryAfter("-3600", base: base, cap: cap) == base)
+  }
+
+  @Test
+  func `leading and trailing whitespace is trimmed before parsing`() {
+    #expect(DispatchUtils.parseRetryAfter("  120  ", base: base, cap: cap) == 120)
+    #expect(DispatchUtils.parseRetryAfter("\n120\t", base: base, cap: cap) == 120)
+  }
+
+  // MARK: - HTTP-date
+
+  @Test
+  func `HTTP-date inside bounds parses to a delta near the actual offset`() {
+    // Build a header 5 minutes (300 s) in the future — comfortably inside [60, 900].
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone(identifier: "GMT")
+    formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+    let future = Date().addingTimeInterval(300)
+    let header = formatter.string(from: future)
+
+    let parsed = DispatchUtils.parseRetryAfter(header, base: base, cap: cap)
+    #expect(parsed != nil)
+    if let parsed {
+      #expect(parsed >= 295 && parsed <= 305, "expected ~300 s, got \(parsed)")
+    }
+  }
+
+  @Test
+  func `HTTP-date in the past clamps up to base`() {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")
     formatter.timeZone = TimeZone(identifier: "GMT")
     formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
     let past = Date().addingTimeInterval(-3600)
-    #expect(DispatchUtils.parseRetryAfter(formatter.string(from: past)) == 0)
+    #expect(DispatchUtils.parseRetryAfter(formatter.string(from: past), base: base, cap: cap) == base)
   }
 
   @Test
-  func `garbage header returns nil`() {
-    #expect(DispatchUtils.parseRetryAfter("tomorrow morning") == nil)
-    #expect(DispatchUtils.parseRetryAfter("Mon Jun 16") == nil)
+  func `HTTP-date far in the future clamps down to cap`() {
+    // Two hours from now is well past the 15-minute cap.
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone(identifier: "GMT")
+    formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+    let farFuture = Date().addingTimeInterval(7200)
+    #expect(DispatchUtils.parseRetryAfter(formatter.string(from: farFuture), base: base, cap: cap) == cap)
+  }
+
+  // MARK: - Custom client bounds
+
+  @Test
+  func `custom base and cap override the defaults`() {
+    // The same input ("100") clamps differently depending on the bounds passed in: with the
+    // default [60, 900] it sits inside, but a stricter [120, 600] window snaps it up to 120.
+    #expect(DispatchUtils.parseRetryAfter("100") == 100)
+    #expect(DispatchUtils.parseRetryAfter("100", base: 120, cap: 600) == 120)
+    #expect(DispatchUtils.parseRetryAfter("100", base: 10, cap: 50) == 50)
   }
 }

@@ -150,22 +150,44 @@ internal enum DispatchUtils {
 
   /// Parses an HTTP `Retry-After` header into a delay in seconds from now. Accepts both
   /// formats permitted by RFC 7231: an integer delta-seconds, or an HTTP-date.
-  /// Returns `nil` if the header is absent or unparseable.
-  internal static func parseRetryAfter(_ header: String?) -> TimeInterval? {
+  /// Returns `nil` if the header is absent or unparseable, so the caller can fall through to
+  /// `computeBackoffDelay` for a client-driven delay.
+  ///
+  /// A successfully parsed value is clamped to `[base, cap]` so a misbehaving server can't
+  /// drive us to either extreme: a value below `base` (including `0`, negatives, or HTTP-dates
+  /// in the past) floors to `base` so we don't hammer; a value above `cap` (or a date far in
+  /// the future) ceilings to `cap` so we don't snooze for hours. Non-finite floating-point
+  /// values (`inf`, `NaN`) are treated as garbage and return `nil`.
+  internal static func parseRetryAfter(
+    _ header: String?,
+    base: TimeInterval = backoffBaseSeconds,
+    cap: TimeInterval = backoffCapSeconds
+  ) -> TimeInterval? {
     guard let raw = header?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
       return nil
     }
     if let seconds = TimeInterval(raw) {
-      return max(seconds, 0)
+      guard seconds.isFinite else { return nil }
+      return clampToBounds(seconds, base: base, cap: cap)
     }
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")
     formatter.timeZone = TimeZone(identifier: "GMT")
     formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
     if let date = formatter.date(from: raw) {
-      return max(date.timeIntervalSinceNow, 0)
+      return clampToBounds(date.timeIntervalSinceNow, base: base, cap: cap)
     }
     return nil
+  }
+
+  /// Clamps a server-supplied retry delay into the client's `[base, cap]` window. Used by
+  /// `parseRetryAfter` so the gate is bounded regardless of what the server sent.
+  private static func clampToBounds(
+    _ seconds: TimeInterval,
+    base: TimeInterval,
+    cap: TimeInterval
+  ) -> TimeInterval {
+    return min(max(seconds, base), cap)
   }
 
   /// Computes the cursor value the dispatch loop should persist after a single dispatch attempt.
