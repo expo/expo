@@ -18,12 +18,12 @@ struct DispatchUtilsNextCursorTests {
     #expect(next == 20)
   }
 
-  /// `.retryable` is the "leave it alone" case — the next dispatch round picks the same rows
+  /// `.retryableFailure` is the "leave it alone" case — the next dispatch round picks the same rows
   /// up again. This is what keeps an in-flight outage from losing telemetry.
   @Test
   func `retryable retains current cursor`() {
     let next = DispatchUtils.nextCursor(
-      for: .retryable(retryAfter: nil),
+      for: .retryableFailure(retryAfter: nil),
       currentCursor: 10,
       highestId: 20
     )
@@ -35,11 +35,25 @@ struct DispatchUtilsNextCursorTests {
   @Test
   func `retryable with Retry-After still retains current cursor`() {
     let next = DispatchUtils.nextCursor(
-      for: .retryable(retryAfter: 30),
+      for: .retryableFailure(retryAfter: 30),
       currentCursor: 10,
       highestId: 20
     )
     #expect(next == 10)
+  }
+
+  /// `.partialSuccess` advances the cursor like `.success` does: the bytes landed on the
+  /// server (a subset was rejected server-side, but the batch as a whole was accepted), so
+  /// re-sending the same rows would just trip the same rejection.
+  @Test
+  func `partialSuccess advances cursor to highestId`() {
+    let partial = OTPartialSuccess(rejectedDataPoints: 1, rejectedLogRecords: nil, errorMessage: "x")
+    let next = DispatchUtils.nextCursor(
+      for: .partialSuccess(partial),
+      currentCursor: 10,
+      highestId: 20
+    )
+    #expect(next == 20)
   }
 
   /// The acceptance-criterion behavior: a non-retryable response (e.g. 400, 403) advances the
@@ -48,7 +62,7 @@ struct DispatchUtilsNextCursorTests {
   @Test
   func `nonRetryable advances cursor to highestId`() {
     let next = DispatchUtils.nextCursor(
-      for: .nonRetryable(reason: "HTTP 400"),
+      for: .nonRetryableFailure(reason: "HTTP 400"),
       currentCursor: 10,
       highestId: 20
     )
@@ -56,11 +70,11 @@ struct DispatchUtilsNextCursorTests {
   }
 
   /// Edge case: a single-row batch where `currentCursor + 1 == highestId`. The cursor still
-  /// advances exactly once on `.nonRetryable` so the bad row is consumed.
+  /// advances exactly once on `.nonRetryableFailure` so the bad row is consumed.
   @Test
   func `nonRetryable on single-row batch advances by one`() {
     let next = DispatchUtils.nextCursor(
-      for: .nonRetryable(reason: "HTTP 400"),
+      for: .nonRetryableFailure(reason: "HTTP 400"),
       currentCursor: 41,
       highestId: 42
     )

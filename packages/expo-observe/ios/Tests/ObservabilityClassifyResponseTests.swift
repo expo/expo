@@ -18,7 +18,7 @@ struct ObservabilityClassifyResponseTests {
   }
 
   @Test
-  func `2xx with partial_success rejected count returns nonRetryable`() {
+  func `2xx with partial_success rejected data points returns partialSuccess`() {
     let partial = OTPartialSuccess(
       rejectedDataPoints: 3,
       rejectedLogRecords: nil,
@@ -29,16 +29,11 @@ struct ObservabilityClassifyResponseTests {
       retryAfterHeader: nil,
       partialSuccess: partial
     )
-    guard case .nonRetryable(let reason) = result else {
-      Issue.record("expected .nonRetryable, got \(result)")
-      return
-    }
-    #expect(reason.contains("rejected 3"))
-    #expect(reason.contains("metric_kind_mismatch"))
+    #expect(result == .partialSuccess(partial))
   }
 
   @Test
-  func `2xx with partial_success rejected logs returns nonRetryable`() {
+  func `2xx with partial_success rejected log records returns partialSuccess`() {
     // The same response struct serves both metrics and logs endpoints; the logs response uses
     // `rejectedLogRecords` instead of `rejectedDataPoints`.
     let partial = OTPartialSuccess(
@@ -51,12 +46,7 @@ struct ObservabilityClassifyResponseTests {
       retryAfterHeader: nil,
       partialSuccess: partial
     )
-    guard case .nonRetryable(let reason) = result else {
-      Issue.record("expected .nonRetryable, got \(result)")
-      return
-    }
-    #expect(reason.contains("rejected 1"))
-    #expect(reason.contains("log_too_large"))
+    #expect(result == .partialSuccess(partial))
   }
 
   @Test
@@ -95,7 +85,7 @@ struct ObservabilityClassifyResponseTests {
       retryAfterHeader: nil,
       partialSuccess: nil
     )
-    #expect(result == .retryable(retryAfter: nil))
+    #expect(result == .retryableFailure(retryAfter: nil))
   }
 
   @Test
@@ -106,7 +96,7 @@ struct ObservabilityClassifyResponseTests {
       retryAfterHeader: "120",
       partialSuccess: nil
     )
-    #expect(result == .retryable(retryAfter: 120))
+    #expect(result == .retryableFailure(retryAfter: 120))
   }
 
   @Test
@@ -118,7 +108,7 @@ struct ObservabilityClassifyResponseTests {
       retryAfterHeader: "5",
       partialSuccess: nil
     )
-    #expect(result == .retryable(retryAfter: DispatchUtils.backoffBaseSeconds))
+    #expect(result == .retryableFailure(retryAfter: DispatchUtils.backoffBaseSeconds))
   }
 
   @Test
@@ -129,7 +119,7 @@ struct ObservabilityClassifyResponseTests {
         retryAfterHeader: nil,
         partialSuccess: nil
       )
-      #expect(result == .retryable(retryAfter: nil), "status \(code) should be retryable")
+      #expect(result == .retryableFailure(retryAfter: nil), "status \(code) should be retryable")
     }
   }
 
@@ -143,8 +133,8 @@ struct ObservabilityClassifyResponseTests {
       partialSuccess: nil,
       bodyExcerpt: { "bad request" }
     )
-    guard case .nonRetryable(let reason) = result else {
-      Issue.record("expected .nonRetryable, got \(result)")
+    guard case .nonRetryableFailure(let reason) = result else {
+      Issue.record("expected .nonRetryableFailure, got \(result)")
       return
     }
     #expect(reason.contains("400"))
@@ -158,8 +148,8 @@ struct ObservabilityClassifyResponseTests {
       retryAfterHeader: nil,
       partialSuccess: nil
     )
-    guard case .nonRetryable = result else {
-      Issue.record("expected .nonRetryable, got \(result)")
+    guard case .nonRetryableFailure = result else {
+      Issue.record("expected .nonRetryableFailure, got \(result)")
       return
     }
   }
@@ -171,8 +161,8 @@ struct ObservabilityClassifyResponseTests {
       retryAfterHeader: nil,
       partialSuccess: nil
     )
-    guard case .nonRetryable = result else {
-      Issue.record("expected .nonRetryable, got \(result)")
+    guard case .nonRetryableFailure = result else {
+      Issue.record("expected .nonRetryableFailure, got \(result)")
       return
     }
   }
@@ -184,8 +174,8 @@ struct ObservabilityClassifyResponseTests {
       retryAfterHeader: nil,
       partialSuccess: nil
     )
-    guard case .nonRetryable = result else {
-      Issue.record("expected .nonRetryable, got \(result)")
+    guard case .nonRetryableFailure = result else {
+      Issue.record("expected .nonRetryableFailure, got \(result)")
       return
     }
   }
@@ -200,8 +190,8 @@ struct ObservabilityClassifyResponseTests {
         retryAfterHeader: nil,
         partialSuccess: nil
       )
-      guard case .nonRetryable = result else {
-        Issue.record("status \(code) should be .nonRetryable, got \(result)")
+      guard case .nonRetryableFailure = result else {
+        Issue.record("status \(code) should be .nonRetryableFailure, got \(result)")
         continue
       }
     }

@@ -106,9 +106,19 @@ internal struct ObservabilityManager {
     switch result {
     case .success:
       ObserveUserDefaults.lastDispatchDate = Date.now
-    case .retryable:
+    case .partialSuccess(let partial):
+      // The batch reached the server; bump `lastDispatchDate` so stale-cursor repair
+      // doesn't trip. Surface the per-record rejection count and any server message at
+      // warn level so the loss is visible without conflating it with a wholesale drop.
+      ObserveUserDefaults.lastDispatchDate = Date.now
+      observeLogger.warn(
+        "[EAS Observe] Partial success on batch of \(events.count) metric event(s) past "
+          + "id \(highestId): server rejected \(partial.rejectedCount) "
+          + "(\(partial.errorMessage ?? "no error message"))"
+      )
+    case .retryableFailure:
       break
-    case .nonRetryable(let reason):
+    case .nonRetryableFailure(let reason):
       observeLogger.warn(
         "[EAS Observe] Dropping batch of \(events.count) metric event(s) past id "
           + "\(highestId): \(reason)"
@@ -166,9 +176,15 @@ internal struct ObservabilityManager {
       highestId: highestId
     )
     switch result {
-    case .success, .retryable:
+    case .success, .retryableFailure:
       break
-    case .nonRetryable(let reason):
+    case .partialSuccess(let partial):
+      observeLogger.warn(
+        "[EAS Observe] Partial success on batch of \(resourceLogs.count) log event(s) past "
+          + "id \(highestId): server rejected \(partial.rejectedCount) "
+          + "(\(partial.errorMessage ?? "no error message"))"
+      )
+    case .nonRetryableFailure(let reason):
       observeLogger.warn(
         "[EAS Observe] Dropping batch of \(resourceLogs.count) log event(s) past id "
           + "\(highestId): \(reason)"

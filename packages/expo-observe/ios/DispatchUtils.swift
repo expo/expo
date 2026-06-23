@@ -2,17 +2,28 @@
 
 import ExpoModulesCore
 
-/// Outcome of a single dispatch attempt to the OTLP endpoint. Modeled after the OTLP retry
-/// guidance: a 3-way classification distinguishes transient failures (retry the same batch)
-/// from permanent ones (drop the batch and advance the cursor so it can't wedge the loop).
+/// Outcome of a single dispatch attempt to the OTLP endpoint. Four cases, modeled after the
+/// OTLP retry guidance:
 ///
-/// `retryable.retryAfter` carries the parsed `Retry-After` header value in seconds (or `nil`
-/// when the server didn't supply one). `nonRetryable.reason` carries a short diagnostic string
-/// for the `warn`-level log line.
+/// - `.success` — server accepted the batch without rejections.
+/// - `.partialSuccess` — server accepted the batch but rejected some records (the OTLP
+///   `partial_success` body with `rejectedCount > 0`). The rows DID land on the server, so
+///   cursor advance and counter reset match `.success`; the case stays distinct so the call
+///   site can log the rejected count and `errorMessage` clearly rather than describing it as
+///   a drop.
+/// - `.retryableFailure` — transient failure (408/429/502/503/504 or transport error); retry the
+///   same batch after `retryAfter` seconds or a client-computed backoff.
+/// - `.nonRetryableFailure` — permanent failure (4xx/5xx outside the retryable set, encoding error);
+///   drop the batch so it can't wedge the loop.
+///
+/// `retryableFailure.retryAfter` carries the parsed `Retry-After` header value in seconds
+/// (or `nil` when the server didn't supply one). `nonRetryableFailure.reason` carries a short
+/// diagnostic string for the warn log.
 internal enum DispatchResult: Equatable, Sendable {
   case success
-  case retryable(retryAfter: TimeInterval?)
-  case nonRetryable(reason: String)
+  case partialSuccess(OTPartialSuccess)
+  case retryableFailure(retryAfter: TimeInterval?)
+  case nonRetryableFailure(reason: String)
 }
 
 extension Data {
@@ -51,7 +62,7 @@ internal enum DispatchUtils {
     do {
       request.httpBody = try body.toJSONData([])
     } catch {
-      return .nonRetryable(reason: "encoding error: \(error.localizedDescription)")
+      return .nonRetryableFailure(reason: "encoding error: \(error.localizedDescription)")
     }
 
     #if DEBUG
@@ -71,12 +82,12 @@ internal enum DispatchUtils {
       observeLogger.warn(
         "[EAS Observe] Transport error talking to \(endpointUrl): \(error.localizedDescription)"
       )
-      return .retryable(retryAfter: nil)
+      return .retryableFailure(retryAfter: nil)
     }
 
     guard let urlResponse = urlResponse as? HTTPURLResponse else {
       // Non-HTTP response — exotic but not impossible (proxies). Treat as transient.
-      return .retryable(retryAfter: nil)
+      return .retryableFailure(retryAfter: nil)
     }
 
     let retryAfterHeader = urlResponse.value(forHTTPHeaderField: "Retry-After")
@@ -95,12 +106,18 @@ internal enum DispatchUtils {
         "[EAS Observe] Server responded successfully with \(urlResponse.statusCode) and data: "
           + "\(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
       )
-    case .retryable:
+    case .partialSuccess(let partial):
+      observeLogger.warn(
+        "[EAS Observe] Server responded with \(urlResponse.statusCode) (partial success, "
+          + "rejected \(partial.rejectedCount): \(partial.errorMessage ?? "no error message")) "
+          + "and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
+      )
+    case .retryableFailure:
       observeLogger.warn(
         "[EAS Observe] Server responded with \(urlResponse.statusCode) (retryable) and data: "
           + "\(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
       )
-    case .nonRetryable(let reason):
+    case .nonRetryableFailure(let reason):
       observeLogger.warn(
         "[EAS Observe] Server responded with \(urlResponse.statusCode) (non-retryable, "
           + "\(reason)) and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
@@ -112,7 +129,7 @@ internal enum DispatchUtils {
   /// Pure classifier that maps an HTTP response into one of three retry outcomes. Extracted
   /// from `sendRequest` so the OTLP-spec rules can be unit-tested without a real network call.
   ///
-  /// `bodyExcerpt` is invoked lazily, only when the result is `.nonRetryable` and the reason
+  /// `bodyExcerpt` is invoked lazily, only when the result is `.nonRetryableFailure` and the reason
   /// string benefits from including a peek at the response body. Lets the caller bound how much
   /// data we slurp into the log line.
   internal static func classifyResponse(
@@ -124,14 +141,14 @@ internal enum DispatchUtils {
     let retryAfter = parseRetryAfter(retryAfterHeader)
 
     if (200...299).contains(statusCode) {
-      // The OTLP spec also allows `partial_success` to carry a warning-only payload — rejected=0
-      // with a non-empty `errorMessage`. Treat that as a successful send (the records DID land)
-      // so we don't double-drop. The dispatch caller may still want to log the warning.
+      // The OTLP spec allows `partial_success` to carry a warning-only payload — rejected=0
+      // with a non-empty `errorMessage`. Treat that as a successful send (the records DID
+      // land) so we don't double-drop. When `rejectedCount > 0`, the records still landed
+      // server-side but a subset was rejected; surface that as `.partialSuccess` so the
+      // caller can log the count and message clearly. Cursor advance and gate behavior for
+      // `.partialSuccess` match `.success`.
       if let partial = partialSuccess, partial.rejectedCount > 0 {
-        let detail = partial.errorMessage ?? "no error message"
-        return .nonRetryable(
-          reason: "partial_success: rejected \(partial.rejectedCount) (\(detail))"
-        )
+        return .partialSuccess(partial)
       }
       return .success
     }
@@ -140,11 +157,11 @@ internal enum DispatchUtils {
     // it; carry the header through unchanged so server can override us.
     switch statusCode {
     case 408, 429, 502, 503, 504:
-      return .retryable(retryAfter: retryAfter)
+      return .retryableFailure(retryAfter: retryAfter)
     default:
       let excerpt = bodyExcerpt()
       let suffix = excerpt.isEmpty ? "" : ": \(excerpt)"
-      return .nonRetryable(reason: "HTTP \(statusCode)\(suffix)")
+      return .nonRetryableFailure(reason: "HTTP \(statusCode)\(suffix)")
     }
   }
 
@@ -192,12 +209,14 @@ internal enum DispatchUtils {
 
   /// Computes the cursor value the dispatch loop should persist after a single dispatch attempt.
   ///
-  /// - `.success` advances to `highestId` — the rows have been accepted by the server.
-  /// - `.nonRetryable` ALSO advances to `highestId` — the server has refused these rows
-  ///   permanently, so retrying would just produce the same answer; advancing the cursor drops
-  ///   the batch so it can't wedge subsequent rounds. This is the acceptance-criterion behavior:
-  ///   a 400/403 must not be re-sent on the next cycle.
-  /// - `.retryable` leaves the cursor at its current value so the next dispatch attempt picks
+  /// - `.success` and `.partialSuccess` advance to `highestId` — the rows have been accepted
+  ///   by the server (partial success rejects a subset server-side, but the bytes still
+  ///   landed; re-sending them would just re-trip the same rejection).
+  /// - `.nonRetryableFailure` ALSO advances to `highestId` — the server has refused these rows
+  ///   permanently, so retrying would just produce the same answer; advancing the cursor
+  ///   drops the batch so it can't wedge subsequent rounds. This is the acceptance-criterion
+  ///   behavior: a 400/403 must not be re-sent on the next cycle.
+  /// - `.retryableFailure` leaves the cursor at its current value so the next dispatch attempt picks
   ///   the same rows up again.
   internal static func nextCursor(
     for result: DispatchResult,
@@ -205,9 +224,9 @@ internal enum DispatchUtils {
     highestId: Int64
   ) -> Int64 {
     switch result {
-    case .success, .nonRetryable:
+    case .success, .partialSuccess, .nonRetryableFailure:
       return highestId
-    case .retryable:
+    case .retryableFailure:
       return currentCursor
     }
   }
@@ -251,12 +270,13 @@ internal enum DispatchUtils {
 
   /// Pure helper that computes the next `RetryGateState` after a single dispatch result.
   ///
-  /// - `.success` resets the counter to 0 and leaves the gate alone. The gate either already
-  ///   expired (we wouldn't have dispatched otherwise) or was never set — either way, success
-  ///   doesn't introduce a new pause.
-  /// - `.nonRetryable` also resets the counter. A permanent drop isn't a sign that the server
-  ///   is unhealthy and shouldn't pause subsequent rounds.
-  /// - `.retryable` increments the counter and sets the gate to `now + delay`, where `delay`
+  /// - `.success` and `.partialSuccess` reset the counter to 0 and leave the gate alone. The
+  ///   gate either already expired (we wouldn't have dispatched otherwise) or was never set
+  ///   — either way, a server response that ACCEPTED the bytes (even if it rejected a subset
+  ///   server-side) doesn't introduce a new pause.
+  /// - `.nonRetryableFailure` also resets the counter. A permanent drop isn't a sign that the
+  ///   server is unhealthy and shouldn't pause subsequent rounds.
+  /// - `.retryableFailure` increments the counter and sets the gate to `now + delay`, where `delay`
   ///   is the server-supplied `Retry-After` if present, otherwise `backoff(nextCount)`.
   ///
   /// `backoff` is injected so tests can drive it deterministically without going through
@@ -268,12 +288,12 @@ internal enum DispatchUtils {
     backoff: (Int) -> TimeInterval
   ) -> RetryGateState {
     switch result {
-    case .success, .nonRetryable:
+    case .success, .partialSuccess, .nonRetryableFailure:
       return RetryGateState(
         dispatchAfterDate: currentState.dispatchAfterDate,
         consecutiveRetryableFailures: 0
       )
-    case .retryable(let retryAfter):
+    case .retryableFailure(let retryAfter):
       let nextCount = currentState.consecutiveRetryableFailures + 1
       let delay = retryAfter ?? backoff(nextCount)
       return RetryGateState(

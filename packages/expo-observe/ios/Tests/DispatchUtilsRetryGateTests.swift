@@ -32,7 +32,26 @@ struct DispatchUtilsRetryGateTests {
     #expect(next.dispatchAfterDate == state.dispatchAfterDate)  // untouched
   }
 
-  /// `.nonRetryable` is treated the same as success for gate purposes: a permanent drop
+  /// `.partialSuccess` is treated the same as success for gate purposes: the bytes landed on
+  /// the server, so the gate stays where it is and the counter resets.
+  @Test
+  func `partialSuccess resets the counter and leaves the gate alone`() {
+    let state = DispatchUtils.RetryGateState(
+      dispatchAfterDate: now.addingTimeInterval(60),
+      consecutiveRetryableFailures: 4
+    )
+    let partial = OTPartialSuccess(rejectedDataPoints: 2, rejectedLogRecords: nil, errorMessage: nil)
+    let next = DispatchUtils.nextRetryGateState(
+      result: .partialSuccess(partial),
+      currentState: state,
+      now: now,
+      backoff: stubbedBackoff
+    )
+    #expect(next.consecutiveRetryableFailures == 0)
+    #expect(next.dispatchAfterDate == state.dispatchAfterDate)
+  }
+
+  /// `.nonRetryableFailure` is treated the same as success for gate purposes: a permanent drop
   /// doesn't suggest the server is unhealthy, so the counter resets and we don't introduce a
   /// new pause for subsequent batches.
   @Test
@@ -42,7 +61,7 @@ struct DispatchUtilsRetryGateTests {
       consecutiveRetryableFailures: 2
     )
     let next = DispatchUtils.nextRetryGateState(
-      result: .nonRetryable(reason: "HTTP 400"),
+      result: .nonRetryableFailure(reason: "HTTP 400"),
       currentState: state,
       now: now,
       backoff: stubbedBackoff
@@ -57,7 +76,7 @@ struct DispatchUtilsRetryGateTests {
   @Test
   func `first retryable with no Retry-After uses computed backoff`() {
     let next = DispatchUtils.nextRetryGateState(
-      result: .retryable(retryAfter: nil),
+      result: .retryableFailure(retryAfter: nil),
       currentState: .initial,
       now: now,
       backoff: stubbedBackoff
@@ -76,7 +95,7 @@ struct DispatchUtilsRetryGateTests {
       consecutiveRetryableFailures: 2
     )
     let next = DispatchUtils.nextRetryGateState(
-      result: .retryable(retryAfter: nil),
+      result: .retryableFailure(retryAfter: nil),
       currentState: state,
       now: now,
       backoff: stubbedBackoff
@@ -90,7 +109,7 @@ struct DispatchUtilsRetryGateTests {
   @Test
   func `retryable with server Retry-After uses the server delay`() {
     let next = DispatchUtils.nextRetryGateState(
-      result: .retryable(retryAfter: 90),
+      result: .retryableFailure(retryAfter: 90),
       currentState: .initial,
       now: now,
       backoff: stubbedBackoff
@@ -106,7 +125,7 @@ struct DispatchUtilsRetryGateTests {
   @Test
   func `retryable with zero Retry-After still increments counter`() {
     let next = DispatchUtils.nextRetryGateState(
-      result: .retryable(retryAfter: 0),
+      result: .retryableFailure(retryAfter: 0),
       currentState: .initial,
       now: now,
       backoff: stubbedBackoff
@@ -122,7 +141,7 @@ struct DispatchUtilsRetryGateTests {
   func `retryable with server Retry-After does not invoke the backoff function`() {
     var backoffCalled = false
     _ = DispatchUtils.nextRetryGateState(
-      result: .retryable(retryAfter: 5),
+      result: .retryableFailure(retryAfter: 5),
       currentState: .initial,
       now: now,
       backoff: { _ in
@@ -139,13 +158,13 @@ struct DispatchUtilsRetryGateTests {
   @Test
   func `retryable then retryable then success drives counter back to zero`() {
     let after1 = DispatchUtils.nextRetryGateState(
-      result: .retryable(retryAfter: nil),
+      result: .retryableFailure(retryAfter: nil),
       currentState: .initial,
       now: now,
       backoff: stubbedBackoff
     )
     let after2 = DispatchUtils.nextRetryGateState(
-      result: .retryable(retryAfter: nil),
+      result: .retryableFailure(retryAfter: nil),
       currentState: after1,
       now: now,
       backoff: stubbedBackoff
