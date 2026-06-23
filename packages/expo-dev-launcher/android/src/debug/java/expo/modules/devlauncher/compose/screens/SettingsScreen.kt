@@ -22,8 +22,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.composeunstyled.TextField
 import com.composeunstyled.TextInput
+import com.composeunstyled.UnstyledTextField
 import expo.modules.devlauncher.compose.models.SettingsAction
 import expo.modules.devlauncher.compose.models.SettingsState
 import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
@@ -342,7 +342,7 @@ private fun NSDSection(state: SettingsState, onAction: (SettingsAction) -> Unit)
             )
           }
 
-          TextField(
+          UnstyledTextField(
             value = state.filterBySlug,
             onValueChange = { newSlug ->
               onAction(SettingsAction.UpdateFilterBySlug(newSlug))
