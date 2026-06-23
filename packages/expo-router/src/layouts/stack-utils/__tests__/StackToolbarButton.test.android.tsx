@@ -340,7 +340,9 @@ describe('NativeToolbarButton', () => {
     });
 
     it('does not render badge text when value is null', () => {
-      render(<NativeToolbarButton {...defaultProps} badge={{ value: null }} />);
+      render(
+        <NativeToolbarButton {...defaultProps} badge={{ value: null as unknown as string }} />
+      );
 
       expect(MockedBox).toHaveBeenCalled();
       expect(MockedBadge).toHaveBeenCalled();
@@ -411,18 +413,18 @@ describe('NativeToolbarButton', () => {
       consoleSpy.mockRestore();
     });
 
-    it('applies alpha modifier to Box when disabled with badge', () => {
+    it('applies alpha modifier to Badge when disabled with badge', () => {
       render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} disabled />);
 
-      expect(MockedBox.mock.calls[0]![0]).toMatchObject({
+      expect(MockedBadge.mock.calls[0]![0]).toMatchObject({
         modifiers: [{ type: 'alpha', alpha: 0.38 }],
       });
     });
 
-    it('does not apply alpha modifier to Box when enabled with badge', () => {
+    it('does not apply alpha modifier to Badge when enabled with badge', () => {
       render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
 
-      expect(MockedBox.mock.calls[0]![0].modifiers).toBeUndefined();
+      expect(MockedBadge.mock.calls[0]![0].modifiers).toBeUndefined();
     });
   });
 

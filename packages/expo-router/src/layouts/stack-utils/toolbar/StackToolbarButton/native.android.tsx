@@ -58,13 +58,12 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
   return (
     <AnimatedItemContainer visible={!props.hidden}>
       {props.badge ? (
-        <Box
-          contentAlignment="topEnd"
-          modifiers={props.disabled ? [alphaModifier(0.38)] : undefined}>
+        <Box contentAlignment="topEnd">
           {button}
           <Badge
             containerColor={props.badge.style?.backgroundColor}
-            contentColor={props.badge.style?.color}>
+            contentColor={props.badge.style?.color}
+            modifiers={props.disabled ? [alphaModifier(0.38)] : undefined}>
             {hasBadge ? (
               <ComposeText
                 style={{
