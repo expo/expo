@@ -1,8 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
 import Foundation
 import Testing
-import ExpoModulesJSI
 
 @testable import ExpoModulesCore
 
@@ -18,18 +18,18 @@ struct JavaScriptCodableArrayBufferTests {
   }
 
   @Test
-  func `decodes JS-backed ArrayBuffer as native-backed copy`() throws {
+  func `decodes JS-backed ArrayBuffer as lazy JavaScript-backed view`() throws {
     let runtime = try runtime
     let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
     let decoded = try ArrayBuffer.decode(value, in: runtime)
 
     #expect(decoded.byteLength == 3)
-    #expect(decoded.isNativeBacked == true)
+    #expect(decoded.isNativeBacked == false)
     #expect(Array(decoded.data) == [1, 2, 3])
   }
 
   @Test
-  func `decodes borrowed JavaScript value as native-backed ArrayBuffer`() throws {
+  func `decodes borrowed JavaScript value as lazy JavaScript-backed view`() throws {
     let runtime = try runtime
     let value = try runtime.eval(
       """
@@ -42,12 +42,12 @@ struct JavaScriptCodableArrayBufferTests {
     let decoded = try ArrayBuffer.decode(values.unownedValue(at: 0), in: runtime)
 
     #expect(decoded.byteLength == 2)
-    #expect(decoded.isNativeBacked == true)
+    #expect(decoded.isNativeBacked == false)
     #expect(Array(decoded.data) == [2, 3])
   }
 
   @Test
-  func `decodes JS-backed typed array view as native-backed copy of view range`() throws {
+  func `decodes JS-backed typed array view as lazy JavaScript-backed view range`() throws {
     let runtime = try runtime
     let value = try runtime.eval(
       """
@@ -58,7 +58,7 @@ struct JavaScriptCodableArrayBufferTests {
     let decoded = try ArrayBuffer.decode(value, in: runtime)
 
     #expect(decoded.byteLength == 2)
-    #expect(decoded.isNativeBacked == true)
+    #expect(decoded.isNativeBacked == false)
     #expect(Array(decoded.data) == [2, 3])
   }
 
@@ -79,7 +79,8 @@ struct JavaScriptCodableArrayBufferTests {
   func `decodes native-backed typed array view as native-backed borrowed view range`() throws {
     let runtime = try runtime
     let nativeBuffer = try makeArrayBuffer(bytes: [1, 2, 3, 4, 5])
-    runtime.global().setProperty("nativeBuffer", value: nativeBuffer.asJavaScriptArrayBuffer(runtime: runtime).asValue())
+    runtime.global().setProperty(
+      "nativeBuffer", value: nativeBuffer.asJavaScriptArrayBuffer(runtime: runtime).asValue())
     let value = try runtime.eval("new Uint8Array(nativeBuffer, 1, 2)")
 
     let decoded = try ArrayBuffer.decode(value, in: runtime)
@@ -111,7 +112,7 @@ struct JavaScriptCodableArrayBufferTests {
     let buffer = try #require(decoded["payload"])
 
     #expect(buffer.byteLength == 3)
-    #expect(buffer.isNativeBacked == true)
+    #expect(buffer.isNativeBacked == false)
     #expect(Array(buffer.data) == [7, 8, 9])
   }
 
@@ -124,7 +125,7 @@ struct JavaScriptCodableArrayBufferTests {
 
     #expect(decoded.count == 1)
     #expect(decoded[0].byteLength == 2)
-    #expect(decoded[0].isNativeBacked == true)
+    #expect(decoded[0].isNativeBacked == false)
     #expect(Array(decoded[0].data) == [10, 11])
   }
 
