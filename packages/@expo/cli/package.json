@@ -86,7 +86,7 @@
     "compression": "^1.7.4",
     "connect": "^3.7.0",
     "debug": "^4.3.4",
-    "dnssd-advertise": "^1.1.4",
+    "dnssd-advertise": "^1.1.6",
     "expo-server": "workspace:^56.0.4",
     "fetch-nodeshim": "^0.4.10",
     "getenv": "^2.0.0",
