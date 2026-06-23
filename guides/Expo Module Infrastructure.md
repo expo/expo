@@ -24,7 +24,7 @@ Run:
 
 # The Standard Configuration
 
-We use a shared set of configuration files and tools like TypeScript across modules. The `expo-module-scripts` package is the source of truth for much of the configuration. With Yarn workspaces, all modules use the same version of `expo-module-scripts`, helping us structurally ensure we use the same configuration across modules and uniformly use the same versions of Babel, TypeScript, Jest, and other tools.
+We use a shared set of configuration files and tools like TypeScript across modules. The `expo-module-scripts` package is the source of truth for much of the configuration. With pnpm workspaces, all modules use the in-repo version of `expo-module-scripts`, helping us structurally ensure we use the same configuration across modules and uniformly use the same versions of Babel, TypeScript, Jest, and other tools.
 
 In a module, include `expo-module-scripts` as a development dependency in package.json:
 
@@ -55,7 +55,7 @@ In a module, include `expo-module-scripts` as a development dependency in packag
 }
 ```
 
-The `expo-module` program is provided by `expo-module-scripts`. You can run `yarn expo-module --help` to see all of the commands. Several of the scripts are interactive and start file watchers as they are intended for human developers rather than CI. To run the commands in non-interactive mode, set the environment variable `EXPO_NONINTERACTIVE=1`.
+The `expo-module` program is provided by `expo-module-scripts`. You can run `pnpm expo-module --help` to see all of the commands. Several of the scripts are interactive and start file watchers as they are intended for human developers rather than CI. To run the commands in non-interactive mode, set the environment variable `EXPO_NONINTERACTIVE=1`.
 
 ## Auto-generated Configuration Files
 
@@ -73,11 +73,11 @@ In package.json, define the main module of the package to be the compiled entry 
 }
 ```
 
-Running `yarn clean` will delete the `build` directory.
+Running `pnpm clean` will delete the `build` directory.
 
 ## Compiling TypeScript
 
-Run `yarn build` to compile the source code from `src` to `build`. Run `yarn typecheck` to type-check the package with `tsc` without emitting output. When working across the monorepo, prefer running these through Turborepo from the repo root (`pnpm build`, `pnpm typecheck`) so only affected packages are rebuilt and results are cached.
+Run `pnpm build` to compile the source code from `src` to `build`. Run `pnpm typecheck` to type-check the package with `tsc` without emitting output. When working across the monorepo, prefer running these through Turborepo from the repo root (`pnpm build`, `pnpm typecheck`) so only affected packages are rebuilt and results are cached.
 
 The `postinstall` script generates a small tsconfig.json file that extends the main configuration file inside of `expo-module-scripts`.
 
@@ -95,7 +95,7 @@ The `postinstall` script generates a small tsconfig.json file that extends the m
 
 This preset enables TypeScript support with `ts-jest`. It creates a custom tsconfig.json file for Jest tests and configures Jest to run both TypeScript and Babel with `babel-preset-expo` so we more accurately transform the code as if it were part of an app.
 
-Run `yarn test` to run Jest in watcher mode. By default, Jest will run tests affected by changed files and re-run tests when files are edited and saved. Since the unit tests run every time a file changes, we need to keep these tests fast and deterministic.
+Run `pnpm test` to run Jest in watcher mode. By default, Jest will run tests affected by changed files and re-run tests when files are edited and saved. Since the unit tests run every time a file changes, we need to keep these tests fast and deterministic.
 
 # package.json Fields
 
