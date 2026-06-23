@@ -1,4 +1,4 @@
-import { resolveFrom } from '@expo/require-utils'
+import { resolveFrom } from '@expo/require-utils';
 import path from 'path';
 
 import type { ExtraDependencies, ModuleDescriptorDevTools, PackageRevision } from '../types';
