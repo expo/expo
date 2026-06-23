@@ -54,7 +54,6 @@ export type EnumCase = string;
  */
 export type EnumType = {
   name: string;
-  stringBacked: boolean;
   cases: EnumCase[];
 };
 
