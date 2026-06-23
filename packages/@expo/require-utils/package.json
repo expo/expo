@@ -17,8 +17,7 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "build",
-    "static"
+    "build"
   ],
   "scripts": {
     "build": "expo-build cjs:src",

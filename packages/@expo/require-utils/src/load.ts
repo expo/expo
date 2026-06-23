@@ -6,7 +6,6 @@ import url from 'node:url';
 import type * as ts from 'typescript';
 
 import { annotateError, formatDiagnostic } from './codeframe';
-import { importAsync } from './import-util';
 import { installSourceMapStackTrace } from './stacktrace';
 import { toCommonJS } from './transform';
 
@@ -342,7 +341,7 @@ async function requireOrImport(filename: string) {
     const importFilename = path.isAbsolute(filename)
       ? url.pathToFileURL(filename).toString()
       : filename;
-    return await importAsync(importFilename);
+    return await import(importFilename);
   }
 }
 
