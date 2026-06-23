@@ -2,13 +2,11 @@
 
 import ExpoModulesJSI
 
-/**
- An array buffer that manages its own native memory or borrows native-backed memory.
- Does not require a JavaScript runtime at creation time — the JSI backing buffer
- is created on demand when the buffer needs to be returned to JavaScript.
-
- - Note: Sendable conformance is `@unchecked` because `UnsafeMutableRawPointer` isn't `Sendable`.
- */
+/// An array buffer that manages its own native memory or borrows native-backed memory.
+/// Does not require a JavaScript runtime at creation time — the JSI backing buffer
+/// is created on demand when the buffer needs to be returned to JavaScript.
+///
+/// - Note: Sendable conformance is `@unchecked` because `UnsafeMutableRawPointer` isn't `Sendable`.
 public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
   private enum Storage {
     case owned(pointer: UnsafeMutableRawPointer, count: Int, cleanup: () -> Void)
@@ -55,6 +53,12 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
     return storage.byteLength
   }
 
+  /// Whether this buffer's visible byte range is stored independently of any parent storage it was
+  /// converted from. JS-heap ArrayBuffer and TypedArray inputs are copied and therefore owned;
+  /// native-backed ArrayBuffer and TypedArray inputs may be borrowed and therefore not owned.
+  ///
+  /// This is not a general mutability flag. For example, an owned buffer that is later returned to
+  /// JavaScript can still be shared with that new JavaScript wrapper.
   public var isOwned: Bool {
     return storage.isOwned
   }
@@ -73,9 +77,7 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
 
   // MARK: - AnyArrayBuffer
 
-  /**
-   Creates a native-owned copy of this ArrayBuffer.
-   */
+  /// Creates a native-owned copy of this ArrayBuffer.
   public func copy() -> ArrayBuffer {
     return ArrayBuffer.copy(of: rawPointer, count: byteLength)
   }
@@ -98,10 +100,9 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
 
   // MARK: - JavaScript conversion
 
-  /**
-   Returns a `JavaScriptArrayBuffer` that wraps the native memory managed by this buffer.
-   The native buffer is retained for the lifetime of the `JavaScriptArrayBuffer`.
-   */
+  /// Returns a `JavaScriptArrayBuffer` that wraps the native memory managed by this buffer.
+  /// The native buffer is retained for the lifetime of the `JavaScriptArrayBuffer`.
+  @usableFromInline
   func asJavaScriptArrayBuffer(runtime: JavaScriptRuntime) -> JavaScriptArrayBuffer {
     return runtime.createArrayBuffer(
       data: rawPointer.assumingMemoryBound(to: UInt8.self),
@@ -115,9 +116,7 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
 
   // MARK: - Allocate
 
-  /**
-   Allocates a new native ArrayBuffer of the given size with zero-initialized memory.
-   */
+  /// Allocates a new native ArrayBuffer of the given size with zero-initialized memory.
   public static func allocate(size: Int, initializeToZero: Bool = true) -> ArrayBuffer {
     let data = UnsafeMutablePointer<UInt8>.allocate(capacity: size)
     if initializeToZero {
@@ -130,9 +129,7 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
 
   // MARK: - Copy
 
-  /**
-   Copies the given raw pointer into a new native ArrayBuffer.
-   */
+  /// Copies the given raw pointer into a new native ArrayBuffer.
   public static func copy(of other: UnsafeRawPointer, count: Int) -> ArrayBuffer {
     if count == 0 {
       return ArrayBuffer.allocate(size: 0, initializeToZero: false)
@@ -145,9 +142,7 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
     }
   }
 
-  /**
-   Copies the given Data into a new native ArrayBuffer.
-   */
+  /// Copies the given Data into a new native ArrayBuffer.
   public static func copy(data: Data) throws -> ArrayBuffer {
     let size = data.count
     if size == 0 {
@@ -166,9 +161,7 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
 
   // MARK: - Wrap
 
-  /**
-   Wraps the given raw buffer pointer in an ArrayBuffer without copying data.
-   */
+  /// Wraps the given raw buffer pointer in an ArrayBuffer without copying data.
   public static func wrap(
     dataWithoutCopy data: UnsafeMutableRawBufferPointer,
     cleanup: @escaping () -> Void
@@ -179,13 +172,11 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
     return ArrayBuffer(wrapping: baseAddress, count: data.count, cleanup: cleanup)
   }
 
-  /**
-   Zero-copy wraps the given Data object in an ArrayBuffer. The Data's backing store
-   is retained for the lifetime of the returned buffer.
-
-   - Warning: This bypasses Data's copy-on-write capabilities, effectively allowing
-   mutation of the Data from JavaScript code.
-   */
+  /// Zero-copy wraps the given Data object in an ArrayBuffer. The Data's backing store
+  /// is retained for the lifetime of the returned buffer.
+  ///
+  /// - Warning: This bypasses Data's copy-on-write capabilities, effectively allowing
+  ///   mutation of the Data from JavaScript code.
   public static func wrap(dataWithoutCopy data: Data) -> ArrayBuffer {
     let retained = Unmanaged.passRetained(data as NSData)
     let pointer = UnsafeMutableRawPointer(mutating: retained.takeUnretainedValue().bytes)
@@ -196,19 +187,17 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
 
   // MARK: - JavaScript conversion
 
-  /**
-   Converts a JavaScript ArrayBuffer or TypedArray to Expo's safe native ArrayBuffer representation.
-   */
-  internal static func from(jsValue: JavaScriptValue) throws -> ArrayBuffer {
-    guard jsValue.isObject() else {
-      throw ArrayBufferJavaScriptValueConversionException(jsValue.kind)
+  /// Converts a JavaScript ArrayBuffer or TypedArray to Expo's safe native ArrayBuffer representation.
+  @usableFromInline
+  internal static func from(value: borrowing JavaScriptValue) throws -> ArrayBuffer {
+    guard value.isObject() else {
+      throw ArrayBufferJavaScriptValueConversionException(value.kind)
     }
-    return try ArrayBuffer.from(jsObject: jsValue.getObject())
+    return try ArrayBuffer.from(jsObject: value.getObject())
   }
 
-  /**
-   Converts a borrowed JavaScript ArrayBuffer or TypedArray without materializing an owning JavaScriptValue.
-   */
+  /// Converts a borrowed JavaScript ArrayBuffer or TypedArray without materializing an owning JavaScriptValue.
+  @usableFromInline
   internal static func from(
     unownedValue: borrowing JavaScriptUnownedValue,
     in runtime: borrowing JavaScriptRuntime
@@ -269,14 +258,16 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
 extension ArrayBuffer: JavaScriptDecodable, JavaScriptEncodable {
   // MARK: - JavaScriptDecodable
   @JavaScriptActor
+  @inlinable
   public static func decode(
-    _ value: JavaScriptValue,
+    _ value: borrowing JavaScriptValue,
     in runtime: borrowing JavaScriptRuntime
   ) throws -> ArrayBuffer {
-    return try ArrayBuffer.from(jsValue: value)
+    return try ArrayBuffer.from(value: value)
   }
 
   @JavaScriptActor
+  @inlinable
   public static func decode(
     _ value: borrowing JavaScriptUnownedValue,
     in runtime: borrowing JavaScriptRuntime
@@ -286,6 +277,7 @@ extension ArrayBuffer: JavaScriptDecodable, JavaScriptEncodable {
 
   // MARK: - JavaScriptEncodable
   @JavaScriptActor
+  @inlinable
   public static func encode(
     _ value: ArrayBuffer,
     in runtime: borrowing JavaScriptRuntime

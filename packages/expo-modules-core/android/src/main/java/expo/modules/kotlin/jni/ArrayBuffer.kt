@@ -33,6 +33,11 @@ class ArrayBuffer : Destructible {
 
   external fun size(): Int
 
+  /**
+   * Reads primitive values from the given byte offset.
+   *
+   * Callers are responsible for ensuring the requested value fits within [size].
+   */
   external fun readByte(position: Int): Byte
   external fun read2Byte(position: Int): Short
   external fun read4Byte(position: Int): Int
@@ -51,6 +56,10 @@ class ArrayBuffer : Destructible {
    */
   external fun toDirectBuffer(copyBorrowed: Boolean): ByteBuffer
 
+  /**
+   * Whether this buffer's visible byte range is stored independently of any parent storage it was
+   * converted from.
+   */
   external fun isOwned(): Boolean
 
   /**
