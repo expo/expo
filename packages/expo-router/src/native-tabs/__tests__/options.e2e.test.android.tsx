@@ -135,7 +135,7 @@ it('when no options are passed, default ones are used', () => {
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     hidden: false,
     specialEffects: {},
-    screenKey: expect.stringMatching(/^index-[-\w]+/),
+    screenKey: expect.stringMatching(/(^|-)index$/),
     children: expect.objectContaining({}),
     android: { icon: undefined, selectedIcon: undefined },
   } as TabsScreenProps);
@@ -1028,7 +1028,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       children: expect.objectContaining({}),
       android: { icon: undefined, selectedIcon: undefined },
     } as TabsScreenProps);
@@ -1036,7 +1036,7 @@ describe('Dynamic options', () => {
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       children: expect.objectContaining({}),
       android: { icon: undefined, selectedIcon: undefined },
     } as TabsScreenProps);
@@ -1065,14 +1065,14 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       android: { icon: undefined, selectedIcon: undefined },
     } as TabsScreenProps);
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       badgeValue: '5',
       android: {
         icon: {
@@ -1127,13 +1127,13 @@ describe('Dynamic options', () => {
       },
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
     } as TabsScreenProps);
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       badgeValue: '5',
       android: {
         icon: {
@@ -1178,13 +1178,13 @@ describe('Dynamic options', () => {
       },
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
     } as TabsScreenProps);
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       badgeValue: '5',
       android: {
         icon: {
@@ -1265,14 +1265,14 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       android: { icon: undefined, selectedIcon: undefined },
     } as TabsScreenProps);
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Second',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^second-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)second$/),
       android: { icon: undefined, selectedIcon: undefined },
     } as TabsScreenProps);
   });

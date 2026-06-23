@@ -14,13 +14,14 @@ test('gets initial state from route names and params with initialRouteName', () 
         baz: { answer: 42 },
         qux: { name: 'Jane' },
       },
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
     index: 0,
     key: 'stack-test',
     routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'baz-test', name: 'baz', params: { answer: 42 } }],
+    routes: [{ key: 'baz', name: 'baz', params: { answer: 42 } }],
     stale: false,
   });
 });
@@ -35,15 +36,34 @@ test('gets initial state from route names and params without initialRouteName', 
         baz: { answer: 42 },
         qux: { name: 'Jane' },
       },
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
     index: 0,
     key: 'stack-test',
     routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
+    routes: [{ key: 'bar', name: 'bar' }],
     stale: false,
   });
+});
+
+test('rehydrates keyless same-name routes to sequential free keys', () => {
+  const router = StackRouter({});
+
+  // Each keyless route derives its key against the routes already built, so repeated same-name
+  // routes land on the next free index instead of colliding.
+  const state = router.getRehydratedState(
+    {
+      index: 2,
+      routes: [{ name: 'a' }, { name: 'a' }, { name: 'a' }],
+    },
+    { routeNames: ['a'], pathname: '/(tabs)', routeParamList: {}, routeGetIdList: {} }
+  );
+
+  const keys = state.routes.map((r) => r.key);
+  expect(keys).toEqual(['/(tabs)-a', '/(tabs)-a-1', '/(tabs)-a-2']);
+  expect(new Set(keys).size).toBe(keys.length);
 });
 
 test('gets rehydrated state from partial state', () => {
@@ -55,6 +75,7 @@ test('gets rehydrated state from partial state', () => {
       baz: { answer: 42 },
       qux: { name: 'Jane' },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -115,7 +136,7 @@ test('gets rehydrated state from partial state', () => {
     index: 0,
     key: 'stack-test',
     routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
+    routes: [{ key: 'bar', name: 'bar' }],
     stale: false,
   });
 });
@@ -135,6 +156,7 @@ test("doesn't rehydrate state if it's not stale", () => {
     router.getRehydratedState(state, {
       routeNames: [],
       routeParamList: {},
+      pathname: undefined,
       routeGetIdList: {},
     })
   ).toBe(state);
@@ -162,6 +184,7 @@ test('gets state on route names change', () => {
           qux: { name: 'John' },
           fiz: { fruit: 'apple' },
         },
+        pathname: undefined,
         routeGetIdList: {},
         routeKeyChanges: [],
       }
@@ -194,6 +217,7 @@ test('gets state on route names change', () => {
         routeParamList: {
           baz: { name: 'John' },
         },
+        pathname: undefined,
         routeGetIdList: {},
         routeKeyChanges: [],
       }
@@ -202,7 +226,7 @@ test('gets state on route names change', () => {
     index: 0,
     key: 'stack-test',
     routeNames: ['baz', 'qux'],
-    routes: [{ key: 'baz-test', name: 'baz', params: { name: 'John' } }],
+    routes: [{ key: 'baz', name: 'baz', params: { name: 'John' } }],
     stale: false,
   });
 });
@@ -227,6 +251,7 @@ test('gets state on route names change with initialRouteName', () => {
         routeParamList: {
           baz: { name: 'John' },
         },
+        pathname: undefined,
         routeGetIdList: {},
         routeKeyChanges: [],
       }
@@ -235,7 +260,7 @@ test('gets state on route names change with initialRouteName', () => {
     index: 0,
     key: 'stack-test',
     routeNames: ['baz', 'qux'],
-    routes: [{ key: 'qux-test', name: 'qux' }],
+    routes: [{ key: 'qux', name: 'qux' }],
     stale: false,
   });
 });
@@ -245,6 +270,7 @@ test('handles navigate action', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -272,7 +298,7 @@ test('handles navigate action', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
       {
-        key: 'qux-test',
+        key: 'qux',
         name: 'qux',
         params: { answer: 42 },
       },
@@ -302,7 +328,7 @@ test('handles navigate action', () => {
     routes: [
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
+      { key: 'baz-1', name: 'baz', params: { answer: 42 } },
     ],
   });
 });
@@ -312,6 +338,7 @@ test('updates params on navigate if already on the screen', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -347,6 +374,7 @@ test('merges params on navigate when specified', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -382,6 +410,7 @@ test("doesn't navigate to nonexistent screen", () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -408,6 +437,7 @@ test('ensures unique ID for navigate', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.foo,
       qux: ({ params }) => params?.fux,
@@ -433,7 +463,7 @@ test('ensures unique ID for navigate', () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar-1', name: 'bar', params: { foo: 'a' } },
     ],
   });
 
@@ -512,7 +542,7 @@ test('ensures unique ID for navigate', () => {
     routes: [
       { key: 'bar', name: 'bar' },
       { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'b' } },
+      { key: 'bar-2', name: 'bar', params: { foo: 'b' } },
     ],
   });
 });
@@ -522,6 +552,7 @@ test('ensure unique ID is only per route name for navigate', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {
       baz: ({ params }) => params?.foo,
       bar: ({ params }) => params?.foo,
@@ -552,7 +583,7 @@ test('ensure unique ID is only per route name for navigate', () => {
     routes: [
       { key: 'qux-test', name: 'qux', params: { test: 'a' } },
       { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar', name: 'bar', params: { foo: 'a' } },
     ],
   });
 });
@@ -562,6 +593,7 @@ test('goes back to matching screen for navigate if pop: true', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -593,7 +625,7 @@ test('goes back to matching screen for navigate if pop: true', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
       {
-        key: 'qux-test',
+        key: 'qux',
         name: 'qux',
         params: { answer: 42 },
       },
@@ -663,6 +695,7 @@ test('goes back to matching ID for navigate if pop: true', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.foo,
       qux: ({ params }) => params?.fux,
@@ -740,6 +773,7 @@ test('handles navigate action (legacy)', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -767,7 +801,7 @@ test('handles navigate action (legacy)', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
       {
-        key: 'qux-test',
+        key: 'qux',
         name: 'qux',
         params: { answer: 42 },
       },
@@ -846,6 +880,7 @@ test("doesn't navigate to nonexistent screen (legacy)", () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -892,6 +927,7 @@ test('ensures unique ID for navigate (legacy)', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.foo,
       qux: ({ params }) => params?.fux,
@@ -917,7 +953,7 @@ test('ensures unique ID for navigate (legacy)', () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar-1', name: 'bar', params: { foo: 'a' } },
     ],
   });
 
@@ -970,7 +1006,7 @@ test('ensures unique ID for navigate (legacy)', () => {
     routes: [
       { key: 'bar', name: 'bar' },
       { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'b' } },
+      { key: 'bar-2', name: 'bar', params: { foo: 'b' } },
     ],
   });
 });
@@ -980,6 +1016,7 @@ test('ensure unique ID is only per route name for navigate (legacy)', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {
       baz: ({ params }) => params?.foo,
       bar: ({ params }) => params?.foo,
@@ -1010,7 +1047,7 @@ test('ensure unique ID is only per route name for navigate (legacy)', () => {
     routes: [
       { key: 'qux-test', name: 'qux', params: { test: 'a' } },
       { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar', name: 'bar', params: { foo: 'a' } },
     ],
   });
 });
@@ -1020,6 +1057,7 @@ test('handles go back action', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1066,6 +1104,7 @@ test('handles pop action', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1229,6 +1268,7 @@ test('handles pop to top action', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1262,6 +1302,7 @@ test('replaces focused screen with replace', () => {
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1287,7 +1328,7 @@ test('replaces focused screen with replace', () => {
     index: 1,
     routes: [
       { key: 'foo', name: 'foo' },
-      { key: 'qux-test', name: 'qux', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { answer: 42 } },
       { key: 'baz', name: 'baz' },
     ],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
@@ -1299,6 +1340,7 @@ test('replaces active screen with replace', () => {
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1327,7 +1369,7 @@ test('replaces active screen with replace', () => {
     index: 1,
     routes: [
       { key: 'foo', name: 'foo' },
-      { key: 'qux-test', name: 'qux', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { answer: 42 } },
       { key: 'baz', name: 'baz' },
     ],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
@@ -1339,6 +1381,7 @@ test("handles replace if source key isn't present but target is not specified", 
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1367,7 +1410,7 @@ test("handles replace if source key isn't present but target is not specified", 
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routes: [
       { key: 'foo', name: 'foo' },
-      { key: 'qux-test', name: 'qux', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { answer: 42 } },
       { key: 'baz', name: 'baz' },
     ],
     stale: false,
@@ -1379,6 +1422,7 @@ test("doesn't handle replace if source key isn't present when target is specifie
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1410,6 +1454,7 @@ test("doesn't handle replace if screen to replace with isn't present", () => {
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1442,6 +1487,7 @@ test('handles push action', () => {
     routeParamList: {
       baz: { foo: 21 },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1464,7 +1510,7 @@ test('handles push action', () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { foo: 21 } },
+      { key: 'baz', name: 'baz', params: { foo: 21 } },
     ],
   });
 
@@ -1487,7 +1533,7 @@ test('handles push action', () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { foo: 21, bar: 29 } },
+      { key: 'baz', name: 'baz', params: { foo: 21, bar: 29 } },
     ],
   });
 
@@ -1511,6 +1557,7 @@ test("doesn't push nonexistent screen", () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1537,6 +1584,7 @@ test('ensures unique ID for push', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.foo,
       qux: ({ params }) => params?.fux,
@@ -1562,7 +1610,7 @@ test('ensures unique ID for push', () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar-1', name: 'bar', params: { foo: 'a' } },
     ],
   });
 
@@ -1615,7 +1663,7 @@ test('ensures unique ID for push', () => {
     routes: [
       { key: 'bar', name: 'bar' },
       { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'b' } },
+      { key: 'bar-2', name: 'bar', params: { foo: 'b' } },
     ],
   });
 });
@@ -1625,6 +1673,7 @@ test('ensure unique ID is only per route name for push', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {
       baz: ({ params }) => params?.foo,
       bar: ({ params }) => params?.foo,
@@ -1655,7 +1704,7 @@ test('ensure unique ID is only per route name for push', () => {
     routes: [
       { key: 'qux-test', name: 'qux', params: { test: 'a' } },
       { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
+      { key: 'bar', name: 'bar', params: { foo: 'a' } },
     ],
   });
 });
@@ -1665,6 +1714,7 @@ test('adds path on navigate if provided', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1756,7 +1806,7 @@ test('adds path on navigate if provided', () => {
     routes: [
       { key: 'bar', name: 'bar', params: { answer: 42 } },
       {
-        key: 'baz-test',
+        key: 'baz',
         name: 'baz',
         path: '/foo/bar',
       },
@@ -1769,6 +1819,7 @@ test("doesn't remove existing path on navigate if not provided", () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1808,6 +1859,7 @@ test('handles popTo action', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1834,7 +1886,7 @@ test('handles popTo action', () => {
     routes: [
       { key: 'baz', name: 'baz' },
       {
-        key: 'qux-test',
+        key: 'qux',
         name: 'qux',
         params: { answer: 42 },
       },
@@ -1896,6 +1948,7 @@ test("doesn't popTo to nonexistent screen", () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1924,6 +1977,7 @@ test("doesn't merge params on popTo to an existing screen", () => {
     routeParamList: {
       bar: { color: 'test' },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -1989,6 +2043,7 @@ test('merges params on popTo to an existing screen if merge: true', () => {
       bar: { color: 'test' },
       baz: { foo: 12 },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -2085,6 +2140,7 @@ test("handles popTo if source key isn't present but target is not specified", ()
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -2114,7 +2170,7 @@ test("handles popTo if source key isn't present but target is not specified", ()
     // `baz` was inactive (position > index), so it is preserved in the tail.
     routes: [
       { key: 'foo', name: 'foo' },
-      { key: 'qux-test', name: 'qux', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { answer: 42 } },
       { key: 'baz', name: 'baz' },
     ],
     stale: false,
@@ -2126,6 +2182,7 @@ test('handles popTo when source and target match a route', () => {
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -2155,7 +2212,7 @@ test('handles popTo when source and target match a route', () => {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routes: [
       { key: 'foo', name: 'foo' },
-      { key: 'qux-test', name: 'qux', params: { answer: 42 } },
+      { key: 'qux', name: 'qux', params: { answer: 42 } },
     ],
     stale: false,
   });
@@ -2166,6 +2223,7 @@ test("doesn't handle popTo if source key isn't present when target is specified"
   const options: RouterConfigOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -2200,6 +2258,7 @@ test('adds route to preloaded list with preload', () => {
       bar: { color: 'test' },
       baz: { foo: 12 },
     },
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2232,7 +2291,7 @@ test('adds route to preloaded list with preload', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar', params: { answer: 42 } },
       { key: 'qux', name: 'qux' },
-      { key: 'bar-test', name: 'bar', params: { color: 'test' } },
+      { key: 'bar-1', name: 'bar', params: { color: 'test' } },
     ],
   });
 
@@ -2304,7 +2363,7 @@ test('adds route to preloaded list with preload', () => {
         params: { answer: 42, toBe: 'notMerged' },
       },
       { key: 'baz', name: 'baz' },
-      { key: 'bar-test', name: 'bar', params: { answer: 43, color: 'test' } },
+      { key: 'bar-1', name: 'bar', params: { answer: 43, color: 'test' } },
     ],
   });
 });
@@ -2314,6 +2373,7 @@ test('uses preloaded route when pushing a route with the same name', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -2355,6 +2415,7 @@ test('uses preloaded route when pushing a route with the same ID', () => {
       bar: { color: 'test' },
       baz: { foo: 12 },
     },
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2413,6 +2474,7 @@ test('does not use preloaded route when pushing a route with different ID', () =
       bar: { color: 'test' },
       baz: { foo: 12 },
     },
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2454,7 +2516,7 @@ test('does not use preloaded route when pushing a route with different ID', () =
     routes: [
       { key: 'qux-test', name: 'qux' },
       {
-        key: 'bar-test',
+        key: 'bar-1',
         params: {
           color: 'test',
           answer: 41,
@@ -2480,6 +2542,7 @@ test('uses preloaded route when replacing current route', () => {
     routeParamList: {
       bar: { color: 'test' },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -2523,6 +2586,7 @@ test('uses preloaded route with the same ID when replacing current route', () =>
     routeParamList: {
       bar: { color: 'test' },
     },
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2568,6 +2632,7 @@ test('does not use preloaded route with different ID when replacing current rout
     routeParamList: {
       bar: { color: 'test' },
     },
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2599,7 +2664,7 @@ test('does not use preloaded route with different ID when replacing current rout
     routes: [
       { key: 'baz', name: 'baz' },
       {
-        key: 'bar-test',
+        key: 'bar-1',
         name: 'bar',
         params: { color: 'test', answer: 42 },
       },
@@ -2615,6 +2680,7 @@ test('uses preloaded route with the same name when popTo replaces current route'
     routeParamList: {
       bar: { color: 'test' },
     },
+    pathname: undefined,
     routeGetIdList: {},
   };
 
@@ -2658,6 +2724,7 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
     routeParamList: {
       bar: { color: 'test' },
     },
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2703,6 +2770,7 @@ test('does not use preloaded route with different ID when popTo replaces current
     routeParamList: {
       bar: { color: 'test' },
     },
+    pathname: undefined,
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2734,7 +2802,7 @@ test('does not use preloaded route with different ID when popTo replaces current
     routes: [
       { key: 'baz', name: 'baz' },
       {
-        key: 'bar-test',
+        key: 'bar-1',
         name: 'bar',
         params: { color: 'test', answer: 42 },
       },
