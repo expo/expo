@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Move digest to the module queue. ([#45271](https://github.com/expo/expo/pull/45271) by [@rustle](https://github.com/rustle))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
