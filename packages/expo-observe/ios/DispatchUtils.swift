@@ -189,4 +189,75 @@ internal enum DispatchUtils {
       return currentCursor
     }
   }
+
+  // MARK: - Retry gate + exponential backoff
+
+  /// Base delay for the exponential backoff when the server doesn't supply a `Retry-After`.
+  /// The cap (`backoffCapSeconds`) bounds the worst-case wait so we don't end up snoozing for
+  /// hours after a long string of failures.
+  internal static let backoffBaseSeconds: TimeInterval = 60
+  internal static let backoffCapSeconds: TimeInterval = 900
+
+  /// Computes a backoff delay for the next dispatch attempt when the server didn't supply
+  /// `Retry-After`. Exponential growth (base × 2^(attempt-1)), capped, with full jitter so a
+  /// fleet of devices recovering from the same transient backend outage doesn't thunder-herd
+  /// the recovery.
+  ///
+  /// `attempt` is 1-based; the helper is defensive for `0` / negative inputs and returns 0
+  /// rather than producing a negative exponent.
+  internal static func computeBackoffDelay(
+    attempt: Int,
+    base: TimeInterval = backoffBaseSeconds,
+    cap: TimeInterval = backoffCapSeconds,
+    random: () -> Double = { Double.random(in: 0..<1) }
+  ) -> TimeInterval {
+    guard attempt >= 1 else { return 0 }
+    let exponential = min(base * pow(2, Double(attempt - 1)), cap)
+    return exponential * random()
+  }
+
+  /// Snapshot of the retry-gate state carried across dispatch rounds. `dispatchAfterDate` is the
+  /// wall-clock deadline before which the dispatch entry point should short-circuit (set by a
+  /// retryable response, naturally expires); `consecutiveRetryableFailures` is the counter that
+  /// drives `computeBackoffDelay` when the server didn't supply a `Retry-After`.
+  internal struct RetryGateState: Equatable {
+    let dispatchAfterDate: Date?
+    let consecutiveRetryableFailures: Int
+
+    static let initial = RetryGateState(dispatchAfterDate: nil, consecutiveRetryableFailures: 0)
+  }
+
+  /// Pure helper that computes the next `RetryGateState` after a single dispatch result.
+  ///
+  /// - `.success` resets the counter to 0 and leaves the gate alone. The gate either already
+  ///   expired (we wouldn't have dispatched otherwise) or was never set — either way, success
+  ///   doesn't introduce a new pause.
+  /// - `.nonRetryable` also resets the counter. A permanent drop isn't a sign that the server
+  ///   is unhealthy and shouldn't pause subsequent rounds.
+  /// - `.retryable` increments the counter and sets the gate to `now + delay`, where `delay`
+  ///   is the server-supplied `Retry-After` if present, otherwise `backoff(nextCount)`.
+  ///
+  /// `backoff` is injected so tests can drive it deterministically without going through
+  /// `computeBackoffDelay`'s `Double.random` source.
+  internal static func nextRetryGateState(
+    result: DispatchResult,
+    currentState: RetryGateState,
+    now: Date,
+    backoff: (Int) -> TimeInterval
+  ) -> RetryGateState {
+    switch result {
+    case .success, .nonRetryable:
+      return RetryGateState(
+        dispatchAfterDate: currentState.dispatchAfterDate,
+        consecutiveRetryableFailures: 0
+      )
+    case .retryable(let retryAfter):
+      let nextCount = currentState.consecutiveRetryableFailures + 1
+      let delay = retryAfter ?? backoff(nextCount)
+      return RetryGateState(
+        dispatchAfterDate: now.addingTimeInterval(delay),
+        consecutiveRetryableFailures: nextCount
+      )
+    }
+  }
 }

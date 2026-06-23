@@ -9,13 +9,42 @@ internal struct ObservabilityManager {
   private static var logsEndpointUrl: URL? = nil
   private static var projectId: String? = nil
 
+  /// In-memory retry-gate state. Reset implicitly when the process restarts — a relaunch
+  /// usually means enough time passed that the transient cause has cleared anyway, and
+  /// persisting the gate would mean an extra UserDefaults write on every retryable response.
+  private static var retryGateState: DispatchUtils.RetryGateState = .initial
+
   internal static func dispatch() async {
+    // Honor the retry gate first: if a previous round told us to back off (server-supplied
+    // `Retry-After` or computed exponential backoff after a transient failure), short-circuit
+    // until the deadline elapses. Skips both signals together so we don't hammer the same
+    // server endpoint with logs traffic while it's asking us to slow down metrics.
+    if let until = retryGateState.dispatchAfterDate, until > Date() {
+      observeLogger.debug(
+        "[EAS Observe] Dispatch suppressed by retry gate until \(until)"
+      )
+      return
+    }
+
     // Compute once and reuse for both signals — `shouldDispatch()` reads the persisted config, the
     // bundle defaults, and computes a sample-rate hash. Both halves of dispatch want the same answer.
     let shouldDispatch = Self.shouldDispatch()
 
     await dispatchMetrics(shouldDispatch: shouldDispatch)
     await dispatchLogs(shouldDispatch: shouldDispatch)
+  }
+
+  /// Applies a per-signal dispatch outcome to the shared retry-gate state. Mirrors the pure
+  /// `DispatchUtils.nextRetryGateState(...)` but reads/writes the manager's static field so the
+  /// call sites stay concise. Called from both `dispatchMetrics` and `dispatchLogs` after each
+  /// `DispatchUtils.sendRequest(...)` call so the gate reflects the latest signal's response.
+  private static func applyRetryOutcome(_ result: DispatchResult) {
+    retryGateState = DispatchUtils.nextRetryGateState(
+      result: result,
+      currentState: retryGateState,
+      now: Date(),
+      backoff: { DispatchUtils.computeBackoffDelay(attempt: $0) }
+    )
   }
 
   private static func dispatchMetrics(shouldDispatch: Bool) async {
@@ -51,6 +80,7 @@ internal struct ObservabilityManager {
     }
     let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
     let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+    applyRetryOutcome(result)
     ObserveUserDefaults.lastDispatchedMetricId = DispatchUtils.nextCursor(
       for: result,
       currentCursor: cursor,
@@ -108,6 +138,7 @@ internal struct ObservabilityManager {
     }
     let body = OTLogsRequestBody(resourceLogs: resourceLogs)
     let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+    applyRetryOutcome(result)
     ObserveUserDefaults.lastDispatchedLogId = DispatchUtils.nextCursor(
       for: result,
       currentCursor: cursor,
