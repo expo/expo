@@ -47,12 +47,14 @@ for (const { label, script } of SYNCS) {
   }
 }
 
+const TIMESTAMP_FIELDS = ['fetchedAt', 'scrapedAt'];
+
 const changed: string[] = [];
 for (const { code, file } of status()) {
   const realDiff = git('diff', '--', file)
     .split('\n')
     .filter(line => /^[+-]/.test(line) && !/^(\+{3}|-{3})/.test(line))
-    .some(line => !line.includes('fetchedAt'));
+    .some(line => !TIMESTAMP_FIELDS.some(field => line.includes(field)));
   if (code.includes('?') || realDiff) {
     changed.push(file);
   } else {
