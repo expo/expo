@@ -4735,7 +4735,7 @@ SPEC CHECKSUMS:
   ExpoLogBox: 63977cf56b04547c713535d2d4e9bbf2f012e3c6
   ExpoMailComposer: ea650b89d3b93c7a277b11a8ab7010a7be6d595e
   ExpoMediaLibrary: 8e280ce4497ce80036c9031b6404693d370cf234
-  ExpoModulesCore: 1e1c9ea10830b0111433a5b862e8b1648756058f
+  ExpoModulesCore: 12f17450495c56261fc454ba10e62a4a87df9f4a
   ExpoModulesJSI: abc606cf32f6eeb4e2ad44ec3fc4b24143abd8f6
   ExpoModulesTestCore: 3c56935dda59911f77a389ede0ebf70a3d1dc858
   ExpoModulesWorklets: 25d712f4e0a4eb37397d46c0ff5b450eca897fd1
@@ -4779,7 +4779,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: d5c6d584ad5c5461ad9e34e0afb5d40d56e428f5
+  hermes-engine: 42f0ed2cf70592b35e2ca49a6b725d31c8ad4136
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

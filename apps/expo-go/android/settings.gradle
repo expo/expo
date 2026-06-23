@@ -42,7 +42,9 @@ expoAutolinking.exclude = [
   'expo-mesh-gradient',
   '@expo/app-integrity',
   '@expo/home',
-  'expo-widgets'
+  'expo-widgets',
+  'expo-app-metrics',
+  'expo-observe'
 ]
 
 expoAutolinking.useExpoModules()

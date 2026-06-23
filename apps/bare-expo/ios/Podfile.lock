@@ -4063,7 +4063,7 @@ SPEC CHECKSUMS:
   ExpoMaps: fb14afa3b589eb38784b70a3178841045ff184fc
   ExpoMediaLibrary: 8e280ce4497ce80036c9031b6404693d370cf234
   ExpoMeshGradient: baf62012104fd9c1719de67f88c69958abcd2ed1
-  ExpoModulesCore: 5122f26912e97e69fb187c19d740907091aa66c1
+  ExpoModulesCore: 6350df6fb2331943c7d1be19418d38430b792541
   ExpoModulesJSI: abc606cf32f6eeb4e2ad44ec3fc4b24143abd8f6
   ExpoModulesTestCore: 3c56935dda59911f77a389ede0ebf70a3d1dc858
   ExpoModulesWorklets: 25d712f4e0a4eb37397d46c0ff5b450eca897fd1
@@ -4095,7 +4095,7 @@ SPEC CHECKSUMS:
   EXUpdates: 849f30a2199491cfd02233f82386f534967dca45
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: e355eb94d3f8b7f4c08531a4d42af958d36c13de
+  hermes-engine: 4c998771d5218e20701b63d8358199a520a54447
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
