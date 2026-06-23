@@ -302,7 +302,7 @@ We must define default **string.xml** values which the user will overwrite local
 </resources>
 ```
 
-At this point, bare users can configure this value by creating a string in their local **strings.xml** file (assuming they also have `expo-modules-core` support setup):
+At this point, users with [existing React Native projects](/bare/overview/) can configure this value by creating a string in their local **strings.xml** file (assuming they also have `expo-modules-core` support setup):
 
 ```xml ./android/app/src/main/res/values/strings.xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -311,7 +311,7 @@ At this point, bare users can configure this value by creating a string in their
 </resources>
 ```
 
-For managed users, we can expose this functionality (safely!) via an Expo config plugin:
+With [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), we can expose this functionality (safely!) via an Expo config plugin:
 
 ```js expo-custom/app.plugin.js
 const { AndroidConfig, withStringsXml } = require('expo/config-plugins');
@@ -336,7 +336,7 @@ function setStrings(strings, value) {
 }
 ```
 
-Managed Expo users can now interact with this API like so:
+Developers using CNG can now interact with this API like so:
 
 ```json app.json
 {
@@ -346,7 +346,7 @@ Managed Expo users can now interact with this API like so:
 }
 ```
 
-By re-running `npx expo prebuild -p` (`eas build -p android`, or `npx expo run:ios`) the user can now see the changes, safely applied in their managed project!
+By re-running `npx expo prebuild -p` (`eas build -p android`, or `npx expo run:ios`) the user can now see the changes, safely applied in their CNG project!
 
 As you can see from the example, we rely heavily on application code (expo-modules-core) to interact with application code (the native project). This ensures that our config plugins are safe and reliable, hopefully for a very long time!
 
@@ -387,7 +387,7 @@ Introspection works by creating custom base mods that work like the default base
 Instead of persisting, they save the results to the app config under `_internal.modResults`, followed by the name of the mod
 such as the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
-As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
+As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a CNG project, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
 
 {/* TODO: Link to VS Code extension after preview feature lands */}
 
