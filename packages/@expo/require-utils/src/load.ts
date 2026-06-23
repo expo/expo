@@ -375,9 +375,10 @@ async function requireOrImport(filename: string) {
   try {
     return require(filename);
   } catch {
-    return await import(
-      path.isAbsolute(filename) ? url.pathToFileURL(filename).toString() : filename
-    );
+    const importFilename = path.isAbsolute(filename)
+      ? url.pathToFileURL(filename).toString()
+      : filename;
+    return await import(importFilename);
   }
 }
 

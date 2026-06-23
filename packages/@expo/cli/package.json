@@ -17,7 +17,6 @@
   },
   "files": [
     "main.js",
-    "add-module.js",
     "internal",
     "static",
     "build"
