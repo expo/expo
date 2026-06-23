@@ -75,11 +75,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
       is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
       is ContentProviderFile -> {
         if (resolvedMode == FileMode.READ_WRITE) {
-          throw Exceptions.IllegalArgument(
-            "READ_WRITE mode is not supported for content:// URIs. " +
-              "Content providers may not support simultaneous read and write access. " +
-              "Use READ or WRITE mode instead."
-          )
+          throw UnsupportedContentUriReadWriteException()
         }
         try {
           FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)

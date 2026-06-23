@@ -74,6 +74,10 @@ class FileSystemFileHandle private constructor(
     }
 
     fun forContentURI(uri: Uri, mode: FileMode, contentResolver: ContentResolver): FileSystemFileHandle {
+      if (mode == FileMode.READ_WRITE) {
+        throw UnsupportedContentUriReadWriteException()
+      }
+
       val pfd = contentResolver.openFileDescriptor(uri, mode.descriptor)
         ?: throw Exceptions.IllegalStateException("Could not open file descriptor for uri: $uri")
 

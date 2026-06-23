@@ -32,6 +32,13 @@ internal class UnableToReadHandleException(reason: String) :
 internal class UnableToWriteHandleException(reason: String) :
   CodedException("Unable to write to a file handle: '$reason'")
 
+internal class UnsupportedContentUriReadWriteException :
+  CodedException(
+    "READ_WRITE mode is not supported for content:// URIs. " +
+      "Content providers may not support simultaneous read and write access. " +
+      "Use READ or WRITE mode instead."
+  )
+
 internal class MissingAppContextException :
   CodedException("The app context is missing.")
 
