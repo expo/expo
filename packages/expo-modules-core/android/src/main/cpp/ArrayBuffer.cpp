@@ -100,7 +100,7 @@ ArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
   }
 
   size_t size = arrayBuffer.size(runtime);
-  auto byteBuffer = jni::JByteBuffer::allocateDirect(size);
+  auto byteBuffer = jni::JByteBuffer::allocateDirect(static_cast<jint>(size));
   byteBuffer->order(jni::JByteOrder::nativeOrder());
   memcpy(byteBuffer->getDirectAddress(), arrayBuffer.data(runtime), size);
 

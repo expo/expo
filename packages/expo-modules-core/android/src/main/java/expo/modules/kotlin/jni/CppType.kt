@@ -39,7 +39,7 @@ enum class CppType(val clazz: KClass<*>, val value: Int = nextValue()) {
   NULLABLE(Any::class),
   VALUE_OR_UNDEFINED(ValueOrUndefined::class),
   JS_ARRAY_BUFFER(JavaScriptArrayBuffer::class),
-  ARRAY_BUFFER(ArrayBuffer::class),
   NATIVE_ARRAY_BUFFER(NativeArrayBuffer::class),
-  SERIALIZABLE(Worklet::class)
+  SERIALIZABLE(Worklet::class),
+  ARRAY_BUFFER(ArrayBuffer::class)
 }
