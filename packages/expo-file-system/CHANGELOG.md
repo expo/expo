@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support.
+- Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support. ([#47176](https://github.com/expo/expo/pull/47176) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
