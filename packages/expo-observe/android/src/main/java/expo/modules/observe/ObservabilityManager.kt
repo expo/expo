@@ -1,6 +1,7 @@
 package expo.modules.observe
 
 import android.content.Context
+import android.util.Log
 import expo.modules.easclient.EASClientID
 import expo.modules.observe.storage.PendingLogsManager
 import expo.modules.observe.storage.PendingMetricsManager
@@ -116,9 +117,15 @@ class BaseObservabilityManager(
     }
 
     val result = eventDispatcher.dispatch(events)
-    if (result is DispatchResult.Success) {
-      val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
+    val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
+    if (DispatchUtils.shouldRemovePending(result)) {
       pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
+    }
+    if (result is DispatchResult.NonRetryable) {
+      Log.w(
+        OBSERVE_TAG,
+        "Dropping batch of ${dispatchedMetricIds.size} metric event(s): ${result.reason}"
+      )
     }
   }
 
@@ -160,9 +167,15 @@ class BaseObservabilityManager(
     }
 
     val result = eventDispatcher.dispatchLogs(events)
-    if (result is DispatchResult.Success) {
-      val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
+    val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
+    if (DispatchUtils.shouldRemovePending(result)) {
       pendingLogsManager.removePendingLogs(dispatchedLogIds)
+    }
+    if (result is DispatchResult.NonRetryable) {
+      Log.w(
+        OBSERVE_TAG,
+        "Dropping batch of ${dispatchedLogIds.size} log event(s): ${result.reason}"
+      )
     }
   }
 

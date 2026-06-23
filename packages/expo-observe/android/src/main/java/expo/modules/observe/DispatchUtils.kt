@@ -71,6 +71,21 @@ object DispatchUtils {
   }
 
   /**
+   * Whether the dispatch caller should remove the just-sent pending IDs from the queue.
+   *
+   * - `Success` removes them — the rows have been accepted by the server.
+   * - `NonRetryable` ALSO removes them — the server has refused these rows permanently, so
+   *   retrying would produce the same answer; removing them drops the batch so it can't
+   *   wedge subsequent rounds. This is the acceptance-criterion behavior: a 400/403 must
+   *   not be re-sent on the next cycle.
+   * - `Retryable` keeps them so the next dispatch round picks the same rows up again.
+   */
+  fun shouldRemovePending(result: DispatchResult): Boolean = when (result) {
+    is DispatchResult.Success, is DispatchResult.NonRetryable -> true
+    is DispatchResult.Retryable -> false
+  }
+
+  /**
    * Parses an HTTP `Retry-After` header into a delay in milliseconds from now. Accepts both
    * formats permitted by RFC 7231: an integer delta-seconds, or an HTTP-date.
    * Returns `null` if the header is absent or unparseable. Clamps negative / past values to 0

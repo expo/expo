@@ -232,6 +232,31 @@ class DispatchUtilsClassifyResponseTest {
   }
 }
 
+class DispatchUtilsShouldRemovePendingTest {
+  /// On `Success`, the queue moves past the dispatched batch so the next round reads only
+  /// newer rows. Unchanged from the pre-OTLP behavior; locked here for the table.
+  @Test
+  fun `Success removes pending IDs`() {
+    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.Success))
+  }
+
+  /// `Retryable` is the "leave them alone" case — the next dispatch round picks the same
+  /// rows up again. This is what keeps an in-flight outage from losing telemetry.
+  @Test
+  fun `Retryable keeps pending IDs`() {
+    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.Retryable()))
+    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.Retryable(retryAfterMs = 30_000L)))
+  }
+
+  /// The acceptance-criterion behavior: a non-retryable response (e.g. 400, 403) drops the
+  /// offending batch. Without this, the next round would re-send the same rows and the
+  /// server would refuse them again, wedging the queue indefinitely.
+  @Test
+  fun `NonRetryable removes pending IDs`() {
+    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.NonRetryable("HTTP 400")))
+  }
+}
+
 class DispatchUtilsParseRetryAfterTest {
   @Test
   fun `null header returns null`() {

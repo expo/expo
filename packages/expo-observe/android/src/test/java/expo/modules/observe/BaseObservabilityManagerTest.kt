@@ -726,6 +726,37 @@ class BaseObservabilityManagerTest {
     }
 
   @Test
+  fun `dispatchUnsentMetrics removes metric IDs from pending on NonRetryable result`() =
+    runTest {
+      // OTLP non-retryable responses (e.g. 400, 403, 404) drop the batch: the pending IDs
+      // are removed so the same rows don't keep getting refused on every dispatch round.
+      val metric1 = createMetric("metric1", metricId = "id1")
+      val metric2 = createMetric("metric2", metricId = "id2")
+      val session = createSessionWithMetrics(
+        sessionId = "session-1",
+        environment = "production",
+        metrics = listOf(metric1, metric2)
+      )
+
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "id2")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.NonRetryable("HTTP 400")
+
+      val removedIds = mutableListOf<String>()
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
+        removedIds.addAll(firstArg<List<String>>())
+      }
+
+      val manager = createManager()
+
+      manager.dispatchUnsentMetrics()
+
+      assertEquals(2, removedIds.size)
+      assertTrue(removedIds.contains("id1"))
+      assertTrue(removedIds.contains("id2"))
+    }
+
+  @Test
   fun `dispatchUnsentMetrics does not remove metric IDs from pending on Retryable result`() =
     runTest {
       // A retryable response (e.g. 503, transport error) should leave the pending IDs alone
