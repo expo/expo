@@ -50,6 +50,9 @@ jobs:
       - name: 🚨 Lint NCL app
         run: pnpm lint --max-warnings 0
         working-directory: apps/native-component-list
+      - name: 💅 Check formatting
+        run: pnpm format --check
+        working-directory: apps/native-component-list
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main') && github.repository == 'expo/expo'
