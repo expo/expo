@@ -187,7 +187,7 @@ await src.write(await response.bytes());
 
 <Collapsible summary="Previewing files">
 
-Use `File.preview()` to open a local file with the platform's file preview flow. File preview is currently supported on iOS and Android. On iOS, this presents Quick Look, which supports many common file types such as PDFs, images, text files, CSV files, and Office documents. On Android, this opens an `ACTION_VIEW` intent, so support depends on apps installed on the device that can handle the file's MIME type.
+Use `File.preview()` to open a local file with the platform's file preview flow. File preview is currently supported on Android and iOS. On iOS, this presents Quick Look, which supports many common file types such as PDFs, images, text files, CSV files, and Office documents. On Android, this opens an `ACTION_VIEW` intent, so support depends on apps installed on the device that can handle the file's MIME type.
 
 ```ts example.ts
 import { File, Paths } from 'expo-file-system';
