@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Changed native implementation to use the unified `ArrayBuffer` type.
+
 ## 56.0.4 — 2026-05-21
 
 ### 🐛 Bug fixes
