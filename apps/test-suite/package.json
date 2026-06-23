@@ -4,8 +4,7 @@
   "description": "Test suite for the Expo SDK",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
-    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "lint": "oxlint --config oxlint.config.mjs .",
     "format": "oxfmt .",
     "tsc": "tsc --noEmit -p ./tsconfig.json",
     "test": "jest"

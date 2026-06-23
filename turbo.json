@@ -36,9 +36,6 @@
     "lint": {
       "cache": false
     },
-    "lint:oxlint": {
-      "cache": false
-    },
     "format": {
       "cache": false
     },

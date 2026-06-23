@@ -50,8 +50,7 @@
   },
   "scripts": {
     "start": "expo start",
-    "lint": "expo-module lint",
-    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "lint": "oxlint --config oxlint.config.mjs .",
     "format": "oxfmt .",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc",

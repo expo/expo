@@ -59,8 +59,7 @@
     "./tsconfig": "./tsconfig.json"
   },
   "scripts": {
-    "lint": "expo-module eslint .",
-    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "lint": "oxlint --config oxlint.config.mjs .",
     "format": "oxfmt .",
     "typecheck": "tsc -p tsconfig.json"
   },

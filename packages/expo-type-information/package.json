@@ -22,8 +22,7 @@
   "scripts": {
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "lint": "oxlint --config oxlint.config.mjs .",
     "format": "oxfmt .",
     "test": "echo \"Tests can only be run on MacOS with sourceKitten installed. Run tests locally instead using local-test script.\"",
     "local-test": "NODE_OPTIONS=\"--experimental-vm-modules\" jest",

@@ -171,8 +171,7 @@
   "scripts": {
     "build": "../expo-module-scripts/bin/expo-build src",
     "clean": "rimraf build",
-    "lint": "eslint src",
-    "lint:oxlint": "oxlint --config oxlint.config.mjs .",
+    "lint": "oxlint --config oxlint.config.mjs .",
     "format": "oxfmt .",
     "test": "jest",
     "prepublishOnly": "run-s clean build",
