@@ -36,7 +36,7 @@ Manual smoke tests are included in `apps/native-component-list`, which is a good
 
 ### Set up documentation
 
-If you plan to contribute to the documentation, run `npm run setup:docs`.
+If you plan to contribute to the documentation, see [Updating Documentation](#-updating-documentation) section below.
 
 ### Set up Android
 
@@ -87,7 +87,6 @@ If you will be working with the iOS project, ensure **ruby 3.3** is installed on
 
 1. Navigate to the bare sandbox project `cd apps/bare-expo`
 2. Run the project on any native platform:
-
    - iOS: `pnpm ios`
    - Android: `pnpm android`
    - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="konsole"`)
@@ -208,17 +207,17 @@ To keep CI green, please make sure of the following:
 
 ### If you modified anything in `packages/`:
 
-  - Run `et check-packages <...packages>` (or `pnpm build`, `pnpm typecheck`, `pnpm test`, and `pnpm lint`) for the packages you changed. See [Common package scripts](#common-package-scripts).
-  - Run `pnpm lint --fix` to fix the formatting of the code. Ensure that `pnpm lint` succeeds without errors or warnings.
-  - (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
-  - All `console.log`s or commented out code blocks are removed!
+- Run `et check-packages <...packages>` (or `pnpm build`, `pnpm typecheck`, `pnpm test`, and `pnpm lint`) for the packages you changed. See [Common package scripts](#common-package-scripts).
+- Run `pnpm lint --fix` to fix the formatting of the code. Ensure that `pnpm lint` succeeds without errors or warnings.
+- (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
+- All `console.log`s or commented out code blocks are removed!
 
 ### If you edited the docs directory:
 
-  - Any changes to docs for the current SDK version should also be applied to the unversioned copy. The current docs SDK version is defined in [`docs/package.json`](./docs/package.json), and the versioning workflow is described in [docs/README.md](./docs/README.md#update-latest-version-of-api-reference-docs). Example:
-    - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
-    - Ensure you copy that change to: `docs/pages/versions/unversioned/sdk/app-auth.md`
-  - You don't need to run the docs tests locally. Just ensure the links you include aren't broken, the format is correct, and the changes are following our [writing style guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
+- Any changes to docs for the current SDK version should also be applied to the unversioned copy. The current docs SDK version is defined in [`docs/package.json`](./docs/package.json), and the versioning workflow is described in [docs/README.md](./docs/README.md#update-latest-version-of-api-reference-docs). Example:
+  - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
+  - Ensure you copy that change to: `docs/pages/versions/unversioned/sdk/app-auth.md`
+- You don't need to run the docs tests locally. Just ensure the links you include aren't broken, the format is correct, and the changes are following our [writing style guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
 ### Extra Credit
 
