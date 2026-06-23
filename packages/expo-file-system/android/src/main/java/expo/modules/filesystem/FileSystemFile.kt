@@ -73,15 +73,24 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     return when (fileImpl) {
       is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, resolvedMode)
       is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
-      is ContentProviderFile -> try {
-        FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
-      } catch (e: Exception) {
-        throw Exceptions.IllegalStateException(
-          "Failed to open file handle for content:// URI: ${fileImpl.uri}. " +
-            "The content provider may not support random access. " +
-            "Try reading the file using File.text() or File.bytes() instead. " +
-            "Cause: ${e.message}"
-        )
+      is ContentProviderFile -> {
+        if (resolvedMode == FileMode.READ_WRITE) {
+          throw Exceptions.IllegalArgument(
+            "READ_WRITE mode is not supported for content:// URIs. " +
+              "Content providers may not support simultaneous read and write access. " +
+              "Use READ or WRITE mode instead."
+          )
+        }
+        try {
+          FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
+        } catch (e: Exception) {
+          throw Exceptions.IllegalStateException(
+            "Failed to open file handle for content:// URI: ${fileImpl.uri}. " +
+              "The content provider may not support random access. " +
+              "Try reading the file using File.text() or File.bytes() instead.",
+            e
+          )
+        }
       }
       else -> throw Exceptions.IllegalStateException("File handle is not supported for ${file.uri}")
     }

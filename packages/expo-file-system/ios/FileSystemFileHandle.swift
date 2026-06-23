@@ -28,6 +28,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   let mode: FileMode
   let handle: FileHandle
   private let didAccessSecurityScope: Bool
+  private var isClosed = false
 
   init(file: FileSystemFile, mode: FileMode?) throws {
     self.file = file
@@ -82,6 +83,8 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   }
 
   func close() throws {
+    guard !isClosed else { return }
+    isClosed = true
     defer {
       if didAccessSecurityScope {
         file.url.stopAccessingSecurityScopedResource()

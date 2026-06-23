@@ -74,14 +74,6 @@ class FileSystemFileHandle private constructor(
     }
 
     fun forContentURI(uri: Uri, mode: FileMode, contentResolver: ContentResolver): FileSystemFileHandle {
-      if (mode == FileMode.READ_WRITE) {
-        throw Exceptions.IllegalArgument(
-          "READ_WRITE mode is not supported for content:// URIs. " +
-            "Content providers may not support simultaneous read and write access. " +
-            "Use READ or WRITE mode instead."
-        )
-      }
-
       val pfd = contentResolver.openFileDescriptor(uri, mode.descriptor)
         ?: throw Exceptions.IllegalStateException("Could not open file descriptor for uri: $uri")
 
