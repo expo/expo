@@ -4,7 +4,7 @@
 
 ## Before opening a PR
 
-- [ ] Verified the package builds and passes checks: `et check-packages @expo/ui` (or `yarn build && yarn typecheck && yarn test` from `packages/expo-ui/`)
+- [ ] Verified the package builds and passes checks: `et check-packages @expo/ui` (or `pnpm build && pnpm typecheck && pnpm test` from `packages/expo-ui/`)
 
 ### When adding or updating a component
 
