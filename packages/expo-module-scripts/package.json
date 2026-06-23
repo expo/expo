@@ -74,6 +74,7 @@
       "./bin/expo-module-clean",
       "./bin/expo-module-configure",
       "./bin/expo-module-depscheck",
+      "./bin/expo-module-format",
       "./bin/expo-module-jest",
       "./bin/expo-module-prepare",
       "./bin/expo-module-prepublishOnly",
