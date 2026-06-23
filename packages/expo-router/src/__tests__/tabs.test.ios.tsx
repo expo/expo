@@ -1,4 +1,5 @@
 import { fireEvent, act, screen } from '@testing-library/react-native';
+import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 
 import { router } from '../exports';
@@ -217,7 +218,10 @@ it('has correct routeInfo when switching tabs using press', () => {
   expect(exploreCalls).toHaveBeenCalledTimes(1);
   expect(exploreCalls).toHaveBeenCalledWith(['explore']);
 
-  expect(indexCalls).toHaveBeenCalledTimes(0);
+  // The initial route (index) is present in state.routes and renders even when
+  // deep-linking to a non-initial route, so its component runs once at mount.
+  expect(indexCalls).toHaveBeenCalledTimes(1);
+  expect(indexCalls).toHaveBeenCalledWith(['explore']);
 
   jest.clearAllMocks();
   fireEvent.press(screen.getByLabelText('index, tab, 1 of 2'));
@@ -254,6 +258,58 @@ it('has correct routeInfo when switching tabs using press', () => {
 
   expect(exploreCalls).toHaveBeenCalledTimes(1);
   expect(exploreCalls).toHaveBeenCalledWith([]);
+});
+
+it('does not remount the anchor (index) tab when switching tabs after deep-linking to a non-initial tab', () => {
+  /**
+   * Under the subset navigation-state model, a route's presence in `state.routes` means
+   * it is loaded/rendered. With the default `backBehavior: 'firstRoute'`, the anchor
+   * (index) tab is materialized into `state.routes` so it can sit at the bottom of the
+   * back-stack — so it renders eagerly at mount even when deep-linking straight to a
+   * non-initial tab. This test pins two things that must not regress:
+   *   1. the anchor mounts exactly once on deep-link, and
+   *   2. switching tabs afterward reconciles the anchor (re-renders) but never remounts
+   *      it from scratch — its mount count stays bounded at 1.
+   */
+  const indexMounts = jest.fn();
+  const indexRenders = jest.fn();
+  const exploreMounts = jest.fn();
+
+  renderRouter(
+    {
+      _layout: () => <Tabs />,
+      index: function Index() {
+        indexRenders();
+        useEffect(() => {
+          indexMounts();
+        }, []);
+        return <Text testID="index">Index</Text>;
+      },
+      explore: function Explore() {
+        useEffect(() => {
+          exploreMounts();
+        }, []);
+        return <Text testID="explore">Explore</Text>;
+      },
+    },
+    {
+      initialUrl: '/explore',
+    }
+  );
+
+  // Deep-linked to a non-initial tab: the anchor still mounts exactly once.
+  expect(indexMounts).toHaveBeenCalledTimes(1);
+  expect(indexRenders).toHaveBeenCalledTimes(1);
+
+  // Switch to the anchor tab and back.
+  fireEvent.press(screen.getByLabelText('index, tab, 1 of 2'));
+  fireEvent.press(screen.getByLabelText('explore, tab, 2 of 2'));
+  fireEvent.press(screen.getByLabelText('index, tab, 1 of 2'));
+
+  // The anchor was reconciled, not remounted: mount count stays bounded at 1.
+  expect(indexMounts).toHaveBeenCalledTimes(1);
+  // Re-renders are expected (segments change), but must stay bounded — not unbounded.
+  expect(indexRenders.mock.calls.length).toBeLessThanOrEqual(6);
 });
 
 it('can push screens', () => {
@@ -361,7 +417,6 @@ it('can use replace navigation', () => {
           // the focused `two`, which lands at index 0 (so back is blocked).
           index: 0,
           key: expect.any(String),
-          preloadedRouteKeys: [],
           routeNames: ['one', 'two'],
           routes: [
             {

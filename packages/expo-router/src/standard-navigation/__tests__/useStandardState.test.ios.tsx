@@ -21,7 +21,6 @@ function makeBuilderState(
     routeNames: routes.map((r) => r.name),
     routes,
     stale: false,
-    preloadedRouteKeys: [],
   } as unknown as NavigationState;
 }
 

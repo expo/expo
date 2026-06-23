@@ -10,12 +10,14 @@ import {
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
 
-// The drawer's open/closed status lives in the drawer navigator's local React state, so the
-// router behaves like the tab router plus a `drawer-` key. These tests cover only navigation state.
+// The drawer's open/closed status lives in the drawer navigator's local React state, so the router
+// behaves like the tab router plus a `drawer-` key. In the new model `routes` is a SUBSET of
+// `routeNames` (presence is the loaded signal) and there is no `preloadedRouteKeys` field.
 
-test('gets initial state from route names and params with initialRouteName', () => {
+test('gets initial state materializing the anchor and the initial route with initialRouteName', () => {
   const router = DrawerRouter({ initialRouteName: 'baz' });
 
+  // firstRoute (default) anchor = first declared (bar), focused = baz -> subset [bar, baz] index 1.
   expect(
     router.getInitialState({
       routeNames: ['bar', 'baz', 'qux'],
@@ -30,17 +32,15 @@ test('gets initial state from route names and params with initialRouteName', () 
     index: 1,
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
     routes: [
       { key: 'bar', name: 'bar' },
       { key: 'baz', name: 'baz', params: { answer: 42 } },
-      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
   });
 });
 
-test('gets initial state from route names and params without initialRouteName', () => {
+test('gets initial state materializing only the focused route without initialRouteName', () => {
   const router = DrawerRouter({});
 
   expect(
@@ -57,12 +57,7 @@ test('gets initial state from route names and params without initialRouteName', 
     index: 0,
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
-      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
-    ],
+    routes: [{ key: 'bar', name: 'bar' }],
     stale: false,
   });
 });
@@ -81,16 +76,12 @@ test('defaultStatus does not affect navigation state', () => {
     index: 0,
     key: 'drawer-test',
     routeNames: ['bar', 'baz'],
-    preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'baz', name: 'baz' },
-    ],
+    routes: [{ key: 'bar', name: 'bar' }],
     stale: false,
   });
 });
 
-test('rehydrates preserving the persisted route order and appending new tabs', () => {
+test('rehydrates preserving the persisted subset and appending the anchor', () => {
   const router = DrawerRouter({});
 
   const options: RouterConfigOptions = {
@@ -103,8 +94,8 @@ test('rehydrates preserving the persisted route order and appending new tabs', (
     routeGetIdList: {},
   };
 
-  // Persisted state focuses qux (index 1 of its own routes). baz is newly
-  // declared, so it is appended at the end in declaration order.
+  // Persisted subset [bar, qux], focused index 1 (qux). firstRoute keeps the anchor (bar)
+  // leading; baz is NOT materialized (never loaded) -> [bar, qux] focused qux index 1.
   expect(
     router.getRehydratedState(
       {
@@ -120,11 +111,9 @@ test('rehydrates preserving the persisted route order and appending new tabs', (
     index: 1,
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
     routes: [
       { key: 'bar-0', name: 'bar' },
       { key: 'qux-1', name: 'qux', params: { name: 'Jane' } },
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
     ],
     stale: false,
   });
@@ -143,9 +132,8 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
     routeGetIdList: {},
   };
 
-  // No index given → focused falls back to the persisted route 'baz'. The drawer's
-  // default `firstRoute` arranges the back stack as [first, focused, ...rest], so
-  // anchor 'bar' leads and 'baz' sits at index 1 (its persisted key is kept).
+  // No index given -> focused falls back to the single persisted route 'baz'. firstRoute adds
+  // the anchor 'bar' in front -> subset [bar, baz] index 1.
   expect(
     router.getRehydratedState(
       {
@@ -157,16 +145,14 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
     index: 1,
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
     routes: [
       { key: 'bar', name: 'bar' },
       { key: 'baz-0', name: 'baz', params: { answer: 42 } },
-      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
     ],
     stale: false,
   });
 
-  // Empty routes → everything rebuilt in declaration order, index falls back to 0.
+  // Empty routes -> materialize the first declared route, index 0.
   expect(
     router.getRehydratedState(
       {
@@ -179,12 +165,7 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
     index: 0,
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
-      { key: 'qux', name: 'qux', params: { name: 'Jane' } },
-    ],
+    routes: [{ key: 'bar', name: 'bar' }],
     stale: false,
   });
 });
@@ -196,7 +177,6 @@ test("doesn't rehydrate state if it's not stale", () => {
     index: 0,
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
     routes: [
       { key: 'bar-test', name: 'bar' },
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
@@ -224,13 +204,12 @@ test('handles navigate action by focusing the target route in place', () => {
     routeGetIdList: {},
   };
 
-  // The drawer uses the default `firstRoute` back behavior, so `routes` stays in
-  // declaration order; navigating to baz just focuses it (index → its position).
+  // The drawer uses the default `firstRoute` back behavior, so present `routes` stay in
+  // declaration order; navigating to baz just focuses it (index -> its position).
   expect(
     router.getStateForAction(
       {
         stale: false,
-        preloadedRouteKeys: [],
         key: 'root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
@@ -248,7 +227,6 @@ test('handles navigate action by focusing the target route in place', () => {
     key: 'root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
-    preloadedRouteKeys: [],
     routes: [
       { key: 'baz', name: 'baz', params: { answer: 42 }, path: undefined },
       { key: 'bar', name: 'bar' },
@@ -266,8 +244,8 @@ test('GO_BACK delegates to the tab router', () => {
     routeGetIdList: {},
   };
 
-  // Tab GO_BACK with backBehavior 'history' moves focus to the previous route
-  // (index - 1). Routes are left untouched.
+  // Tab GO_BACK with backBehavior 'history' moves focus to the previous route (index - 1).
+  // Routes are left untouched.
   expect(
     router.getStateForAction(
       {
@@ -275,7 +253,6 @@ test('GO_BACK delegates to the tab router', () => {
         key: 'root',
         index: 2,
         routeNames: ['bar', 'baz', 'qux'],
-        preloadedRouteKeys: [],
         routes: [
           { key: 'bar-0', name: 'bar' },
           { key: 'baz-0', name: 'baz' },
@@ -290,7 +267,6 @@ test('GO_BACK delegates to the tab router', () => {
     key: 'root',
     index: 1,
     routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
     routes: [
       { key: 'bar-0', name: 'bar' },
       { key: 'baz-0', name: 'baz' },
@@ -302,7 +278,7 @@ test('GO_BACK delegates to the tab router', () => {
 test('getStateForRouteFocus focuses the route in place', () => {
   const router = DrawerRouter({});
 
-  // Default `firstRoute` back behavior: `routes` stays in declaration order and focus
+  // Default `firstRoute` back behavior: present `routes` stay in declaration order and focus
   // just moves to the route's index.
   expect(
     router.getStateForRouteFocus(
@@ -310,7 +286,6 @@ test('getStateForRouteFocus focuses the route in place', () => {
         index: 0,
         key: 'drawer-test',
         routeNames: ['bar', 'baz', 'qux'],
-        preloadedRouteKeys: [],
         routes: [
           { key: 'bar-0', name: 'bar' },
           { key: 'baz-0', name: 'baz' },
@@ -324,7 +299,6 @@ test('getStateForRouteFocus focuses the route in place', () => {
     index: 1,
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
-    preloadedRouteKeys: [],
     routes: [
       { key: 'bar-0', name: 'bar' },
       { key: 'baz-0', name: 'baz' },

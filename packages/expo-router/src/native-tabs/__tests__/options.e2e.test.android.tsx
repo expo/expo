@@ -88,7 +88,8 @@ it('can pass props via unstable_nativeProps', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
+  // Eager preload renders both tabs twice; order is preserved within each pass.
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     ...indexOptions,
   });
@@ -285,7 +286,8 @@ describe('Icons', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       android: {
         standardAppearance: {
@@ -304,6 +306,7 @@ describe('Icons', () => {
         },
       },
     } as Partial<TabsScreenProps>);
+    // The not-yet-loaded "one" tab renders a placeholder that reserves the slot silently.
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
@@ -715,7 +718,8 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('one')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].title).toBe('index');
     expect(TabsScreen.mock.calls[1][0].title).toBe('one');
   });
@@ -813,7 +817,8 @@ describe('Label', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       android: {
         standardAppearance: {
@@ -881,7 +886,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(TabsScreen).toHaveBeenCalledTimes(2);
+      // Eager preload renders both tabs twice; order is preserved within each pass.
+      expect(TabsScreen).toHaveBeenCalledTimes(4);
       expect(TabsScreen.mock.calls[0][0]).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
@@ -942,7 +948,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(TabsScreen).toHaveBeenCalledTimes(2);
+      // Eager preload renders both tabs twice; order is preserved within each pass.
+      expect(TabsScreen).toHaveBeenCalledTimes(4);
       expect(TabsScreen.mock.calls[0][0]).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
@@ -1260,7 +1267,8 @@ describe('Dynamic options', () => {
     // Tab + preview
     expect(screen.getAllByTestId('second')).toHaveLength(2);
     expect(within(screen.getByTestId('index')).getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
@@ -1428,7 +1436,8 @@ describe('Material Design 3 dynamic color defaults', () => {
       second: () => <View testID="second" />,
     });
 
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       android: { standardAppearance: { tabBarItemActiveIndicatorColor: 'magenta' } },
     } as Partial<TabsScreenProps>);
@@ -1449,7 +1458,8 @@ describe('Material Design 3 dynamic color defaults', () => {
       second: () => <View testID="second" />,
     });
 
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       android: { standardAppearance: { tabBarItemRippleColor: 'green' } },
     } as Partial<TabsScreenProps>);
@@ -1470,7 +1480,8 @@ describe('Material Design 3 dynamic color defaults', () => {
       second: () => <View testID="second" />,
     });
 
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       android: { standardAppearance: { tabBarItemActiveIndicatorEnabled: true } },
     } as Partial<TabsScreenProps>);
@@ -1562,7 +1573,8 @@ describe('Material Design 3 dynamic color defaults', () => {
       second: () => <View testID="second" />,
     });
 
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       android: { standardAppearance: { tabBarItemLabelVisibilityMode: 'unlabeled' } },
     } as Partial<TabsScreenProps>);

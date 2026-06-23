@@ -1,4 +1,7 @@
 'use client';
+import * as React from 'react';
+
+import { useOptionalContextKey } from '../../../Route';
 import {
   createNavigatorFactory,
   type DrawerActionHelpers,
@@ -11,6 +14,8 @@ import {
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../native';
+import { usePreloadRoutes } from '../../usePreloadRoutes';
+import { useTabPlaceholders } from '../../useTabPlaceholders';
 import type {
   DrawerNavigationEventMap,
   DrawerNavigationOptions,
@@ -33,7 +38,7 @@ function DrawerNavigator({
   UNSTABLE_router,
   ...rest
 }: DrawerNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, describe, NavigationContent } = useNavigationBuilder<
     DrawerNavigationState<ParamListBase>,
     DrawerRouterOptions,
     DrawerActionHelpers<ParamListBase>,
@@ -53,13 +58,37 @@ function DrawerNavigator({
     UNSTABLE_router,
   });
 
+  // Key placeholders with the same pathname the router keys real routes with, so the real route
+  // reconciles onto its placeholder instead of remounting.
+  const pathname = useOptionalContextKey();
+  const [tabState, tabDescriptors] = useTabPlaceholders(
+    state,
+    descriptors,
+    describe,
+    pathname,
+    state.routeNames
+  );
+
+  // Drawer screens default to `lazy` (rendered on first access), so only routes that opt out with
+  // `lazy={false}` are preloaded. `lazy` is read from the augmented descriptors so it is available
+  // for routes that haven't materialized yet.
+  const nonLazyRouteNames = React.useMemo(
+    () =>
+      state.routeNames.filter((name) => {
+        const placeholder = tabState.routes.find((route) => route.name === name);
+        return placeholder ? tabDescriptors[placeholder.key]?.options.lazy === false : false;
+      }),
+    [state.routeNames, tabState.routes, tabDescriptors]
+  );
+  usePreloadRoutes(state, navigation, nonLazyRouteNames);
+
   return (
     <NavigationContent>
       <DrawerView
         {...rest}
         defaultStatus={defaultStatus}
-        state={state}
-        descriptors={descriptors}
+        state={tabState}
+        descriptors={tabDescriptors}
         navigation={navigation}
       />
     </NavigationContent>

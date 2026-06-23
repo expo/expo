@@ -17,7 +17,6 @@ const makeState = ({
   index,
   routeNames,
   routes: routesOrder.map((name) => ({ key: `${name}-key`, name })),
-  preloadedRouteKeys: [],
 });
 
 test('returns routes in declaration order regardless of the routes (back-stack) order', () => {
@@ -31,9 +30,12 @@ test('returns routes in declaration order regardless of the routes (back-stack) 
 });
 
 test('reflects tabs being added and removed', () => {
-  const { result, rerender } = renderHook(({ state }) => useStableTabOrder(state), {
-    initialProps: { state: makeState({ routeNames: ['a', 'b'], routesOrder: ['b', 'a'] }) },
-  });
+  const { result, rerender } = renderHook(
+    ({ state }: { state: TabNavigationState<ParamListBase> }) => useStableTabOrder(state),
+    {
+      initialProps: { state: makeState({ routeNames: ['a', 'b'], routesOrder: ['b', 'a'] }) },
+    }
+  );
 
   expect(result.current.map((route) => route.name)).toEqual(['a', 'b']);
 

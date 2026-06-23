@@ -70,36 +70,35 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
 
       const route = state.routes.find((route) => route.name === action.payload.name);
 
-      if (!route) {
-        // This shouldn't occur, but lets just hand it off to the next navigator in case.
-        return null;
-      }
+      // A declared route that's absent from `state.routes` is a lazy tab that hasn't loaded yet
+      // (presence is the loaded signal). The base router creates it on focus, so this is a first
+      // visit: reset, with no prior route key/state to clear.
+      let shouldReset = !route || !route.state;
 
-      // We should reset if this is the first time visiting the route
-      let shouldReset = !route.state;
-
-      if (!shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
+      if (route && !shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
         shouldReset = state.routes[state.index ?? 0]!.key !== route.key;
       }
 
       let nextState: ReturnType<typeof rnTabRouter.getStateForAction>;
 
       if (shouldReset) {
-        options.routeParamList[route.name] = {
-          ...options.routeParamList[route.name],
-        };
-        state = {
-          ...state,
-          routes: state.routes.map((r) => {
-            if (r.key !== route.key) {
-              return r;
-            }
-            return { ...r, state: undefined };
-          }),
-        };
+        if (route) {
+          options.routeParamList[route.name] = {
+            ...options.routeParamList[route.name],
+          };
+          state = {
+            ...state,
+            routes: state.routes.map((r) => {
+              if (r.key !== route.key) {
+                return r;
+              }
+              return { ...r, state: undefined };
+            }),
+          };
+        }
         nextState = rnTabRouter.getStateForAction(state, action, options);
       } else {
-        nextState = rnTabRouter.getStateForRouteFocus(state, route.key);
+        nextState = rnTabRouter.getStateForRouteFocus(state, route!.key);
       }
 
       // A REPLACE drops the route it replaced from the back stack.

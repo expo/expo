@@ -14,6 +14,8 @@ import type {
   TabRouterOptions,
 } from '../react-navigation/native';
 import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import { usePreloadRoutes } from '../react-navigation/usePreloadRoutes';
+import { useTabPlaceholders } from '../react-navigation/useTabPlaceholders';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
 import { NavigatorContext } from '../views/Navigator';
@@ -185,13 +187,37 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
 
+  // Headless tabs follow the bottom-tabs policy: show every declared tab from the first frame via
+  // placeholders. Tabs default to `lazy`, so only routes that opt out with `lazy={false}` preload.
+  const [tabState, tabDescriptors] = useTabPlaceholders(
+    state,
+    descriptors,
+    describe,
+    contextKey,
+    state.routeNames
+  );
+  const nonLazyRouteNames = useMemo(
+    () =>
+      state.routeNames.filter((name) => {
+        const placeholder = tabState.routes.find((route) => route.name === name);
+        return placeholder ? tabDescriptors[placeholder.key]?.options.lazy === false : false;
+      }),
+    [state.routeNames, tabState.routes, tabDescriptors]
+  );
+  usePreloadRoutes(state, navigation, nonLazyRouteNames);
+
   const navigatorContextValue = useMemo<NavigatorContextValue>(
-    () => ({
-      ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
-      contextKey,
-      router: ExpoTabRouter,
-    }),
-    [navigatorContext, contextKey, ExpoTabRouter]
+    () =>
+      ({
+        ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
+        // Expose the placeholder-augmented state/descriptors so consumers (TabSlot, TabTrigger) see
+        // every declared tab from the first frame, matching the cast used for the spread above.
+        state: tabState,
+        descriptors: tabDescriptors,
+        contextKey,
+        router: ExpoTabRouter,
+      }) as unknown as NavigatorContextValue,
+    [navigatorContext, tabState, tabDescriptors, contextKey, ExpoTabRouter]
   );
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
@@ -202,7 +228,13 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     </TabTriggerMapContext.Provider>
   )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent, describe };
+  return {
+    state: tabState,
+    descriptors: tabDescriptors,
+    navigation,
+    NavigationContent,
+    describe,
+  };
 }
 
 function parseTriggersFromChildren(

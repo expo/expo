@@ -52,6 +52,7 @@ export function MaterialTopTabView({
   // pager in stable declaration order and detect focus by key.
   const orderedRoutes = useStableTabOrder(state);
   const focusedKey = state.routes[state.index]!.key;
+
   const focusedIndex = useMemo(() => {
     const index = orderedRoutes.findIndex((route) => route.key === focusedKey);
     if (index === -1) {
@@ -107,10 +108,8 @@ export function MaterialTopTabView({
       renderLazyPlaceholder={({ route }: any) =>
         descriptors[route.key]!.options.lazyPlaceholder?.() ?? null
       }
-      lazy={({ route }: any) =>
-        descriptors[route.key]!.options.lazy === true &&
-        !state.preloadedRouteKeys.includes(route.key)
-      }
+      // Material top tabs are fully eager (all routes are preloaded), so never lazy-defer a screen.
+      lazy={false}
       lazyPreloadDistance={focusedOptions.lazyPreloadDistance}
       swipeEnabled={focusedOptions.swipeEnabled}
       animationEnabled={focusedOptions.animationEnabled}

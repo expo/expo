@@ -758,8 +758,11 @@ it('can still use <Screen /> while prefetching in tabs', () => {
     },
   });
 
+  // The prefetched route is inserted at the tail of state.routes and renders its
+  // configured header ('custom-title') during prefetch, before the index re-renders.
   expect(headerTitle.mock.calls.map((call) => call[0].children)).toStrictEqual([
     'index',
+    'custom-title',
     'index',
     'custom-title',
     'index',

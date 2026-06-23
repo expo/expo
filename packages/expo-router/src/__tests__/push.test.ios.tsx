@@ -322,7 +322,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                 // so focusing `c` gives `[a, c, b]` with `c` at index 1.
                 index: 1,
                 key: expect.any(String),
-                preloadedRouteKeys: [],
                 routeNames: ['a', 'b', 'c'],
                 routes: [
                   {
