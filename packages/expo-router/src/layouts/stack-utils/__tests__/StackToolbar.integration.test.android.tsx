@@ -59,6 +59,8 @@ jest.mock('@expo/ui/jetpack-compose', () => {
     Divider: jest.fn(() => <View testID="Divider" />),
     Icon: jest.fn((props) => <View testID="Icon" {...props} />),
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
+    Badge: jest.fn((props) => <View testID="Badge" {...props} />),
+    Box: jest.fn((props) => <View testID="Box" {...props} />),
     Text: jest.fn((props) => <View testID="ComposeText" {...props} />),
     RNHostView: jest.fn((props) => <View testID="RNHostView" {...props} />),
   };
@@ -323,4 +325,76 @@ describe('Stack.Toolbar Android integration tests', () => {
       }
     }
   );
+
+  describe('badge support in left/right placement', () => {
+    it.each(['left', 'right'] as const)(
+      'renders Box with Badge when button has a Badge child in %s placement',
+      (placement) => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement={placement}>
+                  <Stack.Toolbar.Button icon={{ uri: 'icon' }}>
+                    <Stack.Toolbar.Icon src={{ uri: 'icon' }} />
+                    <Stack.Toolbar.Badge>3</Stack.Toolbar.Badge>
+                  </Stack.Toolbar.Button>
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <View testID="index" />,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(screen.getByTestId('Box')).toBeDefined();
+        const badge = screen.getByTestId('Badge');
+        expect(badge).toBeDefined();
+        expect(within(badge).getByTestId('ComposeText')).toBeDefined();
+        expect(within(badge).getByTestId('ComposeText').props.children).toBe('3');
+      }
+    );
+
+    it('renders dot badge when Badge has no children', () => {
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Button icon={{ uri: 'icon' }}>
+                  <Stack.Toolbar.Icon src={{ uri: 'icon' }} />
+                  <Stack.Toolbar.Badge />
+                </Stack.Toolbar.Button>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen.getByTestId('Badge')).toBeDefined();
+      expect(screen.queryByTestId('ComposeText')).toBeNull();
+    });
+
+    it('does not render Box when button has no Badge child', () => {
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Button icon={{ uri: 'icon' }}>
+                  <Stack.Toolbar.Icon src={{ uri: 'icon' }} />
+                </Stack.Toolbar.Button>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen.queryByTestId('Box')).toBeNull();
+    });
+  });
 });

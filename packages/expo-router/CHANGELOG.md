@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android] Support `Stack.Toolbar.Badge` in header left/right placements ([#46537](https://github.com/expo/expo/pull/46537) by [@benjaminkomen](https://github.com/benjaminkomen))
+
 ### 🐛 Bug fixes
 
 - Fix type inference for `unstable_createStandardRouterNavigator` ([#46737](https://github.com/expo/expo/pull/46737) by [@Ubax](https://github.com/Ubax))
