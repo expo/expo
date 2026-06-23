@@ -4,7 +4,9 @@ import android.content.Context
 import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.Session
+import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.storage.SessionWithLogs
 import expo.modules.appmetrics.storage.SessionWithMetrics
 import expo.modules.appmetrics.utils.TimeUtils
 import io.mockk.*
@@ -1068,23 +1070,33 @@ class BaseObservabilityManagerTest {
     }
 
   @Test
-  fun `dispatchUnsentLogs is suppressed when retry gate is active (shared with metrics)`() =
+  fun `metrics Retryable does not gate logs (per-signal gates are independent)`() =
     runTest {
-      // The gate is shared between metrics and logs: a Retryable response to a metrics
-      // dispatch must defer the next logs dispatch too. Otherwise we'd hammer the same
-      // server endpoint with the logs side while it's asking us to slow down.
+      // The metrics and logs endpoints fail independently in practice — one schema
+      // disagreement on the metrics side shouldn't suppress a healthy logs stream. After a
+      // metrics dispatch sets its own gate, a logs dispatch must still proceed (and reach
+      // the dispatcher).
       val metric = createMetric("metric1", metricId = "id1")
       val metricSession = createSessionWithMetrics(
         sessionId = "session-1",
         environment = "production",
         metrics = listOf(metric)
       )
+      val logRecord = createLog("log1", logId = "log-1")
+      val logSession = createSessionWithLogs(
+        sessionId = "session-2",
+        environment = "production",
+        logs = listOf(logRecord)
+      )
 
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(metricSession)
       coEvery { mockEventDispatcher.dispatch(any()) } returns
         DispatchResult.Retryable(retryAfterMs = 60_000L)
+
       coEvery { mockPendingLogsManager.getAllPendingLogIds() } returns listOf("log-1")
+      coEvery { mockSessionManager.getSessionsWithLogs(any()) } returns listOf(logSession)
+      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
 
       val fixedNow = 1_700_000_000_000L
       val manager = createManager(currentTimeMs = { fixedNow })
@@ -1092,7 +1104,43 @@ class BaseObservabilityManagerTest {
       manager.dispatchUnsentMetrics()
       manager.dispatchUnsentLogs()
 
-      coVerify(exactly = 0) { mockEventDispatcher.dispatchLogs(any()) }
+      // Logs MUST reach the dispatcher; the metrics gate doesn't suppress it.
+      coVerify(exactly = 1) { mockEventDispatcher.dispatchLogs(any()) }
+    }
+
+  @Test
+  fun `logs Retryable does not gate metrics (per-signal gates are independent)`() =
+    runTest {
+      // Symmetric test: a logs failure doesn't suppress metrics.
+      val metric = createMetric("metric1", metricId = "id1")
+      val metricSession = createSessionWithMetrics(
+        sessionId = "session-1",
+        environment = "production",
+        metrics = listOf(metric)
+      )
+      val logRecord = createLog("log1", logId = "log-1")
+      val logSession = createSessionWithLogs(
+        sessionId = "session-2",
+        environment = "production",
+        logs = listOf(logRecord)
+      )
+
+      coEvery { mockPendingLogsManager.getAllPendingLogIds() } returns listOf("log-1")
+      coEvery { mockSessionManager.getSessionsWithLogs(any()) } returns listOf(logSession)
+      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns
+        DispatchResult.Retryable(retryAfterMs = 60_000L)
+
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(metricSession)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+
+      val fixedNow = 1_700_000_000_000L
+      val manager = createManager(currentTimeMs = { fixedNow })
+
+      manager.dispatchUnsentLogs()
+      manager.dispatchUnsentMetrics()
+
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
     }
 
   @Test
@@ -1198,6 +1246,53 @@ class BaseObservabilityManagerTest {
       value = value,
       routeName = null,
       params = null
+    )
+
+  private fun createSessionWithLogs(
+    sessionId: String,
+    environment: String?,
+    logs: List<LogRecord>,
+    appName: String = "TestApp",
+    appVersion: String = "1.0.0"
+  ): SessionWithLogs {
+    val session = Session(
+      id = sessionId,
+      startTimestamp = "2025-01-01T00:00:00.000Z",
+      isActive = true,
+      environment = environment,
+      appName = appName,
+      appIdentifier = "com.test.app",
+      appVersion = appVersion,
+      appBuildNumber = "1",
+      appUpdateId = null,
+      deviceOs = "Android",
+      deviceOsVersion = "14",
+      deviceModel = "Test Device",
+      deviceName = "test",
+      expoSdkVersion = "52.0.0",
+      reactNativeVersion = "0.76.0",
+      clientVersion = null,
+      languageTag = "en-US"
+    )
+    return SessionWithLogs(
+      session = session,
+      logs = logs.map { it.copy(sessionId = sessionId) }
+    )
+  }
+
+  private fun createLog(
+    name: String,
+    logId: String = "log-${System.nanoTime()}",
+    body: String = "test log body",
+    severity: String = "info"
+  ): LogRecord =
+    LogRecord(
+      logId = logId,
+      sessionId = "",
+      timestamp = "2025-01-01T00:00:00.000Z",
+      name = name,
+      body = body,
+      severity = severity
     )
 
   // endregion

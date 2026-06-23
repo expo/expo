@@ -88,40 +88,49 @@ class BaseObservabilityManager(
   )
 
   /**
-   * In-memory retry-gate state. Reset implicitly when the process restarts — a relaunch
-   * usually means enough time passed that the transient cause has cleared anyway, and
-   * persisting the gate would mean an extra disk write on every retryable response. The gate
-   * is shared between the metrics and logs paths so when the server asks us to slow down on
-   * one signal, the other one waits too.
+   * In-memory retry-gate state, kept independently per OTLP endpoint. The `/v1/metrics` and
+   * `/v1/logs` endpoints fail independently in practice (one schema validation disagreement
+   * on the metrics side shouldn't suppress a healthy logs stream), so each signal carries
+   * its own consecutive-failure counter and dispatch-after deadline. A single shared field
+   * would conflate the two: a recovering signal would reset the other's counter on success,
+   * and a server's `Retry-After` on one endpoint would silently overwrite a longer backoff
+   * computed for the other.
+   *
+   * State is reset implicitly when the process restarts — a relaunch usually means enough
+   * time passed that the transient cause has cleared anyway, and persisting the gates would
+   * mean a disk write per retryable response.
    */
-  private var retryGateState: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
+  private var metricsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
+  private var logsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
 
   /**
-   * Returns true and logs when an active retry gate suppresses this dispatch round. Mirrors
-   * the `dispatch()` entry-point gate check on the iOS side.
+   * Returns true and logs when an active retry gate suppresses this dispatch round. Called
+   * inside each per-signal dispatch method rather than at a shared entry point, so a backoff
+   * on one endpoint doesn't suppress traffic on the other.
    */
-  private fun retryGateBlocks(): Boolean {
-    val until = retryGateState.dispatchAfterMs ?: return false
+  private fun retryGateBlocks(state: DispatchUtils.RetryGateState, signal: String): Boolean {
+    val until = state.dispatchAfterMs ?: return false
     val now = currentTimeMs()
     if (until <= now) return false
-    Log.d(OBSERVE_TAG, "Dispatch suppressed by retry gate until $until (now $now)")
+    Log.d(OBSERVE_TAG, "$signal dispatch suppressed by retry gate until $until (now $now)")
     return true
   }
 
   /**
-   * Applies a per-signal dispatch outcome to the shared retry-gate state. Reads/writes the
-   * manager's `retryGateState` field so call sites stay concise. Called from both
-   * `dispatchUnsentMetrics` and `dispatchUnsentLogs` after each `eventDispatcher.dispatch*`
-   * call so the gate reflects the latest signal's response.
+   * Computes the next gate state for a given current state and dispatch result. Each per-
+   * signal call site assigns the return value back to its own field — the manager doesn't
+   * share a single mutable state across signals, so the metrics and logs gates can't drift
+   * out of sync from cross-signal updates.
    */
-  private fun applyRetryOutcome(result: DispatchResult) {
-    retryGateState = DispatchUtils.nextRetryGateState(
-      result = result,
-      currentState = retryGateState,
-      now = currentTimeMs(),
-      backoff = { DispatchUtils.computeBackoffDelay(it) }
-    )
-  }
+  private fun nextGate(
+    current: DispatchUtils.RetryGateState,
+    result: DispatchResult
+  ): DispatchUtils.RetryGateState = DispatchUtils.nextRetryGateState(
+    result = result,
+    currentState = current,
+    now = currentTimeMs(),
+    backoff = { DispatchUtils.computeBackoffDelay(it) }
+  )
 
   suspend fun dispatchUnsentMetrics() {
     val pendingIds = pendingMetricsManager.getAllPendingMetricIds()
@@ -129,7 +138,7 @@ class BaseObservabilityManager(
       return
     }
 
-    if (retryGateBlocks()) {
+    if (retryGateBlocks(metricsRetryGate, "metrics")) {
       return
     }
 
@@ -159,7 +168,7 @@ class BaseObservabilityManager(
     }
 
     val result = eventDispatcher.dispatch(events)
-    applyRetryOutcome(result)
+    metricsRetryGate = nextGate(metricsRetryGate, result)
     val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
     if (DispatchUtils.shouldRemovePending(result)) {
       pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
@@ -182,7 +191,7 @@ class BaseObservabilityManager(
       return
     }
 
-    if (retryGateBlocks()) {
+    if (retryGateBlocks(logsRetryGate, "logs")) {
       return
     }
 
@@ -214,7 +223,7 @@ class BaseObservabilityManager(
     }
 
     val result = eventDispatcher.dispatchLogs(events)
-    applyRetryOutcome(result)
+    logsRetryGate = nextGate(logsRetryGate, result)
     val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
     if (DispatchUtils.shouldRemovePending(result)) {
       pendingLogsManager.removePendingLogs(dispatchedLogIds)
