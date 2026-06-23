@@ -768,7 +768,7 @@ jobs:
 
 ### Direct App Store Connect approach
 
-Distribute an already uploaded build to TestFlight groups, set "What to Test" notes, and submit for Beta App Review.
+Distribute an already uploaded build to TestFlight groups, set "What to Test" notes, and submit for Beta App Review. Beta App Review submission is optional — set `submit_beta_review: false` to update the changelog or groups on an existing build without re-submitting it for review.
 
 <Prerequisites>
   <Requirement title="App Store Connect integration">
@@ -835,6 +835,39 @@ jobs:
         - Public Beta
       changelog: Build from CI
       submit_beta_review: true
+```
+
+</Collapsible>
+
+<Collapsible summary="Update the changelog without re-submitting for Beta App Review">
+
+For a build that already exists in App Store Connect, you can update the "What to Test" notes or group membership without triggering Beta App Review. Set `submit_beta_review: false` to apply the changes while leaving the build's existing review status untouched.
+
+This workflow takes the build ID and new changelog as [manual inputs](/eas/workflows/syntax/#onworkflow_dispatchinputs), so you can run it on demand with `eas workflow:run`.
+
+```yaml .eas/workflows/testflight-update-changelog.yml
+name: Update TestFlight changelog
+
+on:
+  workflow_dispatch:
+    inputs:
+      asc_build_id:
+        type: string
+        required: true
+        description: The App Store Connect build ID to update.
+      changelog:
+        type: string
+        required: true
+        description: The new "What to Test" notes.
+
+jobs:
+  update_changelog:
+    name: Update changelog
+    type: testflight
+    params:
+      asc_build_id: ${{ inputs.asc_build_id }}
+      changelog: ${{ inputs.changelog }}
+      submit_beta_review: false
 ```
 
 </Collapsible>
