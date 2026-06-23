@@ -31,6 +31,7 @@
 - [Internal] Update logbox imports ([#46640](https://github.com/expo/expo/pull/46640) by [@kitten](https://github.com/kitten))
 - [Internal] Align find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
 - [Internal] Unify the sync realpath helper and make fallback handling explicit. ([#47175](https://github.com/expo/expo/pull/47175) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Bump to `dnssd-advertise@^1.1.6` ([#47183](https://github.com/expo/expo/pull/47183) by [@kitten](https://github.com/kitten))
 
 ## 56.1.12 — 2026-05-26
 
