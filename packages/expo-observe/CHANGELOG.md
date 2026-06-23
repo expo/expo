@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Classify OTLP dispatch responses per the OTLP retry spec. Non-retryable responses (400, 401, 403, 404, other non-listed codes, and `partial_success` with rejected records) now drop the batch and advance the cursor instead of looping forever; retryable responses (408, 429, 502, 503, 504, and transport errors) gate subsequent dispatches with the server-supplied `Retry-After` header or a jittered exponential backoff. ([@douglowder](https://github.com/douglowder))
+- [iOS] Adjust dispatch code to comply with OTLP retry spec. ([#47159](https://github.com/expo/expo/pull/47159) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
