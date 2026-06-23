@@ -20,16 +20,17 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "files": [
     "build"
   ],
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
-    "test": "expo-module test",
-    "watch": "pnpm run build --watch --preserveWatchOutput",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "engines": {

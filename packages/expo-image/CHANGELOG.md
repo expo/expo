@@ -6,11 +6,13 @@
 
 ### 🎉 New features
 
+- Added `Image.writeToCacheAsync` and `Image.readFromCacheAsync` to seed and read the image cache by cache key. ([#46620](https://github.com/expo/expo/pull/46620) by [@tsapeta](https://github.com/tsapeta))
 - [web] Improved `static` image source selection on web to be based on the rendered layout size by leading the generated `sizes` with `auto`, and default `static` images to `loading="lazy"` (opt out with `loading="eager"`). ([#46425](https://github.com/expo/expo/pull/46425) by [@sebholl](https://github.com/sebholl))
 
 ### 🐛 Bug fixes
 
 - [Android] Fixed image staying blank when its `source` changes while a `transition` cross-fade is still running. ([#46752](https://github.com/expo/expo/pull/46752) by [@zoontek](https://github.com/zoontek))
+- [iOS] Fixed `generateThumbhashAsync` crashing on images with extreme aspect ratios. ([#47189](https://github.com/expo/expo/issues/47189) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

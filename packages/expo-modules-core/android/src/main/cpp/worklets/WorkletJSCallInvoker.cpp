@@ -1,5 +1,3 @@
-#if WORKLETS_ENABLED
-
 #include "WorkletJSCallInvoker.h"
 
 namespace expo {
@@ -30,5 +28,3 @@ namespace expo {
     });
   }
 } // namespace expo
-
-#endif

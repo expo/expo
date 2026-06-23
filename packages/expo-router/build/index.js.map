@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.tsx"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,oBAAkB;AAClB,4CAA0B;AAC1B,0CAAwB;AACxB,yCAAuB;AACvB,0CAAwB","sourcesContent":["import './global';\nexport * from './exports';\nexport * from './stack';\nexport * from './link';\nexport * from './color';\n"]}

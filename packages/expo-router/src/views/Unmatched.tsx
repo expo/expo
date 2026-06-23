@@ -11,6 +11,7 @@ import { Link } from '../link/Link';
 import { useNavigation } from '../useNavigation';
 import { useSafeLayoutEffect } from './useSafeLayoutEffect';
 import { useRoute } from '../react-navigation/native';
+import type { Href } from '../types';
 import { isRoutePreloadedInStack } from '../utils/stack';
 import { Pressable } from '../views/Pressable';
 
@@ -65,7 +66,7 @@ function UnmatchedInner() {
         Page could not be found.
       </Text>
       {render ? (
-        <Link href={pathname} replace {...Platform.select({ native: { asChild: true } })}>
+        <Link href={pathname as Href} replace {...Platform.select({ native: { asChild: true } })}>
           <Pressable>
             {({ hovered, pressed }) => (
               <Text
@@ -102,7 +103,7 @@ function UnmatchedInner() {
                 if (router.canGoBack()) {
                   router.back();
                 } else {
-                  router.replace('/');
+                  router.replace('/' as Href);
                 }
               }}
               style={[

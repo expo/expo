@@ -1,14 +1,13 @@
-import AppMetrics from 'expo-app-metrics';
+import type { Session } from 'expo-app-metrics';
 
 export function emitTTI(args: {
-  sessionId: string;
+  session: Pick<Session, 'addMetric'>;
   timestamp: string;
   routeName: string | undefined;
   value: number;
   routeParams: object;
 }): Promise<void> {
-  return AppMetrics.addCustomMetricToSession({
-    sessionId: args.sessionId,
+  return args.session.addMetric({
     timestamp: args.timestamp,
     category: 'navigation',
     name: 'tti',

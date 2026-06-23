@@ -88,11 +88,7 @@ export async function showLoginPromptAsync({
     });
   } catch (e) {
     if (e instanceof ApiV2Error && e.expoApiV2ErrorCode === 'ONE_TIME_PASSWORD_REQUIRED') {
-      await retryUsernamePasswordAuthWithOTPAsync(
-        username,
-        password,
-        e.expoApiV2ErrorMetadata as any
-      );
+      await retryUsernamePasswordAuthWithOTPAsync(username, password);
     } else {
       throw e;
     }

@@ -100,12 +100,9 @@ export function initListeners(
       storage.interactiveScreensIds.add(e.screenId);
     }
 
-    // All async work happens after storage is updated.
-    const mainSessionId = AppMetrics.getMainSession()?.id;
-    if (!mainSessionId) return;
+    const mainSession = AppMetrics.getMainSession();
 
-    AppMetrics.addCustomMetricToSession({
-      sessionId: mainSessionId,
+    mainSession.addMetric({
       timestamp,
       category: 'navigation',
       name,
@@ -115,7 +112,7 @@ export function initListeners(
     });
     if (hasPendingInteractive) {
       await emitTTI({
-        sessionId: mainSessionId,
+        session: mainSession,
         timestamp,
         routeName: routePattern,
         value: ttrSeconds,

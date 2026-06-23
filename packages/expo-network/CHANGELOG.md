@@ -12,6 +12,9 @@
 
 ### 💡 Others
 
+- [Android] Remove legacy `fetchNetworkState` path. ([#47007](https://github.com/expo/expo/pull/47007) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Use `LinkProperties` in `getIpAddressAsync`. ([#47028](https://github.com/expo/expo/pull/47028) by [@Wenszel](https://github.com/Wenszel))
+
 ## 56.0.4 — 2026-05-19
 
 _This version does not introduce any user-facing changes._

@@ -177,7 +177,7 @@ it(`converts index routes`, () => {
 });
 
 function getNamedMatcher(fileName: string) {
-  return new RegExp(getServerManifest(getRoutesFor([fileName])).htmlRoutes[0].namedRegex, '');
+  return new RegExp(getServerManifest(getRoutesFor([fileName])).htmlRoutes[0]!.namedRegex, '');
 }
 
 it(`matches expected`, () => {
@@ -190,7 +190,7 @@ it(`matches expected`, () => {
 it(`matches expected with safe name`, () => {
   const matcher = getServerManifest(
     getRoutesFor(['./[user name]/category/[CATEGORY]/post/[my_lil-id].tsx'])
-  ).htmlRoutes[0];
+  ).htmlRoutes[0]!;
 
   const matched = new RegExp(matcher.namedRegex).exec(
     '/evanbacon/category/announcements/post/router-v3'
@@ -210,7 +210,7 @@ it(`matches expected with safe name`, () => {
 it(`matches expected with safe names that collide`, () => {
   const matcher = getServerManifest(
     getRoutesFor(['./[user name]/category/[my_lilid]/post/[my_lil-id].tsx'])
-  ).htmlRoutes[0];
+  ).htmlRoutes[0]!;
 
   const matched = new RegExp(matcher.namedRegex).exec(
     '/evanbacon/category/announcements/post/router-v3'
@@ -230,7 +230,7 @@ it(`matches expected with safe names that collide`, () => {
 // TODO: Maybe assert sooner?
 it(`asserts duplicate keys eventually`, () => {
   const routeNode = getRoutesFor(['./[a]/b/[a].tsx']);
-  const route = getServerManifest(routeNode).htmlRoutes[0];
+  const route = getServerManifest(routeNode).htmlRoutes[0]!;
   expect(() => new RegExp(route.namedRegex)).toThrow();
 });
 
@@ -314,7 +314,7 @@ it(`converts dynamic routes on same level with specificity`, () => {
     ['/b', './(a)/[a].tsx'],
   ]) {
     expect(
-      routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher))?.file
+      routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher!))?.file
     ).toBe(page);
   }
 });
@@ -587,7 +587,7 @@ it(`matches top-level catch-all before +not-found route`, () => {
     ['/b/c/', './[...a].tsx'],
   ]) {
     expect(
-      routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher))?.file
+      routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher!))?.file
     ).toBe(page);
   }
 });

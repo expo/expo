@@ -31,7 +31,14 @@ Expo SDK のライブラリである [`expo-image-picker`](/versions/latest/sdk/
 
 `expo-image-picker` ライブラリをインストールするには、ターミナルで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押して開発サーバーを停止してから、次のコマンドを実行します。
 
-<Terminal cmd={['$ npx expo install expo-image-picker']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-image-picker'],
+    yarn: ['$ yarn expo install expo-image-picker'],
+    pnpm: ['$ pnpm expo install expo-image-picker'],
+    bun: ['$ bun expo install expo-image-picker'],
+  }}
+/>
 
 [`npx expo install`](/more/expo-cli/#installation) コマンドは、ライブラリをインストールし、**package.json** のプロジェクトの依存関係に追加します。
 
@@ -50,10 +57,10 @@ Expo SDK のライブラリである [`expo-image-picker`](/versions/latest/sdk/
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 // ...rest of the import statements remain unchanged
-/* @tutinfo <CODE>ImagePicker</CODE> をインポートします。 */ import * as ImagePicker from 'expo-image-picker';/* @end */
+/* @tutinfo `ImagePicker` をインポートします。 */ import * as ImagePicker from 'expo-image-picker';/* @end */
 
 export default function Index() {
-  /* @tutinfo <CODE>launchImageLibraryAsync()</CODE> に画像ピッカーのオプションを渡します */
+  /* @tutinfo `launchImageLibraryAsync()` に画像ピッカーのオプションを渡します */
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -98,7 +105,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 type Props = {
   label: string;
   theme?: 'primary';
-  /* @tutinfo <CODE>onPress</CODE> プロパティの型を定義します。 */
+  /* @tutinfo `onPress` プロパティの型を定義します。 */
   onPress?: () => void;
   /* @end */
 };
@@ -306,7 +313,7 @@ const styles = StyleSheet.create({
 ```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-/* @tutinfo <CODE>react<CODE> から <CODE>useState</CODE> フックをインポートします。*/
+/* @tutinfo `react` から `useState` フックをインポートします。*/
 import { useState } from 'react';
 /* @end */
 
@@ -328,7 +335,7 @@ export default function Index() {
     });
 
     if (!result.canceled) {
-      /* @tutinfo <CODE>assets</CODE> 配列から最初の uri を取得します。また、一度に選択される画像は 1 つだけなので、ここを変更する必要はありません。 */
+      /* @tutinfo `assets` 配列から最初の uri を取得します。また、一度に選択される画像は 1 つだけなので、ここを変更する必要はありません。 */
       setSelectedImage(result.assets[0].uri);
       /* @end */
     } else {
@@ -339,7 +346,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @tutinfo 選択された画像の URI を <CODE>ImageViewer</CODE> コンポーネントに渡します。 */
+        /* @tutinfo 選択された画像の URI を `ImageViewer` コンポーネントに渡します。 */
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
         /* @end */
       </View>
@@ -385,12 +392,12 @@ type Props = {
   /* @end */
 };
 
-export default function ImageViewer({ imgSource, /* @tutinfo <CODE>selectedImage</CODE> プロパティを渡します。*/selectedImage/* @end */ }: Props) {
+export default function ImageViewer({ imgSource, /* @tutinfo `selectedImage` プロパティを渡します。*/selectedImage/* @end */ }: Props) {
   /* @tutinfo 選択された画像が null でない場合はデバイスからの画像を表示し、そうでない場合はプレースホルダー画像を表示します。 */
   const imageSource = selectedImage ? { uri: selectedImage } : imgSource;
   /* @end */
 
-  /* @tutinfo <CODE>imgSource</CODE> を <CODE>imageSource</CODE> に置き換えます。 */
+  /* @tutinfo `imgSource` を `imageSource` に置き換えます。 */
   return <Image source={imageSource} style={styles.image} />;
   /* @end */
 }

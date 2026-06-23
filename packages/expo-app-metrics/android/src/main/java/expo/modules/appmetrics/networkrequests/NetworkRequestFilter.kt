@@ -4,6 +4,7 @@ package expo.modules.appmetrics.networkrequests
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 /**
@@ -20,6 +21,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
  * nothing through it (an empty allow-list matches no value), so any empty field drops every
  * request. A filter with no fields set matches every request, matching the no-filter default.
  */
+@OptimizedRecord
 data class NetworkRequestFilter(
   /**
    * Exact host matches, compared case-insensitively against the request URL's host.

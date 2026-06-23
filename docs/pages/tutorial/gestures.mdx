@@ -100,13 +100,14 @@ In the **EmojiSticker.tsx** file:
 2. To recognize the tap on the sticker, import `useAnimatedStyle`, `useSharedValue`, and `withSpring` from `react-native-reanimated` to animate the style of the `<Animated.Image>`.
 3. Inside the `EmojiSticker` component, create a reference called `scaleImage` using the `useSharedValue()` hook. It will take the value of `imageSize` as its initial value.
 
+{/* prettier-ignore */}
 ```tsx components/EmojiSticker.tsx
 // ...rest of the import statements remain same
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+/* @tutinfo Import `Gesture` and `GestureDetector` from `react-native-gesture-handler`. */import { Gesture, GestureDetector } from 'react-native-gesture-handler';/* @end */
+/* @tutinfo Import `useAnimatedStyle`, `useSharedValue`, and `withSpring` from `react-native-reanimated`. */import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';/* @end */
 
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
-  const scaleImage = useSharedValue(imageSize);
+  /* @tutinfo Create a `scaleImage` shared value and set `imageSize` as its initial value. */const scaleImage = useSharedValue(imageSize);/* @end */
 
   return (
     // ...rest of the code remains same

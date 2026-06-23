@@ -33,9 +33,6 @@ inputs:
   ccache:
     description: 'Restore ccache'
     required: false
-  git-lfs:
-    description: 'Restore Git LFS cache'
-    required: false
   react-native-gradle-downloads:
     description: 'Restore Gradle downloads cache for React Native libraries'
     required: false
@@ -59,9 +56,6 @@ outputs:
   native-tests-pods-hit:
     description: 'Returns true, if /apps/native-tests/ios pods cache is up-to-date'
     value: ${{ steps.native-tests-pods-cache.outputs.cache-hit }}
-  git-lfs-hit:
-    description: 'Returns true, if Git LFS cache is up-to-date'
-    value: ${{ steps.git-lfs-cache.outputs.cache-hit }}
 
 runs:
   using: 'composite'
@@ -168,21 +162,17 @@ runs:
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: ${{ runner.temp }}/.ccache
-        key: ${{ runner.os }}-ccache-${{ hashFiles('pnpm-lock.yaml', 'packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle') }}
-        restore-keys: ${{ runner.os }}-ccache-
-
-    - name: 🔍️ Get cache key of Git LFS files
-      if: inputs.git-lfs == 'true'
-      id: git-lfs
-      run: echo "sha256=$(git lfs ls-files | openssl dgst -sha256)" >> $GITHUB_OUTPUT
-      shell: bash
-    - name: ♻️ Restore Git LFS cache
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-      id: git-lfs-cache
-      if: inputs.git-lfs == 'true'
-      with:
-        path: .git/lfs
-        key: ${{ steps.git-lfs.outputs.sha256 }}
+        # The key is divided into two parts:
+        #
+        # PART 1 - used in key and restore-keys
+        # pnpm-lock.yaml keeps track of the react native version, which tracks the NDK version, if it changes, we need to invalidate the cache.
+        #
+        # PART 2 - used only in the exact key
+        # ccache tracks these files without any sloppiness issues.
+        # - C/C++ source files
+        # - Gradle files: see https://github.com/expo/expo/pull/44884
+        key: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle', 'apps/bare-expo/android/app/src/main/jni/pch.h') }}
+        restore-keys: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}
 
     - name: 🛠 Setup "REACT_NATIVE_DOWNLOADS_DIR" environment variable
       if: inputs.react-native-gradle-downloads == 'true'

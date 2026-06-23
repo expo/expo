@@ -7,12 +7,13 @@
     "build"
   ],
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -92,7 +93,7 @@
     "@babel/plugin-transform-typescript": "^7.25.2",
     "@babel/plugin-transform-unicode-regex": "^7.24.7",
     "@babel/preset-typescript": "^7.23.0",
-    "@react-native/babel-plugin-codegen": "0.86.0-rc.3",
+    "@react-native/babel-plugin-codegen": "0.86.0",
     "babel-plugin-react-compiler": "^1.0.0",
     "babel-plugin-react-native-web": "~0.21.0",
     "babel-plugin-syntax-hermes-parser": "^0.36.0",
@@ -100,18 +101,22 @@
     "debug": "^4.3.4"
   },
   "devDependencies": {
+    "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.26.0",
+    "@expo/config": "workspace:*",
     "@expo/metro": "~56.0.0",
     "@expo/metro-config": "workspace:*",
+    "@expo/spawn-async": "^1.8.0",
+    "@types/babel__code-frame": "^7.0.1",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "babel-plugin-module-resolver": "^5.0.2",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "jest": "^29.2.1",
-    "react-refresh": "^0.14.2",
-    "resolve-from": "^5.0.0"
-  }
+    "react-refresh": "^0.14.2"
+  },
+  "types": "build/index.d.ts"
 }

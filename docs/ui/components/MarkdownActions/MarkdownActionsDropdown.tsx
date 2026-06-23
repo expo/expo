@@ -117,7 +117,7 @@ export function MarkdownActionsDropdown() {
     dropdownItems.push(
       <Dropdown.Item
         key="copy-markdown"
-        label="Copy Markdown"
+        label={intl.formatMessage({ id: 'copyMarkdown' })}
         Icon={Copy04Icon}
         onSelect={handleCopyMarkdown}
       />
@@ -128,7 +128,7 @@ export function MarkdownActionsDropdown() {
     dropdownItems.push(
       <Dropdown.Item
         key="view-markdown"
-        label="View Markdown"
+        label={intl.formatMessage({ id: 'viewMarkdown' })}
         Icon={MarkdownIcon}
         href={markdownViewUrl}
         openInNewTab
@@ -140,7 +140,7 @@ export function MarkdownActionsDropdown() {
     dropdownItems.push(
       <Dropdown.Item
         key="open-chatgpt"
-        label="Open in ChatGPT"
+        label={intl.formatMessage({ id: 'openIn' }, { provider: 'ChatGPT' })}
         Icon={OpenAILogoIcon}
         href={chatGptUrl}
         openInNewTab
@@ -152,7 +152,7 @@ export function MarkdownActionsDropdown() {
     dropdownItems.push(
       <Dropdown.Item
         key="open-codex"
-        label="Open in Codex"
+        label={intl.formatMessage({ id: 'openIn' }, { provider: 'Codex' })}
         Icon={CodexLogoIcon}
         href={codexUrl}
         openInNewTab={false}
@@ -164,7 +164,7 @@ export function MarkdownActionsDropdown() {
     dropdownItems.push(
       <Dropdown.Item
         key="open-claude"
-        label="Open in Claude"
+        label={intl.formatMessage({ id: 'openIn' }, { provider: 'Claude' })}
         Icon={ClaudeLogoIcon}
         href={claudeUrl}
         openInNewTab
@@ -176,7 +176,7 @@ export function MarkdownActionsDropdown() {
     dropdownItems.push(
       <Dropdown.Item
         key="open-claude-code"
-        label="Open in Claude Code"
+        label={intl.formatMessage({ id: 'openIn' }, { provider: 'Claude Code' })}
         Icon={ClaudeCodeLogoIcon}
         href={claudeCodeUrl}
         openInNewTab={false}
@@ -188,7 +188,7 @@ export function MarkdownActionsDropdown() {
     dropdownItems.push(
       <Dropdown.Item
         key="open-cursor"
-        label="Open in Cursor"
+        label={intl.formatMessage({ id: 'openIn' }, { provider: 'Cursor' })}
         Icon={CursorLogoIcon}
         href={cursorUrl}
         openInNewTab
@@ -205,7 +205,7 @@ export function MarkdownActionsDropdown() {
       theme="quaternary"
       className="justify-center pr-2 pl-2.5"
       aria-haspopup="menu"
-      aria-label="Copy page actions">
+      aria-label={intl.formatMessage({ id: 'copyPageActions' })}>
       <div className="flex flex-row items-center gap-1.5">
         <Copy04Icon className="icon-xs text-icon-secondary" />
         <FOOTNOTE crawlable={false} theme="secondary" className="whitespace-nowrap">

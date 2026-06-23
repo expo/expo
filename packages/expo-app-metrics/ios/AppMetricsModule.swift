@@ -134,19 +134,20 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
 
-    Function("simulateCrashReport") {
-      simulateCrashReport()
-    }
-
-    Function("triggerCrash") { (kind: CrashKind) in
-      switch kind {
-      case .badAccess: CrashTriggers.badAccess()
-      case .fatalError: CrashTriggers.fatalErrorCrash()
-      case .divideByZero: CrashTriggers.divideByZero()
-      case .forceUnwrapNil: CrashTriggers.forceUnwrapNil()
-      case .arrayOutOfBounds: CrashTriggers.arrayOutOfBounds()
-      case .objcException: CrashTriggers.objcException()
-      case .stackOverflow: CrashTriggers.stackOverflow()
+    // Records an unhandled JavaScript error captured by the JS-side `global.ErrorUtils` handler as a
+    // log event. The JS layer owns capture (and chaining to the previous handler).
+    //
+    // A fatal error terminates the process right after this returns, so we can't let the async actor
+    // write race the shutdown. We write it to disk synchronously here (on the JS thread, no actor/DB)
+    // and ingest it on the next launch. Non-fatal errors aren't racing termination, so they go through
+    // the normal async log path.
+    Function("reportError") { (report: ErrorReport) in
+      if report.isFatal {
+        PendingErrorStore.write(report.toPendingError(sessionId: AppMetrics.mainSession.id))
+      } else {
+        AppMetricsActor.isolated {
+          AppMetrics.mainSession.receiveLog(report.toLogRecord())
+        }
       }
     }
 
@@ -185,21 +186,4 @@ private func storedSession(id: String) throws -> StoredSession? {
 struct MetricAttributes: Record {
   @Field var routeName: String?
   @Field var params: [String: Any]?
-}
-
-enum CrashKind: String, Enumerable {
-  /// EXC_BAD_ACCESS / SIGSEGV — dereference of a bogus pointer.
-  case badAccess
-  /// EXC_CRASH / SIGABRT — Swift `fatalError`.
-  case fatalError
-  /// EXC_ARITHMETIC / SIGFPE — integer divide by zero.
-  case divideByZero
-  /// EXC_BAD_INSTRUCTION — force-unwrap of a nil optional.
-  case forceUnwrapNil
-  /// EXC_BAD_INSTRUCTION — out-of-bounds Swift array access.
-  case arrayOutOfBounds
-  /// Uncaught Objective-C `NSException`, populates MetricKit's `exceptionReason`.
-  case objcException
-  /// Stack overflow via unbounded recursion.
-  case stackOverflow
 }

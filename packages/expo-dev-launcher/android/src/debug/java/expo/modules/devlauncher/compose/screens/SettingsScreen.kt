@@ -72,25 +72,7 @@ fun SettingsScreen(
       )
     }
 
-    NewMenuButton(
-      icon = {
-        LauncherIcons.ShowAtLaunch(
-          size = 20.dp,
-          tint = NewAppTheme.colors.icon.tertiary
-        )
-      },
-      content = {
-        NewText(
-          text = "Show menu at launch"
-        )
-      },
-      rightComponent = {
-        ToggleSwitch(
-          isToggled = state.showMenuAtLaunch
-        )
-      },
-      onClick = { onAction(SettingsAction.ToggleShowMenuAtLaunch(!state.showMenuAtLaunch)) }
-    )
+    LaunchBehaviourSection(state, onAction)
 
     Spacer(NewAppTheme.spacing.`6`)
 
@@ -128,6 +110,66 @@ fun SettingsScreen(
       runtimeVersion = (info as? ApplicationInfo.Updates)?.runtimeVersion,
       fullDataProvider = { info?.toJson() ?: "No application info available" }
     )
+  }
+}
+
+@Composable
+private fun LaunchBehaviourSection(state: SettingsState, onAction: (SettingsAction) -> Unit) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`3`)
+  ) {
+    Section.Header("LAUNCH BEHAVIOUR")
+
+    RoundedSurface {
+      Column {
+        NewMenuButton(
+          withSurface = false,
+          icon = {
+            LauncherIcons.ShowAtLaunch(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
+            )
+          },
+          content = {
+            NewText(
+              text = "Show menu at launch"
+            )
+          },
+          rightComponent = {
+            ToggleSwitch(
+              isToggled = state.showMenuAtLaunch
+            )
+          },
+          onClick = { onAction(SettingsAction.ToggleShowMenuAtLaunch(!state.showMenuAtLaunch)) }
+        )
+
+        Divider(
+          thickness = 0.5.dp,
+          color = NewAppTheme.colors.border.default
+        )
+
+        NewMenuButton(
+          withSurface = false,
+          icon = {
+            LauncherIcons.ShowAtLaunch(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
+            )
+          },
+          content = {
+            NewText(
+              text = "Auto-launch most recent app"
+            )
+          },
+          rightComponent = {
+            ToggleSwitch(
+              isToggled = state.autoLaunchMostRecent
+            )
+          },
+          onClick = { onAction(SettingsAction.ToggleAutoLaunchMostRecent(!state.autoLaunchMostRecent)) }
+        )
+      }
+    }
   }
 }
 

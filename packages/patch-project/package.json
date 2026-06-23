@@ -5,14 +5,15 @@
   "main": "build/withPatchPlugin.js",
   "types": "build/withPatchPlugin.d.ts",
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "test:e2e": "expo-module clean && expo-module tsc && expo-module test --config e2e/jest.config.js",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch"
+    "test": "jest",
+    "pretest:e2e": "pnpm run build",
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "bin": {
     "patch-project": "bin/cli.js"

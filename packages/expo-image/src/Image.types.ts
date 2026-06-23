@@ -811,6 +811,8 @@ export declare class ImageNativeModule extends NativeModule {
 
   configureCache(config: ImageCacheConfig): void;
   getCachePathAsync(cacheKey: string): Promise<string | null>;
+  writeToCacheAsync(source: string | ImageRef, cacheKey: string): Promise<void>;
+  readFromCacheAsync(cacheKey: string): Promise<ImageRef | null>;
 
   generateBlurhashAsync(
     source: string | ImageRef,

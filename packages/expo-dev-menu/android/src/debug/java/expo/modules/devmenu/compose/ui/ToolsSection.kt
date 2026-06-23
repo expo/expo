@@ -7,6 +7,7 @@ import expo.modules.core.utilities.VRUtilities
 import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.compose.DevMenuActionHandler
+import expo.modules.devmenu.compose.DevMenuState
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.NewText
@@ -18,7 +19,8 @@ import expo.modules.devmenu.compose.primitives.ToggleSwitch
 fun ToolsSection(
   onAction: DevMenuActionHandler,
   devToolsSettings: DevToolsSettings,
-  showFab: Boolean
+  showFab: Boolean,
+  hasComponentSwitcher: Boolean = false
 ) {
   Section.Header(
     "TOOLS"
@@ -28,6 +30,32 @@ fun ToolsSection(
 
   RoundedSurface {
     Column {
+      if (hasComponentSwitcher) {
+        NewMenuButton(
+          withSurface = false,
+          icon = {
+            MenuIcons.Layers(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
+            )
+          },
+          content = {
+            NewText(text = "Components")
+          },
+          rightComponent = {
+            MenuIcons.ChevronRight(
+              size = 16.dp,
+              tint = NewAppTheme.colors.icon.tertiary
+            )
+          },
+          onClick = {
+            onAction(DevMenuAction.OpenSubScreen(DevMenuState.SubScreen.Components))
+          }
+        )
+
+        Divider(thickness = 0.5.dp)
+      }
+
       NewMenuButton(
         withSurface = false,
         icon = {
@@ -83,6 +111,26 @@ fun ToolsSection(
         },
         onClick = {
           onAction(DevMenuAction.OpenJSDebugger)
+        }
+      )
+
+      Divider(thickness = 0.5.dp)
+
+      NewMenuButton(
+        withSurface = false,
+        icon = {
+          MenuIcons.Gear(
+            size = 20.dp,
+            tint = NewAppTheme.colors.icon.tertiary
+          )
+        },
+        content = {
+          NewText(
+            text = "Open React Native dev menu"
+          )
+        },
+        onClick = {
+          onAction(DevMenuAction.OpenReactNativeDevMenu)
         }
       )
 

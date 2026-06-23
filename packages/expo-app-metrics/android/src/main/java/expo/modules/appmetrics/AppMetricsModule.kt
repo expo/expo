@@ -2,6 +2,15 @@ package expo.modules.appmetrics
 
 import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
+import expo.modules.appmetrics.jserrors.ErrorReport
+import expo.modules.appmetrics.jserrors.PendingErrorStore
+import expo.modules.appmetrics.jserrors.toLogRecord
+import expo.modules.appmetrics.crashreporting.CrashFileReader
+import expo.modules.appmetrics.crashreporting.CrashReportProcessor
+import expo.modules.appmetrics.crashreporting.ExitInfoProviderImpl
+import expo.modules.appmetrics.crashreporting.JvmCrashHandler
+import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
+import expo.modules.appmetrics.crashreporting.attributeAndStoreCrashReport
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
@@ -130,6 +139,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           runtime = appContext.runtime
         )
 
+        JvmCrashHandler.currentSessionId = mainSession.sessionId
+
         // Persist the session row eagerly so it's visible to readers
         // (`getMainSession`, …) as soon as possible. Idempotent:
         // a racing write triggers (and joins) the same single start job.
@@ -141,6 +152,27 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // matter. Relies on `<`, not `<=` (see SessionManagerTest).
         scope.launch { sessionManager.deactivateAllSessionsBefore(appSessionStartTimestamp) }
 
+        // Turn the previous process's death evidence (pending JVM crash files,
+        // OS exit records) into stored crash reports.
+        // The processor builds the reports; `attributeAndStoreCrashReport` owns
+        // the session attribution and storage.
+        scope.launch {
+          CrashReportProcessor(
+            crashFileReader = CrashFileReader.forContext(context),
+            exitInfoProvider = ExitInfoProviderImpl(context),
+            lastProcessedExitStore = PreferencesLastProcessedExitStore(context),
+            appVersion = metadata?.appVersion
+          ) { sessionId, origin, report ->
+            attributeAndStoreCrashReport(
+              sessionManager = sessionManager,
+              currentSessionId = mainSession.sessionId,
+              sessionId = sessionId,
+              origin = origin,
+              report = report
+            )
+          }.process()
+        }
+
         memoryMetricsManager = MemoryMetricsManager(
           context = context,
           sessionManager = sessionManager
@@ -149,6 +181,20 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         updatesMonitoring.patchAppInfoIfNeeded(metadata)
         UpdatesControllerRegistry.controller?.get()?.let { controller ->
           subscription = controller.subscribeToUpdatesStateChanges(this@AppMetricsModule)
+        }
+
+        // Ingest fatal JS errors that a previous launch wrote to disk before terminating. Each is
+        // attributed to the session it was captured in (recorded in the file), not the new session.
+        // A session that never reached disk (crash before its row was inserted) makes the insert fail;
+        // we swallow it and move on.
+        // TODO(@ubax): move this drain and other resource-intensive startup work off the launch path
+        // (e.g. into `markInteractive` or a background dispatch) so it doesn't affect startup time.
+        scope.launch {
+          PendingErrorStore.drain(context).forEach { pendingError ->
+            runCatching {
+              sessionManager.addLogs(listOf(pendingError.toLogRecord()), sessionId = pendingError.sessionId)
+            }
+          }
         }
       }
 
@@ -171,12 +217,28 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         runBlocking {
           mainSession.stop()
         }
+        // The session has ended; stop stamping it onto crashes. A crash after
+        // this is captured as an orphan rather than misattributed
+        if (JvmCrashHandler.currentSessionId == mainSession.sessionId) {
+          JvmCrashHandler.currentSessionId = null
+        }
       }
 
       // Debug-only: surfaces the inactive (ended) sessions for on-device
       // inspection (e.g. the ObserveTester app)
       AsyncFunction("getInactiveSessions") Coroutine { ->
-        sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithMetrics(it) }
+        sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithChildren(it) }
+      }
+
+      // Every stored crash report, newest first — attributed reports plus
+      // orphans (startup crashes before the session existed, or native crashes
+      // that couldn't be attributed). Orphans carry a null session id.
+      AsyncFunction("getAllCrashReports") Coroutine { ->
+        sessionManager.getAllCrashReports().mapNotNull { entity ->
+          // `sessionId` lives on the DB row, not in the payload — merge it in so
+          // callers can spot orphans (null session id).
+          JsonAny.decodeJsonStringToMap(entity.payload)?.plus("sessionId" to entity.sessionId)
+        }
       }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->
@@ -187,6 +249,23 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
         sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)
+      }
+
+      // Records an unhandled JavaScript error captured by the JS-side `global.ErrorUtils` handler as
+      // a log event. The JS layer owns capture (and chaining to the previous handler).
+      //
+      // A fatal error terminates the process right after this returns, so we can't let the async
+      // coroutine write race the shutdown. We write it to disk synchronously here (no coroutine, no
+      // database) and ingest it on the next launch. Non-fatal errors aren't racing termination, so
+      // they go through the normal async log path.
+      Function("reportError") { report: ErrorReport ->
+        if (report.isFatal) {
+          PendingErrorStore.write(context, report.toPendingError(mainSession.sessionId))
+        } else {
+          scope.launch {
+            mainSession.addLogs(listOf(report.toLogRecord(mainSession.sessionId)))
+          }
+        }
       }
 
       Function("getMainSession") {

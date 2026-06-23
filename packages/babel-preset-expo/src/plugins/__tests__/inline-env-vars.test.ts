@@ -172,6 +172,55 @@ console.log(process.env.EXPO_PUBLIC_NODE_ENV);
   expect(contents).toMatch('EXPO_PUBLIC_NODE_ENV');
 });
 
+it(`inlines EXPO_PUBLIC_USE_RN_FETCH inside node modules so the expo/fetch opt-out works in production`, () => {
+  process.env.EXPO_PUBLIC_USE_RN_FETCH = '1';
+
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: false,
+      isNodeModule: true,
+    }),
+  };
+
+  const sourceCode = `
+const useRnFetch =
+  process.env.EXPO_PUBLIC_USE_RN_FETCH === '1' || process.env.EXPO_PUBLIC_USE_RN_FETCH === 'true';
+`;
+
+  const normalized = babel.transform(sourceCode, options)!.code!.replace(/\s+/g, ' ');
+
+  expect(normalized).not.toMatch('process.env.EXPO_PUBLIC_USE_RN_FETCH');
+  expect(normalized).toContain('var useRnFetch = true || false;');
+});
+
+it(`leaves EXPO_PUBLIC_USE_RN_FETCH untouched inside node modules when the flag is unset`, () => {
+  delete process.env.EXPO_PUBLIC_USE_RN_FETCH;
+
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'android',
+      isDev: false,
+      isNodeModule: true,
+    }),
+  };
+
+  const sourceCode = `
+const useRnFetch =
+  process.env.EXPO_PUBLIC_USE_RN_FETCH === '1' || process.env.EXPO_PUBLIC_USE_RN_FETCH === 'true';
+`;
+
+  const contents = babel.transform(sourceCode, options)!.code;
+
+  expect(contents).toMatch('process.env.EXPO_PUBLIC_USE_RN_FETCH');
+});
+
 function transformTest(
   sourceCode: string,
   customOptions: { filename?: string; caller?: any } = {}
@@ -187,7 +236,7 @@ function transformTest(
   const meta = results.metadata as unknown as { hasCjsExports?: boolean };
 
   // Parse again to ensure the output is valid code
-  babel.parse(results.code, options);
+  babel.parse(results.code!, options);
 
   return {
     code: results.code,

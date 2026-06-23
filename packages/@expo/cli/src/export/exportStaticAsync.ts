@@ -101,7 +101,9 @@ export async function getFilesToExportFromServerAsync(
     files = new Map(),
   }: {
     manifest: ExpoRouterRuntimeManifest;
-    serverManifest: RoutesManifest;
+    // Optional: the `if (!exportServer && serverManifest)` guard below handles its absence,
+    // and callers exporting only HTML (e.g. tests) don't provide it.
+    serverManifest?: RoutesManifest;
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
     exportServer?: boolean;
     /**

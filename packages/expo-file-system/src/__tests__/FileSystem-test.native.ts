@@ -1,6 +1,6 @@
-import { DownloadTask, File, Directory, Paths, UploadTask } from '../..';
 import { __resetMockFileSystem } from '../../mocks/FileSystem';
 import { FileMode } from '../File.types';
+import { DownloadTask, File, Directory, Paths, UploadTask } from '../index';
 
 beforeEach(() => {
   __resetMockFileSystem();
@@ -90,7 +90,7 @@ describe('expo-file-system new API', () => {
       configurable: true,
       get: () => 'multipart/form-data; boundary=test',
     });
-    global.Response = ResponseMock as typeof Response;
+    global.Response = ResponseMock as unknown as typeof Response;
 
     try {
       await expect(file.formData()).resolves.toBe(formData);
@@ -196,7 +196,7 @@ describe('expo-file-system behavioral mock', () => {
     const children = dir.list();
     expect(children).toHaveLength(1);
     expect(children[0]).toBeInstanceOf(File);
-    expect(children[0].uri).toBe(file.uri);
+    expect(children[0]!.uri).toBe(file.uri);
   });
 
   it('Directory.info returns child names, size, and deterministic metadata', () => {

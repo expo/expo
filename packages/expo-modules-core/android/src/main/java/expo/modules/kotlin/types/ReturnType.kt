@@ -3,9 +3,9 @@ package expo.modules.kotlin.types
 import android.os.Bundle
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.formatters.FormattedRecord
-import io.github.lukmccall.pika.PIntrospectionData
-import io.github.lukmccall.pika.introspectionOf
-import io.github.lukmccall.pika.isIntrospectable
+import io.github.expo.pika.PIntrospectionData
+import io.github.expo.pika.introspectionOf
+import io.github.expo.pika.isIntrospectable
 import kotlin.time.Duration
 
 object ReturnTypeProvider {

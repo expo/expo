@@ -1,5 +1,6 @@
 'use strict';
 
+import { Asset } from 'expo-asset';
 import { Image } from 'expo-image';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -277,6 +278,59 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         }
       });
     });
+
+    if (Platform.OS === 'android' || Platform.OS === 'ios') {
+      t.describe('writeToCacheAsync / readFromCacheAsync', () => {
+        const CACHE_KEY = 'test-suite-seeded-image';
+
+        t.it('seeds the cache from an ImageRef and reads it back', async () => {
+          await Image.clearDiskCache();
+          await Image.clearMemoryCache();
+          const image = await Image.loadAsync(REMOTE_SOURCE);
+
+          await Image.writeToCacheAsync(image, CACHE_KEY);
+
+          const path = await Image.getCachePathAsync(CACHE_KEY);
+          t.expect(typeof path).toBe('string');
+
+          const cached = await Image.readFromCacheAsync(CACHE_KEY);
+          t.expect(cached).toBeDefined();
+          t.expect(cached instanceof Image.Image).toBe(true);
+          t.expect(cached.width).toBeGreaterThan(0);
+          t.expect(cached.height).toBeGreaterThan(0);
+        });
+
+        t.it('seeds the cache from a local file URI', async () => {
+          await Image.clearDiskCache();
+          await Image.clearMemoryCache();
+
+          // A bundled asset gives us a guaranteed local file URI on device.
+          const asset = await Asset.fromModule(require('../assets/icons/app.png')).downloadAsync();
+          t.expect(typeof asset.localUri).toBe('string');
+
+          await Image.writeToCacheAsync(asset.localUri, CACHE_KEY);
+
+          const path = await Image.getCachePathAsync(CACHE_KEY);
+          t.expect(typeof path).toBe('string');
+
+          const cached = await Image.readFromCacheAsync(CACHE_KEY);
+          t.expect(cached).toBeDefined();
+          t.expect(cached instanceof Image.Image).toBe(true);
+        });
+
+        t.it('resolves to null when reading a key that was never seeded', async () => {
+          await Image.clearDiskCache();
+          await Image.clearMemoryCache();
+
+          const cached = await Image.readFromCacheAsync('test-suite-never-seeded-key');
+          t.expect(cached).toBe(null);
+        });
+
+        t.it('rejects when given a remote URL', async () => {
+          await throws(() => Image.writeToCacheAsync(REMOTE_SOURCE.uri, CACHE_KEY));
+        });
+      });
+    }
 
     if (Platform.OS === 'ios') {
       t.describe('generateBlurhashAsync', () => {

@@ -33,7 +33,7 @@ const getWrappedBody = (): string => {
   const workerCalls = jest.mocked(upstreamTransformer.transform).mock.calls;
   const shimCalls = jest.mocked(transformShimMod.transformShim).mock.calls;
   expect(workerCalls.length + shimCalls.length).toBe(1);
-  return workerCalls.length ? workerCalls[0][3].toString('utf8') : (shimCalls[0][2] as string);
+  return workerCalls.length ? workerCalls[0]![3].toString('utf8') : (shimCalls[0]![2] as string);
 };
 
 const doTransformForOutput = async (

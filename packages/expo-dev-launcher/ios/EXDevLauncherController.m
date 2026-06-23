@@ -42,7 +42,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 @interface EXDevLauncherController ()
 
-@property (nonatomic, weak) ExpoDevLauncherReactDelegateHandler * delegate;
 @property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
@@ -91,6 +90,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URL"];
     self.useDefaultLaunchUrlFallback = self.defaultLaunchURLString.length != 0;
     self.defaultLaunchURL = [NSURL URLWithString:self.defaultLaunchURLString];
+
+    NSNumber *tryToLaunchLastBundle = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{
+      @"EXDevLauncherTryToLaunchLastBundle": tryToLaunchLastBundle ?: @YES
+    }];
   }
   return self;
 }
@@ -236,8 +240,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return;
   }
 
-  NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
-  BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
+  // Default registered from the config plugin in init; the Settings toggle overrides it.
+  BOOL shouldTryToLaunchLastOpenedBundle = [[NSUserDefaults standardUserDefaults] boolForKey:@"EXDevLauncherTryToLaunchLastBundle"];
   BOOL useDefaultLaunchUrlFallback = self.useDefaultLaunchUrlFallback;
 
   if (!hasGrantedNetworkPermission) {
