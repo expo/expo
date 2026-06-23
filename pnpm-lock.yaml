@@ -38,9 +38,6 @@ importers:
 
   .:
     dependencies:
-      eslint:
-        specifier: ^8.57.1
-        version: 8.57.1
       expo-asset:
         specifier: workspace:*
         version: link:packages/expo-asset
@@ -53,9 +50,6 @@ importers:
       jsc-android:
         specifier: ^250231.0.0
         version: 250231.0.0
-      prettier:
-        specifier: ~3.8.3
-        version: 3.8.3
     devDependencies:
       '@types/jest':
         specifier: ^29.5.12
@@ -4995,9 +4989,6 @@ importers:
       commander:
         specifier: ^12.1.0
         version: 12.1.0
-      eslint-config-universe:
-        specifier: workspace:^15.2.0
-        version: link:../eslint-config-universe
       glob:
         specifier: ^13.0.0
         version: 13.0.6
@@ -5106,9 +5097,6 @@ importers:
       glob:
         specifier: ^13.0.0
         version: 13.0.6
-      prettier:
-        specifier: ^3.8.3
-        version: 3.8.3
       xml-js:
         specifier: ^1.6.11
         version: 1.6.11
@@ -5839,9 +5827,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      eslint-config-universe:
-        specifier: workspace:*
-        version: link:../eslint-config-universe
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -16630,11 +16615,6 @@ snapshots:
   '@esbuild/win32-x64@0.27.7':
     optional: true
 
-  '@eslint-community/eslint-utils@4.9.1(eslint@8.57.1)':
-    dependencies:
-      eslint: 8.57.1
-      eslint-visitor-keys: 3.4.3
-
   '@eslint-community/eslint-utils@4.9.1(eslint@9.39.4(jiti@1.21.7))':
     dependencies:
       eslint: 9.39.4(jiti@1.21.7)
@@ -20564,7 +20544,7 @@ snapshots:
 
   eslint@8.57.1:
     dependencies:
-      '@eslint-community/eslint-utils': 4.9.1(eslint@8.57.1)
+      '@eslint-community/eslint-utils': 4.9.1(eslint@9.39.4(jiti@1.21.7))
       '@eslint-community/regexpp': 4.12.2
       '@eslint/eslintrc': 2.1.4
       '@eslint/js': 8.57.1

@@ -82,7 +82,6 @@
     "@testing-library/react-native": "^13.3.0",
     "@types/jest": "^29.2.1",
     "commander": "^12.1.0",
-    "eslint-config-universe": "workspace:^15.2.0",
     "glob": "^13.0.0",
     "oxlint-config-universe": "^0.0.3",
     "jest-expo": "workspace:~56.0.4",

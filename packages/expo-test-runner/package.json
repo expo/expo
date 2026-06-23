@@ -29,7 +29,6 @@
   "devDependencies": {
     "@babel/core": "^7.23.7",
     "@types/node": "^22.14.0",
-    "eslint-config-universe": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "dependencies": {

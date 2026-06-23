@@ -35,12 +35,10 @@
     "@types/babel__traverse": "^7.20.7"
   },
   "dependencies": {
-    "eslint": "^8.57.1",
     "expo-asset": "workspace:*",
     "expo-modules-core": "workspace:*",
     "jest-expo": "workspace:*",
-    "jsc-android": "^250231.0.0",
-    "prettier": "~3.8.3"
+    "jsc-android": "^250231.0.0"
   },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0",
