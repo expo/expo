@@ -2094,6 +2094,9 @@ importers:
       devtools-protocol:
         specifier: ^0.0.1113120
         version: 0.0.1113120
+      eslint:
+        specifier: ^9.18.0
+        version: 9.39.4(jiti@1.21.7)
       expect:
         specifier: ^29.7.0
         version: 29.7.0

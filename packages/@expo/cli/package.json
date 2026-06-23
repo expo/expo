@@ -157,6 +157,7 @@
     "@types/wrap-ansi": "^3.0.0",
     "@types/ws": "^8.5.4",
     "devtools-protocol": "^0.0.1113120",
+    "eslint": "^9.18.0",
     "expect": "^29.7.0",
     "expo-atlas": "^0.4.1",
     "expo-module-scripts": "workspace:*",
