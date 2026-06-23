@@ -78,7 +78,6 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
         this.#output = '';
 
         if (this.#closing && !this.#ending) {
-          // destroy(): the in-flight write has landed, drop any queued lines and close
           this.#writing = false;
           this.#close();
         } else if (this.#lines.length - this.#head > this.#partialLine) {
@@ -248,6 +247,7 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
 
   destroy() {
     if (this.#destroyed || this.#closing) {
+      // already closing/destroyed
     } else if (this.#writing || this.#opening) {
       this.#closing = true;
     } else {
