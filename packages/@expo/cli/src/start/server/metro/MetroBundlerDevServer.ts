@@ -1343,7 +1343,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
     // Required for symbolication:
-    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${address?.port ?? options.port}`;
+    const host = process.env.REACT_NATIVE_PACKAGER_HOSTNAME?.trim() || 'localhost';
+    const serverBaseUrl = `${address?.protocol ?? 'http'}://${host}:${address?.port ?? options.port}`;
     process.env.EXPO_DEV_SERVER_ORIGIN = serverBaseUrl;
 
     if (!options.isExporting) {
@@ -1618,8 +1619,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       location: {
         // The port is the main thing we want to send back.
         port: address?.port ?? options.port,
-        // localhost isn't always correct.
-        host: 'localhost',
+        host,
         url: serverBaseUrl,
         protocol: address?.protocol ?? 'http',
       },
