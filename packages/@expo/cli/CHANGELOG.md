@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Make `expo prebuild` clear and regenerate the native folders by default. Pass `--no-clean` to apply changes to the existing folders instead. ([#47209](https://github.com/expo/expo/pull/47209) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

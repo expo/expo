@@ -6,6 +6,7 @@ import chalk from 'chalk';
 
 import {
   clearNativeFolder,
+  getExistingNativePlatformsAsync,
   promptToClearMalformedNativeProjectsAsync,
   maybeBailOnNativeModuleAsync,
 } from './clearNativeFolder';
@@ -85,17 +86,22 @@ export async function prebuildAsync(
     }
   }
   if (options.clean) {
-    const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
-    // Clean the project folders...
-    if (await maybeBailOnGitStatusAsync()) {
-      return null;
+    // Only run the destructive-path guards when there are native folders to delete, so a
+    // first-ever prebuild doesn't prompt on git status or native module detection.
+    const existingPlatforms = await getExistingNativePlatformsAsync(projectRoot, options.platforms);
+    if (existingPlatforms.length) {
+      const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
+      // Clean the project folders...
+      if (await maybeBailOnGitStatusAsync()) {
+        return null;
+      }
+      // Check if the target project is actually a native module, which we don't want to erase
+      if (await maybeBailOnNativeModuleAsync(projectRoot)) {
+        return null;
+      }
+      // Clear the native folders before syncing
+      await clearNativeFolder(projectRoot, options.platforms);
     }
-    // Check if the target project is actually a native module, which we don't want to erase
-    if (await maybeBailOnNativeModuleAsync(projectRoot)) {
-      return null;
-    }
-    // Clear the native folders before syncing
-    await clearNativeFolder(projectRoot, options.platforms);
   } else {
     // Check if the existing project folders are malformed.
     await promptToClearMalformedNativeProjectsAsync(projectRoot, options.platforms);
