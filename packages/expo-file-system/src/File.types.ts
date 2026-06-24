@@ -105,7 +105,7 @@ export enum FileMode {
  * const file = new File(Paths.cache, 'data.bin');
  * const handle = file.open(FileMode.ReadOnly);
  *
- * // Read the first 4 bytes (e.g., a magic number)
+ * // Read the first 4 bytes (for example, a magic number)
  * const header = handle.readBytesSync(4);
  *
  * // Seek to byte 100 and read 50 bytes
