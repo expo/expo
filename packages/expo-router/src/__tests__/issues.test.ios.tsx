@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
-import { usePathname } from '../hooks';
+import { usePathname, useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
@@ -188,4 +188,98 @@ it('can navigate during first render of nested navigator', async () => {
   expect(innerLayoutMount).toHaveBeenCalledTimes(1);
   expect(innerIndexMount).toHaveBeenCalledTimes(1);
   expect(innerSecondMount).toHaveBeenCalledTimes(1);
+});
+
+it('push withAnchor into a nested stack whose only screen is a dynamic route does not create a param-less anchor', () => {
+  // Issue #47114: withAnchor used to seed a param-less duplicate of the dynamic
+  // route (its own initial route), so back landed on it instead of the parent.
+  const userMount = jest.fn();
+  renderRouter({
+    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/index': () => <Text testID="home">home</Text>,
+    '(tabs)/social/_layout': () => <Stack />,
+    '(tabs)/social/index': () => <Text testID="social-index">social</Text>,
+    '(tabs)/social/users/_layout': () => <Stack />,
+    '(tabs)/social/users/[userId]': function User() {
+      const { userId } = useLocalSearchParams<{ userId: string }>();
+      useEffect(() => {
+        userMount();
+      }, []);
+      return <Text testID="user">userId: {userId}</Text>;
+    },
+  });
+
+  act(() => router.navigate('/social'));
+  act(() => router.push('/social/users/1', { withAnchor: true }));
+
+  expect(screen).toHavePathname('/social/users/1');
+  expect(screen.getByTestId('user')).toHaveTextContent('userId: 1');
+  // Instantiated exactly once (no param-less anchor).
+  expect(userMount).toHaveBeenCalledTimes(1);
+
+  // Back returns to the parent, not a param-less [userId].
+  act(() => router.back());
+
+  expect(screen).toHavePathname('/social');
+  expect(screen.getByTestId('social-index')).toBeVisible();
+});
+
+it('push withAnchor still seeds the real initial route of a nested stack with multiple screens', () => {
+  // Issue #47114 guard: the self-anchor check must use the runtime initial route
+  // (sorted: `index` before `[id]`), so `index` is still seeded as the anchor.
+  const indexMount = jest.fn();
+  renderRouter({
+    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/index': () => <Text testID="home">home</Text>,
+    // `[id]` declared before `index`, but `index` is the runtime initial route.
+    '(tabs)/shop/_layout': () => <Stack />,
+    '(tabs)/shop/[id]': function ShopItem() {
+      return <Text testID="shop-item">{useLocalSearchParams<{ id: string }>().id}</Text>;
+    },
+    '(tabs)/shop/index': function ShopIndex() {
+      useEffect(() => {
+        indexMount();
+      }, []);
+      return <Text testID="shop-index">shop</Text>;
+    },
+  });
+
+  // Push into the fresh shop stack (still on the home tab).
+  act(() => router.push('/shop/7', { withAnchor: true }));
+
+  expect(screen).toHavePathname('/shop/7');
+  expect(screen.getByTestId('shop-item')).toHaveTextContent('7');
+  // The `index` anchor was seeded below the target.
+  expect(indexMount).toHaveBeenCalledTimes(1);
+
+  act(() => router.back());
+
+  expect(screen).toHavePathname('/shop');
+  expect(screen.getByTestId('shop-index')).toBeVisible();
+});
+
+it('push withAnchor seeds an anchor under a dynamic segment with its dynamic params', () => {
+  // Issue #47114: when the seeded anchor lives under a dynamic segment (e.g.
+  // `[id]/index` reached via `/posts/1/details`), the anchor must carry the
+  // dynamic param, otherwise back lands on a param-less screen.
+  renderRouter({
+    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/index': () => <Text testID="home">home</Text>,
+    '(tabs)/posts/_layout': () => <Stack />,
+    '(tabs)/posts/[id]/_layout': () => <Stack />,
+    '(tabs)/posts/[id]/index': function PostDetail() {
+      const { id } = useLocalSearchParams<{ id: string }>();
+      return <Text testID="detail">id: {id}</Text>;
+    },
+    '(tabs)/posts/[id]/details': () => <Text testID="details">details</Text>,
+  });
+
+  act(() => router.push('/posts/1/details', { withAnchor: true }));
+  expect(screen.getByTestId('details')).toBeVisible();
+
+  // Back lands on the seeded anchor, which keeps the dynamic `id` param.
+  act(() => router.back());
+
+  expect(screen).toHavePathname('/posts/1');
+  expect(screen.getByTestId('detail')).toHaveTextContent('id: 1');
 });

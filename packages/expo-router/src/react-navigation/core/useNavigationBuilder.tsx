@@ -462,6 +462,20 @@ export function useNavigationBuilder<
       return [undefined, state, false, undefined];
     }
 
+    // When an anchor is seeded via `initial: false`, the loose params on the
+    // navigator route (e.g. a dynamic segment like `[id]`) belong to this
+    // navigator level and must reach the seeded initial route too — otherwise it
+    // loses the dynamic param and the anchor renders empty (see #47114).
+    const looseRouteEntries =
+      route?.params?.initial === false && route?.params?.state == null
+        ? Object.entries(route.params).filter(
+            ([key]) => !['screen', 'params', 'initial', 'state'].includes(key)
+          )
+        : [];
+    const looseRouteParams = looseRouteEntries.length
+      ? Object.fromEntries(looseRouteEntries)
+      : undefined;
+
     const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
       (acc, curr) => {
         const { initialParams } = screens[curr]!.props;
@@ -473,9 +487,12 @@ export function useNavigationBuilder<
             : undefined;
 
         acc[curr] =
-          initialParams !== undefined || initialParamsFromParams !== undefined
+          initialParams !== undefined ||
+          initialParamsFromParams !== undefined ||
+          looseRouteParams !== undefined
             ? {
                 ...initialParams,
+                ...looseRouteParams,
                 ...initialParamsFromParams,
               }
             : undefined;

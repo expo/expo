@@ -1,6 +1,8 @@
 import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
 import { store } from './store';
 import type { LinkToOptions } from './types';
+import type { RouteNode } from '../Route';
+import type { ResultState } from '../fork/getStateFromPath';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
 import {
@@ -9,6 +11,8 @@ import {
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
+import type { PartialRoute, PartialState, NavigationState } from '../react-navigation/native';
+import { sortRoutesWithInitial } from '../sortRoutes';
 import type { SingularOptions } from '../useScreens';
 
 export function getNavigateAction(
@@ -97,10 +101,25 @@ export function getNavigateAction(
      *   True: You want the initialRouteName to load.
      *   False: You do not want the initialRouteName to load.
      */
-    // Set initial on root and all nested params so anchors are loaded at every level
+    // Load anchors at every nested level, but skip levels where the navigator's
+    // initial route is the target itself: anchoring a route to itself seeds a
+    // duplicate (param-less for dynamic routes). See #47114.
+    let navigatorNode = findNavigatorNodeForRoute(state, actionStateRoute, store.routeNode);
     let currentParams = rootPayload.params;
     while (currentParams) {
-      currentParams.initial = !withAnchor;
+      const initialRouteName = getInitialRouteName(navigatorNode);
+      const isSelfAnchor =
+        initialRouteName !== undefined && initialRouteName === currentParams.screen;
+
+      if (!isSelfAnchor) {
+        currentParams.initial = !withAnchor;
+      }
+
+      // Descend into the navigator targeted by this level.
+      navigatorNode =
+        currentParams.screen != null
+          ? navigatorNode?.children.find((child) => child.route === currentParams!.screen)
+          : undefined;
       currentParams = currentParams.params;
     }
   }
@@ -123,4 +142,47 @@ export function getNavigateAction(
       singular,
     },
   };
+}
+
+/**
+ * Route tree node for the navigator containing the divergence route. The root
+ * node maps to the action state's top (`__root`) level; deeper levels descend
+ * through its children.
+ */
+function findNavigatorNodeForRoute(
+  state: ResultState | undefined,
+  actionStateRoute: PartialRoute<any> | undefined,
+  rootNode: RouteNode | null
+): RouteNode | undefined {
+  let navigatorNode: RouteNode | undefined = rootNode ?? undefined;
+  let navigatorState: PartialState<NavigationState> | undefined = state;
+  let isRoot = true;
+  while (navigatorState?.routes?.length) {
+    const route = navigatorState.routes[navigatorState.routes.length - 1]!;
+    if (!isRoot) {
+      navigatorNode = navigatorNode?.children.find((child) => child.route === route.name);
+    }
+    isRoot = false;
+    // actionStateRoute is a reference into state; identity marks the divergence.
+    if (route === actionStateRoute) {
+      break;
+    }
+    navigatorState = route.state;
+  }
+  return navigatorNode;
+}
+
+/**
+ * A navigator's effective initial route: explicit `initialRouteName`, else the
+ * runtime-sorted first child (matching `routeNames[0]`).
+ */
+function getInitialRouteName(node: RouteNode | undefined): string | undefined {
+  if (!node?.children.length) {
+    return undefined;
+  }
+  if (node.initialRouteName) {
+    return node.initialRouteName;
+  }
+  // Copy first: sort mutates.
+  return [...node.children].sort(sortRoutesWithInitial(node.initialRouteName))[0]?.route;
 }
