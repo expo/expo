@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Expose ActivityKit's `staleDate` on `LiveActivity.start()` and `LiveActivity.update()`. ([#46343](https://github.com/expo/expo/pull/46343) by [@KyleAsaff](https://github.com/KyleAsaff))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
