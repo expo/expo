@@ -1,6 +1,6 @@
 import { type ObservableState } from '../../State';
 import { type ModifierConfig } from '../../types';
-export type SyncSwitchProps = {
+export interface SyncSwitchProps {
     /**
      * An observable state that drives the switch.
      * Create one with `useNativeState(false)`.
@@ -20,7 +20,7 @@ export type SyncSwitchProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * A switch driven by observable native state.
  * Use `useNativeState(false)` to create the state.

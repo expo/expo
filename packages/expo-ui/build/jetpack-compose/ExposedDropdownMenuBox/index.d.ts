@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { type ModifierConfig } from '../../types';
-export type ExposedDropdownMenuBoxProps = {
+export interface ExposedDropdownMenuBoxProps {
     /**
      * Whether the dropdown menu is expanded (visible).
      */
@@ -18,7 +18,7 @@ export type ExposedDropdownMenuBoxProps = {
      * and an `ExposedDropdownMenu` with `DropdownMenuItem` children.
      */
     children?: ReactNode;
-};
+}
 /**
  * A Material 3 `ExposedDropdownMenuBox`.
  *

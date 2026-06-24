@@ -17,7 +17,7 @@ export type SurfaceBorder = {
      */
     color?: ColorValue;
 };
-export type SurfaceProps = {
+export interface SurfaceProps {
     /**
      * The content to display inside the surface.
      */
@@ -83,7 +83,7 @@ export type SurfaceProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * A Material Design surface container. Surface is responsible for:
  * - Clipping content to the shape

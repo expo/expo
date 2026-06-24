@@ -3,7 +3,7 @@ import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
  * Props for the `Slider` community drop-in component.
  * Compatible with `@react-native-community/slider`.
  */
-export type SliderProps = {
+export interface SliderProps {
     /**
      * Initial / current value of the slider.
      * Behaves like the community lib: passing a new value updates the thumb,
@@ -71,5 +71,5 @@ export type SliderProps = {
      * Used to style and layout the Slider.
      */
     style?: StyleProp<ViewStyle>;
-};
+}
 //# sourceMappingURL=types.d.ts.map

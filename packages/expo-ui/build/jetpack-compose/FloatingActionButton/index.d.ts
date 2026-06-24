@@ -6,7 +6,7 @@ type SlotChildProps = {
 /**
  * Props shared by all `FloatingActionButton` variants.
  */
-export type FloatingActionButtonProps = {
+export interface FloatingActionButtonProps {
     /**
      * Slot-based children (use `.Icon` sub-component).
      */
@@ -24,21 +24,23 @@ export type FloatingActionButtonProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * Props for the `SmallFloatingActionButton` component.
  * Same as {@link FloatingActionButtonProps}.
  */
-export type SmallFloatingActionButtonProps = FloatingActionButtonProps;
+export interface SmallFloatingActionButtonProps extends FloatingActionButtonProps {
+}
 /**
  * Props for the `LargeFloatingActionButton` component.
  * Same as {@link FloatingActionButtonProps}.
  */
-export type LargeFloatingActionButtonProps = FloatingActionButtonProps;
+export interface LargeFloatingActionButtonProps extends FloatingActionButtonProps {
+}
 /**
  * Props for the `ExtendedFloatingActionButton` component.
  */
-export type ExtendedFloatingActionButtonProps = FloatingActionButtonProps & {
+export interface ExtendedFloatingActionButtonProps extends FloatingActionButtonProps {
     /**
      * Slot-based children (use `.Icon` and `.Text` sub-components).
      */
@@ -48,7 +50,7 @@ export type ExtendedFloatingActionButtonProps = FloatingActionButtonProps & {
      * @default true
      */
     expanded?: boolean;
-};
+}
 declare function FABIcon(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 declare function FABText(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**

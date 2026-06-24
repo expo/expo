@@ -15,7 +15,7 @@ export type NavigationBarItemColors = {
     disabledIconColor?: ColorValue;
     disabledTextColor?: ColorValue;
 };
-export type NavigationBarProps = {
+export interface NavigationBarProps {
     /**
      * Background color of the navigation bar.
      * @default NavigationBarDefaults.containerColor
@@ -39,8 +39,8 @@ export type NavigationBarProps = {
      * Navigation bar items.
      */
     children?: React.ReactNode;
-};
-export type NavigationBarItemProps = {
+}
+export interface NavigationBarItemProps {
     /**
      * Whether this item is currently selected.
      */
@@ -71,7 +71,7 @@ export type NavigationBarItemProps = {
      * Children containing `Icon`, `SelectedIcon`, and `Label` slots.
      */
     children?: React.ReactNode;
-};
+}
 /**
  * Icon slot for `NavigationBarItem`.
  */

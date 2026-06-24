@@ -4,7 +4,7 @@ export type DateRange = {
     start?: Date;
     end?: Date;
 };
-export type DatePickerProps = {
+export interface DatePickerProps extends CommonViewModifierProps {
     /**
      * A title/label displayed on the picker.
      */
@@ -30,7 +30,7 @@ export type DatePickerProps = {
      * Children to use as a custom label.
      */
     children?: React.ReactNode;
-} & CommonViewModifierProps;
+}
 /**
  * Renders a SwiftUI `DatePicker` component.
  */

@@ -125,7 +125,7 @@ export type TextStyle = TextSpanStyleBase & {
      */
     lineBreak?: TextLineBreak;
 };
-export type TextProps = {
+export interface TextProps {
     /**
      * The text content to display. Can be a string, number, or nested `Text` components
      * for inline styled spans.
@@ -162,7 +162,7 @@ export type TextProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * Renders a Text component using Jetpack Compose.
  */

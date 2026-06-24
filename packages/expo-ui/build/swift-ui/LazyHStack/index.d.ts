@@ -1,5 +1,5 @@
 import { type CommonViewModifierProps } from '../types';
-export type LazyHStackProps = {
+export interface LazyHStackProps extends CommonViewModifierProps {
     children: React.ReactNode;
     /**
      * The spacing between children.
@@ -9,6 +9,6 @@ export type LazyHStackProps = {
      * The vertical alignment of children within the stack.
      */
     alignment?: 'top' | 'center' | 'bottom' | 'firstTextBaseline' | 'lastTextBaseline';
-} & CommonViewModifierProps;
+}
 export declare function LazyHStack(props: LazyHStackProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

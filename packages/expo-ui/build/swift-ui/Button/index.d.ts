@@ -7,7 +7,7 @@ import { type CommonViewModifierProps } from '../types';
  * - `destructive` - A button that deletes data or performs a destructive action.
  */
 export type ButtonRole = 'default' | 'cancel' | 'destructive';
-export type ButtonProps = {
+export interface ButtonProps extends CommonViewModifierProps {
     /**
      * A callback that is called when the button is pressed.
      */
@@ -34,7 +34,7 @@ export type ButtonProps = {
      * Target identifier for the button, used for identifying which button was pressed in widgets and live activities.
      */
     target?: string;
-} & CommonViewModifierProps;
+}
 /**
  * Displays a native button component.
  *

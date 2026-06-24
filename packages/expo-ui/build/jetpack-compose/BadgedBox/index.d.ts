@@ -1,5 +1,5 @@
 import { type ModifierConfig } from '../../types';
-export type BadgedBoxProps = {
+export interface BadgedBoxProps {
     /**
      * Modifiers for the component.
      */
@@ -8,7 +8,7 @@ export type BadgedBoxProps = {
      * Children containing the main content and a `BadgedBox.Badge` slot.
      */
     children?: React.ReactNode;
-};
+}
 /**
  * Slot for the badge overlay. Place a `Badge` component inside.
  */

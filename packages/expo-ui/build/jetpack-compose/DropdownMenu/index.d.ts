@@ -4,7 +4,7 @@ import type { ModifierConfig } from '../../types';
 /**
  * Props of the `DropdownMenu` component.
  */
-export type DropdownMenuProps = {
+export interface DropdownMenuProps {
     /**
      * The contents of the submenu are used as an anchor for the dropdown menu.
      * The children will be wrapped in a pressable element, which triggers opening of the dropdown menu.
@@ -31,7 +31,7 @@ export type DropdownMenuProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * Container for items displayed in the dropdown menu.
  * Children should be `DropdownMenuItem` components or other native views.

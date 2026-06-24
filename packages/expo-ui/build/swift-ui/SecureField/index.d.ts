@@ -12,7 +12,7 @@ export type SecureFieldRef = {
     focus: () => Promise<void>;
     blur: () => Promise<void>;
 };
-export type SecureFieldProps = {
+export interface SecureFieldProps extends CommonViewModifierProps {
     ref?: Ref<SecureFieldRef>;
     /**
      * An observable state that holds the current text.
@@ -43,7 +43,7 @@ export type SecureFieldProps = {
      * Slot children - supports `<SecureField.Placeholder>` with a `<Text>` child
      */
     children?: React.ReactNode;
-} & CommonViewModifierProps;
+}
 export type NativeSecureFieldProps = Omit<SecureFieldProps, 'text' | 'onTextChange' | 'onFocusChange'> & ViewEvent<'onTextChange', {
     value: string;
 }> & ViewEvent<'onFocusChange', {

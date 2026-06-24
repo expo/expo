@@ -1,6 +1,6 @@
 import { type SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
-export type TabProps = {
+export interface TabProps extends CommonViewModifierProps {
     /**
      * Identifies this tab. Matched against the parent `TabView`'s `selection`
      * and `defaultSelection` props.
@@ -18,7 +18,7 @@ export type TabProps = {
      * The tab's content — rendered when this tab is selected.
      */
     children: React.ReactNode;
-} & CommonViewModifierProps;
+}
 /**
  * Defines a single tab inside a `TabView`.
  *

@@ -11,7 +11,7 @@ export type SliderColors = {
     activeTickColor?: ColorValue;
     inactiveTickColor?: ColorValue;
 };
-export type SliderProps = {
+export interface SliderProps {
     /**
      * The current value of the slider.
      * @default 0
@@ -69,7 +69,7 @@ export type SliderProps = {
      * Slot children for custom thumb and track.
      */
     children?: React.ReactNode;
-};
+}
 /**
  * A slider component that wraps Material3's `Slider`.
  *

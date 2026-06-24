@@ -1,12 +1,12 @@
 import { type Alignment, type CommonViewModifierProps } from '../types';
-export type MaskProps = {
+export interface MaskProps extends CommonViewModifierProps {
     children: React.ReactNode;
     /**
      * The alignment of the mask content relative to the base content.
      * @default 'center'
      */
     alignment?: Alignment;
-} & CommonViewModifierProps;
+}
 declare function MaskContent(props: {
     children: React.ReactNode;
 }): import("react/jsx-runtime").JSX.Element;

@@ -1,6 +1,6 @@
 import { Tab } from './Tab';
 import { type CommonViewModifierProps } from '../types';
-export type TabViewProps = {
+export interface TabViewProps extends CommonViewModifierProps {
     /**
      * The selected tab (controlled mode). Pair with `onSelectionChange`.
      * Pass `defaultSelection` instead to let the native view manage state.
@@ -19,7 +19,7 @@ export type TabViewProps = {
      * `<TabView.Tab>` elements defining the pages.
      */
     children: React.ReactElement | React.ReactElement[];
-} & CommonViewModifierProps;
+}
 declare function TabView(props: TabViewProps): import("react/jsx-runtime").JSX.Element;
 export type { TabProps } from './Tab';
 /**

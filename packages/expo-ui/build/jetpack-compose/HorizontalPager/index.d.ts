@@ -18,7 +18,7 @@ export type HorizontalPagerHandle = {
  * `DragInteraction.Start` / `DragInteraction.Stop` / `DragInteraction.Cancel`.
  */
 export type HorizontalPagerDragInteraction = 'start' | 'stop' | 'cancel';
-export type HorizontalPagerProps = {
+export interface HorizontalPagerProps {
     /**
      * Imperative handle for programmatic navigation. Mirrors the methods on
      * Compose's `PagerState`.
@@ -96,7 +96,7 @@ export type HorizontalPagerProps = {
      * Children to render as pages.
      */
     children: React.ReactNode;
-};
+}
 /**
  * A horizontally scrolling pager that snaps to individual pages,
  * matching Compose's `HorizontalPager`.

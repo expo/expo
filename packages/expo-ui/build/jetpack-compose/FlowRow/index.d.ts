@@ -1,5 +1,5 @@
 import { type HorizontalArrangement, type PrimitiveBaseProps, type VerticalArrangement } from '../layout-types';
-export type FlowRowProps = {
+export interface FlowRowProps extends PrimitiveBaseProps {
     children?: React.ReactNode;
     /**
      * Horizontal arrangement of children.
@@ -9,6 +9,6 @@ export type FlowRowProps = {
      * Vertical arrangement of children.
      */
     verticalArrangement?: VerticalArrangement;
-} & PrimitiveBaseProps;
+}
 export declare function FlowRow(props: FlowRowProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

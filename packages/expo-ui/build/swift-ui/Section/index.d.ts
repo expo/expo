@@ -1,5 +1,5 @@
 import { type CommonViewModifierProps } from '../types';
-export type SectionProps = {
+export interface SectionProps extends CommonViewModifierProps {
     /**
      * The title of the section.
      */
@@ -30,7 +30,7 @@ export type SectionProps = {
      * @platform tvos 17.0+
      */
     onIsExpandedChange?: (isExpanded: boolean) => void;
-} & CommonViewModifierProps;
+}
 /**
  * Section component uses the native [Section](https://developer.apple.com/documentation/swiftui/section) component.
  */

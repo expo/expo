@@ -1,5 +1,5 @@
 import { type CommonViewModifierProps } from '../types';
-export type SliderProps = {
+export interface SliderProps extends CommonViewModifierProps {
     /**
      * The current value of the slider.
      */
@@ -46,6 +46,6 @@ export type SliderProps = {
      * Callback triggered when the user starts or ends editing the slider.
      */
     onEditingChanged?: (isEditing: boolean) => void;
-} & CommonViewModifierProps;
+}
 export declare function Slider(props: SliderProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

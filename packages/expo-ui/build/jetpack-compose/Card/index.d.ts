@@ -21,7 +21,7 @@ export type CardBorder = {
      */
     color?: ColorValue;
 };
-export type CardProps = {
+export interface CardProps {
     /**
      * The content to display inside the card.
      */
@@ -42,12 +42,12 @@ export type CardProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * A card component that renders a filled card surface for content.
  */
 export declare const Card: import("react").ComponentType<CardProps>;
-export type ElevatedCardProps = {
+export interface ElevatedCardProps {
     /**
      * The content to display inside the card.
      */
@@ -64,12 +64,12 @@ export type ElevatedCardProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * An elevated card component that provides a raised surface for content.
  */
 export declare const ElevatedCard: import("react").ComponentType<ElevatedCardProps>;
-export type OutlinedCardProps = {
+export interface OutlinedCardProps {
     /**
      * The content to display inside the card.
      */
@@ -90,7 +90,7 @@ export type OutlinedCardProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * An outlined card component that provides a bordered surface for content.
  */
