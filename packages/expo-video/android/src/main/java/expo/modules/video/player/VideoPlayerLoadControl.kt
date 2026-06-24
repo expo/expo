@@ -54,4 +54,8 @@ class VideoPlayerLoadControl : DefaultLoadControl() {
 
     updateAllocator()
   }
+
+  override fun getAllocator(playerId: androidx.media3.exoplayer.analytics.PlayerId): androidx.media3.exoplayer.upstream.Allocator {
+    return super.getAllocator()
+  }
 }
