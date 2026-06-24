@@ -1,7 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesJSI
-
 /// A protocol for types that can be converted to a JavaScript value without type erasure.
 ///
 /// `encode` is static and takes the value explicitly so the macro emits one uniform call shape
@@ -10,8 +8,8 @@ import ExpoModulesJSI
 /// It is the native → JS half of `JavaScriptCodable`.
 ///
 /// The conversion runs on the JavaScript thread; conformers are called under `@JavaScriptActor`.
-/// See `JavaScriptDecodable` for why `appContext` and `runtime` are both `borrowing`.
+/// See `JavaScriptDecodable` for why `runtime` is `borrowing`.
 public protocol JavaScriptEncodable {
   @JavaScriptActor
-  static func encode(_ value: Self, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue
+  static func encode(_ value: Self, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue
 }

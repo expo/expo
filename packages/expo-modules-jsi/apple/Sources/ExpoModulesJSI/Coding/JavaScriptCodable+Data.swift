@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesJSI
+import Foundation
 
 // `Data` converts to and from a JavaScript `Uint8Array`. Decoding copies the typed array's bytes
 // into `Data`; encoding copies the bytes into a new `ArrayBuffer` wrapped in a `Uint8Array`.
@@ -11,7 +11,8 @@ import ExpoModulesJSI
 extension Data: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Data {
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Data
+  {
     guard value.isTypedArray() else {
       throw DataNotUint8ArrayException()
     }
@@ -29,7 +30,7 @@ extension Data: JavaScriptCodable {
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Data, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: Data, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     let arrayBuffer = runtime.createArrayBuffer(size: value.count)
     value.withUnsafeBytes { rawBuffer in
       if let baseAddress = rawBuffer.baseAddress, value.count > 0 {
@@ -42,11 +43,14 @@ extension Data: JavaScriptCodable {
 }
 
 /// Thrown when decoding `Data` from a JavaScript value that is not a `Uint8Array`.
-public final class DataNotUint8ArrayException: Exception, @unchecked Sendable {
-  override public var code: String {
+public struct DataNotUint8ArrayException: JavaScriptThrowable {
+  @usableFromInline
+  init() {}
+
+  public var code: String {
     "ERR_DATA_NOT_UINT8ARRAY"
   }
-  override public var reason: String {
+  public var message: String {
     "Cannot convert a JavaScript value to Data because it is not a Uint8Array"
   }
 }

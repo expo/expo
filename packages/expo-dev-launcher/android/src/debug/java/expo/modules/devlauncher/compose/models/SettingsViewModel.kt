@@ -10,6 +10,7 @@ import expo.modules.devmenu.DevMenuPreferences
 
 data class SettingsState(
   val showMenuAtLaunch: Boolean = false,
+  val autoLaunchMostRecent: Boolean = true,
   val isShakeEnable: Boolean = true,
   val isThreeFingerLongPressEnable: Boolean = true,
   val isKeyCommandEnabled: Boolean = true,
@@ -23,6 +24,7 @@ data class SettingsState(
 
 sealed interface SettingsAction {
   data class ToggleShowMenuAtLaunch(val newValue: Boolean) : SettingsAction
+  data class ToggleAutoLaunchMostRecent(val newValue: Boolean) : SettingsAction
   data class ToggleShakeEnable(val newValue: Boolean) : SettingsAction
   data class ToggleThreeFingerLongPressEnable(val newValue: Boolean) : SettingsAction
   data class ToggleKeyCommandEnable(val newValue: Boolean) : SettingsAction
@@ -40,6 +42,7 @@ class SettingsViewModel : ViewModel() {
   private val _state = mutableStateOf(
     SettingsState(
       showMenuAtLaunch = menuPreferences.showsAtLaunch,
+      autoLaunchMostRecent = menuPreferences.tryToLaunchLastBundle,
       isShakeEnable = menuPreferences.motionGestureEnabled,
       isThreeFingerLongPressEnable = menuPreferences.touchGestureEnabled,
       isKeyCommandEnabled = menuPreferences.keyCommandsEnabled,
@@ -57,6 +60,7 @@ class SettingsViewModel : ViewModel() {
   private val menuListener = {
     _state.value = _state.value.copy(
       showMenuAtLaunch = menuPreferences.showsAtLaunch,
+      autoLaunchMostRecent = menuPreferences.tryToLaunchLastBundle,
       isShakeEnable = menuPreferences.motionGestureEnabled,
       isThreeFingerLongPressEnable = menuPreferences.touchGestureEnabled,
       isKeyCommandEnabled = menuPreferences.keyCommandsEnabled,
@@ -86,6 +90,7 @@ class SettingsViewModel : ViewModel() {
   fun onAction(action: SettingsAction) {
     when (action) {
       is SettingsAction.ToggleShowMenuAtLaunch -> menuPreferences.showsAtLaunch = action.newValue
+      is SettingsAction.ToggleAutoLaunchMostRecent -> menuPreferences.tryToLaunchLastBundle = action.newValue
       is SettingsAction.ToggleShakeEnable -> menuPreferences.motionGestureEnabled = action.newValue
       is SettingsAction.ToggleThreeFingerLongPressEnable -> menuPreferences.touchGestureEnabled = action.newValue
       is SettingsAction.ToggleKeyCommandEnable -> menuPreferences.keyCommandsEnabled = action.newValue

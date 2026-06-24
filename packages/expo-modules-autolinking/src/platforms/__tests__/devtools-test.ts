@@ -80,6 +80,7 @@ describe(resolveModuleAsync, () => {
 
   it('resolves a package-local serverEntryPoint to an absolute path inside the package', async () => {
     const pkgDir = path.resolve('/node_modules/example-devtools');
+    vol.fromJSON({ 'dist/server.js': '' }, pkgDir);
     const result = await resolveModuleAsync(
       'example-devtools',
       createRevision(pkgDir, 'web', undefined, 'dist/server.js')
@@ -90,6 +91,7 @@ describe(resolveModuleAsync, () => {
 
   it('resolves serverEntryPoint without webpageRoot', async () => {
     const pkgDir = path.resolve('/node_modules/example-devtools');
+    vol.fromJSON({ 'dist/server.js': '' }, pkgDir);
     const result = await resolveModuleAsync(
       'example-devtools',
       createRevision(pkgDir, undefined, undefined, 'dist/server.js')
@@ -101,6 +103,7 @@ describe(resolveModuleAsync, () => {
 
   it('drops serverEntryPoint when it traverses out of the package directory', async () => {
     const pkgDir = path.resolve('/project/node_modules/malicious');
+    vol.fromJSON({ 'evil.js': '' }, '/project');
     const result = await resolveModuleAsync(
       'malicious',
       createRevision(pkgDir, 'web', undefined, '../../evil.js')

@@ -1,5 +1,4 @@
-import type { Album } from './Album';
-import { Asset } from './Asset';
+import { Asset, type Album } from './AssetAlbum';
 import { NativeAlbum, NativeQuery } from '../native';
 import type { AssetField, AssetFieldValueMap, AssetMetadata, SortDescriptor } from '../types';
 

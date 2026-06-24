@@ -1,7 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesJSI
-
 // `JavaScriptCodable` conformance for the JS value passthrough.
 //
 // `Void` is intentionally not here: it is the empty tuple `()`, which cannot be extended to conform
@@ -14,13 +12,17 @@ import ExpoModulesJSI
 extension JavaScriptValue: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
-    return value
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.copy()
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+  public static func encode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
     return value
   }
 }
