@@ -70,6 +70,17 @@
 			path = "../../native-component-list/src/screens/ModulesCore";
 			sourceTree = SOURCE_ROOT;
 		};
+		E2A1B95CA00D4E4CBBC49B09 /* ../../native-component-list/app-intents */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = "../../native-component-list/app-intents";
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +156,7 @@
 				AC3B6E5EB4FE4A6AACD31066 /* Resources */,
 				A33828129C2D4325846AC204 /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */,
 				A33828129C2D4325846AC205 /* ../../native-component-list/src/screens/ModulesCore */,
+				E2A1B95CA00D4E4CBBC49B09 /* ../../native-component-list/app-intents */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -251,6 +263,7 @@
 			fileSystemSynchronizedGroups = (
 				A33828129C2D4325846AC204 /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */,
 				A33828129C2D4325846AC205 /* ../../native-component-list/src/screens/ModulesCore */,
+				E2A1B95CA00D4E4CBBC49B09 /* ../../native-component-list/app-intents */,
 			);
 			name = BareExpo;
 			productName = BareExpo;

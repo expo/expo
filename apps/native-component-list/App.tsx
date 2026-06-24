@@ -21,7 +21,6 @@ function useSplashScreen(loadingFunction: () => Promise<void>) {
         console.warn(e);
       } finally {
         setLoadingComplete(true);
-        await SplashScreen.hide();
       }
     }
 
