@@ -7,10 +7,10 @@ import { LINK_PROTOCOL_ALLOWLIST } from './link-protocol-allowlist.ts';
 const DOCS_ROOT = fileURLToPath(new URL('../', import.meta.url));
 const PAGES_DIR = path.join(DOCS_ROOT, 'pages');
 
-const MARKDOWN_LINK = /\]\(\s*<?([^)\s>]+)/g;
+const MARKDOWN_LINK = /]\(\s*<?([^\s)>]+)/g;
 const ATTR_URL = /\b(?:href|src)=("([^"]*)"|'([^']*)')/g;
-const AUTOLINK = /<((?:https?:)?\/\/[^>\s"'`]+)>/g;
-const ALLOW_HTTP_DIRECTIVE = /\{\/\*\s*allow-http:\s*\S.*?\*\/\}/;
+const AUTOLINK = /<((?:https?:)?\/\/[^\s"'>`]+)>/g;
+const ALLOW_HTTP_DIRECTIVE = /{\/\*\s*allow-http:\s*\S.*?\*\/}/;
 
 interface Violation {
   file: string;
@@ -62,7 +62,7 @@ function insecureHost(url: string): string | null {
   } else {
     return null;
   }
-  const host = rest.split(/[/?#]/)[0];
+  const host = rest.split(/[#/?]/)[0];
   return host || null;
 }
 
