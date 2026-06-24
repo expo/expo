@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - Add `accessPrivileges` to `PermissionResponse` type ([#47177](https://github.com/expo/expo/pull/47177) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Fix permission guards for limited and write-only photo library access. ([#47216](https://github.com/expo/expo/pull/47216) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 
