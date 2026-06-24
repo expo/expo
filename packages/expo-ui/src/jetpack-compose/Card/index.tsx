@@ -49,7 +49,7 @@ function createCardComponent<P extends { modifiers?: ModifierConfig[] }>(
 
 // region Card
 
-export type CardProps = {
+export interface CardProps {
   /**
    * The content to display inside the card.
    */
@@ -70,7 +70,7 @@ export type CardProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 /**
  * A card component that renders a filled card surface for content.
@@ -81,7 +81,7 @@ export const Card = createCardComponent<CardProps>('CardView');
 
 // region ElevatedCard
 
-export type ElevatedCardProps = {
+export interface ElevatedCardProps {
   /**
    * The content to display inside the card.
    */
@@ -98,7 +98,7 @@ export type ElevatedCardProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 /**
  * An elevated card component that provides a raised surface for content.
@@ -109,7 +109,7 @@ export const ElevatedCard = createCardComponent<ElevatedCardProps>('ElevatedCard
 
 // region OutlinedCard
 
-export type OutlinedCardProps = {
+export interface OutlinedCardProps {
   /**
    * The content to display inside the card.
    */
@@ -130,7 +130,7 @@ export type OutlinedCardProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 /**
  * An outlined card component that provides a bordered surface for content.

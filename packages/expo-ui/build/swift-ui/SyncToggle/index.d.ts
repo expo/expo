@@ -1,7 +1,7 @@
 import { type SFSymbol } from 'sf-symbols-typescript';
 import { type ObservableState } from '../../State';
 import { type CommonViewModifierProps } from '../types';
-export type SyncToggleProps = {
+export interface SyncToggleProps extends CommonViewModifierProps {
     /**
      * An observable state that drives the toggle.
      * Create one with `useNativeState(false)`.
@@ -20,7 +20,7 @@ export type SyncToggleProps = {
      * Must be marked with the `'worklet'` directive.
      */
     onIsOnChangeSync?: (isOn: boolean) => void;
-} & CommonViewModifierProps;
+}
 /**
  * A toggle driven by observable native state.
  * Use `useNativeState(false)` to create the state.

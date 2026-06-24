@@ -11,7 +11,7 @@ export type ListItemColors = {
     supportingContentColor?: ColorValue;
     overlineContentColor?: ColorValue;
 };
-export type ListItemProps = {
+export interface ListItemProps {
     /**
      * Colors for list item elements.
      */
@@ -34,7 +34,7 @@ export type ListItemProps = {
      * Children containing slot sub-components.
      */
     children?: React.ReactNode;
-};
+}
 /**
  * A list item matching Compose's `ListItem`.
  */

@@ -2,7 +2,7 @@ import { type CommonViewModifierProps } from '../types';
 /**
  * Props of the `Alert` component.
  */
-export type AlertProps = {
+export interface AlertProps extends CommonViewModifierProps {
     /**
      * The contents of the alert.
      * Should include `Alert.Trigger`, `Alert.Actions`, and optionally `Alert.Message`.
@@ -20,7 +20,7 @@ export type AlertProps = {
      * A callback that is called when the `isPresented` state changes.
      */
     onIsPresentedChange?: (isPresented: boolean) => void;
-} & CommonViewModifierProps;
+}
 /**
  * `Alert` presents a SwiftUI alert with a title, optional message, and action buttons.
  *

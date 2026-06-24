@@ -59,7 +59,7 @@ export type ChipBorder = {
 type SlotChildProps = {
     children: React.ReactNode;
 };
-export type AssistChipProps = {
+export interface AssistChipProps {
     /**
      * Whether the chip is enabled and can be clicked.
      * @default true
@@ -89,7 +89,7 @@ export type AssistChipProps = {
      * Children containing Label, LeadingIcon, and TrailingIcon slots.
      */
     children: React.ReactNode;
-};
+}
 /**
  * Label slot for AssistChip.
  */
@@ -112,7 +112,7 @@ declare namespace AssistChipComponent {
     var TrailingIcon: typeof AssistChipTrailingIcon;
 }
 export { AssistChipComponent as AssistChip };
-export type FilterChipProps = {
+export interface FilterChipProps {
     /**
      * Whether the chip is currently selected.
      */
@@ -145,7 +145,7 @@ export type FilterChipProps = {
      * Children containing Label, LeadingIcon, and TrailingIcon slots.
      */
     children: React.ReactNode;
-};
+}
 /**
  * Label slot for FilterChip.
  */
@@ -168,7 +168,7 @@ declare namespace FilterChipComponent {
     var TrailingIcon: typeof FilterChipTrailingIcon;
 }
 export { FilterChipComponent as FilterChip };
-export type InputChipProps = {
+export interface InputChipProps {
     /**
      * Whether the chip is enabled and can be interacted with.
      * @default true
@@ -203,7 +203,7 @@ export type InputChipProps = {
      * Children containing Label, Avatar, and TrailingIcon slots.
      */
     children: React.ReactNode;
-};
+}
 /**
  * Label slot for InputChip.
  */
@@ -226,7 +226,7 @@ declare namespace InputChipComponent {
     var TrailingIcon: typeof InputChipTrailingIcon;
 }
 export { InputChipComponent as InputChip };
-export type SuggestionChipProps = {
+export interface SuggestionChipProps {
     /**
      * Whether the chip is enabled and can be clicked.
      * @default true
@@ -256,7 +256,7 @@ export type SuggestionChipProps = {
      * Children containing Label and Icon slots.
      */
     children: React.ReactNode;
-};
+}
 /**
  * Label slot for SuggestionChip.
  */

@@ -1,5 +1,5 @@
 import { type CommonViewModifierProps } from '../types';
-export type BottomSheetProps = {
+export interface BottomSheetProps extends CommonViewModifierProps {
     /**
      * The children of the `BottomSheet` component.
      * Use `Group` to wrap your content and apply presentation modifiers
@@ -25,7 +25,7 @@ export type BottomSheetProps = {
      * @default false
      */
     fitToContents?: boolean;
-} & CommonViewModifierProps;
+}
 /**
  * `BottomSheet` presents content from the bottom of the screen.
  */

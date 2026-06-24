@@ -1,5 +1,6 @@
 import { type CommonViewModifierProps } from '../types';
-export type DividerProps = CommonViewModifierProps;
+export interface DividerProps extends CommonViewModifierProps {
+}
 /**
  * Divider component uses the native [Divider](https://developer.apple.com/documentation/swiftui/divider) component.
  * A visual element that can be used to separate other content.

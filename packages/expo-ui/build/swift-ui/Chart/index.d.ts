@@ -130,7 +130,7 @@ export type RuleChartStyle = {
      */
     dashArray?: number[];
 };
-export type ChartProps = {
+export interface ChartProps extends CommonViewModifierProps {
     /**
      * Array of data points to display.
      */
@@ -187,7 +187,7 @@ export type ChartProps = {
      * Rule mark specific styling options.
      */
     ruleStyle?: RuleChartStyle;
-} & CommonViewModifierProps;
+}
 /**
  * Renders a native Chart component using Swift Charts.
  * @platform ios 16.0+

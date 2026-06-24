@@ -11,14 +11,14 @@ export type BasicTextFieldRef = TextFieldRef;
  * `OutlinedTextField`; use `BasicTextField.DecorationBox` to add your own
  * decoration.
  */
-export type BasicTextFieldProps = CommonTextFieldProperties & {
+export interface BasicTextFieldProps extends CommonTextFieldProperties {
     /**
      * Color of the text cursor. Maps to Compose's `cursorBrush` via
      * `SolidColor(color)`. Defaults to the theme's primary color
      * (`MaterialTheme.colorScheme.primary`) so it stays visible in light and dark.
      */
     cursorColor?: ColorValue;
-};
+}
 /**
  * A bare, unstyled Compose `BasicTextField` with no Material decoration.
  */

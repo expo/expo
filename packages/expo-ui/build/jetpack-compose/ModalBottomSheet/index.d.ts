@@ -29,7 +29,7 @@ export type ModalBottomSheetProperties = {
      */
     shouldDismissOnClickOutside?: boolean;
 };
-export type ModalBottomSheetProps = {
+export interface ModalBottomSheetProps {
     /**
      * The children of the `ModalBottomSheet` component.
      * Can include a `ModalBottomSheet.DragHandle` slot for a custom drag handle.
@@ -86,7 +86,7 @@ export type ModalBottomSheetProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * A Material Design modal bottom sheet.
  */

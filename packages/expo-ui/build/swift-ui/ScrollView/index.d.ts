@@ -23,7 +23,7 @@ export type ScrollGeometry = {
     /** Total height of the scrollable content, in points. */
     contentHeight: number;
 };
-export type ScrollViewProps = {
+export interface ScrollViewProps extends CommonViewModifierProps {
     children: React.ReactNode;
     /**
      * The scrollable axes. Pass `'both'` to enable 2D (horizontal + vertical) scrolling.
@@ -36,7 +36,7 @@ export type ScrollViewProps = {
      * @default true
      */
     showsIndicators?: boolean;
-} & CommonViewModifierProps;
+}
 /**
  * SwiftUI `ScrollView` wrapper. To control scroll position, pair this with the
  * `scrollPosition(state, { onChange })` modifier and a `useNativeState`-backed

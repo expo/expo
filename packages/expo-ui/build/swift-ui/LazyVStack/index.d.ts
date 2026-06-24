@@ -1,5 +1,5 @@
 import { type CommonViewModifierProps } from '../types';
-export type LazyVStackProps = {
+export interface LazyVStackProps extends CommonViewModifierProps {
     children: React.ReactNode;
     /**
      * The horizontal alignment of children within the stack.
@@ -9,6 +9,6 @@ export type LazyVStackProps = {
      * The spacing between children.
      */
     spacing?: number;
-} & CommonViewModifierProps;
+}
 export declare function LazyVStack(props: LazyVStackProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -90,7 +90,7 @@ export type TimePickerElementColors = {
     /** The text color of the unselected hour/minute segment. */
     timeSelectorUnselectedContentColor?: ColorValue;
 };
-export type DateTimePickerProps = {
+export interface DateTimePickerProps {
     /**
      * The initial date to display on the picker.
      */
@@ -149,12 +149,12 @@ export type DateTimePickerProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * Renders an inline `DateTimePicker` component.
  */
 export declare function DateTimePicker(props: DateTimePickerProps): import("react/jsx-runtime").JSX.Element;
-export type DatePickerDialogProps = {
+export interface DatePickerDialogProps {
     initialDate?: string | null;
     variant?: AndroidVariant;
     showVariantToggle?: boolean;
@@ -168,9 +168,9 @@ export type DatePickerDialogProps = {
     };
     onDateSelected?: (date: Date) => void;
     onDismissRequest: () => void;
-};
+}
 export declare function DatePickerDialog(props: DatePickerDialogProps): import("react/jsx-runtime").JSX.Element;
-export type TimePickerDialogProps = {
+export interface TimePickerDialogProps {
     initialDate?: string | null;
     is24Hour?: boolean;
     confirmButtonLabel?: string;
@@ -179,6 +179,6 @@ export type TimePickerDialogProps = {
     elementColors?: DatePickerElementColors & TimePickerElementColors;
     onDateSelected?: (date: Date) => void;
     onDismissRequest: () => void;
-};
+}
 export declare function TimePickerDialog(props: TimePickerDialogProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

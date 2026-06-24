@@ -1,5 +1,5 @@
 import { type ModifierConfig } from '../../types';
-export type MultiChoiceSegmentedButtonRowProps = {
+export interface MultiChoiceSegmentedButtonRowProps {
     /**
      * SegmentedButton children.
      */
@@ -8,7 +8,7 @@ export type MultiChoiceSegmentedButtonRowProps = {
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-};
+}
 /**
  * A row container for multi-choice `SegmentedButton` children.
  * Maps to Material 3 `MultiChoiceSegmentedButtonRow`.
