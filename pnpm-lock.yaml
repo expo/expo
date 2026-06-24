@@ -3675,6 +3675,12 @@ importers:
 
   packages/expo-app-intents:
     dependencies:
+      commander:
+        specifier: ^12.1.0
+        version: 12.1.0
+      prompts:
+        specifier: ^2.4.2
+        version: 2.4.2
       react:
         specifier: '*'
         version: 19.2.3
@@ -3688,6 +3694,9 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
+      '@types/prompts':
+        specifier: ^2.4.9
+        version: 2.4.9
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
@@ -3697,6 +3706,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
 
   packages/expo-app-metrics:
     dependencies:

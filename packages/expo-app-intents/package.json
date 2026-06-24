@@ -4,11 +4,15 @@
   "description": "Expose Apple App Intents (Siri, Shortcuts, Spotlight, Apple Intelligence) from Expo apps",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "bin": {
+    "expo-app-intents": "bin/expo-app-intents.js"
+  },
   "sideEffects": false,
   "scripts": {
-    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:cli",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
+    "build:cli": "expo-build cjs:src/cli=build/bin",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "test": "jest",
@@ -38,9 +42,15 @@
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
+    "@types/prompts": "^2.4.9",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "prompts": "^2.4.2"
   },
   "peerDependencies": {
     "expo": "*",
