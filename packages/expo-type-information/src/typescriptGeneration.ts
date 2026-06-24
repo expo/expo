@@ -942,6 +942,7 @@ export function buildExposedModuleTypesDeclarations(
     buildClass({ classDeclaration, exported: true, declaration: true });
 
   return joinTSNodesWithNewlines([
+    createImportDeclaration({ namedImportsNames: ['NativeModule'], importFromName: 'expo' }),
     ctx.module.classes.map(classDeclarationMap),
     buildModuleEventsTypeDeclaration(ctx.module, options),
   ]);
@@ -952,7 +953,6 @@ export function buildExposedTypesDeclarations(
   options: { exported?: boolean; declare?: boolean }
 ): ts.Node[] {
   return [
-    ...createImportDeclaration({ namedImportsNames: ['NativeModule'], importFromName: 'expo' }),
     ...buildExposedCommonTypesDeclarations(ctx, options),
     ...buildExposedModuleTypesDeclarations(ctx, options),
   ];
@@ -1305,8 +1305,7 @@ export async function generateFullTsInterface(
     } else {
       moduleTypesFileNodes = joinTSNodesWithNewlines([
         createGeneratedPrefix(),
-        createImportAllDeclaration('./Common.types'),
-        createImportDeclaration({ namedImportsNames: ['NativeModule'], importFromName: 'expo' }),
+        createImportAllDeclaration('./CommonTypes.types'),
         buildExposedModuleTypesDeclarations(ctx, { exported: true }),
         ...ctx.module.views.map((view) => buildViewPropsInterface(view, { exported: true })),
       ]);
@@ -1423,7 +1422,7 @@ export async function generateFullTsInterface(
     )
   );
   const commonTypesInterface: OutputFile = {
-    name: 'Common.types.ts',
+    name: 'CommonTypes.types.ts',
     content: commonTypesContent,
   };
   return { moduleInterfaces, commonTypesInterface };
