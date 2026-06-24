@@ -8,6 +8,7 @@
 
 - [iOS][web] Added `seedColor` prop to the universal and SwiftUI `<Host>`, used as the SwiftUI tint on iOS and to derive the primary color scale on web. ([#46566](https://github.com/expo/expo/pull/46566) by [@zoontek](https://github.com/zoontek))
 - [web] Honor the `colorScheme` prop on `<Host>` to override the system color scheme for its subtree, matching native parity. ([#46459](https://github.com/expo/expo/pull/46459) by [@zoontek](https://github.com/zoontek))
+- [iOS] Added the SwiftUI `accessibilityElement` modifier, which collapses a view's subtree into a single accessibility element via `ignore`, `combine`, or `contain`. ([#47156](https://github.com/expo/expo/pull/47156) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 🐛 Bug fixes
 
