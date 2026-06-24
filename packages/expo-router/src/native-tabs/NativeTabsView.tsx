@@ -7,6 +7,6 @@ import type { NativeTabsViewProps } from './types';
 
 export function NativeTabsView(_props: NativeTabsViewProps): null {
   throw new Error(
-    'You are using NativeTabs on unsupported platform. This is likely an internal Expo Router bug.'
+    'You are using NativeTabs on an unsupported platform. This is likely an internal Expo Router bug.'
   );
 }
