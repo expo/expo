@@ -115,7 +115,7 @@
                 {
                     "type": "cpp",
                     "name": "RNReanimated_view",
-                    "moduleName": "reanimated_view",
+                    "moduleName": "Common",
                     "path": "Common/NativeView",
                     "pattern": "**/*.cpp",
                     "headerPattern": "**/*.h",
