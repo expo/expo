@@ -158,7 +158,7 @@ build_slice() {
   # explicitly because Package.swift reads them to resolve header search paths.
   # Run from PACKAGE_DIR so xcodebuild finds the SPM package, not the Pods project.
   #
-  # SYMROOT/OBJROOT are pinned explicitly because Xcode 16+ (seen on 26.x) emits
+  # SYMROOT/OBJROOT are pinned explicitly because Xcode emits
   # "Supported platforms for the buildables in the current scheme is empty" for
   # an auto-generated SwiftPM scheme and then ignores -derivedDataPath when
   # placing build products — writing them to a default $TMPDIR-derived location
