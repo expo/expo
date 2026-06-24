@@ -98,7 +98,7 @@ export type TimePickerElementColors = {
   timeSelectorUnselectedContentColor?: ColorValue;
 };
 
-export type DateTimePickerProps = {
+export interface DateTimePickerProps {
   /**
    * The initial date to display on the picker.
    */
@@ -154,7 +154,7 @@ export type DateTimePickerProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 type NativeDatePickerProps = Omit<
   DateTimePickerProps,
@@ -212,7 +212,7 @@ export function DateTimePicker(props: DateTimePickerProps) {
 
 // -- Dialog views (used internally by the compat layer) ---------------------
 
-export type DatePickerDialogProps = {
+export interface DatePickerDialogProps {
   initialDate?: string | null;
   variant?: AndroidVariant;
   showVariantToggle?: boolean;
@@ -223,7 +223,7 @@ export type DatePickerDialogProps = {
   selectableDates?: { start?: Date; end?: Date };
   onDateSelected?: (date: Date) => void;
   onDismissRequest: () => void;
-};
+}
 
 type NativeDatePickerDialogProps = Omit<
   DatePickerDialogProps,
@@ -260,7 +260,7 @@ export function DatePickerDialog(props: DatePickerDialogProps) {
   return <DatePickerDialogNativeView {...nativeProps} />;
 }
 
-export type TimePickerDialogProps = {
+export interface TimePickerDialogProps {
   initialDate?: string | null;
   is24Hour?: boolean;
   confirmButtonLabel?: string;
@@ -269,7 +269,7 @@ export type TimePickerDialogProps = {
   elementColors?: DatePickerElementColors & TimePickerElementColors;
   onDateSelected?: (date: Date) => void;
   onDismissRequest: () => void;
-};
+}
 
 type NativeTimePickerDialogProps = Omit<
   TimePickerDialogProps,
