@@ -37,6 +37,16 @@ export function resolvePackageManagerOptions(args: any) {
   return managers;
 }
 
+/** Resolves whether prebuild should clear and regenerate the native folders. Defaults to `true`. */
+export function resolveCleanOption(args: any): boolean {
+  if (args['--clean']) {
+    Log.warn(
+      'The --clean flag is deprecated. Prebuild now clears and regenerates the native folders by default. Pass --no-clean to merge changes into the existing folders instead.'
+    );
+  }
+  return !args['--no-clean'];
+}
+
 /** Resolves a template option as a URL or file path pointing to a tar file. */
 export function resolveTemplateOption(template: string): ResolvedTemplateOption {
   assert(template, 'template is required');

@@ -6,6 +6,7 @@
 
 - Make browser-based login the default for `expo login`. Use `--no-browser` (or pass `--username`/`--password`) for username/password login. Non-interactive environments such as CI continue to use username/password login. ([#46832](https://github.com/expo/expo/pull/46832) by [@byronkarlen](https://github.com/byronkarlen))
 - Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
+- Make `expo prebuild` clear the native folders by default. Pass `--no-clean` to merge changes into the existing folders instead.
 
 ### 🎉 New features
 
