@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `SourceSkips.ExpoConfigPlatformVersions` to exclude `ios.version` and `android.version` from the fingerprint, so per-platform version bumps do not invalidate the fingerprint.
+
 ### 🐛 Bug fixes
 
 - Fixed unstable fingerprint for iOS precompiled modules. ([#46466](https://github.com/expo/expo/pull/46466) by [@kudo](https://github.com/kudo))

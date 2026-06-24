@@ -60,4 +60,12 @@ export enum SourceSkips {
 
   /** The [extra](https://docs.expo.dev/versions/latest/config/app/#extra) section in app.json */
   ExpoConfigExtraSection = 1 << 12,
+
+  /**
+   * Platform-specific version overrides in app.json, including `ios.version` and `android.version`.
+   * These take precedence over the top-level `version`. Use this when versioning each platform
+   * independently, so a version bump on one platform does not invalidate the other platform's
+   * fingerprint.
+   */
+  ExpoConfigPlatformVersions = 1 << 13,
 }
