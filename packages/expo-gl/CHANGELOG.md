@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update docs to `createContextAsync` and `destroyContextAsync` methods which purpose wasn't documented and [was confusing](https://github.com/expo/expo/issues/40037). ([#XXXXXX](https://github.com/expo/expo/pull/XXXXXX) by [@HubertBer](https://github.com/HubertBer))
+
 ## 56.0.5 — 2026-05-19
 
 ### 🐛 Bug fixes
