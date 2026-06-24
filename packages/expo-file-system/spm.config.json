@@ -48,7 +48,8 @@
           ],
           "linkedFrameworks": [
             "Foundation",
-            "UIKit"
+            "UIKit",
+            "QuickLook"
           ]
         }
       ]

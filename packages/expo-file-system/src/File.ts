@@ -4,6 +4,8 @@ import { Directory } from './Directory';
 import ExpoFileSystem from './ExpoFileSystem';
 import {
   FileMode,
+  type FileCanPreviewOptions,
+  type FilePreviewOptions,
   type PickFileOptions,
   type PickMultipleFilesOptions,
   type PickMultipleFilesResult,
@@ -204,6 +206,38 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
 
   slice(start?: number, end?: number, contentType?: string): Blob {
     return new Blob([this.bytesSync().slice(start, end)], { type: contentType });
+  }
+
+  /**
+   * Determines whether the platform can preview this file.
+   *
+   * On iOS, this checks whether Quick Look can preview the file. On Android, this checks whether
+   * an installed app can handle the preview intent for the file's MIME type.
+   * Invalid files and files the app cannot read reject instead of returning `false`. If the file
+   * does not exist, the promise resolves to `false`.
+   *
+   * @param options Preview options.
+   * @returns A promise that resolves to `true` if the file can be previewed, and `false` otherwise.
+   * @platform android
+   * @platform ios
+   */
+  canPreview(options?: FileCanPreviewOptions): Promise<boolean> {
+    return super.canPreview(options ?? {});
+  }
+
+  /**
+   * Opens this file with the platform's file preview flow.
+   *
+   * On iOS, this presents Quick Look. On Android, this starts an `ACTION_VIEW` intent.
+   * The promise resolves once the preview has been presented or handed off to another app.
+   * The promise rejects if the file does not exist or cannot be previewed.
+   *
+   * @param options Preview options.
+   * @platform android
+   * @platform ios
+   */
+  preview(options?: FilePreviewOptions): Promise<void> {
+    return super.preview(options ?? {});
   }
 
   /**
