@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
@@ -10,6 +10,9 @@ test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
 const inputDir = 'native-tabs';
+
+const visibleTestId = (page: Page, testId: string) =>
+  page.getByTestId(testId).filter({ visible: true });
 
 test.describe(inputDir, () => {
   const expoStart = createExpoStart({
@@ -45,19 +48,19 @@ test.describe(inputDir, () => {
 
     await page.goto(new URL('/', expoStart.url).href);
 
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-index')).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /nested/inner', exact: true }).click();
 
-    expect(page.getByTestId('native-tabs-nested-inner')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-nested-inner')).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /', exact: true }).click();
 
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-index')).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /nested', exact: true }).click();
 
-    expect(page.getByTestId('native-tabs-nested-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-nested-index')).toBeVisible();
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -68,35 +71,35 @@ test.describe(inputDir, () => {
 
     await page.goto(new URL('/', expoStart.url).href);
 
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-index')).toBeVisible();
 
     // 1 is the badge value on the "nested" tab
     await page.getByRole('tab', { name: 'nested 1', exact: true }).click();
-    expect(page.getByTestId('native-tabs-nested-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-nested-index')).toBeVisible();
 
     await page.getByRole('tab', { name: 'Index label', exact: true }).click();
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-index')).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /nested/inner', exact: true }).click();
-    expect(page.getByTestId('native-tabs-nested-inner')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-nested-inner')).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /', exact: true }).click();
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-index')).toBeVisible();
 
     await page.getByRole('tab', { name: 'nested 1', exact: true }).click();
-    expect(page.getByTestId('native-tabs-nested-inner')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-nested-inner')).toBeVisible();
 
     await page.getByRole('tab', { name: 'Index label', exact: true }).click();
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-index')).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /nested', exact: true }).click();
-    expect(page.getByTestId('native-tabs-nested-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-nested-index')).toBeVisible();
 
     await page.getByRole('tab', { name: 'Index label', exact: true }).click();
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-index')).toBeVisible();
 
     await page.getByRole('tab', { name: 'nested 1', exact: true }).click();
-    expect(page.getByTestId('native-tabs-nested-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-nested-index')).toBeVisible();
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -107,14 +110,14 @@ test.describe(inputDir, () => {
 
     await page.goto(new URL('/', expoStart.url).href);
 
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(visibleTestId(page, 'native-tabs-index')).toBeVisible();
 
-    expect(page.getByRole('tab', { name: 'Dynamic 9', exact: true })).toBeDefined();
+    await expect(page.getByRole('tab', { name: 'Dynamic 9', exact: true })).toBeVisible();
     await page.getByRole('tab', { name: 'Dynamic 9', exact: true }).click();
-    expect(page.getByTestId('native-tabs-dynamic')).toBeDefined();
-    expect(page.getByTestId('label-input')).toBeDefined();
+    await expect(visibleTestId(page, 'label-input')).toBeVisible();
+    await expect(visibleTestId(page, 'badge-input')).toBeVisible();
 
-    expect(page.getByRole('tab', { name: 'Dynamic 9', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Dynamic 9', exact: true })).not.toBeVisible();
 
     expect(pageErrors.all).toEqual([]);
   });
