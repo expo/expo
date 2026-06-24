@@ -34,7 +34,7 @@ export const expoPrebuild: Command = async (argv) => {
       [
         chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
         `--no-install                             Skip installing npm packages and CocoaPods`,
-        `--no-clean                               Merge changes into the existing native folders instead of regenerating them`,
+        `--no-clean                               Keep the existing native folders instead of deleting and regenerating them`,
         chalk`--npm                                    Use npm to install dependencies. {dim Default when package-lock.json exists}`,
         chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
         chalk`--bun                                    Use bun to install dependencies. {dim Default when bun.lock or bun.lockb exists}`,

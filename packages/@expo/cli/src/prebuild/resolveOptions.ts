@@ -41,7 +41,7 @@ export function resolvePackageManagerOptions(args: any) {
 export function resolveCleanOption(args: any): boolean {
   if (args['--clean']) {
     Log.warn(
-      'The --clean flag is deprecated. Prebuild now clears and regenerates the native folders by default. Pass --no-clean to merge changes into the existing folders instead.'
+      'The --clean flag is deprecated. Prebuild now clears and regenerates the native folders by default. Pass --no-clean to keep the existing folders instead.'
     );
   }
   return !args['--no-clean'];

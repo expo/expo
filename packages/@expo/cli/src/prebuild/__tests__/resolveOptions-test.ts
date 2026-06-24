@@ -11,6 +11,8 @@ import {
   resolveTemplateOption,
 } from '../resolveOptions';
 
+jest.mock('../../log');
+
 describe(resolvePackageManagerOptions, () => {
   it(`resolves`, () => {
     expect(resolvePackageManagerOptions({ '--yarn': true })).toEqual({
@@ -35,7 +37,7 @@ describe(resolvePackageManagerOptions, () => {
 
 describe(resolveCleanOption, () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   it(`cleans by default`, () => {
@@ -45,18 +47,15 @@ describe(resolveCleanOption, () => {
     expect(resolveCleanOption({ '--no-clean': true })).toBe(false);
   });
   it(`lets --no-clean win when --clean is also passed`, () => {
-    jest.spyOn(Log, 'warn').mockImplementation(() => {});
     expect(resolveCleanOption({ '--clean': true, '--no-clean': true })).toBe(false);
   });
   it(`warns that --clean is deprecated when passed`, () => {
-    const warn = jest.spyOn(Log, 'warn').mockImplementation(() => {});
     expect(resolveCleanOption({ '--clean': true })).toBe(true);
-    expect(warn).toHaveBeenCalledWith(expect.stringMatching(/--clean.*deprecated/i));
+    expect(Log.warn).toHaveBeenCalledWith(expect.stringMatching(/--clean.*deprecated/i));
   });
   it(`does not warn when --clean is absent`, () => {
-    const warn = jest.spyOn(Log, 'warn').mockImplementation(() => {});
     resolveCleanOption({});
-    expect(warn).not.toHaveBeenCalled();
+    expect(Log.warn).not.toHaveBeenCalled();
   });
 });
 
