@@ -9,6 +9,7 @@
 - [iOS] Added the SwiftUI `presentationSizing` modifier (`automatic`/`fitted`/`form`/`page`) to control sheet sizing, and applied `fitted` in `community/bottom-sheet` dynamic sizing so the sheet hugs its content on iPad instead of opening near full-screen. ([#47050](https://github.com/expo/expo/pull/47050) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS][web] Added `seedColor` prop to the universal and SwiftUI `<Host>`, used as the SwiftUI tint on iOS and to derive the primary color scale on web. ([#46566](https://github.com/expo/expo/pull/46566) by [@zoontek](https://github.com/zoontek))
 - [web] Honor the `colorScheme` prop on `<Host>` to override the system color scheme for its subtree, matching native parity. ([#46459](https://github.com/expo/expo/pull/46459) by [@zoontek](https://github.com/zoontek))
+- [iOS] Added the SwiftUI `accessibilityElement` modifier, which collapses a view's subtree into a single accessibility element via `ignore`, `combine`, or `contain`. ([#47156](https://github.com/expo/expo/pull/47156) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 🐛 Bug fixes
 
