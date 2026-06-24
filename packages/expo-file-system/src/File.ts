@@ -175,10 +175,25 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     return Paths.basename(this.uri);
   }
 
+  /**
+   * Creates a `ReadableStream` that reads from this file using a `FileHandle` internally.
+   *
+   * The stream reads in 1024-byte chunks by default. The underlying file handle is
+   * closed automatically when the stream is fully consumed or cancelled.
+   *
+   * @return A byte-oriented `ReadableStream` backed by this file.
+   */
   readableStream() {
     return new ReadableStream(new FileSystemReadableStreamSource(super.open(FileMode.ReadOnly)));
   }
 
+  /**
+   * Creates a `WritableStream` that writes to this file using a `FileHandle` internally.
+   *
+   * The underlying file handle is closed automatically when the stream is closed or aborted.
+   *
+   * @return A `WritableStream` that accepts `Uint8Array` chunks.
+   */
   writableStream() {
     return new WritableStream<Uint8Array>(
       new FileSystemWritableSink(super.open(FileMode.WriteOnly))
@@ -200,6 +215,12 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     }).formData();
   }
 
+  /**
+   * Returns a `ReadableStream` for this file. This is an alias for `readableStream()`
+   * and implements the `Blob.stream()` interface.
+   *
+   * @return A byte-oriented `ReadableStream` backed by this file.
+   */
   stream(): ReadableStream<Uint8Array<ArrayBuffer>> {
     return this.readableStream();
   }

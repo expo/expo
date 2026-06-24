@@ -107,39 +107,95 @@ export enum FileMode {
   Truncate = 'wt',
 }
 
+/**
+ * Provides low-level, random-access read and write operations on a file.
+ *
+ * Obtain a `FileHandle` by calling [`File.open()`](#openmode) on a `File` instance.
+ * The handle maintains an internal byte offset that advances automatically with each
+ * read or write. Set the `offset` property to seek to an arbitrary position.
+ *
+ * Always call `close()` when finished to release the underlying file descriptor.
+ * Failing to close a handle may prevent the file from being deleted, moved, or
+ * opened by another process.
+ *
+ * @example
+ * ```ts
+ * import { File, Paths, FileMode } from 'expo-file-system';
+ *
+ * const file = new File(Paths.cache, 'data.bin');
+ * const handle = file.open(FileMode.ReadOnly);
+ *
+ * // Read the first 4 bytes (for example, a magic number)
+ * const header = handle.readBytesSync(4);
+ *
+ * // Seek to byte 100 and read 50 bytes
+ * handle.offset = 100;
+ * const chunk = await handle.readBytes(50);
+ *
+ * handle.close();
+ * ```
+ */
 export declare class FileHandle {
-  /*
-   * Closes the file handle. This allows the file to be deleted, moved or read by a different process. Subsequent calls to `readBytes`, `writeBytes`, `readBytesSync` or `writeBytesSync` will throw an error.
+  /**
+   * Closes the file handle and releases the underlying file descriptor.
+   *
+   * After closing, the `offset` and `size` properties return `null`, and any
+   * subsequent call to `readBytes`, `readBytesSync`, `writeBytes`, or
+   * `writeBytesSync` throws an error.
    */
   close(): void;
-  /*
-   * Reads the specified amount of bytes from the file at the current offset. Max amount of bytes read at once is capped by ArrayBuffer max size (32 bit signed MAX_INT on Android and 64 bit on iOS), but you can read from a FileHandle multiple times.
+  /**
+   * Reads up to `length` bytes from the file starting at the current offset.
+   *
+   * The returned `Uint8Array` may contain fewer than `length` bytes if the end of the
+   * file is reached. Returns an empty `Uint8Array` when the offset is already at or
+   * past the end of the file. The `offset` advances by the number of bytes actually read.
+   *
+   * The maximum number of bytes that can be read in a single call is limited by the
+   * platform's `ArrayBuffer` size: 2 GB (signed 32-bit max) on Android, and the 64-bit
+   * limit on iOS. To read larger files, call this method in a loop.
+   *
    * @param length The number of bytes to read.
+   * @return A promise fulfilled with a `Uint8Array` containing the bytes read.
    */
   readBytes(length: number): Promise<Uint8Array<ArrayBuffer>>;
-  /*
-   * Reads the specified amount of bytes from the file at the current offset. Max amount of bytes read at once is capped by ArrayBuffer max size (32 bit signed MAX_INT on Android and 64 bit on iOS), but you can read from a FileHandle multiple times.
+  /**
+   * Reads up to `length` bytes from the file starting at the current offset, synchronously.
+   *
+   * Behaves identically to `readBytes` but blocks the JS thread until the data is available.
+   *
    * @param length The number of bytes to read.
+   * @return A `Uint8Array` containing the bytes read.
    */
   readBytesSync(length: number): Uint8Array<ArrayBuffer>;
-  /*
-   * Writes the specified bytes to the file at the current offset.
-   * @param bytes A `Uint8Array` array containing bytes to write.
+  /**
+   * Writes the provided bytes to the file at the current offset, then advances the
+   * offset by the number of bytes written.
+   *
+   * @param bytes A `Uint8Array` containing the bytes to write.
    */
   writeBytes(bytes: Uint8Array): Promise<void>;
-  /*
-   * Writes the specified bytes to the file at the current offset.
-   * @param bytes A `Uint8Array` array containing bytes to write.
+  /**
+   * Writes the provided bytes to the file at the current offset synchronously, then
+   * advances the offset by the number of bytes written.
+   *
+   * @param bytes A `Uint8Array` containing the bytes to write.
    */
   writeBytesSync(bytes: Uint8Array): void;
-  /*
-   * A property that indicates the current byte offset in the file. Calling `readBytes`, `writeBytes`, `readBytesSync` or `writeBytesSync` will read or write a specified amount of bytes starting from this offset. The offset is incremented by the number of bytes read or written.
-   * The offset can be set to any value within the file size. If the offset is set to a value greater than the file size, the next write operation will append data to the end of the file.
-   * Null if the file handle is closed.
+  /**
+   * The current byte offset in the file.
+   *
+   * Reading or writing advances the offset by the number of bytes processed. Set this
+   * property to seek to an arbitrary position before the next read or write. If set to
+   * a value greater than the file size, the next write appends data at the end of the file.
+   *
+   * Returns `null` after the handle has been closed.
    */
   offset: number | null;
-  /*
-   * A size of the file in bytes or `null` if the file handle is closed.
+  /**
+   * The total size of the file in bytes, or `null` if the handle has been closed.
+   *
+   * Reading this property does not change the current offset.
    */
   size: number | null;
 }
