@@ -130,6 +130,9 @@ public class NotificationSerializer {
       serializedContent.putString("categoryIdentifier", content.getCategoryId());
     }
     serializedContent.putBoolean("sticky", content.isSticky());
+    if (content.getGroup() != null) {
+      serializedContent.putString("threadIdentifier", content.getGroup());
+    }
     return serializedContent;
   }
 
@@ -201,6 +204,14 @@ public class NotificationSerializer {
       // so we copy the data as is from the extras bundle, after
       // ensuring it can be converted for emitting to JS
       serializedContent.putBundle("data", filteredBundleForJSTypeConverter(extras));
+    }
+
+    String threadIdentifier = extras.getString("threadIdentifier");
+    if (threadIdentifier == null) {
+      threadIdentifier = extras.getString("gcm.notification.thread_id");
+    }
+    if (threadIdentifier != null) {
+      serializedContent.putString("threadIdentifier", threadIdentifier);
     }
 
     Bundle serializedTrigger = new Bundle();
