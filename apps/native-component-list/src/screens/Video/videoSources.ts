@@ -123,6 +123,10 @@ const androidDrmSource: VideoSource = {
   },
 };
 
+export const splitAudioHLSSource: VideoSource = {
+  uri: 'https://storage.sardius.media/b94F91A2A4c1c84/archives/46D416760208A337BDd2382D503C/media/playlist.m3u8',
+};
+
 const videoLabels: string[] = [
   'Big Buck Bunny',
   'Elephants Dream',
@@ -132,6 +136,7 @@ const videoLabels: string[] = [
   'Cute Doggo (local video)',
   'Null Source',
   'Audio Track',
+  'Split audio (HLS)',
 ];
 const videoSources: VideoSource[] = [
   bigBuckBunnySource,
@@ -142,6 +147,7 @@ const videoSources: VideoSource[] = [
   localVideoSource,
   nullSource,
   audioTrackSource,
+  splitAudioHLSSource,
 ];
 
 export {
