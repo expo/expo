@@ -1006,9 +1006,6 @@ importers:
       expo-print:
         specifier: workspace:*
         version: link:../../packages/expo-print
-      expo-processing:
-        specifier: workspace:*
-        version: link:../../packages/expo-processing
       expo-screen-capture:
         specifier: workspace:*
         version: link:../../packages/expo-screen-capture
@@ -5259,19 +5256,6 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
-
-  packages/expo-processing:
-    dependencies:
-      expo-gl:
-        specifier: workspace:~56.0.5
-        version: link:../expo-gl
-      processing-js:
-        specifier: ^1.6.6
-        version: 1.6.6
-    devDependencies:
-      expo:
-        specifier: workspace:*
-        version: link:../expo
 
   packages/expo-router:
     dependencies:
@@ -18021,7 +18005,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
