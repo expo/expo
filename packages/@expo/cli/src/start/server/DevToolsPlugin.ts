@@ -1,5 +1,6 @@
 import type { WebSocketServer } from 'ws';
 
+import { isPathInside, maybeRealpathSync } from '../../utils/dir';
 import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
 import { PluginSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
@@ -9,7 +10,6 @@ import {
   loadRequestHandlerAsync,
   loadWebSocketServerAsync,
 } from './DevToolsPluginServerHelpers';
-import { isPathInside, maybeRealpathSync } from '../../utils/dir';
 
 export type { DevToolsPluginRequestHandler } from './DevToolsPluginServerHelpers';
 

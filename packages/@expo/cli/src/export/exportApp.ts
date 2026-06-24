@@ -8,6 +8,17 @@ import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import * as Log from '../log';
+import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
+import { DevServerManager } from '../start/server/DevServerManager';
+import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
+import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
+import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
+import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
+import { env } from '../utils/env';
+import { CommandError } from '../utils/errors';
+import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
 import {
@@ -25,17 +36,6 @@ import type { Options } from './resolveOptions';
 import type { ExportAssetMap, BundleOutput, BundleAssetWithFileHashes } from './saveAssets';
 import { getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
 import { createAssetMap } from './writeContents';
-import * as Log from '../log';
-import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
-import { DevServerManager } from '../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
-import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
-import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
-import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
-import { env } from '../utils/env';
-import { CommandError } from '../utils/errors';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 
 export async function exportAppAsync(
   projectRoot: string,

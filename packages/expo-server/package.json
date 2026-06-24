@@ -2,9 +2,26 @@
   "name": "expo-server",
   "version": "56.0.4",
   "description": "Server API for Expo Router projects",
+  "keywords": [
+    "expo"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-server#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-server"
+  },
+  "files": [
+    "build",
+    "adapter"
+  ],
+  "sideEffects": false,
   "main": "build/cjs/index.js",
   "module": "build/mjs/index.js",
-  "sideEffects": false,
   "exports": {
     ".": {
       "types": {
@@ -62,41 +79,25 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "expo-build cjs:src=build/cjs src=build/mjs",
     "clean": "rimraf build",
     "prepublishOnly": "run-s clean build",
-    "lint": "eslint .",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "test": "jest",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-server"
-  },
-  "keywords": [
-    "expo"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-server#readme",
-  "files": [
-    "build",
-    "adapter"
-  ],
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*",
     "npm-run-all2": "^8.0.4",
     "rimraf": "^6.1.2"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"

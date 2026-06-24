@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
+import { Host } from '../../jetpack-compose/Host';
+import { ModalBottomSheet, type ModalBottomSheetRef } from '../../jetpack-compose/ModalBottomSheet';
+import { RNHostView } from '../../jetpack-compose/RNHostView';
 import { BottomSheetContext, BottomSheetInternalContext } from './context';
 import { SheetScrollContextReset } from './scrollContextReset';
 import type { BottomSheetMethods, BottomSheetProps } from './types';
 import { parseSnapPoint } from './types';
-import { Host } from '../../jetpack-compose/Host';
-import { ModalBottomSheet, type ModalBottomSheetRef } from '../../jetpack-compose/ModalBottomSheet';
-import { RNHostView } from '../../jetpack-compose/RNHostView';
 
 export { useBottomSheet } from './context';
 

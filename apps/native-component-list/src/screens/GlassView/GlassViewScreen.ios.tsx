@@ -14,8 +14,8 @@ import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'rea
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
-import GlassOpacityAnimationExample from './GlassOpacityAnimationExample.ios';
 import { BodyText } from '../../components/BodyText';
+import GlassOpacityAnimationExample from './GlassOpacityAnimationExample.ios';
 
 // Static color options for tinting
 const colorOptions = [

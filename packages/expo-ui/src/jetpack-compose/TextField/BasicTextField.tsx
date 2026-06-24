@@ -1,13 +1,13 @@
 import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
+import { Slot } from '../SlotView';
 import {
   type CommonNativeTextFieldProps,
   type CommonTextFieldProperties,
   type TextFieldRef,
   useCommonTextFieldProps,
 } from './shared';
-import { Slot } from '../SlotView';
 
 // region Types
 

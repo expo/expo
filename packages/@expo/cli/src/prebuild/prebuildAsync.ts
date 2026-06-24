@@ -4,6 +4,14 @@ import type { ModPlatform } from '@expo/config-plugins';
 import { updateXcodeProject } from '@expo/inline-modules';
 import chalk from 'chalk';
 
+import { installAsync } from '../install/installAsync';
+import { Log } from '../log';
+import { env } from '../utils/env';
+import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
+import { clearNodeModulesAsync } from '../utils/nodeModules';
+import { logNewSection } from '../utils/ora';
+import { profile } from '../utils/profile';
+import { confirmAsync } from '../utils/prompts';
 import {
   clearNativeFolder,
   getExistingNativePlatformsAsync,
@@ -14,14 +22,6 @@ import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
 import { updateFromTemplateAsync } from './updateFromTemplate';
-import { installAsync } from '../install/installAsync';
-import { Log } from '../log';
-import { env } from '../utils/env';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
-import { clearNodeModulesAsync } from '../utils/nodeModules';
-import { logNewSection } from '../utils/ora';
-import { profile } from '../utils/profile';
-import { confirmAsync } from '../utils/prompts';
 
 const debug = require('debug')('expo:prebuild') as typeof console.log;
 

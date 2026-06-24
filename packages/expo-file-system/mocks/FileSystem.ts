@@ -789,12 +789,7 @@ export class FileSystemDownloadTask extends SharedObject {
   pause(): { resumeData: string } {
     return { resumeData: 'mock-resume-data' };
   }
-  resume(
-    _url: string,
-    _to: any,
-    _resumeData: string,
-    _options?: any
-  ): Promise<string | null> {
+  resume(_url: string, _to: any, _resumeData: string, _options?: any): Promise<string | null> {
     return Promise.resolve('file:///mock/downloaded-file');
   }
   release(): void {

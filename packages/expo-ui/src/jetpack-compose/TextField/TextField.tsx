@@ -1,14 +1,14 @@
 import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
+import { type ObservableState } from '../../State';
+import { parseJSXShape, type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
+import { Slot } from '../SlotView';
 import {
   type CommonNativeTextFieldProps,
   type CommonTextFieldProperties,
   useCommonTextFieldProps,
 } from './shared';
-import { type ObservableState } from '../../State';
-import { parseJSXShape, type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
-import { Slot } from '../SlotView';
 
 // region Types
 

@@ -13,6 +13,7 @@
     "typecheck": "turbo typecheck",
     "depscheck": "turbo depscheck",
     "lint": "turbo lint",
+    "format": "turbo format",
     "test": "turbo test",
     "prepare": "turbo build"
   },
@@ -35,12 +36,10 @@
     "@types/babel__traverse": "^7.20.7"
   },
   "dependencies": {
-    "eslint": "^8.57.1",
     "expo-asset": "workspace:*",
     "expo-modules-core": "workspace:*",
     "jest-expo": "workspace:*",
-    "jsc-android": "^250231.0.0",
-    "prettier": "~3.8.3"
+    "jsc-android": "^250231.0.0"
   },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0",
@@ -53,6 +52,8 @@
     "expo-module-scripts": "workspace:*",
     "expotools": "workspace:*",
     "jest": "^29.7.0",
+    "oxfmt": "^0.55.0",
+    "oxlint": "^1.70.0",
     "ts-node": "^10.9.2",
     "turbo": "2.9.18",
     "typescript": "^6.0.2"

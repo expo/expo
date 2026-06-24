@@ -5,9 +5,9 @@ import {
   TextButton,
 } from '@expo/ui/jetpack-compose';
 
+import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { ButtonProps, ButtonVariant } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 export function Button({
   children,

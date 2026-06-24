@@ -2,42 +2,23 @@
   "name": "expo-mesh-gradient",
   "version": "56.0.3",
   "description": "A module that exposes MeshGradient view from SwiftUI to React Native",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "scripts": {
-    "build": "expo-build src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
-  },
+  "keywords": [
+    "expo",
+    "gradient",
+    "mesh",
+    "mesh-gradient",
+    "react-native"
+  ],
   "homepage": "https://docs.expo.dev/versions/latest/sdk/mesh-gradient/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-mesh-gradient"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "mesh-gradient",
-    "gradient",
-    "mesh"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {
-    "@types/react": "~19.2.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
-  },
-  "peerDependencies": {
-    "expo": "*",
-    "react": "*",
-    "react-native": "*"
-  },
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "exports": {
     ".": {
       "types": {
@@ -48,5 +29,25 @@
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/react": "~19.2.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

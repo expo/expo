@@ -4,9 +4,11 @@ import { Command } from 'commander';
 import path from 'node:path';
 import { chalk } from 'zx';
 
+import packageJSON from '../package.json';
 import { packExpoBareTemplateTarballAsync } from './ExpoRepo.js';
 import { getNpmVersionAsync } from './Npm.js';
 import { reinstallPackagesAsync } from './Packages.js';
+import { applyPatchesGlobAsync } from './Patch.js';
 import { setDefaultVerbose } from './Processes.js';
 import {
   type ProjectProperties,
@@ -15,8 +17,6 @@ import {
   prebuildAppAsync,
 } from './Project.js';
 import { checkRequiredToolsAsync } from './SanityChecks.js';
-import packageJSON from '../package.json';
-import { applyPatchesGlobAsync } from './Patch.js';
 
 const PACKAGE_ROOT = path.dirname(import.meta.dirname);
 

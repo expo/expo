@@ -2,6 +2,25 @@
   "name": "@expo/ui",
   "version": "56.0.14",
   "description": "A collection of UI components",
+  "keywords": [
+    "Jetpack Compose",
+    "SwiftUI",
+    "UI components",
+    "cross platform",
+    "expo",
+    "react",
+    "react-native",
+    "universal",
+    "web"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/ui/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-ui"
+  },
   "sideEffects": false,
   "exports": {
     ".": {
@@ -119,32 +138,14 @@
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/ui/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-ui"
-  },
-  "keywords": [
-    "react",
-    "react-native",
-    "expo",
-    "UI components",
-    "SwiftUI",
-    "Jetpack Compose",
-    "cross platform",
-    "web",
-    "universal"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "dependencies": {
     "sf-symbols-typescript": "^2.1.0",
     "vaul": "^1.1.2"

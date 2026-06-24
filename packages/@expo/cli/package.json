@@ -2,10 +2,31 @@
   "name": "@expo/cli",
   "version": "56.1.12",
   "description": "The Expo CLI",
-  "main": "main.js",
+  "keywords": [
+    "cli",
+    "expo"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/cli",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/cli"
+  },
   "bin": {
     "expo-internal": "bin/cli.js"
   },
+  "files": [
+    "main.js",
+    "internal",
+    "static",
+    "build"
+  ],
+  "main": "main.js",
   "exports": {
     "./package.json": "./package.json",
     "./static/template/*": "./static/template/*",
@@ -18,39 +39,19 @@
     "./*": "./*.js",
     "./*.js": "./*.js"
   },
-  "files": [
-    "main.js",
-    "internal",
-    "static",
-    "build"
-  ],
   "scripts": {
     "build": "pnpm run build:cli && pnpm run build:metro-require",
     "build:cli": "expo-build cjs:src=build/src",
     "build:metro-require": "expo-build script:metro-require=build/metro-require",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "test": "jest",
     "test:e2e": "jest --config e2e/jest.config.js",
     "test:playwright": "playwright test --config e2e/playwright.config.ts"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/cli"
-  },
-  "keywords": [
-    "expo",
-    "cli"
-  ],
-  "author": "Expo",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/cli",
   "dependencies": {
     "@expo/code-signing-certificates": "^0.0.6",
     "@expo/config": "workspace:~56.0.9",
@@ -111,19 +112,6 @@
     "ws": "^8.12.1",
     "zod": "^3.25.76"
   },
-  "peerDependencies": {
-    "expo": "*",
-    "expo-router": "*",
-    "react-native": "*"
-  },
-  "peerDependenciesMeta": {
-    "expo-router": {
-      "optional": true
-    },
-    "react-native": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@expo/fingerprint": "workspace:*",
@@ -146,16 +134,17 @@
     "@types/picomatch": "^4.0.2",
     "@types/progress": "^2.0.5",
     "@types/prompts": "^2.0.6",
+    "@types/react": "~19.2.0",
+    "@types/react-test-renderer": "^19.1.0",
     "@types/resolve": "^1.20.2",
     "@types/semver": "^7.5.8",
     "@types/send": "^0.17.1",
     "@types/webpack": "~4.41.32",
     "@types/webpack-dev-server": "^3.11.0",
-    "@types/react": "~19.2.0",
-    "@types/react-test-renderer": "^19.1.0",
     "@types/wrap-ansi": "^3.0.0",
     "@types/ws": "^8.5.4",
     "devtools-protocol": "^0.0.1113120",
+    "eslint": "^9.18.0",
     "expect": "^29.7.0",
     "expo-atlas": "^0.4.1",
     "expo-module-scripts": "workspace:*",
@@ -172,5 +161,18 @@
     "react-refresh": "^0.14.2",
     "react-test-renderer": "19.2.3",
     "tree-kill": "^1.2.2"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "expo-router": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-router": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
   }
 }

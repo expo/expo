@@ -4,11 +4,11 @@ import { FullscreenOrientation } from 'expo-video/build/VideoView.types';
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 
-import { bigBuckBunnySource } from './videoSources';
-import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import { E2EKeyValueBox } from '../../components/E2EKeyValueBox';
 import TitledSwitch from '../../components/TitledSwitch';
+import { bigBuckBunnySource } from './videoSources';
+import { styles } from './videoStyles';
 
 const orientations = ['default', 'portrait', 'landscape'];
 export default function VideoFullscreenScreen() {
