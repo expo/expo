@@ -9,7 +9,7 @@ import {
   renameTemplateAppNameAsync,
   sanitizeTemplateAsync,
 } from './Template';
-import { consumeMonorepoConfigAsync } from './monorepoConfig';
+import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { env } from './utils/env';
 import { fetch } from './utils/fetch';
 import { extractNpmTarballAsync } from './utils/npm';
@@ -115,7 +115,7 @@ export async function promptExamplesAsync() {
 /**
  * Download and move the selected example from https://github.com/expo/examples.
  *
- * If the example ships a `.expo-monorepo-config.json`, its `renamePatterns`
+ * If the example ships a `.create-expo.json`, its `renamePatterns`
  * field overrides the default rename config used by the HelloWorld
  * find-and-replace pass. The config file is read once and deleted from disk
  * immediately so it can never leak into the user's project.

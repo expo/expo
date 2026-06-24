@@ -8,9 +8,9 @@ import { glob } from 'glob';
 import ora from 'ora';
 import path from 'path';
 
+import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { sanitizedName } from './createFileTransform';
 import { Log } from './log';
-import { consumeMonorepoConfigAsync } from './monorepoConfig';
 import type { PackageManagerName } from './resolvePackageManager';
 import { formatRunCommand } from './resolvePackageManager';
 import { env } from './utils/env';
@@ -119,7 +119,7 @@ export function resolvePackageModuleId(moduleId: string) {
  * Extract a template app to a given file path and clean up any properties left over from npm to
  * prepare it for usage.
  *
- * If the template ships a `.expo-monorepo-config.json`, its `renamePatterns`
+ * If the template ships a `.create-expo.json`, its `renamePatterns`
  * field overrides the default rename config used by the HelloWorld
  * find-and-replace pass. The config file is read once and deleted from disk
  * immediately so it can never leak into the user's project.

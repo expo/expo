@@ -5,16 +5,16 @@ import { Log } from './log';
 
 const debug = require('debug')('expo:init:monorepo-config') as typeof console.log;
 
-export const MONOREPO_CONFIG_FILENAME = '.expo-monorepo-config.json';
+export const CREATE_EXPO_CONFIG_NAME = '.create-expo.json';
 
 /**
- * Per-template configuration for monorepo-aware behavior in `create-expo`.
+ * Per-template configuration for customized behavior in `create-expo`.
  * Templates that need any of these knobs can ship a
- * `.expo-monorepo-config.json` file at the template root; it is read once at
+ * `.create-expo.json` file at the template root; it is read once at
  * project creation time and then deleted from the user's project so it
  * doesn't leak into their repo.
  */
-export interface MonorepoConfig {
+export interface CreateExpoConfig {
   /**
    * Glob patterns (relative to the project root) listing extra files that
    * should be passed through the `HelloWorld` find-and-replace pass during
@@ -26,7 +26,7 @@ export interface MonorepoConfig {
 }
 
 /**
- * Read `.expo-monorepo-config.json` from the project root and immediately
+ * Read `.create-expo.json` from the project root and immediately
  * delete the file from disk so it doesn't leak into the user's project.
  * Returns the parsed config (or `undefined` if there's no file / it's
  * malformed). This is the "use it once" entry point that template-extraction
@@ -35,16 +35,16 @@ export interface MonorepoConfig {
  */
 export async function consumeMonorepoConfigAsync(
   projectRoot: string
-): Promise<MonorepoConfig | undefined> {
+): Promise<CreateExpoConfig | undefined> {
   const config = await loadMonorepoConfigAsync(projectRoot);
   await fs.promises
-    .rm(path.join(projectRoot, MONOREPO_CONFIG_FILENAME), { force: true })
+    .rm(path.join(projectRoot, CREATE_EXPO_CONFIG_NAME), { force: true })
     .catch(() => undefined);
   return config;
 }
 
 /**
- * Reads `.expo-monorepo-config.json` from the project root without touching
+ * Reads `.create-expo.json` from the project root without touching
  * the file. Returns `undefined` if the file is missing, unreadable, or
  * malformed — a missing file is the common case (single-app templates) and
  * shouldn't warn.
@@ -55,14 +55,14 @@ export async function consumeMonorepoConfigAsync(
  */
 export async function loadMonorepoConfigAsync(
   projectRoot: string
-): Promise<MonorepoConfig | undefined> {
-  const configPath = path.join(projectRoot, MONOREPO_CONFIG_FILENAME);
+): Promise<CreateExpoConfig | undefined> {
+  const configPath = path.join(projectRoot, CREATE_EXPO_CONFIG_NAME);
   let contents: string;
   try {
     contents = await fs.promises.readFile(configPath, { encoding: 'utf-8' });
   } catch (error: any) {
     if (error?.code !== 'ENOENT') {
-      Log.log(`Could not read ${MONOREPO_CONFIG_FILENAME}; ignoring: ${error?.message ?? error}`);
+      Log.log(`Could not read ${CREATE_EXPO_CONFIG_NAME}; ignoring: ${error?.message ?? error}`);
     }
     return undefined;
   }
@@ -71,14 +71,14 @@ export async function loadMonorepoConfigAsync(
     parsed = JSON.parse(contents);
   } catch (error: any) {
     Log.log(
-      `${MONOREPO_CONFIG_FILENAME} could not be parsed as JSON; ignoring: ${error?.message ?? error}`
+      `${CREATE_EXPO_CONFIG_NAME} could not be parsed as JSON; ignoring: ${error?.message ?? error}`
     );
     return undefined;
   }
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    Log.log(`${MONOREPO_CONFIG_FILENAME} did not parse as a JSON object; ignoring.`);
+    Log.log(`${CREATE_EXPO_CONFIG_NAME} did not parse as a JSON object; ignoring.`);
     return undefined;
   }
-  debug(`Loaded ${MONOREPO_CONFIG_FILENAME}`);
-  return parsed as MonorepoConfig;
+  debug(`Loaded ${CREATE_EXPO_CONFIG_NAME}`);
+  return parsed as CreateExpoConfig;
 }

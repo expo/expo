@@ -1,7 +1,7 @@
 import type { Endpoints } from '@octokit/types';
 
+import { CREATE_EXPO_CONFIG_NAME } from '../createExpoConfig';
 import { createGlobFilter } from '../createFileTransform';
-import { MONOREPO_CONFIG_FILENAME } from '../monorepoConfig';
 import { fetch } from './fetch';
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
 
@@ -82,7 +82,7 @@ async function extractRemoteGitHubTarballAsync(
       // Templates ship their monorepo config as a root-level dotfile; without
       // an explicit allow-list entry, picomatch's default `dot: false` drops
       // it during extraction so downstream consumers see no config at all.
-      `${subDirPrefix}/${MONOREPO_CONFIG_FILENAME}`,
+      `${subDirPrefix}/${CREATE_EXPO_CONFIG_NAME}`,
     ],
     {
       // Always ignore the `.xcworkspace` folder
