@@ -1,10 +1,13 @@
-import { createPermissionHook, type PermissionResponse } from 'expo';
+import { createPermissionHook } from 'expo';
 import { UnavailabilityError, type EventSubscription } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
-import type { MediaLibraryAssetsChangeEvent } from './MediaLibraryNext.types';
-import type { GranularPermission } from './types/GranularPermission';
+import type {
+  GranularPermission,
+  MediaLibraryAssetsChangeEvent,
+  PermissionResponse,
+} from './MediaLibraryNext.types';
 import { MediaSubtype } from './types/MediaSubtype';
 import type { MediaTypeFilter } from './types/MediaTypeFilter';
 
@@ -114,7 +117,6 @@ export const usePermissions = createPermissionHook<
     requestPermissionsAsync(options?.writeOnly, options?.granularPermissions),
 });
 
-export type { PermissionHookOptions, PermissionResponse } from 'expo';
 export type { EventSubscription } from 'expo-modules-core';
 
 /**

@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Add `accessPrivileges` to `PermissionResponse` type ([#47177](https://github.com/expo/expo/pull/47177) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 - [android] Add `getAssetContentUriAsync` for legacy ID migration ([#46854](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
