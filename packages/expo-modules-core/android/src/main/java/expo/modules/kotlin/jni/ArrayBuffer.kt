@@ -6,7 +6,14 @@ import expo.modules.kotlin.exception.Exceptions
 import java.nio.ByteBuffer
 
 enum class ArrayBufferJSBytesAccessPolicy {
+  /**
+   * Allows scoped read access even if an implementation needs to copy.
+   */
   ALLOW_COPY,
+
+  /**
+   * Requires the scoped buffer to point at this ArrayBuffer's current backing storage.
+   */
   REQUIRE_ZERO_COPY
 }
 
@@ -70,7 +77,8 @@ class ArrayBuffer : Destructible {
   /**
    * Provides scoped access to this buffer's visible bytes.
    *
-   * The returned [ByteBuffer] is valid only for the duration of [body].
+   * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
+   * Do not store it, return it, or access it after [body] returns.
    */
   @Throws(Throwable::class)
   fun <R> withJSBytes(
@@ -89,7 +97,8 @@ class ArrayBuffer : Destructible {
   /**
    * Provides scoped mutable access to this buffer's visible bytes.
    *
-   * The returned [ByteBuffer] is valid only for the duration of [body]. JavaScript-backed
+   * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
+   * Do not store it, return it, or access it after [body] returns. JavaScript-backed
    * buffers require real zero-copy access and never fall back to a mutable temporary copy.
    */
   @Throws(Throwable::class)

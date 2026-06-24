@@ -4,6 +4,7 @@ package expo.modules.kotlin.jni.types
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.jni.ArrayBuffer
+import expo.modules.kotlin.jni.ArrayBufferJSBytesAccessPolicy
 import expo.modules.kotlin.jni.JavaScriptArrayBuffer
 import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.jni.inlineModule
@@ -21,6 +22,7 @@ class ArrayBufferConversionTest {
       Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
       Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(0xff.toByte())
       Truth.assertThat(arrayBuffer.read2Byte(0)).isEqualTo(-256)
+      Truth.assertThat(arrayBuffer.isNativeBacked()).isFalse()
     },
     map = {},
     jsAssertion = {}
@@ -34,6 +36,7 @@ class ArrayBufferConversionTest {
       Truth.assertThat(arrayBuffer.isNativeBacked()).isFalse()
       Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
       Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(0xff.toByte())
+      Truth.assertThat(arrayBuffer.isNativeBacked()).isFalse()
     },
     map = { it },
     jsAssertion = { jsValue ->
@@ -166,6 +169,20 @@ class ArrayBufferConversionTest {
     ).getArray()
 
     Truth.assertThat(result.map { it.getInt() }).containsExactly(2, 3).inOrder()
+  }
+
+  @Test
+  fun array_buffer_with_js_bytes_require_zero_copy_reads_js_backed_array_buffer() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
+        expo.modules.TestModule.readWithJSBytesRequireZeroCopy(buffer, 4);
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result.map { it.getInt() }).containsExactly(1, 2, 3, 4).inOrder()
   }
 
   @Test
@@ -589,6 +606,15 @@ class ArrayBufferConversionTest {
 
     Function("readWithJSBytes") { buffer: ArrayBuffer, count: Int ->
       buffer.withJSBytes { scopedBuffer ->
+        scopedBuffer.rewind()
+        List(count.coerceAtMost(scopedBuffer.remaining())) {
+          scopedBuffer.get().toInt() and 0xff
+        }
+      }
+    }
+
+    Function("readWithJSBytesRequireZeroCopy") { buffer: ArrayBuffer, count: Int ->
+      buffer.withJSBytes(ArrayBufferJSBytesAccessPolicy.REQUIRE_ZERO_COPY) { scopedBuffer ->
         scopedBuffer.rewind()
         List(count.coerceAtMost(scopedBuffer.remaining())) {
           scopedBuffer.get().toInt() and 0xff

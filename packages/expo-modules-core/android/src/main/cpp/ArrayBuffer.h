@@ -25,6 +25,8 @@ public:
 
   [[nodiscard]] virtual size_t size() const = 0;
 
+  virtual void readBytes(size_t position, void *destination, size_t length) = 0;
+
   [[nodiscard]] virtual jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) = 0;
 
   [[nodiscard]] virtual std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer() = 0;
@@ -50,6 +52,8 @@ public:
   [[nodiscard]] uint8_t* data() override;
 
   [[nodiscard]] size_t size() const override;
+
+  void readBytes(size_t position, void *destination, size_t length) override;
 
   [[nodiscard]] bool isNativeBacked() const noexcept override;
 
@@ -83,6 +87,8 @@ public:
   [[nodiscard]] uint8_t* data() override;
 
   [[nodiscard]] size_t size() const override;
+
+  void readBytes(size_t position, void *destination, size_t length) override;
 
   [[nodiscard]] bool isNativeBacked() const noexcept override;
 
@@ -119,6 +125,8 @@ public:
   [[nodiscard]] uint8_t* data() override;
 
   [[nodiscard]] size_t size() const override;
+
+  void readBytes(size_t position, void *destination, size_t length) override;
 
   [[nodiscard]] bool isNativeBacked() const noexcept override;
 
@@ -200,7 +208,9 @@ public:
 
   template<class T>
   T read(int position) {
-    return *reinterpret_cast<T *>(data() + position);
+    T result;
+    storage->readBytes(position, &result, sizeof(T));
+    return result;
   }
 
 private:

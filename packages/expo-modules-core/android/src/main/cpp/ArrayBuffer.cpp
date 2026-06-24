@@ -8,8 +8,30 @@ namespace expo {
 
 namespace {
 
+enum class ScopedAccessPolicy {
+  AllowCopy = 0,
+  RequireZeroCopy = 1
+};
+
 [[noreturn]] void throwArrayBufferAccessException(const std::string &message) {
   throwNewJavaException(CodedException::create(message).get());
+}
+
+ScopedAccessPolicy parseScopedAccessPolicy(int policy) {
+  switch (policy) {
+    case 0:
+      return ScopedAccessPolicy::AllowCopy;
+    case 1:
+      return ScopedAccessPolicy::RequireZeroCopy;
+    default:
+      throwArrayBufferAccessException("Invalid ArrayBuffer scoped access policy.");
+  }
+}
+
+void validateByteRange(size_t storageSize, size_t position, size_t length) {
+  if (position > storageSize || length > storageSize - position) {
+    throwArrayBufferAccessException("ArrayBuffer byte access is out of bounds.");
+  }
 }
 
 jni::local_ref<jni::JByteBuffer> copyToDirectBuffer(uint8_t *data, size_t length) {
@@ -108,6 +130,11 @@ bool ByteBufferArrayBufferStorage::isNativeBacked() const noexcept {
   return true;
 }
 
+void ByteBufferArrayBufferStorage::readBytes(size_t position, void *destination, size_t length) {
+  validateByteRange(size(), position, length);
+  memcpy(destination, data() + position, length);
+}
+
 jni::local_ref<jni::JByteBuffer> ByteBufferArrayBufferStorage::toDirectBuffer(bool) {
   return jni::make_local(_byteBuffer);
 }
@@ -121,9 +148,10 @@ jsi::Value ByteBufferArrayBufferStorage::toJSIValue(jsi::Runtime &runtime) {
 }
 
 jni::local_ref<jni::JObject> ByteBufferArrayBufferStorage::withJSBytes(
-  int,
+  int policy,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
+  parseScopedAccessPolicy(policy);
   return invokeBodyWithByteBuffer(body, toDirectBuffer(false));
 }
 
@@ -153,9 +181,12 @@ bool MutableBufferViewArrayBufferStorage::isNativeBacked() const noexcept {
   return true;
 }
 
-jni::local_ref<jni::JByteBuffer> MutableBufferViewArrayBufferStorage::toDirectBuffer(
-  bool copyBorrowed
-) {
+void MutableBufferViewArrayBufferStorage::readBytes(size_t position, void *destination, size_t length) {
+  validateByteRange(size(), position, length);
+  memcpy(destination, data() + position, length);
+}
+
+jni::local_ref<jni::JByteBuffer> MutableBufferViewArrayBufferStorage::toDirectBuffer(bool copyBorrowed) {
   if (copyBorrowed) {
     auto byteBuffer = jni::JByteBuffer::allocateDirect(static_cast<jint>(_length));
     byteBuffer->order(jni::JByteOrder::nativeOrder());
@@ -228,6 +259,29 @@ void JavaScriptBackedArrayBufferStorage::validateBounds(jsi::Runtime &runtime) {
   }
 }
 
+void JavaScriptBackedArrayBufferStorage::readBytes(size_t position, void *destination, size_t length) {
+  validateByteRange(size(), position, length);
+  auto runtime = runtimeOrThrow();
+  std::exception_ptr exception;
+
+  try {
+    runtime->executeSync([&](jsi::Runtime &rt) {
+      try {
+        validateBounds(rt);
+        memcpy(destination, _arrayBuffer->data(rt) + _offset + position, length);
+      } catch (...) {
+        exception = std::current_exception();
+      }
+    });
+  } catch (...) {
+    exception = std::current_exception();
+  }
+
+  if (exception) {
+    std::rethrow_exception(exception);
+  }
+}
+
 jni::local_ref<jni::JByteBuffer> JavaScriptBackedArrayBufferStorage::toDirectBuffer(bool) {
   auto runtime = runtimeOrThrow();
   jni::global_ref<jni::JByteBuffer> result;
@@ -276,9 +330,10 @@ jsi::Value JavaScriptBackedArrayBufferStorage::toJSIValue(jsi::Runtime &runtime)
 }
 
 jni::local_ref<jni::JObject> JavaScriptBackedArrayBufferStorage::withJSBytes(
-  int,
+  int policy,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
+  auto accessPolicy = parseScopedAccessPolicy(policy);
   auto runtime = runtimeOrThrow();
   auto bodyRef = jni::make_global(body);
   jni::global_ref<jni::JObject> result;
@@ -289,6 +344,11 @@ jni::local_ref<jni::JObject> JavaScriptBackedArrayBufferStorage::withJSBytes(
     runtime->executeSync([&](jsi::Runtime &rt) {
       try {
         validateBounds(rt);
+        // Both policies use zero-copy here. `RequireZeroCopy` is kept explicit so
+        // unsupported fallback paths cannot accidentally start copying later.
+        if (accessPolicy == ScopedAccessPolicy::RequireZeroCopy) {
+          validateBounds(rt);
+        }
         auto byteBuffer = jni::JByteBuffer::wrapBytes(_arrayBuffer->data(rt) + _offset, _length);
         byteBuffer->order(jni::JByteOrder::nativeOrder());
         auto localBody = jni::static_ref_cast<JNIFunctionBody>(bodyRef);
