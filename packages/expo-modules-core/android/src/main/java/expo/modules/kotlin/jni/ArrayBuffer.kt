@@ -57,10 +57,10 @@ class ArrayBuffer : Destructible {
   external fun toDirectBuffer(copyBorrowed: Boolean): ByteBuffer
 
   /**
-   * Whether this buffer's visible byte range is stored independently of any parent storage it was
-   * converted from.
+   * Whether this buffer's visible byte range is backed by native memory that can be accessed
+   * directly from native code without touching JavaScript heap memory.
    */
-  external fun isOwned(): Boolean
+  external fun isNativeBacked(): Boolean
 
   /**
    * Creates a native-owned copy of this ArrayBuffer.

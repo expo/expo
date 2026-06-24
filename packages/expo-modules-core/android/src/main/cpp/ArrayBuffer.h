@@ -18,7 +18,7 @@ class ArrayBufferStorage: public jsi::MutableBuffer {
 public:
   ~ArrayBufferStorage() override = default;
 
-  [[nodiscard]] virtual bool isOwned() const noexcept = 0;
+  [[nodiscard]] virtual bool isNativeBacked() const noexcept = 0;
 
   [[nodiscard]] virtual jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) = 0;
 };
@@ -33,7 +33,7 @@ public:
 
   [[nodiscard]] size_t size() const override;
 
-  [[nodiscard]] bool isOwned() const noexcept override;
+  [[nodiscard]] bool isNativeBacked() const noexcept override;
 
   [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) override;
 
@@ -53,7 +53,7 @@ public:
 
   [[nodiscard]] size_t size() const override;
 
-  [[nodiscard]] bool isOwned() const noexcept override;
+  [[nodiscard]] bool isNativeBacked() const noexcept override;
 
   [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) override;
 
@@ -98,7 +98,7 @@ public:
 
   [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed);
 
-  [[nodiscard]] bool isOwned();
+  [[nodiscard]] bool isNativeBacked();
 
   template<class T>
   T read(int position) {
