@@ -1139,6 +1139,7 @@ function returnExpressionEnd(fileContent: string, returnIndex: number): number {
 type SourceKittenPreprocessingOptions = {
   preprocessReturns?: boolean;
   mapUnicodeCharacters?: boolean;
+  runOnQueue: boolean;
 };
 
 // Preprocessing to help sourcekitten functions
@@ -1147,9 +1148,25 @@ type SourceKittenPreprocessingOptions = {
 // TODO(@HubertBer): This has many problems which need fixing:
 // - return can be inside a string
 // - return Expression end parses incorrectly in case of some strings (check how it parses expo-video)
-function preprocessReturnStatements(originalFileContent: string): string {
+export function preprocessSwiftFile(
+  originalFileContent: string,
+  { preprocessReturns, runOnQueue, mapUnicodeCharacters }: SourceKittenPreprocessingOptions
+): string {
+  let fileContent = removeComments(originalFileContent);
+  if (preprocessReturns) {
+    fileContent = preprocessReturnStatements(fileContent);
+  }
+  if (runOnQueue) {
+    fileContent = preprocessRunOnQueue(fileContent);
+  }
+  if (mapUnicodeCharacters) {
+    fileContent = preprocessUnicodeCharacters(fileContent);
+  }
+  return fileContent;
+}
+
+function preprocessReturnStatements(fileContent: string): string {
   const newFileContent: string[] = [];
-  const fileContent = removeComments(originalFileContent);
   const returnPositions: { start: number; end: number }[] = [];
   let startPos = 0;
   while (startPos < fileContent.length) {
@@ -1190,16 +1207,8 @@ function preprocessUnicodeCharacters(fileConent: string): string {
   });
 }
 
-export function preprocessSwiftFile(
-  originalFileContent: string,
-  { preprocessReturns, mapUnicodeCharacters }: SourceKittenPreprocessingOptions
-): string {
-  let fileContent = originalFileContent;
-  if (preprocessReturns) {
-    fileContent = preprocessReturnStatements(fileContent);
-  }
-  if (mapUnicodeCharacters) {
-    fileContent = preprocessUnicodeCharacters(fileContent);
-  }
-  return fileContent;
+function preprocessRunOnQueue(originalFileContent: string): string {
+  const regex = /\.runOnQueue\s*\([^)]*\)/g;
+  // Note that this won't work if there are nested parentheses inside the runOnQueue, e.g. .runOnQueue(function1()) won't work
+  return originalFileContent.replace(regex, '');
 }

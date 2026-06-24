@@ -71,6 +71,10 @@ public class TestModule: Module {
       return a + b
     }
 
+    AsyncFunction("TestRunOnQueue") { (a: String, b: String) async ->  String in
+      return a + b
+    }.runOnQueue(.main)
+
     AsyncFunction("TestUnderscore") { (url: URL, _  /* Comment 10 */: [BarcodeType]) in
     }
 
