@@ -5,13 +5,10 @@ import { createHash } from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
-import {
-  FileTypeInformation,
-  getFileTypeInformation,
-  TypeInferenceOption,
-} from '../typeInformation';
+import { FileTypeInformation, TypeInferenceOption } from '../typeInformation.types';
 import { generateConciseTsInterface } from '../typescriptGeneration';
 import { taskAll } from '../utils';
+import { getFileTypeInformation } from '../typeInformation';
 
 export type TypeInformationCommandCommonAllArguments = {
   inputPaths?: string[];

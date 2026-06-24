@@ -34,6 +34,24 @@ public class TestModule: Module {
       return TestEnum.simpleCase
     }
 
+    Function("TestObject") { () -> JavaScriptObject in 
+    }
+
+    Function("TestAnyValue") { () -> JavaScriptValue in 
+    }
+
+    Function("TestJsFunction") { () -> JavaScriptFunction in
+    }
+
+    Function("TestUIColor") { () -> UIColor in 
+    }
+
+    Function("TestCGColor") { () -> CGColor in 
+    }
+
+    Function("TestData") { () -> Data in 
+    }
+
     Function("TestUntypedFunction3" /* Comment 5 */) {
       return TestRecord2(field1: /* Comment 6 */ 10, "field2")
     }

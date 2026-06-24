@@ -9,7 +9,7 @@ import {
   parseCommandArguments,
   TypeInformationCommandCommonAllArguments,
 } from './commandUtils';
-import { TypeInferenceOption } from '../typeInformation';
+import { TypeInferenceOption } from '../typeInformation.types';
 import { scanFilesRecursively, taskAll } from '../utils';
 
 async function getResolvedWatchedDirectoriesFromAppJson(
