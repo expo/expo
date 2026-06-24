@@ -3,6 +3,7 @@ import { useWindowDimensions, View, StyleSheet } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { BottomSheetContext, BottomSheetInternalContext } from './context';
+import { SheetScrollContextReset } from './scrollContextReset';
 import type { BottomSheetMethods, BottomSheetProps } from './types';
 import { parseSnapPoint } from './types';
 import { BottomSheet as NativeBottomSheet } from '../../swift-ui/BottomSheet';
@@ -246,7 +247,7 @@ export function BottomSheet(props: BottomSheetProps) {
                       ? { paddingTop: handleComponent !== null ? 16 : 0 }
                       : { flex: 1, paddingTop: handleComponent !== null ? 16 : 0 }
                   }>
-                  {children}
+                  <SheetScrollContextReset>{children}</SheetScrollContextReset>
                 </View>
               </RNHostView>
             </Group>
