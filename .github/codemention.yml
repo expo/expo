@@ -181,8 +181,6 @@ rules:
     mentions: ['vonovak']
   - patterns: ['packages/expo-print/**']
     mentions: ['lukmccall']
-  - patterns: ['packages/expo-processing/**']
-    mentions: ['lukmccall']
   - patterns: ['packages/expo-router/**']
     mentions: ['ubax', 'hassankhan', 'kitten']
   - patterns: ['packages/expo-screen-capture/**']
