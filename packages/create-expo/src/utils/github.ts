@@ -1,9 +1,9 @@
 import type { Endpoints } from '@octokit/types';
 
 import { createGlobFilter } from '../createFileTransform';
+import { MONOREPO_CONFIG_FILENAME } from '../monorepoConfig';
 import { fetch } from './fetch';
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
-import { MONOREPO_CONFIG_FILENAME } from '../monorepoConfig';
 
 const debug = require('debug')('expo:init:github') as typeof console.log;
 

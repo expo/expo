@@ -199,10 +199,7 @@ function escapeXMLCharacters(original: string): string {
  * ## The rename config
  *
  * The rename config can be passed directly as a string array to
- * `getTemplateFilesToRenameAsync()`, or shipped with a template via the
- * `renamePatterns` field of `.expo-monorepo-config.json` at the project
- * root — useful for monorepo templates that need to reach inside per-app
- * directories like `apps/*\/android/**\/build.gradle`.
+ * `getTemplateFilesToRenameAsync()`.
  *
  * The file patterns are formatted as glob expressions to be interpreted by
  * [glob](https://github.com/isaacs/node-glob). Comments are supported with
@@ -210,8 +207,7 @@ function escapeXMLCharacters(original: string): string {
  * Whitespace is trimmed and whitespace-only lines are ignored.
  *
  * If no rename config has been passed directly to
- * `getTemplateFilesToRenameAsync()` and the template ships no
- * `.expo-monorepo-config.json` with `renamePatterns`, then this default
+ * `getTemplateFilesToRenameAsync()`, then this default
  * rename config will be used instead.
  */
 export const defaultRenameConfig = [
@@ -299,7 +295,9 @@ export async function renameTemplateAppNameAsync({
 
       let contents: string;
       try {
-        contents = await fs.promises.readFile(absoluteFilePath, { encoding: 'utf-8' });
+        contents = await fs.promises.readFile(absoluteFilePath, {
+          encoding: 'utf-8',
+        });
       } catch (error) {
         throw new Error(
           `Failed to read template file: "${absoluteFilePath}". Was it removed mid-operation?`,
@@ -372,7 +370,9 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
     slug: projectName,
   };
 
-  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), { default: {} });
+  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), {
+    default: {},
+  });
   const appContent = (await appFile.readAsync()) as ExpoConfig | Record<'expo', ExpoConfig>;
   const appJson = deepMerge(
     appContent,

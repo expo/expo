@@ -20,29 +20,11 @@ const WORKSPACE_DEP_FIELDS = [
  * chosen package manager's convention, and — for pnpm — write a
  * `pnpm-workspace.yaml` listing the workspace packages so they're picked up
  * regardless of the root `package.json` `workspaces` field.
- *
- * - npm requires workspace deps to be written as `"*"`.
- * - yarn / npm / bun handle workspace links given `"workspace:*"` (the convention used
- *   by yarn classic + npm workspaces).
- *
- * The function expects the template to use either `"workspace:*"` or `"*"` for
- * intra-monorepo links; other dep specs (semver ranges, file paths, etc.) are
- * left untouched. No-op if the root has no workspaces declaration.
- *
- * We deliberately do not write or modify per-PM "node linker" settings (e.g.
- * pnpm's `nodeLinker: hoisted` or yarn's `.yarnrc.yml`). Those settings
- * interact unpredictably with arbitrary dependency trees and shouldn't be
- * dictated by the template.
  */
 export async function configureWorkspacesAsync(
   projectRoot: string,
   packageManager: PackageManagerName
 ): Promise<void> {
-  // Use `resolve-workspace-root` so we read workspace globs from whichever
-  // source the template ships — `pnpm-workspace.yaml` for pnpm templates,
-  // `package.json` `workspaces` (array or `{ packages: [...] }` object form)
-  // for bun / npm / yarn. The library only inspects the given root (no parent
-  // traversal) and returns `null` when neither file declares workspaces.
   const workspacePatterns = (await getWorkspaceGlobsAsync(projectRoot)) ?? [];
   if (!workspacePatterns.length) {
     debug(`No workspaces declared at ${projectRoot}; skipping workspace configuration`);
@@ -66,16 +48,6 @@ async function resolveWorkspaceMemberPathsAsync(
   projectRoot: string,
   patterns: string[]
 ): Promise<string[]> {
-  // Expand each workspace pattern by reading its parent directory. Supports
-  // the conventional monorepo shapes:
-  //
-  //   "apps/*"       → every child dir of apps/ that contains a package.json
-  //   "apps/mobile"  → literal directory if it contains a package.json
-  //
-  // More complex glob features (`**`, `?(...)`, brace expansion) aren't
-  // supported here on purpose — workspace templates almost always use one of
-  // the two forms above, and avoiding glob lets us stay deterministic with
-  // memfs-backed tests and fast in production.
   const members: string[] = [];
   const seen = new Set<string>();
   for (const pattern of patterns) {
@@ -183,13 +155,7 @@ async function readJsonFileAsync(filePath: string): Promise<any | undefined> {
  * Ensure `pnpm-workspace.yaml` contains a `packages:` block listing our
  * workspace patterns. If the file doesn't exist we write it from scratch. If
  * it does exist (e.g. the template ships its own with extra pnpm settings),
- * we preserve all existing content and only append `packages:` if it's not
- * already declared at the top level — so multiple sources can contribute to
- * the same YAML without clobbering each other.
- *
- * We don't parse the YAML (no parser is bundled with create-expo), so the
- * "is this top-level key already present?" check is a simple line-prefix
- * match — good enough for the conventional flat shape pnpm uses.
+ * we preserve all existing content and only append `packages:`
  */
 async function ensurePnpmWorkspaceYamlAsync(
   projectRoot: string,
