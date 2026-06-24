@@ -15,7 +15,11 @@
     "developmentClient": {
       "silentLaunch": true
     },
-    "platforms": ["android", "ios", "web"],
+    "platforms": [
+      "android",
+      "ios",
+      "web"
+    ],
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
@@ -69,7 +73,8 @@
         {
           "image": "./assets/icons/loadingIcon.png"
         }
-      ]
+      ],
+      "expo-app-intents"
     ],
     "extra": {
       "eas": {
@@ -79,7 +84,10 @@
     "experiments": {
       "noxcturnalTransformWorker": true,
       "inlineModules": {
-        "watchedDirectories": ["src/screens/inlineModules/inlineModulesExamples/"]
+        "watchedDirectories": [
+          "src/screens/inlineModules/inlineModulesExamples/",
+          "app-intents"
+        ]
       }
     }
   }
