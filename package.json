@@ -40,8 +40,8 @@
     "jsc-android": "^250231.0.0",
     "prettier": "~3.8.3"
   },
-  "volta": {
-    "node": "22.14.0"
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
