@@ -17,7 +17,7 @@ class ArrayBufferConversionTest {
     jsValue = "new Uint8Array([0x00, 0xff]).buffer",
     nativeAssertion = { arrayBuffer ->
       Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
-      Truth.assertThat(arrayBuffer.isOwned()).isTrue()
+      Truth.assertThat(arrayBuffer.isNativeBacked()).isTrue()
       Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
       Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(0xff.toByte())
       Truth.assertThat(arrayBuffer.read2Byte(0)).isEqualTo(-256)
@@ -31,7 +31,7 @@ class ArrayBufferConversionTest {
     jsValue = "new Uint8Array([0x00, 0xff]).buffer",
     nativeAssertion = { arrayBuffer ->
       Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
-      Truth.assertThat(arrayBuffer.isOwned()).isTrue()
+      Truth.assertThat(arrayBuffer.isNativeBacked()).isTrue()
       Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
       Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(0xff.toByte())
     },
@@ -81,13 +81,13 @@ class ArrayBufferConversionTest {
         const buffer = expo.modules.TestModule.createArrayBuffer(4);
         const view = new Uint8Array(buffer);
         view.fill(1);
-        const isOwned = expo.modules.TestModule.isArrayBufferOwned(buffer);
+        const isNativeBacked = expo.modules.TestModule.isArrayBufferNativeBacked(buffer);
         const processedBuffer = expo.modules.TestModule.fillArrayBuffer(buffer, 0x42);
-        [isOwned, Array.from(view), Array.from(new Uint8Array(processedBuffer))]
+        [isNativeBacked, Array.from(view), Array.from(new Uint8Array(processedBuffer))]
       """.trimIndent()
     ).getArray()
 
-    Truth.assertThat(result[0].getBool()).isFalse()
+    Truth.assertThat(result[0].getBool()).isTrue()
     Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(0x42, 0x42, 0x42, 0x42).inOrder()
     Truth.assertThat(result[2].getArray().map { it.getInt() }).containsExactly(0x42, 0x42, 0x42, 0x42).inOrder()
   }
@@ -102,13 +102,13 @@ class ArrayBufferConversionTest {
         const fullView = new Uint8Array(buffer);
         fullView.set([1, 2, 3, 4, 5]);
         const partialView = new Uint8Array(buffer, 1, 2);
-        const isOwned = expo.modules.TestModule.isArrayBufferOwned(partialView);
+        const isNativeBacked = expo.modules.TestModule.isArrayBufferNativeBacked(partialView);
         const processedBuffer = expo.modules.TestModule.fillArrayBuffer(partialView, 0x42);
-        [isOwned, Array.from(fullView), Array.from(new Uint8Array(processedBuffer))]
+        [isNativeBacked, Array.from(fullView), Array.from(new Uint8Array(processedBuffer))]
       """.trimIndent()
     ).getArray()
 
-    Truth.assertThat(result[0].getBool()).isFalse()
+    Truth.assertThat(result[0].getBool()).isTrue()
     Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(1, 0x42, 0x42, 4, 5).inOrder()
     Truth.assertThat(result[2].getArray().map { it.getInt() }).containsExactly(0x42, 0x42).inOrder()
   }
@@ -122,9 +122,9 @@ class ArrayBufferConversionTest {
         const buffer = new Uint8Array([1, 2, 3, 4, 5]).buffer;
         const fullView = new Uint8Array(buffer);
         const partialView = new Uint8Array(buffer, 1, 2);
-        const isOwned = expo.modules.TestModule.isArrayBufferOwned(partialView);
+        const isNativeBacked = expo.modules.TestModule.isArrayBufferNativeBacked(partialView);
         const processedBuffer = expo.modules.TestModule.fillArrayBuffer(partialView, 0x42);
-        [isOwned, Array.from(fullView), Array.from(new Uint8Array(processedBuffer))]
+        [isNativeBacked, Array.from(fullView), Array.from(new Uint8Array(processedBuffer))]
       """.trimIndent()
     ).getArray()
 
@@ -455,8 +455,8 @@ class ArrayBufferConversionTest {
       buffer
     }
 
-    Function("isArrayBufferOwned") { buffer: ArrayBuffer ->
-      buffer.isOwned()
+    Function("isArrayBufferNativeBacked") { buffer: ArrayBuffer ->
+      buffer.isNativeBacked()
     }
   }
 

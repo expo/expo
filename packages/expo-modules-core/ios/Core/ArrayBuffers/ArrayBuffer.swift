@@ -26,12 +26,10 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
       }
     }
 
-    var isOwned: Bool {
+    var isNativeBacked: Bool {
       switch self {
-      case .owned:
+      case .owned, .borrowed:
         return true
-      case .borrowed:
-        return false
       }
     }
 
@@ -53,14 +51,13 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
     return storage.byteLength
   }
 
-  /// Whether this buffer's visible byte range is stored independently of any parent storage it was
-  /// converted from. JS-heap ArrayBuffer and TypedArray inputs are copied and therefore owned;
-  /// native-backed ArrayBuffer and TypedArray inputs may be borrowed and therefore not owned.
+  /// Whether this buffer's visible byte range is backed by native memory that can be accessed
+  /// directly from native code without touching JavaScript heap memory.
   ///
-  /// This is not a general mutability flag. For example, an owned buffer that is later returned to
-  /// JavaScript can still be shared with that new JavaScript wrapper.
-  public var isOwned: Bool {
-    return storage.isOwned
+  /// JS-heap ArrayBuffer and TypedArray inputs are copied into native memory. Native-backed
+  /// ArrayBuffer and TypedArray inputs borrow and retain their native `MutableBuffer` storage.
+  public var isNativeBacked: Bool {
+    return storage.isNativeBacked
   }
 
   init(wrapping data: UnsafeMutableRawPointer, count: Int, cleanup: @escaping () -> Void) {

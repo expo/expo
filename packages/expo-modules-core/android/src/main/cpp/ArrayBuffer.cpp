@@ -22,7 +22,7 @@ size_t ByteBufferArrayBufferStorage::size() const {
   return _byteBuffer->getDirectSize();
 }
 
-bool ByteBufferArrayBufferStorage::isOwned() const noexcept {
+bool ByteBufferArrayBufferStorage::isNativeBacked() const noexcept {
   return true;
 }
 
@@ -46,8 +46,8 @@ size_t MutableBufferViewArrayBufferStorage::size() const {
   return _length;
 }
 
-bool MutableBufferViewArrayBufferStorage::isOwned() const noexcept {
-  return false;
+bool MutableBufferViewArrayBufferStorage::isNativeBacked() const noexcept {
+  return true;
 }
 
 jni::local_ref<jni::JByteBuffer> MutableBufferViewArrayBufferStorage::toDirectBuffer(bool copyBorrowed) {
@@ -74,7 +74,7 @@ void ArrayBuffer::registerNatives() {
                    makeNativeMethod("readFloat", ArrayBuffer::read<float>),
                    makeNativeMethod("readDouble", ArrayBuffer::read<double>),
                    makeNativeMethod("toDirectBuffer", ArrayBuffer::toDirectBuffer),
-                   makeNativeMethod("isOwned", ArrayBuffer::isOwned),
+                   makeNativeMethod("isNativeBacked", ArrayBuffer::isNativeBacked),
                  });
 }
 
@@ -155,8 +155,8 @@ jni::local_ref<jni::JByteBuffer> ArrayBuffer::toDirectBuffer(bool copyBorrowed) 
   return storage->toDirectBuffer(copyBorrowed);
 }
 
-bool ArrayBuffer::isOwned() {
-  return storage->isOwned();
+bool ArrayBuffer::isNativeBacked() {
+  return storage->isNativeBacked();
 }
 
 }
