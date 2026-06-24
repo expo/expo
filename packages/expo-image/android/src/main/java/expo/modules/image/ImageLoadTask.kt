@@ -1,8 +1,10 @@
 package expo.modules.image
 
 import android.graphics.drawable.BitmapDrawable
+import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.Glide
+import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.ImageLoadOptions
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.AppContext
@@ -29,6 +31,14 @@ open class ImageLoadTask(
           .asDrawable()
           .load(model)
           .centerInside()
+          .downsample(
+            if (options.maxWidth <= 0 && options.maxHeight <= 0) {
+              // ARGB_8888 is the default format, but is it safe to hardcode it here?
+              SafeDownsampleStrategy(DecodeFormat.ARGB_8888)
+            } else {
+              NoopDownsampleStrategy
+            }
+          )
           .customize(options.tintColor) {
             apply(RequestOptions().set(CustomOptions.tintColor, it))
           }
