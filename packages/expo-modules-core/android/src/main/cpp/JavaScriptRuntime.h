@@ -72,6 +72,10 @@ public:
    */
   void drainJSEventLoop();
 
+  bool supportsSyncExecution();
+
+  void executeSync(std::function<void(jsi::Runtime &)> &&func);
+
   std::shared_ptr<react::CallInvoker> jsInvoker;
 
 private:
@@ -82,5 +86,6 @@ private:
    * the runtime is deallocated.
    */
   jsi::Runtime *runtime;
+  std::optional<bool> supportsSyncExecution_;
 };
 } // namespace expo

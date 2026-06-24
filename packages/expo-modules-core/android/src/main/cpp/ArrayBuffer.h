@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ExpoHeader.pch"
+#include "JNIFunctionBody.h"
 #include "JNIDeallocator.h"
 #include "JSIContext.h"
 #include "TypedArray.h"
@@ -14,13 +15,30 @@ class JavaScriptRuntime;
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
-class ArrayBufferStorage : public jsi::MutableBuffer {
+class ArrayBufferStorage {
 public:
-  ~ArrayBufferStorage() override = default;
+  virtual ~ArrayBufferStorage() = default;
 
   [[nodiscard]] virtual bool isNativeBacked() const noexcept = 0;
 
+  [[nodiscard]] virtual uint8_t* data() = 0;
+
+  [[nodiscard]] virtual size_t size() const = 0;
+
   [[nodiscard]] virtual jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) = 0;
+
+  [[nodiscard]] virtual std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer() = 0;
+
+  [[nodiscard]] virtual jsi::Value toJSIValue(jsi::Runtime &runtime) = 0;
+
+  [[nodiscard]] virtual jni::local_ref<jni::JObject> withJSBytes(
+    int policy,
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  ) = 0;
+
+  [[nodiscard]] virtual jni::local_ref<jni::JObject> withMutableJSBytes(
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  ) = 0;
 };
 
 class ByteBufferArrayBufferStorage : public ArrayBufferStorage {
@@ -36,6 +54,19 @@ public:
   [[nodiscard]] bool isNativeBacked() const noexcept override;
 
   [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) override;
+
+  [[nodiscard]] std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer() override;
+
+  [[nodiscard]] jsi::Value toJSIValue(jsi::Runtime &runtime) override;
+
+  [[nodiscard]] jni::local_ref<jni::JObject> withJSBytes(
+    int policy,
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  ) override;
+
+  [[nodiscard]] jni::local_ref<jni::JObject> withMutableJSBytes(
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  ) override;
 
 private:
   jni::global_ref<jni::JByteBuffer> _byteBuffer;
@@ -57,8 +88,62 @@ public:
 
   [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) override;
 
+  [[nodiscard]] std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer() override;
+
+  [[nodiscard]] jsi::Value toJSIValue(jsi::Runtime &runtime) override;
+
+  [[nodiscard]] jni::local_ref<jni::JObject> withJSBytes(
+    int policy,
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  ) override;
+
+  [[nodiscard]] jni::local_ref<jni::JObject> withMutableJSBytes(
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  ) override;
+
 private:
   std::shared_ptr<jsi::MutableBuffer> _backingBuffer;
+  size_t _offset;
+  size_t _length;
+};
+
+class JavaScriptBackedArrayBufferStorage: public ArrayBufferStorage {
+public:
+  JavaScriptBackedArrayBufferStorage(
+    std::weak_ptr<JavaScriptRuntime> runtime,
+    std::shared_ptr<jsi::ArrayBuffer> arrayBuffer,
+    size_t offset,
+    size_t length
+  );
+
+  [[nodiscard]] uint8_t* data() override;
+
+  [[nodiscard]] size_t size() const override;
+
+  [[nodiscard]] bool isNativeBacked() const noexcept override;
+
+  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) override;
+
+  [[nodiscard]] std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer() override;
+
+  [[nodiscard]] jsi::Value toJSIValue(jsi::Runtime &runtime) override;
+
+  [[nodiscard]] jni::local_ref<jni::JObject> withJSBytes(
+    int policy,
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  ) override;
+
+  [[nodiscard]] jni::local_ref<jni::JObject> withMutableJSBytes(
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  ) override;
+
+private:
+  [[nodiscard]] std::shared_ptr<JavaScriptRuntime> runtimeOrThrow();
+
+  void validateBounds(jsi::Runtime &runtime);
+
+  std::weak_ptr<JavaScriptRuntime> _runtime;
+  std::shared_ptr<jsi::ArrayBuffer> _arrayBuffer;
   size_t _offset;
   size_t _length;
 };
@@ -78,8 +163,8 @@ public:
 
   static jni::local_ref<ArrayBuffer::javaobject> newInstance(
     JSIContext *jsiContext,
-    jsi::Runtime &runtime,
-    jsi::ArrayBuffer &arrayBuffer
+    jsi::Runtime& runtime,
+    jsi::ArrayBuffer arrayBuffer
   );
 
   static jni::local_ref<ArrayBuffer::javaobject> newInstance(
@@ -96,13 +181,26 @@ public:
 
   [[nodiscard]] std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer();
 
+  [[nodiscard]] jsi::Value toJSIValue(jsi::Runtime &runtime);
+
   [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed);
 
   [[nodiscard]] bool isNativeBacked();
 
+  [[nodiscard]] jni::local_ref<jni::JObject> withJSBytes(
+    int policy,
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  );
+
+  [[nodiscard]] jni::local_ref<jni::JObject> withMutableJSBytes(
+    jni::alias_ref<JNIFunctionBody::javaobject> body
+  );
+
+  [[nodiscard]] uint8_t* data();
+
   template<class T>
   T read(int position) {
-    return *reinterpret_cast<T *>(storage->data() + position);
+    return *reinterpret_cast<T *>(data() + position);
   }
 
 private:

@@ -17,7 +17,7 @@ class ArrayBufferConversionTest {
     jsValue = "new Uint8Array([0x00, 0xff]).buffer",
     nativeAssertion = { arrayBuffer ->
       Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
-      Truth.assertThat(arrayBuffer.isNativeBacked()).isTrue()
+      Truth.assertThat(arrayBuffer.isNativeBacked()).isFalse()
       Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
       Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(0xff.toByte())
       Truth.assertThat(arrayBuffer.read2Byte(0)).isEqualTo(-256)
@@ -31,7 +31,7 @@ class ArrayBufferConversionTest {
     jsValue = "new Uint8Array([0x00, 0xff]).buffer",
     nativeAssertion = { arrayBuffer ->
       Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
-      Truth.assertThat(arrayBuffer.isNativeBacked()).isTrue()
+      Truth.assertThat(arrayBuffer.isNativeBacked()).isFalse()
       Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
       Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(0xff.toByte())
     },
@@ -114,7 +114,7 @@ class ArrayBufferConversionTest {
   }
 
   @Test
-  fun array_buffer_typed_array_arg_should_copy_js_allocated_view() = withJSIInterop(
+  fun array_buffer_typed_array_arg_should_be_js_backed_until_direct_buffer_access() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {
     val result = evaluateScript(
@@ -128,9 +128,141 @@ class ArrayBufferConversionTest {
       """.trimIndent()
     ).getArray()
 
-    Truth.assertThat(result[0].getBool()).isTrue()
+    Truth.assertThat(result[0].getBool()).isFalse()
     Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(1, 2, 3, 4, 5).inOrder()
     Truth.assertThat(result[2].getArray().map { it.getInt() }).containsExactly(0x42, 0x42).inOrder()
+  }
+
+  @Test
+  fun array_buffer_with_js_bytes_reads_js_backed_array_buffer_without_detaching() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
+        const view = new Uint8Array(buffer);
+        const initialBytes = expo.modules.TestModule.readWithJSBytes(buffer, 4);
+        view[0] = 9;
+        const updatedBytes = expo.modules.TestModule.readWithJSBytes(buffer, 4);
+        [initialBytes, updatedBytes, expo.modules.TestModule.isArrayBufferNativeBacked(buffer)]
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(1, 2, 3, 4).inOrder()
+    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(9, 2, 3, 4).inOrder()
+    Truth.assertThat(result[2].getBool()).isFalse()
+  }
+
+  @Test
+  fun array_buffer_with_js_bytes_reads_js_backed_typed_array_view_range() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4, 5]).buffer;
+        const view = new Uint8Array(buffer, 1, 2);
+        expo.modules.TestModule.readWithJSBytes(view, 2);
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result.map { it.getInt() }).containsExactly(2, 3).inOrder()
+  }
+
+  @Test
+  fun array_buffer_with_mutable_js_bytes_mutates_original_js_backed_array_buffer() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
+        expo.modules.TestModule.fillWithMutableJSBytes(buffer, 7);
+        Array.from(new Uint8Array(buffer));
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result.map { it.getInt() }).containsExactly(7, 7, 7, 7).inOrder()
+  }
+
+  @Test
+  fun array_buffer_with_mutable_js_bytes_mutates_original_js_backed_typed_array_view_range() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4, 5]).buffer;
+        const view = new Uint8Array(buffer, 1, 2);
+        expo.modules.TestModule.fillWithMutableJSBytes(view, 7);
+        Array.from(new Uint8Array(buffer));
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result.map { it.getInt() }).containsExactly(1, 7, 7, 4, 5).inOrder()
+  }
+
+  @Test
+  fun array_buffer_scoped_js_bytes_work_for_native_backed_storage() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = expo.modules.TestModule.createArrayBuffer(3);
+        new Uint8Array(buffer).set([1, 2, 3]);
+        const initialBytes = expo.modules.TestModule.readWithJSBytes(buffer, 3);
+        expo.modules.TestModule.fillWithMutableJSBytes(buffer, 8);
+        [initialBytes, Array.from(new Uint8Array(buffer)), expo.modules.TestModule.isArrayBufferNativeBacked(buffer)];
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(1, 2, 3).inOrder()
+    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(8, 8, 8).inOrder()
+    Truth.assertThat(result[2].getBool()).isTrue()
+  }
+
+  @Test
+  fun array_buffer_unscoped_direct_buffer_access_detaches_js_backed_storage() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
+        const processedBuffer = expo.modules.TestModule.fillArrayBuffer(buffer, 0x42);
+        [Array.from(new Uint8Array(buffer)), Array.from(new Uint8Array(processedBuffer))];
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(1, 2, 3, 4).inOrder()
+    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(0x42, 0x42, 0x42, 0x42).inOrder()
+  }
+
+  @Test
+  fun array_buffer_returning_js_backed_full_buffer_preserves_identity() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
+        expo.modules.TestModule.returnArrayBuffer(buffer) === buffer;
+      """.trimIndent()
+    )
+
+    Truth.assertThat(result.getBool()).isTrue()
+  }
+
+  @Test
+  fun array_buffer_returning_js_backed_typed_array_view_returns_visible_range_buffer() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4, 5]).buffer;
+        const view = new Uint8Array(buffer, 1, 2);
+        const returned = expo.modules.TestModule.returnArrayBuffer(view);
+        [returned === buffer, Array.from(new Uint8Array(returned))];
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result[0].getBool()).isFalse()
+    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(2, 3).inOrder()
   }
 
   @Test
@@ -452,6 +584,28 @@ class ArrayBufferConversionTest {
           put(value.toByte())
         }
       }
+      buffer
+    }
+
+    Function("readWithJSBytes") { buffer: ArrayBuffer, count: Int ->
+      buffer.withJSBytes { scopedBuffer ->
+        scopedBuffer.rewind()
+        List(count.coerceAtMost(scopedBuffer.remaining())) {
+          scopedBuffer.get().toInt() and 0xff
+        }
+      }
+    }
+
+    Function("fillWithMutableJSBytes") { buffer: ArrayBuffer, value: Int ->
+      buffer.withMutableJSBytes { scopedBuffer ->
+        scopedBuffer.rewind()
+        while (scopedBuffer.hasRemaining()) {
+          scopedBuffer.put(value.toByte())
+        }
+      }
+    }
+
+    Function("returnArrayBuffer") { buffer: ArrayBuffer ->
       buffer
     }
 

@@ -5,6 +5,11 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.Exceptions
 import java.nio.ByteBuffer
 
+enum class ArrayBufferJSBytesAccessPolicy {
+  ALLOW_COPY,
+  REQUIRE_ZERO_COPY
+}
+
 /**
  * A Kotlin representation of an ArrayBuffer with native-owned or native-retained storage.
  * Can be created on any thread and safely returned to JavaScript.
@@ -61,6 +66,42 @@ class ArrayBuffer : Destructible {
    * directly from native code without touching JavaScript heap memory.
    */
   external fun isNativeBacked(): Boolean
+
+  /**
+   * Provides scoped access to this buffer's visible bytes.
+   *
+   * The returned [ByteBuffer] is valid only for the duration of [body].
+   */
+  @Throws(Throwable::class)
+  fun <R> withJSBytes(
+    policy: ArrayBufferJSBytesAccessPolicy = ArrayBufferJSBytesAccessPolicy.ALLOW_COPY,
+    body: (ByteBuffer) -> R
+  ): R {
+    @Suppress("UNCHECKED_CAST")
+    return withJSBytes(policy.ordinal, JNIFunctionBody { args ->
+      body(args[0] as ByteBuffer)
+    }) as R
+  }
+
+  @Throws(Throwable::class)
+  private external fun withJSBytes(policy: Int, body: JNIFunctionBody): Any?
+
+  /**
+   * Provides scoped mutable access to this buffer's visible bytes.
+   *
+   * The returned [ByteBuffer] is valid only for the duration of [body]. JavaScript-backed
+   * buffers require real zero-copy access and never fall back to a mutable temporary copy.
+   */
+  @Throws(Throwable::class)
+  fun <R> withMutableJSBytes(body: (ByteBuffer) -> R): R {
+    @Suppress("UNCHECKED_CAST")
+    return withMutableJSBytes(JNIFunctionBody { args ->
+      body(args[0] as ByteBuffer)
+    }) as R
+  }
+
+  @Throws(Throwable::class)
+  private external fun withMutableJSBytes(body: JNIFunctionBody): Any?
 
   /**
    * Creates a native-owned copy of this ArrayBuffer.
