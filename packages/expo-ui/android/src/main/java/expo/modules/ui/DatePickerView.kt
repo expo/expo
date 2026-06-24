@@ -226,6 +226,29 @@ fun rememberSelectableDates(selectableDatesRecord: SelectableDatesRecord?): Sele
   }
 }
 
+// `selectableDates` only greys out unselectable cells; the calendar's actual extent (months list,
+// year grid, range content description) comes from `yearRange`. Derive it from min/max so the
+// picker reflects the constraints instead of always spanning the 1900..2100 default.
+// https://github.com/expo/expo/issues/47206
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun rememberDatePickerYearRange(selectableDatesRecord: SelectableDatesRecord?, initialDateMillis: Long): IntRange {
+  val start = selectableDatesRecord?.start
+  val end = selectableDatesRecord?.end
+  return remember(start, end, initialDateMillis) {
+    val defaults = DatePickerDefaults.YearRange
+    val yearOf = { millis: Long ->
+      Calendar.getInstance().apply { timeInMillis = millis }.get(Calendar.YEAR)
+    }
+    val startYear = start?.let(yearOf) ?: defaults.first
+    val endYear = end?.let(yearOf) ?: defaults.last
+    // Keep the initially selected/displayed year inside the range so Material3 doesn't discard the
+    // selection
+    val initialYear = yearOf(initialDateMillis)
+    minOf(startYear, initialYear)..maxOf(endYear, initialYear)
+  }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun buildDatePickerColors(
@@ -294,14 +317,15 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
   val selectableDates = rememberSelectableDates(props.selectableDates)
   val fallbackDate = remember { Date().time }
   val initialDate = props.initialDate ?: fallbackDate
+  val yearRange = rememberDatePickerYearRange(props.selectableDates, initialDate)
 
-  val state = remember(variant, initialDate, selectableDates) {
+  val state = remember(variant, initialDate, selectableDates, yearRange) {
     DatePickerState(
       initialDisplayMode = variant,
       locale = locale,
       initialSelectedDateMillis = initialDate,
       initialDisplayedMonthMillis = initialDate,
-      yearRange = DatePickerDefaults.YearRange,
+      yearRange = yearRange,
       selectableDates = selectableDates
     )
   }
@@ -399,17 +423,18 @@ fun FunctionalComposableScope.DateTimePickerContent(props: DateTimePickerProps, 
 fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, onDateSelected: (DatePickerResult) -> Unit) {
   val locale = LocalConfiguration.current.locales[0]
   val variant = props.variant.toDisplayMode()
-  val initialDate = props.initialDate
+  val fallbackDate = remember { Date().time }
+  val initialDate = props.initialDate ?: fallbackDate
   val selectableDates = rememberSelectableDates(props.selectableDates)
+  val yearRange = rememberDatePickerYearRange(props.selectableDates, initialDate)
 
-  val state = remember(variant, initialDate, selectableDates) {
-    val fallbackDate = Date().time
+  val state = remember(variant, initialDate, selectableDates, yearRange) {
     DatePickerState(
       initialDisplayMode = variant,
       locale = locale,
-      initialSelectedDateMillis = initialDate ?: fallbackDate,
-      initialDisplayedMonthMillis = initialDate ?: fallbackDate,
-      yearRange = DatePickerDefaults.YearRange,
+      initialSelectedDateMillis = initialDate,
+      initialDisplayedMonthMillis = initialDate,
+      yearRange = yearRange,
       selectableDates = selectableDates
     )
   }
