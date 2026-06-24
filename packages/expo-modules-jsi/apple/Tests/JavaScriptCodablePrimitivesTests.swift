@@ -212,5 +212,10 @@ struct JavaScriptCodablePrimitivesTests {
     #expect(throws: JavaScriptValue.TypeError.self) {
       _ = try Bool.decode(runtime.eval("'true'"), in: runtime)
     }
+    // A wide integer decodes from either a number or a bigint; a value that is neither still throws a
+    // TypeError rather than falling through.
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try Int.decode(runtime.eval("'not a number'"), in: runtime)
+    }
   }
 }
