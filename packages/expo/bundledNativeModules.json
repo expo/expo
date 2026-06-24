@@ -1,4 +1,5 @@
 {
+  "@expo/dom-webview": "~56.0.5",
   "@expo/fingerprint": "~0.19.3",
   "@expo/metro-runtime": "~56.0.13",
   "@expo/vector-icons": "^15.0.2",
