@@ -23,6 +23,7 @@
     "generate-markdown-pages": "node --experimental-strip-types ./scripts/generate-markdown-pages.ts",
     "generate-ui-component-tables": "node --experimental-strip-types ./scripts/generate-ui-component-tables.ts",
     "check-markdown-pages": "node --experimental-strip-types ./scripts/check-markdown-pages.ts",
+    "ja:stamp": "node --experimental-strip-types checks/ja/stamp.ts",
     "generate-static-resources": "node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
     "append-last-modified-dates": "node --unhandled-rejections=strict ./scripts/append-dates.js",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
