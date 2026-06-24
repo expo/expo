@@ -3649,7 +3649,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated (4.4.1):
+  - RNReanimated (4.5.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3677,12 +3677,13 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/apple (= 4.4.1)
-    - RNReanimated/common (= 4.4.1)
+    - RNReanimated/apple (= 4.5.0)
+    - RNReanimated/common (= 4.5.0)
+    - RNReanimated/view (= 4.5.0)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/apple (4.4.1):
+  - RNReanimated/apple (4.5.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3713,7 +3714,38 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/common (4.4.1):
+  - RNReanimated/common (4.5.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-jsitooling
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNWorklets
+    - SocketRocket
+    - Yoga
+  - RNReanimated/view (4.5.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3860,7 +3892,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets (0.9.2):
+  - RNWorklets (0.10.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3888,11 +3920,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/apple (= 0.9.2)
-    - RNWorklets/common (= 0.9.2)
+    - RNWorklets/apple (= 0.10.0)
+    - RNWorklets/common (= 0.10.0)
     - SocketRocket
     - Yoga
-  - RNWorklets/apple (0.9.2):
+  - RNWorklets/apple (0.10.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3922,7 +3954,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets/common (0.9.2):
+  - RNWorklets/common (0.10.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -4293,10 +4325,10 @@ DEPENDENCIES:
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.86.0_@babel+core@7.29.0_@react-native_df9b5bdf4983a534926d94e4f6b171c1/node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.1.0_expo@packages+expo_react-native@0.86.0_@ba_3410ef6ce3d9f843a98f5e317302287f/node_modules/@react-native-community/datetimepicker`)"
   - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.0_@babel+core@7.29.0_@react-nativ_8313629b77c6557c08d7b3ab032d2fe3/node_modules/react-native-gesture-handler`)"
-  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.4.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_a74cc18fafa65e7651a9d50fd7a881ac/node_modules/react-native-reanimated`)"
+  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.0_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_10f144ba956b5a530a45a6878b34a594/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.25.2_react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-p_bc74c8251353228e298a45eaf397fd0f/node_modules/react-native-screens`)"
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-pres_7db2513d16ccc60642452ad7fe65813d/node_modules/react-native-svg`)"
-  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.9.2_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa75012_a381df5e861150bf105798ed8aeeeb09/node_modules/react-native-worklets`)"
+  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.10.0_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_c64e077fa1008b08c55c8a21a8b6024d/node_modules/react-native-worklets`)"
   - SocketRocket (~> 0.7.1)
   - "stripe-react-native (from `../../../node_modules/.pnpm/@stripe+stripe-react-native@0.64.0_expo@packages+expo_react-native-webview@13.16.1_reac_1b651f5d850a77c7df154fb0380a03b9/node_modules/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
@@ -4878,10 +4910,10 @@ SPEC CHECKSUMS:
   RNCPicker: bf95ec4b2483e2ab256047130bc536b437cd916c
   RNDateTimePicker: 73ffdd45f0ce1d00ff981031679a05206e619fdc
   RNGestureHandler: 83e66307c200b98c746bd03113c4403da5c9b486
-  RNReanimated: 3d99ff849347c9edb11f969bb8fff310beb3c6a7
+  RNReanimated: e77ecf371765b9e591cae017f484aacb0a91e2b5
   RNScreens: 9269ab4971b2bd24917be84295d2c2ae7d06e9be
   RNSVG: c6acd5c597d26625214295105756c5e488f5ae4c
-  RNWorklets: 19dee3f5d61e02243db4a2930524a4b5ccab2fdf
+  RNWorklets: c3de83bb2c5c846a8f3bdafccf1b6c4aa38a3829
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
