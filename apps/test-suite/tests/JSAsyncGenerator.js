@@ -336,7 +336,10 @@ export function test({ describe, it, xit, expect }) {
 
       it('for-of with Map', () => {
         var res = [];
-        for (const [k, v] of new Map([['a', 1], ['b', 2]])) {
+        for (const [k, v] of new Map([
+          ['a', 1],
+          ['b', 2],
+        ])) {
           res.push(k + ':' + v);
         }
         expect(res).toEqual(['a:1', 'b:2']);
@@ -419,7 +422,11 @@ export function test({ describe, it, xit, expect }) {
       });
 
       it('for-of with destructuring', () => {
-        const pairs = [[1, 'a'], [2, 'b'], [3, 'c']];
+        const pairs = [
+          [1, 'a'],
+          [2, 'b'],
+          [3, 'c'],
+        ];
         var nums = [];
         var strs = [];
         for (const [n, s] of pairs) {
@@ -597,11 +604,7 @@ export function test({ describe, it, xit, expect }) {
       // From: for-await/async-generator-exec/exec.js
       it('for-await-of with async generator (cumulative sum)', async () => {
         async function* genAnswers() {
-          var stream = [
-            Promise.resolve(4),
-            Promise.resolve(9),
-            Promise.resolve(12),
-          ];
+          var stream = [Promise.resolve(4), Promise.resolve(9), Promise.resolve(12)];
           var total = 0;
           for await (let val of stream) {
             total += await val;
@@ -616,11 +619,7 @@ export function test({ describe, it, xit, expect }) {
       });
 
       it('for-await-of with array of promises', async () => {
-        const promises = [
-          Promise.resolve(1),
-          Promise.resolve(2),
-          Promise.resolve(3),
-        ];
+        const promises = [Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)];
         const results = [];
         for await (const val of promises) {
           results.push(val);
@@ -872,7 +871,11 @@ export function test({ describe, it, xit, expect }) {
             }
           }
         }
-        expect([...gen()]).toEqual([[0, 0], [1, 0], [2, 0]]);
+        expect([...gen()]).toEqual([
+          [0, 0],
+          [1, 0],
+          [2, 0],
+        ]);
       });
 
       it('async generator with for-of inside', async () => {

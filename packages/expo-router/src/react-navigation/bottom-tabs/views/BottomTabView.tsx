@@ -20,11 +20,11 @@ import type {
   BottomTabNavigationOptions,
   BottomTabNavigationProp,
 } from '../types';
-import { BottomTabBar, getTabBarHeight } from './BottomTabBar';
-import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
 import { BottomTabBarHeightCallbackContext } from '../utils/BottomTabBarHeightCallbackContext';
 import { BottomTabBarHeightContext } from '../utils/BottomTabBarHeightContext';
 import { useAnimatedHashMap } from '../utils/useAnimatedHashMap';
+import { BottomTabBar, getTabBarHeight } from './BottomTabBar';
+import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
 
 type Props = BottomTabNavigationConfig & {
   state: TabNavigationState<ParamListBase>;

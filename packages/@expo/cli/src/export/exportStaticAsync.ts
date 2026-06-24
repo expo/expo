@@ -16,10 +16,6 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
 
-import { generateFaviconAssetAsync } from './favicon';
-import { persistMetroAssetsAsync } from './persistMetroAssets';
-import type { ExportAssetMap } from './saveAssets';
-import { getFilesFromSerialAssets } from './saveAssets';
 import { Log } from '../log';
 import type {
   ExpoRouterRuntimeManifest,
@@ -33,6 +29,10 @@ import {
   sortMatchedAssetsByEntryPoints,
 } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
+import { generateFaviconAssetAsync } from './favicon';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
+import type { ExportAssetMap } from './saveAssets';
+import { getFilesFromSerialAssets } from './saveAssets';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 

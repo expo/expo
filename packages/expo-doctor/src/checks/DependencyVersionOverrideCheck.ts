@@ -3,8 +3,8 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { joinWithCommasAnd } from '../utils/strings';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 /**
  * Dependency traversal chains for critical transitive dependencies that should

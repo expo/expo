@@ -825,18 +825,17 @@ public class AudioModule: Module {
   }
 
   private func deactivateSession() {
-    // We need to give isPlaying time to update before running this
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-      guard let self else {
+    Task {
+      // Give isPlaying time to update before deciding whether to deactivate.
+      try? await Task.sleep(for: .milliseconds(100))
+      let hasActivePlayables = registry.allPlayables.contains { $0.isPlaying }
+      guard !hasActivePlayables else {
         return
       }
-      let hasActivePlayables = self.registry.allPlayables.contains { $0.isPlaying }
-      if !hasActivePlayables {
-        do {
-          try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
-        } catch {
-          print("Failed to deactivate audio session: \(error)")
-        }
+      do {
+        try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+      } catch {
+        print("Failed to deactivate audio session: \(error)")
       }
     }
   }

@@ -1,5 +1,5 @@
-import { SHOW_MORE_MESSAGE_LENGTH } from './Constants';
 import type { Message } from '../Data/Types';
+import { SHOW_MORE_MESSAGE_LENGTH } from './Constants';
 
 export default function ShowMoreButton({
   message,

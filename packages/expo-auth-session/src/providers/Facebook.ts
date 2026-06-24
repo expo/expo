@@ -1,8 +1,6 @@
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
 
-import type { ProviderAuthRequestConfig } from './Provider.types';
-import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 import { AuthRequest } from '../AuthRequest';
 import type { AuthRequestConfig, AuthRequestPromptOptions } from '../AuthRequest.types';
 import { ResponseType } from '../AuthRequest.types';
@@ -11,6 +9,8 @@ import { makeRedirectUri } from '../AuthSession';
 import type { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSession.types';
 import type { DiscoveryDocument } from '../Discovery';
 import { generateHexStringAsync } from '../PKCE';
+import type { ProviderAuthRequestConfig } from './Provider.types';
+import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 
 const settings = {
   windowFeatures: { width: 700, height: 600 },

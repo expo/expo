@@ -4,11 +4,11 @@ import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundle
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import path from 'path';
 
-import type { CSSMetadata } from './jsOutput';
-import type { SerialAsset } from './serializerAssets';
 import { pathToHtmlSafeName } from '../transform-worker/css';
 import { toPosixPath } from '../utils/filePath';
 import { hashString } from '../utils/hash';
+import type { CSSMetadata } from './jsOutput';
+import type { SerialAsset } from './serializerAssets';
 
 type Options = {
   processModuleFilter: (modules: Module) => boolean;

@@ -6,7 +6,7 @@ internal import jsi
 /// As opposed to other concrete types (e.g. `JavaScriptObject`, `JavaScriptFunction`),
 /// this one is a reference type so can be safely captured in closures, passed to other isolation context,
 /// and stored in containers that don't support non-copyable types etc.
-public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error {
+public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   internal weak let runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.Value
 

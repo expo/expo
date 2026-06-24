@@ -2,6 +2,15 @@
 
 import React, { use, useCallback, useMemo, useRef } from 'react';
 
+import { withLayoutContext } from '../layouts/withLayoutContext';
+import { getPathFromState } from '../link/linking';
+import type {
+  ParamListBase,
+  TabNavigationState,
+  TabRouterOptions,
+} from '../react-navigation/native';
+import { createNavigatorFactory, useNavigationBuilder } from '../react-navigation/native';
+import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
@@ -14,15 +23,6 @@ import type {
   OnTabChangeEventPayload,
 } from './types';
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
-import { withLayoutContext } from '../layouts/withLayoutContext';
-import { getPathFromState } from '../link/linking';
-import type {
-  ParamListBase,
-  TabNavigationState,
-  TabRouterOptions,
-} from '../react-navigation/native';
-import { createNavigatorFactory, useNavigationBuilder } from '../react-navigation/native';
-import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';

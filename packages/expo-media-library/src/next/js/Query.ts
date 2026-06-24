@@ -1,6 +1,6 @@
-import { Asset, type Album } from './AssetAlbum';
 import { NativeAlbum, NativeQuery } from '../native';
 import type { AssetField, AssetFieldValueMap, AssetMetadata, SortDescriptor } from '../types';
+import { Asset, type Album } from './AssetAlbum';
 
 /**
  * Represents a query to fetch data from the media library.

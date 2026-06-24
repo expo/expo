@@ -4,12 +4,12 @@ import { Readable, Stream } from 'stream';
 import type { ReadableStream } from 'stream/web';
 import { promisify } from 'util';
 
+import { createCachedFetch, fetchAsync } from '../api/rest/client';
+import type { FetchLike, ProgressCallback } from '../api/rest/client.types';
 import { createTempFilePath } from './createTempPath';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { extractAsync } from './tar';
-import { createCachedFetch, fetchAsync } from '../api/rest/client';
-import type { FetchLike, ProgressCallback } from '../api/rest/client.types';
 
 const debug = require('debug')('expo:utils:downloadAppAsync') as typeof console.log;
 

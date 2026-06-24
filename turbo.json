@@ -36,6 +36,12 @@
     "lint": {
       "cache": false
     },
+    "format": {
+      "cache": false,
+      "dependsOn": [
+        "lint"
+      ]
+    },
     "test": {
       "cache": false,
       "outputLogs": "errors-only"

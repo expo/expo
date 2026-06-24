@@ -2,32 +2,33 @@
   "name": "expo-network",
   "version": "56.0.4",
   "description": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
-  "main": "build/Network.js",
-  "types": "build/Network.d.ts",
-  "scripts": {
-    "build": "expo-build src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
-  },
   "keywords": [
-    "react-native",
     "expo",
-    "expo-network"
+    "expo-network",
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/network/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-network"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "main": "build/Network.js",
+  "types": "build/Network.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/network/",
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.2.0",

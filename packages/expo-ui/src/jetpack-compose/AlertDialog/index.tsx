@@ -26,7 +26,7 @@ export type AlertDialogColors = {
   textContentColor?: ColorValue;
 };
 
-export type AlertDialogProps = {
+export interface AlertDialogProps {
   /**
    * Colors for the alert dialog.
    */
@@ -54,7 +54,7 @@ export type AlertDialogProps = {
    * `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, `AlertDialog.Icon`).
    */
   children?: React.ReactNode;
-};
+}
 
 type NativeAlertDialogProps = Omit<AlertDialogProps, 'onDismissRequest'> &
   ViewEvent<'onDismissRequest', { onDismissRequest?: () => void }>;

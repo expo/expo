@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { type NavigatorState } from 'standard-navigation';
 
+import { type NavigationState } from '../react-navigation/core';
 import { getPreloadedRoutes } from './getPreloadedRoutes';
 import { useBuildHref } from './useBuildHref';
-import { type NavigationState } from '../react-navigation/core';
 
 export function useStandardState(builderState: NavigationState): NavigatorState {
   const buildHref = useBuildHref();

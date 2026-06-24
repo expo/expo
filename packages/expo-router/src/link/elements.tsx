@@ -5,15 +5,15 @@ import React, { isValidElement, use, useId, type PropsWithChildren, type ReactNo
 import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { Icon, Label } from '../primitives';
+import { Slot } from '../ui/Slot';
+import { getFirstChildOfType } from '../utils/children';
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
 import { NativeMenuContext } from './NativeMenuContext';
-import { Icon, Label } from '../primitives';
 import { HrefPreview } from './preview/HrefPreview';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import { NativeLinkPreviewAction, NativeLinkPreviewContent } from './preview/native';
-import { Slot } from '../ui/Slot';
 import { LinkAppleZoom } from './zoom/link-apple-zoom';
-import { getFirstChildOfType } from '../utils/children';
 
 export interface LinkMenuActionProps {
   /**
