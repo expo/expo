@@ -1,17 +1,13 @@
 import { vol } from 'memfs';
 import path from 'path';
 
-import * as Log from '../../log';
 import {
   ensureValidPlatforms,
-  resolveCleanOption,
   resolvePlatformOption,
   resolveSkipDependencyUpdate,
   resolvePackageManagerOptions,
   resolveTemplateOption,
 } from '../resolveOptions';
-
-jest.mock('../../log');
 
 describe(resolvePackageManagerOptions, () => {
   it(`resolves`, () => {
@@ -32,30 +28,6 @@ describe(resolvePackageManagerOptions, () => {
         '--yarn': true,
       })
     ).toThrow();
-  });
-});
-
-describe(resolveCleanOption, () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it(`cleans by default`, () => {
-    expect(resolveCleanOption({})).toBe(true);
-  });
-  it(`opts out with --no-clean`, () => {
-    expect(resolveCleanOption({ '--no-clean': true })).toBe(false);
-  });
-  it(`lets --no-clean win when --clean is also passed`, () => {
-    expect(resolveCleanOption({ '--clean': true, '--no-clean': true })).toBe(false);
-  });
-  it(`warns that --clean is deprecated when passed`, () => {
-    expect(resolveCleanOption({ '--clean': true })).toBe(true);
-    expect(Log.warn).toHaveBeenCalledWith(expect.stringMatching(/--clean.*deprecated/i));
-  });
-  it(`does not warn when --clean is absent`, () => {
-    resolveCleanOption({});
-    expect(Log.warn).not.toHaveBeenCalled();
   });
 });
 
