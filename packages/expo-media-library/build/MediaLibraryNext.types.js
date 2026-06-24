@@ -9,4 +9,5 @@ export * from './types/AssetMetadata';
 export * from './types/Location';
 export * from './types/MediaLibraryAssetsChangeEvent';
 export * from './types/Shape';
+export { PermissionStatus, } from 'expo';
 //# sourceMappingURL=MediaLibraryNext.types.js.map
