@@ -1,5 +1,5 @@
-import type { NativeAlbumClass } from './NativeAlbumClass.types';
 import type { AssetInfo, Location, Shape, MediaSubtype, MediaType } from '../../types';
+import type { NativeAlbumClass } from './NativeAlbumClass.types';
 
 export declare class NativeAssetClass {
   constructor(id: string);

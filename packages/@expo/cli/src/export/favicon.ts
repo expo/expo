@@ -4,9 +4,9 @@ import { generateFaviconAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { Log } from '../log';
 import { getUserDefinedFile } from './publicFolder';
 import type { ExportAssetMap } from './saveAssets';
-import { Log } from '../log';
 
 const debug = require('debug')('expo:favicon') as typeof console.log;
 

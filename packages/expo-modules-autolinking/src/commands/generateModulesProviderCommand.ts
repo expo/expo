@@ -1,11 +1,11 @@
 import type commander from 'commander';
 import fs from 'fs';
 
-import type { AutolinkingCommonArguments } from './autolinkingOptions';
-import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 import { findModulesAsync } from '../autolinking/findModules';
 import { generateModulesProviderAsync } from '../autolinking/generatePackageList';
 import { resolveModulesAsync } from '../autolinking/resolveModules';
+import type { AutolinkingCommonArguments } from './autolinkingOptions';
+import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 
 interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   target: string;

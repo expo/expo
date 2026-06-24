@@ -1,6 +1,9 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
+import { stableHash } from '@expo/metro/metro-cache';
+import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import exclusionList from '@expo/metro/metro-config/defaults/exclusionList';
 import type { Graph, Result as GraphResult } from '@expo/metro/metro/DeltaBundler/Graph';
 import type {
   MixedOutput,
@@ -8,9 +11,6 @@ import type {
   ReadOnlyGraph,
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
-import { stableHash } from '@expo/metro/metro-cache';
-import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
-import exclusionList from '@expo/metro/metro-config/defaults/exclusionList';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';

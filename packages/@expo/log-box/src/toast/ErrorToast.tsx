@@ -7,12 +7,12 @@
  */
 import React, { useEffect, useCallback, useMemo } from 'react';
 
-import styles from './ErrorToast.module.css';
 import * as LogBoxData from '../Data/LogBoxData';
 import type { LogBoxLog } from '../Data/LogBoxLog';
 import { useLogs } from '../Data/LogBoxLog';
 import { LogBoxMessage } from '../overlay/Message';
 import { parseUnexpectedThrownValue } from '../utils/parseUnexpectedThrownValue';
+import styles from './ErrorToast.module.css';
 import '../overlay/Overlay.module.css';
 
 export function ErrorToastContainer() {

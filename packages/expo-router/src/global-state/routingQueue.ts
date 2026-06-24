@@ -1,12 +1,12 @@
 import type { RefObject } from 'react';
 
-import { getNavigateAction } from './getNavigationAction';
-import type { LinkToOptions } from './types';
 import type {
   NavigationAction,
   ParamListBase,
   NavigationContainerRef,
 } from '../react-navigation/native';
+import { getNavigateAction } from './getNavigationAction';
+import type { LinkToOptions } from './types';
 
 export interface LinkAction {
   type: 'ROUTER_LINK';

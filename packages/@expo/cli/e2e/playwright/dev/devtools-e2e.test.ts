@@ -47,9 +47,7 @@ test.describe('devtools-e2e', () => {
       .toContain('Banner E2E');
 
     const terminalOutput = stripVTControlCharacters(output.all);
-    const pluginUrl = terminalOutput.match(
-      /(http:\/\/\S+\/_expo\/plugins\/devtools-e2e)/
-    )?.[1];
+    const pluginUrl = terminalOutput.match(/(http:\/\/\S+\/_expo\/plugins\/devtools-e2e)/)?.[1];
 
     expect(pluginUrl).toBeDefined();
     expect(new URL(pluginUrl!).pathname).toBe(pluginPath);

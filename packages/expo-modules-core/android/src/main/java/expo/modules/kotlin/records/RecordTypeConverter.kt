@@ -22,7 +22,7 @@ import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.types.descriptors.toRawTypeDescriptor
 import expo.modules.kotlin.types.descriptors.toTypeDescriptor
 import expo.modules.kotlin.types.descriptors.typeDescriptorOf
-import io.github.lukmccall.pika.PIntrospectionData
+import io.github.expo.pika.PIntrospectionData
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.findAnnotation

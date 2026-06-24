@@ -4,13 +4,13 @@ import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type LabeledContentProps = {
+export interface LabeledContentProps extends CommonViewModifierProps {
   /**
    * The label to be displayed in the labeled content.
    */
   label?: string | React.ReactNode;
   children: React.ReactNode;
-} & CommonViewModifierProps;
+}
 
 const LabeledContentNativeView: React.ComponentType<LabeledContentProps> = requireNativeView(
   'ExpoUI',

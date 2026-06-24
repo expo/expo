@@ -2,10 +2,10 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import React, { useCallback, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 
-import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
-import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
+import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
+import { styles } from './videoStyles';
 
 export default function VideoNowPlayingScreen() {
   const [showNowPlaying, setShowNowPlaying] = useState(true);

@@ -616,12 +616,15 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   /// Returns the app context that prepared the given runtime, or `nil` if no app context did
   /// (its `global.expo` object carries no `NativeState`). Lets code that only has a runtime
-  /// recover the app context without capturing a reference to it.
+  /// recover the app context without capturing a reference to it, e.g. a `JavaScriptCodable`
+  /// witness that has the runtime but not the context.
   @JavaScriptActor
-  internal static func from(runtime: JavaScriptRuntime) -> AppContext? {
+  public static func from(runtime: borrowing JavaScriptRuntime) -> AppContext? {
     // Recovery may happen on every conversion, so look the core object up through a cached
     // prop name id to avoid re-interning the "expo" string into JSI on each call.
-    let coreObjectPropName = JavaScriptPropNameID.cached(runtime, globalCoreObjectPropertyName)
+    // TODO: drop the `copy` once `JavaScriptPropNameID.cached` borrows its runtime instead of
+    // taking it owned — it only reads the runtime, so the owned convention forces a needless retain.
+    let coreObjectPropName = JavaScriptPropNameID.cached(copy runtime, globalCoreObjectPropertyName)
     guard let coreObject = try? runtime.global().getPropertyAsObject(coreObjectPropName) else {
       return nil
     }

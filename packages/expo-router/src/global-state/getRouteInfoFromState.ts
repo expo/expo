@@ -1,7 +1,7 @@
-import type { FocusedRouteState } from './types';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import type { NavigationState, PartialState } from '../react-navigation/native';
+import type { FocusedRouteState } from './types';
 
 export type UrlObject = {
   unstable_globalHref: string;

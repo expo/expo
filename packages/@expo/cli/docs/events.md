@@ -18,13 +18,19 @@ Create a typed event logger with `events(category, typeDefinition)`:
 import { events } from '../events';
 
 export const event = events('my_module', (t) => [
-  t.event<'something_started', {
-    platform: string;
-  }>(),
-  t.event<'something_finished', {
-    platform: string;
-    duration: number;
-  }>(),
+  t.event<
+    'something_started',
+    {
+      platform: string;
+    }
+  >(),
+  t.event<
+    'something_finished',
+    {
+      platform: string;
+      duration: number;
+    }
+  >(),
 ]);
 ```
 
@@ -39,7 +45,7 @@ event('something_started', { platform: 'ios' });
 
 // event names and payloads are type-checked:
 event('something_started', { wrong: true }); // TS error
-event('nonexistent', {});                     // TS error
+event('nonexistent', {}); // TS error
 ```
 
 When the logger is inactive (`LOG_EVENTS` not set), `event()` is a no-op.
@@ -60,10 +66,12 @@ After creating a new event logger, add it to `src/events/types.ts` to collect al
 ```ts
 import type { event as myModuleEvent } from '../path/to/module';
 
-export type Events = collectEventLoggers<[
-  // ... existing entries
-  typeof myModuleEvent,
-]>;
+export type Events = collectEventLoggers<
+  [
+    // ... existing entries
+    typeof myModuleEvent,
+  ]
+>;
 ```
 
 ## Output format
@@ -80,9 +88,9 @@ Each event is a single JSON line:
 
 ## Files
 
-| File | Role |
-|---|---|
-| `index.ts` | Public API: `events()` factory, `installEventLogger()`, `isEventLoggerActive()`, `shouldReduceLogs()` |
-| `stream.ts` | `LogStream` write stream and `writeEvent()` serializer |
-| `builder.ts` | TypeScript type definitions for the `events()` factory |
-| `types.ts` | Central registry of all event logger types |
+| File         | Role                                                                                                  |
+| ------------ | ----------------------------------------------------------------------------------------------------- |
+| `index.ts`   | Public API: `events()` factory, `installEventLogger()`, `isEventLoggerActive()`, `shouldReduceLogs()` |
+| `stream.ts`  | `LogStream` write stream and `writeEvent()` serializer                                                |
+| `builder.ts` | TypeScript type definitions for the `events()` factory                                                |
+| `types.ts`   | Central registry of all event logger types                                                            |

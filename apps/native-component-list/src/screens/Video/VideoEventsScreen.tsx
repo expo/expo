@@ -3,12 +3,12 @@ import { useVideoPlayer, VideoTrack, VideoView, SubtitleTrack } from 'expo-video
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 
-import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
-import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import ConsoleBox from '../../components/ConsoleBox';
 import { E2EKeyValueBox } from '../../components/E2EKeyValueBox';
 import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
+import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
+import { styles } from './videoStyles';
 
 const originalSource = bigBuckBunnySource;
 const replacementSource = elephantsDreamSource;

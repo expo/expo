@@ -1,76 +1,8 @@
-import fs from 'node:fs';
+import { loadModule } from '@expo/require-utils';
 import type { IncomingMessage } from 'node:http';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { type WebSocket, WebSocketServer } from 'ws';
 
-import * as Log from '../../log';
-import { isPathInside } from '../../utils/dir';
-
-const importEsm = require('@expo/cli/add-module') as <T>(moduleName: string) => Promise<T>; 
-
-const maybeRealpath = (target: string): string => {
-  try {
-    return fs.realpathSync(target);
-  } catch {
-    return target;
-  }
-};
-
-/**
- * Determines whether a server entry point should be loaded as an ES module. `.mjs` is always ESM
- * and `.cjs` is always CommonJS; for `.js` we read the nearest `package.json` between the entry
- * point directory and plugin package root, treating `"type": "module"` as ESM and everything else
- * as CommonJS.
- */
-export const isEsmEntryPoint = (entryPoint: string, packageRoot: string): boolean => {
-  const ext = path.extname(entryPoint).toLowerCase();
-  if (ext === '.mjs') {
-    return true;
-  }
-  if (ext === '.cjs') {
-    return false;
-  }
-  return nearestPackageType(entryPoint, packageRoot) === 'module';
-};
-
-/**
- * Reads the `type` field of the nearest `package.json` between the entry point's directory and the
- * plugin package root. Defaults to CommonJS when no package manifest in that range can be read.
- */
-const nearestPackageType = (entryPoint: string, packageRoot: string): 'module' | 'commonjs' => {
-  const root = maybeRealpath(packageRoot);
-  const cwd = path.dirname(entryPoint);
-
-  for (let dir = cwd; dir === root || isPathInside(dir, root); dir = path.dirname(dir)) {
-    try {
-      const pkg = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
-      return pkg.type === 'module' ? 'module' : 'commonjs';
-    } catch {
-      // Keep walking toward packageRoot until a readable package.json is found.
-    }
-
-    if (path.dirname(dir) === dir) {
-      break;
-    }
-  }
-
-  Log.warn(
-    `Unable to load package.json for DevTools plugin server entry point ${entryPoint}, loading as CommonJS.`
-  );
-  return 'commonjs';
-};
-
-export const loadServerModuleAsync = async (
-  entryPoint: string,
-  packageRoot: string
-): Promise<any> => {
-  const realPath = maybeRealpath(entryPoint);
-  if (isEsmEntryPoint(realPath, packageRoot)) {
-    return await importEsm(pathToFileURL(realPath).href);
-  }
-  return require(realPath);
-};
+const debug = require('debug')('expo:start:server:devtools') as typeof console.log;
 
 /**
  * Handler default-exported by a plugin's `serverEntryPoint`. Receives a fetch API `Request`
@@ -95,14 +27,15 @@ export type DevToolsPluginWebSocketHandler = (
 
 export async function loadRequestHandlerAsync({
   packageName,
-  packageRoot,
   serverEntryPoint,
 }: {
   packageName: string;
-  packageRoot: string;
   serverEntryPoint: string;
 }): Promise<DevToolsPluginRequestHandler> {
-  const serverModule = await loadServerModuleAsync(serverEntryPoint, packageRoot);
+  debug('Loading DevTools plugin server module: %s', serverEntryPoint);
+  const serverModule = (await loadModule(serverEntryPoint)) as
+    | DevToolsPluginRequestHandler
+    | { default?: DevToolsPluginRequestHandler };
   const handler = typeof serverModule === 'function' ? serverModule : serverModule?.default;
   if (typeof handler !== 'function') {
     throw new Error(
@@ -117,14 +50,15 @@ export async function loadRequestHandlerAsync({
 
 export async function loadWebSocketServerAsync({
   packageName,
-  packageRoot,
   serverEntryPoint,
 }: {
   packageName: string;
-  packageRoot: string;
   serverEntryPoint: string;
 }): Promise<Record<string, WebSocketServer>> {
-  const serverModule = await loadServerModuleAsync(serverEntryPoint, packageRoot);
+  debug('Loading DevTools plugin WebSocket server module: %s', serverEntryPoint);
+  const serverModule = (await loadModule(serverEntryPoint)) as {
+    webSocketHandlers?: Record<string, DevToolsPluginWebSocketHandler>;
+  };
   const handlers: Record<string, DevToolsPluginWebSocketHandler> =
     serverModule?.webSocketHandlers ?? {};
 

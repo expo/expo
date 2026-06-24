@@ -2,6 +2,10 @@ import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import { getLogFile, shouldReduceLogs } from '../events';
+import * as Log from '../log';
+import { env } from '../utils/env';
+import { isInteractive } from '../utils/interactive';
+import { profile } from '../utils/profile';
 import {
   checkDependencies,
   printDependencyCheckResult,
@@ -14,18 +18,14 @@ import { printDevToolsPluginCliBannersAsync } from './interface/interactiveActio
 import { startInterfaceAsync } from './interface/startInterface';
 import type { Options } from './resolveOptions';
 import { resolvePortsAsync } from './resolveOptions';
-import * as Log from '../log';
 import type { BundlerStartOptions } from './server/BundlerDevServer';
 import type { MultiBundlerStartOptions } from './server/DevServerManager';
 import { DevServerManager } from './server/DevServerManager';
 import { maybeCreateMCPServerAsync } from './server/MCP';
+import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
 import { openPlatformsAsync } from './server/openPlatforms';
 import type { PlatformBundlers } from './server/platformBundlers';
 import { getPlatformBundlers } from './server/platformBundlers';
-import { env } from '../utils/env';
-import { isInteractive } from '../utils/interactive';
-import { profile } from '../utils/profile';
-import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,

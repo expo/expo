@@ -19,12 +19,6 @@ import {
   SafeAreaProviderCompat,
   useFrameSize,
 } from '../../elements';
-import type {
-  NativeStackDescriptor,
-  NativeStackDescriptorMap,
-  NativeStackNavigationHelpers,
-} from '../types';
-import { useHeaderConfigProps } from './useHeaderConfigProps';
 import {
   NavigationProvider,
   type ParamListBase,
@@ -34,11 +28,17 @@ import {
   usePreventRemoveContext,
   useTheme,
 } from '../../native';
+import type {
+  NativeStackDescriptor,
+  NativeStackDescriptorMap,
+  NativeStackNavigationHelpers,
+} from '../types';
 import { debounce } from '../utils/debounce';
 import { getModalRouteKeys } from '../utils/getModalRoutesKeys';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 import { useDismissedRouteError } from '../utils/useDismissedRouteError';
 import { useInvalidPreventRemoveError } from '../utils/useInvalidPreventRemoveError';
+import { useHeaderConfigProps } from './useHeaderConfigProps';
 
 const ANDROID_DEFAULT_HEADER_HEIGHT = 56;
 

@@ -3,9 +3,9 @@ import { useVideoPlayer, VideoPlayer, VideoView } from 'expo-video';
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
 
+import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
 import { bigBuckBunnySource } from './videoSources';
 import { styles } from './videoStyles';
-import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
 
 function ProblematicOverlap({
   player1,

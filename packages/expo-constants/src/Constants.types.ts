@@ -1,4 +1,3 @@
-import type { ExpoConfig } from 'expo/config';
 import type {
   EASConfig as ManifestsEASConfig,
   ExpoGoConfig as ManifestsExpoGoConfig,
@@ -10,6 +9,7 @@ import type {
   ExpoGoPackagerOpts as ExpoGoPackagerOptsForReExport,
   // @ts-ignore -- optional interface, will gracefully degrade to `any` not installed
 } from 'expo-manifests';
+import type { ExpoConfig } from 'expo/config';
 
 export enum AppOwnership {
   /**

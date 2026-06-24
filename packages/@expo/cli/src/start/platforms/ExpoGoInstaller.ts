@@ -1,6 +1,5 @@
 import semver from 'semver';
 
-import type { DeviceManager } from './DeviceManager';
 import { getVersionsAsync } from '../../api/getVersions';
 import * as Log from '../../log';
 import { downloadExpoGoAsync } from '../../utils/downloadExpoGoAsync';
@@ -10,6 +9,7 @@ import { isInteractive } from '../../utils/interactive';
 import { learnMore } from '../../utils/link';
 import { logNewSection } from '../../utils/ora';
 import { confirmAsync } from '../../utils/prompts';
+import type { DeviceManager } from './DeviceManager';
 
 const debug = require('debug')('expo:utils:ExpoGoInstaller') as typeof console.log;
 
