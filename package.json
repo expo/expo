@@ -13,6 +13,7 @@
     "typecheck": "turbo typecheck",
     "depscheck": "turbo depscheck",
     "lint": "turbo lint",
+    "format": "turbo format",
     "test": "turbo test",
     "prepare": "turbo build"
   },
