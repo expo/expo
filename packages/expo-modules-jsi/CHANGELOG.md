@@ -4,12 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] `JavaScriptError` is now a copyable class conforming to `Error` (was a non-copyable struct), and `JavaScriptValue` no longer conforms to `Error`. ([#47154](https://github.com/expo/expo/pull/47154) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- [iOS] `JavaScriptError` can now wrap and throw an arbitrary JS value (not only an `Error` instance) via `init(_:value:)`, preserving the thrown value's identity when it reaches JavaScript. ([#47154](https://github.com/expo/expo/pull/47154) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add `createFunction`/`setProperty` overloads taking a `UnownedThisSyncFunctionClosure`, which receives `this` as a borrowed `JavaScriptUnownedValue` instead of an owning `JavaScriptValue`. Used by host functions that ignore `this` to skip the per-call owning-value allocation and its `weak`-runtime traffic. ([#46949](https://github.com/expo/expo/pull/46949) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Conform `JavaScriptRuntime` to `Identifiable` with an `id` based on the underlying runtime, equal across multiple wrappers of the same runtime. ([#47068](https://github.com/expo/expo/pull/47068) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
+
+- [iOS] Awaiting a `JavaScriptPromise` that is rejected after the await begins now throws instead of resuming with the rejection value as if fulfilled. ([#47154](https://github.com/expo/expo/pull/47154) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

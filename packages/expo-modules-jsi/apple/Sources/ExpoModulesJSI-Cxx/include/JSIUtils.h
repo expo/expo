@@ -86,6 +86,10 @@ inline const jsi::Value valueFromError(jsi::IRuntime &runtime, const jsi::JSErro
   return jsi::Value(runtime, error.value());
 }
 
+inline jsi::JSError errorFromValue(jsi::IRuntime &runtime, jsi::Value value) {
+  return jsi::JSError(runtime, std::move(value));
+}
+
 inline std::shared_ptr<const jsi::Buffer> makeSharedStringBuffer(const std::string &source) noexcept {
   return std::make_shared<jsi::StringBuffer>(source);
 }
