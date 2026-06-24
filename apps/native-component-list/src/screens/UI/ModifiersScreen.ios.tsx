@@ -42,6 +42,7 @@ import {
   accessibilityIdentifier,
   accessibilityHidden,
   accessibilityInputLabels,
+  accessibilityElement,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -721,6 +722,12 @@ export default function ModifiersScreen() {
                 ]}>
                 End
               </Text>
+            </HStack>
+
+            {/* accessibilityElement: combine children into one VoiceOver element */}
+            <HStack spacing={6} modifiers={[accessibilityElement('combine')]}>
+              <Image systemName="star.fill" size={17} />
+              <Text>4.8 out of 5 stars</Text>
             </HStack>
 
             <Text
