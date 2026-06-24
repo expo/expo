@@ -422,21 +422,28 @@ func decodeInteger<T: FixedWidthInteger>(_ number: Double, as type: T.Type) thro
   return result
 }
 
-/// Decodes a 64-bit-wide integer that may arrive as either a JS `number` or a JS `bigint`. A `bigint`
-/// is read losslessly through its 64-bit accessor; anything else falls back to the `Double` path so a
-/// plain number still decodes (and rounds) exactly as the narrow integer types do.
+/// Decodes a 64-bit-wide integer that may arrive as either a JS `number` or a JS `bigint`. The `number`
+/// case is checked first since it's the common one: a single `isNumber()` tag check, then the
+/// assert-only `getDouble()` reads the value without re-checking the tag. A `bigint` is read losslessly
+/// through its 64-bit accessor; anything else throws the same `TypeError` the `number` read would.
 @usableFromInline
 @JavaScriptActor
 func decodeWideInteger<T: FixedWidthInteger>(_ value: borrowing JavaScriptValue, as type: T.Type) throws -> T {
-  guard value.isBigInt() else {
-    return try decodeInteger(value.asDouble(), as: T.self)
+  guard value.isNumber() else {
+    guard value.isBigInt() else {
+      // Neither a number nor a bigint: `asDouble()` throws the canonical `TypeError`. Throwing it
+      // through the accessor (rather than constructing it here) keeps this inlinable helper from
+      // referencing `TypeError`'s internal memberwise initializer.
+      return try decodeInteger(value.asDouble(), as: T.self)
+    }
+    return try decodeBigInt(value.getBigInt(), as: T.self)
   }
-  return try decodeBigInt(value.getBigInt(), as: T.self)
+  return try decodeInteger(value.getDouble(), as: T.self)
 }
 
-/// `JavaScriptUnownedValue` overload of `decodeWideInteger`. The common `number` path stays zero-copy;
-/// only a `bigint` materializes an owning value (the borrowed value exposes no BigInt accessor), which
-/// is acceptable on this rare branch.
+/// `JavaScriptUnownedValue` overload of `decodeWideInteger`. The common `number` path stays zero-copy
+/// and pays a single tag check (see the owning overload); only a `bigint` materializes an owning value
+/// (the borrowed value exposes no BigInt accessor), which is acceptable on this rare branch.
 @usableFromInline
 @JavaScriptActor
 func decodeWideInteger<T: FixedWidthInteger>(
@@ -444,10 +451,15 @@ func decodeWideInteger<T: FixedWidthInteger>(
   as type: T.Type,
   runtime: borrowing JavaScriptRuntime
 ) throws -> T {
-  guard value.isBigInt() else {
-    return try decodeInteger(value.asDouble(), as: T.self)
+  guard value.isNumber() else {
+    guard value.isBigInt() else {
+      // See the owning overload: route the not-a-number throw through `asDouble()` rather than
+      // constructing `TypeError` here, which this inlinable helper can't reference.
+      return try decodeInteger(value.asDouble(), as: T.self)
+    }
+    return try decodeBigInt(value.copied(in: copy runtime).getBigInt(), as: T.self)
   }
-  return try decodeBigInt(value.copied(in: copy runtime).getBigInt(), as: T.self)
+  return try decodeInteger(value.getDouble(), as: T.self)
 }
 
 /// Narrows a `JavaScriptBigInt` to `T`, reading it through the signed or unsigned 64-bit accessor to
