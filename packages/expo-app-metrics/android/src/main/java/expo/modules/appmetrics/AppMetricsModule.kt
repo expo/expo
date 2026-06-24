@@ -5,6 +5,12 @@ import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.jserrors.ErrorReport
 import expo.modules.appmetrics.jserrors.PendingErrorStore
 import expo.modules.appmetrics.jserrors.toLogRecord
+import expo.modules.appmetrics.crashreporting.CrashFileReader
+import expo.modules.appmetrics.crashreporting.CrashReportProcessor
+import expo.modules.appmetrics.crashreporting.ExitInfoProviderImpl
+import expo.modules.appmetrics.crashreporting.JvmCrashHandler
+import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
+import expo.modules.appmetrics.crashreporting.attributeAndStoreCrashReport
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
@@ -133,6 +139,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           runtime = appContext.runtime
         )
 
+        JvmCrashHandler.currentSessionId = mainSession.sessionId
+
         // Persist the session row eagerly so it's visible to readers
         // (`getMainSession`, …) as soon as possible. Idempotent:
         // a racing write triggers (and joins) the same single start job.
@@ -143,6 +151,27 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // survives while older ones are swept — order vs the INSERT doesn't
         // matter. Relies on `<`, not `<=` (see SessionManagerTest).
         scope.launch { sessionManager.deactivateAllSessionsBefore(appSessionStartTimestamp) }
+
+        // Turn the previous process's death evidence (pending JVM crash files,
+        // OS exit records) into stored crash reports.
+        // The processor builds the reports; `attributeAndStoreCrashReport` owns
+        // the session attribution and storage.
+        scope.launch {
+          CrashReportProcessor(
+            crashFileReader = CrashFileReader.forContext(context),
+            exitInfoProvider = ExitInfoProviderImpl(context),
+            lastProcessedExitStore = PreferencesLastProcessedExitStore(context),
+            appVersion = metadata?.appVersion
+          ) { sessionId, origin, report ->
+            attributeAndStoreCrashReport(
+              sessionManager = sessionManager,
+              currentSessionId = mainSession.sessionId,
+              sessionId = sessionId,
+              origin = origin,
+              report = report
+            )
+          }.process()
+        }
 
         memoryMetricsManager = MemoryMetricsManager(
           context = context,
@@ -188,12 +217,28 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         runBlocking {
           mainSession.stop()
         }
+        // The session has ended; stop stamping it onto crashes. A crash after
+        // this is captured as an orphan rather than misattributed
+        if (JvmCrashHandler.currentSessionId == mainSession.sessionId) {
+          JvmCrashHandler.currentSessionId = null
+        }
       }
 
       // Debug-only: surfaces the inactive (ended) sessions for on-device
       // inspection (e.g. the ObserveTester app)
       AsyncFunction("getInactiveSessions") Coroutine { ->
-        sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithMetrics(it) }
+        sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithChildren(it) }
+      }
+
+      // Every stored crash report, newest first — attributed reports plus
+      // orphans (startup crashes before the session existed, or native crashes
+      // that couldn't be attributed). Orphans carry a null session id.
+      AsyncFunction("getAllCrashReports") Coroutine { ->
+        sessionManager.getAllCrashReports().mapNotNull { entity ->
+          // `sessionId` lives on the DB row, not in the payload — merge it in so
+          // callers can spot orphans (null session id).
+          JsonAny.decodeJsonStringToMap(entity.payload)?.plus("sessionId" to entity.sessionId)
+        }
       }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->

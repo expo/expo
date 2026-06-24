@@ -227,6 +227,14 @@ export class FileSystemFile {
     return '';
   }
 
+  canPreview(): Promise<boolean> {
+    return Promise.resolve(this.exists);
+  }
+
+  preview(): Promise<void> {
+    return this.exists ? Promise.resolve() : Promise.reject(new Error('File does not exist'));
+  }
+
   create(options: { intermediates?: boolean; overwrite?: boolean } = {}): void {
     const key = normalizeKey(this.uri);
     const existing = store.get(key);

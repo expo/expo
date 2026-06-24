@@ -26,6 +26,8 @@
   },
   "resolutions": {
     "react-native": "0.86.0",
+    "react-native-reanimated": "4.5.0",
+    "react-native-worklets": "0.10.0",
     "@types/babel__core": "^7.20.5",
     "@types/babel__code-frame": "^7.27.0",
     "@types/babel__generator": "^7.27.0",
@@ -40,8 +42,9 @@
     "jsc-android": "^250231.0.0",
     "prettier": "~3.8.3"
   },
-  "volta": {
-    "node": "22.14.0"
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0",
+    "pnpm": "^10.33.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

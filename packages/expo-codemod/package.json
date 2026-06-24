@@ -36,7 +36,7 @@
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "engines": {
-    "node": ">=18"
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
   },
   "dependencies": {
     "chalk": "^4.1.2",

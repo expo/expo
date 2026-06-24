@@ -46,6 +46,51 @@ describe('basic write operations', () => {
     expect(await fs.promises.readFile(destFile, 'utf8')).toBe('hello world\n');
   });
 
+  it('flushes an in-flight write before destroying', async () => {
+    const realWrite = fs.write.bind(fs);
+    const spy = jest.spyOn(fs, 'write').mockImplementation((...args: any[]) => {
+      setTimeout(() => (realWrite as any)(...args), 50);
+    });
+
+    try {
+      const stream = new LogStream(destFD);
+      const _close = new Promise((resolve) => stream.on('close', resolve));
+
+      stream.write('hello world\n');
+      stream.destroy();
+
+      await _close;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(await fs.promises.readFile(destFile, 'utf8')).toBe('hello world\n');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('drops queued lines when destroying mid-write', async () => {
+    const realWrite = fs.write.bind(fs);
+    const spy = jest.spyOn(fs, 'write').mockImplementation((...args: any[]) => {
+      setTimeout(() => (realWrite as any)(...args), 50);
+    });
+
+    try {
+      const stream = new LogStream(destFD);
+      const _close = new Promise((resolve) => stream.on('close', resolve));
+
+      // The first write goes in-flight; the rest queue behind it under backpressure.
+      stream.write('first\n');
+      stream.write('second\n');
+      stream.write('third\n');
+      stream.destroy();
+
+      await _close;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(await fs.promises.readFile(destFile, 'utf8')).toBe('first\n');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
   it('writes twice then ends a stream', async () => {
     const stream = new LogStream(destFD);
     const _close = new Promise((resolve) => stream.on('close', resolve));

@@ -436,11 +436,11 @@ class CameraViewModule : Module() {
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
         if (!EmulatorUtilities.isRunningOnEmulator()) {
-          view.takePicture(options, promise, cacheDirectory, runtimeContext)
+          view.takePicture(options, promise, cacheDirectory, runtime)
         } else {
           val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
           moduleScope.launch {
-            ResolveTakenPicture(image, promise, options, false, runtimeContext, cacheDirectory) { response ->
+            ResolveTakenPicture(image, promise, options, false, runtime, cacheDirectory) { response ->
               view.onPictureSaved(response)
             }.resolve()
           }

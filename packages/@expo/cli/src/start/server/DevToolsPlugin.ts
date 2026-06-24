@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import type { WebSocketServer } from 'ws';
 
 import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
@@ -10,15 +9,7 @@ import {
   loadRequestHandlerAsync,
   loadWebSocketServerAsync,
 } from './DevToolsPluginServerHelpers';
-import { isPathInside } from '../../utils/dir';
-
-const maybeRealpath = (target: string): string => {
-  try {
-    return fs.realpathSync(target);
-  } catch {
-    return target;
-  }
-};
+import { isPathInside, maybeRealpathSync } from '../../utils/dir';
 
 export type { DevToolsPluginRequestHandler } from './DevToolsPluginServerHelpers';
 
@@ -46,7 +37,7 @@ export class DevToolsPlugin {
     }
 
     if (plugin.webpageRoot != null) {
-      const webpageRoot = maybeRealpath(plugin.webpageRoot);
+      const webpageRoot = maybeRealpathSync(plugin.webpageRoot) ?? plugin.webpageRoot;
       if (!isPathInside(webpageRoot, plugin.packageRoot)) {
         throw new Error(
           `webpageRoot (${plugin.webpageRoot}) is not inside packageRoot (${plugin.packageRoot}).`
@@ -55,7 +46,8 @@ export class DevToolsPlugin {
     }
 
     if (plugin.serverEntryPoint != null) {
-      const serverEntryPoint = maybeRealpath(plugin.serverEntryPoint);
+      const serverEntryPoint =
+        maybeRealpathSync(plugin.serverEntryPoint) ?? plugin.serverEntryPoint;
       if (!isPathInside(serverEntryPoint, plugin.packageRoot)) {
         throw new Error(
           `serverEntryPoint (${plugin.serverEntryPoint}) is not inside packageRoot (${plugin.packageRoot}).`
@@ -103,7 +95,6 @@ export class DevToolsPlugin {
     if (!this._requestHandler) {
       this._requestHandler = await loadRequestHandlerAsync({
         packageName: this.plugin.packageName,
-        packageRoot: this.plugin.packageRoot,
         serverEntryPoint: this.plugin.serverEntryPoint,
       });
     }
@@ -127,7 +118,6 @@ export class DevToolsPlugin {
     if (!this._webSocketServers) {
       this._webSocketServers = await loadWebSocketServerAsync({
         packageName: this.plugin.packageName,
-        packageRoot: this.plugin.packageRoot,
         serverEntryPoint: this.plugin.serverEntryPoint,
       });
     }

@@ -8,12 +8,6 @@ import android.util.Log
 
 private val TAG = NetworkModule::class.java.simpleName
 
-internal fun frontPadWithZeros(inputArray: ByteArray): ByteArray {
-  val newByteArray = byteArrayOf(0, 0, 0, 0)
-  System.arraycopy(inputArray, 0, newByteArray, 4 - inputArray.size, inputArray.size)
-  return newByteArray
-}
-
 /**
  * Returns whether the device can reach the Internet.
  * Checks that the active network has both the INTERNET and VALIDATED

@@ -21,6 +21,8 @@ object TimeUtils {
   // Cannot use Instant.now() as it's only available in API 26+
   fun getCurrentTimestampInISOFormat(): String = dateToTimestamp(Date())
 
+  fun millisToTimestamp(millis: Long): String = dateToTimestamp(Date(millis))
+
   fun getTimestampInISOFormatFromPast(secondsFromNow: Long): String =
     dateToTimestamp(
       Date(System.currentTimeMillis() - secondsFromNow * 1000)
