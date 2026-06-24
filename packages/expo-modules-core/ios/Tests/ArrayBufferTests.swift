@@ -164,10 +164,12 @@ struct ArrayBufferTests {
 
     @Test
     func `ArrayBuffer argument accepts full typed arrays`() throws {
-      let result = try runtime.eval([
-        "typedArray = new Uint8Array([42, 84])",
-        "expo.modules.ArrayBufferTests.readBytesAsArray(typedArray, 2)",
-      ]).asArray()
+      let result = try runtime.eval(
+        """
+        typedArray = new Uint8Array([42, 84])
+        expo.modules.ArrayBufferTests.readBytesAsArray(typedArray, 2)
+        """
+      ).asArray()
 
       #expect(try result.getValue(at: 0).asInt() == 42)
       #expect(try result.getValue(at: 1).asInt() == 84)
@@ -175,11 +177,13 @@ struct ArrayBufferTests {
 
     @Test
     func `JavaScriptArrayBuffer accepts partial typed array view`() throws {
-      let result = try runtime.eval([
-        "arrayBuffer = new Uint8Array([1,2,3,4,5]).buffer",
-        "view = new Uint8Array(arrayBuffer, 1, 2)",
-        "expo.modules.ArrayBufferTests.readBytesAsArray(view, 2)",
-      ]).asArray()
+      let result = try runtime.eval(
+        """
+        arrayBuffer = new Uint8Array([1,2,3,4,5]).buffer
+        view = new Uint8Array(arrayBuffer, 1, 2)
+        expo.modules.ArrayBufferTests.readBytesAsArray(view, 2)
+        """
+      ).asArray()
 
       #expect(try result.getValue(at: 0).asInt() == 2)
       #expect(try result.getValue(at: 1).asInt() == 3)
@@ -187,10 +191,12 @@ struct ArrayBufferTests {
 
     @Test
     func `NativeArrayBuffer accepts partial typed array view`() throws {
-      let result = try runtime.eval([
-        "view = new Uint8Array(new Uint8Array([1,2,3,4,5]).buffer, 1, 2)",
-        "expo.modules.ArrayBufferTests.readNativeBufferBytesAsArray(view, 2)",
-      ]).asArray()
+      let result = try runtime.eval(
+        """
+        view = new Uint8Array(new Uint8Array([1,2,3,4,5]).buffer, 1, 2)
+        expo.modules.ArrayBufferTests.readNativeBufferBytesAsArray(view, 2)
+        """
+      ).asArray()
 
       #expect(try result.getValue(at: 0).asInt() == 2)
       #expect(try result.getValue(at: 1).asInt() == 3)
@@ -206,13 +212,15 @@ struct ArrayBufferTests {
     @Test
     func `reads and writes through JavaScript`() throws {
       // Create buffer and write data through JavaScript
-      let buffer = try runtime.eval([
-        "buffer = expo.modules.ArrayBufferTests.createNative(10)",
-        "view = new Uint8Array(buffer)",
-        "view[0] = 42",
-        "view[1] = 84",
-        "buffer",
-      ]).asArrayBuffer()
+      let buffer = try runtime.eval(
+        """
+        buffer = expo.modules.ArrayBufferTests.createNative(10)
+        view = new Uint8Array(buffer)
+        view[0] = 42
+        view[1] = 84
+        buffer
+        """
+      ).asArrayBuffer()
 
       // Read back the data we wrote
       let result = try runtime.eval("expo.modules.ArrayBufferTests.readBytesAsArray(buffer, 2)").asArray()
@@ -225,17 +233,21 @@ struct ArrayBufferTests {
     @Test
     func `maintains data consistency between native and JS`() throws {
       // Create buffer and fill with pattern from native
-      let buffer = try runtime.eval([
-        "buffer = expo.modules.ArrayBufferTests.createNative(5)",
-        "expo.modules.ArrayBufferTests.fillWithPattern(buffer, 170)",  // 10101010 in binary
-        "buffer",
-      ]).asArrayBuffer()
+      let buffer = try runtime.eval(
+        """
+        buffer = expo.modules.ArrayBufferTests.createNative(5)
+        expo.modules.ArrayBufferTests.fillWithPattern(buffer, 170)
+        buffer
+        """
+      ).asArrayBuffer()
 
       // Read back through JavaScript
-      let values = try runtime.eval([
-        "view = new Uint8Array(buffer)",
-        "Array.from(view)",
-      ]).asArray().map { try $0.asInt() }
+      let values = try runtime.eval(
+        """
+        view = new Uint8Array(buffer)
+        Array.from(view)
+        """
+      ).asArray().map { try $0.asInt() }
 
       #expect(buffer.byteLength == 5)
       #expect(values.allSatisfy { $0 == 170 } == true)
@@ -244,28 +256,30 @@ struct ArrayBufferTests {
     @Test
     func `copies buffer when using NativeArrayBuffer argument`() throws {
       // Create original buffer with initial pattern
-      let originalBuffer = try runtime.eval([
-        "originalBuffer = new ArrayBuffer(4)",
-        "originalView = new Uint8Array(originalBuffer)",
-        "originalView.fill(42)",
-        "originalBuffer",
-      ]).asArrayBuffer()
+      let originalBuffer = try runtime.eval(
+        """
+        originalBuffer = new ArrayBuffer(4)
+        originalView = new Uint8Array(originalBuffer)
+        originalView.fill(42)
+        originalBuffer
+        """
+      ).asArrayBuffer()
 
       // Process through native function that takes NativeArrayBuffer (creates copy)
-      let processedBuffer = try runtime.eval([
-        "processedBuffer = expo.modules.ArrayBufferTests.processNativeBuffer(originalBuffer, 99)",
-        "processedBuffer",
-      ]).asArrayBuffer()
+      let processedBuffer = try runtime.eval(
+        """
+        processedBuffer = expo.modules.ArrayBufferTests.processNativeBuffer(originalBuffer, 99)
+        processedBuffer
+        """
+      ).asArrayBuffer()
 
       // Check that original buffer is unchanged
-      let originalValues = try runtime.eval([
-        "Array.from(new Uint8Array(originalBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let originalValues = try runtime.eval("Array.from(new Uint8Array(originalBuffer))")
+        .asArray().map { try $0.asInt() }
 
       // Check that processed buffer has new pattern
-      let processedValues = try runtime.eval([
-        "Array.from(new Uint8Array(processedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let processedValues = try runtime.eval("Array.from(new Uint8Array(processedBuffer))")
+        .asArray().map { try $0.asInt() }
 
       #expect(originalBuffer.byteLength == 4)
       #expect(processedBuffer.byteLength == 4)
@@ -286,13 +300,11 @@ struct ArrayBufferTests {
         """
       ).asArrayBuffer()
 
-      let originalValues = try runtime.eval([
-        "Array.from(originalView)"
-      ]).asArray().map { try $0.asInt() }
+      let originalValues = try runtime.eval("Array.from(originalView)")
+        .asArray().map { try $0.asInt() }
 
-      let processedValues = try runtime.eval([
-        "Array.from(new Uint8Array(processedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let processedValues = try runtime.eval("Array.from(new Uint8Array(processedBuffer))")
+        .asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 4)
       #expect(try runtime.eval("isOwned").asBool() == true)
@@ -302,21 +314,21 @@ struct ArrayBufferTests {
 
     @Test
     func `shares native-backed ArrayBuffer when using ArrayBuffer argument`() throws {
-      let processedBuffer = try runtime.eval([
-        "nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(4)",
-        "new Uint8Array(nativeBackedBuffer).fill(42)",
-        "isOwned = expo.modules.ArrayBufferTests.isOwned(nativeBackedBuffer)",
-        "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(nativeBackedBuffer, 99)",
-        "processedBuffer",
-      ]).asArrayBuffer()
+      let processedBuffer = try runtime.eval(
+        """
+        nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(4)
+        new Uint8Array(nativeBackedBuffer).fill(42)
+        isOwned = expo.modules.ArrayBufferTests.isOwned(nativeBackedBuffer)
+        processedBuffer = expo.modules.ArrayBufferTests.processBuffer(nativeBackedBuffer, 99)
+        processedBuffer
+        """
+      ).asArrayBuffer()
 
-      let originalValues = try runtime.eval([
-        "Array.from(new Uint8Array(nativeBackedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let originalValues = try runtime.eval("Array.from(new Uint8Array(nativeBackedBuffer))")
+        .asArray().map { try $0.asInt() }
 
-      let processedValues = try runtime.eval([
-        "Array.from(new Uint8Array(processedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let processedValues = try runtime.eval("Array.from(new Uint8Array(processedBuffer))")
+        .asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 4)
       #expect(try runtime.eval("isOwned").asBool() == false)
@@ -326,23 +338,23 @@ struct ArrayBufferTests {
 
     @Test
     func `shares native-backed typed array view when using ArrayBuffer argument`() throws {
-      let processedBuffer = try runtime.eval([
-        "nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(5)",
-        "fullView = new Uint8Array(nativeBackedBuffer)",
-        "fullView.set([1, 2, 3, 4, 5])",
-        "partialView = new Uint8Array(nativeBackedBuffer, 1, 2)",
-        "isOwned = expo.modules.ArrayBufferTests.isOwned(partialView)",
-        "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(partialView, 99)",
-        "processedBuffer",
-      ]).asArrayBuffer()
+      let processedBuffer = try runtime.eval(
+        """
+        nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(5)
+        fullView = new Uint8Array(nativeBackedBuffer)
+        fullView.set([1, 2, 3, 4, 5])
+        partialView = new Uint8Array(nativeBackedBuffer, 1, 2)
+        isOwned = expo.modules.ArrayBufferTests.isOwned(partialView)
+        processedBuffer = expo.modules.ArrayBufferTests.processBuffer(partialView, 99)
+        processedBuffer
+        """
+      ).asArrayBuffer()
 
-      let originalValues = try runtime.eval([
-        "Array.from(new Uint8Array(nativeBackedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let originalValues = try runtime.eval("Array.from(new Uint8Array(nativeBackedBuffer))")
+        .asArray().map { try $0.asInt() }
 
-      let processedValues = try runtime.eval([
-        "Array.from(new Uint8Array(processedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let processedValues = try runtime.eval("Array.from(new Uint8Array(processedBuffer))")
+        .asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 2)
       #expect(try runtime.eval("isOwned").asBool() == false)
@@ -352,22 +364,22 @@ struct ArrayBufferTests {
 
     @Test
     func `copies JS-backed typed array view when using ArrayBuffer argument`() throws {
-      let processedBuffer = try runtime.eval([
-        "jsBackedBuffer = new Uint8Array([1, 2, 3, 4, 5]).buffer",
-        "fullView = new Uint8Array(jsBackedBuffer)",
-        "partialView = new Uint8Array(jsBackedBuffer, 1, 2)",
-        "isOwned = expo.modules.ArrayBufferTests.isOwned(partialView)",
-        "processedBuffer = expo.modules.ArrayBufferTests.processBuffer(partialView, 99)",
-        "processedBuffer",
-      ]).asArrayBuffer()
+      let processedBuffer = try runtime.eval(
+        """
+        jsBackedBuffer = new Uint8Array([1, 2, 3, 4, 5]).buffer
+        fullView = new Uint8Array(jsBackedBuffer)
+        partialView = new Uint8Array(jsBackedBuffer, 1, 2)
+        isOwned = expo.modules.ArrayBufferTests.isOwned(partialView)
+        processedBuffer = expo.modules.ArrayBufferTests.processBuffer(partialView, 99)
+        processedBuffer
+        """
+      ).asArrayBuffer()
 
-      let originalValues = try runtime.eval([
-        "Array.from(fullView)"
-      ]).asArray().map { try $0.asInt() }
+      let originalValues = try runtime.eval("Array.from(fullView)")
+        .asArray().map { try $0.asInt() }
 
-      let processedValues = try runtime.eval([
-        "Array.from(new Uint8Array(processedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let processedValues = try runtime.eval("Array.from(new Uint8Array(processedBuffer))")
+        .asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 2)
       #expect(try runtime.eval("isOwned").asBool() == true)
@@ -377,20 +389,20 @@ struct ArrayBufferTests {
 
     @Test
     func `shares native-backed buffer when using NativeArrayBuffer argument`() throws {
-      let processedBuffer = try runtime.eval([
-        "nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(4)",
-        "new Uint8Array(nativeBackedBuffer).fill(42)",
-        "processedBuffer = expo.modules.ArrayBufferTests.processNativeBuffer(nativeBackedBuffer, 99)",
-        "processedBuffer",
-      ]).asArrayBuffer()
+      let processedBuffer = try runtime.eval(
+        """
+        nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(4)
+        new Uint8Array(nativeBackedBuffer).fill(42)
+        processedBuffer = expo.modules.ArrayBufferTests.processNativeBuffer(nativeBackedBuffer, 99)
+        processedBuffer
+        """
+      ).asArrayBuffer()
 
-      let originalValues = try runtime.eval([
-        "Array.from(new Uint8Array(nativeBackedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let originalValues = try runtime.eval("Array.from(new Uint8Array(nativeBackedBuffer))")
+        .asArray().map { try $0.asInt() }
 
-      let processedValues = try runtime.eval([
-        "Array.from(new Uint8Array(processedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let processedValues = try runtime.eval("Array.from(new Uint8Array(processedBuffer))")
+        .asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 4)
       #expect(originalValues.allSatisfy { $0 == 99 } == true)
@@ -399,22 +411,22 @@ struct ArrayBufferTests {
 
     @Test
     func `shares native-backed typed array view when using NativeArrayBuffer argument`() throws {
-      let processedBuffer = try runtime.eval([
-        "nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(5)",
-        "fullView = new Uint8Array(nativeBackedBuffer)",
-        "fullView.set([1, 2, 3, 4, 5])",
-        "partialView = new Uint8Array(nativeBackedBuffer, 1, 2)",
-        "processedBuffer = expo.modules.ArrayBufferTests.processNativeBuffer(partialView, 99)",
-        "processedBuffer",
-      ]).asArrayBuffer()
+      let processedBuffer = try runtime.eval(
+        """
+        nativeBackedBuffer = expo.modules.ArrayBufferTests.createNative(5)
+        fullView = new Uint8Array(nativeBackedBuffer)
+        fullView.set([1, 2, 3, 4, 5])
+        partialView = new Uint8Array(nativeBackedBuffer, 1, 2)
+        processedBuffer = expo.modules.ArrayBufferTests.processNativeBuffer(partialView, 99)
+        processedBuffer
+        """
+      ).asArrayBuffer()
 
-      let originalValues = try runtime.eval([
-        "Array.from(new Uint8Array(nativeBackedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let originalValues = try runtime.eval("Array.from(new Uint8Array(nativeBackedBuffer))")
+        .asArray().map { try $0.asInt() }
 
-      let processedValues = try runtime.eval([
-        "Array.from(new Uint8Array(processedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let processedValues = try runtime.eval("Array.from(new Uint8Array(processedBuffer))")
+        .asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 2)
       #expect(originalValues == [1, 99, 99, 4, 5])
@@ -423,21 +435,21 @@ struct ArrayBufferTests {
 
     @Test
     func `copies JS-backed typed array view when using NativeArrayBuffer argument`() throws {
-      let processedBuffer = try runtime.eval([
-        "jsBackedBuffer = new Uint8Array([1, 2, 3, 4, 5]).buffer",
-        "fullView = new Uint8Array(jsBackedBuffer)",
-        "partialView = new Uint8Array(jsBackedBuffer, 1, 2)",
-        "processedBuffer = expo.modules.ArrayBufferTests.processNativeBuffer(partialView, 99)",
-        "processedBuffer",
-      ]).asArrayBuffer()
+      let processedBuffer = try runtime.eval(
+        """
+        jsBackedBuffer = new Uint8Array([1, 2, 3, 4, 5]).buffer
+        fullView = new Uint8Array(jsBackedBuffer)
+        partialView = new Uint8Array(jsBackedBuffer, 1, 2)
+        processedBuffer = expo.modules.ArrayBufferTests.processNativeBuffer(partialView, 99)
+        processedBuffer
+        """
+      ).asArrayBuffer()
 
-      let originalValues = try runtime.eval([
-        "Array.from(fullView)"
-      ]).asArray().map { try $0.asInt() }
+      let originalValues = try runtime.eval("Array.from(fullView)")
+        .asArray().map { try $0.asInt() }
 
-      let processedValues = try runtime.eval([
-        "Array.from(new Uint8Array(processedBuffer))"
-      ]).asArray().map { try $0.asInt() }
+      let processedValues = try runtime.eval("Array.from(new Uint8Array(processedBuffer))")
+        .asArray().map { try $0.asInt() }
 
       #expect(processedBuffer.byteLength == 2)
       #expect(originalValues == [1, 2, 3, 4, 5])
