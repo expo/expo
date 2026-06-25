@@ -472,16 +472,21 @@ export const getVersionsInfoAsync = async (options: {
     let classicTag: string | null = null;
     let v1Tag: string | null = null;
 
+    // The .hermesversion / .hermesv1version tag files only exist in the React Native
+    // monorepo source — they are not shipped in published npm tarballs, so a miss here
+    // is expected and harmless (we fall back to the version from version.properties).
     try {
       classicTag = await readHermesTag(reactNativePath);
     } catch (error) {
-      logger.warn(`Could not read .hermesversion: ${String((error as Error).message || error)}`);
+      logger.verbose(`Could not read .hermesversion: ${String((error as Error).message || error)}`);
     }
 
     try {
       v1Tag = await readHermesV1Tag(reactNativePath);
     } catch (error) {
-      logger.warn(`Could not read .hermesv1version: ${String((error as Error).message || error)}`);
+      logger.verbose(
+        `Could not read .hermesv1version: ${String((error as Error).message || error)}`
+      );
     }
 
     const normalizeHermesVersion = (value: string) =>
@@ -490,13 +495,16 @@ export const getVersionsInfoAsync = async (options: {
         .replace(/^v/i, '')
         .trim();
 
-    // Matches hermes-engine.podspec polarity: V1 is the default, classic is
-    // selected only when the consuming app explicitly sets the env var to "0".
+    // React Native 0.85.x shipped two Hermes engines side by side, keyed as
+    // HERMES_VERSION_NAME (classic) and HERMES_V1_VERSION_NAME (V1); the podspec
+    // defaulted to V1 unless RCT_HERMES_V1_ENABLED was set to "0". Newer RN (0.87+)
+    // collapsed back to a single HERMES_VERSION_NAME (which hermes-engine.podspec
+    // reads directly). So prefer the V1 key only when it actually exists, and fall
+    // back to HERMES_VERSION_NAME otherwise — matching whatever the podspec reads.
     const isHermesV1Enabled = process.env.RCT_HERMES_V1_ENABLED !== '0';
-    const version = isHermesV1Enabled
-      ? properties.HERMES_V1_VERSION_NAME
-      : properties.HERMES_VERSION_NAME;
-    const tag = isHermesV1Enabled ? v1Tag : classicTag;
+    const useV1 = isHermesV1Enabled && !!properties.HERMES_V1_VERSION_NAME;
+    const version = useV1 ? properties.HERMES_V1_VERSION_NAME : properties.HERMES_VERSION_NAME;
+    const tag = useV1 ? v1Tag : classicTag;
 
     if (!version) {
       throw new Error(
