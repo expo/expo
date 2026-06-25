@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Ensure external CSS imports are added to the server manifest so they reach the streaming renderer ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
-
 ### 💡 Others
+
+## 57.0.0 — 2026-06-25
+
+### 🐛 Bug fixes
+
+- Ensure external CSS imports are added to the server manifest so they reach the streaming renderer ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
 
 ## 56.0.5 — 2026-06-05
 

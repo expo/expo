@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.7.0 — 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
 ## 2.6.0 — 2026-05-20
 
 ### 🎉 New features

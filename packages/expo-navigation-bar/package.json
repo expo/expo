@@ -1,6 +1,6 @@
 {
   "name": "expo-navigation-bar",
-  "version": "56.0.3",
+  "version": "57.0.0",
   "description": "Modify and observe the native navigation bar on Android devices.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",

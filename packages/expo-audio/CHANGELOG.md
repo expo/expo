@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Deactivate the audio session off the main thread to avoid app hangs. ([#47066](https://github.com/expo/expo/pull/47066) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 57.0.0 — 2026-06-25
+
+### 🐛 Bug fixes
+
+- [iOS] Deactivate the audio session off the main thread to avoid app hangs. ([#47066](https://github.com/expo/expo/pull/47066) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.12 — 2026-06-10
 

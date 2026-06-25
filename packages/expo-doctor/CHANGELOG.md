@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.20.0 — 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
 ## 1.19.10 — 2026-06-10
 
 ### 🐛 Bug fixes

@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.0 — 2026-06-25
+
+### 🐛 Bug fixes
+
 - Wrap `getStaticContent` and `getStreamingContent` in `expo-font`'s per-render `withServerContext` scope so concurrent server renders cannot share font registry state. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
 - Render external CSS imports as `<link rel="stylesheet">` nodes when using the streaming renderer ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
 

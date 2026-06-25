@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.13.0 — 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
 ## 1.12.1 — 2026-05-29
 
 ### 🎉 New features

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add missing `expo` peer dependency. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
-
 ### 💡 Others
+
+## 57.0.0 — 2026-06-25
+
+### 🐛 Bug fixes
+
+- Add missing `expo` peer dependency. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.13 — 2026-06-10
 

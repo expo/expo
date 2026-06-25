@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.5.0`'s generated component and native view sources. ([#47201](https://github.com/expo/expo/pull/47201) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 57.0.0 — 2026-06-25
+
+### 🐛 Bug fixes
+
+- [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.5.0`'s generated component and native view sources. ([#47201](https://github.com/expo/expo/pull/47201) by [@lukmccall](https://github.com/lukmccall))
 
 ## 56.0.16 — 2026-06-15
 

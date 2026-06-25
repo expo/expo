@@ -1,6 +1,6 @@
 {
   "name": "@expo/app-integrity",
-  "version": "56.0.3",
+  "version": "57.0.0",
   "description": "A native module that helps assert app integrity on mobile platforms",
   "sideEffects": false,
   "main": "build/index.js",

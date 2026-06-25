@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Add ObserveInteractiveMarker component ([#46909](https://github.com/expo/expo/pull/46909) by [@Ubax](https://github.com/Ubax))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.0 — 2026-06-25
+
+### 🎉 New features
+
+- Add ObserveInteractiveMarker component ([#46909](https://github.com/expo/expo/pull/46909) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
