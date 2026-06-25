@@ -3,7 +3,7 @@
 import ExpoModulesCore
 
 /// Outcome of a single dispatch attempt to the OTLP endpoint. Four cases, modeled after the
-/// OTLP retry guidance:
+/// OTLP retry guidance (see https://opentelemetry.io/docs/specs/otlp/#otlphttp-response):
 ///
 /// - `.success` — server accepted the batch without rejections.
 /// - `.partialSuccess` — server accepted the batch but rejected some records (the OTLP
@@ -243,6 +243,8 @@ internal enum DispatchUtils {
   /// `Retry-After`. Exponential growth (base × 2^(attempt-1)), capped, with full jitter so a
   /// fleet of devices recovering from the same transient backend outage doesn't thunder-herd
   /// the recovery.
+  ///
+  /// https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
   ///
   /// `attempt` is 1-based; the helper is defensive for `0` / negative inputs and returns 0
   /// rather than producing a negative exponent.
