@@ -14,6 +14,11 @@ import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/Con
 
 `expo-widgets` enables the creation of iOS home screen widgets and Live Activities using Expo UI components, without writing native code. It provides a simple API for creating and updating a widget's timeline, as well as starting and managing Live Activities. You can build the layout using [`expo/ui`](/versions/latest/sdk/ui/swift-ui/) components and modifiers.
 
+## Known limitations
+
+- **Frequent Live Activity updates.** To raise the budget for frequent push updates, set `NSSupportsLiveActivitiesFrequentUpdates` to `true` in your **Info.plist**. The system may still throttle updates, and the user can disable frequent updates in Settings.
+- **Widget runtime.** Code inside a `'widget'`-marked component runs in an isolated runtime and can only use `@expo/ui/swift-ui` components, with no React hooks, app state, or asynchronous work. See [The `'widget'` directive](#the-widget-directive).
+
 ## Installation
 
 <APIInstallSection />
@@ -702,11 +707,6 @@ To end a Live Activity remotely, send an `end` event with the final content stat
 ```
 
 For the exact payload shape and headers, follow Apple's [Starting and updating Live Activities with ActivityKit push notifications](https://developer.apple.com/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications).
-
-## Known limitations
-
-- **Frequent Live Activity updates.** To raise the budget for frequent push updates, set `NSSupportsLiveActivitiesFrequentUpdates` to `true` in your **Info.plist**. The system may still throttle updates, and the user can disable frequent updates in Settings.
-- **Widget runtime.** Code inside a `'widget'`-marked component runs in an isolated runtime and can only use `@expo/ui/swift-ui` components, with no React hooks, app state, or asynchronous work. See [The `'widget'` directive](#the-widget-directive).
 
 ## API
 
