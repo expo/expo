@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Enabled responsive capture and fast capture prioritization on iOS for lower shutter lag and faster successive photo captures.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
