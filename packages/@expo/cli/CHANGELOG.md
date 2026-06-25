@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- `expo lint` now fails when an Expo Router route has a platform-specific extension (`.ios`/`.android`/`.native`/`.web`) with no non-platform fallback, which otherwise crashes route generation at runtime. ([#PR](https://github.com/expo/expo/pull/PR) by [@kudo](https://github.com/kudo))
 - Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
 - Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
 - Support Device Hub as Simulator replacement for Xcode 27+ ([#46757](https://github.com/expo/expo/pull/46757) by [@byCedric](https://github.com/byCedric), [@GersonRocha9](https://github.com/GersonRocha9))
