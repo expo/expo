@@ -266,8 +266,8 @@ describe('_resolveProjectSettingsAsync', () => {
       'index.bundle?platform=android&dev=true&hot=false&lazy=true#debug'
     );
 
-    const resolver = jest.mocked(resolveManifestAssets).mock.calls[0][1].resolver;
-    await expect(resolver('./assets/icon.png')).resolves.toBe('assets/./assets/icon.png');
+    const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
+    await expect(resolver?.('./assets/icon.png')).resolves.toBe('assets/./assets/icon.png');
   });
   it(`returns the project settings for Webpack dev servers`, async () => {
     const middleware = new MockManifestMiddleware('/', {
