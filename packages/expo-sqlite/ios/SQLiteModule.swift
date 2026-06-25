@@ -615,7 +615,7 @@ public final class SQLiteModule: Module {
       return String(cString: text)
     case SQLITE_BLOB:
       guard let blob = exsqlite3_column_blob(instance, index) else {
-        return ArrayBuffer.allocate(size: 0)
+        return ArrayBuffer(size: 0)
       }
       let size = exsqlite3_column_bytes(instance, index)
       return ArrayBuffer.copy(of: blob, count: Int(size))
@@ -770,7 +770,7 @@ public final class SQLiteModule: Module {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     guard let buffer else {
-      return ArrayBuffer.allocate(size: 0)
+      return ArrayBuffer(size: 0)
     }
     defer { exsqlite3_free(buffer) }
     return ArrayBuffer.copy(of: buffer, count: Int(size))
@@ -815,7 +815,7 @@ public final class SQLiteModule: Module {
         throw SQLiteErrorException(convertSqlLiteErrorToString(database))
       }
       guard let outBuffer else {
-        return ArrayBuffer.allocate(size: 0)
+        return ArrayBuffer(size: 0)
       }
       defer { exsqlite3_free(outBuffer) }
       return ArrayBuffer.copy(of: outBuffer, count: Int(outSize))
