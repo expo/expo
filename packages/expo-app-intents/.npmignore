@@ -1,0 +1,4 @@
+src
+plugin/src
+plugin/__tests__
+tsconfig.json
