@@ -40,6 +40,7 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
             if (cssMetadata.externalImports) {
                 for (const external of cssMetadata.externalImports) {
                     let source = `<link rel="stylesheet" href="${escapeHtmlAttribute(external.url)}"`;
+                    // TODO(@hassankhan): We should be able to remove this when we remove the static renderer
                     // TODO: How can we do this for local css imports?
                     if (external.media) {
                         source += ` media="${escapeHtmlAttribute(external.media)}"`;
@@ -54,6 +55,9 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
                         source,
                         metadata: {
                             hmrId: (0, css_1.pathToHtmlSafeName)(originFilename),
+                            // Carried alongside the baked `source` field so the streaming renderer can rebuild
+                            // the `<link>` as a React node without having to parse the HTML string
+                            media: external.media ?? undefined,
                         },
                     });
                 }

@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Internal] Pass through the `media` query of `css-external` assets in metadata ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
+
 ## 56.0.14 — 2026-06-10
 
 ### 🐛 Bug fixes

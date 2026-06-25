@@ -107,6 +107,7 @@ async function getStreamingContent(location, options) {
     return Font.withServerContext(() => {
         const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
         const { headNodes: headCssNodes } = (0, react_1.createInjectedCssAsNodes)(options?.assets?.css ?? []);
+        const { headNodes: externalCssNodes } = (0, react_1.createInjectedExternalCssAsNodes)(options?.assets?.externalCss);
         const { headNodes: inlineCssNodes } = (0, react_1.createInjectedInlineCssAsNodes)(options?.assets?.inlineCss);
         const faviconNode = options?.assets?.favicon
             ? (0, react_1.createFaviconAsNode)(options?.assets?.favicon)
@@ -117,6 +118,7 @@ async function getStreamingContent(location, options) {
                 faviconNode,
                 getStyleElement({ key: 'rnw-style-element' }),
                 ...(headCssNodes ?? []),
+                ...(externalCssNodes ?? []),
                 ...(inlineCssNodes ?? []),
             ].filter(Boolean),
             bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {}, "font-resources")],

@@ -728,7 +728,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const { artifacts: resources } = await this.getStaticResourcesAsync({
         clientBoundaries: [],
       });
-      const { cssHrefs, inlineCss } = getStreamingCssAssetsFromSerialAssets(resources);
+      const { cssHrefs, externalCss, inlineCss } = getStreamingCssAssetsFromSerialAssets(resources);
       const { loader, metadata } = await this.getDevServerRenderOptionsAsync({
         location,
         route,
@@ -742,6 +742,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         request: request as unknown as Request,
         assets: {
           css: cssHrefs,
+          externalCss,
           inlineCss,
           js: [devBundleUrlPathname],
         },
@@ -2427,9 +2428,11 @@ function unique<T>(array: T[]): T[] {
 
 function getStreamingCssAssetsFromSerialAssets(resources: SerialAsset[]): {
   cssHrefs: string[];
+  externalCss: NonNullable<GetStreamingContentOptions['assets']>['externalCss'];
   inlineCss: NonNullable<GetStreamingContentOptions['assets']>['inlineCss'];
 } {
   const cssHrefs: string[] = [];
+  const externalCss: NonNullable<GetStreamingContentOptions['assets']>['externalCss'] = [];
   const inlineCss: NonNullable<GetStreamingContentOptions['assets']>['inlineCss'] = [];
 
   for (const asset of resources) {
@@ -2439,9 +2442,12 @@ function getStreamingCssAssetsFromSerialAssets(resources: SerialAsset[]): {
         hmrId: asset.metadata.hmrId,
       });
     } else if (asset.type === 'css-external') {
-      cssHrefs.push(asset.filename);
+      externalCss.push({
+        href: asset.filename,
+        media: asset.metadata.media,
+      });
     }
   }
 
-  return { cssHrefs, inlineCss };
+  return { cssHrefs, externalCss, inlineCss };
 }

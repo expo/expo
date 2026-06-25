@@ -18,6 +18,14 @@ export type GetStreamingContentOptions = {
     /** Assets for hydration bundles and development-only inline CSS. */
     assets?: {
         css: string[];
+        /**
+         * External stylesheets (`@import url(https://…)`) extracted from the bundled CSS, rendered
+         * verbatim as `<link rel="stylesheet">` so attributes like `media` survive.
+         */
+        externalCss?: {
+            href: string;
+            media?: string;
+        }[];
         /** CSS source to inline into the document head, used by development SSR. */
         inlineCss?: {
             source: string;

@@ -5,6 +5,10 @@ type CreateNodeResult = {
     bodyNodes?: ReactNode[];
 };
 export declare function createInjectedCssAsNodes(hrefs: string[]): CreateNodeResult;
+export declare function createInjectedExternalCssAsNodes(externalCss?: {
+    href: string;
+    media?: string;
+}[]): CreateNodeResult;
 export declare function createInjectedInlineCssAsNodes(inlineCss?: {
     source: string;
     hmrId?: string;

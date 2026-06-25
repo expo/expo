@@ -187,6 +187,7 @@ function createEnvironment(input) {
 function mergeAssets(topLevel, routeLevel) {
     return {
         css: [...(topLevel?.css ?? []), ...(routeLevel?.css ?? [])],
+        externalCss: [...(topLevel?.externalCss ?? []), ...(routeLevel?.externalCss ?? [])],
         js: [...(topLevel?.js ?? []), ...(routeLevel?.js ?? [])],
         favicon: topLevel?.favicon,
     };

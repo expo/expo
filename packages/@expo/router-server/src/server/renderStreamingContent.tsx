@@ -21,6 +21,7 @@ import { createDebug } from '../utils/debug';
 import {
   createFaviconAsNode,
   createInjectedCssAsNodes,
+  createInjectedExternalCssAsNodes,
   createInjectedFontsAsNodes,
   createInjectedInlineCssAsNodes,
   getBootstrapContents,
@@ -52,6 +53,14 @@ export type GetStreamingContentOptions = {
   /** Assets for hydration bundles and development-only inline CSS. */
   assets?: {
     css: string[];
+    /**
+     * External stylesheets (`@import url(https://…)`) extracted from the bundled CSS, rendered
+     * verbatim as `<link rel="stylesheet">` so attributes like `media` survive.
+     */
+    externalCss?: {
+      href: string;
+      media?: string;
+    }[];
     /** CSS source to inline into the document head, used by development SSR. */
     inlineCss?: {
       source: string;
@@ -124,6 +133,9 @@ export async function getStreamingContent(
     );
 
     const { headNodes: headCssNodes } = createInjectedCssAsNodes(options?.assets?.css ?? []);
+    const { headNodes: externalCssNodes } = createInjectedExternalCssAsNodes(
+      options?.assets?.externalCss
+    );
     const { headNodes: inlineCssNodes } = createInjectedInlineCssAsNodes(
       options?.assets?.inlineCss
     );
@@ -137,6 +149,7 @@ export async function getStreamingContent(
         faviconNode,
         getStyleElement({ key: 'rnw-style-element' }),
         ...(headCssNodes ?? []),
+        ...(externalCssNodes ?? []),
         ...(inlineCssNodes ?? []),
       ].filter(Boolean),
       bodyNodes: [<FontResources key="font-resources" />],
