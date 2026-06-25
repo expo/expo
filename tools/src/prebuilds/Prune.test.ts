@@ -12,14 +12,30 @@ describe('findDerivedDataDirsAsync', () => {
     try {
       // Non-versioned (Expo package) layout
       await fs.ensureDir(path.join(tmp, 'output', 'debug', 'frameworks', 'ExpoFoo', 'Build'));
-      await fs.outputFile(path.join(tmp, 'output', 'debug', 'xcframeworks', 'ExpoFoo.xcframework', 'x'), '1');
-      await fs.outputFile(path.join(tmp, 'output', 'debug', 'xcframeworks', 'ExpoFoo.tar.gz'), 'tar');
+      await fs.outputFile(
+        path.join(tmp, 'output', 'debug', 'xcframeworks', 'ExpoFoo.xcframework', 'x'),
+        '1'
+      );
+      await fs.outputFile(
+        path.join(tmp, 'output', 'debug', 'xcframeworks', 'ExpoFoo.tar.gz'),
+        'tar'
+      );
       await fs.ensureDir(path.join(tmp, 'output', 'release', 'frameworks', 'ExpoFoo'));
 
       // Versioned (external package) layout — xcframeworks live under a version prefix
       await fs.ensureDir(path.join(tmp, 'output', 'release', 'frameworks', 'RNFoo'));
       await fs.outputFile(
-        path.join(tmp, 'output', '1.2.3', '0.83.0', '1.0.0', 'release', 'xcframeworks', 'RNFoo.xcframework', 'x'),
+        path.join(
+          tmp,
+          'output',
+          '1.2.3',
+          '0.83.0',
+          '1.0.0',
+          'release',
+          'xcframeworks',
+          'RNFoo.xcframework',
+          'x'
+        ),
         '1'
       );
 

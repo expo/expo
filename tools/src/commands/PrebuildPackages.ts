@@ -1,5 +1,6 @@
 import { Command } from '@expo/commander';
 
+import { prunePrebuildBuildFilesAsync } from '../prebuilds/Prune';
 import {
   createRequest,
   createContext,
@@ -7,7 +8,6 @@ import {
   installSignalHandlers,
 } from '../prebuilds/pipeline/Index';
 import type { PrebuildCliOptions } from '../prebuilds/pipeline/Index';
-import { prunePrebuildBuildFilesAsync } from '../prebuilds/Prune';
 
 export async function runPrebuildPackagesAsync(
   packageNames: string[],
