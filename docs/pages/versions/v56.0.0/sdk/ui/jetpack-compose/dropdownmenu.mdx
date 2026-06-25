@@ -47,9 +47,7 @@ export default function BasicDropdownMenuExample() {
     <Host matchContents>
       <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
         <DropdownMenu.Trigger>
-          <OutlinedButton onClick={() => setIsExpanded(true)}>
-            Show Menu
-          </OutlinedButton>
+          <OutlinedButton onClick={() => setIsExpanded(true)}>Show Menu</OutlinedButton>
         </DropdownMenu.Trigger>
         <DropdownMenu.Items>
           <DropdownMenuItem

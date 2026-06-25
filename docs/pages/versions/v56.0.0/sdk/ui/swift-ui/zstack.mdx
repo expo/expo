@@ -56,9 +56,7 @@ export default function ZStackAlignmentExample() {
   return (
     <Host matchContents>
       <ZStack alignment="bottomTrailing">
-        <Rectangle
-          modifiers={[frame({ width: 100, height: 100 }), foregroundStyle('blue')]}
-        />
+        <Rectangle modifiers={[frame({ width: 100, height: 100 }), foregroundStyle('blue')]} />
         <Circle modifiers={[frame({ width: 30, height: 30 }), foregroundStyle('red')]} />
       </ZStack>
     </Host>
