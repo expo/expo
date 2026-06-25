@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Reuse agent files from `@expo/llm-configs` ([#46968](https://github.com/expo/expo/pull/46968) by [@davidmokos](https://github.com/davidmokos))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
