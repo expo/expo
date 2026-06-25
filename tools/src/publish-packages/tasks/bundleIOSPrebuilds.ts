@@ -7,6 +7,7 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner, spawnAsync } from '../../Utils';
 import { runPrebuildPackagesAsync } from '../../commands/PrebuildPackages';
+import { IOS_PREBUILD_PACKAGES } from '../../prebuilds/Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 /**
@@ -117,27 +118,6 @@ export async function ensureSupportedToolchainAsync(
     }
   };
 }
-
-/**
- * Packages whose iOS prebuilt xcframeworks should be bundled into the npm tarball.
- */
-const IOS_PREBUILD_PACKAGES = [
-  'expo-brownfield',
-  'expo-camera',
-  'expo-contacts',
-  'expo-file-system',
-  'expo-font',
-  'expo-image',
-  'expo-image-manipulator',
-  'expo-live-photo',
-  'expo-location',
-  'expo-maps',
-  'expo-media-library',
-  'expo-modules-core',
-  'expo-print',
-  'expo-ui',
-  'expo-video',
-];
 
 // Names of the publish set's packages that ship iOS prebuilds (empty when none do).
 export function iosPrebuildPackagesInSet(parcels: Parcel[]): string[] {
