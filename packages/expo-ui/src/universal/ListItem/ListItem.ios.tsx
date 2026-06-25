@@ -1,11 +1,5 @@
 import { Button, HStack, RNHostView, Spacer, Text, VStack } from '@expo/ui/swift-ui';
-import {
-  background,
-  buttonStyle,
-  contentShape,
-  foregroundStyle,
-  shapes,
-} from '@expo/ui/swift-ui/modifiers';
+import { buttonStyle, contentShape, foregroundStyle, shapes } from '@expo/ui/swift-ui/modifiers';
 import { Children, isValidElement, type ReactNode } from 'react';
 
 import { extractListItemSlots } from './ListItemSlots';
@@ -60,10 +54,10 @@ export function ListItem(props: ListItemProps) {
     <Button onPress={onPress} modifiers={[buttonStyle('plain')]} testID={testID}>
       <HStack spacing={12} modifiers={[contentShape(shapes.rectangle())]}>
         {renderAccessory(leading)}
-        {/* <VStack alignment="leading" spacing={2}>
+        <VStack alignment="leading" spacing={2}>
           <>{wrapStrings(slots.headline)}</>
           {supporting != null ? renderSupporting(supporting) : null}
-        </VStack> */}
+        </VStack>
         <Spacer />
         {renderAccessory(trailing)}
       </HStack>
