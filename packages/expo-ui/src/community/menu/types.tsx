@@ -118,7 +118,7 @@ export type NativeActionEvent = {
  * Props for the `MenuView` component.
  * Drop-in compatible with `@react-native-menu/menu`.
  */
-export type MenuComponentProps = {
+export interface MenuComponentProps {
   /**
    * Menu title shown at the top of the menu.
    * @platform ios
@@ -168,4 +168,4 @@ export type MenuComponentProps = {
    * Trigger view. Long-pressing or tapping (per `shouldOpenOnLongPress`) opens the menu.
    */
   children?: ReactNode;
-};
+}

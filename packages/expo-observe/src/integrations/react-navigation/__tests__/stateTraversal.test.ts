@@ -1,4 +1,5 @@
-import { collectMountedKeys, findFocusedLeaf, type NavigationStateLike } from '../stateTraversal';
+import { collectMountedKeys, findFocusedLeaf } from '../stateTraversal';
+import type { NavigationStateLike } from '../types';
 
 function stackState(
   routes: { key: string; name: string; state?: NavigationStateLike }[],
@@ -18,14 +19,28 @@ function tabState(
   routes: { key: string; name: string; state?: NavigationStateLike }[],
   index = 0
 ): NavigationStateLike {
-  return { type: 'tab', index, routes, key: 'test', routeNames: [], stale: false };
+  return {
+    type: 'tab',
+    index,
+    routes,
+    key: 'test',
+    routeNames: [],
+    stale: false,
+  } as NavigationStateLike;
 }
 
 function drawerState(
   routes: { key: string; name: string; state?: NavigationStateLike }[],
   index = 0
 ): NavigationStateLike {
-  return { type: 'drawer', index, routes, key: 'test', routeNames: [], stale: false };
+  return {
+    type: 'drawer',
+    index,
+    routes,
+    key: 'test',
+    routeNames: [],
+    stale: false,
+  } as NavigationStateLike;
 }
 
 describe('findFocusedLeaf', () => {

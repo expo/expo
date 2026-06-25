@@ -37,7 +37,9 @@ class ViewManagerDefinition(
     val reactContext = (view.context as? ReactContext) ?: return
     val nativeModulesProxy = reactContext.getUnimoduleProxy() ?: return
     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext
-
-    appContext.errorManager?.reportExceptionToLogBox(exception)
+    appContext.jsLogger?.error(
+      message = exception.message.toString(),
+      cause = exception
+    )
   }
 }

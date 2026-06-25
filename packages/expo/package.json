@@ -2,15 +2,20 @@
   "name": "expo",
   "version": "56.0.5",
   "description": "The Expo SDK",
-  "main": "src/Expo.ts",
-  "module": "src/Expo.ts",
-  "types": "build/Expo.d.ts",
-  "sideEffects": [
-    "*.fx.tsx",
-    "*.fx.web.tsx",
-    "./src/winter/*.ts",
-    "./src/async-require/*.ts"
+  "keywords": [
+    "expo"
   ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo"
+  },
   "bin": {
     "expo": "bin/cli",
     "expo-modules-autolinking": "bin/autolinking",
@@ -49,30 +54,150 @@
     "virtual",
     "template.tgz"
   ],
-  "scripts": {
-    "build": "tsc",
-    "clean": "rimraf build",
-    "lint": "eslint src",
-    "test": "jest",
-    "prepublishOnly": "run-s clean build"
-  },
-  "jest": {
-    "preset": "../expo-module-scripts/jest-preset.cjs"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo"
-  },
-  "keywords": [
-    "expo"
+  "sideEffects": [
+    "*.fx.tsx",
+    "*.fx.web.tsx",
+    "*.fx.js",
+    "*.fx.web.js",
+    "./src/winter/*.ts",
+    "./build/winter/*.js",
+    "./src/async-require/*.ts",
+    "./build/async-require/*.js"
   ],
-  "author": "Expo",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "main": "build/Expo.js",
+  "module": "build/Expo.js",
+  "types": "build/Expo.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/Expo.ts",
+        "default": "./build/Expo.d.ts"
+      },
+      "expo-source": "./src/Expo.ts",
+      "default": "./build/Expo.js"
+    },
+    "./types": {
+      "types": "./types/index.d.ts",
+      "default": "./types/index.js"
+    },
+    "./internal/async-require-module": {
+      "types": {
+        "expo-source": "./src/async-require/asyncRequireModule.ts",
+        "default": "./build/async-require/asyncRequireModule.d.ts"
+      },
+      "expo-source": "./src/async-require/asyncRequireModule.ts",
+      "default": "./build/async-require/asyncRequireModule.js"
+    },
+    "./internal/install-global": {
+      "types": {
+        "expo-source": "./src/winter/installGlobal.ts",
+        "default": "./build/winter/installGlobal.d.ts"
+      },
+      "expo-source": "./src/winter/installGlobal.ts",
+      "default": "./build/winter/installGlobal.js"
+    },
+    "./internal/*": {
+      "types": "./internal/*.d.ts",
+      "default": "./internal/*.js"
+    },
+    "./dom": {
+      "types": {
+        "expo-source": "./src/dom/dom.ts",
+        "default": "./build/dom/dom.d.ts"
+      },
+      "expo-source": "./src/dom/dom.ts",
+      "default": "./build/dom/dom.js"
+    },
+    "./dom/global": {
+      "types": {
+        "expo-source": "./src/dom/global-events.ts",
+        "default": "./build/dom/global-events.d.ts"
+      },
+      "expo-source": "./src/dom/global-events.ts",
+      "default": "./build/dom/global-events.js"
+    },
+    "./dom/internal": {
+      "types": {
+        "expo-source": "./src/dom/internal.ts",
+        "default": "./build/dom/internal.d.ts"
+      },
+      "expo-source": "./src/dom/internal.ts",
+      "default": "./build/dom/internal.js"
+    },
+    "./fetch": {
+      "types": {
+        "expo-source": "./src/winter/fetch/index.ts",
+        "default": "./build/winter/fetch/index.d.ts"
+      },
+      "expo-source": "./src/winter/fetch/index.ts",
+      "default": "./build/winter/fetch/index.js"
+    },
+    "./config": {
+      "types": "./config/index.d.ts",
+      "default": "./config/index.js"
+    },
+    "./config/paths": {
+      "types": "./config/paths.d.ts",
+      "default": "./config/paths.js"
+    },
+    "./src/winter": {
+      "types": {
+        "expo-source": "./src/winter/index.ts",
+        "default": "./build/winter/index.d.ts"
+      },
+      "expo-source": "./src/winter/index.ts",
+      "default": "./build/winter/index.js"
+    },
+    "./src/*.ts": {
+      "types": {
+        "expo-source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "expo-source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./src/*": {
+      "types": {
+        "expo-source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "expo-source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./dom/entry.js": "./dom/entry.js",
+    "./dom/entry": "./dom/entry.js",
+    "./AppEntry.js": "./AppEntry.js",
+    "./virtual/*.js": "./virtual/*.js",
+    "./virtual/*": "./virtual/*.js",
+    "./scripts/*.js": "./scripts/*.js",
+    "./scripts/*": "./scripts/*.js",
+    "./bin/*": "./bin/*",
+    "./package.json": "./package.json",
+    "./*.json": "./*.json",
+    "./*": {
+      "types": "./*.d.ts",
+      "default": "./*.js"
+    }
   },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/node-binary.sh",
+      "./scripts/react-native-xcode.sh",
+      "./scripts/xcode/with-environment.sh",
+      "./scripts/compose-source-maps.js",
+      "./scripts/resolveAppEntry.js"
+    ]
+  },
+  "scripts": {
+    "build": "../expo-module-scripts/bin/expo-build src",
+    "clean": "rimraf build",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "run-s clean build",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@expo/cli": "workspace:^56.1.12",
@@ -116,8 +241,8 @@
     "@expo/dom-webview": "*",
     "@expo/metro-runtime": "*",
     "react": "*",
-    "react-native": "*",
     "react-dom": "*",
+    "react-native": "*",
     "react-native-web": "*",
     "react-native-webview": "*"
   },
@@ -138,13 +263,10 @@
       "optional": true
     }
   },
-  "publishConfig": {
-    "executableFiles": [
-      "./scripts/node-binary.sh",
-      "./scripts/react-native-xcode.sh",
-      "./scripts/xcode/with-environment.sh",
-      "./scripts/compose-source-maps.js",
-      "scripts/resolveAppEntry.js"
-    ]
+  "jest": {
+    "preset": "../expo-module-scripts/jest-preset.cjs"
+  },
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
   }
 }

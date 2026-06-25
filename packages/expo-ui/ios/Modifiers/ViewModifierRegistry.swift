@@ -518,6 +518,31 @@ internal struct AccessibilityHiddenModifier: ViewModifier, Record {
   }
 }
 
+internal enum AccessibilityChildBehaviorType: String, Enumerable {
+  case ignore
+  case combine
+  case contain
+
+  func toNative() -> AccessibilityChildBehavior {
+    switch self {
+    case .ignore:
+      return .ignore
+    case .combine:
+      return .combine
+    case .contain:
+      return .contain
+    }
+  }
+}
+
+internal struct AccessibilityElementModifier: ViewModifier, Record {
+  @Field var children: AccessibilityChildBehaviorType = .ignore
+
+  func body(content: Content) -> some View {
+    content.accessibilityElement(children: children.toNative())
+  }
+}
+
 internal struct LayoutPriorityModifier: ViewModifier, Record {
   @Field var priority: Double = 0
 
@@ -978,21 +1003,21 @@ internal struct HeaderProminence: ViewModifier, Record {
 }
 
 internal struct ListRowInsets: ViewModifier, Record {
-  @Field var top: CGFloat = 0
-  @Field var leading: CGFloat = 0
-  @Field var bottom: CGFloat = 0
-  @Field var trailing: CGFloat = 0
+  @Field var top: CGFloat?
+  @Field var leading: CGFloat?
+  @Field var bottom: CGFloat?
+  @Field var trailing: CGFloat?
 
   func body(content: Content) -> some View {
-    if top != 0 || leading != 0 || bottom != 0 || trailing != 0 {
-      content.listRowInsets(.init(
-        top: top,
-        leading: leading,
-        bottom: bottom,
-        trailing: trailing
-      ))
-    } else {
+    if top == nil && leading == nil && bottom == nil && trailing == nil {
       content
+    } else {
+      content.listRowInsets(.init(
+        top: top ?? 0,
+        leading: leading ?? 0,
+        bottom: bottom ?? 0,
+        trailing: trailing ?? 0
+      ))
     }
   }
 }
@@ -1596,6 +1621,10 @@ extension ViewModifierRegistry {
       return try AccessibilityHiddenModifier(from: params, appContext: appContext)
     }
 
+    register("accessibilityElement") { params, appContext, _ in
+      return try AccessibilityElementModifier(from: params, appContext: appContext)
+    }
+
     register("layoutPriority") { params, appContext, _ in
       return try LayoutPriorityModifier(from: params, appContext: appContext)
     }
@@ -1890,6 +1919,10 @@ extension ViewModifierRegistry {
     
     register("presentationBackground") { params, appContext, _ in
       return try PresentationBackgroundModifier(from: params, appContext: appContext)
+    }
+
+    register("presentationSizing") { params, appContext, _ in
+      return try PresentationSizingModifier(from: params, appContext: appContext)
     }
 
     register("listStyle") { params, appContext, _ in

@@ -61,6 +61,9 @@ jobs:
           avd-name: avd-${{ matrix.api-level }}
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🧶 Install `expo-test-runner`
         run: |
           pnpm add -g expo-test-runner@$(cat package.json | grep '"expo-test-runner": "[0-9]*\.[0-9]*\.[0-9]*' | head -n 1 | awk '{print $2}' | sed 's/"//g; s/,//g')

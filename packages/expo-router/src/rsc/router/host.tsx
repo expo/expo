@@ -25,11 +25,11 @@ import {
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
 
+import { getDevServer } from '../../getDevServer';
+import { getOriginFromConstants } from '../../head/url';
 import { MetroServerError, ReactServerError } from './errors';
 import { fetch } from './fetch';
 import { encodeInput, encodeActionId } from './utils';
-import { getDevServer } from '../../getDevServer';
-import { getOriginFromConstants } from '../../head/url';
 
 declare namespace globalThis {
   let __EXPO_RSC_RELOAD_LISTENERS__: undefined | (() => void)[];

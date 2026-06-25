@@ -19,6 +19,11 @@ struct RNHostView: ExpoSwiftUI.View {
       .onAppear {
         ExpoUITouchHandlerHelper.createAndAttachTouchHandler(for: childUIView)
       }
+    } else if props.matchContents {
+      // No hosted UIView (a pure SwiftUI child, e.g. Text/Image). Render it at its
+      // natural size instead of falling into the fill branch below, which would
+      // stretch a self-sizing SwiftUI view to fill its container.
+      Children()
     } else {
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)

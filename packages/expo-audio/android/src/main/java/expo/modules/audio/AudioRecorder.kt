@@ -25,7 +25,6 @@ import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.UUID
-import kotlin.coroutines.Continuation
 import kotlin.math.log10
 
 private const val RECORDING_STATUS_UPDATE = "recordingStatusUpdate"
@@ -49,7 +48,6 @@ class AudioRecorder(
   var isPaused = false
   private var recordingTimerJob: Job? = null
   var useForegroundService = false
-  private var bindingContinuation: Continuation<Boolean>? = null
 
   val serviceConnection = AudioRecordingServiceConnection(WeakReference(this), appContext)
 
@@ -68,7 +66,7 @@ class AudioRecorder(
 
     val amplitude: Int = try {
       recorder?.maxAmplitude ?: 0
-    } catch (e: Exception) {
+    } catch (_: Exception) {
       // MediaRecorder maxAmplitude can throw various exceptions:
       // - IllegalStateException: invalid recorder state/race condition
       // - RuntimeException: getMaxAmplitude failed (hardware/driver issues)
@@ -223,13 +221,10 @@ class AudioRecorder(
     isPrepared = false
   }
 
+  @Suppress("DEPRECATION")
   private fun createRecorder(options: RecordingOptions): MediaRecorder {
     val outputFilePath = createRecordingFilePath(options)
-    val mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      MediaRecorder(context)
-    } else {
-      MediaRecorder()
-    }
+    val mediaRecorder = MediaRecorder()
 
     try {
       setRecordingOptions(mediaRecorder, options, outputFilePath)
@@ -250,7 +245,7 @@ class AudioRecorder(
     val directory = File(parentDirectory, "Audio")
     try {
       ensureDirExists(directory)
-    } catch (e: IOException) {
+    } catch (_: IOException) {
       // This only occurs in the case that the scoped path is not in this experience's scope,
       // which is never true.
     }
@@ -402,7 +397,7 @@ class AudioRecorder(
         // only returns a valid device when actively recording, and may throw otherwise.
         // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
         deviceInfo = recorder?.routedDevice
-      } catch (e: java.lang.Exception) {
+      } catch (_: java.lang.Exception) {
         // no-op
       }
     }
@@ -453,6 +448,7 @@ class AudioRecorder(
       }
     }
 
+  @Suppress("DEPRECATION")
   fun setInput(uid: String, audioManager: AudioManager) {
     val deviceInfo: AudioDeviceInfo? = getDeviceInfoFromUid(uid, audioManager)
 

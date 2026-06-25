@@ -7,10 +7,10 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
-import { SourceSkips } from './SourceSkips';
-import { getFileBasedHashSourceAsync, maybeGetRealPathAsync } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
+import { SourceSkips } from './SourceSkips';
+import { getFileBasedHashSourceAsync, maybeGetRealPathAsync } from './Utils';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 

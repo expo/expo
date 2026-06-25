@@ -128,5 +128,13 @@ Pod::Spec.new do |s|
     test_spec.dependency 'ExpoModulesTestCore'
 
     test_spec.source_files = 'ios/Tests/**/*.{m,swift}'
+
+    # The library's -lc++ lives in `user_target_xcconfig` (for consuming apps), which a
+    # test_spec target doesn't inherit. The test bundle links libExpoModulesCore.a (C++)
+    # but has no C++/Obj-C++ source of its own, so the linker driver is clang, not clang++,
+    # and libc++ isn't linked implicitly. Link it explicitly here.
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++'
+    }
   end
 end

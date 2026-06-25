@@ -774,6 +774,22 @@ struct JavaScriptRuntimeTests {
     let result = try newRuntime.eval("1 + 2")
     #expect(result.getInt() == 3)
   }
+
+  @Test
+  func `id is equal across wrappers of the same underlying runtime`() {
+    // A second wrapper around the same underlying `jsi::Runtime` shares the runtime's identity, even
+    // though it is a distinct `JavaScriptRuntime` instance (so `===` differs). This is the guarantee
+    // `id` provides over wrapper identity.
+    let otherWrapper = runtime.withUnsafePointee { JavaScriptRuntime(unsafePointer: $0) }
+    #expect(otherWrapper.id == runtime.id)
+    #expect(otherWrapper !== runtime)
+  }
+
+  @Test
+  func `id differs between distinct runtimes`() {
+    let otherRuntime = JavaScriptRuntime()
+    #expect(otherRuntime.id != runtime.id)
+  }
 }
 
 /// Runs `body` on a freshly spawned synchronous thread and bridges the result back into the

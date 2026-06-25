@@ -39,11 +39,19 @@ jobs:
           cache: 'pnpm'
       - name: 📦 Install dependencies
         run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build app dependencies
+        run: pnpm turbo build --filter native-component-list...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🛠 Compile NCL sources
         run: pnpm tsc
         working-directory: apps/native-component-list
       - name: 🚨 Lint NCL app
         run: pnpm lint --max-warnings 0
+        working-directory: apps/native-component-list
+      - name: 💅 Check formatting
+        run: pnpm format --check
         working-directory: apps/native-component-list
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify

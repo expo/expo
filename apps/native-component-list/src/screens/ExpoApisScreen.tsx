@@ -1,8 +1,8 @@
 import { memo } from 'react';
 import { Platform } from 'react-native';
 
-import ComponentListScreen, { type ListElement } from './ComponentListScreen';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
+import ComponentListScreen, { type ListElement } from './ComponentListScreen';
 
 if (Platform.OS !== 'web') {
   // Optionally require expo-notifications as we cannot assume that the module is linked.

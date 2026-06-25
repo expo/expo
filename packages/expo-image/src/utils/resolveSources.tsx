@@ -1,9 +1,9 @@
 import { Platform } from 'expo-modules-core';
 
-import resolveAssetSource from './resolveAssetSource';
-import { resolveBlurhashString, resolveThumbhashString } from './resolveHashString';
 import type { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
 import { isImageRef } from '../utils';
+import resolveAssetSource from './resolveAssetSource';
+import { resolveBlurhashString, resolveThumbhashString } from './resolveHashString';
 
 export function isBlurhashString(str: string): boolean {
   return /^(blurhash:\/)+[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);

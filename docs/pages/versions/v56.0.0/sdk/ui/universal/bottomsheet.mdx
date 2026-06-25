@@ -11,6 +11,8 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 A modal sheet that slides up from the bottom of the screen. The sheet's visibility is controlled — toggle [`isPresented`](#ispresented) from React state and dismiss it from [`onDismiss`](#ondismiss) (called when the user swipes down or taps the overlay).
 
+> **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
+
 ## Installation
 
 <APIInstallSection />

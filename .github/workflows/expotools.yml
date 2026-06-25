@@ -37,8 +37,10 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
       - name: 🛠 Compile TypeScript sources
-        run: pnpm build
-        working-directory: tools
+        run: pnpm turbo build --filter expotools...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🛠 Typecheck sources
         run: pnpm tsc --noEmit
         working-directory: tools

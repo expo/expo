@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react-native';
-import * as React from 'react';
 import { Platform, View as NativeView } from 'react-native';
 
 import { createDevView } from '../createDevView';

@@ -1,8 +1,0 @@
-.line {
-  display: flex;
-  flex-direction: row;
-}
-
-.text {
-  white-space: pre;
-}

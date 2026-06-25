@@ -1,5 +1,5 @@
-import Tabs from './TabsClient';
 import { Screen } from '../views/Screen';
+import Tabs from './TabsClient';
 
 export * from '../react-navigation/bottom-tabs';
 

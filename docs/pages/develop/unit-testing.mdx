@@ -235,8 +235,8 @@ import { render } from '@testing-library/react-native';
 import HomeScreen, { CustomText } from '@/app/index';
 
 describe('<HomeScreen />', () => {
-  test('Text renders correctly on HomeScreen', () => {
-    const { getByText } = render(<HomeScreen />);
+  test('Text renders correctly on HomeScreen', async () => {
+    const { getByText } = await render(<HomeScreen />);
 
     getByText('Welcome!');
   });
@@ -303,8 +303,8 @@ To add a snapshot test for `<HomeScreen />`, add the following code snippet in t
 describe('<HomeScreen />', () => {
   /* @hide ... */ /* @end */
 
-  test('CustomText renders correctly', () => {
-    const tree = render(<CustomText>Some text</CustomText>).toJSON();
+  test('CustomText renders correctly', async () => {
+    const tree = (await render(<CustomText>Some text</CustomText>)).toJSON();
 
     expect(tree).toMatchSnapshot();
   });

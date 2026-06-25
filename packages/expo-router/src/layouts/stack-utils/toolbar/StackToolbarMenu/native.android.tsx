@@ -10,7 +10,6 @@ import {
 import { background } from '@expo/ui/jetpack-compose/modifiers';
 import { createContext, use, useCallback, useState } from 'react';
 
-import type { NativeToolbarMenuActionProps, NativeToolbarMenuProps } from './types';
 import { Label } from '../../../../primitives';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { getFirstChildOfType } from '../../../../utils/children';
@@ -20,6 +19,7 @@ import {
   DEFAULT_TOOLBAR_BACKGROUND_COLOR,
   DEFAULT_TOOLBAR_TINT_COLOR,
 } from '../defaults';
+import type { NativeToolbarMenuActionProps, NativeToolbarMenuProps } from './types';
 
 const arrowRightIcon = require('../../../../../assets/arrow_right.xml');
 const checkmarkIcon = require('../../../../../assets/checkmark.xml');

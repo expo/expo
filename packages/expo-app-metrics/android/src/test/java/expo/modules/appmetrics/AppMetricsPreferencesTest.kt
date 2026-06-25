@@ -47,4 +47,15 @@ class AppMetricsPreferencesTest {
     val expected = if (BuildConfig.DEBUG) "development" else null
     assertEquals(expected, AppMetricsPreferences.getDefaultEnvironment())
   }
+
+  @Test
+  fun `last processed exit timestamp defaults to zero`() {
+    assertEquals(0L, AppMetricsPreferences.getLastProcessedExitTimestampMillis(context))
+  }
+
+  @Test
+  fun `last processed exit timestamp round-trips`() {
+    AppMetricsPreferences.setLastProcessedExitTimestampMillis(context, 1_700_000_000_500)
+    assertEquals(1_700_000_000_500, AppMetricsPreferences.getLastProcessedExitTimestampMillis(context))
+  }
 }

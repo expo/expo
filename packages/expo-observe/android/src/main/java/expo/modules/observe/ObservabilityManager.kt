@@ -14,7 +14,6 @@ class ObservabilityManager(
   val sessionManager: SessionManager
 ) {
   private val baseManager: BaseObservabilityManager
-  private val useOpenTelemetry: Boolean
 
   // TODO: Can this information change during expo module lifecycle?
   init {
@@ -28,7 +27,6 @@ class ObservabilityManager(
       "Project ID is required to send observability metrics. Make sure you have configured it correctly in app.json."
     }
     val baseUrl = manifest.baseUrl ?: OBSERVE_DEFAULT_BASE_URL
-    useOpenTelemetry = manifest.useOpenTelemetry
 
     val pendingMetricsManager = PendingMetricsManager(context)
     val pendingLogsManager = PendingLogsManager(context)
@@ -40,8 +38,7 @@ class ObservabilityManager(
       pendingLogsManager = pendingLogsManager,
       projectId = projectId,
       baseUrl = baseUrl,
-      isDebugBuild = BuildConfig.DEBUG,
-      useOpenTelemetry = useOpenTelemetry
+      isDebugBuild = BuildConfig.DEBUG
     )
 
     sessionManager.addMetricsInsertListener { metricIds ->
@@ -64,8 +61,7 @@ class ObservabilityManager(
     ObservabilityBackgroundWorker.scheduleBackgroundDispatch(
       context = context,
       projectId = baseManager.projectId,
-      baseUrl = baseManager.baseUrl,
-      useOpenTelemetry = useOpenTelemetry
+      baseUrl = baseManager.baseUrl
     )
   }
 }
@@ -78,7 +74,6 @@ class BaseObservabilityManager(
   val projectId: String,
   val baseUrl: String,
   private val isDebugBuild: Boolean = false,
-  private val useOpenTelemetry: Boolean = false,
   private val deterministicUniformValueProvider: () -> Double = {
     EASClientID.deterministicUniformValue(EASClientID(context).uuid)
   }
@@ -86,8 +81,7 @@ class BaseObservabilityManager(
   private val eventDispatcher = EventDispatcher(
     context = context,
     projectId = projectId,
-    baseUrl = baseUrl,
-    useOpenTelemetry = useOpenTelemetry
+    baseUrl = baseUrl
   )
 
   suspend fun dispatchUnsentMetrics() {

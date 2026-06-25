@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noEmit": true,
     "target": "ES2020"
   },
   "files": ["index.d.ts"]

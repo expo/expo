@@ -2,10 +2,8 @@
   "extends": "expo-module-scripts/tsconfig.node",
   "compilerOptions": {
     "lib": ["es2023"],
-    "noEmit": false,
-    "rootDir": "./src",
-    "outDir": "./build"
+    "noEmit": true,
+    "rootDir": "./src"
   },
-  "include": ["src/**/*"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "include": ["src/**/*"]
 }

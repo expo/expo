@@ -1,12 +1,14 @@
+import type { ExpoConfig, ProjectConfig } from '@expo/config';
 import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import type { ExpoConfig, ProjectConfig } from 'expo/config';
 import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 import path from 'path';
 import semver from 'semver';
 
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
+import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { toPosixPath } from '../utils/Path';
 import { SourceSkips } from './SourceSkips';
 import {
   getFileBasedHashSourceAsync,
@@ -14,8 +16,6 @@ import {
   relativizeJsonPaths,
   stringifyJsonSorted,
 } from './Utils';
-import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
-import { toPosixPath } from '../utils/Path';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 

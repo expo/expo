@@ -317,10 +317,21 @@ class DevLauncherController private constructor(
         return@let
       }
 
-      val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE", "true").toBoolean()
+      val shouldTryToLaunchLastOpenedBundle =
+        DependencyInjection.devMenuPreferences?.tryToLaunchLastBundle ?: true
       val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
-        launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+        coroutineScope.launch {
+          try {
+            loadApp(lastOpenedApp.url.toUri(), activityToBeInvalidated)
+          } catch (_: Throwable) {
+            if (useDefaultLaunchUrlFallback) {
+              launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+            } else {
+              navigateToLauncher()
+            }
+          }
+        }
         return true
       }
 

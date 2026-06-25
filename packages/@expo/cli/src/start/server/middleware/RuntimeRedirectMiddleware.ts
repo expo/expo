@@ -1,5 +1,6 @@
 import { parse } from 'url';
 
+import * as Log from '../../../log';
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
 import type { RuntimePlatform } from './resolvePlatform';
 import {
@@ -9,7 +10,6 @@ import {
   resolvePlatformFromUserAgentHeader,
 } from './resolvePlatform';
 import type { ServerRequest, ServerResponse } from './server.types';
-import * as Log from '../../../log';
 
 const debug = require('debug')(
   'expo:start:server:middleware:runtimeRedirect'

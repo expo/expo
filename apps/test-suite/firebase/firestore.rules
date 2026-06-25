@@ -1,9 +1,0 @@
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /tests/{testId} {
-      allow read: if true;
-      allow write: if false;
-    }
-  }
-}
