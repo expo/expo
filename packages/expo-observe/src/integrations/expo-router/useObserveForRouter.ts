@@ -1,12 +1,12 @@
 import AppMetrics, { type MetricAttributes } from 'expo-app-metrics';
 import { use, useCallback, useEffect, useRef } from 'react';
 
-import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 import { ObserveRouterIntegrationContext } from './ObserveRouterIntegrationProvider';
 import { emitTTI } from './emitTTI';
 import { isInitialized } from './init';
 import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
 type MarkInteractive = (typeof AppMetrics)['markInteractive'];
 

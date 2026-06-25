@@ -1,10 +1,10 @@
 import { forwardRef, useImperativeHandle, type ComponentProps, type Ref } from 'react';
 
-import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 import { ObserveNavigationProvider } from './ObserveNavigationProvider';
 import { isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
 import type { NavigationContainerRefLike } from './types';
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
 const NavigationContainer = optionalReactNavigation?.NavigationContainer;
 const useNavigationContainerRef = optionalReactNavigation?.useNavigationContainerRef;
