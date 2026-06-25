@@ -6,42 +6,8 @@ import ExpoModulesJSI
 /// Does not require a JavaScript runtime at creation time — the JSI backing buffer
 /// is created on demand when the buffer needs to be returned to JavaScript.
 ///
-/// - Note: Sendable conformance is `@unchecked` because `UnsafeMutableRawPointer` isn't `Sendable`.
-public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
-  private enum Storage {
-    case owned(pointer: UnsafeMutableRawPointer, count: Int, cleanup: () -> Void)
-    case borrowed(pointer: UnsafeMutableRawPointer, count: Int, cleanup: () -> Void)
-
-    var rawPointer: UnsafeMutableRawPointer {
-      switch self {
-      case let .owned(pointer, _, _), let .borrowed(pointer, _, _):
-        return pointer
-      }
-    }
-
-    var byteLength: Int {
-      switch self {
-      case let .owned(_, count, _), let .borrowed(_, count, _):
-        return count
-      }
-    }
-
-    var isNativeBacked: Bool {
-      switch self {
-      case .owned, .borrowed:
-        return true
-      }
-    }
-
-    func cleanup() {
-      switch self {
-      case let .owned(_, _, cleanup), let .borrowed(_, _, cleanup):
-        cleanup()
-      }
-    }
-  }
-
-  private let storage: Storage
+public final class ArrayBuffer: AnyArrayBuffer, Sendable {
+  private let storage: ArrayBufferStorage
 
   private var rawPointer: UnsafeMutableRawPointer {
     return storage.rawPointer
@@ -60,12 +26,25 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
     return storage.isNativeBacked
   }
 
-  init(wrapping data: UnsafeMutableRawPointer, count: Int, cleanup: @escaping () -> Void) {
-    self.storage = .owned(pointer: data, count: count, cleanup: cleanup)
+  internal init(owning data: UnsafeMutableRawPointer, count: Int, cleanup: @escaping () -> Void) {
+    self.storage = .ownedNative(
+      NativeArrayBufferStorage(pointer: data, byteLength: count, cleanup: cleanup))
   }
 
   init(borrowing data: UnsafeMutableRawPointer, count: Int, cleanup: @escaping () -> Void) {
-    self.storage = .borrowed(pointer: data, count: count, cleanup: cleanup)
+    self.storage = .nativeBacked(
+      NativeArrayBufferStorage(pointer: data, byteLength: count, cleanup: cleanup))
+  }
+
+  /// Allocates a new native ArrayBuffer of the given size with zero-initialized memory.
+  convenience init(size: Int, initializeToZero: Bool = true) {
+    let data = UnsafeMutablePointer<UInt8>.allocate(capacity: size)
+    if initializeToZero {
+      data.initialize(repeating: 0, count: size)
+    }
+    self.init(owning: data, count: size) {
+      data.deallocate()
+    }
   }
 
   deinit {
@@ -111,30 +90,17 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
     }
   }
 
-  // MARK: - Allocate
-
-  /// Allocates a new native ArrayBuffer of the given size with zero-initialized memory.
-  public static func allocate(size: Int, initializeToZero: Bool = true) -> ArrayBuffer {
-    let data = UnsafeMutablePointer<UInt8>.allocate(capacity: size)
-    if initializeToZero {
-      data.initialize(repeating: 0, count: size)
-    }
-    return ArrayBuffer(wrapping: data, count: size) {
-      data.deallocate()
-    }
-  }
-
   // MARK: - Copy
 
   /// Copies the given raw pointer into a new native ArrayBuffer.
   public static func copy(of other: UnsafeRawPointer, count: Int) -> ArrayBuffer {
     if count == 0 {
-      return ArrayBuffer.allocate(size: 0, initializeToZero: false)
+      return ArrayBuffer(size: 0, initializeToZero: false)
     }
     let copy = UnsafeMutablePointer<UInt8>.allocate(capacity: count)
     copy.initialize(from: other.assumingMemoryBound(to: UInt8.self), count: count)
 
-    return ArrayBuffer(wrapping: copy, count: count) {
+    return ArrayBuffer(owning: copy, count: count) {
       copy.deallocate()
     }
   }
@@ -143,9 +109,9 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
   public static func copy(data: Data) throws -> ArrayBuffer {
     let size = data.count
     if size == 0 {
-      return ArrayBuffer.allocate(size: 0, initializeToZero: false)
+      return ArrayBuffer(size: 0, initializeToZero: false)
     }
-    let arrayBuffer = ArrayBuffer.allocate(size: size, initializeToZero: false)
+    let arrayBuffer = ArrayBuffer(size: size, initializeToZero: false)
 
     try data.withUnsafeBytes { rawPointer in
       guard let baseAddress = rawPointer.baseAddress else {
@@ -166,7 +132,7 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
     guard let baseAddress = data.baseAddress else {
       throw MissingBaseAddressError()
     }
-    return ArrayBuffer(wrapping: baseAddress, count: data.count, cleanup: cleanup)
+    return ArrayBuffer(owning: baseAddress, count: data.count, cleanup: cleanup)
   }
 
   /// Zero-copy wraps the given Data object in an ArrayBuffer. The Data's backing store
@@ -177,7 +143,7 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
   public static func wrap(dataWithoutCopy data: Data) -> ArrayBuffer {
     let retained = Unmanaged.passRetained(data as NSData)
     let pointer = UnsafeMutableRawPointer(mutating: retained.takeUnretainedValue().bytes)
-    return ArrayBuffer(wrapping: pointer, count: data.count) {
+    return ArrayBuffer(owning: pointer, count: data.count) {
       retained.release()
     }
   }
@@ -220,7 +186,7 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
     let count = typedArray.byteLength
 
     if count == 0 {
-      return ArrayBuffer.allocate(size: 0)
+      return ArrayBuffer(size: 0)
     }
     return typedArray.withUnsafeBytes { bytes in
       let backingBuffer = typedArray.getArrayBuffer()
@@ -238,7 +204,7 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
 
   private static func from(jsArrayBuffer: consuming JavaScriptArrayBuffer) -> ArrayBuffer {
     if jsArrayBuffer.size == 0 {
-      return ArrayBuffer.allocate(size: 0)
+      return ArrayBuffer(size: 0)
     }
     if let borrowed = jsArrayBuffer.tryBorrowMutableBuffer() {
       return ArrayBuffer(
@@ -284,8 +250,56 @@ extension ArrayBuffer: JavaScriptDecodable, JavaScriptEncodable {
 }
 
 internal final class ArrayBufferJavaScriptValueConversionException:
-  GenericException<JavaScriptValue.Kind>, @unchecked Sendable {
+  GenericException<JavaScriptValue.Kind>, @unchecked Sendable
+{
   override var reason: String {
     "Given argument is not an ArrayBuffer or TypedArray, got \(param.rawValue)"
   }
+}
+
+/// Describes the native storage mode used by `ArrayBuffer`.
+///
+/// Both cases are native-backed and safe to access from native code. `.ownedNative` owns
+/// allocated memory, while `.nativeBacked` retains a borrowed native JSI `MutableBuffer`.
+private enum ArrayBufferStorage: Sendable {
+  case ownedNative(NativeArrayBufferStorage)
+  case nativeBacked(NativeArrayBufferStorage)
+
+  var rawPointer: UnsafeMutableRawPointer {
+    switch self {
+    case .ownedNative(let storage), .nativeBacked(let storage):
+      return storage.pointer
+    }
+  }
+
+  var byteLength: Int {
+    switch self {
+    case .ownedNative(let storage), .nativeBacked(let storage):
+      return storage.byteLength
+    }
+  }
+
+  var isNativeBacked: Bool {
+    switch self {
+    case .ownedNative, .nativeBacked:
+      return true
+    }
+  }
+
+  func cleanup() {
+    switch self {
+    case .ownedNative(let storage), .nativeBacked(let storage):
+      storage.cleanup()
+    }
+  }
+}
+
+/// Stores a native-memory byte range and the cleanup closure that owns or retains it.
+///
+/// This is `@unchecked Sendable` because Swift cannot prove raw pointer safety, but
+/// `ArrayBufferStorage` only exposes memory that is native-backed and lifetime-retained.
+private struct NativeArrayBufferStorage: @unchecked Sendable {
+  let pointer: UnsafeMutableRawPointer
+  let byteLength: Int
+  let cleanup: () -> Void
 }
