@@ -10,6 +10,9 @@
 
 ### 🐛 Bug fixes
 
+- Host the iOS camera preview on the view's backing layer so it no longer zooms into place on launch. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
+- Replace the deprecated `videoOrientation` API with `AVCaptureDevice.RotationCoordinator` for the iOS camera preview. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 57.0.0 — 2026-06-25
