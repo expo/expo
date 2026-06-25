@@ -7,8 +7,10 @@ import expo.modules.manifests.core.Manifest
 import okhttp3.Headers
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.OkHttpClient
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.Reader
+import java.net.URI
 
 class DevLauncherManifestParser(
   private val httpClient: OkHttpClient,
@@ -35,8 +37,32 @@ class DevLauncherManifestParser(
 
   suspend fun parseManifest(): Manifest {
     downloadManifest().use {
-      return Manifest.fromManifestJson(JSONObject(it.readText()))
+      return Manifest.fromManifestJson(resolveManifestUrls(JSONObject(it.readText())))
     }
+  }
+
+  private fun resolveManifestUrls(manifestJson: JSONObject): JSONObject {
+    if (manifestJson.has("bundleUrl")) {
+      manifestJson.put("bundleUrl", resolveUrl(manifestJson.getString("bundleUrl")))
+    }
+
+    manifestJson.optJSONObject("launchAsset")?.let { launchAsset ->
+      launchAsset.put("url", resolveUrl(launchAsset.getString("url")))
+    }
+
+    manifestJson.optJSONArray("assets")?.resolveAssetUrls()
+    return manifestJson
+  }
+
+  private fun JSONArray.resolveAssetUrls() {
+    for (i in 0 until length()) {
+      val asset = getJSONObject(i)
+      asset.put("url", resolveUrl(asset.getString("url")))
+    }
+  }
+
+  private fun resolveUrl(rawUrl: String): String {
+    return URI(url.toString()).resolve(rawUrl).toString()
   }
 
   private fun getHeaders(): Headers {
