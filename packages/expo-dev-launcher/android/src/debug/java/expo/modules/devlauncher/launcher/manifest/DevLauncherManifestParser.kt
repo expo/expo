@@ -44,9 +44,20 @@ class DevLauncherManifestParser(
       "expo-platform" to "android",
       "accept" to "application/expo+json,application/json"
     )
+    headersMap.putAll(getForwardedHeaders(url))
     if (installationID != null) {
       headersMap["expo-dev-client-id"] = installationID
     }
     return headersMap.toHeaders()
+  }
+
+  private fun getForwardedHeaders(url: Uri): Map<String, String> {
+    val authority = url.encodedAuthority ?: return emptyMap()
+    val scheme = url.scheme ?: return emptyMap()
+    return mutableMapOf(
+      "forwarded" to "host=\"$authority\";proto=$scheme",
+      "x-forwarded-host" to authority,
+      "x-forwarded-proto" to scheme
+    )
   }
 }

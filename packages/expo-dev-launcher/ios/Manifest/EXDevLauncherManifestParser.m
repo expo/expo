@@ -103,6 +103,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
   [request setHTTPMethod:method];
   [request setValue:@"ios" forHTTPHeaderField:@"expo-platform"];
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"accept"];
+  [self _setForwardedHeadersOnRequest:request];
   [request setTimeoutInterval:self.requestTimeout];
   if (self.installationID) {
     [request setValue:self.installationID forHTTPHeaderField:@"Expo-Dev-Client-ID"];
@@ -115,6 +116,19 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
     }
   }];
   [dataTask resume];
+}
+
+- (void)_setForwardedHeadersOnRequest:(NSMutableURLRequest *)request
+{
+  NSURLComponents *components = [NSURLComponents componentsWithURL:self.url resolvingAgainstBaseURL:NO];
+  if (!components.host || !components.scheme) {
+    return;
+  }
+
+  NSString *authority = components.port ? [NSString stringWithFormat:@"%@:%@", components.host, components.port] : components.host;
+  [request setValue:[NSString stringWithFormat:@"host=\"%@\";proto=%@", authority, components.scheme] forHTTPHeaderField:@"Forwarded"];
+  [request setValue:authority forHTTPHeaderField:@"X-Forwarded-Host"];
+  [request setValue:components.scheme forHTTPHeaderField:@"X-Forwarded-Proto"];
 }
 
 @end
