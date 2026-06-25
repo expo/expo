@@ -181,6 +181,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   deinit {
+    observer?.notifyPlayerDeinit(player: self)
     observer?.cleanup()
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
