@@ -72,6 +72,12 @@ module Expo
     # so it is not resolved through the Expo precompiled tarball pipeline.
     CUSTOM_XCFRAMEWORK_DEPENDENCIES = %w[ExpoModulesJSI].freeze
 
+    # Mangled-name prefix of Swift symbols defined by the ExpoModulesCore module.
+    # Used to attribute a prebuilt binary's undefined symbols to ExpoModulesCore
+    # with no false positives (symbols defined in core but mangled under other
+    # top-level contexts, e.g. ObjC type extensions, are intentionally not matched).
+    SWIFT_CORE_SYMBOL_PREFIX = '_$s15ExpoModulesCore'.freeze
+
     # Module-level caches (initialized lazily)
     @pod_lookup_map = nil
     @repo_root = nil
@@ -86,6 +92,7 @@ module Expo
     @target_platform = nil
     @xcframework_slice_cache = nil
     @status_cache = {}                  # Hash: pod_name -> resolve_prebuilt_status result
+    @prebuilt_abi_cache = nil           # Hash: [tarball, undefined?] -> Set<String> of symbol names
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -1925,7 +1932,127 @@ module Expo
           }
         end
 
+        missing_symbols = prebuilt_core_abi_missing_symbols(pod_name, own_resolution[:resolved])
+        if missing_symbols
+          Pod::UI.warn "[Expo-precompiled] #{pod_name}: the prebuilt xcframework imports #{missing_symbols.size} ExpoModulesCore symbol(s) that the resolved prebuilt ExpoModulesCore artifact does not export (e.g. `#{missing_symbols.first}`). The two artifacts were compiled from different expo-modules-core versions, which would crash at app launch (dyld `Symbol not found`) and trigger ITMS-90863 on App Store uploads. Falling back to building #{pod_name} from source. Run `npx expo install --fix` to align your Expo package versions and restore the precompiled build."
+          return { available: false, reason: :core_abi_mismatch, missing_symbols_count: missing_symbols.size }
+        end
+
         own_resolution
+      end
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Helpers: prebuilt ABI compatibility
+      # ──────────────────────────────────────────────────────────────────────
+
+      # Returns the Swift symbols that a pod's prebuilt binary imports from
+      # ExpoModulesCore but the resolved prebuilt ExpoModulesCore artifact does
+      # not export, or nil when the artifacts are compatible or the check does
+      # not apply (core not prebuilt, no binary slice found, tooling failure).
+      #
+      # Prebuilt artifacts are compiled in the expo/expo monorepo at each
+      # package's publish time, so a project that resolves Expo packages from
+      # different publish waves (e.g. a stale lockfile keeping an older
+      # expo-modules-core while sibling packages float to newer patches) can
+      # end up with module binaries that strongly bind to core symbols the
+      # embedded ExpoModulesCore.framework does not export. That combination
+      # installs and builds cleanly but aborts at app launch (dyld `Symbol not
+      # found`) and is flagged by App Store Connect as ITMS-90863.
+      #
+      # @param pod_name [String] The pod being resolved
+      # @param resolved [Array] [pod_info, product_name, tarball] from resolve_own_prebuilt_info
+      # @return [Array<String>, nil] Missing mangled symbol names, or nil when compatible/skipped
+      def prebuilt_core_abi_missing_symbols(pod_name, resolved)
+        return nil if pod_name == 'ExpoModulesCore'
+
+        core_exports = prebuilt_core_swift_exports
+        return nil if core_exports.nil?
+
+        _pod_info, product_name, tarball = resolved
+        imports = swift_symbols_from_prebuilt(tarball, product_name, undefined: true)
+        return nil if imports.nil? || imports.empty?
+
+        missing = imports.reject { |symbol| core_exports.include?(symbol) }
+        missing.empty? ? nil : missing.sort
+      end
+
+      # Exported symbol names of the resolved prebuilt ExpoModulesCore binary,
+      # or nil when ExpoModulesCore is not using a prebuilt artifact (in that
+      # case every Expo module also builds from source via the dependency check,
+      # so there is nothing to validate). Memoized for the whole install.
+      def prebuilt_core_swift_exports
+        unless defined?(@prebuilt_core_swift_exports_resolved) && @prebuilt_core_swift_exports_resolved
+          @prebuilt_core_swift_exports_resolved = true
+          @prebuilt_core_swift_exports = nil
+          unless build_from_source?('ExpoModulesCore')
+            core_resolution = resolve_own_prebuilt_info('ExpoModulesCore')
+            if core_resolution[:available]
+              _core_info, core_product, core_tarball = core_resolution[:resolved]
+              @prebuilt_core_swift_exports = swift_symbols_from_prebuilt(core_tarball, core_product, undefined: false)
+            end
+          end
+        end
+        @prebuilt_core_swift_exports
+      end
+
+      # Extracts symbol names from the binary inside a prebuilt xcframework tarball.
+      # With undefined: true, returns the undefined (imported) symbols attributable
+      # to ExpoModulesCore (SWIFT_CORE_SYMBOL_PREFIX); with undefined: false,
+      # returns all exported symbols. Returns nil when the binary cannot be
+      # located or inspected; callers treat nil as "skip the check" so a
+      # tooling failure never breaks the install.
+      #
+      # @param tarball [String] Path to the <Product>.tar.gz artifact
+      # @param product_name [String] The framework/product name inside the tarball
+      # @param undefined [Boolean] Whether to list undefined (imported) symbols
+      # @return [Set<String>, nil] Symbol names, or nil on failure
+      def swift_symbols_from_prebuilt(tarball, product_name, undefined:)
+        @prebuilt_abi_cache ||= {}
+        cache_key = [tarball, undefined]
+        return @prebuilt_abi_cache[cache_key] if @prebuilt_abi_cache.key?(cache_key)
+
+        @prebuilt_abi_cache[cache_key] = begin
+          member = macho_member_in_tarball(tarball, product_name)
+          if member.nil?
+            nil
+          else
+            binary, status = Open3.capture2('tar', '-xOzf', tarball, member)
+            if status.success?
+              symbols = nil
+              Tempfile.create(['expo-prebuilt-abi', '.bin']) do |file|
+                file.binmode
+                file.write(binary)
+                file.flush
+                flags = undefined ? '-ju' : '-gjU'
+                output, nm_status = Open3.capture2('xcrun', 'nm', flags, file.path)
+                if nm_status.success?
+                  lines = output.lines.map(&:strip).reject(&:empty?)
+                  lines = lines.select { |symbol| symbol.start_with?(SWIFT_CORE_SYMBOL_PREFIX) } if undefined
+                  symbols = lines.to_set
+                end
+              end
+              symbols
+            end
+          end
+        rescue StandardError => e
+          Pod::UI.warn "[Expo-precompiled] Failed to inspect symbols of #{File.basename(tarball)}: #{e.message}"
+          nil
+        end
+      end
+
+      # Finds the framework binary member for a product inside an xcframework
+      # tarball, preferring the ios-arm64 device slice (the ABI is identical
+      # across slices built from the same sources). Returns nil when no
+      # flat-layout framework binary is present (e.g. macOS versioned bundles).
+      def macho_member_in_tarball(tarball, product_name)
+        entries_output, status = Open3.capture2e('tar', 'tzf', tarball)
+        return nil unless status.success?
+
+        suffix = "/#{product_name}.framework/#{product_name}"
+        candidates = entries_output.lines.map(&:strip).select do |entry|
+          entry.end_with?(suffix) && !entry.include?('.dSYM/')
+        end
+        candidates.find { |entry| entry.include?('/ios-arm64/') } || candidates.first
       end
 
       # Candidate parent dirs (each holds <flavor>/<Name>.xcframework subtrees) for
@@ -2338,6 +2465,8 @@ module Expo
           'prebuilt tarball not found'
         when :missing_platform_slice
           "prebuilt xcframework does not contain a slice for #{@target_platform}"
+        when :core_abi_mismatch
+          'prebuilt binary is ABI-incompatible with the resolved prebuilt ExpoModulesCore artifact (expo-modules-core version skew)'
         when :dependency_unavailable
           reason = format_prebuilt_unavailable_reason(reason: info[:dependency_reason], path: info[:dependency_path])
           "dependency #{info[:dependency]} is not using prebuilt: #{reason}"
