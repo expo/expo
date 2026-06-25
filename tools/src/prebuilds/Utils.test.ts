@@ -176,4 +176,17 @@ describe('getVersionsInfoAsync — Hermes V1 polarity', () => {
     const { hermesVersion } = await getVersionsInfoAsync({});
     assert.equal(hermesVersion, classicVersion);
   });
+
+  // React Native 0.87+ collapsed the dual engines back to a single HERMES_VERSION_NAME.
+  // With V1 enabled by default, resolution must fall back to HERMES_VERSION_NAME instead
+  // of throwing because the (now absent) HERMES_V1_VERSION_NAME key can't be read.
+  it('falls back to HERMES_VERSION_NAME when there is no V1 key (single-engine RN)', async (t) => {
+    if (!(classicVersion && !v1Version)) {
+      t.skip('version.properties exposes a V1 key; single-engine fallback not applicable');
+      return;
+    }
+    delete process.env.RCT_HERMES_V1_ENABLED;
+    const { hermesVersion } = await getVersionsInfoAsync({});
+    assert.equal(hermesVersion, classicVersion);
+  });
 });
