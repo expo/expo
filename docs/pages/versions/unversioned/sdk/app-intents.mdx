@@ -11,31 +11,101 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample } from '~/ui/components/ConfigSection';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
-> **important** **This library is currently in [alpha](/more/release-statuses/#alpha) and will frequently experience breaking changes.**
+> **important** This library is currently in [alpha](/more/release-statuses/#alpha) and will frequently experience breaking changes.
 
-`expo-app-intents` allows your app to expose Apple App Intents while keeping the intent declarations in Swift using [inline modules](/modules/inline-modules-reference/), where Apple's build-time metadata extraction can find them. The package provides the JavaScript API, native invocation queue, entity storage, config plugin, and a starter `app-intents/` directory for native inline module code.
+`expo-app-intents` allows your app to expose Apple App Intents while keeping the intent declarations in Swift using [inline modules](/modules/inline-modules-reference/), where Apple's build-time metadata extraction can find them. The package provides the JavaScript API, native invocation queue, entity storage, config plugin, and a starter **app-intents** directory for native inline module code.
 
 App Intent types cannot be created dynamically from JavaScript at runtime. You have to declare `AppIntent`, `AppEntity`, `EntityQuery`, and `AppShortcutsProvider` classes in Swift, then use this package to hand invocations to JavaScript and keep dynamic entity values in sync.
+
+## Limitations
+
+With `expo-app-intents`, you can implement many Apple Intelligence features. As of now, there is no way to support [on-screen intelligence](https://developer.apple.com/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri).
 
 ## Installation
 
 <APIInstallSection />
 
+
+## Configuration in app config
+
+The initializer writes the required configuration for you:
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-app-intents"],
+    "experiments": {
+      "inlineModules": {
+        "watchedDirectories": ["app-intents"]
+      }
+    }
+  }
+}
+```
+
+</ConfigPluginExample>
+
+If you use a directory other than **app-intents**, pass the same directory name to the config plugin:
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [["expo-app-intents", { "directory": "siri" }]],
+    "experiments": {
+      "inlineModules": {
+        "watchedDirectories": ["siri"]
+      }
+    }
+  }
+}
+```
+
+</ConfigPluginExample>
+
+## How it works
+
+App Intents are different from most Expo APIs because Apple discovers them at build time. The Swift types that describe your intents, entities, queries, and shortcut phrases must be compiled into the app target so Xcode's App Intents metadata processor can extract them. `expo-app-intents` uses Expo inline modules for that app-target Swift and provides a regular Expo package for the JavaScript API, native storage, and event delivery.
+
+The generated **app-intents** directory is watched by Expo inline modules and contains your app-owned Swift:
+
+- `AppShortcuts.swift` defines your concrete `AppShortcutsProvider`. Shortcut phrases are static metadata: they are compiled into the app and cannot be added dynamically from JavaScript.
+- `AppIntentsSetup.swift` connects the app-target `AppShortcutsProvider` to the `expo-app-intents` runtime so JavaScript can request `AppShortcuts.updateAppShortcutParameters()` via the `expo-app-intents` package.
+- The remaining Swift files define concrete `AppIntent`, `AppEntity`, and `EntityQuery` types. They compile into the app target, but are not registered as Expo modules unless they contain an Expo module definition.
+
+When an intent runs, its `perform()` method should finish the native work that Siri or Shortcuts expects and then dispatch the intent to JavaScript/TypeScript, for example:
+
+```swift
+await AppIntentDispatcher.shared.dispatch(
+  name: "orderFood",
+  params: ["dishId": .string(dish.id), "dishName": .string(dish.name)]
+)
+```
+
+`AppIntentDispatcher` is a Swift actor. It records the invocation in native storage first, then emits an `onIntent` event if the JavaScript runtime is already observing. This means intent delivery is at-least-once: JavaScript should handle each invocation by `id` and call `removePendingInvocationAsync(id)` after the action has been applied.
+
+If Siri or Shortcuts runs while the app is cold, the event cannot be delivered immediately. The invocation stays in the pending queue. When your app starts, `useAppIntents()` calls your handler once with the current pending invocations and `newIntent` set to `null`; later live invocations call the handler again with the new invocation. You can also read the queue manually with `getPendingInvocationsAsync()`.
+
+Parameterized intents use native entities. For example, the restaurant template defines a `DishEntity` and `DishQuery` in Swift, while JavaScript supplies the current dish list with `setEntityCatalogAsync('dish', dishes)`. The native query reads that catalog through `AppIntentEntityStore.shared`, so Siri and Shortcuts can resolve spoken values by ID, title, or synonym. Calling `setEntityCatalogAsync()` replaces the catalog and requests a shortcut parameter refresh; call it again whenever those values change.
+
+Assistant schema intents, such as the journal example, are also defined in app-target Swift. The schema intent can be discovered directly on supported iOS versions, but the template includes a shortcut-facing wrapper intent so the main `AppShortcutsProvider` can remain available on devices below iOS 18. If your app only supports iOS 18 or later for that provider, you can reference the schema intent directly and remove the wrapper.
+
+## Usage
+
 After installing the package, run the initializer from your project root:
 
-```sh
-npx expo-app-intents init
-```
+<Terminal cmd={['$ npx expo-app-intents init']} />
 
-This command adds the config plugin, enables inline modules for the top-level `app-intents/` directory, and writes starter Swift files. Then rebuild the native project:
+This command adds the config plugin, enables inline modules for the top-level **app-intents** directory, and writes starter Swift files. Then rebuild the native project:
 
-```sh
-npx expo prebuild -p ios
-npx expo run:ios
-```
+<Terminal cmd={['$ npx expo prebuild -p ios', '$ npx expo run:ios']} />
 
-The app intents are now set up in your app. Depending on your choice of examples you can now add handlers or populate the app intents on the JavaScript side:
+The app intents are now set up in your app. Depending on your choice of examples, you can now add handlers or populate the app intents on the JavaScript side:
 
 <Collapsible summary="Handle the counter example">
 
@@ -167,85 +237,7 @@ export function JournalIntentHandler() {
 
 </Collapsible>
 
-## Configuration in app config
-
-The initializer writes the required configuration for you:
-
-<ConfigPluginExample>
-
-```json app.json
-{
-  "expo": {
-    "plugins": ["expo-app-intents"],
-    "experiments": {
-      "inlineModules": {
-        "watchedDirectories": ["app-intents"]
-      }
-    }
-  }
-}
-```
-
-</ConfigPluginExample>
-
-If you use a directory other than `app-intents`, pass the same directory to the config plugin:
-
-<ConfigPluginExample>
-
-```json app.json
-{
-  "expo": {
-    "plugins": [["expo-app-intents", { "directory": "siri" }]],
-    "experiments": {
-      "inlineModules": {
-        "watchedDirectories": ["siri"]
-      }
-    }
-  }
-}
-```
-
-</ConfigPluginExample>
-
-## How it works
-
-App Intents are different from most Expo APIs because Apple discovers them at build time. The Swift types that describe your intents, entities, queries, and shortcut phrases must be compiled into the app target so Xcode's App Intents metadata processor can extract them. `expo-app-intents` uses Expo inline modules for that app-target Swift and provides a regular Expo package for the JavaScript API, native storage, and event delivery.
-
-The generated `app-intents/` directory is watched by Expo inline modules and contains your app-owned Swift:
-
-- `AppShortcuts.swift` defines your concrete `AppShortcutsProvider`. Shortcut phrases are static metadata: they are compiled into the app and cannot be added dynamically from JavaScript.
-- `AppIntentsSetup.swift` connects the app-target `AppShortcutsProvider` to the `expo-app-intents` runtime so JavaScript can request `AppShortcuts.updateAppShortcutParameters()` via the `expo-app-intents` package.
-- The remaining Swift files define concrete `AppIntent`, `AppEntity`, and `EntityQuery` types. They compile into the app target, but are not registered as Expo modules unless they contain an Expo module definition.
-
-When an intent runs, its `perform()` method should finish the native work that Siri or Shortcuts expects and then dispatch the intent to JS, for example:
-
-```swift
-await AppIntentDispatcher.shared.dispatch(
-  name: "orderFood",
-  params: ["dishId": .string(dish.id), "dishName": .string(dish.name)]
-)
-```
-
-`AppIntentDispatcher` is a Swift actor. It records the invocation in native storage first, then emits an `onIntent` event if the JavaScript runtime is already observing. This means intent delivery is at-least-once: JavaScript should handle each invocation by `id` and call `removePendingInvocationAsync(id)` after the action has been applied.
-
-If Siri or Shortcuts runs while the app is cold, the event cannot be delivered immediately. The invocation stays in the pending queue. When your app starts, `useAppIntents()` calls your handler once with the current pending invocations and `newIntent` set to `null`; later live invocations call the handler again with the new invocation. You can also read the queue manually with `getPendingInvocationsAsync()`.
-
-Parameterized intents use native entities. For example, the restaurant template defines a `DishEntity` and `DishQuery` in Swift, while JavaScript supplies the current dish list with `setEntityCatalogAsync('dish', dishes)`. The native query reads that catalog through `AppIntentEntityStore.shared`, so Siri and Shortcuts can resolve spoken values by ID, title, or synonym. Calling `setEntityCatalogAsync()` replaces the catalog and requests a shortcut parameter refresh; call it again whenever those values change.
-
-Assistant schema intents, such as the journal example, are also defined in app-target Swift. The schema intent can be discovered directly on supported iOS versions, but the template includes a shortcut-facing wrapper intent so the main `AppShortcutsProvider` can remain available on devices below iOS 18. If your app only supports iOS 18 or later for that provider, you can reference the schema intent directly and remove the wrapper.
-
-## Learn more about App Intents
-
-In order to get practical knowledge of how to use the `expo-app-intents` package start by analyzing basic examples suggested when running `npx expo-app-intents init`. The counter example is the simplest and once you understand it you will have a good knowledge of how the foundation `expo-app-intents` works. Later you can move onto the restaurant and journal examples to see more practical usage.
-The main goal of the examples is to demonstrate the process of connecting the JS and Swift runtimes. Once you master those examples, you should consider learning more about App Intent development from excellent learning resources provided by Apple:
-
-- [Accelerating app interactions with App Intents](https://developer.apple.com/documentation/appintents/acceleratingappinteractionswithappintents)
-- [Code-along: Make your app available to Siri](https://developer.apple.com/videos/play/wwdc2026/344/)
-- [Integrating your calendar app with Apple Intelligence](https://developer.apple.com/documentation/AppIntents/integrating-your-calendar-app-with-apple-intelligence)
-
-## Usage
-
-```ts
+```tsx Basic example
 import * as AppIntents from 'expo-app-intents';
 
 export function AppIntentHandler() {
@@ -267,7 +259,7 @@ export function AppIntentHandler() {
 }
 ```
 
-Feed dynamic values for parameterized intents from JavaScript:
+Feed dynamic values for parameterized intents from JavaScript/TypeScript:
 
 ```ts
 await AppIntents.setEntityCatalogAsync('dish', [
@@ -282,17 +274,22 @@ Classic App Shortcut phrases can interpolate at most one non-array parameter. Th
 
 ## Platform constraints
 
-- Requires a native iOS build; `expo-app-intents` is not available in Expo Go.
+- Requires a native iOS build. `expo-app-intents` is not available in Expo Go.
 - App Shortcut phrases are compiled into the app and cannot be added dynamically from JavaScript.
 - Every App Shortcut phrase must include `\(.applicationName)`.
 - A single App Shortcut phrase can interpolate at most one non-array parameter.
 - Apps can define at most 10 App Shortcuts.
 - Assistant schema examples require iOS 18 or later and must match one of Apple's [supported App Intent domains](https://developer.apple.com/documentation/appintents/app-schema-domains).
 
-## Expo-app-intents limitations
+## Additional resources
 
-Using expo-app-intents you can implement many Apple Intelligence features, as of now there no way of supporting
-[on-screen intelligence](https://developer.apple.com/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri).
+To learn how to use `expo-app-intents`, start with the basic examples that `npx expo-app-intents init` scaffolds. The counter example is the simplest. Once you understand it, you understand the foundation `expo-app-intents` is built on. From there, move on to the restaurant and journal examples for more practical usage.
+
+The main goal of the examples is to demonstrate the process of connecting the JS and Swift runtimes. Once you master those examples, you should consider learning more about App Intent development from Apple's resources:
+
+- [Accelerating app interactions with App Intents](https://developer.apple.com/documentation/appintents/acceleratingappinteractionswithappintents)
+- [Code-along: Make your app available to Siri](https://developer.apple.com/videos/play/wwdc2026/344/)
+- [Integrating your calendar app with Apple Intelligence](https://developer.apple.com/documentation/AppIntents/integrating-your-calendar-app-with-apple-intelligence)
 
 ## API
 
