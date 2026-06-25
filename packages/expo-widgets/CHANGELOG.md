@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added support for rendering the `Background` view in widgets and Live Activities. ([#46918](https://github.com/expo/expo/pull/46918) by [@crockalet](https://github.com/crockalet))
 - [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
 - Expose shared directory for images. ([#46339](https://github.com/expo/expo/pull/46339) by [@jakex7](https://github.com/jakex7))
 - [iOS] Expose ActivityKit's `staleDate` on `LiveActivity.start()` and `LiveActivity.update()`. ([#46343](https://github.com/expo/expo/pull/46343) by [@KyleAsaff](https://github.com/KyleAsaff))

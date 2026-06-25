@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added the SwiftUI `Background` view, which draws a view (such as an image) behind its content. Unlike `ZStack`, it is sized to the foreground content, so a full-bleed background does not expand or compress the content. ([#46918](https://github.com/expo/expo/pull/46918) by [@crockalet](https://github.com/crockalet))
 - [iOS] Added the SwiftUI `presentationSizing` modifier (`automatic`/`fitted`/`form`/`page`) to control sheet sizing, and applied `fitted` in `community/bottom-sheet` dynamic sizing so the sheet hugs its content on iPad instead of opening near full-screen. ([#47050](https://github.com/expo/expo/pull/47050) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `accessibilityElement` modifier, which collapses a view's subtree into a single accessibility element via `ignore`, `combine`, or `contain`. ([#47156](https://github.com/expo/expo/pull/47156) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added the SwiftUI `activityBackgroundTint` modifier for setting Live Activity background. ([#46756](https://github.com/expo/expo/pull/46756) by [@jakex7](https://github.com/jakex7))
