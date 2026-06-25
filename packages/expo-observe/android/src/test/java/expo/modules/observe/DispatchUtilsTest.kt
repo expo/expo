@@ -107,7 +107,7 @@ class DispatchUtilsClassifyResponseTest {
     assertEquals(DispatchResult.Success, result)
   }
 
-  // MARK: -- Retryable per OTLP (408, 429, 502, 503, 504)
+  // MARK: -- Retryable per OTLP (429, 502, 503, 504)
 
   @Test
   fun `429 returns Retryable with null retryAfter when no header`() {
@@ -143,8 +143,8 @@ class DispatchUtilsClassifyResponseTest {
   }
 
   @Test
-  fun `408 502 504 are all Retryable`() {
-    for (code in intArrayOf(408, 502, 504)) {
+  fun `429 502 504 are all Retryable`() {
+    for (code in intArrayOf(429, 502, 504)) {
       val result = DispatchUtils.classifyResponse(
         statusCode = code,
         retryAfterHeader = null,

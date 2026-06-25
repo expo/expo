@@ -142,7 +142,7 @@ class EventDispatcherTest {
   @Test
   fun `dispatch returns NonRetryable on 500 server error`() =
     runTest {
-      // 500 is NOT in OTLP's retryable list — only 408/429/502/503/504 are. 500 means an
+      // 500 is NOT in OTLP's retryable list — only 429/502/503/504 are. 500 means an
       // internal server error we can't reason about, so we drop the batch.
       mockServer.enqueue(
         MockResponse()

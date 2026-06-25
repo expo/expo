@@ -20,7 +20,7 @@ import kotlin.random.Random
  *   pending-ID removal and counter reset match `Success`; the case stays distinct so the
  *   call site can log the rejected count and `errorMessage` clearly rather than describing
  *   it as a drop.
- * - `RetryableFailure` — transient failure (408/429/502/503/504 or transport error); retry
+ * - `RetryableFailure` — transient failure (429/502/503/504 or transport error); retry
  *   the same batch after `retryAfterMs` or a client-computed backoff.
  * - `NonRetryableFailure` — permanent failure (4xx/5xx outside the retryable set, encoding
  *   error); drop the batch so it can't wedge the queue.
@@ -74,7 +74,7 @@ object DispatchUtils {
     }
 
     return when (statusCode) {
-      408, 429, 502, 503, 504 -> DispatchResult.RetryableFailure(retryAfter)
+      429, 502, 503, 504 -> DispatchResult.RetryableFailure(retryAfter)
       else -> {
         val excerpt = bodyExcerpt()
         val suffix = if (excerpt.isEmpty()) "" else ": $excerpt"
