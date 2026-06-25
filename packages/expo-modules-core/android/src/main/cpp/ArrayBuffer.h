@@ -14,7 +14,7 @@ class JavaScriptRuntime;
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
-class ArrayBufferStorage: public jsi::MutableBuffer {
+class ArrayBufferStorage : public jsi::MutableBuffer {
 public:
   ~ArrayBufferStorage() override = default;
 
@@ -23,9 +23,9 @@ public:
   [[nodiscard]] virtual jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) = 0;
 };
 
-class ByteBufferArrayBufferStorage: public ArrayBufferStorage {
+class ByteBufferArrayBufferStorage : public ArrayBufferStorage {
 public:
-  explicit ByteBufferArrayBufferStorage(const jni::alias_ref<jni::JByteBuffer>& byteBuffer);
+  explicit ByteBufferArrayBufferStorage(const jni::alias_ref<jni::JByteBuffer> &byteBuffer);
 
   ~ByteBufferArrayBufferStorage() override;
 
@@ -41,7 +41,7 @@ private:
   jni::global_ref<jni::JByteBuffer> _byteBuffer;
 };
 
-class MutableBufferViewArrayBufferStorage: public ArrayBufferStorage {
+class MutableBufferViewArrayBufferStorage : public ArrayBufferStorage {
 public:
   MutableBufferViewArrayBufferStorage(
     std::shared_ptr<jsi::MutableBuffer> backingBuffer,
@@ -78,17 +78,17 @@ public:
 
   static jni::local_ref<ArrayBuffer::javaobject> newInstance(
     JSIContext *jsiContext,
-    jsi::Runtime& runtime,
-    jsi::ArrayBuffer& arrayBuffer
+    jsi::Runtime &runtime,
+    jsi::ArrayBuffer &arrayBuffer
   );
 
   static jni::local_ref<ArrayBuffer::javaobject> newInstance(
     JSIContext *jsiContext,
-    jsi::Runtime& runtime,
-    expo::TypedArray& typedArray
+    jsi::Runtime &runtime,
+    expo::TypedArray &typedArray
   );
 
-  explicit ArrayBuffer(const jni::alias_ref<jni::JByteBuffer>& byteBuffer);
+  explicit ArrayBuffer(const jni::alias_ref<jni::JByteBuffer> &byteBuffer);
 
   explicit ArrayBuffer(std::shared_ptr<ArrayBufferStorage> storage);
 
