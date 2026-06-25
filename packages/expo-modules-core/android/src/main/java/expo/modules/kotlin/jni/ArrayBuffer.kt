@@ -81,9 +81,11 @@ class ArrayBuffer : Destructible {
   @Throws(Throwable::class)
   fun <R> withJSBytes(body: (ByteBuffer) -> R): R {
     @Suppress("UNCHECKED_CAST")
-    return withJSBytes(JNIFunctionBody { args ->
-      body((args[0] as ByteBuffer).asScopedReadOnlyBuffer())
-    }) as R
+    return withJSBytes(
+      JNIFunctionBody { args ->
+        body((args[0] as ByteBuffer).asScopedReadOnlyBuffer())
+      }
+    ) as R
   }
 
   @Throws(Throwable::class)
@@ -124,9 +126,11 @@ class ArrayBuffer : Destructible {
   @Throws(Throwable::class)
   fun <R> withMutableJSBytes(body: (ByteBuffer) -> R): R {
     @Suppress("UNCHECKED_CAST")
-    return withJSBytes(JNIFunctionBody { args ->
-      body(args[0] as ByteBuffer)
-    }) as R
+    return withJSBytes(
+      JNIFunctionBody { args ->
+        body(args[0] as ByteBuffer)
+      }
+    ) as R
   }
 
   /**
