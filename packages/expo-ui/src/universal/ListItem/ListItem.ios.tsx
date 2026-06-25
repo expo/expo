@@ -2,6 +2,7 @@ import { Button, HStack, RNHostView, Spacer, Text, VStack } from '@expo/ui/swift
 import { buttonStyle, contentShape, foregroundStyle, shapes } from '@expo/ui/swift-ui/modifiers';
 import { Children, isValidElement, type ReactNode } from 'react';
 
+import { omitUserOverridden } from '../modifierUtils';
 import { extractListItemSlots } from './ListItemSlots';
 import type { ListItemProps } from './types';
 
@@ -44,14 +45,20 @@ export function ListItem(props: ListItemProps) {
     trailing: trailingProp,
     supportingText,
     testID,
+    modifiers,
   } = props;
   const slots = extractListItemSlots(children);
   const leading = slots.leading ?? leadingProp;
   const trailing = slots.trailing ?? trailingProp;
   const supporting = slots.supporting ?? supportingText;
 
+  const buttonModifiers = [
+    ...omitUserOverridden([buttonStyle('plain')], modifiers),
+    ...(modifiers ?? []),
+  ];
+
   return (
-    <Button onPress={onPress} modifiers={[buttonStyle('plain')]} testID={testID}>
+    <Button onPress={onPress} modifiers={buttonModifiers} testID={testID}>
       <HStack spacing={12} modifiers={[contentShape(shapes.rectangle())]}>
         {renderAccessory(leading)}
         <VStack alignment="leading" spacing={2}>
