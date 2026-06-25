@@ -186,6 +186,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   expo: ['Expo.ts'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-apple-authentication': ['index.ts'],
+  'expo-app-intents': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': ['index.ts'],
   'expo-auth-session': ['index.ts'],
