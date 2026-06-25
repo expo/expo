@@ -227,7 +227,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (NSURL *)bundleUrl
 {
-  return [EXApiUtil bundleUrlFromManifest:_appRecord.appLoader.manifest];
+  return [EXApiUtil bundleUrlFromManifest:_appRecord.appLoader.manifest relativeTo:_appRecord.appLoader.manifestUrl];
 }
 
 #pragma mark - EXAppFetcherDataSource

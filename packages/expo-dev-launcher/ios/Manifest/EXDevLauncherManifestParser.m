@@ -81,7 +81,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
       }
     }
     NSError *error;
-    NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    NSMutableDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
     if (!jsonObject) {
       NSMutableDictionary *details = [NSMutableDictionary dictionary];
       details[NSLocalizedDescriptionKey] = [NSString stringWithFormat:@"Couldn't parse the manifest. %@", (error ? error.localizedDescription : @"")];
@@ -91,6 +91,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
       onError([[NSError alloc] initWithDomain:@"DevelopmentClient" code:1 userInfo:details]);
       return;
     }
+    [self _resolveManifestUrls:jsonObject];
     EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:jsonObject];
     onParsed(manifest);
   }];
@@ -129,6 +130,32 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
   [request setValue:[NSString stringWithFormat:@"host=\"%@\";proto=%@", authority, components.scheme] forHTTPHeaderField:@"Forwarded"];
   [request setValue:authority forHTTPHeaderField:@"X-Forwarded-Host"];
   [request setValue:components.scheme forHTTPHeaderField:@"X-Forwarded-Proto"];
+}
+
+- (void)_resolveManifestUrls:(NSMutableDictionary *)manifestJson
+{
+  NSString *bundleUrl = manifestJson[@"bundleUrl"];
+  if (bundleUrl) {
+    manifestJson[@"bundleUrl"] = [self _resolveUrlString:bundleUrl];
+  }
+
+  NSMutableDictionary *launchAsset = manifestJson[@"launchAsset"];
+  if (launchAsset[@"url"]) {
+    launchAsset[@"url"] = [self _resolveUrlString:launchAsset[@"url"]];
+  }
+
+  NSArray *assets = manifestJson[@"assets"];
+  for (NSMutableDictionary *asset in assets) {
+    if (asset[@"url"]) {
+      asset[@"url"] = [self _resolveUrlString:asset[@"url"]];
+    }
+  }
+}
+
+- (NSString *)_resolveUrlString:(NSString *)urlString
+{
+  NSURL *resolvedUrl = [NSURL URLWithString:urlString relativeToURL:self.url];
+  return resolvedUrl.absoluteURL.absoluteString ?: urlString;
 }
 
 @end

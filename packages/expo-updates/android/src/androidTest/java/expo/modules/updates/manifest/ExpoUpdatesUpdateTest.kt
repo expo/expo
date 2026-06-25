@@ -23,6 +23,28 @@ class ExpoUpdatesUpdateTest {
     Assert.assertNotNull(ExpoUpdatesUpdate.fromExpoUpdatesManifest(manifest, null, createConfig()))
   }
 
+  @Test
+  @Throws(JSONException::class)
+  fun testFromManifestJson_RelativeAssetUrls() {
+    val manifestJson =
+      "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"key\":\"bundle\",\"url\":\"index.bundle?platform=android\",\"contentType\":\"application/javascript\"},\"assets\":[{\"key\":\"asset\",\"url\":\"assets/icon.png\",\"fileExtension\":\".png\"}]}"
+    val manifest = ExpoUpdatesManifest(JSONObject(manifestJson))
+    val update = ExpoUpdatesUpdate.fromExpoUpdatesManifest(manifest, null, createConfig())
+
+    Assert.assertEquals(
+      "https://exp.host/@test/index.bundle?platform=android",
+      update.assetEntityList[0].url.toString()
+    )
+    Assert.assertEquals(
+      "https://exp.host/@test/assets/icon.png",
+      update.assetEntityList[1].url.toString()
+    )
+    Assert.assertEquals(
+      "https://exp.host/@test/index.bundle?platform=android",
+      update.manifest.getBundleURL()
+    )
+  }
+
   @Test(expected = JSONException::class)
   @Throws(JSONException::class)
   fun testFromManifestJson_NoId() {
