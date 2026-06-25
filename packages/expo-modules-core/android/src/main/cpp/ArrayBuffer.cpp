@@ -5,8 +5,9 @@
 
 namespace expo {
 
-ByteBufferArrayBufferStorage::ByteBufferArrayBufferStorage(const jni::alias_ref<jni::JByteBuffer> &byteBuffer)
-  : _byteBuffer(jni::make_global(byteBuffer)) {
+ByteBufferArrayBufferStorage::ByteBufferArrayBufferStorage(
+  const jni::alias_ref<jni::JByteBuffer> &byteBuffer
+) : _byteBuffer(jni::make_global(byteBuffer)) {
   _byteBuffer->order(jni::JByteOrder::nativeOrder());
 }
 
@@ -50,7 +51,9 @@ bool MutableBufferViewArrayBufferStorage::isNativeBacked() const noexcept {
   return true;
 }
 
-jni::local_ref<jni::JByteBuffer> MutableBufferViewArrayBufferStorage::toDirectBuffer(bool copyBorrowed) {
+jni::local_ref<jni::JByteBuffer> MutableBufferViewArrayBufferStorage::toDirectBuffer(
+  bool copyBorrowed
+) {
   if (copyBorrowed) {
     auto byteBuffer = jni::JByteBuffer::allocateDirect(static_cast<jint>(_length));
     byteBuffer->order(jni::JByteOrder::nativeOrder());
@@ -78,15 +81,18 @@ void ArrayBuffer::registerNatives() {
                  });
 }
 
-jni::local_ref<ArrayBuffer::jhybriddata>
-ArrayBuffer::initHybrid(jni::alias_ref<JavaPart::javaobject>,
-                        jni::alias_ref<jni::JByteBuffer> byteBuffer) {
+jni::local_ref<ArrayBuffer::jhybriddata> ArrayBuffer::initHybrid(
+  jni::alias_ref<JavaPart::javaobject>,
+  jni::alias_ref<jni::JByteBuffer> byteBuffer
+) {
   return makeCxxInstance(byteBuffer);
 }
 
-jni::local_ref<ArrayBuffer::javaobject>
-ArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
-                         jsi::ArrayBuffer &arrayBuffer) {
+jni::local_ref<ArrayBuffer::javaobject> ArrayBuffer::newInstance(
+  JSIContext *jsiContext,
+  jsi::Runtime &runtime,
+  jsi::ArrayBuffer &arrayBuffer
+) {
   auto mutableBuffer = arrayBuffer.tryGetMutableBuffer(runtime);
   if (mutableBuffer) {
     auto storage = std::make_shared<MutableBufferViewArrayBufferStorage>(
@@ -109,9 +115,11 @@ ArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
   return value;
 }
 
-jni::local_ref<ArrayBuffer::javaobject>
-ArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
-                         expo::TypedArray& typedArray) {
+jni::local_ref<ArrayBuffer::javaobject> ArrayBuffer::newInstance(
+  JSIContext *jsiContext,
+  jsi::Runtime &runtime,
+  expo::TypedArray &typedArray
+) {
   size_t size = typedArray.byteLength(runtime);
 
   auto backingBuffer = typedArray.getBuffer(runtime);
