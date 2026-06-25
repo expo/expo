@@ -1,11 +1,9 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { cyan, blue } = chalk;
 
 /**
  * Checks whether the current branch is correct and working dir is not dirty.
@@ -38,7 +36,7 @@ export const checkRepositoryStatus = new Task<TaskArgs>(
 
       if (stats.ahead + stats.behind > 0) {
         logger.error(
-          `🚫 Your local branch ${cyan(currentBranch)} is out of sync with remote branch.`
+          `🚫 Your local branch ${styleText('cyan', currentBranch)} is out of sync with remote branch.`
         );
         return Task.STOP;
       }
@@ -67,7 +65,7 @@ async function checkBranchNameAsync(branchName: string) {
     return true;
   }
 
-  logger.warn('💡', `You are publishing from the ${blue(branchName)}.`);
+  logger.warn('💡', `You are publishing from the ${styleText('blue', branchName)}.`);
 
   // Insert any validation here if needed in the future.
   logger.log();

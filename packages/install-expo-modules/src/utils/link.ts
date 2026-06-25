@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import terminalLink from 'terminal-link';
 
 /**
@@ -16,9 +16,9 @@ export function link(
   if (terminalLink.isSupported) {
     output = terminalLink(text, url);
   } else {
-    output = `${text === url ? '' : text + ': '}${chalk.underline(url)}`;
+    output = `${text === url ? '' : text + ': '}${styleText('underline', url)}`;
   }
-  return dim ? chalk.dim(output) : output;
+  return dim ? styleText('dim', output) : output;
 }
 
 /**

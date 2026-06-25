@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import type { Command } from '../index';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
@@ -25,27 +25,27 @@ export const expoLint: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      chalk`Lint all files in {bold /src}, {bold /app}, {bold /components} directories with ESLint`,
-      chalk`npx expo lint {dim [path...] -- [eslint options]}`,
+      `Lint all files in ${styleText('bold', `/src`)}, ${styleText('bold', `/app`)}, ${styleText('bold', `/components`)} directories with ESLint`,
+      `npx expo lint ${styleText('dim', `[path...] -- [eslint options]`)}`,
 
       [
-        chalk`[path...]                  List of files and directories to lint`,
-        chalk`--ext {dim <string>}             Additional file extensions to lint. {dim Default: .js, .jsx, .ts, .tsx, .mjs, .cjs}`,
-        chalk`--config {dim <path>}            Custom ESLint config file`,
+        `[path...]                  List of files and directories to lint`,
+        `--ext ${styleText('dim', `<string>`)}             Additional file extensions to lint. ${styleText('dim', `Default: .js, .jsx, .ts, .tsx, .mjs, .cjs`)}`,
+        `--config ${styleText('dim', `<path>`)}            Custom ESLint config file`,
         `--no-cache                 Check all files, instead of changes between runs`,
         `--fix                      Automatically fix problems`,
-        chalk`--fix-type {dim <string>}        Specify the types of fixes to apply. {dim Example: problem, suggestion, layout}`,
+        `--fix-type ${styleText('dim', `<string>`)}        Specify the types of fixes to apply. ${styleText('dim', `Example: problem, suggestion, layout`)}`,
         `--no-ignore                Disable use of ignore files and patterns`,
-        chalk`--ignore-pattern {dim <string>}  Patterns of files to ignore`,
+        `--ignore-pattern ${styleText('dim', `<string>`)}  Patterns of files to ignore`,
         `--quiet                    Only report errors`,
-        chalk`--max-warnings {dim <number>}    Number of warnings to trigger nonzero exit code`,
+        `--max-warnings ${styleText('dim', `<number>`)}    Number of warnings to trigger nonzero exit code`,
         `-h, --help                 Usage info`,
       ].join('\n'),
       [
         '',
-        chalk`  Additional options can be passed to {bold npx eslint} by using {bold --}`,
-        chalk`    {dim $} npx expo lint -- --no-error-on-unmatched-pattern`,
-        chalk`    {dim >} npx eslint --no-error-on-unmatched-pattern {dim ...}`,
+        `  Additional options can be passed to ${styleText('bold', `npx eslint`)} by using ${styleText('bold', `--`)}`,
+        `    ${styleText('dim', `$`)} npx expo lint -- --no-error-on-unmatched-pattern`,
+        `    ${styleText('dim', `>`)} npx eslint --no-error-on-unmatched-pattern ${styleText('dim', `...`)}`,
         '',
       ].join('\n')
     );

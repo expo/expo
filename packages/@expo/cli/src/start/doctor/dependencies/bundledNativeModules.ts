@@ -1,5 +1,5 @@
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import resolveFrom from 'resolve-from';
 
 import { getNativeModuleVersionsAsync } from '../../../api/getNativeModuleVersions';
@@ -34,7 +34,7 @@ export async function getVersionedNativeModulesAsync(
     } catch (error: any) {
       if (error instanceof CommandError && (error.code === 'OFFLINE' || error.code === 'API')) {
         Log.warn(
-          chalk`Unable to reach well-known versions endpoint. Using local dependency map {bold expo/bundledNativeModules.json} for version validation`
+          `Unable to reach well-known versions endpoint. Using local dependency map ${styleText('bold', `expo/bundledNativeModules.json`)} for version validation`
         );
       } else {
         throw error;
@@ -59,7 +59,7 @@ async function getBundledNativeModulesAsync(projectRoot: string): Promise<Bundle
   if (!bundledNativeModulesPath) {
     Log.log();
     throw new CommandError(
-      chalk`The dependency map {bold expo/bundledNativeModules.json} cannot be found, please ensure you have the package "{bold expo}" installed in your project.`
+      `The dependency map ${styleText('bold', `expo/bundledNativeModules.json`)} cannot be found, please ensure you have the package "${styleText('bold', `expo`)}" installed in your project.`
     );
   }
   return await JsonFile.readAsync<BundledNativeModules>(bundledNativeModulesPath);

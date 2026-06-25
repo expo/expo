@@ -37,7 +37,6 @@
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
-    "chalk": "^4.1.2",
     "jscodeshift": "^17.1.2",
     "tinyglobby": "^0.2.15"
   },

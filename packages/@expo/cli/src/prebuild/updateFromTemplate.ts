@@ -1,6 +1,6 @@
 import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import { createTempDirectoryPath } from '../utils/createTempPath';
@@ -145,8 +145,9 @@ export async function cloneTemplateAndCopyToProjectAsync({
     }
     ora.fail(`Failed to create the native ${pluralized}`);
     Log.log(
-      chalk.yellow(
-        chalk`You may want to delete the {bold ./ios} and/or {bold ./android} directories before trying again.`
+      styleText(
+        'yellow',
+        `You may want to delete the ${styleText('bold', `./ios`)} and/or ${styleText('bold', `./android`)} directories before trying again.`
       )
     );
     throw new SilentError(e);

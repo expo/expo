@@ -1,7 +1,7 @@
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import assert from 'assert';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
@@ -74,7 +74,7 @@ export class DevServerManager {
         './.babelrc.js',
       ],
       {
-        additionalWarning: chalk` You may need to clear the bundler cache with the {bold --clear} flag for your changes to take effect.`,
+        additionalWarning: ` You may need to clear the bundler cache with the ${styleText('bold', `--clear`)} flag for your changes to take effect.`,
       }
     );
 
@@ -150,7 +150,7 @@ export class DevServerManager {
   /** Switch between Expo Go and Expo Dev Clients. */
   async toggleRuntimeMode(isUsingDevClient: boolean = !this.options.devClient): Promise<boolean> {
     const nextMode = isUsingDevClient ? '--dev-client' : '--go';
-    Log.log(printItem(`Switching to ${chalk`{bold ${nextMode}}`}`, { dim: true }));
+    Log.log(printItem(`Switching to ${`${styleText('bold', nextMode)}`}`, { dim: true }));
     Log.log();
 
     const nextScheme = await resolveSchemeAsync(this.projectRoot, {

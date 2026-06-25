@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import type { Ora } from 'ora';
 import oraReal from 'ora';
 
@@ -90,7 +90,7 @@ export function ora(options?: oraReal.Options | string): oraReal.Ora {
  * @returns
  */
 export function logNewSection(title: string) {
-  const spinner = ora(chalk.bold(title));
+  const spinner = ora(styleText('bold', title));
   // Prevent the spinner from clashing with debug logs
   spinner.start();
   return spinner;

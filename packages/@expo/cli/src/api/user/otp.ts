@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../../log';
 import { AbortCommandError } from '../../utils/errors';
@@ -14,7 +14,7 @@ const nonInteractiveHelp = `Use the EXPO_TOKEN environment variable to authentic
  * Prompt for an OTP with the option to cancel the question by answering empty (pressing return key).
  */
 async function promptForOTPAsync(): Promise<string | null> {
-  const enterMessage = chalk`press {bold Enter} to cancel`;
+  const enterMessage = `press ${styleText('bold', `Enter`)} to cancel`;
   const { otp } = await promptAsync(
     {
       type: 'text',

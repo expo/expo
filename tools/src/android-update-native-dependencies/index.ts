@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { getAndroidProjectReports, Revision } from './androidProjectReports';
 import { promptForNativeDependenciesUpdates, promptForAndroidProjectsSelection } from './prompts';
@@ -26,18 +26,18 @@ async function printAvailableUpdates(reports: AndroidProjectReport[]) {
     const noDependenciesIssues = unresolvedExceededDependencies.length + outdated.length === 0;
 
     logger.log(
-      `\n● Project: ${chalk.blue(projectName)}${
-        noDependenciesIssues ? chalk.green(` - no dependencies issues ✅`) : ''
+      `\n● Project: ${styleText('blue', projectName)}${
+        noDependenciesIssues ? styleText('green', ` - no dependencies issues ✅`) : ''
       }`
     );
 
     if (outdated.length > 0) {
-      logger.log(chalk.cyan('  ◼︎ outdated dependencies:'));
+      logger.log(styleText('cyan', '  ◼︎ outdated dependencies:'));
       outdated.forEach(printDependency);
     }
 
     if (unresolvedExceededDependencies.length > 0) {
-      logger.log(chalk.yellow('  ◼︎ unresolved/exceeded dependencies:'));
+      logger.log(styleText('yellow', '  ◼︎ unresolved/exceeded dependencies:'));
       unresolvedExceededDependencies.forEach(printDependency);
     }
   }

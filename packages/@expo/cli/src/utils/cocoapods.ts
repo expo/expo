@@ -2,8 +2,8 @@ import type { PackageJSONConfig } from '@expo/config';
 import { getPackageJson } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import * as Log from '../log';
@@ -99,7 +99,7 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
     } catch (error: any) {
       step.stopAndPersist({
         symbol: '⚠️ ',
-        text: chalk.red('Unable to install the CocoaPods CLI.'),
+        text: styleText('red', 'Unable to install the CocoaPods CLI.'),
       });
       if (error instanceof PackageManager.CocoaPodsError) {
         Log.log(error.message);
@@ -119,7 +119,7 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
   } catch (error: any) {
     step.stopAndPersist({
       symbol: '⚠️ ',
-      text: chalk.red('Something went wrong running `pod install` in the `ios` directory.'),
+      text: styleText('red', 'Something went wrong running `pod install` in the `ios` directory.'),
     });
     if (error instanceof PackageManager.CocoaPodsError) {
       Log.log(error.message);
@@ -170,8 +170,8 @@ async function promptToInstallPodsAsync(projectRoot: string, missingPods?: strin
   if (missingPods?.length) {
     Log.log(
       `Could not find the following native modules: ${missingPods
-        .map((pod) => chalk.bold(pod))
-        .join(', ')}. Did you forget to run "${chalk.bold('pod install')}" ?`
+        .map((pod) => styleText('bold', pod))
+        .join(', ')}. Did you forget to run "${styleText('bold', 'pod install')}" ?`
     );
   }
 

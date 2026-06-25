@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { readFile, writeFile } from 'fs-extra';
+import { styleText } from 'node:util';
 import * as path from 'path';
 import terminalLink from 'terminal-link';
 
@@ -121,7 +121,7 @@ async function writeGradleFiles(gradleFiles: Record<string, string>) {
 export async function updateGradleDependencies(
   updatesList: AndroidProjectDependenciesUpdates[]
 ): Promise<void> {
-  logger.log(chalk.white.bold(`\nUpdating gradle files.`));
+  logger.log(styleText(['white', 'bold'], `\nUpdating gradle files.`));
   const buildFiles = await readGradleFiles(updatesList);
   for (const updates of updatesList) {
     if (updates.updates.length === 0) {
@@ -130,9 +130,9 @@ export async function updateGradleDependencies(
 
     logger.log(
       `\n📈 Updating %s native dependencies in file: %s`,
-      chalk.blue(updates.report.projectName),
+      styleText('blue', updates.report.projectName),
       terminalLink(
-        chalk.italic.grey(path.relative(EXPO_DIR, updates.report.gradleFilePath)),
+        styleText(['italic', 'grey'], path.relative(EXPO_DIR, updates.report.gradleFilePath)),
         updates.report.gradleFilePath
       )
     );
@@ -140,7 +140,7 @@ export async function updateGradleDependencies(
     let buildFile = buildFiles[updates.report.gradleFilePath];
     for (const singleUpdate of updates.updates) {
       logger.log(
-        `  ▶︎ ${chalk.blueBright(singleUpdate.fullName)}:${
+        `  ▶︎ ${styleText('blueBright', singleUpdate.fullName)}:${
           singleUpdate.oldVersion
         } ➡️  ${addColorBasedOnSemverDiff(
           singleUpdate.newVersion,

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { CocoaPodsPackageManager } from '@expo/package-manager/build/ios/CocoaPodsPackageManager';
-import chalk from 'chalk';
 import { Command } from 'commander';
 import { existsSync, readFileSync } from 'fs';
+import { styleText } from 'node:util';
 import { join, resolve } from 'path';
 
 import shouldUpdate from './update';
@@ -19,7 +19,7 @@ function info(message: string) {
 
 async function runAsync(maybeProjectDirectory?: string): Promise<void> {
   if (process.platform !== 'darwin') {
-    info(chalk.yellow('⚠️ CocoaPods is only supported on darwin machines'));
+    info(styleText('yellow', '⚠️ CocoaPods is only supported on darwin machines'));
     process.exit(0);
   }
 
@@ -27,7 +27,7 @@ async function runAsync(maybeProjectDirectory?: string): Promise<void> {
   const possibleProjectRoot = resolve(hasProjectDirectory ? maybeProjectDirectory : process.cwd());
 
   if (!existsSync(possibleProjectRoot)) {
-    info(chalk.red(`\n💥 Target directory does not exist: ${possibleProjectRoot}\n`));
+    info(styleText('red', `\n💥 Target directory does not exist: ${possibleProjectRoot}\n`));
     process.exit(1);
   }
 
@@ -37,7 +37,7 @@ async function runAsync(maybeProjectDirectory?: string): Promise<void> {
     const packageJsonPath = join(possibleProjectRoot, 'package.json');
 
     if (!existsSync(packageJsonPath)) {
-      info(chalk.red(`\n💥 'package.json' file does not exist: ${packageJsonPath}\n`));
+      info(styleText('red', `\n💥 'package.json' file does not exist: ${packageJsonPath}\n`));
       process.exit(1);
     }
 
@@ -46,19 +46,20 @@ async function runAsync(maybeProjectDirectory?: string): Promise<void> {
 
     if (hasExpoPackage) {
       info(
-        chalk.yellow(
-          `⚠️ No 'ios' directory found, skipping installing pods.`,
-          `\nPods will be automatically installed when the 'ios' directory is generated with 'npx expo prebuild' or 'npx expo run:ios'.`,
-          learnMore('https://docs.expo.dev/workflow/prebuild/')
+        styleText(
+          'yellow',
+          `⚠️ No 'ios' directory found, skipping installing pods.\nPods will be automatically installed when the 'ios' directory is generated with 'npx expo prebuild' or 'npx expo run:ios'. ${learnMore('https://docs.expo.dev/workflow/prebuild/')}`
         )
       );
       process.exit(0);
     }
 
     if (hasProjectDirectory) {
-      info(chalk.yellow(`⚠️ CocoaPods is not supported in project at ${possibleProjectRoot}`));
+      info(
+        styleText('yellow', `⚠️ CocoaPods is not supported in project at ${possibleProjectRoot}`)
+      );
     } else {
-      info(chalk.yellow('⚠️ CocoaPods is not supported in this project'));
+      info(styleText('yellow', '⚠️ CocoaPods is not supported in this project'));
     }
     process.exit(0);
   }
@@ -76,7 +77,7 @@ async function runAsync(maybeProjectDirectory?: string): Promise<void> {
     await manager.installAsync();
   } catch (error: any) {
     if (error.isPackageManagerError) {
-      console.error(chalk.red(error.message));
+      console.error(styleText('red', error.message));
       process.exit(1);
     }
     // throw unhandled
@@ -87,7 +88,7 @@ async function runAsync(maybeProjectDirectory?: string): Promise<void> {
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
   .arguments('[project-directory]')
-  .usage(`${chalk.green('[project-directory]')} [options]`)
+  .usage(`${styleText('green', '[project-directory]')} [options]`)
   .description(
     'A fast, zero-dependency package for cutting down on common issues developers have when running pod install.'
   )
@@ -104,10 +105,13 @@ const program = new Command(packageJSON.name)
     } catch (reason: any) {
       console.log('\nAborting run');
       if (reason.command) {
-        console.log(`  ${chalk.magenta(reason.command)} has failed.`);
+        console.log(`  ${styleText('magenta', reason.command)} has failed.`);
       } else {
         console.log(
-          chalk.red`💥 An unexpected error was encountered. Report it on GitHub: https://github.com/expo/expo/issues`
+          styleText(
+            'red',
+            `💥 An unexpected error was encountered. Report it on GitHub: https://github.com/expo/expo/issues`
+          )
         );
         console.log(reason);
       }

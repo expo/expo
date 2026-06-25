@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { promisify } from 'util';
 import type webpack from 'webpack';
 
@@ -21,10 +21,10 @@ export async function compileAsync(compiler: webpack.Compiler) {
     throw new CommandError('WEBPACK_BUNDLE', errors.join('\n\n'));
   }
   if (warnings?.length) {
-    Log.warn(chalk.yellow('Compiled with warnings\n'));
+    Log.warn(styleText('yellow', 'Compiled with warnings\n'));
     Log.warn(warnings.join('\n\n'));
   } else {
-    Log.log(chalk.green('Compiled successfully'));
+    Log.log(styleText('green', 'Compiled successfully'));
   }
 
   return { errors, warnings };

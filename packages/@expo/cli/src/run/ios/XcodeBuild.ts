@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import { ExpoRunFormatter } from '@expo/xcpretty';
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import type { SpawnOptionsWithoutStdio } from 'child_process';
 import { spawn } from 'child_process';
 import fs from 'fs';
@@ -39,7 +39,7 @@ export function getGenericSimulatorDestination(osType: OSType): string {
   }
 }
 export function logPrettyItem(message: string) {
-  Log.log(chalk`{whiteBright \u203A} ${message}`);
+  Log.log(`${styleText('whiteBright', `\u203A`)} ${message}`);
 }
 
 export function matchEstimatedBinaryPath(buildOutput: string): string | null {
@@ -321,7 +321,7 @@ async function spawnXcodeBuildWithFormat(
 ): Promise<{ code: number | null; results: string; error: string; formatter: ExpoRunFormatter }> {
   Log.debug(`  xcodebuild ${args.join(' ')}`);
 
-  logPrettyItem(chalk.bold`Planning build`);
+  logPrettyItem(styleText("bold", `Planning build`));
 
   const formatter = ExpoRunFormatter.create(projectRoot, {
     xcodeProject,
@@ -443,14 +443,14 @@ export function _assertXcodeBuildResults(
     throw new CommandError(
       `${errorTitle}\nTo view more error logs, try building the app with Xcode directly, by opening ${xcodeProject.name}.\n\n` +
         message +
-        `Build logs written to ${chalk.underline(logFilePath)}`
+        `Build logs written to ${styleText("underline", logFilePath)}`
     );
   };
 
   const localizedError = error.match(/NSLocalizedFailure = "(.*)"/)?.[1];
 
   if (localizedError) {
-    throwWithMessage(chalk.bold(localizedError) + '\n\n');
+    throwWithMessage(styleText("bold", localizedError) + '\n\n');
   }
   // Show all the log info because often times the error is coming from a shell script,
   // that invoked a node script, that started metro, which threw an error.

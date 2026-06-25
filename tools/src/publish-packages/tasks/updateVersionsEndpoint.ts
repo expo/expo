@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import { publishPackages } from './publishPackages';
@@ -7,8 +7,6 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import * as Versions from '../../Versions';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { cyan, green, yellow } = chalk;
 
 /**
  * Updates the versions endpoint with the published expo package version.
@@ -40,7 +38,7 @@ export const updateVersionsEndpoint = new Task<TaskArgs>(
     const sdkVersions = Versions.getSortedSdkVersionKeys(versions);
     const recentSdks = sdkVersions.slice(0, 3);
 
-    logger.info(`\n📡 Expo package published: ${green(publishedVersion)}`);
+    logger.info(`\n📡 Expo package published: ${styleText('green', publishedVersion)}`);
 
     const ENTER_SDK = 'Enter SDK version';
     const SKIP = 'Skip';
@@ -51,14 +49,14 @@ export const updateVersionsEndpoint = new Task<TaskArgs>(
       {
         type: 'list',
         name: 'selectedSdk',
-        message: `Update versions endpoint with expoVersion ${green(expoVersionValue)}?`,
+        message: `Update versions endpoint with expoVersion ${styleText('green', expoVersionValue)}?`,
         choices: sdkChoices,
         default: recentSdks[0],
       },
     ]);
 
     if (selectedSdk === SKIP) {
-      logger.info(yellow('  Skipping versions endpoint update.'));
+      logger.info(styleText('yellow', '  Skipping versions endpoint update.'));
       return;
     }
 
@@ -83,11 +81,11 @@ export const updateVersionsEndpoint = new Task<TaskArgs>(
     }
 
     logger.info(
-      `\n📡 Updating versions endpoint for SDK ${cyan(targetSdkVersion)} with expoVersion ${green(expoVersionValue)}...`
+      `\n📡 Updating versions endpoint for SDK ${styleText('cyan', targetSdkVersion)} with expoVersion ${styleText('green', expoVersionValue)}...`
     );
 
     if (options.dry) {
-      logger.info(yellow('  Dry run - skipping version update.'));
+      logger.info(styleText('yellow', '  Dry run - skipping version update.'));
       return;
     }
 
@@ -97,7 +95,7 @@ export const updateVersionsEndpoint = new Task<TaskArgs>(
         expoVersion: expoVersionValue,
       }));
       logger.success(
-        `\n📡 Successfully updated versions endpoint: SDK ${cyan(targetSdkVersion)} → expoVersion: ${green(expoVersionValue)}`
+        `\n📡 Successfully updated versions endpoint: SDK ${styleText('cyan', targetSdkVersion)} → expoVersion: ${styleText('green', expoVersionValue)}`
       );
     } catch (error) {
       logger.error(`\n📡 Failed to update versions endpoint: ${error.message}`);

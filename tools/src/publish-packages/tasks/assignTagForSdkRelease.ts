@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import { loadRequestedParcels } from './loadRequestedParcels';
@@ -11,8 +11,6 @@ import { sdkVersionNumberAsync } from '../../ProjectVersions';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { green, yellow, cyan } = chalk;
 
 /**
  * Assigns the SDK tag to packages when run on the release branch.
@@ -37,7 +35,7 @@ export const assignTagForSdkRelease = new Task<TaskArgs>(
     }
 
     await runWithSpinner(
-      `Assigning ${yellow(sdkTag)} tag to packages`,
+      `Assigning ${styleText('yellow', sdkTag)} tag to packages`,
       async (step) => {
         for (const { pkg, pkgView } of parcels) {
           const currentTagVersion = pkgView?.['dist-tags']?.[sdkTag];
@@ -47,7 +45,8 @@ export const assignTagForSdkRelease = new Task<TaskArgs>(
           // Skip if the currently tagged version is greater or equal to the current one.
           if (currentTagVersion && semver.lte(pkgVersion, currentTagVersion)) {
             logger.debug(
-              `≫ Skipped ${green(pkgName)} - the tag is already greater or equal (${cyan(
+              `≫ Skipped ${styleText('green', pkgName)} - the tag is already greater or equal (${styleText(
+                'cyan',
                 currentTagVersion
               )})`
             );
@@ -55,7 +54,7 @@ export const assignTagForSdkRelease = new Task<TaskArgs>(
           }
 
           step.start(
-            `Assigning ${yellow.bold(sdkTag)} tag to ${green(pkgName)}@${cyan(pkgVersion)}\n`
+            `Assigning ${styleText(['yellow', 'bold'], sdkTag)} tag to ${styleText('green', pkgName)}@${styleText('cyan', pkgVersion)}\n`
           );
 
           if (!options.dry) {
@@ -63,7 +62,7 @@ export const assignTagForSdkRelease = new Task<TaskArgs>(
           }
         }
       },
-      `Successfully assigned ${yellow(sdkTag)} tag`
+      `Successfully assigned ${styleText('yellow', sdkTag)} tag`
     );
   }
 );
@@ -95,7 +94,7 @@ async function askToAssignSdkTag(sdkTag: string): Promise<boolean> {
       type: 'confirm',
       name: 'assignSdkTag',
       prefix: '❔',
-      message: `Do you want to assign ${yellow(sdkTag)} tag to the current versions?`,
+      message: `Do you want to assign ${styleText('yellow', sdkTag)} tag to the current versions?`,
       default: true,
     },
   ]);

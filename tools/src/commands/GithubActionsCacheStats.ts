@@ -1,6 +1,6 @@
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 export default (program: Command) => {
   program
@@ -64,7 +64,7 @@ async function actionAsync(options: Options) {
     displayResults(data, options);
     printSummary(data, options.highlightOnce);
   } catch (error: any) {
-    console.error(chalk.red('\nError:'), error.message);
+    console.error(styleText('red', '\nError:'), error.message);
     process.exit(1);
   }
 }
@@ -82,7 +82,7 @@ async function fetchAllCaches(): Promise<CacheInfo[]> {
   let page = 1;
   const GITHUB_API_PER_PAGE_LIMIT = 100;
 
-  console.log(chalk.cyan(`Fetching cache data...`));
+  console.log(styleText('cyan', `Fetching cache data...`));
 
   let totalCount = 0;
   while (true) {
@@ -145,13 +145,13 @@ function filterCacheData(data: ProcessedCache[], options: Options): ProcessedCac
 
   if (options.ref) {
     const refFilter = options.ref;
-    console.log(chalk.cyan(`Filtering caches by ref: ${refFilter}...`));
+    console.log(styleText('cyan', `Filtering caches by ref: ${refFilter}...`));
     filtered = filtered.filter((c) => c.ref.includes(refFilter));
   }
 
   if (options.accessedOlderThan) {
     const days = parseInt(options.accessedOlderThan, 10);
-    console.log(chalk.cyan(`Filtering caches accessed older than ${days} days...`));
+    console.log(styleText('cyan', `Filtering caches accessed older than ${days} days...`));
 
     if (!isNaN(days)) {
       const cutoffDate = new Date();
@@ -159,14 +159,17 @@ function filterCacheData(data: ProcessedCache[], options: Options): ProcessedCac
       filtered = filtered.filter((c) => c.rawLastAccessed < cutoffDate);
     } else {
       console.log(
-        chalk.yellow(`Invalid number of days: ${options.accessedOlderThan}. Skipping filter.`)
+        styleText(
+          'yellow',
+          `Invalid number of days: ${options.accessedOlderThan}. Skipping filter.`
+        )
       );
     }
   }
 
   if (options.createdOlderThan) {
     const days = parseInt(options.createdOlderThan, 10);
-    console.log(chalk.cyan(`Filtering caches created older than ${days} days...`));
+    console.log(styleText('cyan', `Filtering caches created older than ${days} days...`));
 
     if (!isNaN(days)) {
       const cutoffDate = new Date();
@@ -174,7 +177,7 @@ function filterCacheData(data: ProcessedCache[], options: Options): ProcessedCac
       filtered = filtered.filter((c) => c.rawCreatedAt < cutoffDate);
     } else {
       console.log(
-        chalk.yellow(`Invalid number of days: ${options.createdOlderThan}. Skipping filter.`)
+        styleText('yellow', `Invalid number of days: ${options.createdOlderThan}. Skipping filter.`)
       );
     }
   }
@@ -222,8 +225,8 @@ function displayGroupedByRef(data: ProcessedCache[], highlightOnce?: boolean) {
       .toFixed(2);
 
     console.log(
-      chalk.bold.magenta(`\nRef: ${refKey} `) +
-        chalk.gray(`(${groupItems.length} items, ${groupSize} MB)`)
+      styleText(['bold', 'magenta'], `\nRef: ${refKey} `) +
+        styleText('gray', `(${groupItems.length} items, ${groupSize} MB)`)
     );
     displayList(groupItems, highlightOnce);
   });
@@ -231,7 +234,7 @@ function displayGroupedByRef(data: ProcessedCache[], highlightOnce?: boolean) {
 
 function displayList(data: ProcessedCache[], highlightOnce?: boolean) {
   if (data.length === 0) {
-    console.log(chalk.gray('No caches found.'));
+    console.log(styleText('gray', 'No caches found.'));
     return;
   }
 
@@ -248,8 +251,8 @@ function displayList(data: ProcessedCache[], highlightOnce?: boolean) {
     'ACCESSED'.padEnd(dateWidth) +
     'SIZE'.padStart(sizeWidth);
 
-  console.log(chalk.bold.gray(header));
-  console.log(chalk.gray('-'.repeat(header.length)));
+  console.log(styleText(['bold', 'gray'], header));
+  console.log(styleText('gray', '-'.repeat(header.length)));
 
   data.forEach((item) => {
     const displayKey =
@@ -266,7 +269,7 @@ function displayList(data: ProcessedCache[], highlightOnce?: boolean) {
       (item.sizeMb.toFixed(2) + ' MB').padStart(sizeWidth);
 
     if (highlightOnce && item.isOnce) {
-      console.log(chalk.yellow(row));
+      console.log(styleText('yellow', row));
     } else {
       console.log(row);
     }
@@ -278,12 +281,12 @@ function printSummary(data: ProcessedCache[], highlightOnce?: boolean) {
   const onceCount = data.filter((d) => d.isOnce).length;
 
   console.log(
-    chalk.bold(`\nTOTAL: ${data.length} caches | Combined Size: ${totalMB.toFixed(2)} MB`)
+    styleText('bold', `\nTOTAL: ${data.length} caches | Combined Size: ${totalMB.toFixed(2)} MB`)
   );
 
   if (highlightOnce) {
     console.log(
-      chalk.yellow(`Found ${onceCount} caches accessed strictly within the creation minute.`)
+      styleText('yellow', `Found ${onceCount} caches accessed strictly within the creation minute.`)
     );
   }
 }

@@ -1,5 +1,5 @@
 import { AssertionError } from 'assert';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { exit } from './log';
 
@@ -37,7 +37,7 @@ export function logCmdError(error: any): never {
     exit(error);
   }
 
-  const errorDetails = error.stack ? '\n' + chalk.gray(error.stack) : '';
+  const errorDetails = error.stack ? '\n' + styleText('gray', error.stack) : '';
 
-  exit(chalk.red(error.toString()) + errorDetails);
+  exit(styleText('red', error.toString()) + errorDetails);
 }

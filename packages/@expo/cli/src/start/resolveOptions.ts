@@ -1,5 +1,5 @@
 import assert from 'assert';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Log } from '../log';
 import { envIsWebcontainer } from '../utils/env';
@@ -38,7 +38,9 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   });
 
   if (args['--https']) {
-    Log.warn(chalk`{bold --https} option is deprecated in favor of {bold --tunnel}`);
+    Log.warn(
+      `${styleText('bold', `--https`)} option is deprecated in favor of ${styleText('bold', `--tunnel`)}`
+    );
   }
 
   // User can force the default target by passing either `--dev-client` or `--go`. They can also
@@ -101,11 +103,11 @@ export async function resolveSchemeAsync(
         // This can happen if one of the native projects has no URI schemes defined in it.
         // Normally, this should never happen.
         Log.warn(
-          chalk`Could not find a shared URI scheme for the dev client between the local {bold /ios} and {bold /android} directories. App launches (QR code, interstitial, terminal keys) may not work as expected. You can configure a custom scheme using the {bold --scheme} option, or by running {bold npx expo prebuild} to regenerate the native directories with URI schemes.`
+          `Could not find a shared URI scheme for the dev client between the local ${styleText('bold', `/ios`)} and ${styleText('bold', `/android`)} directories. App launches (QR code, interstitial, terminal keys) may not work as expected. You can configure a custom scheme using the ${styleText('bold', `--scheme`)} option, or by running ${styleText('bold', `npx expo prebuild`)} to regenerate the native directories with URI schemes.`
         );
       } else if (['ios', 'android'].includes(resolvedScheme.resolution)) {
         Log.warn(
-          chalk`The {bold /${resolvedScheme.resolution}} project does not contain any URI schemes. Expo CLI will not be able to use links to launch the project. You can configure a custom URI scheme using the {bold --scheme} option.`
+          `The ${styleText('bold', `/${resolvedScheme.resolution}`)} project does not contain any URI schemes. Expo CLI will not be able to use links to launch the project. You can configure a custom URI scheme using the ${styleText('bold', `--scheme`)} option.`
         );
       }
     }

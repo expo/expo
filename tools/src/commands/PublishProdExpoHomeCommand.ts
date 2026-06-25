@@ -4,9 +4,9 @@ import {
   isMultipartPartWithName,
   parseMultipartMixedResponseAsync,
 } from '@expo/multipart-body-parser';
-import chalk from 'chalk';
 import { createWriteStream } from 'fs';
 import fs from 'fs/promises';
+import { styleText } from 'node:util';
 import nullthrows from 'nullthrows';
 import os from 'os';
 import path from 'path';
@@ -78,7 +78,7 @@ async function publishAppAsync({
   slug: string;
   message: string;
 }): Promise<{ createdUpdateGroupId: string }> {
-  console.log(`Publishing ${chalk.green(slug)}...`);
+  console.log(`Publishing ${styleText('green', slug)}...`);
 
   const result = await EASUpdate.publishProjectWithEasCliAsync(EXPO_HOME_PATH, {
     branch: 'production',
@@ -86,9 +86,7 @@ async function publishAppAsync({
   });
 
   console.log(
-    `Done publishing ${chalk.green(slug)}. Update Group ID is: ${chalk.blue(
-      result.createdUpdateGroupId
-    )}`
+    `Done publishing ${styleText('green', slug)}. Update Group ID is: ${styleText('blue', result.createdUpdateGroupId)}`
   );
 
   return result;
@@ -200,16 +198,16 @@ async function action(): Promise<void> {
     throw new Error('app.json missing updates.url');
   }
 
-  console.log(`Creating backup of ${chalk.magenta('app.json')} file...`);
+  console.log(`Creating backup of ${styleText('magenta', 'app.json')} file...`);
   const appJsonBackup = deepCloneObject<AppConfig>(appJson);
 
-  console.log(`Modifying home's slug to ${chalk.green(slug)}...`);
+  console.log(`Modifying home's slug to ${styleText('green', slug)}...`);
   appJson.expo.slug = slug;
 
-  console.log(`Modifying home's EAS project ID to ${chalk.green(easProjectId)}...`);
+  console.log(`Modifying home's EAS project ID to ${styleText('green', easProjectId)}...`);
   appJson.expo.extra.eas.projectId = easProjectId;
 
-  console.log(`Modifying home's update URL to ${chalk.green(easUpdateURL)}...`);
+  console.log(`Modifying home's update URL to ${styleText('green', easUpdateURL)}...`);
   appJson.expo.updates.url = easUpdateURL;
 
   // Save the modified `appJson` to the file so it'll be used as a manifest.
@@ -219,7 +217,7 @@ async function action(): Promise<void> {
     await publishAppAsync({ slug, message: `Publish ${appJson.expo.sdkVersion}` })
   ).createdUpdateGroupId;
 
-  console.log(`Restoring ${chalk.magenta('app.json')} file...`);
+  console.log(`Restoring ${styleText('magenta', 'app.json')} file...`);
   await appJsonFile.writeAsync(appJsonBackup);
 
   console.log(`Downloading published manifests and bundles...`);
@@ -229,7 +227,8 @@ async function action(): Promise<void> {
   ]);
 
   console.log(
-    chalk.yellow(
+    styleText(
+      'yellow',
       `Finished publishing. Remember to commit changes of the embedded manifests and bundles.`
     )
   );

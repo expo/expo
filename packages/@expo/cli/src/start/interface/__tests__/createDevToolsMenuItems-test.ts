@@ -1,5 +1,4 @@
-// @ts-ignore
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { DevToolsPlugin } from '../../server/DevToolsPlugin';
 import { createDevToolsMenuItems } from '../createDevToolsMenuItems';
@@ -27,7 +26,7 @@ describe('createInteractiveMenuItems', () => {
       Promise.resolve()
     );
     expect(menuItems.length).toBe(1);
-    expect(menuItems[menuItems.length - 1]!.title).toBe(chalk`Open {bold test-plugin}`);
+    expect(menuItems[menuItems.length - 1]!.title).toBe(`Open ${styleText('bold', 'test-plugin')}`);
     expect(menuItems[menuItems.length - 1]!.children).toBeUndefined();
   });
 
@@ -56,7 +55,7 @@ describe('createInteractiveMenuItems', () => {
       Promise.resolve()
     );
     expect(menuItems.length).toBe(1);
-    expect(menuItems[menuItems.length - 1]!.title).toBe(chalk`{bold test-plugin}`);
+    expect(menuItems[menuItems.length - 1]!.title).toBe(styleText('bold', 'test-plugin'));
     expect(menuItems[menuItems.length - 1]!.children?.length).toBe(1);
     expect(menuItems[menuItems.length - 1]!.children![0]!.title).toBe('Test Command');
   });
@@ -92,7 +91,7 @@ describe('createInteractiveMenuItems', () => {
       Promise.resolve()
     );
     expect(menuItems.length).toBe(1);
-    expect(menuItems[menuItems.length - 1]!.title).toBe(chalk`{bold test-plugin}`);
+    expect(menuItems[menuItems.length - 1]!.title).toBe(styleText('bold', 'test-plugin'));
     expect(menuItems[menuItems.length - 1]!.children?.length).toBe(2);
     expect(menuItems[menuItems.length - 1]!.children![0]!.title).toBe('Test Command 1');
     expect(menuItems[menuItems.length - 1]!.children![1]!.title).toBe('Test Command 2');
@@ -124,10 +123,10 @@ describe('createInteractiveMenuItems', () => {
       Promise.resolve()
     );
     expect(menuItems.length).toBe(1);
-    expect(menuItems[menuItems.length - 1]!.title).toBe(chalk`{bold test-plugin}`);
+    expect(menuItems[menuItems.length - 1]!.title).toBe(styleText('bold', 'test-plugin'));
     expect(menuItems[menuItems.length - 1]!.children?.length).toBe(2);
     expect(menuItems[menuItems.length - 1]!.children![0]!.title).toBe(
-      chalk`Open {bold test-plugin}`
+      `Open ${styleText('bold', 'test-plugin')}`
     );
     expect(menuItems[menuItems.length - 1]!.children![1]!.title).toBe('Test Command 1');
   });

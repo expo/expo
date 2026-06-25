@@ -6,8 +6,8 @@ import {
 import * as Scheme from '@expo/config-plugins/build/android/Scheme';
 import { format } from '@expo/config-plugins/build/utils/XML';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import { existsSync } from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import type { Options } from './Options';
@@ -41,7 +41,8 @@ export async function addAsync({
   }
   if (Scheme.hasScheme(uri, manifest)) {
     console.log(
-      chalk.yellow(
+      styleText(
+        'yellow',
         `\u203A Android: URI scheme "${uri}" already exists in AndroidManifest.xml at: ${resolvedManifestPath}`
       )
     );
@@ -51,7 +52,7 @@ export async function addAsync({
   manifest = Scheme.appendScheme(uri, manifest);
 
   if (dryRun) {
-    console.log(chalk.magenta('Write manifest to: ', resolvedManifestPath));
+    console.log(styleText('magenta', 'Write manifest to: '));
     console.log(format(manifest));
     return false;
   }
@@ -77,7 +78,8 @@ export async function removeAsync({
 
   if (!Scheme.hasScheme(uri, manifest)) {
     console.log(
-      chalk.yellow(
+      styleText(
+        'yellow',
         `\u203A Android: URI scheme "${uri}" does not exist in AndroidManifest.xml at: ${resolvedManifestPath}`
       )
     );
@@ -87,7 +89,7 @@ export async function removeAsync({
   manifest = Scheme.removeScheme(uri, manifest);
 
   if (dryRun) {
-    console.log(chalk.magenta('Write manifest to: ', resolvedManifestPath));
+    console.log(styleText('magenta', 'Write manifest to: '));
     console.log(format(manifest));
     return false;
   }

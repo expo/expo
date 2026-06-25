@@ -1,5 +1,5 @@
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -7,8 +7,6 @@ import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { magenta, green, gray, cyan } = chalk;
 
 /**
  * Updates `bundledNativeModules.json` file in `expo` package.
@@ -25,7 +23,9 @@ export const updateBundledNativeModulesFile = new Task<TaskArgs>(
     const bundledNativeModules =
       await JsonFile.readAsync<Record<string, string>>(bundledNativeModulesPath);
 
-    logger.info(`\n✏️  Updating ${magenta.bold('bundledNativeModules.json')} file...`);
+    logger.info(
+      `\n✏️  Updating ${styleText(['magenta', 'bold'], 'bundledNativeModules.json')} file...`
+    );
 
     for (const { pkg, state } of parcels) {
       const currentRange = bundledNativeModules[pkg.packageName];
@@ -33,14 +33,14 @@ export const updateBundledNativeModulesFile = new Task<TaskArgs>(
       const newRange = rangePrefix + state.releaseVersion;
 
       if (!currentRange) {
-        logger.log('  ', green(pkg.packageName), gray('is not defined.'));
+        logger.log('  ', styleText('green', pkg.packageName), styleText('gray', 'is not defined.'));
         continue;
       }
 
       logger.log(
         '  ',
-        green(pkg.packageName),
-        `${cyan.bold(currentRange)} -> ${cyan.bold(newRange)}`
+        styleText('green', pkg.packageName),
+        `${styleText(['cyan', 'bold'], currentRange)} -> ${styleText(['cyan', 'bold'], newRange)}`
       );
 
       bundledNativeModules[pkg.packageName] = newRange;

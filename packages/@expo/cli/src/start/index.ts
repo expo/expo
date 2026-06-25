@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+
+import { styleText } from 'node:util';
 
 import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
@@ -47,35 +48,35 @@ export const expoStart: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Start a local dev server for the app`,
-      chalk`npx expo start {dim <dir>}`,
+      `npx expo start ${styleText('dim', `<dir>`)}`,
       [
-        chalk`<dir>                           Directory of the Expo project. {dim Default: Current working directory}`,
+        `<dir>                           Directory of the Expo project. ${styleText('dim', `Default: Current working directory`)}`,
         `-a, --android                   Open on a connected Android device`,
         `-i, --ios                       Open in an iOS simulator`,
         `-w, --web                       Open in a web browser`,
         ``,
-        chalk`-d, --dev-client                Launch in a custom native app`,
-        chalk`-g, --go                        Launch in Expo Go`,
+        `-d, --dev-client                Launch in a custom native app`,
+        `-g, --go                        Launch in Expo Go`,
         ``,
         `-c, --clear                     Clear the bundler cache`,
         `--max-workers <number>          Maximum number of tasks to allow Metro to spawn`,
         `--no-dev                        Bundle in production mode`,
         `--minify                        Minify JavaScript`,
         ``,
-        chalk`-m, --host <string>             Dev server hosting type. {dim Default: lan}`,
-        chalk`                                {bold lan}: Use the local network`,
-        chalk`                                {bold tunnel}: Use any network by tunnel through ngrok`,
-        chalk`                                {bold localhost}: Connect to the dev server over localhost`,
+        `-m, --host <string>             Dev server hosting type. ${styleText('dim', `Default: lan`)}`,
+        `                                ${styleText('bold', `lan`)}: Use the local network`,
+        `                                ${styleText('bold', `tunnel`)}: Use any network by tunnel through ngrok`,
+        `                                ${styleText('bold', `localhost`)}: Connect to the dev server over localhost`,
         `--tunnel                        Same as --host tunnel`,
         `--lan                           Same as --host lan`,
         `--localhost                     Same as --host localhost`,
         ``,
         `--offline                       Skip network requests and use anonymous manifest signatures`,
-        chalk`--https                         Start the dev server with https protocol. {bold Deprecated in favor of --tunnel}`,
+        `--https                         Start the dev server with https protocol. ${styleText('bold', `Deprecated in favor of --tunnel`)}`,
         `--scheme <scheme>               Custom URI protocol to use when launching an app`,
-        chalk`-p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). {dim Default: 8081}`,
+        `-p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). ${styleText('dim', `Default: 8081`)}`,
         ``,
-        chalk`--private-key-path <path>       Path to private key for code signing. {dim Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.}`,
+        `--private-key-path <path>       Path to private key for code signing. ${styleText('dim', `Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.`)}`,
         `-h, --help                      Usage info`,
       ].join('\n')
     );

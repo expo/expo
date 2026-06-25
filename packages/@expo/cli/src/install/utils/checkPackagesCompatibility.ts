@@ -1,5 +1,5 @@
 // note(Simek): reference https://github.com/react-native-community/directory/blob/main/pages/api/libraries/check.ts
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Log } from '../../log';
 import { chunk } from '../../utils/array';
@@ -47,7 +47,7 @@ export async function checkPackagesCompatibility(packages: string[]) {
       if (result.status === 'fulfilled') {
         return { ...acc, ...result.value };
       }
-      Log.log(chalk.gray(ERROR_MESSAGE));
+      Log.log(styleText('gray', ERROR_MESSAGE));
       return acc;
     }, {});
 
@@ -57,13 +57,14 @@ export async function checkPackagesCompatibility(packages: string[]) {
 
     if (incompatiblePackages.length) {
       Log.warn(
-        chalk.yellow(
-          `${chalk.bold('Warning')}: ${formatPackageNames(incompatiblePackages)} do${incompatiblePackages.length > 1 ? '' : 'es'} not support the New Architecture. ${learnMore('https://docs.expo.dev/guides/new-architecture/')}`
+        styleText(
+          'yellow',
+          `${styleText('bold', 'Warning')}: ${formatPackageNames(incompatiblePackages)} do${incompatiblePackages.length > 1 ? '' : 'es'} not support the New Architecture. ${learnMore('https://docs.expo.dev/guides/new-architecture/')}`
         )
       );
     }
   } catch {
-    Log.log(chalk.gray(ERROR_MESSAGE));
+    Log.log(styleText('gray', ERROR_MESSAGE));
   }
 }
 

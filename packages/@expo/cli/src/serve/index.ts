@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+
+import { styleText } from 'node:util';
 
 import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
@@ -20,9 +21,9 @@ export const expoServe: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Host the production server locally`,
-      chalk`npx expo serve {dim <dir>}`,
+      `npx expo serve ${styleText('dim', `<dir>`)}`,
       [
-        chalk`<dir>            Directory of the Expo project. {dim Default: Current working directory}`,
+        `<dir>            Directory of the Expo project. ${styleText('dim', `Default: Current working directory`)}`,
         `--port <number>  Port to host the server on`,
         `-h, --help       Usage info`,
       ].join('\n')

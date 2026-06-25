@@ -1,5 +1,5 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 export default (program: Command) => {
   program
@@ -8,9 +8,9 @@ export default (program: Command) => {
     .allowUnknownOption()
     .action(() => {
       console.log(
-        chalk.yellow('This command has been deprecated.\n\n') +
+        styleText('yellow', 'This command has been deprecated.\n\n') +
           'Use the shell script directly instead:\n' +
-          chalk.cyan('  apps/expo-go/ios/Build-Phases/generate-dynamic-macros.sh\n\n') +
+          styleText('cyan', '  apps/expo-go/ios/Build-Phases/generate-dynamic-macros.sh\n\n') +
           'The script no longer requires Node.js or expotools.'
       );
       process.exit(1);

@@ -4,8 +4,8 @@
  * Moved from PrebuildPackages.ts and adapted to consume `UnitStatus[]`
  * instead of the old `ProductBuildStatus[]`.
  */
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import logger from '../../Logger';
@@ -27,15 +27,15 @@ export function logPackageBanner(
 ): void {
   const flavorInfo = flavors.length > 1 ? ` [${flavors.join(' + ')}]` : ` [${flavors[0]}]`;
   logger.info(
-    `\n📦 [${chalk.dim(`${index + 1}/${total}`)}] ${chalk.green(pkg.packageName)}${flavorInfo}`
+    `\n📦 [${styleText('dim', `${index + 1}/${total}`)}] ${styleText('green', pkg.packageName)}${flavorInfo}`
   );
   logger.info(`${'─'.repeat(60)}`);
   const relPath = (p: string) => path.relative(process.cwd(), p);
-  logger.info(`   ・Package:      ${chalk.dim(relPath(pkg.path))}`);
-  logger.info(`   ・Build:        ${chalk.dim(relPath(pkg.buildPath))}`);
-  logger.info(`   ・Cache:        ${chalk.dim(relPath(artifactsPath))}`);
+  logger.info(`   ・Package:      ${styleText('dim', relPath(pkg.path))}`);
+  logger.info(`   ・Build:        ${styleText('dim', relPath(pkg.buildPath))}`);
+  logger.info(`   ・Cache:        ${styleText('dim', relPath(artifactsPath))}`);
   logger.info(
-    `   ・XCFrameworks: ${chalk.dim(relPath(Frameworks.getFrameworksOutputPath(pkg.buildPath, flavors[0], pkg.outputVersionPrefix)).replace(`/${flavors[0].toLowerCase()}`, '/<flavor>'))}`
+    `   ・XCFrameworks: ${styleText('dim', relPath(Frameworks.getFrameworksOutputPath(pkg.buildPath, flavors[0], pkg.outputVersionPrefix)).replace(`/${flavors[0].toLowerCase()}`, '/<flavor>'))}`
   );
 }
 
@@ -113,11 +113,11 @@ export function printPrebuildSummary(statuses: UnitStatus[], elapsedMs: number):
   for (const status of statuses) {
     const productDisplay =
       status.packageName === status.productName
-        ? chalk.cyan(status.packageName)
-        : `${chalk.cyan(status.packageName)}/${chalk.yellow(`${status.productName} [${status.flavor}]`)}`;
+        ? styleText('cyan', status.packageName)
+        : `${styleText('cyan', status.packageName)}/${styleText('yellow', `${status.productName} [${status.flavor}]`)}`;
 
     if (status.skipReason) {
-      logger.info(`${productDisplay}: ${chalk.red('⛔ Skipped')} (${status.skipReason})`);
+      logger.info(`${productDisplay}: ${styleText('red', '⛔ Skipped')} (${status.skipReason})`);
       continue;
     }
 
@@ -129,11 +129,12 @@ export function printPrebuildSummary(statuses: UnitStatus[], elapsedMs: number):
   const { successful, warnings, failed } = computeSummaryCounts(statuses);
 
   logger.info('─'.repeat(80));
-  const warningText = warnings > 0 ? ` | ${chalk.yellow(`⚠️  ${warnings} with warnings`)}` : '';
-  const failedText = failed > 0 ? ` | ${chalk.red(`❌ ${failed} failed`)}` : '';
-  const timeText = chalk.blue(`⏱️  ${formatDuration(elapsedMs)}`);
+  const warningText =
+    warnings > 0 ? ` | ${styleText('yellow', `⚠️  ${warnings} with warnings`)}` : '';
+  const failedText = failed > 0 ? ` | ${styleText('red', `❌ ${failed} failed`)}` : '';
+  const timeText = styleText('blue', `⏱️  ${formatDuration(elapsedMs)}`);
   logger.info(
-    `Total: ${statuses.length} | ${chalk.green(`✅ ${successful} successful`)}${warningText}${failedText} | ${timeText}`
+    `Total: ${statuses.length} | ${styleText('green', `✅ ${successful} successful`)}${warningText}${failedText} | ${timeText}`
   );
 }
 

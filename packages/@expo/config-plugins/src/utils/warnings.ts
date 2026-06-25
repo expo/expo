@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import type { ModPlatform } from '../Plugin.types';
 
@@ -42,7 +42,8 @@ export function addWarningForPlatform(
 }
 
 function formatWarning(platform: string, property: string, warning: string, link?: string) {
-  return chalk.yellow`${'» ' + chalk.bold(platform)}: ${property}: ${warning}${
-    link ? chalk.gray(' ' + link) : ''
-  }`;
+  return styleText(
+    'yellow',
+    `» ${styleText('bold', platform)}: ${property} ${warning}${link ? styleText('gray', ` ${link}`) : ''}`
+  );
 }

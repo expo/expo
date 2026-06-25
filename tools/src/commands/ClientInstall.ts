@@ -1,9 +1,9 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { Writable } from 'node:stream';
+import { styleText } from 'node:util';
 import { extract as tarExtract } from 'tar';
 
 import * as AndroidDevice from '../AndroidDevice';
@@ -36,7 +36,7 @@ async function downloadAndInstallOnIOSAsync(downloadUrl: string): Promise<void> 
 
   await Simulator.uninstallAppFromSimulatorAsync(simulator, EXPO_GO_APP_ID_IOS);
 
-  console.log(`Downloading Expo Go from ${chalk.blue(downloadUrl)}`);
+  console.log(`Downloading Expo Go from ${styleText('blue', downloadUrl)}`);
   const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'expotools-client-install-'));
   try {
     const downloadFilePath = await downloadExpoGoAsync({ downloadUrl, targetDir: tmpDir });
@@ -47,14 +47,14 @@ async function downloadAndInstallOnIOSAsync(downloadUrl: string): Promise<void> 
       cwd: appPath,
       strip: 1,
     });
-    console.log(`Extracted to ${chalk.blue(tmpDir)}`);
-    console.log(`Installing Expo Go from ${chalk.blue(appPath)} on iOS simulator...`);
+    console.log(`Extracted to ${styleText('blue', tmpDir)}`);
+    console.log(`Installing Expo Go from ${styleText('blue', appPath)} on iOS simulator...`);
     await Simulator.installSimulatorAppAsync(simulator, appPath);
-    console.log(`Launching Expo Go with identifier ${chalk.blue(EXPO_GO_APP_ID_IOS)}...`);
+    console.log(`Launching Expo Go with identifier ${styleText('blue', EXPO_GO_APP_ID_IOS)}...`);
     await Simulator.launchSimulatorAppAsync(simulator, EXPO_GO_APP_ID_IOS);
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error(chalk.red(`Unable to install Expo Go: ${error.message}`));
+      console.error(styleText('red', `Unable to install Expo Go: ${error.message}`));
     }
   } finally {
     await fs.promises.rm(tmpDir, { recursive: true, force: true });
@@ -84,16 +84,16 @@ async function downloadAndInstallOnAndroidAsync(downloadUrl: string): Promise<vo
       await AndroidDevice.uninstallAppAsync({ device, appId: EXPO_GO_APP_ID_ANDROID });
     } catch {}
 
-    console.log(`Downloading Expo Go from ${chalk.blue(downloadUrl)}`);
+    console.log(`Downloading Expo Go from ${styleText('blue', downloadUrl)}`);
     const downloadFilePath = await downloadExpoGoAsync({ downloadUrl, targetDir: tmpDir });
     console.log(
-      `Installing Expo Go from ${chalk.blue(downloadFilePath)} on Android device ${chalk.blue(device)}...`
+      `Installing Expo Go from ${styleText('blue', downloadFilePath)} on Android device ${styleText('blue', device)}...`
     );
 
     await AndroidDevice.installAppAsync({ device, appPath: downloadFilePath });
 
     const activity = `${EXPO_GO_APP_ID_ANDROID}/.LauncherActivity`;
-    console.log(`Launching Expo Go activity ${chalk.blue(activity)}...`);
+    console.log(`Launching Expo Go activity ${styleText('blue', activity)}...`);
 
     await AndroidDevice.startActivityAsync({
       device,
@@ -101,7 +101,7 @@ async function downloadAndInstallOnAndroidAsync(downloadUrl: string): Promise<vo
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error(chalk.red(`Unable to install Expo Go: ${error.message}`));
+      console.error(styleText('red', `Unable to install Expo Go: ${error.message}`));
     }
   } finally {
     await fs.promises.rm(tmpDir, { recursive: true, force: true });
@@ -133,7 +133,9 @@ async function action(options: ActionOptions) {
     (await askForSDKVersionAsync(platform, await getNewestSDKVersionAsync(platform)));
 
   if (!sdkVersion) {
-    throw new Error(`Unable to find SDK version. Try to use ${chalk.yellow('--sdkVersion')} flag.`);
+    throw new Error(
+      `Unable to find SDK version. Try to use ${styleText('yellow', '--sdkVersion')} flag.`
+    );
   }
   const versionsApiHost = options.production
     ? Versions.VersionsApiHost.PRODUCTION
@@ -143,7 +145,7 @@ async function action(options: ActionOptions) {
   const sdkConfiguration = versions?.sdkVersions?.[sdkVersion];
 
   if (!sdkConfiguration) {
-    throw new Error(`Versions configuration for SDK ${chalk.cyan(sdkVersion)} not found!`);
+    throw new Error(`Versions configuration for SDK ${styleText('cyan', sdkVersion)} not found!`);
   }
 
   const tarballKey = `${platform}ClientUrl`;
@@ -151,7 +153,7 @@ async function action(options: ActionOptions) {
 
   if (!downloadUrl) {
     throw new Error(
-      `Expo Go download url not found at ${chalk.yellow(tarballKey)} key of versions config!`
+      `Expo Go download url not found at ${styleText('yellow', tarballKey)} key of versions config!`
     );
   }
 
@@ -169,7 +171,7 @@ async function action(options: ActionOptions) {
     }
   }
 
-  console.log(chalk.green(`Successfully installed and launched Expo Go 🎉`));
+  console.log(styleText('green', `Successfully installed and launched Expo Go 🎉`));
 }
 
 export default (program: Command) => {

@@ -1,5 +1,5 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { link } from '../Formatter';
 import { commentOnIssueAsync } from '../GitHubActions';
@@ -25,9 +25,7 @@ export default (program: Command) => {
       'Serialized and escaped JSON array describing what and where to comment.'
     )
     .description(
-      `To add "Hello!" comment on issue #1234, run it with ${chalk.blue.italic(
-        `--payload "[{\\"issue\\": 1234, \\"body\\": \\"Hello!\\"}]"`
-      )}`
+      `To add "Hello!" comment on issue #1234, run it with ${styleText(['blue', 'italic'], `--payload "[{\\"issue\\": 1234, \\"body\\": \\"Hello!\\"}]"`)}`
     )
     .asyncAction(main);
 };
@@ -56,7 +54,7 @@ async function main(options: ActionOptions) {
       '✍️  Commented on the following issues: %s',
       commentedIssues
         .map((issue) =>
-          link(chalk.blue('#' + issue), `https://github.com/expo/expo/issues/${issue}`)
+          link(styleText('blue', '#' + issue), `https://github.com/expo/expo/issues/${issue}`)
         )
         .join(', ')
     );

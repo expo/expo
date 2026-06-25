@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 import type arg from 'arg';
-import chalk from 'chalk';
 import path from 'path';
 
 import type { Command } from '../../index';
 import * as Log from '../../log';
 import { assertWithOptionsArgs } from '../../utils/args';
 import { logCmdError } from '../../utils/errors';
+import { styleText } from 'node:util';
 
 export const expoRunAndroid: Command = async (argv) => {
   const rawArgsMap: arg.Spec = {
@@ -38,22 +38,22 @@ export const expoRunAndroid: Command = async (argv) => {
 
   if (args['--help']) {
     Log.exit(
-      chalk`
-  {bold Description}
+      `
+  ${styleText('bold', `Description`)}
     Run the native Android app locally
 
-  {bold Usage}
+  ${styleText('bold', `Usage`)}
     $ npx expo run:android <dir>
 
-  {bold Options} 
+  ${styleText('bold', `Options`)}
     --no-build-cache       Clear the native build cache
     --no-install           Skip installing dependencies
     --no-bundler           Skip starting the bundler
     --app-id <appId>       Custom Android application ID to launch.
-    --variant <name>       Build variant or product flavor and build variant. {dim Default: debug}
+    --variant <name>       Build variant or product flavor and build variant. ${styleText('dim', `Default: debug`)}
     --binary <path>        Path to existing .apk or .aab to install.
     -d, --device [device]  Device name to run the app on
-    -p, --port <port>      Port to start the dev server on. {dim Default: 8081}
+    -p, --port <port>      Port to start the dev server on. ${styleText('dim', `Default: 8081`)}
     -h, --help             Output usage information
 `,
       0

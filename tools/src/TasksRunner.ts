@@ -1,6 +1,6 @@
 import JsonFile, { JSONObject } from '@expo/json-file';
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 
 import Git from './Git';
 import logger from './Logger';
@@ -277,7 +277,7 @@ export class TaskRunner<
       logger.error();
 
       if (error instanceof TaskError) {
-        logger.error(`💥 Execution failed for task ${chalk.cyan(error.task.name)}.`);
+        logger.error(`💥 Execution failed for task ${styleText('cyan', error.task.name)}.`);
       }
 
       logger.error('💥 Error:', error.message);
@@ -287,7 +287,7 @@ export class TaskRunner<
         logger.debug(stack[1]);
       }
 
-      error.stderr && logger.error('💥 stderr output:\n', chalk.reset(error.stderr));
+      error.stderr && logger.error('💥 stderr output:\n', styleText('reset', error.stderr));
       process.exit(1);
     }
   }

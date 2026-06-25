@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import type { ChildProcessWithoutNullStreams } from 'child_process';
 import { spawn } from 'child_process';
 import { EOL } from 'os';
@@ -239,7 +239,7 @@ function isRunningBoardServicesLog(simLog: SimControlLog): boolean {
 
 function formatMessage(simLog: SimControlLog): string {
   // TODO: Maybe change "TCC" to "Consent" or "System".
-  const category = chalk.gray(`[${simLog.source?.image ?? simLog.subsystem}]`);
+  const category = styleText("gray", `[${simLog.source?.image ?? simLog.subsystem}]`);
   const message = simLog.eventMessage;
   return wrapAnsi(category + ' ' + message, process.stdout.columns || 80);
 }

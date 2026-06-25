@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import { env } from './env';
@@ -18,7 +18,7 @@ export function profile<IArgs extends any[], T extends (...args: IArgs) => any>(
     return fn;
   }
 
-  const name = chalk.dim(`⏱  [profile] ${functionName ?? 'unknown'}`);
+  const name = styleText('dim', `⏱  [profile] ${functionName ?? 'unknown'}`);
 
   return ((...args: IArgs) => {
     // Start the timer.

@@ -1,6 +1,6 @@
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 
 import * as Log from '../../../log';
 
@@ -48,10 +48,12 @@ export async function updateTSConfigAsync({
   Log.log();
 
   if (shouldGenerate) {
-    Log.log(chalk`{bold TypeScript}: A {cyan tsconfig.json} has been auto-generated`);
+    Log.log(
+      `${styleText('bold', `TypeScript`)}: A ${styleText('cyan', `tsconfig.json`)} has been auto-generated`
+    );
   } else {
     Log.log(
-      chalk`{bold TypeScript}: The {cyan tsconfig.json} has been updated {dim (Use EXPO_NO_TYPESCRIPT_SETUP to skip)}`
+      `${styleText('bold', `TypeScript`)}: The ${styleText('cyan', `tsconfig.json`)} has been updated ${styleText('dim', `(Use EXPO_NO_TYPESCRIPT_SETUP to skip)`)}`
     );
     logModifications(modifications);
   }
@@ -61,7 +63,9 @@ export async function updateTSConfigAsync({
 function logModifications(modifications: [string, string][]) {
   Log.log();
 
-  Log.log(chalk`\u203A {bold Required} modifications made to the {cyan tsconfig.json}:`);
+  Log.log(
+    `\u203A ${styleText('bold', `Required`)} modifications made to the ${styleText('cyan', `tsconfig.json`)}:`
+  );
 
   Log.log();
 
@@ -73,7 +77,7 @@ function logModifications(modifications: [string, string][]) {
 
 function printTable(items: [string, string][]) {
   const tableFormat = (name: string, msg: string) =>
-    `  ${chalk.bold`${name}`} is now ${chalk.cyan(msg)}`;
+    `  ${styleText('bold', name)} is now ${styleText('cyan', msg)}`;
   for (const [key, value] of items) {
     Log.log(tableFormat(key, value));
   }

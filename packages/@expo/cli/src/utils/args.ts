@@ -1,8 +1,8 @@
 // Common utilities for interacting with `args` library.
 // These functions should be used by every command.
 import arg from 'arg';
-import chalk from 'chalk';
 import { existsSync } from 'fs';
+import { styleText } from 'node:util';
 import { resolve } from 'path';
 
 import * as Log from '../log';
@@ -53,14 +53,14 @@ export function assertWithOptionsArgs(
 
 export function printHelp(info: string, usage: string, options: string, extra: string = ''): never {
   Log.exit(
-    chalk`
-  {bold Info}
+    `
+  ${styleText('bold', `Info`)}
     ${info}
 
-  {bold Usage}
-    {dim $} ${usage}
+  ${styleText('bold', `Usage`)}
+    ${styleText('dim', `$`)} ${usage}
 
-  {bold Options}
+  ${styleText('bold', `Options`)}
     ${options.split('\n').join('\n    ')}
 ` + extra,
     0

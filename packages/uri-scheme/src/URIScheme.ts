@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
 import { statSync } from 'fs';
+import { styleText } from 'node:util';
 import { relative } from 'path';
 import prompts from 'prompts';
 
@@ -87,7 +87,8 @@ async function normalizeUriProtocolAsync(uri: any): Promise<string> {
     // Create a warning.
     if (normalizedUri) {
       console.log(
-        chalk.yellow(
+        styleText(
+          'yellow',
           `\u203A Supplied URI protocol "${trimmedUri}" does not match normalized scheme "${normalizedUri}".`
         )
       );
@@ -131,7 +132,8 @@ export async function addAsync(options: Options): Promise<string[]> {
 
   if (!actionOccurred) {
     console.log(
-      chalk.yellow(
+      styleText(
+        'yellow',
         'No URI schemes could be added. Ensure there is a native project in "ios" and/or "android" directories.'
       )
     );
@@ -163,7 +165,8 @@ export async function removeAsync(options: Options): Promise<string[]> {
 
   if (!actionOccurred) {
     console.log(
-      chalk.yellow(
+      styleText(
+        'yellow',
         'No URI schemes could be removed. Ensure there is a native project in "ios" and/or "android" directories.'
       )
     );
@@ -216,14 +219,15 @@ export async function listAsync(
   }
 
   if (!actionOccurred) {
-    console.log(chalk.yellow('Could not find any native URI schemes to list.'));
+    console.log(styleText('yellow', 'Could not find any native URI schemes to list.'));
   }
 }
 
 function logPlatformMessage(platform: string, message: string): void {
-  console.log(chalk.magenta(`\u203A ${chalk.bold(platform)}: ${message}`));
+  console.log(styleText('magenta', `\u203A ${styleText('bold', platform)}: ${message}`));
 }
 function logSchemes(schemes: string[]): void {
-  for (const scheme of schemes) console.log(`${chalk.dim('\u203A ')}${scheme}${chalk.dim('://')}`);
+  for (const scheme of schemes)
+    console.log(`${styleText('dim', '\u203A ')}${scheme}${styleText('dim', '://')}`);
   console.log('');
 }

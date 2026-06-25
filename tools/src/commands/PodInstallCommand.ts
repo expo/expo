@@ -1,6 +1,6 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
 import { hashElement } from 'folder-hash';
+import { styleText } from 'node:util';
 import path from 'path';
 import process from 'process';
 
@@ -32,7 +32,7 @@ async function action(options: ActionOptions) {
     const manifestLockHash = await md5(path.join(absoluteProjectPath, 'Pods/Manifest.lock'));
 
     if (!manifestLockHash || podfileLockHash !== manifestLockHash || options.force) {
-      logger.info(`🥥 Installing pods in ${chalk.yellow(relativeProjectPath)} directory`);
+      logger.info(`🥥 Installing pods in ${styleText('yellow', relativeProjectPath)} directory`);
 
       try {
         await npxPodInstallAsync(absoluteProjectPath, !!options.verbose);

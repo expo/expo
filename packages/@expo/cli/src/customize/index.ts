@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+
+import { styleText } from 'node:util';
 
 import type { Command } from '../index';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
@@ -22,10 +23,10 @@ export const expoCustomize: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Generate static project files`,
-      chalk`npx expo customize {dim [files...] -- [options]}`,
+      `npx expo customize ${styleText('dim', `[files...] -- [options]`)}`,
       [
-        chalk`[files...]  List of files to generate`,
-        chalk`[options]   Options to pass to the install command`,
+        `[files...]  List of files to generate`,
+        `[options]   Options to pass to the install command`,
         `-h, --help  Usage info`,
       ].join('\n')
     );

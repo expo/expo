@@ -8,7 +8,7 @@
 import JsonFile from '@expo/json-file';
 import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import { spawn, execSync } from 'child_process';
 import fs from 'fs';
 import assert from 'node:assert';
@@ -412,7 +412,7 @@ export async function installAndLaunchAppAsync(props: {
         if (!indicator) {
           indicator = ora(status).start();
         }
-        indicator.text = `${chalk.bold(status)} ${progress}%`;
+        indicator.text = `${styleText("bold", status)} ${progress}%`;
         if (isComplete) {
           indicator.succeed();
         }

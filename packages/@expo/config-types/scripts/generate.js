@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const chalk = require('chalk');
+const { styleText } = require('node:util');
 const { Command } = require('commander');
 const { compile } = require('json-schema-to-typescript');
 const fs = require('node:fs');
@@ -15,7 +15,7 @@ const packageJSON = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
   .arguments('[version]')
-  .usage(`${chalk.green('[version]')} [options]`)
+  .usage(`${styleText('green', '[version]')} [options]`)
   .description('Generate TypeScript types from the Expo config JSON schema.')
   .option('-p, --path <schema-path>', 'Path to a local JSON schema to use.')
   .action(

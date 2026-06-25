@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { findPackagesToPromote } from './findPackagesToPromote';
 import { prepareParcels } from './prepareParcels';
@@ -10,8 +10,6 @@ import { Task } from '../../TasksRunner';
 import { formatVersionChange } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
-const { yellow, red, green, cyan } = chalk;
-
 /**
  * Promotes local versions of selected packages to npm tag passed as an option.
  */
@@ -21,7 +19,7 @@ export const promotePackages = new Task<TaskArgs>(
     dependsOn: [prepareParcels, findPackagesToPromote, selectPackagesToPromote],
   },
   async (parcels: Parcel[], options: CommandOptions): Promise<void> => {
-    logger.info(`\n🚀 Promoting packages to ${yellow.bold(options.tag)} tag...`);
+    logger.info(`\n🚀 Promoting packages to ${styleText(['yellow', 'bold'], options.tag)} tag...`);
 
     // Sort alphabetically, optionally reversed.
     const sorted = [...parcels].sort((a, b) => a.pkg.packageName.localeCompare(b.pkg.packageName));
@@ -38,12 +36,14 @@ export const promotePackages = new Task<TaskArgs>(
       const currentVersion = pkg.packageVersion;
       const { versionToReplace } = state;
 
-      const action = state.isDemoting ? red('Demoting') : green('Promoting');
-      logger.log('  ', green.bold(pkg.packageName));
+      const action = state.isDemoting
+        ? styleText('red', 'Demoting')
+        : styleText('green', 'Promoting');
+      logger.log('  ', styleText(['green', 'bold'], pkg.packageName));
       logger.log(
         '    ',
         action,
-        yellow(options.tag),
+        styleText('yellow', options.tag),
         formatVersionChange(versionToReplace, currentVersion)
       );
 
@@ -53,6 +53,8 @@ export const promotePackages = new Task<TaskArgs>(
       }
     }
 
-    logger.success(`\n✅ Successfully promoted ${cyan(parcels.length + '')} packages.`);
+    logger.success(
+      `\n✅ Successfully promoted ${styleText('cyan', parcels.length + '')} packages.`
+    );
   }
 );

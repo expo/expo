@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import * as semver from 'semver';
 
 import {
@@ -21,8 +21,6 @@ import {
   validateVersion,
 } from '../helpers';
 import { CommandOptions, Parcel, ReleaseType, TaskArgs } from '../types';
-
-const { green, cyan } = chalk;
 
 let lastAction: string | undefined;
 let lastVersionIndex: number = 0;
@@ -85,7 +83,7 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
               const current = p.pkg.packageVersion;
               const target = resolvedVersions.get(p) ?? current;
               return {
-                name: `${green(name)} (${cyan(target)})`,
+                name: `${styleText('green', name)} (${styleText('cyan', target)})`,
                 value: p,
                 checked: true,
               };
@@ -127,7 +125,7 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
     );
     if (skippedFromCascade.length > 0) {
       logger.info(
-        `\n📦 Skipping dependent cascade for shared packages: ${skippedFromCascade.map((p) => green(p.pkg.packageName)).join(', ')}\n   Use ${chalk.bold('--cascade-all')} to include their dependents.`
+        `\n📦 Skipping dependent cascade for shared packages: ${skippedFromCascade.map((p) => styleText('green', p.pkg.packageName)).join(', ')}\n   Use ${styleText('bold', '--cascade-all')} to include their dependents.`
       );
     }
 
@@ -195,9 +193,10 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
 
       parcelsToPublish.add(templateParcel);
       logger.log(
-        `📦 ${green('expo-template-bare-minimum')} is required to be published with ${green(
+        `📦 ${styleText('green', 'expo-template-bare-minimum')} is required to be published with ${styleText(
+          'green',
           'expo'
-        )} package, will be published as ${cyan.bold(releaseVersion)}.`
+        )} package, will be published as ${styleText(['cyan', 'bold'], releaseVersion)}.`
       );
     }
 
@@ -250,7 +249,7 @@ async function promptToPublishParcel(
     {
       type: 'list',
       name: 'action',
-      message: `Do you want to publish ${green.bold(packageName)} as ${cyan.bold(releaseVersion)}?${explainer ? `\n${explainer}` : ''}`,
+      message: `Do you want to publish ${styleText(['green', 'bold'], packageName)} as ${styleText(['cyan', 'bold'], releaseVersion)}?${explainer ? `\n${explainer}` : ''}`,
       choices,
       default: lastAction || 'yes',
     },
@@ -279,11 +278,11 @@ async function promptToPublishParcel(
     {
       type: 'list',
       name: 'version',
-      message: `What do you want to do with ${green.bold(packageName)}?`,
+      message: `What do you want to do with ${styleText(['green', 'bold'], packageName)}?`,
       choices: [
         ...suggestedVersions.map((version) => {
           return {
-            name: `Publish as ${cyan.bold(version)}`,
+            name: `Publish as ${styleText(['cyan', 'bold'], version)}`,
             value: version,
           };
         }),
@@ -456,7 +455,8 @@ async function promptForDependentNodes(
           .filter((edge) => publishingPackageNames.has(edge.destination.name))
           .map((edge) => edge.destination.name);
 
-        const depsInfo = updatedDeps.length > 0 ? ` ${cyan(`(${updatedDeps.join(', ')})`)}` : '';
+        const depsInfo =
+          updatedDeps.length > 0 ? ` ${styleText('cyan', `(${updatedDeps.join(', ')})`)}` : '';
 
         return {
           name: `${node.name}${depsInfo}`,

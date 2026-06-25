@@ -41,7 +41,6 @@
     "@expo/plist": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/prompts": "^2.0.6",
-    "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",

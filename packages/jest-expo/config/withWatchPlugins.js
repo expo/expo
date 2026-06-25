@@ -1,4 +1,4 @@
-const chalk = require('chalk');
+const { styleText } = require('node:util');
 
 function getWatchPlugins({ projects = [] } = {}) {
   const watchPlugins = [
@@ -11,7 +11,7 @@ function getWatchPlugins({ projects = [] } = {}) {
       {
         key: 'X',
         prompt() {
-          return `select which PLATFORMS to run ${chalk.italic(this._getActiveProjectsText())}`;
+          return `select which PLATFORMS to run ${styleText('italic', this._getActiveProjectsText())}`;
         },
       },
     ]);

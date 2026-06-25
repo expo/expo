@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 // NOTE(@kitten): LogRespectingTerminal in instantiateMetro regressed on fatal errors and
 // logs may be swallowed before exiting. We redirect them to a direct write when we're about to exit
@@ -27,15 +27,17 @@ export function error(...message: string[]): void {
 /** Print an error and provide additional info (the stack trace) in debug mode. */
 export function exception(e: Error): void {
   const { env } = require('./utils/env');
-  error(chalk.red(e.toString()) + (env.EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+  error(
+    styleText('red', e.toString()) + (env.EXPO_DEBUG ? '\n' + styleText('gray', e.stack!) : '')
+  );
 }
 
 export function warn(...message: string[]): void {
   if (isExiting) {
-    process.stderr.write(message.map((value) => chalk.yellow(value)).join(' ') + '\n');
+    process.stderr.write(message.map((value) => styleText('yellow', value)).join(' ') + '\n');
     return;
   }
-  console.warn(...message.map((value) => chalk.yellow(value)));
+  console.warn(...message.map((value) => styleText('yellow', value)));
 }
 
 export function log(...message: string[]): void {

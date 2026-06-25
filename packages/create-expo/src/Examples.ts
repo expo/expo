@@ -1,6 +1,6 @@
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 import prompts from 'prompts';
 
@@ -104,7 +104,9 @@ export async function promptExamplesAsync() {
 
   if (!answer) {
     console.log();
-    console.log(chalk`Specify the example name, for example: {cyan --example with-router}`);
+    console.log(
+      `Specify the example name, for example: ${styleText('cyan', `--example with-router`)}`
+    );
     console.log();
     process.exit(1);
   }

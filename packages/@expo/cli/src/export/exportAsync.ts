@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import * as Log from '../log';
@@ -34,7 +34,7 @@ export async function exportAsync(projectRoot: string, options: Options) {
   await waitUntilAtlasExportIsReadyAsync(projectRoot);
 
   // Final notes
-  Log.log(chalk.greenBright`Exported: ${options.outputDir}`);
+  Log.log(styleText('greenBright', `Exported: ${options.outputDir}`));
 
   // Exit the process to stop any hanging processes from reading the app.config.js or server rendering.
   ensureProcessExitsAfterDelay();

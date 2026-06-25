@@ -44,7 +44,6 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "chalk": "^4.1.0",
     "commander": "^12.1.0",
     "prettier": "^3.8.3",
     "typescript": "~6.0.3",

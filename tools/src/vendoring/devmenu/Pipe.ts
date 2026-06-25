@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Task } from './steps/Task';
 import logger from '../../Logger';
@@ -72,9 +72,9 @@ export class Pipe {
   }
 
   public async start(platform: Platform) {
-    logger.debug(`Staring pipe for platform = ${chalk.green(platform)}`);
+    logger.debug(`Staring pipe for platform = ${styleText('green', platform)}`);
     logger.debug(
-      `${chalk.green('<workingDirectory>')} = ${chalk.yellow(this.workingDirectory || '')}`
+      `${styleText('green', '<workingDirectory>')} = ${styleText('yellow', this.workingDirectory || '')}`
     );
     logger.debug();
 

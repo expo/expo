@@ -2,9 +2,9 @@
 import * as Scheme from '@expo/config-plugins/build/ios/Scheme';
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'fs';
 import { globSync } from 'glob';
+import { styleText } from 'node:util';
 import * as path from 'path';
 
 import type { Options } from './Options';
@@ -38,7 +38,8 @@ export async function addAsync({
 
   if (Scheme.hasScheme(uri, config)) {
     console.log(
-      chalk.yellow(
+      styleText(
+        'yellow',
         `\u203A iOS: URI scheme "${uri}" already exists in Info.plist at: ${infoPlistPath}`
       )
     );
@@ -48,7 +49,7 @@ export async function addAsync({
   config = Scheme.appendScheme(uri, config);
 
   if (dryRun) {
-    console.log(chalk.magenta('Write plist to: ', infoPlistPath));
+    console.log(styleText('magenta', 'Write plist to: '));
     console.log(formatConfig(config));
     return false;
   }
@@ -68,7 +69,8 @@ export async function removeAsync({
 
   if (!Scheme.hasScheme(uri, config)) {
     console.log(
-      chalk.yellow(
+      styleText(
+        'yellow',
         `\u203A iOS: URI scheme "${uri}" does not exist in Info.plist at: ${infoPlistPath}`
       )
     );
@@ -78,7 +80,7 @@ export async function removeAsync({
   config = Scheme.removeScheme(uri, config);
 
   if (dryRun) {
-    console.log(chalk.magenta('Write plist to: ', infoPlistPath));
+    console.log(styleText('magenta', 'Write plist to: '));
     console.log(formatConfig(config));
     return false;
   }

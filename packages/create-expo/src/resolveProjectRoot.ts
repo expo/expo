@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 import prompts from 'prompts';
 
@@ -11,12 +11,15 @@ import { getConflictsForDirectory } from './utils/dir';
 export function assertValidName(folderName: string) {
   const validation = Template.validateName(folderName);
   if (typeof validation === 'string') {
-    Log.exit(chalk`{red Cannot create an app named {bold "${folderName}"}. ${validation}}`, 1);
+    Log.exit(
+      `${styleText('red', `Cannot create an app named ${styleText('bold', `"${folderName}"`)}. ${validation}`)}`,
+      1
+    );
   }
   const isFolderNameForbidden = Template.isFolderNameForbidden(folderName);
   if (isFolderNameForbidden) {
     Log.exit(
-      chalk`{red Cannot create an app named {bold "${folderName}"} because it would conflict with a dependency of the same name.}`,
+      `${styleText('red', `Cannot create an app named ${styleText('bold', `"${folderName}"`)} because it would conflict with a dependency of the same name.`)}`,
       1
     );
   }
@@ -25,7 +28,7 @@ export function assertValidName(folderName: string) {
 export function assertFolderEmpty(projectRoot: string, folderName: string) {
   const conflicts = getConflictsForDirectory(projectRoot);
   if (conflicts.length) {
-    Log.log(chalk`The directory {cyan ${folderName}} has files that might be overwritten:`);
+    Log.log(`The directory ${styleText('cyan', folderName)} has files that might be overwritten:`);
     Log.log();
     for (const file of conflicts) {
       Log.log(`  ${file}`);
@@ -62,10 +65,10 @@ export async function resolveProjectRootAsync(input: string): Promise<string> {
     const selfCmd = formatSelfCommand();
     Log.log();
     Log.log('Choose a name for your app:');
-    Log.log(chalk`  {dim $} {cyan ${selfCmd} <name>}`);
+    Log.log(`  ${styleText('dim', `$`)} ${styleText('cyan', `${selfCmd} <name>}`)}`);
     Log.log();
     Log.log(`For more info, run:`);
-    Log.log(chalk`  {dim $} {cyan ${selfCmd} --help}`);
+    Log.log(`  ${styleText('dim', `$`)} ${styleText('cyan', `${selfCmd} --help`)}`);
     Log.log();
     Log.exit('');
   }

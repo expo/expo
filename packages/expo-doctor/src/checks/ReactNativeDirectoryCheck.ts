@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import type { AutolinkingResolutionsCache } from '../utils/autolinkingResolutions';
 import { scanNativeModuleResolutions } from '../utils/autolinkingResolutions';
@@ -122,27 +122,27 @@ export class ReactNativeDirectoryCheck implements DoctorCheck<DoctorCache> {
     if (newArchUnsupportedPackages.length > 0) {
       hasCriticalIssues = true;
       issues.push(
-        `${chalk.bold(`  Unsupported on New Architecture:`)} ${newArchUnsupportedPackages.join(', ')}`
+        `${styleText('bold', `  Unsupported on New Architecture:`)} ${newArchUnsupportedPackages.join(', ')}`
       );
     }
 
     if (newArchUntestedPackages.length > 0) {
       hasCriticalIssues = true;
       issues.push(
-        `${chalk.bold(`  Untested on New Architecture:`)} ${newArchUntestedPackages.join(', ')}`
+        `${styleText('bold', `  Untested on New Architecture:`)} ${newArchUntestedPackages.join(', ')}`
       );
     }
 
     if (unmaintainedPackages.length > 0) {
       hasCriticalIssues = true;
-      issues.push(`${chalk.bold(`  Unmaintained:`)} ${unmaintainedPackages.join(', ')}`);
+      issues.push(`${styleText('bold', `  Unmaintained:`)} ${unmaintainedPackages.join(', ')}`);
     }
 
     if (
       (listUnknownPackagesEnabled === null || listUnknownPackagesEnabled) &&
       unknownPackages.length > 0
     ) {
-      issues.push(`${chalk.bold(`  No metadata available`)}: ${unknownPackages.join(', ')}`);
+      issues.push(`${styleText('bold', `  No metadata available`)}: ${unknownPackages.join(', ')}`);
     }
 
     if (!hasCriticalIssues && listUnknownPackagesEnabled === null) {
@@ -170,20 +170,16 @@ export class ReactNativeDirectoryCheck implements DoctorCheck<DoctorCache> {
       newArchUntestedPackages.length > 0
     ) {
       advice.push(
-        `Use libraries that are actively maintained and support the New Architecture. Find alternative libraries with ${chalk.bold('https://reactnative.directory')}.`
+        `Use libraries that are actively maintained and support the New Architecture. Find alternative libraries with ${styleText('bold', 'https://reactnative.directory')}.`
       );
       advice.push(
-        `Add packages to ${chalk.bold(
-          'expo.doctor.reactNativeDirectoryCheck.exclude'
-        )} in package.json to selectively skip validations, if the warning is not relevant.`
+        `Add packages to ${styleText('bold', 'expo.doctor.reactNativeDirectoryCheck.exclude')} in package.json to selectively skip validations, if the warning is not relevant.`
       );
     }
 
     if (unknownPackages.length > 0) {
       advice.push(
-        `Update React Native Directory to include metadata for unknown packages. Alternatively, set ${chalk.bold(
-          'expo.doctor.reactNativeDirectoryCheck.listUnknownPackages'
-        )} in package.json to ${chalk.bold('false')} to skip warnings about packages with no metadata, if the warning is not relevant.`
+        `Update React Native Directory to include metadata for unknown packages. Alternatively, set ${styleText('bold', 'expo.doctor.reactNativeDirectoryCheck.listUnknownPackages')} in package.json to ${styleText('bold', 'false')} to skip warnings about packages with no metadata, if the warning is not relevant.`
       );
     }
 

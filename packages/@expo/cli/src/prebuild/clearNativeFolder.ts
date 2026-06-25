@@ -1,8 +1,8 @@
 import type { ModPlatform } from '@expo/config-plugins';
 import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
-import chalk from 'chalk';
 import { isNativeModuleAsync } from 'expo/internal/unstable-autolinking-exports';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import * as Log from '../log';
@@ -127,7 +127,7 @@ export async function promptToClearMalformedNativeProjectsAsync(
     return;
   }
 
-  const displayPlatforms = platforms.map((platform) => chalk.cyan(platform));
+  const displayPlatforms = platforms.map((platform) => styleText('cyan', platform));
   // Prompt which platforms to reset.
   const message =
     platforms.length > 1

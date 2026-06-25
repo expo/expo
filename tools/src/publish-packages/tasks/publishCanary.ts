@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import { checkEnvironmentTask } from './checkEnvironmentTask';
@@ -20,8 +20,6 @@ import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addTemplateTarball } from './addTemplateTarball';
 import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { updateAndroidProjects } from './updateAndroidProjects';
-
-const { cyan } = chalk;
 
 /**
  * Prepare packages to be published as canaries.
@@ -146,7 +144,7 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
     const count = parcels.length;
 
     logger.success(
-      `\n✅ Successfully published ${cyan.bold(count + '')} package${count > 1 ? 's' : ''}.\n`
+      `\n✅ Successfully published ${styleText(['cyan', 'bold'], count + '')} package${count > 1 ? 's' : ''}.\n`
     );
   }
 );

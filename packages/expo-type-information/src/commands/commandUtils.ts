@@ -1,8 +1,8 @@
-import chalk from 'chalk';
 import { execSync } from 'child_process';
 import commander from 'commander';
 import { createHash } from 'crypto';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import {
@@ -283,7 +283,7 @@ export async function getFileTypeInformationFromArgs({
 
   if (!typeInfo) {
     console.error(
-      chalk.red(`Provided files: ${realInputPaths} couldn't be parsed for type information!`)
+      styleText('red', `Provided files: ${realInputPaths} couldn't be parsed for type information!`)
     );
     return null;
   }

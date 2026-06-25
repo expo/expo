@@ -1,7 +1,7 @@
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import canonicalize from '@expo/metro/metro-core/canonicalize';
 import type { ResolutionContext } from '@expo/metro/metro-resolver';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 import { stripVTControlCharacters } from 'util';
 
@@ -305,12 +305,13 @@ export const createMutateResolutionError =
     debug('Number of explored stacks:', stackCounter);
 
     if (inverseStack && inverseStack.frames.length > 0) {
-      const formattedImport = chalk`{gray  |} {cyan import} `;
+      const formattedImport = `${styleText('gray', ` |`)} ${styleText('cyan', `import`)} `;
       const importMessagePadding = ' '.repeat(stripVTControlCharacters(formattedImport).length + 1);
 
       debug('Found inverse graph:', JSON.stringify(inverseStack, null, 2));
 
-      let extraMessage = chalk.bold(
+      let extraMessage = styleText(
+        'bold',
         `Import stack${stackCounter >= stackCountLimit ? ` (${stackCounter})` : ''}:`
       );
 
@@ -319,9 +320,9 @@ export const createMutateResolutionError =
         let filename = path.relative(root, frame.origin);
 
         if (filename.match(/\?ctx=[\w\d]+$/)) {
-          filename = filename.replace(/\?ctx=[\w\d]+$/, chalk.dim(' (require.context)'));
+          filename = filename.replace(/\?ctx=[\w\d]+$/, styleText('dim', ' (require.context)'));
         } else {
-          let formattedRequest = chalk.green(`"${frame.request}"`);
+          let formattedRequest = styleText('green', `"${frame.request}"`);
 
           if (
             // If bundling for web and the import is pulling internals from outside of react-native
@@ -332,18 +333,19 @@ export const createMutateResolutionError =
           ) {
             formattedRequest =
               formattedRequest +
-              chalk`\n${importMessagePadding}{yellow ^ Importing react-native internals is not supported on web.}`;
+              `\n${importMessagePadding}${styleText('yellow', `^ Importing react-native internals is not supported on web.`)}`;
           }
 
-          filename = filename + chalk`\n${formattedImport}${formattedRequest}`;
+          filename = filename + `\n${formattedImport}${formattedRequest}`;
         }
 
-        let line = '\n' + chalk.gray(' ') + filename;
+        let line = '\n' + styleText('gray', ' ') + filename;
         if (filename.match(/node_modules/)) {
-          line = chalk.gray(
+          line = styleText(
+            'gray',
             // Bold the node module name
             line.replace(/node_modules\/([^/]+)/, (_match, p1) => {
-              return 'node_modules/' + chalk.bold(p1);
+              return `node_modules/${styleText('bold', p1)}`;
             })
           );
         }
@@ -352,11 +354,11 @@ export const createMutateResolutionError =
       }
 
       if (inverseStack.circular) {
-        extraMessage += chalk`\n${importMessagePadding}{yellow ^ The import above creates circular dependency.}`;
+        extraMessage += `\n${importMessagePadding}${styleText('yellow', `^ The import above creates circular dependency.`)}`;
       }
 
       if (inverseStack.limited) {
-        extraMessage += chalk`\n\n {bold {yellow Depth limit reached. The actual stack is longer than what you can see above.}}`;
+        extraMessage += `\n\n ${styleText(['bold', 'yellow'], `Depth limit reached. The actual stack is longer than what you can see above.`)}`;
       }
 
       extraMessage += '\n';

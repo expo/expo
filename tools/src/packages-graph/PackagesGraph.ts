@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import PackagesGraphEdge from './PackagesGraphEdge';
 import PackagesGraphNode from './PackagesGraphNode';
@@ -107,7 +107,7 @@ function addDependency(
     // Possible cycle in dependencies. Cycles in peer and optional dependency relations are fine though.
     if (DefaultDependencyKind.includes(kind)) {
       console.error(
-        chalk.red(`Detected a cycle in ${kind}! ${origin.name} -> ${destination.name}`)
+        styleText('red', `Detected a cycle in ${kind}! ${origin.name} -> ${destination.name}`)
       );
     }
     return;

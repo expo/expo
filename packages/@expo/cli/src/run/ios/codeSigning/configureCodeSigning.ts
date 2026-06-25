@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from "node:util";
 
 import * as Security from './Security';
 import { resolveCertificateSigningIdentityAsync } from './resolveCertificateSigningIdentity';
@@ -27,7 +27,7 @@ function isCodeSigningConfigured(projectRoot: string): boolean {
       const team = curr.developmentTeams[0];
       return team ? [...prev, team] : prev;
     }, []);
-    Log.log(chalk.dim`\u203A Auto signing app using team(s): ${teamList.join(', ')}`);
+    Log.log(styleText("dim", `\u203A Auto signing app using team(s): ${teamList.join(', ')}`));
     return true;
   }
 

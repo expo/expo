@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import { env } from './env';
@@ -66,6 +66,11 @@ export async function validateGitStatusAsync(): Promise<boolean> {
 }
 
 function logWarning(warning: string, hint: string) {
-  Log.warn(chalk.bold`! ` + warning);
-  Log.log(chalk.gray`\u203A ` + chalk.gray(hint));
+  Log.warn(
+    styleText(
+      'bold',
+      `) + warning);
+  Log.log(styleText("gray", `
+    ) + styleText('gray', hint)
+  );
 }

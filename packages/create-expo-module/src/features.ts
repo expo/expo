@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 export const ALL_FEATURES = [
   'Constant',
@@ -94,7 +94,8 @@ export function filterFeaturesByPlatforms(
   }
   if (dropped.length > 0) {
     console.log(
-      chalk.yellow(
+      styleText(
+        'yellow',
         `⚠️  Dropping ${dropped.join(', ')} — required platform not selected ` +
           `(SwiftUI* require apple, Compose* require android).`
       )

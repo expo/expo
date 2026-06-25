@@ -1,6 +1,6 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import { glob } from 'glob';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import {
@@ -110,7 +110,7 @@ export async function buildFrameworksForProjectAsync(
   // Builds frameworks from flavors.
   const frameworks: Framework[] = [];
   for (const flavor of flavors) {
-    logger.log('   Building framework for %s', chalk.yellow(flavor.sdk));
+    logger.log('   Building framework for %s', styleText('yellow', flavor.sdk));
 
     frameworks.push(
       await xcodeProject.buildFrameworkAsync(xcodeProject.name, flavor, {
@@ -130,11 +130,11 @@ export async function buildFrameworksForProjectAsync(
 
   // Print binary sizes
   const binarySizes = frameworks.map((framework) =>
-    chalk.magenta((framework.binarySize / 1024 / 1024).toFixed(2) + 'MB')
+    styleText('magenta', (framework.binarySize / 1024 / 1024).toFixed(2) + 'MB')
   );
   logger.log('   Binary sizes:', binarySizes.join(', '));
 
-  logger.log('   Merging frameworks to', chalk.magenta(`${xcodeProject.name}.xcframework`));
+  logger.log('   Merging frameworks to', styleText('magenta', `${xcodeProject.name}.xcframework`));
 
   // Merge frameworks into universal xcframework
   await xcodeProject.buildXcframeworkAsync(frameworks, settings);

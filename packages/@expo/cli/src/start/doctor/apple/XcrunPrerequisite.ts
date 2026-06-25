@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import { execSync } from 'child_process';
+import { styleText } from 'node:util';
 
 import { delayAsync } from '../../../utils/delay';
 import { AbortCommandError } from '../../../utils/errors';
@@ -38,7 +38,7 @@ export class XcrunPrerequisite extends Prerequisite {
     // This prompt serves no purpose accept informing the user what to do next, we could just open the App Store but it could be confusing if they don't know what's going on.
     const confirm = await confirmAsync({
       initial: true,
-      message: chalk`Xcode {bold Command Line Tools} needs to be installed (requires {bold sudo}), continue?`,
+      message: `Xcode ${styleText('bold', `Command Line Tools`)} needs to be installed (requires ${styleText('bold', `sudo`)}), continue?`,
     });
 
     if (confirm) {

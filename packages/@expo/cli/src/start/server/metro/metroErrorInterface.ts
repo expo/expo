@@ -6,8 +6,7 @@
  */
 import { getMetroServerRoot } from '@expo/config/paths';
 import { parseWebBuildErrors } from '@expo/log-box-utils';
-import chalk from 'chalk';
-import { stripVTControlCharacters } from 'node:util';
+import { styleText, stripVTControlCharacters } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import type { StackFrame } from 'stacktrace-parser';
@@ -31,11 +30,11 @@ function fill(width: number): string {
 }
 
 function formatPaths(config: { filePath: string | null; line?: number; col?: number }) {
-  const filePath = chalk.reset(config.filePath);
+  const filePath = styleText('reset', config.filePath ?? '');
   return (
-    chalk.dim('(') +
+    styleText('dim', '(') +
     filePath +
-    chalk.dim(`:${[config.line, config.col].filter(Boolean).join(':')})`)
+    styleText('dim', `:${[config.line, config.col].filter(Boolean).join(':')})`)
   );
 }
 
@@ -59,7 +58,7 @@ export async function logMetroErrorWithStack(
   // process.stdout.write('\u001bc'); // Reset the terminal
 
   Log.log();
-  Log.log(chalk.red('Metro error: ') + error.message);
+  Log.log(styleText('red', 'Metro error: ') + error.message);
   Log.log();
 
   if (error instanceof CommandError) {
@@ -104,7 +103,7 @@ export function getStackAsFormattedLog(
     // ---- index.tsx ------------------------------------------------------
     //  32 |         This is example code which will be under the title.
     const title = path.basename(codeFrame.fileName);
-    logs.push(chalk.bold`Code: ${title}`);
+    logs.push(styleText('bold', `Code: ${title}`));
 
     const isPreviewTooLong = lines.some((line) => line.length > maxWarningLineLength);
     const column = codeFrame.location?.column;
@@ -135,16 +134,24 @@ export function getStackAsFormattedLog(
         if (minBounds > 0) {
           // Adjust the min bounds so the cursor is aligned after we add the "..."
           minBounds -= 3;
-          previewLine = chalk.dim('...') + previewLine;
+          previewLine = styleText('dim', '...') + previewLine;
         }
         if (maxBounds < lineText.length) {
-          previewLine += chalk.dim('...');
+          previewLine += styleText('dim', '...');
         }
 
         // If the column property could be found, then use that to fix the cursor location which is often broken in regex.
-        cursorLine = (column == null ? '' : fill(column) + chalk.reset('^')).slice(minBounds);
+        cursorLine = (column == null ? '' : fill(column) + styleText('reset', '^')).slice(
+          minBounds
+        );
 
-        logs.push(formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)'));
+        logs.push(
+          formattedPath,
+          '',
+          previewLine,
+          cursorLine,
+          styleText('dim', '(error truncated)')
+        );
       }
     } else {
       logs.push(codeFrame.content);
@@ -170,10 +177,10 @@ export function getStackAsFormattedLog(
       const position = terminalLink.isSupported
         ? terminalLink(frame.subtitle, frame.subtitle)
         : frame.subtitle;
-      let lineItem = chalk.gray(`  ${frame.title} (${position})`);
+      let lineItem = styleText('gray', `  ${frame.title} (${position})`);
 
       if (frame.collapse) {
-        lineItem = chalk.dim(lineItem);
+        lineItem = styleText('dim', lineItem);
       }
       // Never show the internal module system.
       const isMetroRuntime =
@@ -187,10 +194,10 @@ export function getStackAsFormattedLog(
       }
     });
 
-    logs.push(chalk.bold`Call Stack`);
+    logs.push(styleText('bold', `Call Stack`));
 
     if (!backupStackLines.length) {
-      logs.push(chalk.gray('  No stack trace available.'));
+      logs.push(styleText('gray', '  No stack trace available.'));
     } else {
       isFallback = stackLines.length === 0;
       // If there are not stack lines then it means the error likely happened in the node modules, in this case we should fallback to showing all the
@@ -199,7 +206,7 @@ export function getStackAsFormattedLog(
       logs.push(displayStack.join('\n'));
     }
   } else if (error && error.stack) {
-    logs.push(chalk.gray(`  ${error.stack}`));
+    logs.push(styleText('gray', `  ${error.stack}`));
   }
 
   return {

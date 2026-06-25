@@ -1,7 +1,7 @@
 import type { ModPlatform } from '@expo/config-plugins';
 import type { MergeResults } from '@expo/config-plugins/build/utils/generateCode';
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { copySync } from '../utils/dir';
@@ -40,17 +40,18 @@ export function createCopyFilesSuccessMessage(
   let message = `Created native ${pluralized}`;
 
   if (skippedPaths.length) {
-    message += chalk.dim(
-      ` | reusing ${skippedPaths.map((path) => chalk.bold(`/${path}`)).join(', ')}`
+    message += styleText(
+      'dim',
+      ` | reusing ${skippedPaths.map((path) => styleText('bold', `/${path}`)).join(', ')}`
     );
   }
   if (!gitignore) {
     // Add no additional message...
   } else if (!gitignore.didMerge) {
-    message += chalk.dim(` | reusing gitignore`);
+    message += styleText('dim', ` | reusing gitignore`);
   } else if (gitignore.didMerge && gitignore.didClear) {
     // This is legacy and for non-standard templates. The Expo template adds gitignores to the platform folders.
-    message += chalk.dim(` | updated gitignore`);
+    message += styleText('dim', ` | updated gitignore`);
   }
   return message;
 }

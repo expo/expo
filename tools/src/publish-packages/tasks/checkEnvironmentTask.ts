@@ -1,10 +1,8 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Npm from '../../Npm';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { cyan } = chalk;
 
 /**
  * Checks whether the environment allows to proceed with any further tasks.
@@ -39,7 +37,7 @@ export const checkEnvironmentTask = new Task<TaskArgs>(
 
     if (!teamMembers.includes(npmUser)) {
       throw new Error(
-        `❗️ You must be in ${cyan(Npm.EXPO_DEVELOPERS_TEAM_NAME)} team to publish packages`
+        `❗️ You must be in ${styleText('cyan', Npm.EXPO_DEVELOPERS_TEAM_NAME)} team to publish packages`
       );
     }
   }

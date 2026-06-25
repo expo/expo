@@ -1,6 +1,6 @@
 import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
-import chalk from 'chalk';
 import { glob, GlobOptions } from 'glob';
+import { styleText } from 'node:util';
 import ora from 'ora';
 import { stripVTControlCharacters } from 'util';
 
@@ -36,7 +36,9 @@ export async function spawnJSONCommandAsync<T = object>(
     return JSON.parse(child.stdout);
   } catch (e) {
     e.message +=
-      '\n' + chalk.red('Cannot parse this output as JSON: ') + chalk.yellow(child.stdout.trim());
+      '\n' +
+      styleText('red', 'Cannot parse this output as JSON: ') +
+      styleText('yellow', child.stdout.trim());
     throw e;
   }
 }
@@ -180,7 +182,7 @@ export async function runWithSpinner<Result>(
 ): Promise<Result> {
   const disabled = process.env.CI || process.env.EXPO_DEBUG;
   const step = ora({
-    text: chalk.bold(title),
+    text: styleText('bold', title),
     isEnabled: !disabled,
     stream: disabled ? process.stdout : process.stderr,
     ...options,

@@ -1,5 +1,5 @@
 import type * as PackageManager from '@expo/package-manager';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import { getOperationLog } from '../start/doctor/dependencies/getVersionedPackages';
@@ -47,9 +47,9 @@ export async function fixPackagesAsync(
 
   // display all packages to update, including expo package
   Log.log(
-    chalk`\u203A Installing ${
+    `\u203A Installing ${
       versioningMessages.length ? versioningMessages.join(' and ') + ' ' : ''
-    }using {bold ${packageManager.name}}`
+    }using ${styleText('bold', packageManager.name)}`
   );
 
   // if updating expo package, install this first, then run expo install --fix again under new version

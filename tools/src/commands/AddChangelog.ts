@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer, { QuestionCollection } from 'inquirer';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import * as Changelogs from '../Changelogs';
@@ -134,13 +134,13 @@ async function action(packageNames: string[], options: ActionOptions) {
 
   const type = toChangeType(options.type);
   if (!type) {
-    throw new Error(`Invalid type: ${chalk.cyan(options.type)}`);
+    throw new Error(`Invalid type: ${styleText('cyan', options.type)}`);
   }
 
   for (const packageName of options.packageNames) {
     const packagePath = path.join(Directories.getPackagesDir(), packageName, 'CHANGELOG.md');
     if (!(await fs.pathExists(packagePath))) {
-      throw new Error(`Package ${chalk.green(packageName)} doesn't have changelog file.`);
+      throw new Error(`Package ${styleText('green', packageName)} doesn't have changelog file.`);
     }
 
     const changelog = Changelogs.loadFrom(packagePath);
@@ -158,13 +158,15 @@ async function action(packageNames: string[], options: ActionOptions) {
       await changelog.saveAsync();
 
       logger.info(
-        `\n➕ Inserted ${chalk.magenta(options.type)} entry to ${chalk.green(packageName)}:`
+        `\n➕ Inserted ${styleText('magenta', options.type)} entry to ${styleText('green', packageName)}:`
       );
       insertedEntries.forEach((entry) => {
         logger.log('  ', formatChangelogEntry(Changelogs.getChangeEntryLabel(entry)));
       });
     } else {
-      logger.info(`\n👌 Specified entry is already added to ${chalk.green(packageName)} changelog`);
+      logger.info(
+        `\n👌 Specified entry is already added to ${styleText('green', packageName)} changelog`
+      );
     }
   }
 }

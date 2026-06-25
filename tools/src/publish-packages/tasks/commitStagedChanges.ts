@@ -1,12 +1,10 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { blue } = chalk;
 
 /**
  * Commits staged changes made by all previous tasks.
@@ -32,7 +30,7 @@ export const commitStagedChanges = new Task<TaskArgs>(
       .map(({ pkg, state }) => `${pkg.packageName}@${state.releaseVersion}`)
       .join('\n');
 
-    logger.info(`\n📼 Committing changes with message: ${blue(commitMessage)}`);
+    logger.info(`\n📼 Committing changes with message: ${styleText('blue', commitMessage)}`);
 
     await Git.commitAsync({
       title: commitMessage,

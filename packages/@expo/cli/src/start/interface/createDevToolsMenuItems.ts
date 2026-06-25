@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../../log';
 import { openBrowserAsync } from '../../utils/open';
@@ -55,12 +55,12 @@ export const createDevToolsMenuItems = (
           })),
         ].filter((item) => item != null);
         return {
-          title: chalk`{bold ${plugin.packageName}}`,
+          title: `${styleText('bold', plugin.packageName)}`,
           value: '',
           children,
           action: async () => {
             try {
-              const value = await selectAsync(chalk`{dim Select command}`, children);
+              const value = await selectAsync(`${styleText('dim', `Select command`)}`, children);
               await children.find((item) => item.value === value)?.action?.();
             } catch (error: any) {
               // Handle aborting prompt
@@ -88,7 +88,7 @@ const devtoolFactory = (
   }
 
   return {
-    title: chalk`Open {bold ${plugin.packageName}}`,
+    title: `Open ${styleText('bold', plugin.packageName)}`,
     value: `devtoolsPlugin:${plugin.packageName}`,
     action: async () => {
       const url = new URL(plugin.webpageEndpoint!, defaultServerUrl);
@@ -121,12 +121,12 @@ const cliExtensionFactory = (
   }));
 
   return {
-    title: chalk`{bold ${plugin.packageName}}`,
+    title: `${styleText('bold', plugin.packageName)}`,
     value: `cliExtension:${plugin.packageName}`,
     children,
     action: async () => {
       try {
-        const value = await selectAsync(chalk`{dim Select command}`, children);
+        const value = await selectAsync(`${styleText('dim', `Select command`)}`, children);
         const cmd = commands.find((c) => c.name === value);
         if (cmd == null) {
           Log.warn(`No command found for ${plugin.packageName}`);

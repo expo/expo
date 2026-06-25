@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import Table from 'cli-table3';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import { VendoringTargetModulesConfig } from './types';
@@ -37,7 +37,7 @@ export async function listAvailableVendoredModulesAsync(
     const packageView = packageViews.shift();
 
     if (!packageView) {
-      logger.error(`Couldn't get package view for ${chalk.green.bold(packageName)}.\n`);
+      logger.error(`Couldn't get package view for ${styleText(['green', 'bold'], packageName)}.\n`);
       continue;
     }
 
@@ -54,9 +54,9 @@ export async function listAvailableVendoredModulesAsync(
       }
 
       table.push([
-        link(chalk.bold.green(packageName), source),
-        (bundledVersion ? chalk.cyan : chalk.gray)(bundledVersion),
-        chalk.cyan(latestVersion),
+        link(styleText(['bold', 'green'], packageName), source),
+        styleText(bundledVersion ? 'cyan' : 'gray', bundledVersion),
+        styleText('cyan', latestVersion),
         isOutdated ? '❌' : '✅',
       ]);
     }

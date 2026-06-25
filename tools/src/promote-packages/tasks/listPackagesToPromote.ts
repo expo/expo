@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { findPackagesToPromote } from './findPackagesToPromote';
 import { prepareParcels } from './prepareParcels';
@@ -6,8 +6,6 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { printPackagesToPromote } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { yellow } = chalk;
 
 /**
  * Lists packages that can be promoted to given tag.
@@ -23,7 +21,7 @@ export const listPackagesToPromote = new Task<TaskArgs>(
       return Task.STOP;
     }
 
-    logger.info(`\n📚 Packages to promote to ${yellow.bold(options.tag)}:`);
+    logger.info(`\n📚 Packages to promote to ${styleText(['yellow', 'bold'], options.tag)}:`);
     printPackagesToPromote(parcels);
   }
 );

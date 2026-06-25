@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import { getConfig, getPackageJson } from 'expo/config';
 import fs from 'node:fs';
 import path from 'node:path';
+import { styleText } from 'node:util';
 import prompts from 'prompts';
 
 import CLIError from './error';
@@ -16,7 +16,7 @@ export const validatePrebuild = async (
   validatePackageInstalled();
 
   if (!checkPrebuild(platform)) {
-    console.info(`${chalk.yellow(`⚠ Prebuild for platform: ${platform} is missing`)}`);
+    console.info(`${styleText('yellow', `⚠ Prebuild for platform: ${platform} is missing`)}`);
     const response = await prompts({
       type: 'confirm',
       name: 'shouldRunPrebuild',
@@ -48,9 +48,7 @@ const validateIosPodsInstalled = async (): Promise<void> => {
   }
 
   console.info(
-    `${chalk.yellow(
-      '⚠ iOS workspace not found. CocoaPods has not been installed in the `ios/` directory yet.'
-    )}`
+    `${styleText('yellow', '⚠ iOS workspace not found. CocoaPods has not been installed in the `ios/` directory yet.')}`
   );
   const response = await prompts({
     type: 'confirm',

@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 import semver from 'semver';
 
@@ -53,18 +53,18 @@ async function ensureLoggedInAsAppleReview(): Promise<string | null> {
   const currentUser = await getCurrentUser();
 
   if (currentUser === REVIEW_CONFIG.owner) {
-    logger.info(`Already logged in as ${chalk.cyan(REVIEW_CONFIG.owner)}`);
+    logger.info(`Already logged in as ${styleText('cyan', REVIEW_CONFIG.owner)}`);
     return null;
   }
 
   if (currentUser) {
     throw new Error(
-      `You are logged in as ${chalk.cyan(currentUser)}. Please run ${chalk.cyan('eas logout')} and then ${chalk.cyan(`eas login`)} as ${chalk.cyan(REVIEW_CONFIG.owner)} before running this command.`
+      `You are logged in as ${styleText('cyan', currentUser)}. Please run ${styleText('cyan', 'eas logout')} and then ${styleText('cyan', `eas login`)} as ${styleText('cyan', REVIEW_CONFIG.owner)} before running this command.`
     );
   }
 
   throw new Error(
-    `You are not logged in. Please run ${chalk.cyan('eas login')} as ${chalk.cyan(REVIEW_CONFIG.owner)} before running this command.`
+    `You are not logged in. Please run ${styleText('cyan', 'eas login')} as ${styleText('cyan', REVIEW_CONFIG.owner)} before running this command.`
   );
 }
 
@@ -89,7 +89,7 @@ async function main(options: ActionOptions): Promise<void> {
   // Read current app.json (for backup/revert)
   const originalAppJson = await JsonFile.readAsync(APP_JSON_PATH);
 
-  logger.info(`Setting sdkVersion and version to ${chalk.cyan(sdkVersion)}`);
+  logger.info(`Setting sdkVersion and version to ${styleText('cyan', sdkVersion)}`);
 
   // Deep clone and apply review config
   const appJson = JSON.parse(JSON.stringify(originalAppJson));
@@ -102,7 +102,9 @@ async function main(options: ActionOptions): Promise<void> {
   // If --config-only, exit here
   if (options.configOnly) {
     logger.info('Config-only mode: exiting without publishing');
-    logger.info(`Run ${chalk.cyan('eas update --branch main')} when you are ready to publish`);
+    logger.info(
+      `Run ${styleText('cyan', 'eas update --branch main')} when you are ready to publish`
+    );
     return;
   }
 

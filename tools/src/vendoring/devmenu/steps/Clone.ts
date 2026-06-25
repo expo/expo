@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 
 import { Task } from './Task';
 
@@ -43,11 +43,11 @@ export class Clone extends Task {
   async execute() {
     const workDirectory = this.getWorkingDirectory();
 
-    this.logSubStep(`🧹 remove ${chalk.yellow(this.overrideWorkingDirectory())}`);
+    this.logSubStep(`🧹 remove ${styleText('yellow', this.overrideWorkingDirectory())}`);
     await fs.remove(workDirectory);
 
     this.logSubStep(
-      `📩 clone repo ${chalk.green(this.url)} into ${chalk.yellow(this.overrideWorkingDirectory())}`
+      `📩 clone repo ${styleText('green', this.url)} into ${styleText('yellow', this.overrideWorkingDirectory())}`
     );
 
     const cloneArguments = this.cloneArguments();

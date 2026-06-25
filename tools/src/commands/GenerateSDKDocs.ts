@@ -1,8 +1,8 @@
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import { glob } from 'glob';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import * as Directories from '../Directories';
@@ -35,7 +35,7 @@ async function action(options) {
       throw new Error(`React Native version not found at ${reactNativePackageJsonPath}`);
     }
 
-    console.log(`Updating ${chalk.cyan('react-native-website')} submodule...`);
+    console.log(`Updating ${styleText('cyan', 'react-native-website')} submodule...`);
 
     await spawnAsync('git', ['checkout', 'main'], {
       cwd: reactNativeWebsiteDir,
@@ -45,7 +45,9 @@ async function action(options) {
       cwd: reactNativeWebsiteDir,
     });
 
-    console.log(`Importing React Native docs to ${chalk.yellow('unversioned')} directory...\n`);
+    console.log(
+      `Importing React Native docs to ${styleText('yellow', 'unversioned')} directory...\n`
+    );
 
     await fs.remove(path.join(SDK_DOCS_DIR, 'unversioned', 'react-native'));
 
@@ -62,14 +64,12 @@ async function action(options) {
 
   if (await fs.pathExists(targetSdkDirectory)) {
     console.log(
-      chalk.magenta(versionDirectory),
+      styleText('magenta', versionDirectory),
       'directory already exists. Skipping copy operation.'
     );
   } else {
     console.log(
-      `Copying ${chalk.yellow('unversioned')} docs to ${chalk.yellow(
-        versionDirectory
-      )} directory...`
+      `Copying ${styleText('yellow', 'unversioned')} docs to ${styleText('yellow', versionDirectory)} directory...`
     );
 
     await fs.copy(path.join(SDK_DOCS_DIR, 'unversioned'), targetSdkDirectory);
@@ -93,14 +93,12 @@ async function action(options) {
 
   if (await fs.pathExists(targetExampleDirectory)) {
     console.log(
-      chalk.magenta(versionDirectory),
+      styleText('magenta', versionDirectory),
       'examples directory already exists. Skipping copy operation.'
     );
   } else {
     console.log(
-      `Copying ${chalk.yellow('unversioned')} static examples to ${chalk.yellow(
-        versionDirectory
-      )} directory…`
+      `Copying ${styleText('yellow', 'unversioned')} static examples to ${styleText('yellow', versionDirectory)} directory…`
     );
 
     await fs.copy(path.join(STATIC_EXAMPLES_DIR, 'unversioned'), targetExampleDirectory);
@@ -108,26 +106,20 @@ async function action(options) {
 
   if (await fs.pathExists(targetAPIDataDirectory)) {
     console.log(
-      chalk.magenta(versionDirectory),
+      styleText('magenta', versionDirectory),
       'API data directory already exists. Skipping copy operation.'
     );
   } else {
     console.log(
-      `Copying ${chalk.yellow('unversioned')} generated API files to ${chalk.yellow(
-        versionDirectory
-      )} directory…`
+      `Copying ${styleText('yellow', 'unversioned')} generated API files to ${styleText('yellow', versionDirectory)} directory…`
     );
 
     await fs.copy(path.join(STATIC_API_DATA_DIR, 'unversioned'), targetAPIDataDirectory);
   }
 
   console.log(
-    `\nDocs version ${chalk.red(
-      sdk
-    )} created successfully. By default, it will not be included in the production build.` +
-      `\nWhen the new version is ready to deploy, set version to ${chalk.red(
-        sdk
-      )} in ${chalk.yellow('docs/package.json')}`
+    `\nDocs version ${styleText('red', sdk)} created successfully. By default, it will not be included in the production build.` +
+      `\nWhen the new version is ready to deploy, set version to ${styleText('red', sdk)} in ${styleText('yellow', 'docs/package.json')}`
   );
 }
 

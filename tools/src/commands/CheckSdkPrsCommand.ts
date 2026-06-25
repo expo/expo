@@ -1,5 +1,5 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import Git from '../Git';
 import logger from '../Logger';
@@ -136,11 +136,11 @@ function formatPublishInfo(info: PublishInfo): string {
   switch (info.status) {
     case 'published':
       return link(
-        chalk.green('published'),
+        styleText('green', 'published'),
         `https://github.com/expo/expo/commit/${info.commitHash}`
       );
     case 'unpublished':
-      return chalk.dim('unpublished');
+      return styleText('dim', 'unpublished');
     case 'no-packages':
       return '';
   }
@@ -158,21 +158,21 @@ function pad(str: string, width: number): string {
 function formatReviewDecision(decision: GhPr['reviewDecision']): string {
   switch (decision) {
     case 'APPROVED':
-      return chalk.green('approved');
+      return styleText('green', 'approved');
     case 'CHANGES_REQUESTED':
-      return chalk.red('changes requested');
+      return styleText('red', 'changes requested');
     case 'REVIEW_REQUIRED':
-      return chalk.yellow('review needed');
+      return styleText('yellow', 'review needed');
     default:
       return '';
   }
 }
 
 function formatPrLine(pr: GhPr, publishInfo?: PublishInfo): string {
-  const num = link(chalk.yellow(`#${pr.number}`), pr.url);
+  const num = link(styleText('yellow', `#${pr.number}`), pr.url);
   const sha = pr.mergeCommit
     ? link(
-        chalk.dim(pr.mergeCommit.oid.slice(0, 10)),
+        styleText('dim', pr.mergeCommit.oid.slice(0, 10)),
         `https://github.com/expo/expo/commit/${pr.mergeCommit.oid}`
       )
     : '';
@@ -185,10 +185,13 @@ function formatPrLine(pr: GhPr, publishInfo?: PublishInfo): string {
   }
   const titleText = pr.title.length > 60 ? pr.title.slice(0, 57) + '...' : pr.title;
   const title = link(titleText, pr.url);
-  const author = link(chalk.dim(`@${pr.author.login}`), `https://github.com/${pr.author.login}`);
+  const author = link(
+    styleText('dim', `@${pr.author.login}`),
+    `https://github.com/${pr.author.login}`
+  );
   // For merged PRs show merge age, for open PRs show time since last activity
   const timestamp = pr.mergedAt ?? pr.updatedAt;
-  const age = timestamp ? chalk.dim(formatAge(timestamp)) : '';
+  const age = timestamp ? styleText('dim', formatAge(timestamp)) : '';
   return `  ${pad(num, 8)}  ${pad(sha, 10)}  ${pad(status, 17)}  ${pad(title, 60)}  ${pad(author, 20)}  ${age}`;
 }
 
@@ -210,11 +213,11 @@ async function action(sdk: string | undefined, options: ActionOptions) {
 
       if (sorted.length === 0) {
         throw new Error(
-          `Could not detect SDK version. Pass it explicitly: ${chalk.bold('et csp 55')}`
+          `Could not detect SDK version. Pass it explicitly: ${styleText('bold', 'et csp 55')}`
         );
       }
       sdkNumber = sorted[0].split('.')[0];
-      logger.info(`Detected latest SDK version: ${chalk.bold(sdkNumber)}`);
+      logger.info(`Detected latest SDK version: ${styleText('bold', sdkNumber)}`);
     }
   }
 
@@ -222,7 +225,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
   const branch = `sdk-${sdkNumber}`;
 
   // Fetch PRs from GitHub
-  logger.info(`Fetching PRs labeled ${chalk.bold(label)}...`);
+  logger.info(`Fetching PRs labeled ${styleText('bold', label)}...`);
 
   let prs: GhPr[];
   try {
@@ -248,7 +251,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
   }
 
   if (prs.length === 0) {
-    logger.warn(`No PRs found with label ${chalk.bold(label)}.`);
+    logger.warn(`No PRs found with label ${styleText('bold', label)}.`);
     return;
   }
 
@@ -257,7 +260,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
   const closedPrs = prs.filter((pr) => pr.state === 'CLOSED');
 
   // Fetch SDK branch
-  logger.info(`Fetching ${chalk.bold(branch)} branch...`);
+  logger.info(`Fetching ${styleText('bold', branch)} branch...`);
   await Git.fetchAsync({ remote: 'origin', ref: branch });
 
   // Determine which ref to compare against
@@ -269,7 +272,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
       const { ahead } = await Git.compareBranchesAsync(branch, `origin/${branch}`);
       if (ahead > 0) {
         logger.warn(
-          `Local branch ${chalk.bold(branch)} is ${ahead} commit${ahead === 1 ? '' : 's'} ahead of origin — comparing against local.`
+          `Local branch ${styleText('bold', branch)} is ${ahead} commit${ahead === 1 ? '' : 's'} ahead of origin — comparing against local.`
         );
         ref = branch;
       }
@@ -311,7 +314,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
   if (options.all) {
     if (needsCherryPick.length > 0) {
       logger.log('');
-      logger.log(chalk.red.bold(`Needs Cherry-Pick (${needsCherryPick.length}):`));
+      logger.log(styleText(['red', 'bold'], `Needs Cherry-Pick (${needsCherryPick.length}):`));
       for (const pr of needsCherryPick) {
         logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
       }
@@ -319,7 +322,9 @@ async function action(sdk: string | undefined, options: ActionOptions) {
 
     if (alreadyCherryPicked.length > 0) {
       logger.log('');
-      logger.log(chalk.green.bold(`Already Cherry-Picked (${alreadyCherryPicked.length}):`));
+      logger.log(
+        styleText(['green', 'bold'], `Already Cherry-Picked (${alreadyCherryPicked.length}):`)
+      );
       for (const pr of alreadyCherryPicked) {
         logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
       }
@@ -327,7 +332,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
 
     if (openPrs.length > 0) {
       logger.log('');
-      logger.log(chalk.blue.bold(`Open (${openPrs.length}):`));
+      logger.log(styleText(['blue', 'bold'], `Open (${openPrs.length}):`));
       for (const pr of openPrs) {
         logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
       }
@@ -335,7 +340,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
 
     if (closedPrs.length > 0) {
       logger.log('');
-      logger.log(chalk.gray.bold(`Closed without Merge (${closedPrs.length}):`));
+      logger.log(styleText(['gray', 'bold'], `Closed without Merge (${closedPrs.length}):`));
       for (const pr of closedPrs) {
         logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
       }
@@ -343,13 +348,13 @@ async function action(sdk: string | undefined, options: ActionOptions) {
   } else {
     if (needsCherryPick.length === 0) {
       logger.success(
-        `All merged PRs have been cherry-picked to ${chalk.bold(branch)}! (${mergedPrs.length} merged, ${openPrs.length} open)`
+        `All merged PRs have been cherry-picked to ${styleText('bold', branch)}! (${mergedPrs.length} merged, ${openPrs.length} open)`
       );
       return;
     }
 
     logger.log('');
-    logger.log(chalk.bold(`PRs that need cherry-picking to ${branch}:`));
+    logger.log(styleText('bold', `PRs that need cherry-picking to ${branch}:`));
     logger.log('');
     for (const pr of needsCherryPick) {
       logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
@@ -359,7 +364,8 @@ async function action(sdk: string | undefined, options: ActionOptions) {
   // Summary
   logger.log('');
   logger.log(
-    chalk.dim(
+    styleText(
+      'dim',
       `${needsCherryPick.length} PR${needsCherryPick.length === 1 ? '' : 's'} need${needsCherryPick.length === 1 ? 's' : ''} cherry-picking (${mergedPrs.length} merged, ${openPrs.length} open)`
     )
   );

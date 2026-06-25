@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { ExitError } from './error';
 
@@ -9,7 +9,9 @@ export function error(...message: string[]): void {
 /** Print an error and provide additional info (the stack trace) in debug mode. */
 export function exception(e: Error): void {
   const { env } = require('./utils/env');
-  error(chalk.red(e.toString()) + (env.EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+  error(
+    styleText('red', e.toString()) + (env.EXPO_DEBUG ? '\n' + styleText('gray', e.stack!) : '')
+  );
 }
 
 export function log(...message: string[]): void {

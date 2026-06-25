@@ -24,7 +24,6 @@ import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
-import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
 import {
   type RouteInfo,
@@ -32,6 +31,7 @@ import {
   type ImmutableRequest,
   resolveLoaderContextKey,
 } from 'expo-server/private';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { events } from '../../../events';
@@ -1757,7 +1757,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             // This could happen during the install.
             Log.log();
             Log.error(
-              chalk.red`Failed to automatically setup TypeScript for your project. Try restarting the dev server to fix.`
+              styleText(
+                'red',
+                `Failed to automatically setup TypeScript for your project. Try restarting the dev server to fix.`
+              )
             );
             Log.exception(error);
             resolve(false);
@@ -1808,7 +1811,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Wrap with command error for better error messages.
         const err = new CommandError(
           'API_ROUTE',
-          chalk`Failed to bundle API Route: {bold ${relativePath}}\n\n` + error.message
+          `Failed to bundle API Route: ${styleText('bold', relativePath)}\n\n` + error.message
         );
 
         for (const key in error) {
@@ -1965,7 +1968,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       debug('Failed to bundle loader:', filePath, ':', error.message);
       throw new CommandError(
         'LOADER_BUNDLE',
-        chalk`Failed to bundle loader: {bold ${filePath}}\n\n` + error.message
+        `Failed to bundle loader: ${styleText('bold', filePath)}\n\n` + error.message
       );
     }
   }

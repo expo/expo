@@ -1,5 +1,5 @@
 import type { Terminal } from '@expo/metro/metro-core';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 import { format as utilFormat, stripVTControlCharacters } from 'util';
 
@@ -178,7 +178,10 @@ export class MetroTerminalReporter extends TerminalReporter {
 
     if (!inProgress) {
       const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
-      const color = phase === 'done' ? chalk.green : chalk.red;
+      const color =
+        phase === 'done'
+          ? (text: string) => styleText('green', text)
+          : (text: string) => styleText('red', text);
 
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
 
@@ -193,9 +196,9 @@ export class MetroTerminalReporter extends TerminalReporter {
         if (ms <= 0.5) {
           const tenthFractionOfMicro = ((micro * 10) / 1000).toFixed(0);
           // Format as microseconds to nearest tenth
-          time = chalk.cyan.bold(`0.${tenthFractionOfMicro}ms`);
+          time = styleText(['cyan', 'bold'], `0.${tenthFractionOfMicro}ms`);
         } else {
-          time = chalk.dim(ms.toFixed(0) + 'ms');
+          time = styleText('dim', ms.toFixed(0) + 'ms');
         }
       }
 
@@ -212,7 +215,7 @@ export class MetroTerminalReporter extends TerminalReporter {
       return (
         color(platform + status) +
         time +
-        chalk.reset.dim(` ${localPath} (${progress.totalFileCount} module${plural})`)
+        styleText(['reset', 'dim'], ` ${localPath} (${progress.totalFileCount} module${plural})`)
       );
     }
 
@@ -228,10 +231,14 @@ export class MetroTerminalReporter extends TerminalReporter {
 
     const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
     const _progress = inProgress
-      ? chalk.green.bgGreen(DARK_BLOCK_CHAR.repeat(filledBar)) +
-        chalk.bgWhite.white(LIGHT_BLOCK_CHAR.repeat(MAX_PROGRESS_BAR_CHAR_WIDTH - filledBar)) +
-        chalk.bold(` ${(100 * progress.ratio).toFixed(1).padStart(4)}% `) +
-        chalk.dim(
+      ? styleText(['green', 'bgGreen'], DARK_BLOCK_CHAR.repeat(filledBar)) +
+        styleText(
+          ['bgWhite', 'white'],
+          LIGHT_BLOCK_CHAR.repeat(MAX_PROGRESS_BAR_CHAR_WIDTH - filledBar)
+        ) +
+        styleText('bold', ` ${(100 * progress.ratio).toFixed(1).padStart(4)}% `) +
+        styleText(
+          'dim',
           `(${progress.transformedFileCount
             .toString()
             .padStart(progress.totalFileCount.toString().length)}/${progress.totalFileCount})`
@@ -239,8 +246,8 @@ export class MetroTerminalReporter extends TerminalReporter {
       : '';
     return (
       platform +
-      chalk.reset.dim(`${path.dirname(localPath)}${path.sep}`) +
-      chalk.bold(path.basename(localPath)) +
+      styleText(['reset', 'dim'], `${path.dirname(localPath)}${path.sep}`) +
+      styleText('bold', path.basename(localPath)) +
       ' ' +
       _progress
     );
@@ -249,7 +256,7 @@ export class MetroTerminalReporter extends TerminalReporter {
   _logInitializing(port: number, hasReducedPerformance: boolean): void {
     // Don't print a giant logo...
     if (!shouldReduceLogs()) {
-      this.terminal.log(chalk.dim('Starting Metro Bundler') + '\n');
+      this.terminal.log(styleText('dim', 'Starting Metro Bundler') + '\n');
     }
   }
 
@@ -265,7 +272,7 @@ export class MetroTerminalReporter extends TerminalReporter {
   transformCacheReset(): void {
     logWarning(
       this.terminal,
-      chalk`Bundler cache is empty, rebuilding {dim (this may take a minute)}`
+      `Bundler cache is empty, rebuilding ${styleText('dim', `(this may take a minute)`)}`
     );
   }
 
@@ -275,7 +282,8 @@ export class MetroTerminalReporter extends TerminalReporter {
     if (hasReducedPerformance) {
       // Extends https://github.com/facebook/metro/blob/347b1d7ed87995d7951aaa9fd597c04b06013dac/packages/metro/src/lib/TerminalReporter.js#L283-L290
       this.terminal.log(
-        chalk.red(
+        styleText(
+          'red',
           [
             'Metro is operating with reduced performance.',
             'Fix the problem above and restart Metro.',
@@ -488,19 +496,13 @@ export function formatUsingNodeStandardLibraryError(
   if (isNodeStdLibraryModule(targetModuleName)) {
     if (originModulePath.includes('node_modules')) {
       return [
-        `The package at "${chalk.bold(
-          relativePath
-        )}" attempted to import the Node standard library module "${chalk.bold(
-          targetModuleName
-        )}".`,
+        `The package at "${styleText('bold', relativePath)}" attempted to import the Node standard library module "${styleText('bold', targetModuleName)}".`,
         `It failed because the native React runtime does not include the Node standard library.`,
         learnMore(DOCS_PAGE_URL),
       ].join('\n');
     } else {
       return [
-        `You attempted to import the Node standard library module "${chalk.bold(
-          targetModuleName
-        )}" from "${chalk.bold(relativePath)}".`,
+        `You attempted to import the Node standard library module "${styleText('bold', targetModuleName)}" from "${styleText('bold', relativePath)}".`,
         `It failed because the native React runtime does not include the Node standard library.`,
         learnMore(DOCS_PAGE_URL),
       ].join('\n');
@@ -610,7 +612,7 @@ function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): st
       default:
         formatted = platform;
     }
-    return `${chalk.bold(formatted)} `;
+    return `${styleText('bold', formatted)} `;
   }
 
   return '';
@@ -620,16 +622,16 @@ function getEnvironmentForBuildDetails(bundleDetails?: BundleDetails | null): st
   // Expo CLI will pass `customTransformOptions.environment = 'node'` when bundling for the server.
   const env = bundleDetails?.customTransformOptions?.environment ?? null;
   if (env === 'node') {
-    return chalk.bold('λ') + ' ';
+    return styleText('bold', 'λ') + ' ';
   } else if (env === 'react-server') {
-    return chalk.bold(`RSC(${getPlatformTagForBuildDetails(bundleDetails).trim()})`) + ' ';
+    return styleText('bold', `RSC(${getPlatformTagForBuildDetails(bundleDetails).trim()})`) + ' ';
   }
 
   if (
     bundleDetails?.customTransformOptions?.dom &&
     typeof bundleDetails?.customTransformOptions?.dom === 'string'
   ) {
-    return chalk.bold(`DOM`) + ' ';
+    return styleText('bold', `DOM`) + ' ';
   }
 
   return '';

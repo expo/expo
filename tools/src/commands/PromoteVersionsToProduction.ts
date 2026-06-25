@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
 import inquirer from 'inquirer';
 import * as jsondiffpatch from 'jsondiffpatch';
+import { styleText } from 'node:util';
 
 import * as Versions from '../Versions';
 
@@ -11,18 +11,20 @@ async function action() {
   const delta = jsondiffpatch.diff(versionsProd, versionsStaging);
 
   if (!delta) {
-    console.log(chalk.yellow('There are no changes to apply in the configuration.'));
+    console.log(styleText('yellow', 'There are no changes to apply in the configuration.'));
     return;
   }
 
-  console.log(`Here is the diff from ${chalk.green('staging')} -> ${chalk.green('production')}:`);
+  console.log(
+    `Here is the diff from ${styleText('green', 'staging')} -> ${styleText('green', 'production')}:`
+  );
   console.log(jsondiffpatch.formatters.console.format(delta, versionsProd));
 
   const { isCorrect } = await inquirer.prompt<{ isCorrect: boolean }>([
     {
       type: 'confirm',
       name: 'isCorrect',
-      message: `Does this look correct? Type \`y\` to update ${chalk.green('production')} config.`,
+      message: `Does this look correct? Type \`y\` to update ${styleText('green', 'production')} config.`,
       default: false,
     },
   ]);
@@ -32,11 +34,11 @@ async function action() {
     await Versions.setVersionsAsync(versionsStaging, Versions.VersionsApiHost.PRODUCTION);
 
     console.log(
-      chalk.green('\nSuccessfully updated production config. You can check it out on'),
-      chalk.blue(`https://${Versions.VersionsApiHost.PRODUCTION}/v2/versions`)
+      styleText('green', '\nSuccessfully updated production config. You can check it out on'),
+      styleText('blue', `https://${Versions.VersionsApiHost.PRODUCTION}/v2/versions`)
     );
   } else {
-    console.log(chalk.yellow('Canceled'));
+    console.log(styleText('yellow', 'Canceled'));
   }
 }
 

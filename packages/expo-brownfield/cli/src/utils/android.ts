@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'node:fs';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import CLIError from './error';
 import { withSpinner } from './spinner';
@@ -56,14 +56,14 @@ export const findBrownfieldLibrary = (): string | undefined => {
 };
 
 export const printAndroidConfig = (config: AndroidConfig) => {
-  console.log(chalk.bold('Resolved build configuration'));
-  console.log(` - Build variant: ${chalk.blue(config.variant)}`);
-  console.log(` - Library: ${chalk.blue(config.library)}`);
-  console.log(` - Verbose: ${chalk.blue(config.verbose)}`);
-  console.log(` - Dry run: ${chalk.blue(config.dryRun)}`);
+  console.log(styleText('bold', 'Resolved build configuration'));
+  console.log(` - Build variant: ${styleText('blue', config.variant)}`);
+  console.log(` - Library: ${styleText('blue', config.library)}`);
+  console.log(` - Verbose: ${styleText('blue', String(config.verbose))}`);
+  console.log(` - Dry run: ${styleText('blue', String(config.dryRun))}`);
   console.log(` - Tasks:`);
   config.tasks.forEach((task) => {
-    console.log(`   - ${chalk.blue(task)}`);
+    console.log(`   - ${styleText('blue', task)}`);
   });
   console.log();
 };

@@ -1,6 +1,6 @@
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { UnexpectedServerError, UnexpectedServerData } from '../api/graphql/client';
 import { AppQuery } from '../api/graphql/queries/AppQuery';
@@ -86,9 +86,10 @@ async function promptForBundleIdWithInitialAsync(
 ): Promise<string> {
   if (!bundleIdentifier) {
     memoLog(
-      chalk`\n{bold 📝  iOS Bundle Identifier} {dim ${learnMore(
-        'https://expo.fyi/bundle-identifier'
-      )}}\n`
+      `\n${styleText('bold', `📝  iOS Bundle Identifier`)} ${styleText(
+        'dim',
+        learnMore('https://expo.fyi/bundle-identifier')
+      )}\n`
     );
 
     // Prompt the user for the bundle ID.
@@ -126,7 +127,7 @@ async function promptForBundleIdWithInitialAsync(
       { ios: { bundleIdentifier } }
     )
   ) {
-    Log.log(chalk.gray`\u203A Apple bundle identifier: ${bundleIdentifier}`);
+    Log.log(styleText('gray', `\u203A Apple bundle identifier: ${bundleIdentifier}`));
   }
 
   return bundleIdentifier;
@@ -230,7 +231,7 @@ async function promptForPackageWithInitialAsync(
 ): Promise<string> {
   if (!packageName) {
     memoLog(
-      chalk`\n{bold 📝  Android package} {dim ${learnMore('https://expo.fyi/android-package')}}\n`
+      `\n${styleText('bold', `📝  Android package`)} ${styleText('dim', learnMore('https://expo.fyi/android-package'))}\n`
     );
 
     // Prompt the user for the android package.
@@ -266,7 +267,7 @@ async function promptForPackageWithInitialAsync(
       { android: { package: packageName } }
     )
   ) {
-    Log.log(chalk.gray`\u203A Android package name: ${packageName}`);
+    Log.log(styleText('gray', `\u203A Android package name: ${packageName}`));
   }
 
   return packageName;

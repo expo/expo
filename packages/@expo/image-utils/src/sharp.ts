@@ -1,7 +1,7 @@
 import { resolveFrom, resolveGlobal } from '@expo/require-utils';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 import semver from 'semver';
 
@@ -206,13 +206,18 @@ function showVersionMismatchWarning(requiredCliVersion: string, installedCliVers
   }
   console.warn(
     [
-      chalk.yellow(
+      styleText(
+        'yellow',
         `Expo supports version "${requiredCliVersion}" of \`sharp-cli\`, current version: "${installedCliVersion}".`
       ),
-      chalk.yellow.dim(
+      styleText(
+        ['yellow', 'dim'],
         `If you can remove or upgrade using \`npm (un)install -g sharp-cli@${requiredCliVersion}\`.`
       ),
-      chalk.yellow.dim(`Or disable \`sharp-cli\` with \`EXPO_IMAGE_UTILS_NO_SHARP=1\`.`),
+      styleText(
+        ['yellow', 'dim'],
+        `Or disable \`sharp-cli\` with \`EXPO_IMAGE_UTILS_NO_SHARP=1\`.`
+      ),
     ].join('\n')
   );
   versionMismatchWarningShown = true;

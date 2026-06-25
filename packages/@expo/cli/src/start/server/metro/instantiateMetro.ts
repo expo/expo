@@ -14,8 +14,8 @@ import type MetroHmrServer from '@expo/metro/metro/HmrServer';
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import chalk from 'chalk';
 import type http from 'http';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { events, shouldReduceLogs } from '../../../events';
@@ -273,11 +273,16 @@ export async function loadMetroConfigAsync(
 
   const reactCompilerEnabled = !!exp.experiments?.reactCompiler;
   if (!reduceLogs && reactCompilerEnabled) {
-    Log.log(chalk.gray`React Compiler enabled`);
+    Log.log(
+      styleText(
+        'gray',
+        `));
   }
 
   if (!reduceLogs && autolinkingModuleResolutionEnabled) {
-    Log.log(chalk.gray`Expo Autolinking module resolution enabled`);
+    Log.log(styleText("gray", `
+      )
+    );
   }
 
   if (env.EXPO_UNSTABLE_TREE_SHAKING && !env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
@@ -698,7 +703,7 @@ function pruneCustomTransformOptions(
 export function isWatchEnabled() {
   if (env.CI) {
     Log.log(
-      chalk`Metro is running in CI mode, reloads are disabled. Remove {bold CI=true} to enable watch mode.`
+      `Metro is running in CI mode, reloads are disabled. Remove ${styleText('bold', `CI=true`)} to enable watch mode.`
     );
   }
 

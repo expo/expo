@@ -1,5 +1,5 @@
 import { getConfig, modifyConfigAsync } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from "node:util";
 
 import * as Log from '../../../../log';
 import { selectAsync } from '../../../../utils/prompts';
@@ -115,7 +115,7 @@ describe(resolveCertificateSigningIdentityAsync, () => {
     expect(selectAsync).toHaveBeenCalledWith(expect.any(String), [
       {
         // Formatted the preferred ID as bold and sorted it first.
-        title: chalk.bold(' (12345ABCD) - Apple Developer: Nave Nocab (YYY)'),
+        title: styleText("bold", ' (12345ABCD) - Apple Developer: Nave Nocab (YYY)'),
         value: 0,
       },
       expect.anything(),

@@ -1,5 +1,5 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import fetch from 'npm-registry-fetch';
 
 import logger from '../Logger';
@@ -27,11 +27,11 @@ async function action(_options: ActionOptions) {
 
   logger.log('Fetching organization members...');
   const orgMembers = await getOrgMembersAsync();
-  logger.log(`${orgMembers.length} members found: ${chalk.dim(orgMembers.join(', '))}\n`);
+  logger.log(`${orgMembers.length} members found: ${styleText('dim', orgMembers.join(', '))}\n`);
 
   logger.log('Fetching organization packages...');
   const packages = await getOrgPackagesAsync();
-  logger.log(`${packages.length} packages found: ${chalk.dim(packages.join(', '))}\n`);
+  logger.log(`${packages.length} packages found: ${styleText('dim', packages.join(', '))}\n`);
 
   logger.log('Validating package owners...');
   const packagesWithInvalidOwners = await validatePackageOwnersAsync(
@@ -104,9 +104,9 @@ async function validatePackageOwnersAsync(orgMembers, packages) {
     }
 
     if (packagesWithInvalidOwners[pkg]) {
-      process.stdout.write(chalk.dim('x'));
+      process.stdout.write(styleText('dim', 'x'));
     } else {
-      process.stdout.write(chalk.dim('.'));
+      process.stdout.write(styleText('dim', '.'));
     }
   }
 

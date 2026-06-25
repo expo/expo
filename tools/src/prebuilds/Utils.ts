@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import { glob } from 'glob';
+import { styleText } from 'node:util';
 import ora from 'ora';
 import path from 'path';
 
@@ -296,16 +296,16 @@ export const validateAllPodNamesAsync = async (
 
   if (allErrors.length > 0) {
     logger.error(
-      chalk.red(`\n⚠️  podName validation failed for ${allErrors.length} product(s):\n`)
+      styleText('red', `\n⚠️  podName validation failed for ${allErrors.length} product(s):\n`)
     );
 
     for (const error of allErrors) {
       logger.error(
-        `  ${chalk.red('✗')} ${chalk.cyan(error.packageName)}/${chalk.yellow(error.productName)}: ` +
-          `podName "${chalk.red(error.declaredPodName)}" does not match any .podspec file`
+        `  ${styleText('red', '✗')} ${styleText('cyan', error.packageName)}/${styleText('yellow', error.productName)}: ` +
+          `podName "${styleText('red', error.declaredPodName)}" does not match any .podspec file`
       );
       if (error.actualPodspecs.length > 0) {
-        logger.error(`    Found podspecs: ${chalk.gray(error.actualPodspecs.join(', '))}`);
+        logger.error(`    Found podspecs: ${styleText('gray', error.actualPodspecs.join(', '))}`);
       } else {
         logger.error(`    No .podspec files found in package`);
       }
@@ -360,15 +360,17 @@ export const verifyAllPackagesAsync = async (
     const expoPackages = packages.filter((p) => p instanceof Package);
     const externalPackages = packages.filter((p) => p instanceof ExternalPackage);
 
-    logger.info(`Discovered ${chalk.cyan(packages.length)} packages with spm.config.json:`);
+    logger.info(
+      `Discovered ${styleText('cyan', `${packages.length}`)} packages with spm.config.json:`
+    );
     if (expoPackages.length > 0) {
       logger.info(
-        `  Expo packages (${expoPackages.length}): ${chalk.green(expoPackages.map((p) => p.packageName).join(', '))}`
+        `  Expo packages (${expoPackages.length}): ${styleText('green', expoPackages.map((p) => p.packageName).join(', '))}`
       );
     }
     if (externalPackages.length > 0) {
       logger.info(
-        `  External packages (${externalPackages.length}): ${chalk.blue(externalPackages.map((p) => p.packageName).join(', '))}`
+        `  External packages (${externalPackages.length}): ${styleText('blue', externalPackages.map((p) => p.packageName).join(', '))}`
       );
     }
 
@@ -382,7 +384,9 @@ export const verifyAllPackagesAsync = async (
       const expoPkg = getPackageByName(name);
       if (expoPkg) {
         if (!expoPkg.hasSwiftPMConfiguration()) {
-          throw new Error(`Package ${chalk.gray(name)} does not have a spm.config.json file.`);
+          throw new Error(
+            `Package ${styleText('gray', name)} does not have a spm.config.json file.`
+          );
         }
         return expoPkg;
       }
@@ -394,7 +398,7 @@ export const verifyAllPackagesAsync = async (
       }
 
       throw new Error(
-        `Package not found: ${chalk.red(name)}. ` +
+        `Package not found: ${styleText('red', name)}. ` +
           `Make sure it exists in packages/ or has a config in external-configs/ios/.`
       );
     })
@@ -530,27 +534,27 @@ export const verifyLocalTarballPathsIfSetAsync = async (options: {
 }): Promise<void> => {
   if (options.reactNativeTarballPath && !(await fs.exists(options.reactNativeTarballPath))) {
     throw new Error(
-      `React Native tarball path does not exist: ${chalk.gray(options.reactNativeTarballPath)}`
+      `React Native tarball path does not exist: ${styleText('gray', options.reactNativeTarballPath)}`
     );
   }
   if (options.hermesTarballPath && !(await fs.exists(options.hermesTarballPath))) {
-    throw new Error(`Hermes tarball path does not exist: ${chalk.gray(options.hermesTarballPath)}`);
+    throw new Error(
+      `Hermes tarball path does not exist: ${styleText('gray', options.hermesTarballPath)}`
+    );
   }
   if (
     options.reactNativeDependenciesTarballPath &&
     !(await fs.exists(options.reactNativeDependenciesTarballPath))
   ) {
     throw new Error(
-      `React Native Dependencies tarball path does not exist: ${chalk.gray(
-        options.reactNativeDependenciesTarballPath
-      )}`
+      `React Native Dependencies tarball path does not exist: ${styleText('gray', options.reactNativeDependenciesTarballPath)}`
     );
   }
 };
 
 const Prefix = '  ';
 const getPackageAndProductPrefix = (
-  colorizer: (...text: unknown[]) => string,
+  colorizer: (text: string) => string,
   pkg?: SPMPackageSource,
   product?: SPMProduct
 ) => {
@@ -567,7 +571,10 @@ export const createAsyncSpinner = (
   // When no pkg is provided but an async-local prefix is active (parallel builds),
   // use it so every log line is attributed to a package.
   const activePrefix = getActiveLogPrefix();
-  const effectivePrefix = (colorizer: (...text: unknown[]) => string) => {
+  const effectivePrefix = (color: Parameters<typeof styleText>[0]) => {
+    const colorizer = (text: string) => {
+      return styleText(color, text);
+    };
     if (pkg) {
       return getPackageAndProductPrefix(colorizer, pkg, product);
     }
@@ -580,34 +587,36 @@ export const createAsyncSpinner = (
   if (isNonInteractive()) {
     return {
       succeed: (text?: string) => {
-        logger.log(`${Prefix} ${chalk.green('✔')} ${effectivePrefix(chalk.green)}${text ?? ''}`);
+        logger.log(`${Prefix} ${styleText('green', '✔')} ${effectivePrefix('green')}${text ?? ''}`);
       },
       fail: (text?: string) => {
-        logger.log(`${Prefix} ${chalk.red('✖')} ${effectivePrefix(chalk.red)}${text ?? ''}`);
+        logger.log(`${Prefix} ${styleText('red', '✖')} ${effectivePrefix('red')}${text ?? ''}`);
       },
       warn: (text?: string) => {
-        logger.log(`${Prefix} ${chalk.yellow('⚠')} ${effectivePrefix(chalk.yellow)}${text ?? ''}`);
+        logger.log(
+          `${Prefix} ${styleText('yellow', '⚠')} ${effectivePrefix('yellow')}${text ?? ''}`
+        );
       },
       info: (text?: string) => {
         if (!logger.isVerbose()) return;
-        logger.log(`${Prefix} ${chalk.blue('ℹ')} ${effectivePrefix(chalk.green)}${text ?? ''}`);
+        logger.log(`${Prefix} ${styleText('blue', 'ℹ')} ${effectivePrefix('green')}${text ?? ''}`);
       },
     };
   }
   const spinnerPrefix = pkg
-    ? `[${chalk.green(pkg.packageName)}] `
+    ? `[${styleText('green', pkg.packageName)}] `
     : activePrefix
-      ? `[${chalk.green(activePrefix)}] `
+      ? `[${styleText('green', activePrefix)}] `
       : '';
   const spinner = ora({
     prefixText: Prefix,
     text: spinnerPrefix + initialText,
   }).start();
   return {
-    succeed: (text?: string) => spinner.succeed(effectivePrefix(chalk.green) + (text ?? '')),
-    fail: (text?: string) => spinner.fail(effectivePrefix(chalk.red) + (text ?? '')),
-    warn: (text?: string) => spinner.warn(effectivePrefix(chalk.yellow) + (text ?? '')),
-    info: (text: string) => (spinner.text = effectivePrefix(chalk.green) + text),
+    succeed: (text?: string) => spinner.succeed(effectivePrefix('green') + (text ?? '')),
+    fail: (text?: string) => spinner.fail(effectivePrefix('red') + (text ?? '')),
+    warn: (text?: string) => spinner.warn(effectivePrefix('yellow') + (text ?? '')),
+    info: (text: string) => (spinner.text = effectivePrefix('green') + text),
   };
 };
 

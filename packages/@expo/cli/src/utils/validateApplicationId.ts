@@ -1,5 +1,5 @@
 import assert from 'assert';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Log } from '../log';
 import { env } from './env';
@@ -227,9 +227,7 @@ export async function getPackageNameWarningInternalAsync(
     if (response.status === 200) {
       // There is no JSON API for the Play Store so we can't concisely
       // locate the app name and developer to match the iOS warning.
-      return `⚠️  The package ${chalk.bold(packageName)} is already in use. ${chalk.dim(
-        learnMore(url)
-      )}`;
+      return `⚠️  The package ${styleText('bold', packageName)} is already in use. ${styleText('dim', learnMore(url))}`;
     }
   } catch (error: any) {
     // Error fetching play store data or the page doesn't exist.
@@ -239,9 +237,7 @@ export async function getPackageNameWarningInternalAsync(
 }
 
 function formatInUseWarning(appName: string, author: string, id: string): string {
-  return `⚠️  The app ${chalk.bold(appName)} by ${chalk.italic(
-    author
-  )} is already using ${chalk.bold(id)}`;
+  return `⚠️  The app ${styleText('bold', appName)} by ${styleText('italic', author)} is already using ${styleText('bold', id)}`;
 }
 
 /** Returns a warning message if an Android package name is potentially already in use. */

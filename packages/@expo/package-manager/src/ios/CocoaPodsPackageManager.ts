@@ -1,6 +1,6 @@
 import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import fs from 'fs';
 import type { Ora } from 'ora';
 import os from 'os';
@@ -111,8 +111,8 @@ export class CocoaPodsPackageManager {
       return true;
     } catch (error: any) {
       if (!silent) {
-        console.log(chalk.yellow(`\u203A Failed to install CocoaPods CLI with Gem`));
-        console.log(chalk.red(error.stderr ?? error.message));
+        console.log(styleText("yellow", `\u203A Failed to install CocoaPods CLI with Gem`));
+        console.log(styleText("red", error.stderr ?? error.message));
         console.log(`\u203A Attempting to install CocoaPods CLI with Homebrew`);
       }
       try {
@@ -142,9 +142,7 @@ export class CocoaPodsPackageManager {
       } catch (error: any) {
         !silent &&
           console.warn(
-            chalk.yellow(
-              `\u203A Failed to install CocoaPods with Homebrew. Install CocoaPods CLI and try again: https://cocoapods.org/`
-            )
+            styleText("yellow", `\u203A Failed to install CocoaPods with Homebrew. Install CocoaPods CLI and try again: https://cocoapods.org/`)
           );
         throw new CocoaPodsError(
           `Failed to install CocoaPods with Homebrew. Install CocoaPods CLI and try again: https://cocoapods.org/`,
@@ -157,11 +155,11 @@ export class CocoaPodsPackageManager {
 
   static isAvailable(projectRoot: string, silent: boolean): boolean {
     if (process.platform !== 'darwin') {
-      !silent && console.log(chalk.red('CocoaPods is only supported on macOS machines'));
+      !silent && console.log(styleText("red", 'CocoaPods is only supported on macOS machines'));
       return false;
     }
     if (!CocoaPodsPackageManager.isUsingPods(projectRoot)) {
-      !silent && console.log(chalk.yellow('CocoaPods is not supported in this project'));
+      !silent && console.log(styleText("yellow", 'CocoaPods is not supported in this project'));
       return false;
     }
     return true;
@@ -183,7 +181,7 @@ export class CocoaPodsPackageManager {
       // NOTE(@kitten): We abort here to prevent any command from proceeding
       // We don't want to trigger `installCLIAsync` and let users resolve this
       if (useBundler) {
-        console.warn(chalk.yellow(`\u203A Failed to run \`bundle exec pod\``));
+        console.warn(styleText("yellow", `\u203A Failed to run \`bundle exec pod\``));
         throw new CocoaPodsError(error.stderr, 'COMMAND_FAILED');
       }
       return false;
@@ -302,9 +300,7 @@ export class CocoaPodsPackageManager {
       ['update', updatePackage, shouldUpdateRepo ? '' : '--no-repo-update'].filter(Boolean),
       {
         formatWarning() {
-          const updateMessage = `Failed to update ${chalk.bold(
-            updatePackage
-          )}. Attempting to update the repo instead.`;
+          const updateMessage = `Failed to update ${styleText("bold", updatePackage)}. Attempting to update the repo instead.`;
           return updateMessage;
         },
         spinner,
@@ -358,10 +354,10 @@ export class CocoaPodsPackageManager {
       if (formatWarning) {
         const warning = formatWarning(error);
         if (props.spinner) {
-          props.spinner.text = chalk.bold(warning);
+          props.spinner.text = styleText("bold", warning);
         }
         if (!this.silent) {
-          console.warn(chalk.yellow(warning));
+          console.warn(styleText("yellow", warning));
         }
       }
 
@@ -474,7 +470,7 @@ export function getPodRepoUpdateMessage(errorOutput: string) {
 
   let message: string;
   if (warningInfo) {
-    message = `Couldn't install: ${warningInfo[1]} » ${chalk.underline(warningInfo[0])}.`;
+    message = `Couldn't install: ${warningInfo[1]} » ${styleText("underline", warningInfo[0])}.`;
   } else if (brokenPackage?.updatePackage) {
     message = `Couldn't install: ${brokenPackage?.updatePackage}.`;
   } else {
@@ -505,7 +501,7 @@ export function getImprovedPodInstallError(
     const warningInfo = extractMissingDependencyError(errorOutput);
     let reason: string;
     if (warningInfo) {
-      reason = `Couldn't install: ${warningInfo[1]} » ${chalk.underline(warningInfo[0])}`;
+      reason = `Couldn't install: ${warningInfo[1]} » ${styleText("underline", warningInfo[0])}`;
     } else {
       reason = `This is often due to native package versions mismatching`;
     }
@@ -533,7 +529,7 @@ export function getImprovedPodInstallError(
       const firstWarning = cocoapodsDebugInfo.findIndex((v) => v.startsWith('[!]'));
       if (firstWarning !== -1) {
         const warning = cocoapodsDebugInfo.slice(firstWarning).join(os.EOL);
-        error.message += `\n\n${chalk.gray(warning)}`;
+        error.message += `\n\n${styleText("gray", warning)}`;
       }
     }
     return new CocoaPodsError(

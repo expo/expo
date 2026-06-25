@@ -1,6 +1,6 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
 import pick from 'lodash/pick';
+import { styleText } from 'node:util';
 import npmPacklist from 'npm-packlist';
 import semver from 'semver';
 
@@ -10,8 +10,6 @@ import * as Changelogs from '../Changelogs';
 import * as Formatter from '../Formatter';
 import Git, { GitDirectory, GitFileStatus } from '../Git';
 import logger from '../Logger';
-
-const { green, cyan, magenta, gray, red } = chalk;
 
 /**
  * Returns options that are capable of being backed up.
@@ -37,7 +35,7 @@ export async function shouldUseBackupAsync(options: CommandOptions): Promise<boo
       type: 'confirm',
       name: 'restore',
       prefix: '❔',
-      message: cyan('Found valid backup file. Would you like to use it?'),
+      message: styleText('cyan', 'Found valid backup file. Would you like to use it?'),
     },
   ]);
   logger.log();
@@ -54,23 +52,26 @@ export function printPackageParcel(parcel: Parcel): void {
 
   logger.log(
     '\n📦',
-    `${green.bold(pkg.packageName)},`,
-    `current version ${cyan.bold(pkg.packageVersion)},`,
+    `${styleText(['green', 'bold'], pkg.packageName)},`,
+    `current version ${styleText(['cyan', 'bold'], pkg.packageVersion)},`,
     pkgView ? `published from ${Formatter.formatCommitHash(gitHead)}` : 'not published yet'
   );
 
   if (dependents.size) {
     logger.log(
       '  ',
-      magenta('Dependency of:'),
-      [...dependents].map((dependent) => green(dependent.pkg.packageName)).join(', ')
+      styleText('magenta', 'Dependency of:'),
+      [...dependents].map((dependent) => styleText('green', dependent.pkg.packageName)).join(', ')
     );
   }
 
   if (!pkgView) {
     logger.log(
       '  ',
-      magenta(`Version ${cyan.bold(pkg.packageVersion)} hasn't been published yet.`)
+      styleText(
+        'magenta',
+        `Version ${styleText(['cyan', 'bold'], pkg.packageVersion)} hasn't been published yet.`
+      )
     );
   } else if (!logs) {
     logger.warn("   We couldn't determine new commits for this package.");
@@ -84,7 +85,7 @@ export function printPackageParcel(parcel: Parcel): void {
   }
 
   if (dependencies.size) {
-    logger.log('  ', magenta('Package depends on:'));
+    logger.log('  ', styleText('magenta', 'Package depends on:'));
 
     dependencies.forEach((dependency) => {
       const fromVersion = dependency.pkg.packageVersion;
@@ -92,20 +93,27 @@ export function printPackageParcel(parcel: Parcel): void {
 
       logger.log(
         '    ',
-        green(dependency.pkg.packageName),
-        gray(`(upgrades from ${cyan(fromVersion)}${toVersion ? ` to ${cyan(toVersion)}` : ''})`)
+        styleText('green', dependency.pkg.packageName),
+        styleText(
+          'gray',
+          `(upgrades from ${styleText('cyan', fromVersion)}${toVersion ? ` to ${styleText('cyan', toVersion)}` : ''})`
+        )
       );
     });
   }
   if (logs && logs.commits.length > 0) {
-    logger.log('  ', magenta('New commits:'));
+    logger.log('  ', styleText('magenta', 'New commits:'));
 
     [...logs.commits].reverse().forEach((commitLog) => {
       logger.log('    ', Formatter.formatCommitLog(commitLog));
     });
   }
   if (logs && logs.files.length > 0) {
-    logger.log('  ', magenta('File changes:'), gray('(build folder not displayed)'));
+    logger.log(
+      '  ',
+      styleText('magenta', 'File changes:'),
+      styleText('gray', '(build folder not displayed)')
+    );
 
     logs.files.forEach((fileLog) => {
       if (fileLog.relativePath.startsWith('build/')) {
@@ -121,7 +129,7 @@ export function printPackageParcel(parcel: Parcel): void {
     const changes = unpublishedChanges[changeType];
 
     if (changes.length > 0) {
-      logger.log('  ', magenta(`${Formatter.stripNonAsciiChars(changeType).trim()}:`));
+      logger.log('  ', styleText('magenta', `${Formatter.stripNonAsciiChars(changeType).trim()}:`));
 
       for (const change of unpublishedChanges[changeType]) {
         logger.log('    ', Formatter.formatChangelogEntry(change.message));
@@ -132,7 +140,10 @@ export function printPackageParcel(parcel: Parcel): void {
   if (pkgView && releaseType && releaseVersion) {
     logger.log(
       '  ',
-      magenta(`Suggested ${cyan.bold(releaseType)} upgrade to ${cyan.bold(releaseVersion)}`)
+      styleText(
+        'magenta',
+        `Suggested ${styleText(['cyan', 'bold'], releaseType)} upgrade to ${styleText(['cyan', 'bold'], releaseVersion)}`
+      )
     );
   }
 }
@@ -242,8 +253,9 @@ export async function resolveReleaseTypeAndVersion(parcel: Parcel, options: Comm
   } else if (sdkBranch != null) {
     state.releaseType = ReleaseType.PATCH;
     if (highestReleaseType !== ReleaseType.PATCH) {
-      explainer = chalk.dim(
-        `Based on changes made in this package, it should normally be released as ${chalk.blue(highestReleaseType)}, but when releasing from an SDK branch (currently ${chalk.blue(sdkBranch)}) a ${chalk.blue('patch')} bump is recommended instead.`
+      explainer = styleText(
+        'dim',
+        `Based on changes made in this package, it should normally be released as ${styleText('blue', highestReleaseType)}, but when releasing from an SDK branch (currently ${styleText('blue', sdkBranch)}) a ${styleText('blue', 'patch')} bump is recommended instead.`
       );
     }
   } else {
@@ -349,10 +361,16 @@ export function validateVersion(parcel: Parcel) {
   return (input: string) => {
     if (input) {
       if (!semver.valid(input)) {
-        return red(`${cyan.bold(input)} is not a valid semver version.`);
+        return styleText(
+          'red',
+          `${styleText(['cyan', 'bold'], input)} is not a valid semver version.`
+        );
       }
       if (parcel.pkgView && parcel.pkgView.versions.includes(input)) {
-        return red(`${cyan.bold(input)} has already been published.`);
+        return styleText(
+          'red',
+          `${styleText(['cyan', 'bold'], input)} has already been published.`
+        );
       }
     }
     return true;

@@ -47,9 +47,7 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "dependencies": {
-    "chalk": "^4.1.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",

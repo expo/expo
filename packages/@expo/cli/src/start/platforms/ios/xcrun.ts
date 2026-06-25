@@ -1,6 +1,6 @@
 import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from "node:util";
 
 import { CommandError } from '../../../utils/errors';
 
@@ -34,9 +34,7 @@ function throwXcrunError(e: any): never {
   } else if (e.stderr?.includes('not a developer tool or in PATH')) {
     throw new CommandError(
       'SIMCTL_NOT_AVAILABLE',
-      `You may need to run ${chalk.bold(
-        'sudo xcode-select -s /Applications/Xcode.app'
-      )} and try again.`
+      `You may need to run ${styleText("bold", 'sudo xcode-select -s /Applications/Xcode.app')} and try again.`
     );
   }
   // Attempt to craft a better error message...

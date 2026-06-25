@@ -11,7 +11,7 @@ import type {
   ReadOnlyGraph,
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -224,7 +224,8 @@ export function getDefaultConfig(
   if (reactNativePath === 'react-native' && !hasWarnedAboutReactNative) {
     hasWarnedAboutReactNative = true;
     console.log(
-      chalk.yellow(
+      styleText(
+        'yellow',
         `\u203A Could not resolve react-native! Is it installed and a project dependency?`
       )
     );
@@ -254,7 +255,10 @@ export function getDefaultConfig(
   } catch (error: any) {
     if (error && error.name === 'ConfigError') {
       console.log(
-        chalk.yellow(`\u203A Could not find a package.json at the project root! ("${projectRoot}")`)
+        styleText(
+          'yellow',
+          `\u203A Could not find a package.json at the project root! ("${projectRoot}")`
+        )
       );
     } else {
       throw error;

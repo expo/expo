@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import terminalLink from 'terminal-link';
 
 /**
@@ -9,7 +9,7 @@ import terminalLink from 'terminal-link';
  * @param url
  */
 export function learnMore(url: string): string {
-  return terminalLink(chalk.underline('Learn more.'), url, {
-    fallback: (text, url) => `Learn more: ${chalk.underline(url)}`,
+  return terminalLink(styleText('underline', 'Learn more.'), url, {
+    fallback: (text, url) => `Learn more: ${styleText('underline', url)}`,
   });
 }

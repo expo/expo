@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 export function time(label?: string): void {
   console.time(label);
@@ -14,11 +14,14 @@ export function error(...message: string[]): void {
 
 /** Print an error and provide additional info (the stack trace) in debug mode. */
 export function exception(e: Error): void {
-  error(chalk.red(e.toString()) + (process.env.EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+  error(
+    styleText('red', e.toString()) +
+      (process.env.EXPO_DEBUG ? '\n' + styleText('gray', e.stack!) : '')
+  );
 }
 
 export function warn(...message: string[]): void {
-  console.warn(...message.map((value) => chalk.yellow(value)));
+  console.warn(...message.map((value) => styleText('yellow', value)));
 }
 
 export function log(...message: string[]): void {

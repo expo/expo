@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { Task } from './Task';
@@ -84,9 +84,7 @@ export class CopyFiles extends Task {
         : workDirectory;
 
       this.logSubStep(
-        `📝 copy ${chalk.green(this.overrideWorkingDirectory())}/${chalk.green(
-          this.subDirectory ? this.subDirectory + '/' : ''
-        )}${chalk.yellow(pattern)} into ${chalk.magenta(this.to)}`
+        `📝 copy ${styleText('green', this.overrideWorkingDirectory())}/${styleText('green', this.subDirectory ? this.subDirectory + '/' : '')}${styleText('yellow', pattern)} into ${styleText('magenta', this.to)}`
       );
 
       const files = await findFiles(subPath, pattern);

@@ -1,7 +1,7 @@
-import chalk from 'chalk';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { styleText } from 'node:util';
 import prompts from 'prompts';
 
 import { detectFeaturesFromFile, findModuleDefinitionFile } from './featureDetection';
@@ -284,7 +284,7 @@ type TemplatePathInfo = {
 };
 
 function exitWithError(message: string): never {
-  console.error(chalk.red(message));
+  console.error(styleText('red', message));
   process.exit(1);
 }
 
@@ -338,7 +338,7 @@ async function resolvePlatformsToAdd(
   const availablePlatforms = ALL_PLATFORMS.filter((p) => !moduleInfo.platforms.includes(p));
 
   if (availablePlatforms.length === 0) {
-    console.log(chalk.yellow('ℹ️  All platforms are already supported by this module.'));
+    console.log(styleText('yellow', 'ℹ️  All platforms are already supported by this module.'));
     return null;
   }
 
@@ -413,13 +413,15 @@ async function resolveDetectedFeatures(
     const { features, sharedObjectName } = await detectFeaturesFromFile(moduleDefinitionFile);
     if (features.length === 0) {
       console.warn(
-        chalk.yellow(
+        styleText(
+          'yellow',
           '⚠️  No features detected in the module definition. Generating a minimal scaffold.'
         )
       );
     } else {
       console.log(
-        chalk.dim(
+        styleText(
+          'dim',
           `Detected features from ${path.relative(CWD, moduleDefinitionFile)} (best effort). ` +
             'Use --features to override.'
         )
@@ -429,7 +431,7 @@ async function resolveDetectedFeatures(
   }
 
   // Web-only module adding a native platform: no ModuleDefinition to scan.
-  console.log(chalk.dim('No native module definition found. Generating minimal scaffold.'));
+  console.log(styleText('dim', 'No native module definition found. Generating minimal scaffold.'));
   return { detectedFeatures: [], sharedObjectName: null };
 }
 
@@ -602,13 +604,16 @@ export async function addPlatformSupport(
   console.log();
   console.log(`✅ Successfully added ${platformsToAdd.join(', ')} support to the module.`);
   if (detectedFeatures.length > 0) {
-    console.log(chalk.dim(`   Scaffolded features: ${detectedFeatures.join(', ')}`));
+    console.log(styleText('dim', `   Scaffolded features: ${detectedFeatures.join(', ')}`));
   }
 
   const nativeOpenCommands = getNativeOpenCommands(platformsToAdd);
   if (nativeOpenCommands.length > 0) {
     console.log(
-      chalk.dim(`   To write the native implementation, use ${nativeOpenCommands.join(' or ')}.`)
+      styleText(
+        'dim',
+        `   To write the native implementation, use ${nativeOpenCommands.join(' or ')}.`
+      )
     );
   }
 }

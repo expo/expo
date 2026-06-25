@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import fs from 'fs';
 import path from 'path';
 
@@ -98,7 +98,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     if (!fs.existsSync(binaryPath)) {
       throw new CommandError(`The path to the custom Android binary does not exist: ${binaryPath}`);
     }
-    Log.log(chalk.gray`\u203A Installing ${binaryPath}`);
+    Log.log(styleText("gray", `\u203A Installing ${binaryPath}`));
     await props.device.installAppAsync(binaryPath);
   } else {
     await installAppAsync(androidProjectRoot, props);

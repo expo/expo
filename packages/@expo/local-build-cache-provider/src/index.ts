@@ -4,9 +4,9 @@ import type {
   RunOptions,
   UploadBuildCacheProps,
 } from '@expo/config';
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
+import { styleText } from 'node:util';
 
 type Options = {
   cacheDir?: string;
@@ -51,7 +51,7 @@ async function uploadBuildCacheAsync(
   }
 
   try {
-    console.log(chalk`{whiteBright \u203A} {bold Copying build to local cache}`);
+    console.log(`${styleText('whiteBright', '\u203A')} ${styleText('bold', 'Copying build to local cache')}`);
     const destFile = `${platform}-${fingerprintHash}-${getBuildVariant(runOptions)}${path.extname(buildPath)}`;
     const destPath = path.join(cacheDir, destFile);
 

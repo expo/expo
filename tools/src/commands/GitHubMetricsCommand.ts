@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
 import { Octokit } from '@octokit/rest';
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import logger from '../Logger';
@@ -149,7 +149,7 @@ async function fetchIssueMetrics(
   startDate: Date,
   endDate: Date
 ): Promise<IssueMetrics> {
-  logger.info(chalk.gray('Fetching issue metrics...'));
+  logger.info(styleText('gray', 'Fetching issue metrics...'));
 
   // Fetch all issues (not PRs) created or updated in the date range
   // Note: We use a 30-day buffer before startDate to ensure we capture all issues that were open at the start
@@ -191,7 +191,7 @@ async function fetchIssueMetrics(
   const netChange = openedDuringPeriod - closedDuringPeriod;
 
   // Track "needs review" label metrics
-  logger.info(chalk.gray('Tracking "needs review" label...'));
+  logger.info(styleText('gray', 'Tracking "needs review" label...'));
 
   const hasNeedsReviewLabel = (issue: (typeof allIssues)[0]) => {
     return issue.labels.some(
@@ -238,7 +238,7 @@ async function fetchPRMetrics(
   startDate: Date,
   endDate: Date
 ): Promise<PRMetrics> {
-  logger.info(chalk.gray('Fetching pull request metrics...'));
+  logger.info(styleText('gray', 'Fetching pull request metrics...'));
 
   const allPRs = await fetchAllPaginatedData(async (page) => {
     const { data } = await octokit.pulls.list({
@@ -299,7 +299,7 @@ async function fetchPRMetrics(
   const netChange = openedDuringPeriod - closedDuringPeriod;
 
   // Split metrics by external vs internal contributions
-  logger.info(chalk.gray('Splitting PR metrics by contribution type...'));
+  logger.info(styleText('gray', 'Splitting PR metrics by contribution type...'));
 
   const isExternalContribution = (pr: (typeof relevantPRs)[0]) => {
     return pr.head.repo ? pr.head.repo.full_name !== `${owner}/${repo}` : false;
@@ -359,7 +359,7 @@ async function fetchCIMetrics(
   startDate: Date,
   endDate: Date
 ): Promise<CIMetrics> {
-  logger.info(chalk.gray('Fetching CI metrics...'));
+  logger.info(styleText('gray', 'Fetching CI metrics...'));
 
   const workflowRuns = await fetchAllPaginatedData(async (page) => {
     const { data } = await octokit.actions.listWorkflowRunsForRepo({
@@ -448,7 +448,8 @@ async function retryOnError<T>(
 
       if (shouldRetry && attempt < maxRetries) {
         logger.warn(
-          chalk.yellow(
+          styleText(
+            'yellow',
             `⚠ API error (${error.status}), retrying in ${delayMs}ms... (attempt ${attempt}/${maxRetries})`
           )
         );
@@ -482,7 +483,7 @@ async function fetchAllPaginatedData<T>(fetchPage: (page: number) => Promise<T[]
 
       if (page > 50) {
         logger.warn(
-          chalk.yellow('⚠ Reached pagination limit of 50 pages. Some data may be missing.')
+          styleText('yellow', '⚠ Reached pagination limit of 50 pages. Some data may be missing.')
         );
         break;
       }
@@ -599,21 +600,21 @@ async function generateMetricsReport(options: MetricsOptions): Promise<string> {
   try {
     const [issues, pullRequests, ci] = await Promise.all([
       fetchIssueMetrics(owner, repo, startDate, endDate).catch((error) => {
-        logger.error(chalk.red('Error fetching issue metrics:'));
-        logger.error(chalk.red(`Status: ${error.status || 'N/A'}`));
-        logger.error(chalk.red(`Message: ${error.message}`));
+        logger.error(styleText('red', 'Error fetching issue metrics:'));
+        logger.error(styleText('red', `Status: ${error.status || 'N/A'}`));
+        logger.error(styleText('red', `Message: ${error.message}`));
         throw error;
       }),
       fetchPRMetrics(owner, repo, startDate, endDate).catch((error) => {
-        logger.error(chalk.red('Error fetching PR metrics:'));
-        logger.error(chalk.red(`Status: ${error.status || 'N/A'}`));
-        logger.error(chalk.red(`Message: ${error.message}`));
+        logger.error(styleText('red', 'Error fetching PR metrics:'));
+        logger.error(styleText('red', `Status: ${error.status || 'N/A'}`));
+        logger.error(styleText('red', `Message: ${error.message}`));
         throw error;
       }),
       fetchCIMetrics(owner, repo, startDate, endDate).catch((error) => {
-        logger.error(chalk.red('Error fetching CI metrics:'));
-        logger.error(chalk.red(`Status: ${error.status || 'N/A'}`));
-        logger.error(chalk.red(`Message: ${error.message}`));
+        logger.error(styleText('red', 'Error fetching CI metrics:'));
+        logger.error(styleText('red', `Status: ${error.status || 'N/A'}`));
+        logger.error(styleText('red', `Message: ${error.message}`));
         throw error;
       }),
     ]);
@@ -624,11 +625,11 @@ async function generateMetricsReport(options: MetricsOptions): Promise<string> {
       ci,
     };
 
-    logger.info(chalk.green('✓ Metrics collected successfully\n'));
+    logger.info(styleText('green', '✓ Metrics collected successfully\n'));
 
     return generateMarkdownReport(metrics, options);
   } catch (error: any) {
-    logger.error(chalk.red('\n🔥 Failed to generate metrics report'));
+    logger.error(styleText('red', '\n🔥 Failed to generate metrics report'));
     throw error;
   }
 }
@@ -639,7 +640,7 @@ async function action(options: ActionOptions) {
   }
 
   try {
-    logger.info(chalk.bold('📊 Generating GitHub metrics report...\n'));
+    logger.info(styleText('bold', '📊 Generating GitHub metrics report...\n'));
 
     const endDate = options.endDate ? new Date(options.endDate) : getThisWeekEnd();
     const startDate = options.startDate ? new Date(options.startDate) : getThisWeekMonday();
@@ -661,9 +662,9 @@ async function action(options: ActionOptions) {
       throw new Error('Invalid repository format. Use owner/repo format.');
     }
 
-    logger.info(`Repository: ${chalk.cyan(`${owner}/${repo}`)}`);
+    logger.info(`Repository: ${styleText('cyan', `${owner}/${repo}`)}`);
     logger.info(
-      `Date range: ${chalk.cyan(startDate.toISOString().split('T')[0])} to ${chalk.cyan(endDate.toISOString().split('T')[0])}\n`
+      `Date range: ${styleText('cyan', startDate.toISOString().split('T')[0])} to ${styleText('cyan', endDate.toISOString().split('T')[0])}\n`
     );
 
     const report = await generateMetricsReport({
@@ -676,33 +677,33 @@ async function action(options: ActionOptions) {
     if (options.output) {
       const outputPath = path.resolve(options.output);
       await fs.writeFile(outputPath, report);
-      logger.info(chalk.green(`✓ Report saved to: ${outputPath}`));
+      logger.info(styleText('green', `✓ Report saved to: ${outputPath}`));
     } else {
-      logger.info(chalk.bold('📄 Metrics Report:\n'));
+      logger.info(styleText('bold', '📄 Metrics Report:\n'));
       console.log(report);
     }
   } catch (error: any) {
-    logger.error(chalk.red('\n❌ Error Details:'));
-    logger.error(chalk.red(`Message: ${error.message}`));
+    logger.error(styleText('red', '\n❌ Error Details:'));
+    logger.error(styleText('red', `Message: ${error.message}`));
 
     if (error.status) {
-      logger.error(chalk.red(`HTTP Status: ${error.status}`));
+      logger.error(styleText('red', `HTTP Status: ${error.status}`));
     }
 
     if (error.response) {
-      logger.error(chalk.red('Response:'));
-      logger.error(chalk.red(JSON.stringify(error.response, null, 2)));
+      logger.error(styleText('red', 'Response:'));
+      logger.error(styleText('red', JSON.stringify(error.response, null, 2)));
     }
 
     if (error.request) {
-      logger.error(chalk.red('Request:'));
-      logger.error(chalk.red(`URL: ${error.request?.url || 'N/A'}`));
-      logger.error(chalk.red(`Method: ${error.request?.method || 'N/A'}`));
+      logger.error(styleText('red', 'Request:'));
+      logger.error(styleText('red', `URL: ${error.request?.url || 'N/A'}`));
+      logger.error(styleText('red', `Method: ${error.request?.method || 'N/A'}`));
     }
 
     if (error.stack) {
-      logger.error(chalk.gray('\nStack trace:'));
-      logger.error(chalk.gray(error.stack));
+      logger.error(styleText('gray', '\nStack trace:'));
+      logger.error(styleText('gray', error.stack));
     }
 
     throw error;

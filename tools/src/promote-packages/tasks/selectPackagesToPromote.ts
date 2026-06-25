@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import readline from 'readline';
 import stripAnsi from 'strip-ansi';
 
@@ -8,8 +8,6 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { formatVersionChange } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { green, red } = chalk;
 
 /**
  * Prompts the user to select packages to promote or demote.
@@ -44,10 +42,12 @@ async function promptForPackagesToPromoteAsync(parcels: Parcel[]): Promise<strin
   const maxLength = sorted.reduce((acc, { pkg }) => Math.max(acc, pkg.packageName.length), 0);
 
   const choices = sorted.map(({ pkg, state }) => {
-    const action = state.isDemoting ? red.bold('demote') : green.bold('promote');
+    const action = state.isDemoting
+      ? styleText(['red', 'bold'], 'demote')
+      : styleText(['green', 'bold'], 'promote');
 
     return {
-      name: `${green(pkg.packageName.padEnd(maxLength))} ${action} ${formatVersionChange(
+      name: `${styleText('green', pkg.packageName.padEnd(maxLength))} ${action} ${formatVersionChange(
         state.versionToReplace,
         pkg.packageVersion
       )}`,

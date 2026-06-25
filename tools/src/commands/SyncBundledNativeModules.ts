@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import path from 'path';
 import semver from 'semver';
 
@@ -60,7 +60,7 @@ async function confirmEnvAsync(env: Env): Promise<void> {
     {
       type: 'confirm',
       name: 'confirmed',
-      message: `Are you sure to run this script against the ${chalk.green(env)} environment?`,
+      message: `Are you sure to run this script against the ${styleText('green', env)} environment?`,
       default: true,
     },
   ]);
@@ -76,9 +76,7 @@ async function resolveSecretAsync(): Promise<string> {
   }
 
   logger.info(
-    `We need the secret to authenticate you with Expo servers.\nPlease set the ${chalk.green(
-      'EXPO_SDK_NATIVE_MODULES_SECRET'
-    )} env var if you want to skip the prompt in the future.`
+    `We need the secret to authenticate you with Expo servers.\nPlease set the ${styleText('green', 'EXPO_SDK_NATIVE_MODULES_SECRET')} env var if you want to skip the prompt in the future.`
   );
 
   const { secret } = await inquirer.prompt<{ secret: string }>([
@@ -103,9 +101,7 @@ async function resolveTargetSdkVersionAsync(): Promise<string> {
     {
       type: 'confirm',
       name: 'confirmed',
-      message: `Do you want to sync bundledNativeModules.json for ${chalk.green(
-        `SDK ${sdkVersion}`
-      )}?`,
+      message: `Do you want to sync bundledNativeModules.json for ${styleText('green', `SDK ${sdkVersion}`)}?`,
       default: true,
     },
   ]);
@@ -158,20 +154,20 @@ async function compareAndConfirmAsync(
     if (versionRange !== currentMap[npmPackage]?.versionRange) {
       hasChanges = true;
       logger.info(
-        ` - ${npmPackage}: ${chalk.red(
-          currentMap[npmPackage]?.versionRange ?? '(none)'
-        )} -> ${chalk.green(versionRange)}`
+        ` - ${npmPackage}: ${styleText('red', currentMap[npmPackage]?.versionRange ?? '(none)')} -> ${styleText('green', versionRange)}`
       );
     }
   }
   for (const { npmPackage, versionRange } of current) {
     if (!nextMap[npmPackage]) {
       hasChanges = true;
-      logger.info(` - ${npmPackage}: ${chalk.red(versionRange)} -> ${chalk.green('(removed)')}`);
+      logger.info(
+        ` - ${npmPackage}: ${styleText('red', versionRange)} -> ${styleText('green', '(removed)')}`
+      );
     }
   }
   if (!hasChanges) {
-    logger.info(chalk.gray('(no changes found)'));
+    logger.info(styleText('gray', '(no changes found)'));
     // there's no need to proceed with the script
     process.exit(0);
   }

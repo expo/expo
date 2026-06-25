@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { watchFile } from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -65,9 +65,8 @@ export class FileNotifier {
     const listener = (cur: any, prev: any) => {
       if (prev.size || cur.size) {
         Log.log(
-          `\u203A Detected a change in ${chalk.bold(
-            configName
-          )}. Restart the server to see the new results.` + (this.settings.additionalWarning || '')
+          `\u203A Detected a change in ${styleText('bold', configName)}. Restart the server to see the new results.` +
+            (this.settings.additionalWarning || '')
         );
       }
     };

@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { COMMENT_HEADER, generateReportFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
@@ -63,7 +63,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
   const pr = await GitHub.getPullRequestAsync(prNumber);
   const user = await GitHub.getAuthenticatedUserAsync();
 
-  logger.info('👾 Fetching head commit', chalk.yellow.bold(pr.head.sha));
+  logger.info('👾 Fetching head commit', styleText(['yellow', 'bold'], pr.head.sha));
   await Git.fetchAsync({
     remote: 'origin',
     ref: pr.head.sha,
@@ -86,7 +86,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
     try {
       return await action(input);
     } catch (error) {
-      logger.error(`😫 Code review action '${chalk.green(id)}' failed`);
+      logger.error(`😫 Code review action '${styleText('green', id)}' failed`);
       throw error;
     }
   });
@@ -172,11 +172,11 @@ async function updateLabelsAsync(pr: GitHub.PullRequest, newLabel: Label) {
   );
 
   for (const labelToRemove of labelsToRemove) {
-    logger.info(`🏷  Removing ${chalk.yellow(labelToRemove)} label`);
+    logger.info(`🏷  Removing ${styleText('yellow', labelToRemove)} label`);
     await GitHub.removeIssueLabelAsync(pr.number, labelToRemove);
   }
   if (!prLabels.includes(newLabel)) {
-    logger.info(`🏷  Adding ${chalk.yellow(newLabel)} label`);
+    logger.info(`🏷  Adding ${styleText('yellow', newLabel)} label`);
     await GitHub.addIssueLabelsAsync(pr.number, [newLabel]);
   }
 }
@@ -209,7 +209,7 @@ async function submitReportAsync(prNumber: number, reportBody: string) {
 
   const comment = await GitHub.createCommentAsync(prNumber, reportBody);
 
-  logger.info('🎤 Submitted the report at:', chalk.blue(comment.html_url));
+  logger.info('🎤 Submitted the report at:', styleText('blue', comment.html_url));
 }
 
 /**
@@ -230,7 +230,7 @@ async function submitReviewWithCommentsAsync(prNumber: number, comments: ReviewC
     comments,
   });
 
-  logger.info('📝 Submitted the review at:', chalk.blue(review.html_url));
+  logger.info('📝 Submitted the review at:', styleText('blue', review.html_url));
 }
 
 /**

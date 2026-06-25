@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import { getExpoConfigAsync } from '../ExpoConfig';
@@ -92,7 +92,7 @@ export async function getHashSourcesAsync(
   // extra sources
   if (options.extraSources) {
     for (const source of options.extraSources) {
-      debug(`Adding extra source - ${chalk.dim(JSON.stringify(source))}`);
+      debug(`Adding extra source - ${styleText('dim', JSON.stringify(source))}`);
     }
     results.push(options.extraSources);
   }

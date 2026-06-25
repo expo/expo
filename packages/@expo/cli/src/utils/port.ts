@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import { env } from './env';
@@ -86,23 +86,23 @@ export async function choosePortAsync(
 
     let message = isRestricted
       ? `Admin permissions are required to run a server on a port below 1024`
-      : `Port ${chalk.bold(defaultPort)} is`;
+      : `Port ${styleText('bold', `${defaultPort}`)} is`;
 
     const { getRunningProcess } =
       require('./getRunningProcess') as typeof import('./getRunningProcess');
     const runningProcess = isRestricted ? null : await getRunningProcess(defaultPort);
 
     if (runningProcess) {
-      const pidTag = chalk.gray(`(pid ${runningProcess.pid})`);
+      const pidTag = styleText('gray', `(pid ${runningProcess.pid})`);
       if (runningProcess.directory === projectRoot) {
         message += ` running this app in another window`;
         if (reuseExistingPort) {
           return null;
         }
       } else {
-        message += ` running ${chalk.cyan(runningProcess.command)} in another window`;
+        message += ` running ${styleText('cyan', runningProcess.command)} in another window`;
       }
-      message += '\n' + chalk.gray(`  ${runningProcess.directory} ${pidTag}`);
+      message += '\n' + styleText('gray', `  ${runningProcess.directory} ${pidTag}`);
     } else {
       message += ' being used by another process';
     }
@@ -118,7 +118,7 @@ export async function choosePortAsync(
     if (error.code === 'ABORTED') {
       throw error;
     } else if (error.code === 'NON_INTERACTIVE') {
-      Log.warn(chalk.yellow(error.message));
+      Log.warn(styleText('yellow', error.message));
       return null;
     }
     throw error;

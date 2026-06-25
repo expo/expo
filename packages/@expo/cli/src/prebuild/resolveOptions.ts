@@ -1,7 +1,7 @@
 import type { ModPlatform } from '@expo/config-plugins';
 import assert from 'assert';
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import * as Log from '../log';
@@ -127,7 +127,7 @@ export function ensureValidPlatforms(platforms: ModPlatform[]): ModPlatform[] {
   // Skip prebuild for iOS on Windows
   if (process.platform === 'win32' && platforms.includes('ios')) {
     Log.warn(
-      chalk`⚠️  Skipping generating the iOS native project files. Run {bold npx expo prebuild} again from macOS or Linux to generate the iOS project.\n`
+      `⚠️  Skipping generating the iOS native project files. Run ${styleText('bold', `npx expo prebuild`)} again from macOS or Linux to generate the iOS project.\n`
     );
     return platforms.filter((platform) => platform !== 'ios');
   }

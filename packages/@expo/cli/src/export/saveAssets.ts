@@ -7,8 +7,8 @@
 import type { Platform } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import type { AssetData } from '@expo/metro/metro';
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { Log } from '../log';
@@ -131,7 +131,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   const sizeStr = (contents: string | Buffer) => {
     const length = contentSize(contents);
-    const size = chalk.gray`(${prettyBytes(length)})`;
+    const size = styleText('gray', `(${prettyBytes(length)})`);
     return size;
   };
 
@@ -156,14 +156,15 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
       const totalAssets = assetGroups.reduce((sum, [, assets]) => sum + assets.length, 0);
 
       Log.log('');
-      Log.log(chalk.bold`${BLT} Assets (${totalAssets}):`);
+      Log.log(styleText('bold', `${BLT} Assets (${totalAssets}):`));
 
       for (const [assetId, assets] of assetGroups) {
         const averageContentSize =
           assets.reduce((sum, [, { contents }]) => sum + contentSize(contents), 0) / assets.length;
         Log.log(
           assetId,
-          chalk.gray(
+          styleText(
+            'gray',
             `(${[
               assets.length > 1 ? `${assets.length} variations` : '',
               `${prettyBytes(averageContentSize)}`,
@@ -192,7 +193,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   [...bundles.entries()].forEach(([platform, assets]) => {
     Log.log('');
-    Log.log(chalk.bold`${BLT} ${platform} bundles (${assets.length}):`);
+    Log.log(styleText('bold', `${BLT} ${platform} bundles (${assets.length}):`));
 
     const allAssets = assets.sort((a, b) => a[0].localeCompare(b[0]));
     while (allAssets.length) {
@@ -203,7 +204,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
         const sourceMapIndex = allAssets.findIndex(([fp]) => fp === filePath + '.map');
         if (sourceMapIndex !== -1) {
           const [sourceMapFilePath, sourceMapAsset] = allAssets.splice(sourceMapIndex, 1)[0]!;
-          Log.log(chalk.gray(sourceMapFilePath), sizeStr(sourceMapAsset.contents));
+          Log.log(styleText('gray', sourceMapFilePath), sizeStr(sourceMapAsset.contents));
         }
       }
     }
@@ -211,7 +212,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   if (showAdditionalInfo && other.length) {
     Log.log('');
-    Log.log(chalk.bold`${BLT} Files (${other.length}):`);
+    Log.log(styleText('bold', `${BLT} Files (${other.length}):`));
 
     for (const [filePath, asset] of other.sort((a, b) => a[0].localeCompare(b[0]))) {
       Log.log(filePath, sizeStr(asset.contents));
@@ -220,25 +221,25 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   if (rscEntries.length) {
     Log.log('');
-    Log.log(chalk.bold`${BLT} React Server Components (${rscEntries.length}):`);
+    Log.log(styleText('bold', `${BLT} React Server Components (${rscEntries.length}):`));
 
     for (const [filePath, assets] of rscEntries.sort((a, b) => a[0].length - b[0].length)) {
       const id = assets.rscId!;
       Log.log(
-        '/' + (id === '' ? chalk.gray(' (index)') : id),
+        '/' + (id === '' ? styleText('gray', ' (index)') : id),
         sizeStr(assets.contents),
-        chalk.gray(filePath)
+        styleText('gray', filePath)
       );
     }
   }
 
   if (routeEntries.length) {
     Log.log('');
-    Log.log(chalk.bold`${BLT} Static routes (${routeEntries.length}):`);
+    Log.log(styleText('bold', `${BLT} Static routes (${routeEntries.length}):`));
 
     for (const [, assets] of routeEntries.sort((a, b) => a[0].length - b[0].length)) {
       const id = assets.routeId!;
-      Log.log('/' + (id === '' ? chalk.gray(' (index)') : id), sizeStr(assets.contents));
+      Log.log('/' + (id === '' ? styleText('gray', ' (index)') : id), sizeStr(assets.contents));
     }
   }
 
@@ -247,7 +248,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
       (route) => !route[0].endsWith('.map')
     );
     Log.log('');
-    Log.log(chalk.bold`${BLT} API routes (${apiRoutesWithoutSourcemaps.length}):`);
+    Log.log(styleText('bold', `${BLT} API routes (${apiRoutesWithoutSourcemaps.length}):`));
 
     for (const [apiRouteFilename, assets] of apiRoutesWithoutSourcemaps.sort(
       (a, b) => a[0].length - b[0].length
@@ -260,9 +261,9 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
           filename.endsWith('.map')
       );
       Log.log(
-        id === '' ? chalk.gray(' (index)') : id,
+        id === '' ? styleText('gray', ' (index)') : id,
         sizeStr(assets.contents),
-        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
+        hasSourceMap ? styleText('gray', `(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
       );
     }
   }
@@ -272,7 +273,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
       (route) => !route[0].endsWith('.map')
     );
     Log.log('');
-    Log.log(chalk.bold`${BLT} Middleware:`);
+    Log.log(styleText('bold', `${BLT} Middleware:`));
 
     for (const [middlewareFilename, assets] of middlewareWithoutSourcemaps.sort(
       (a, b) => a[0].length - b[0].length
@@ -287,7 +288,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
       Log.log(
         id,
         sizeStr(assets.contents),
-        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
+        hasSourceMap ? styleText('gray', `(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
       );
     }
   }
@@ -295,7 +296,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   if (loaderEntries.length) {
     const loadersWithoutSourcemaps = loaderEntries.filter((entry) => !entry[0].endsWith('.map'));
     Log.log('');
-    Log.log(chalk.bold`${BLT} Loaders (${loadersWithoutSourcemaps.length}):`);
+    Log.log(styleText('bold', `${BLT} Loaders (${loadersWithoutSourcemaps.length}):`));
 
     for (const [loaderFilename, assets] of loadersWithoutSourcemaps.sort(
       (a, b) => a[0].length - b[0].length
@@ -308,9 +309,9 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
           filename.endsWith('.map')
       );
       Log.log(
-        id === '/' ? '/ ' + chalk.gray('(index)') : id,
+        id === '/' ? '/ ' + styleText('gray', '(index)') : id,
         sizeStr(assets.contents),
-        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
+        hasSourceMap ? styleText('gray', `(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
       );
     }
   }

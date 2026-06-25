@@ -1,12 +1,20 @@
-import chalk, { Chalk } from 'chalk';
+import { styleText } from 'node:util';
 import readline from 'readline';
 
 type LogLevel = 'log' | 'debug' | 'info' | 'warn' | 'error';
 
-type LoggerResolver = (level: LogLevel, color: Chalk | null, args: string[]) => void;
+type LoggerResolver = (
+  level: LogLevel,
+  color: Parameters<typeof styleText>[0] | null,
+  args: string[]
+) => void;
 
-const CONSOLE_RESOLVER: LoggerResolver = (level: LogLevel, color: Chalk | null, args: string[]) => {
-  return console[level](...(color ? args.map((arg) => color(arg)) : args));
+const CONSOLE_RESOLVER: LoggerResolver = (
+  level: LogLevel,
+  color: Parameters<typeof styleText>[0] | null,
+  args: string[]
+) => {
+  return console[level](...(color ? args.map((arg) => styleText(color, arg)) : args));
 };
 
 // Process-wide verbose flag. All Logger instances (including LoggerBatch)
@@ -38,11 +46,11 @@ export class Logger {
    */
   verbose(...args: any[]): void {
     if (!_verbose) return;
-    this.resolver('debug', chalk.dim, args);
+    this.resolver('debug', 'dim', args);
   }
 
   debug(...args: any[]): void {
-    this.resolver('debug', chalk.gray, args);
+    this.resolver('debug', 'gray', args);
   }
 
   log(...args: any[]): void {
@@ -50,19 +58,19 @@ export class Logger {
   }
 
   success(...args: any[]): void {
-    this.resolver('log', chalk.green, args);
+    this.resolver('log', 'green', args);
   }
 
   info(...args: any[]): void {
-    this.resolver('info', chalk.cyan, args);
+    this.resolver('info', 'cyan', args);
   }
 
   warn(...args: any[]): void {
-    this.resolver('warn', chalk.yellow.bold, args);
+    this.resolver('warn', ['yellow', 'bold'], args);
   }
 
   error(...args: any[]): void {
-    this.resolver('error', chalk.red.bold, args);
+    this.resolver('error', ['red', 'bold'], args);
   }
 
   batch(): LoggerBatch {
@@ -80,7 +88,7 @@ export class Logger {
  * Useful for asynchronous simultaneous operations to preserve logs order.
  */
 export class LoggerBatch extends Logger {
-  readonly batchedLogs: [LogLevel, Chalk | null, any[]][] = [];
+  readonly batchedLogs: [LogLevel, Parameters<typeof styleText>[0] | null, any[]][] = [];
 
   constructor(readonly parentResolver: LoggerResolver = CONSOLE_RESOLVER) {
     super((level, color, args) => {

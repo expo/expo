@@ -1,13 +1,11 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 
 import { loadRequestedParcels } from './loadRequestedParcels';
 import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { green, cyan, blue, yellow } = chalk;
 
 /**
  * Checks packages integrity and warns about violations.
@@ -36,19 +34,19 @@ export const checkPackagesIntegrity = new Task<TaskArgs>(
       const integral = isAncestor && isVersionMatching;
 
       if (!integral) {
-        logger.warn(`\n⚠️  Integrity checks failed for ${green(pkg.packageName)}.`);
+        logger.warn(`\n⚠️  Integrity checks failed for ${styleText('green', pkg.packageName)}.`);
       }
       if (!pkgView.gitHead) {
-        logger.warn(`   Cannot find ${blue('gitHead')} in package view.`);
+        logger.warn(`   Cannot find ${styleText('blue', 'gitHead')} in package view.`);
       } else if (!isAncestor) {
         logger.warn(
-          `   Local version ${cyan(pkgView.version)} has been published from different branch.`
+          `   Local version ${styleText('cyan', pkgView.version)} has been published from different branch.`
         );
       }
       if (!isVersionMatching) {
         logger.warn(
-          `   Last version in changelog ${cyan(lastChangelogVersion!)}`,
-          `doesn't match local version ${cyan(pkgView.version)}.`
+          `   Last version in changelog ${styleText('cyan', lastChangelogVersion!)}`,
+          `doesn't match local version ${styleText('cyan', pkgView.version)}.`
         );
       }
       return integral;
@@ -87,7 +85,10 @@ async function shouldStopOnFailedIntegrityChecksAsync(): Promise<boolean> {
       type: 'confirm',
       name: 'proceed',
       prefix: '❔',
-      message: yellow('Some integrity checks have failed. Do you want to proceed either way?'),
+      message: styleText(
+        'yellow',
+        'Some integrity checks have failed. Do you want to proceed either way?'
+      ),
       default: true,
     },
   ]);

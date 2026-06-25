@@ -1,8 +1,8 @@
-import chalk from 'chalk';
 import { getConfig, type ExpoConfig } from 'expo/config';
 import { type ModPlatform } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import { glob as globAsync } from 'glob';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { addAllToGitIndexAsync, commitAsync, diffAsync, initializeGitRepoAsync } from '../gitPatch';
@@ -104,7 +104,7 @@ async function patchProjectForPlatformAsync({
 
   debug(`Generating native projects from prebuild template - projectRoot[${projectRoot}]`);
   logger.log(
-    chalk.bold(`Generating native projects from prebuild template - platform[${platform}]`)
+    styleText('bold', `Generating native projects from prebuild template - platform[${platform}]`)
   );
   const templateChecksum = await generateNativeProjectsAsync(projectRoot, exp, {
     platforms: [platform],
@@ -133,7 +133,7 @@ async function patchProjectForPlatformAsync({
 
   debug(`Generating patch file`);
   const patchFilePath = path.join(projectRoot, patchRoot, `${platform}+${templateChecksum}.patch`);
-  logger.log(chalk.bold(`Saving patch file to ${patchFilePath}`));
+  logger.log(styleText('bold', `Saving patch file to ${patchFilePath}`));
   await diffAsync(diffDir, patchFilePath, options.diffOptions ?? []);
   const stat = await fs.stat(patchFilePath);
   if (stat.size === 0) {

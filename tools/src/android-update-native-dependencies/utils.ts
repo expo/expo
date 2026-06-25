@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import semver, { type ReleaseType } from 'semver';
 import terminalLink from 'terminal-link';
 
@@ -7,9 +7,11 @@ import dependenciesChangelogs from '../data/androidDependenciesChangelogs.json';
 
 export function getChangelogLink(dependency: string, fallbackLink: string | null) {
   const link = dependenciesChangelogs[dependency] ?? fallbackLink;
-  return chalk.italic.dim(
+  return styleText(
+    ['italic', 'dim'],
     (link && terminalLink('CHANGELOG', link)) ??
-      chalk.whiteBright(
+      styleText(
+        'whiteBright',
         `Hey developer! Add CHANGELOG URL address for this dependency in ${terminalLink(
           'dependenciesChangelogs.json',
           `file://${EXPOTOOLS_DIR}/src/android-update-native-dependencies/dependenciesChangelogs.json`
@@ -42,5 +44,5 @@ export function addColorBasedOnSemverDiff(version: string | null, semverDiff: Re
     }
   }
 
-  return chalk.reset.bold[colorEffect](version ?? '<unknown>');
+  return styleText(['reset', 'bold', colorEffect], version ?? '<unknown>');
 }

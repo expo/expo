@@ -1,6 +1,6 @@
 import { ExpoRunFormatter } from '@expo/xcpretty';
-import chalk from 'chalk';
 import { spawn } from 'child_process';
+import { styleText } from 'node:util';
 import os from 'os';
 
 import logger from '../Logger';
@@ -104,18 +104,18 @@ function printDiagnostics(warnings: string[], errors: string[]): void {
   const MAX = 10;
 
   if (warnings.length > 0) {
-    logger.log(chalk.gray('      Warnings:'));
-    warnings.slice(0, MAX).forEach((warn) => logger.log(chalk.gray(`        ${warn}`)));
+    logger.log(styleText('gray', '      Warnings:'));
+    warnings.slice(0, MAX).forEach((warn) => logger.log(styleText('gray', `        ${warn}`)));
     if (warnings.length > MAX) {
-      logger.log(chalk.gray(`        ... and ${warnings.length - MAX} more warnings`));
+      logger.log(styleText('gray', `        ... and ${warnings.length - MAX} more warnings`));
     }
   }
 
   if (errors.length > 0) {
-    logger.log(chalk.gray('      Errors:'));
-    errors.slice(0, MAX).forEach((err) => logger.log(chalk.gray(`        ${err.trim()}`)));
+    logger.log(styleText('gray', '      Errors:'));
+    errors.slice(0, MAX).forEach((err) => logger.log(styleText('gray', `        ${err.trim()}`)));
     if (errors.length > MAX) {
-      logger.log(chalk.gray(`        ... and ${errors.length - MAX} more errors`));
+      logger.log(styleText('gray', `        ... and ${errors.length - MAX} more errors`));
     }
   }
 }
@@ -127,10 +127,10 @@ function printDiagnostics(warnings: string[], errors: string[]): void {
 function printRawErrorFallback(rawOutput: string, stderr: string): void {
   const rawErrors = extractRawCompileErrors(rawOutput);
   if (rawErrors.length > 0) {
-    logger.log(chalk.gray('      Raw errors:'));
-    rawErrors.slice(0, 10).forEach((err) => logger.log(chalk.gray(`        ${err}`)));
+    logger.log(styleText('gray', '      Raw errors:'));
+    rawErrors.slice(0, 10).forEach((err) => logger.log(styleText('gray', `        ${err}`)));
   } else if (stderr) {
-    logger.log(chalk.gray(stderr));
+    logger.log(styleText('gray', stderr));
   }
 }
 

@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import nullthrows from 'nullthrows';
 import path from 'path';
 import semver from 'semver';
@@ -156,7 +156,7 @@ async function insertInitialReleasesAsync(
           unshift: true,
         }
       );
-      logger.info(`\n📦 Inserted initial release of ${chalk.green(pkg.packageName)}`);
+      logger.info(`\n📦 Inserted initial release of ${styleText('green', pkg.packageName)}`);
     }
   }
 }
@@ -206,11 +206,11 @@ async function insertNewChangelogEntriesAsync(
 
     // Package was already bundled within previous version.
     logger.info(
-      `\n📦 Inserted ${chalk.green(pkg.packageName)} entries as of ${chalk.yellow(fromVersion)}`
+      `\n📦 Inserted ${styleText('green', pkg.packageName)} entries as of ${styleText('yellow', fromVersion)}`
     );
 
     for (const [type, entries] of Object.entries(insertedEntries)) {
-      logger.log('  ', chalk.magenta(stripNonAsciiChars(type).trim() + ':'));
+      logger.log('  ', styleText('magenta', stripNonAsciiChars(type).trim() + ':'));
       entries.forEach((entry) => {
         logger.log('    ', formatChangelogEntry(entry.message));
       });
@@ -226,7 +226,7 @@ async function cutOffMainChangelogAsync(
   versions: ChangelogVersions,
   nextVersion: string
 ): Promise<void> {
-  logger.info(`\n✂️  Cutting off changelog for SDK ${chalk.cyan(nextVersion)}...`);
+  logger.info(`\n✂️  Cutting off changelog for SDK ${styleText('cyan', nextVersion)}...`);
 
   await mainChangelog.cutOffAsync(nextVersion, [
     ChangeType.LIBRARY_UPGRADES,
@@ -271,7 +271,7 @@ async function promptToMakeInitialReleaseAsync(packageName: string): Promise<boo
       name: 'confirm',
       default: true,
       prefix: '❔',
-      message: `${chalk.green(packageName)} wasn't bundled in SDK yet. Do you want to include it?`,
+      message: `${styleText('green', packageName)} wasn't bundled in SDK yet. Do you want to include it?`,
     },
   ]);
   return confirm;

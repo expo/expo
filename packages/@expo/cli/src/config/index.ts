@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+
+import { styleText } from 'node:util';
 
 import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
@@ -22,9 +23,9 @@ export const expoConfig: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Show the project config`,
-      chalk`npx expo config {dim <dir>}`,
+      `npx expo config ${styleText('dim', `<dir>`)}`,
       [
-        chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
+        `<dir>                                    Directory of the Expo project. ${styleText('dim', `Default: Current working directory`)}`,
         `--full                                   Include all project config data`,
         `--json                                   Output in JSON format`,
         `-t, --type <public|prebuild|introspect>  Type of config to show`,

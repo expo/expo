@@ -1,5 +1,5 @@
 import spawnAsync, { SpawnResult } from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { RootNodePackage } from './explainDependencies.types';
 import { Log } from './log';
@@ -29,9 +29,7 @@ export async function explainAsync(
         return null;
       } else if (error.stdout.match(/Usage: npm <command>/)) {
         throw new Error(
-          `Dependency tree validation for ${chalk.underline(
-            packageName
-          )} failed. This validation is only available on Node 16+ / npm 8.`
+          `Dependency tree validation for ${styleText('underline', packageName)} failed. This validation is only available on Node 16+ / npm 8.`
         );
       }
     }

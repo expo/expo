@@ -1,3 +1,12 @@
+import type {
+  ASTPath,
+  ImportDeclaration,
+  ImportDefaultSpecifier,
+  ImportNamespaceSpecifier,
+  ImportSpecifier,
+  JSCodeshift,
+  Transform,
+} from 'jscodeshift';
 /**
  * Codemod: Replace @react-navigation/* imports with expo-router equivalents.
  *
@@ -13,16 +22,7 @@
  *
  * After replacement, duplicate `expo-router` imports are merged into one.
  */
-import chalk from 'chalk';
-import type {
-  ASTPath,
-  ImportDeclaration,
-  ImportDefaultSpecifier,
-  ImportNamespaceSpecifier,
-  ImportSpecifier,
-  JSCodeshift,
-  Transform,
-} from 'jscodeshift';
+import { styleText } from 'node:util';
 
 // Specifier types in `@types/jscodeshift` (via ast-types) don't expose the
 // inline `type` modifier (`import { type A }`), even though Babel emits it as
@@ -57,9 +57,9 @@ const UNSUPPORTED_SPECIFIERS: Partial<Record<ImportSpecifierWithKind['type'], st
 
 // Prints a prominent, color-formatted error block to stderr.
 const printErrorBlock = (title: string, lines: string[]): void => {
-  const divider = chalk.red.bold('━'.repeat(78));
-  const heading = chalk.red.bold(`  ${title}`);
-  const body = lines.map((line) => chalk.red(`  ${line}`));
+  const divider = styleText(['red', 'bold'], '━'.repeat(78));
+  const heading = styleText(['red', 'bold'], `  ${title}`);
+  const body = lines.map((line) => styleText('red', `  ${line}`));
   console.error(['', divider, heading, divider, '', ...body, ''].join('\n'));
 };
 

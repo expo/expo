@@ -3,10 +3,10 @@ import type { Platform } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { createFaviconAsString } from '@expo/router-server/build/utils/html';
-import chalk from 'chalk';
 import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
@@ -101,11 +101,14 @@ export async function exportAppAsync(
   // Print out logs
   if (baseUrl) {
     Log.log();
-    Log.log(chalk.gray`Using (experimental) base path: ${baseUrl}`);
+    Log.log(styleText('gray', `Using (experimental) base path: ${baseUrl}`));
     // Warn if not using an absolute path.
     if (!baseUrl.startsWith('/')) {
       Log.log(
-        chalk.yellow`  Base path does not start with a slash. Requests will not be absolute.`
+        styleText(
+          'yellow',
+          `  Base path does not start with a slash. Requests will not be absolute.`
+        )
       );
     }
   }

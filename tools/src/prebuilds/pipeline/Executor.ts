@@ -6,7 +6,7 @@
  *     → for each package: package-scope steps → flavor loop → product-scope steps
  *   → report summary → return PrebuildRunResult
  */
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
@@ -368,7 +368,7 @@ export async function runPrebuildPipeline(
 
     if (concurrency > 1) {
       logger.info(
-        `\n⚡ Building ${packages.length} packages with concurrency ${chalk.green(String(concurrency))}`
+        `\n⚡ Building ${packages.length} packages with concurrency ${styleText('green', String(concurrency))}`
       );
     }
 
@@ -386,7 +386,7 @@ export async function runPrebuildPipeline(
       (pkg, signal, failedDeps) => {
         if (failedDeps && failedDeps.length > 0) {
           logger.info(
-            `⏭️  Skipping ${chalk.yellow(pkg.packageName)} — dependency failed: ${chalk.yellow(failedDeps.join(', '))}`
+            `⏭️  Skipping ${styleText('yellow', pkg.packageName)} — dependency failed: ${styleText('yellow', failedDeps.join(', '))}`
           );
           return Promise.resolve(
             synthesizeSkippedResult(
@@ -436,7 +436,7 @@ function finalize(ctx: PrebuildContext, startTime: number, exitCode: number): Pr
   let errorLogPath: string | undefined;
   if (ctx.errors.length > 0 && !ctx.suppressErrorLog) {
     errorLogPath = writeErrorLog(PACKAGES_DIR, ctx.errors);
-    logger.info(`\n📝 Error log written to: ${chalk.yellow(errorLogPath)}`);
+    logger.info(`\n📝 Error log written to: ${styleText('yellow', errorLogPath)}`);
   }
 
   return {

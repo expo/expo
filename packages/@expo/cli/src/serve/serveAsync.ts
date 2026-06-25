@@ -1,7 +1,7 @@
-import chalk from 'chalk';
 import connect from 'connect';
 import { createRequestHandler } from 'expo-server/adapter/http';
 import http from 'http';
+import { styleText } from 'node:util';
 import path from 'path';
 import send from 'send';
 
@@ -47,7 +47,7 @@ export async function serveAsync(inputDir: string, options: Options) {
 
   const isStatic = await isStaticExportAsync(serverDist);
 
-  Log.log(chalk.dim(`Starting ${isStatic ? 'static ' : ''}server in ${serverDist}`));
+  Log.log(styleText('dim', `Starting ${isStatic ? 'static ' : ''}server in ${serverDist}`));
 
   if (isStatic) {
     await startStaticServerAsync(serverDist, options);

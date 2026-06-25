@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'node:fs';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import { XCFramework } from './constants';
 import CLIError from './error';
@@ -545,21 +545,21 @@ export const makeArtifactsDirectory = (config: IosConfig) => {
 };
 
 export const printIosConfig = (config: IosConfig) => {
-  console.log(chalk.bold('Resolved build configuration'));
-  console.log(` - Build configuration: ${chalk.blue(config.buildConfiguration)}`);
-  console.log(` - Scheme: ${chalk.blue(config.scheme)}`);
-  console.log(` - Workspace: ${chalk.blue(config.workspace)}`);
-  console.log(` - Dry run: ${chalk.blue(config.dryRun)}`);
-  console.log(` - Verbose: ${chalk.blue(config.verbose)}`);
-  console.log(` - Artifacts path: ${chalk.blue(config.artifacts)}`);
+  console.log(styleText('bold', 'Resolved build configuration'));
+  console.log(` - Build configuration: ${styleText('blue', config.buildConfiguration)}`);
+  console.log(` - Scheme: ${styleText('blue', config.scheme)}`);
+  console.log(` - Workspace: ${styleText('blue', config.workspace)}`);
+  console.log(` - Dry run: ${styleText('blue', String(config.dryRun))}`);
+  console.log(` - Verbose: ${styleText('blue', String(config.verbose))}`);
+  console.log(` - Artifacts path: ${styleText('blue', config.artifacts)}`);
 
   if (config.output !== 'frameworks') {
-    console.log(` - Package name: ${chalk.blue(config.output.packageName)}`);
+    console.log(` - Package name: ${styleText('blue', config.output.packageName)}`);
   }
-  console.log(` - Bundle precompiled modules: ${chalk.blue(config.usePrebuilds)}`);
+  console.log(` - Bundle precompiled modules: ${styleText('blue', String(config.usePrebuilds))}`);
   if (config.hostProvidedFrameworks.length > 0) {
     console.log(
-      ` - Host-provided frameworks: ${chalk.blue(config.hostProvidedFrameworks.join(', '))}`
+      ` - Host-provided frameworks: ${styleText('blue', config.hostProvidedFrameworks.join(', '))}`
     );
   }
 
@@ -593,7 +593,8 @@ export const validateHostProvided = (config: IosConfig): void => {
     const xcframeworkPath = pathsByName.get(name);
     if (xcframeworkPath === undefined) {
       console.warn(
-        chalk.yellow(
+        styleText(
+          'yellow',
           `expo-brownfield: '${name}' is listed in ios.hostProvidedFrameworks but no matching xcframework was found in ios/Pods/, node_modules/<pkg>/prebuilds/output/, or the shared .spm-deps/ cache. Remove it from the config, or re-run \`pod install\` if the source module isn't installed yet.`
         )
       );
@@ -602,7 +603,8 @@ export const validateHostProvided = (config: IosConfig): void => {
     const version = readXcframeworkShortVersion(xcframeworkPath);
     const versionLabel = version ?? 'unknown version';
     console.log(
-      chalk.dim(
+      styleText(
+        'dim',
         `expo-brownfield: excluding ${name} (${versionLabel}) — the host iOS app must provide ${name} at a compatible version at link time.`
       )
     );

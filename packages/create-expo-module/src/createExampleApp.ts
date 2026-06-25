@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import { usesExpoUI } from './features';
 import { installDependencies, type PackageManagerName } from './packageManager';
@@ -52,7 +52,10 @@ export async function createExampleApp(
       }
 
       console.warn(
-        chalk.yellow(`Failed to use the "${distTag}" example template, falling back to "latest".`)
+        styleText(
+          'yellow',
+          `Failed to use the "${distTag}" example template, falling back to "latest".`
+        )
       );
 
       await initExampleApp(packageManager, exampleProjectSlug, targetDir, 'latest');

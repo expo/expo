@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import arg from 'arg';
-import chalk from 'chalk';
 import Debug from 'debug';
 import { boolish } from 'getenv';
+import { styleText } from 'node:util';
 
 import { runLegacyCLIAsync } from './runLegacyCLIAsync';
 import { logCmdError } from './utils/errors';
@@ -52,18 +52,18 @@ const commandArgs = args._.slice(1);
 // Handle `--help` flag
 if ((args['--help'] && !command) || !command) {
   Log.exit(
-    chalk`
-{bold Usage}
-  {dim $} npx @expo/fingerprint <command>
+    `
+${styleText('bold', 'Usage')}
+  ${styleText('dim', '$')} npx @expo/fingerprint <command>
 
-{bold Commands}
+${styleText('bold', 'Commands')}
   ${Object.keys(commands).sort().join(', ')}
 
-{bold Options}
+${styleText('bold', 'Options')}
   --help, -h      Displays this message
 
 For more information run a command with the --help flag
-  {dim $} npx @expo/fingerprint fingerprint:generate --help
+  ${styleText('dim', '$')} npx @expo/fingerprint fingerprint:generate --help
   `,
     0
   );

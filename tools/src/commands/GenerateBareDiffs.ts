@@ -1,8 +1,8 @@
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import npmPacklist from 'npm-packlist';
 import os from 'os';
 import path from 'path';
@@ -176,7 +176,8 @@ async function action({ check = false }: ActionOptions) {
     );
 
     logger.log(
-      chalk.green(
+      styleText(
+        'green',
         `\n🎉 Successfully generated diffs for template-bare-minimum for the last 6 SDK versions + main`
       )
     );

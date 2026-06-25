@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import type { CommanderStatic } from 'commander';
+import { styleText } from 'node:util';
 
 import type { Config } from '../Config';
 import TemplateProject from '../TemplateProject';
@@ -14,10 +14,10 @@ async function createProjectAsync(config: Config, options: CreateProjectOptions)
   const app = config.applications[options.app];
 
   if (app?.preset === 'detox') {
-    console.log(`Using ${chalk.green('detox')} preset.`);
+    console.log(`Using ${styleText('green', 'detox')} preset.`);
     const preset = new TemplateProject(app, options.app, options.platform, options.configFile);
 
-    console.log(`Creating test app in ${chalk.green(options.path)}.`);
+    console.log(`Creating test app in ${styleText('green', options.path)}.`);
     await preset.createApplicationAsync(options.path);
   } else {
     throw new Error(`Unknown preset: ${app?.preset}`);

@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -50,7 +50,7 @@ export async function getPackageSourceAsync(
     return null;
   }
 
-  debug(`Adding package - ${chalk.dim(params.packageName)}`);
+  debug(`Adding package - ${styleText('dim', params.packageName)}`);
 
   if (params.packageJsonOnly) {
     return {

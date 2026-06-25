@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import os from 'os';
 
 import { ADBServer } from './ADBServer';
@@ -66,9 +66,7 @@ export function getServer() {
 /** Logs an FYI message about authorizing your device. */
 export function logUnauthorized(device: Device) {
   Log.warn(
-    `\nThis computer is not authorized for developing on ${chalk.bold(device.name)}. ${chalk.dim(
-      learnMore('https://expo.fyi/authorize-android-device')
-    )}`
+    `\nThis computer is not authorized for developing on ${styleText("bold", device.name)}. ${styleText("dim", learnMore('https://expo.fyi/authorize-android-device'))}`
   );
 }
 

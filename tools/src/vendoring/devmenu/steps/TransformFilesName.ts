@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { TransformFilesContent } from './TransformFilesContent';
@@ -10,9 +10,7 @@ export class TransformFilesName extends TransformFilesContent {
     const workDirectory = this.getWorkingDirectory();
 
     this.logSubStep(
-      `🔄 find ${chalk.yellow(this.find.toString())} in files names in path ${chalk.green(
-        this.overrideWorkingDirectory()
-      )}/${chalk.yellow(this.filePattern)} and replace with ${chalk.magenta(this.replace)}`
+      `🔄 find ${styleText('yellow', this.find.toString())} in files names in path ${styleText('green', this.overrideWorkingDirectory())}/${styleText('yellow', this.filePattern)} and replace with ${styleText('magenta', this.replace)}`
     );
 
     const files = await findFiles(workDirectory, this.filePattern);

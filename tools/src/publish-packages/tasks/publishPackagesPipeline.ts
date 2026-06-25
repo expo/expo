@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { addTemplateTarball } from './addTemplateTarball';
@@ -30,8 +30,6 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { cyan, yellow } = chalk;
 
 /**
  * Cleans up all the changes that were made by previously run tasks.
@@ -115,12 +113,12 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
     }
     const packagesCount = parcels.length;
     logger.success(
-      `\n✅ Successfully published ${cyan.bold(packagesCount)} package${packagesCount > 1 ? 's' : ''}.\n`
+      `\n✅ Successfully published ${styleText(['cyan', 'bold'], `${packagesCount}`)} package${packagesCount > 1 ? 's' : ''}.\n`
     );
 
     if (options.tag !== 'latest') {
       logger.log(
-        `Run ${cyan.bold('et promote-packages')} to promote them to ${yellow('latest')} tag.`
+        `Run ${styleText(['cyan', 'bold'], 'et promote-packages')} to promote them to ${styleText('yellow', 'latest')} tag.`
       );
     }
   }

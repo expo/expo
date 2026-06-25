@@ -1,6 +1,6 @@
 import { certificateFor } from '@expo/devcert';
-import chalk from 'chalk';
 import fs from 'fs/promises';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import * as Log from '../../../log';
@@ -25,7 +25,7 @@ export async function getTLSCertAsync(
   projectRoot: string
 ): Promise<{ keyPath: string; certPath: string } | false> {
   Log.log(
-    chalk`Creating TLS certificate for localhost. {dim This functionality may not work on all computers.}`
+    `Creating TLS certificate for localhost. ${styleText('dim', `This functionality may not work on all computers.`)}`
   );
 
   const name = 'localhost';

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
 import { Command } from 'commander';
+import { styleText } from 'node:util';
 import { resolve } from 'path';
 
 import * as Android from './Android';
@@ -178,18 +178,23 @@ async function commandDidThrowAsync(reason: any) {
   console.log();
   if (reason.command) {
     console.log(
-      chalk.red(`\u203A ${chalk.bold(`npx ${packageJson().name} ${reason.command}`)} has failed.`)
+      styleText(
+        'red',
+        `\u203A ${styleText('bold', `npx ${packageJson().name} ${reason.command}`)} has failed.`
+      )
     );
     console.log();
   }
   if (reason.origin === 'uri-scheme') {
-    console.log(chalk.black.bgRed(reason.message));
+    console.log(styleText(['black', 'bgRed'], reason.message));
   } else {
     console.log('Aborting run');
 
     console.log(
-      chalk.black
-        .bgRed`An unexpected error was encountered. Report it: https://github.com/expo/expo/issues`
+      styleText(
+        ['black', 'bgRed'],
+        `An unexpected error was encountered. Report it: https://github.com/expo/expo/issues`
+      )
     );
     console.log(reason);
   }

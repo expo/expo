@@ -1,6 +1,6 @@
-import chalk from 'chalk';
 import { pathExists, readJSON, unlink, writeJSON } from 'fs-extra';
 import { glob } from 'glob';
+import { styleText } from 'node:util';
 import ora from 'ora';
 import * as path from 'path';
 
@@ -87,9 +87,7 @@ async function executeGradleTask(
   ];
   const spinner = ora({
     spinner: 'dots',
-    text: `Executing gradle command ${chalk.yellow(
-      `${gradleWrapperCommand} ${gradleCommandArguments.join(' ')}`
-    )}. This might take a while.`,
+    text: `Executing gradle command ${styleText('yellow', `${gradleWrapperCommand} ${gradleCommandArguments.join(' ')}`)}. This might take a while.`,
   });
 
   spinner.start();
