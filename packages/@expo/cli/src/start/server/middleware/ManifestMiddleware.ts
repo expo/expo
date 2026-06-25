@@ -46,6 +46,8 @@ export interface ManifestRequestInfo {
   hostname?: string | null;
   /** The protocol used to request the manifest */
   protocol?: 'http' | 'https';
+  /** Whether URL-valued manifest fields should be emitted relative to the manifest URL. */
+  shouldUseRelativeManifestUrls?: boolean;
 }
 
 /** Project related info. */
@@ -95,9 +97,10 @@ export abstract class ManifestMiddleware<
     platform,
     hostname,
     protocol,
+    shouldUseRelativeManifestUrls,
   }: Pick<
     TManifestRequestInfo,
-    'hostname' | 'platform' | 'protocol'
+    'hostname' | 'platform' | 'protocol' | 'shouldUseRelativeManifestUrls'
   >): Promise<ResponseProjectSettings> {
     // Read the config
     const projectConfig = getConfig(this.projectRoot);
@@ -123,7 +126,7 @@ export abstract class ManifestMiddleware<
 
     const hostUri = this.options.constructUrl({ scheme: '', hostname });
 
-    const bundleUrl = this._getBundleUrl({
+    const absoluteBundleUrl = this._getBundleUrl({
       platform,
       mainModuleName,
       hostname,
@@ -140,7 +143,15 @@ export abstract class ManifestMiddleware<
     });
 
     // Resolve all assets and set them on the manifest as URLs
-    await this.mutateManifestWithAssetsAsync(projectConfig.exp, bundleUrl);
+    await this.mutateManifestWithAssetsAsync(
+      projectConfig.exp,
+      absoluteBundleUrl,
+      !!shouldUseRelativeManifestUrls
+    );
+
+    const bundleUrl = shouldUseRelativeManifestUrls
+      ? this.toPathRelativeUrl(absoluteBundleUrl)
+      : absoluteBundleUrl;
 
     return {
       expoGoConfig,
@@ -260,10 +271,22 @@ export abstract class ManifestMiddleware<
   }
 
   /** Resolve all assets and set them on the manifest as URLs */
-  private async mutateManifestWithAssetsAsync(manifest: ExpoConfig, bundleUrl: string) {
+  private toPathRelativeUrl(url: string): string {
+    const parsedUrl = new URL(url);
+    return parsedUrl.pathname.replace(/^\//, '') + parsedUrl.search + parsedUrl.hash;
+  }
+
+  private async mutateManifestWithAssetsAsync(
+    manifest: ExpoConfig,
+    bundleUrl: string,
+    shouldUseRelativeManifestUrls: boolean
+  ) {
     await resolveManifestAssets(this.projectRoot, {
       manifest,
       resolver: async (path) => {
+        if (shouldUseRelativeManifestUrls) {
+          return this.options.isNativeWebpack ? path : 'assets/' + path;
+        }
         if (this.options.isNativeWebpack) {
           // When using our custom dev server, just do assets normally
           // without the `assets/` subpath redirect.

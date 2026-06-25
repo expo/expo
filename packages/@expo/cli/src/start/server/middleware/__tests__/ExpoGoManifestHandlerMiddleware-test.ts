@@ -170,6 +170,25 @@ describe('getParsedHeaders', () => {
       platform: 'ios',
     });
   });
+
+  it('requests relative manifest URLs when forwarding headers are present', () => {
+    expect(
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:3000',
+          headers: {
+            host: 'localhost:8081',
+            'expo-platform': 'ios',
+            forwarded: 'host=proxy.test;proto=https',
+          },
+        })
+      )
+    ).toMatchObject({
+      hostname: 'localhost',
+      platform: 'ios',
+      shouldUseRelativeManifestUrls: true,
+    });
+  });
 });
 
 describe('_getManifestResponseAsync', () => {
