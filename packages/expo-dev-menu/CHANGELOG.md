@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.1 — 2026-06-25
+
+### 🎉 New features
+
 - Add a `tryToLaunchLastBundle` preference backing the dev launcher auto-launch toggle. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - [iOS] Show the floating Tools button at its final position instead of animating in from the top-left corner. ([#46762](https://github.com/expo/expo/pull/46762) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
 
 ## 57.0.0 — 2026-06-25
 
