@@ -4,21 +4,10 @@ import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.Exceptions
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
-
-enum class ArrayBufferJSBytesAccessPolicy {
-  /**
-   * Allows scoped read access even if an implementation needs to copy.
-   */
-  ALLOW_COPY,
-
-  /**
-   * Requires the scoped buffer to point at this ArrayBuffer's current backing storage.
-   */
-  REQUIRE_ZERO_COPY
-}
 
 @DoNotStrip
 internal fun interface ArrayBufferScopedAccessAsyncCallback {
@@ -90,18 +79,15 @@ class ArrayBuffer : Destructible {
    * Do not store it, return it, or access it after [body] returns.
    */
   @Throws(Throwable::class)
-  fun <R> withJSBytes(
-    policy: ArrayBufferJSBytesAccessPolicy = ArrayBufferJSBytesAccessPolicy.ALLOW_COPY,
-    body: (ByteBuffer) -> R
-  ): R {
+  fun <R> withJSBytes(body: (ByteBuffer) -> R): R {
     @Suppress("UNCHECKED_CAST")
-    return withJSBytes(policy.ordinal, JNIFunctionBody { args ->
-      body(args[0] as ByteBuffer)
+    return withJSBytes(JNIFunctionBody { args ->
+      body((args[0] as ByteBuffer).asScopedReadOnlyBuffer())
     }) as R
   }
 
   @Throws(Throwable::class)
-  private external fun withJSBytes(policy: Int, body: JNIFunctionBody): Any?
+  private external fun withJSBytes(body: JNIFunctionBody): Any?
 
   /**
    * Provides scoped access to this buffer's visible bytes without blocking the caller while
@@ -111,23 +97,19 @@ class ArrayBuffer : Destructible {
    * Do not store it, return it, or access it after [body] returns.
    */
   @Throws(Throwable::class)
-  suspend fun <R> withJSBytesAsync(
-    policy: ArrayBufferJSBytesAccessPolicy = ArrayBufferJSBytesAccessPolicy.ALLOW_COPY,
-    body: (ByteBuffer) -> R
-  ): R {
+  suspend fun <R> withJSBytesAsync(body: (ByteBuffer) -> R): R {
     if (isNativeBacked()) {
-      return withJSBytes(policy, body)
+      return withJSBytes(body)
     }
     return withScopedJSBytesAsync(
       schedule = { jniBody, callback ->
-        withJSBytesAsync(policy.ordinal, jniBody, callback)
+        withJSBytesAsync(jniBody, callback)
       },
-      body = body
+      body = { buffer -> body(buffer.asScopedReadOnlyBuffer()) }
     )
   }
 
   private external fun withJSBytesAsync(
-    policy: Int,
     body: JNIFunctionBody,
     callback: ArrayBufferScopedAccessAsyncCallback
   )
@@ -142,13 +124,10 @@ class ArrayBuffer : Destructible {
   @Throws(Throwable::class)
   fun <R> withMutableJSBytes(body: (ByteBuffer) -> R): R {
     @Suppress("UNCHECKED_CAST")
-    return withMutableJSBytes(JNIFunctionBody { args ->
+    return withJSBytes(JNIFunctionBody { args ->
       body(args[0] as ByteBuffer)
     }) as R
   }
-
-  @Throws(Throwable::class)
-  private external fun withMutableJSBytes(body: JNIFunctionBody): Any?
 
   /**
    * Provides scoped mutable access to this buffer's visible bytes without blocking the caller while
@@ -160,7 +139,15 @@ class ArrayBuffer : Destructible {
    */
   @Throws(Throwable::class)
   suspend fun <R> withMutableJSBytesAsync(body: (ByteBuffer) -> R): R {
-    return withJSBytesAsync(ArrayBufferJSBytesAccessPolicy.REQUIRE_ZERO_COPY, body)
+    if (isNativeBacked()) {
+      return withMutableJSBytes(body)
+    }
+    return withScopedJSBytesAsync(
+      schedule = { jniBody, callback ->
+        withJSBytesAsync(jniBody, callback)
+      },
+      body = body
+    )
   }
 
   private suspend fun <R> withScopedJSBytesAsync(
@@ -191,6 +178,11 @@ class ArrayBuffer : Destructible {
         continuation.resumeWithException(error)
       }
     }
+  }
+
+  private fun ByteBuffer.asScopedReadOnlyBuffer(): ByteBuffer {
+    // ByteBuffer.asReadOnlyBuffer() resets byte order to BIG_ENDIAN, so restore native order.
+    return asReadOnlyBuffer().order(ByteOrder.nativeOrder())
   }
 
   /**

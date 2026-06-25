@@ -5,12 +5,13 @@ package expo.modules.kotlin.jni.types
 import com.google.common.truth.Truth
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.jni.ArrayBuffer
-import expo.modules.kotlin.jni.ArrayBufferJSBytesAccessPolicy
 import expo.modules.kotlin.jni.JavaScriptArrayBuffer
 import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.jni.inlineModule
 import expo.modules.kotlin.jni.waitForAsyncFunction
 import expo.modules.kotlin.jni.withJSIInterop
+import java.nio.ByteOrder
+import java.nio.ReadOnlyBufferException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 
@@ -174,17 +175,31 @@ class ArrayBufferConversionTest {
   }
 
   @Test
-  fun array_buffer_with_js_bytes_require_zero_copy_reads_js_backed_array_buffer() = withJSIInterop(
+  fun array_buffer_with_js_bytes_provides_read_only_byte_buffer() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {
     val result = evaluateScript(
       """
         const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
-        expo.modules.TestModule.readWithJSBytesRequireZeroCopy(buffer, 4);
+        expo.modules.TestModule.inspectWithJSBytes(buffer);
       """.trimIndent()
     ).getArray()
 
-    Truth.assertThat(result.map { it.getInt() }).containsExactly(1, 2, 3, 4).inOrder()
+    Truth.assertThat(result.map { it.getBool() }).containsExactly(true, true, true, true).inOrder()
+  }
+
+  @Test
+  fun array_buffer_with_mutable_js_bytes_provides_writable_byte_buffer() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
+        expo.modules.TestModule.inspectWithMutableJSBytes(buffer);
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result.map { it.getBool() }).containsExactly(true, false, true, true).inOrder()
   }
 
   @Test
@@ -654,21 +669,46 @@ class ArrayBufferConversionTest {
       }
     }
 
-    Function("readWithJSBytesRequireZeroCopy") { buffer: ArrayBuffer, count: Int ->
-      buffer.withJSBytes(ArrayBufferJSBytesAccessPolicy.REQUIRE_ZERO_COPY) { scopedBuffer ->
-        scopedBuffer.rewind()
-        List(count.coerceAtMost(scopedBuffer.remaining())) {
-          scopedBuffer.get().toInt() and 0xff
-        }
-      }
-    }
-
     Function("fillWithMutableJSBytes") { buffer: ArrayBuffer, value: Int ->
       buffer.withMutableJSBytes { scopedBuffer ->
         scopedBuffer.rewind()
         while (scopedBuffer.hasRemaining()) {
           scopedBuffer.put(value.toByte())
         }
+      }
+    }
+
+    Function("inspectWithJSBytes") { buffer: ArrayBuffer ->
+      buffer.withJSBytes { scopedBuffer ->
+        val mutationThrows = try {
+          scopedBuffer.put(0, 42)
+          false
+        } catch (_: ReadOnlyBufferException) {
+          true
+        }
+        listOf(
+          scopedBuffer.isDirect,
+          scopedBuffer.isReadOnly,
+          scopedBuffer.order() == ByteOrder.nativeOrder(),
+          mutationThrows
+        )
+      }
+    }
+
+    Function("inspectWithMutableJSBytes") { buffer: ArrayBuffer ->
+      buffer.withMutableJSBytes { scopedBuffer ->
+        val mutationSucceeds = try {
+          scopedBuffer.put(0, scopedBuffer.get(0))
+          true
+        } catch (_: ReadOnlyBufferException) {
+          false
+        }
+        listOf(
+          scopedBuffer.isDirect,
+          scopedBuffer.isReadOnly,
+          scopedBuffer.order() == ByteOrder.nativeOrder(),
+          mutationSucceeds
+        )
       }
     }
 

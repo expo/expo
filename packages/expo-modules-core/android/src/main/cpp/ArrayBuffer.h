@@ -45,11 +45,6 @@ public:
   [[nodiscard]] virtual jsi::Value toJSIValue(jsi::Runtime &runtime) = 0;
 
   [[nodiscard]] virtual jni::local_ref<jni::JObject> withJSBytes(
-    int policy,
-    jni::alias_ref<JNIFunctionBody::javaobject> body
-  ) = 0;
-
-  [[nodiscard]] virtual jni::local_ref<jni::JObject> withMutableJSBytes(
     jni::alias_ref<JNIFunctionBody::javaobject> body
   ) = 0;
 };
@@ -75,11 +70,6 @@ public:
   [[nodiscard]] jsi::Value toJSIValue(jsi::Runtime &runtime) override;
 
   [[nodiscard]] jni::local_ref<jni::JObject> withJSBytes(
-    int policy,
-    jni::alias_ref<JNIFunctionBody::javaobject> body
-  ) override;
-
-  [[nodiscard]] jni::local_ref<jni::JObject> withMutableJSBytes(
     jni::alias_ref<JNIFunctionBody::javaobject> body
   ) override;
 
@@ -110,11 +100,6 @@ public:
   [[nodiscard]] jsi::Value toJSIValue(jsi::Runtime &runtime) override;
 
   [[nodiscard]] jni::local_ref<jni::JObject> withJSBytes(
-    int policy,
-    jni::alias_ref<JNIFunctionBody::javaobject> body
-  ) override;
-
-  [[nodiscard]] jni::local_ref<jni::JObject> withMutableJSBytes(
     jni::alias_ref<JNIFunctionBody::javaobject> body
   ) override;
 
@@ -148,16 +133,10 @@ public:
   [[nodiscard]] jsi::Value toJSIValue(jsi::Runtime &runtime) override;
 
   [[nodiscard]] jni::local_ref<jni::JObject> withJSBytes(
-    int policy,
-    jni::alias_ref<JNIFunctionBody::javaobject> body
-  ) override;
-
-  [[nodiscard]] jni::local_ref<jni::JObject> withMutableJSBytes(
     jni::alias_ref<JNIFunctionBody::javaobject> body
   ) override;
 
   void withJSBytesAsync(
-    int policy,
     jni::alias_ref<JNIFunctionBody::javaobject> body,
     jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback
   );
@@ -213,16 +192,10 @@ public:
   [[nodiscard]] bool isNativeBacked();
 
   [[nodiscard]] jni::local_ref<jni::JObject> withJSBytes(
-    int policy,
-    jni::alias_ref<JNIFunctionBody::javaobject> body
-  );
-
-  [[nodiscard]] jni::local_ref<jni::JObject> withMutableJSBytes(
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
   void withJSBytesAsync(
-    int policy,
     jni::alias_ref<JNIFunctionBody::javaobject> body,
     jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback
   );
