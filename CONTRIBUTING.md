@@ -118,17 +118,18 @@ All Expo SDK packages can be found in the `packages/` directory. These packages 
 
 Almost every package in `packages/` exposes the same set of npm scripts, orchestrated across the monorepo by [Turborepo](https://turborepo.com/). The compiled `build/` output is not committed to Git (it is in `.gitignore`); Turborepo builds it on demand and caches the result, locally and in a shared remote cache, so a `git pull` or `git checkout` doesn't force you to rebuild every package.
 
-| Script | What it does |
-| --- | --- |
-| `build` | Compiles `src/` → `build/`. |
-| `typecheck` | Type-checks the package with `tsc`. |
-| `test` | Runs the package's Jest unit tests. |
-| `lint` | Lints the package. Pass `--fix` to autofix. |
+| Script      | What it does                                                        |
+|-------------|---------------------------------------------------------------------|
+| `build`     | Compiles `src/` → `build/`.                                         |
+| `typecheck` | Type-checks the package with `tsc`.                                 |
+| `test`      | Runs the package's Jest unit tests.                                 |
+| `lint`      | Lints the package. Pass `--fix` to autofix.                         |
+| `format`    | Formats the package. Pass `--check` to check without modifying.     |
 | `depscheck` | Verifies the package's declared dependencies match what it imports. |
 
 Run them two ways:
 
-- **From the repo root** with `pnpm <script>` (e.g. `pnpm build`, `pnpm test`, `pnpm lint`, `pnpm typecheck`). This invokes `turbo <task>` and runs the script across every workspace package — respecting the cache and dependency graph 
+- **From the repo root** with `pnpm <script>` (e.g. `pnpm build`, `pnpm test`, `pnpm lint`, `pnpm format`, `pnpm typecheck`). This invokes `turbo <task>` and runs the script across every workspace package — respecting the cache and dependency graph
 - **From a single package directory** with `pnpm run <script>` (e.g. `cd packages/expo-constants && pnpm run test`) to run just that package's script.
 
 For a one-shot "did my change build, typecheck, lint, and pass tests?" check across the packages you touched, use `et check-packages <...packages>`, which runs the same Turborepo task graph as CI.
@@ -207,8 +208,8 @@ To keep CI green, please make sure of the following:
 
 ### If you modified anything in `packages/`:
 
-- Run `et check-packages <...packages>` (or `pnpm build`, `pnpm typecheck`, `pnpm test`, and `pnpm lint`) for the packages you changed. See [Common package scripts](#common-package-scripts).
-- Run `pnpm lint --fix` to fix the formatting of the code. Ensure that `pnpm lint` succeeds without errors or warnings.
+- Run `et check-packages <...packages>` (or `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm lint` and `pnpm format`) for the packages you changed. See [Common package scripts](#common-package-scripts).
+- Run `pnpm lint --fix` and `pnpm format` to fix the formatting of the code. Ensure that both commands succeed without errors or warnings.
 - (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
 - All `console.log`s or commented out code blocks are removed!
 

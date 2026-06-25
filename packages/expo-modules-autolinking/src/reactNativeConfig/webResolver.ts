@@ -1,9 +1,9 @@
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { fastJoin, loadPackageJson } from '../utils';
 import type {
   RNConfigReactNativePlatformsConfig,
   RNConfigDependencyWeb,
 } from './reactNativeConfig.types';
-import { fastJoin, loadPackageJson } from '../utils';
 
 export async function checkDependencyWebAsync(
   resolution: { path: string; version: string },

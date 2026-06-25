@@ -2,12 +2,12 @@ import { convertEntryPointToRelative } from '@expo/config/paths';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { toPosixPath } from '../../../utils/filePath';
+import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 import { DOM_POLYFILLS_SCRIPT } from './domPolyfills';
 import type { ExpoMetroOptions } from './metroOptions';
 import { createBundleUrlPath } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
-import { toPosixPath } from '../../../utils/filePath';
-import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 

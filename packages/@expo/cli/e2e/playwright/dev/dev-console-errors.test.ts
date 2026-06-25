@@ -158,7 +158,9 @@ Call Stack
     }
   });
 
-  test('prints component stack of unhandled thrown non-Error values (strings)', async ({ page }) => {
+  test('prints component stack of unhandled thrown non-Error values (strings)', async ({
+    page,
+  }) => {
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
@@ -284,7 +286,9 @@ Call Stack
     }
   });
 
-  test('prints call stack and component stack of console.error non-Error values (strings)', async ({ page }) => {
+  test('prints call stack and component stack of console.error non-Error values (strings)', async ({
+    page,
+  }) => {
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
@@ -373,7 +377,9 @@ function expectNoStackTrace(output: { all: string }) {
 }
 
 function normalizeConsoleOutput(output: string) {
-  return stripVTControlCharacters(output)
-    // Remove trailing whitespace from each line.
-    .replace(/[ \t]+$/gm, '');
+  return (
+    stripVTControlCharacters(output)
+      // Remove trailing whitespace from each line.
+      .replace(/[ \t]+$/gm, '')
+  );
 }

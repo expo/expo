@@ -10,8 +10,8 @@ import Constants from 'expo-constants';
 import type { RenderRscArgs } from 'expo-server/private';
 import path from 'node:path';
 
-import { renderRsc } from './rsc-renderer';
 import { createDebug } from '../utils/debug';
+import { renderRsc } from './rsc-renderer';
 
 declare const $$require_external: typeof require;
 

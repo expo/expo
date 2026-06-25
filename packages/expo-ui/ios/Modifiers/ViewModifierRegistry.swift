@@ -518,6 +518,31 @@ internal struct AccessibilityHiddenModifier: ViewModifier, Record {
   }
 }
 
+internal enum AccessibilityChildBehaviorType: String, Enumerable {
+  case ignore
+  case combine
+  case contain
+
+  func toNative() -> AccessibilityChildBehavior {
+    switch self {
+    case .ignore:
+      return .ignore
+    case .combine:
+      return .combine
+    case .contain:
+      return .contain
+    }
+  }
+}
+
+internal struct AccessibilityElementModifier: ViewModifier, Record {
+  @Field var children: AccessibilityChildBehaviorType = .ignore
+
+  func body(content: Content) -> some View {
+    content.accessibilityElement(children: children.toNative())
+  }
+}
+
 internal struct LayoutPriorityModifier: ViewModifier, Record {
   @Field var priority: Double = 0
 
@@ -1594,6 +1619,10 @@ extension ViewModifierRegistry {
 
     register("accessibilityHidden") { params, appContext, _ in
       return try AccessibilityHiddenModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityElement") { params, appContext, _ in
+      return try AccessibilityElementModifier(from: params, appContext: appContext)
     }
 
     register("layoutPriority") { params, appContext, _ in

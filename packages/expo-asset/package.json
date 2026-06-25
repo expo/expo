@@ -2,28 +2,28 @@
   "name": "expo-asset",
   "version": "56.0.15",
   "description": "An Expo universal module to download assets and pass them into other APIs",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "keywords": [
+    "asset",
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/asset/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-asset"
+  },
   "sideEffects": [
     "*.fx.js",
     "*.fx.web.js"
   ],
-  "scripts": {
-    "build": "pnpm run build:lib && pnpm run build:plugin",
-    "build:lib": "expo-build src",
-    "build:plugin": "expo-build --base plugin cjs:src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "jest",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "asset"
-  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "exports": {
     "./app.plugin": "./app.plugin.js",
     "./app.plugin.js": "./app.plugin.js",
@@ -47,17 +47,18 @@
       "default": "./build/index.js"
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-asset"
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/asset/",
   "dependencies": {
     "@expo/image-utils": "workspace:^0.10.1",
     "expo-constants": "workspace:~56.0.16"

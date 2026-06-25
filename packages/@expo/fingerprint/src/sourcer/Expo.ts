@@ -7,6 +7,8 @@ import path from 'path';
 import semver from 'semver';
 
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
+import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { toPosixPath } from '../utils/Path';
 import { SourceSkips } from './SourceSkips';
 import {
   getFileBasedHashSourceAsync,
@@ -14,8 +16,6 @@ import {
   relativizeJsonPaths,
   stringifyJsonSorted,
 } from './Utils';
-import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
-import { toPosixPath } from '../utils/Path';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 

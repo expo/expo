@@ -1,8 +1,8 @@
 import { loadModuleSync, resolveFrom } from '@expo/require-utils';
 import assert from 'assert';
 
-import { PluginError } from './errors';
 import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
+import { PluginError } from './errors';
 
 // Re-exported for back-compat with external consumers.
 export const pluginFileName = 'app.plugin.js';

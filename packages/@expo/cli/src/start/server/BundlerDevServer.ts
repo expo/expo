@@ -1,14 +1,6 @@
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
-import { AsyncNgrok } from './AsyncNgrok';
-import { AsyncWsTunnel } from './AsyncWsTunnel';
-import { Bonjour } from './Bonjour';
-import DevToolsPluginManager from './DevToolsPluginManager';
-import { DevelopmentSession } from './DevelopmentSession';
-import type { CreateURLOptions } from './UrlCreator';
-import { UrlCreator } from './UrlCreator';
-import type { PlatformBundlers } from './platformBundlers';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
@@ -17,6 +9,14 @@ import { CommandError } from '../../utils/errors';
 import { isInteractive } from '../../utils/interactive';
 import { openBrowserAsync } from '../../utils/open';
 import type { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
+import { AsyncNgrok } from './AsyncNgrok';
+import { AsyncWsTunnel } from './AsyncWsTunnel';
+import { Bonjour } from './Bonjour';
+import DevToolsPluginManager from './DevToolsPluginManager';
+import { DevelopmentSession } from './DevelopmentSession';
+import type { CreateURLOptions } from './UrlCreator';
+import { UrlCreator } from './UrlCreator';
+import type { PlatformBundlers } from './platformBundlers';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 

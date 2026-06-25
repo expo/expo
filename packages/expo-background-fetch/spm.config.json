@@ -4,9 +4,7 @@
     {
       "name": "ExpoBackgroundFetch",
       "podName": "ExpoBackgroundFetch",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -25,10 +23,7 @@
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "BackgroundTasks"
-          ]
+          "linkedFrameworks": ["Foundation", "BackgroundTasks"]
         }
       ]
     }

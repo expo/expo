@@ -17,7 +17,7 @@ export type ToggleButtonColors = {
   disabledContentColor?: ColorValue;
 };
 
-export type ToggleButtonProps = {
+export interface ToggleButtonProps {
   /**
    * Whether the toggle button is checked.
    */
@@ -43,7 +43,7 @@ export type ToggleButtonProps = {
    * Content to display inside the toggle button.
    */
   children: React.ReactNode;
-};
+}
 
 type NativeToggleButtonProps = Omit<ToggleButtonProps, 'onCheckedChange' | 'children'> & {
   children?: React.ReactNode;

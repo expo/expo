@@ -158,7 +158,7 @@ et native-unit-tests --packages expo-router -p ios
 **Conventions:**
 
 - Use `@Test` / `@Suite` from Swift Testing (not XCTest)
-- Backtick-quoted test names for readability (e.g., `` @Test func `converts options correctly`() ``)
+- Backtick-quoted test names for readability (e.g., ``@Test func `converts options correctly`()``)
 - Inner structs for grouping related tests within a `@Suite`
 - `#expect` / `#require` for assertions
 

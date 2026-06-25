@@ -1,5 +1,33 @@
 'use strict';
 
+const { createModulesTransform } = require('./jest-modules-transform.cjs');
+
+// NOTE: Many modules ship as ESM-only but are otherwise ready to be used directly
+// We can manually list them here to extend support to them and only transpile to CJS with SWC
+const cjsTransformIncludeNames = [
+  '@react-navigation',
+  'standard-navigation',
+];
+
+// WARN: Packages here ship Flow/untranspiled source or ESM and assume a transforming bundler
+// Anything not listed (e.g. plain-CommonJS deps) runs as-is to keep test transforms fast
+const baseTransformIncludeNames = [
+  // negative lookahead skip the virtual-store segment
+  '\\.pnpm',
+  // React Native packages are shipped with Flow source and/or ESM
+  'react-native',
+  '@react-native/assets-registry',
+  '@react-native/js-polyfills',
+  '@react-native/normalize-colors',
+  '@react-native/virtualized-lists',
+  '@react-native/jest-preset',
+  '@react-native-masked-view',
+  // Google Fonts packages ship ESM
+  '@expo-google-fonts',
+  // We need to include the above packages that need to be transformed by SWC
+  ...cjsTransformIncludeNames,
+];
+
 module.exports = function createJestPreset(basePreset) {
   // Explicitly catch and log errors since Jest sometimes suppresses error messages
   try {
@@ -21,6 +49,16 @@ function _createJestPreset(basePreset) {
     ...basePreset,
     clearMocks: true,
     roots: ['<rootDir>/src'],
+    transform: {
+      // NOTE: Many modules ship as ESM-only but are otherwise ready to be used directly
+      // We can manually list them here to extend support to them and only transpile to CJS with SWC
+      ...createModulesTransform(cjsTransformIncludeNames),
+      ...basePreset.transform,
+    },
+    transformIgnorePatterns: [
+      ...(basePreset.transformIgnorePatterns ?? []),
+      `/node_modules/(?!(?:${baseTransformIncludeNames.join('|')}))`,
+    ],
     testEnvironmentOptions: {
       ...basePreset.testEnvironmentOptions,
       customExportConditions,

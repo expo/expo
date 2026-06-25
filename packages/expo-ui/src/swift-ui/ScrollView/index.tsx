@@ -29,7 +29,7 @@ export type ScrollGeometry = {
   contentHeight: number;
 };
 
-export type ScrollViewProps = {
+export interface ScrollViewProps extends CommonViewModifierProps {
   children: React.ReactNode;
   /**
    * The scrollable axes. Pass `'both'` to enable 2D (horizontal + vertical) scrolling.
@@ -42,7 +42,7 @@ export type ScrollViewProps = {
    * @default true
    */
   showsIndicators?: boolean;
-} & CommonViewModifierProps;
+}
 
 const ScrollViewNativeView: React.ComponentType<ScrollViewProps> = requireNativeView(
   'ExpoUI',

@@ -5,7 +5,7 @@ import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type SnackbarProps = {
+export interface SnackbarProps {
   /**
    * The background color of the snackbar container.
    */
@@ -32,7 +32,7 @@ export type SnackbarProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 const SnackbarNativeView: React.ComponentType<SnackbarProps> = requireNativeView(
   'ExpoUI',
@@ -97,7 +97,7 @@ export type SnackbarHostRef = {
   showSnackbar: (options: SnackbarShowOptions) => Promise<SnackbarResult>;
 };
 
-export type SnackbarHostProps = {
+export interface SnackbarHostProps {
   /**
    * Ref exposing the imperative `showSnackbar` method.
    */
@@ -111,7 +111,7 @@ export type SnackbarHostProps = {
    * Compose's `SnackbarHost(hostState) { data -> Snackbar(data, ...) }` lambda.
    */
   children?: React.ReactNode;
-};
+}
 
 const SnackbarHostNativeView: React.ComponentType<SnackbarHostProps> = requireNativeView(
   'ExpoUI',

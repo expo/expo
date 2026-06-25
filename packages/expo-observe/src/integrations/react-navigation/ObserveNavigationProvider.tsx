@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 import { attachActionListener } from './actionListener';
 import { ObserveReactNavigationIntegrationContext } from './context';
 import { createStateChangeHandler } from './handleStateChange';
@@ -7,7 +8,6 @@ import { isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
 import { createReactNavigationIntegrationStorage } from './storage';
 import type { NavigationContainerRefLike, NavigationStateLike } from './types';
-import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
 export interface ObserveNavigationProviderProps {
   /**

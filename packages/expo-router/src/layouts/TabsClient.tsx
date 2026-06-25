@@ -3,7 +3,6 @@
 import type { ComponentProps } from 'react';
 import { Pressable, Platform } from 'react-native';
 
-import { withLayoutContext } from './withLayoutContext';
 import { Link } from '../link/Link';
 import type {
   BottomTabNavigationEventMap,
@@ -13,6 +12,7 @@ import { createBottomTabNavigator } from '../react-navigation/bottom-tabs';
 import type { ParamListBase, TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 import { Protected } from '../views/Protected';
+import { withLayoutContext } from './withLayoutContext';
 
 // This is the only way to access the navigator.
 const BottomTabNavigator = createBottomTabNavigator().Navigator;

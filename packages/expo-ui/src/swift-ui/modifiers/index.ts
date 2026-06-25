@@ -777,6 +777,22 @@ export const accessibilityHidden = (hidden: boolean = true) =>
   createModifier('accessibilityHidden', { hidden });
 
 /**
+ * Controls how a view's child accessibility elements are exposed, mirroring SwiftUI's
+ * `accessibilityElement(children:)`. It creates a new accessibility element (or modifies
+ * the existing one) and applies the chosen behavior to the subtree.
+ *
+ * Complements `accessibilityHidden`, which hides a single leaf, by acting on the whole subtree.
+ *
+ * @param children - How the child accessibility elements are treated:
+ * - `ignore` - hide the children; the new element starts with no properties, so pair it with `accessibilityLabel` (default).
+ * - `combine` - merge the children's accessibility properties into the new element.
+ * - `contain` - keep the children as accessible elements, grouped in the new element as a container (navigated in order).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityelement(children:)).
+ */
+export const accessibilityElement = (children: 'ignore' | 'combine' | 'contain' = 'ignore') =>
+  createModifier('accessibilityElement', { children });
+
+/**
  * Sets layout priority for the view.
  * @param priority - Layout priority value.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/layoutpriority(_:)).
@@ -1474,6 +1490,7 @@ export type BuiltInModifier =
   | ReturnType<typeof accessibilityInputLabels>
   | ReturnType<typeof accessibilityIdentifier>
   | ReturnType<typeof accessibilityHidden>
+  | ReturnType<typeof accessibilityElement>
   | ReturnType<typeof layoutPriority>
   | ReturnType<typeof mask>
   | ReturnType<typeof overlay>
