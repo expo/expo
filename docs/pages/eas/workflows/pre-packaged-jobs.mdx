@@ -639,7 +639,7 @@ jobs:
 
 Distribute iOS builds to TestFlight internal and external testing groups. This is an alternative to the iOS submit job for when you need more advanced TestFlight features. If you need to control test groups, changelog, or Beta App Review submission, use the `testflight` job instead of submit.
 
-The job supports two approaches. With `build_id`, you upload an EAS iOS build and distribute it to TestFlight. With `asc_build_id`, you operate on a build that is already in App Store Connect and handle TestFlight beta distribution. This adds the build to groups, sets "What to Test" notes, and submits for Beta App Review. Provide exactly one of `build_id` or `asc_build_id`.
+The job supports two approaches: upload a build and submit it to TestFlight (`build_id`), or submit an already uploaded build (`asc_build_id`). In both cases, you can add the build to groups, set "What to Test" notes, and submit for Beta App Review. Provide exactly one of `build_id` or `asc_build_id`.
 
 <Prerequisites>
   <Requirement title="TestFlight test information for external distribution">
@@ -653,7 +653,7 @@ The job supports two approaches. With `build_id`, you upload an EAS iOS build an
 
 ### Shared parameters
 
-Both paths accept the following parameters in `params`:
+Both approaches accept the following parameters in `params`:
 
 | Parameter          | Type     | Description                                                                                                                                                                                                                                                             |
 | ------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -662,9 +662,9 @@ Both paths accept the following parameters in `params`:
 | changelog          | string   | Optional. Test notes ("What to Test") for TestFlight testers.                                                                                                                                                                                                           |
 | submit_beta_review | boolean  | Optional. Whether to submit for Beta App Review. If not specified, defaults to `true` when `external_groups` are provided, `false` otherwise. Set to `false` to update the changelog or groups on an already-submitted build without re-submitting for Beta App Review. |
 
-### Fastlane approach
+### Upload build and submit to TestFlight
 
-Upload an EAS iOS build to App Store Connect and distribute it to TestFlight using fastlane, all in the same workflow job.
+Upload an EAS iOS build and submit it to TestFlight in a single workflow job.
 
 <Prerequisites>
   <Requirement title="An iOS store build and Apple Developer account">
@@ -766,9 +766,9 @@ jobs:
 
 </Collapsible>
 
-### Direct App Store Connect approach
+### Submit an already uploaded build
 
-Distribute an already uploaded build to TestFlight groups, set "What to Test" notes, and submit for Beta App Review. Beta App Review submission is optional. Set `submit_beta_review: false` to update the changelog or groups on an existing build without re-submitting it for review.
+Submit a build that is already in App Store Connect to TestFlight groups, set "What to Test" notes, and submit for Beta App Review. Beta App Review submission is optional. Set `submit_beta_review: false` to update the changelog or groups on an existing build without re-submitting it for review.
 
 <Prerequisites>
   <Requirement title="App Store Connect integration">
