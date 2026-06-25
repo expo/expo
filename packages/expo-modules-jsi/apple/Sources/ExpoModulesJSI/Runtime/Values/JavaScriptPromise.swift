@@ -103,9 +103,19 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
         return
       }
       // A `JavaScriptError` already carries the value to reject with (which may be an arbitrary JS
-      // value rather than an `Error`), so reuse it. Any other native error is stringified into a
-      // generic `Error`.
-      let jsError = error as? JavaScriptError ?? JavaScriptError(runtime, message: String(describing: error))
+      // value rather than an `Error`), so reuse it. Errors conforming to `JavaScriptThrowable`
+      // (e.g. expo-modules-core's `Exception`) carry a structured `code`, so route them through the
+      // code-preserving initializer to mirror the synchronous throw path in
+      // `forwardingSwiftErrorsToJS`; otherwise the `code` is lost and JS only sees the message.
+      // Any other native error is stringified into a generic `Error`.
+      let jsError: JavaScriptError
+      if let javaScriptError = error as? JavaScriptError {
+        jsError = javaScriptError
+      } else if let throwable = error as? JavaScriptThrowable {
+        jsError = JavaScriptError(runtime, from: throwable)
+      } else {
+        jsError = JavaScriptError(runtime, message: String(describing: error))
+      }
       let errorValue = jsError.toValue()
 
       // Call the actual rejecter given in the Promise setup.

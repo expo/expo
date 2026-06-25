@@ -27,6 +27,7 @@
 - [iOS] Clear stale build intermediates before rebuilding xcframework slices to avoid compiler errors. ([#46399](https://github.com/expo/expo/pull/46399) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Type the host-object setter pointer explicitly so the nil-check conversion type-checks reliably. ([#46736](https://github.com/expo/expo/pull/46736) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Awaiting a `JavaScriptPromise` that is rejected after the await begins now throws instead of resuming with the rejection value as if fulfilled. ([#47154](https://github.com/expo/expo/pull/47154) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Preserve the `code` on the JavaScript error when an async function rejects with a `JavaScriptThrowable` (e.g. an `Exception`), by routing it through the code-preserving `JavaScriptError(from:)` initializer in `JavaScriptPromise.reject` instead of stringifying it — mirroring the synchronous throw path. ([#27959](https://github.com/expo/expo/issues/27959) by [@wwdrew](https://github.com/wwdrew))
 
 ### 💡 Others
 
