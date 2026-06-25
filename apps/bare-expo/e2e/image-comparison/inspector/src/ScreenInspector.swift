@@ -10,18 +10,17 @@ private func log(_ message: String) {
     logger.log("[\(LOG_TAG)] \(message)")
 }
 
-@objc public class ScreenInspector: NSObject {
+public final class ScreenInspector {
     private var isRunning = false
     private var serverQueue: DispatchQueue
     private let requestPipePath = "/tmp/ios_screen_inspector_request"
     private let responsePipePath = "/tmp/ios_screen_inspector_response"
 
-    public override init() {
+    public init() {
         self.serverQueue = DispatchQueue(label: "screenInspector.server", qos: .userInitiated)
-        super.init()
     }
 
-    @objc public func start() {
+    public func start() {
         guard !isRunning else {
             log("Server already running")
             return
