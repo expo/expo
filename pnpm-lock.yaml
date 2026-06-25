@@ -138,6 +138,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-app-intents:
+        specifier: workspace:*
+        version: link:../../packages/expo-app-intents
       expo-app-metrics:
         specifier: workspace:*
         version: link:../../packages/expo-app-metrics
@@ -859,6 +862,9 @@ importers:
       expo-age-range:
         specifier: workspace:*
         version: link:../../packages/expo-age-range
+      expo-app-intents:
+        specifier: workspace:*
+        version: link:../../packages/expo-app-intents
       expo-app-metrics:
         specifier: workspace:*
         version: link:../../packages/expo-app-metrics

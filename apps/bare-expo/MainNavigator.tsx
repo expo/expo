@@ -3,7 +3,7 @@ import {
   BottomTabNavigationOptions,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
-import { LinkingOptions } from '@react-navigation/native';
+import { LinkingOptions, type NavigationState } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
@@ -14,6 +14,14 @@ import { TestStackNavigator } from 'test-suite/TestStackNavigator';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppMetrics } from 'expo-observe';
 import { ObserveNavigationContainer } from 'expo-observe/integrations/react-navigation';
+import {
+  AppIntentsNavigationProvider,
+  AppIntentsNavigationHandler,
+  navigateToInitialAppScreen,
+  navigateToAppIntentScreen,
+  type AppIntentNavigationRef,
+  type AppIntentNavigationTarget,
+} from 'native-component-list/src/screens/AppIntents/AppIntentsNavigationHandler';
 
 import Playground from './Playground';
 
@@ -35,6 +43,23 @@ type NativeComponentListExportsType = null | {
     linking: any;
     navigator: NavigationRouteConfigMap;
   };
+};
+
+type BareExpoNavigationStateLike = {
+  type?: string;
+  index?: number;
+  routes: {
+    key: string;
+    name: string;
+    params?: object;
+    state?: BareExpoNavigationStateLike;
+  }[];
+};
+
+type BareExpoNavigationRef = AppIntentNavigationRef & {
+  addListener(event: string, cb: (...args: any[]) => void): () => void;
+  getRootState(): BareExpoNavigationStateLike | undefined;
+  isFocused(): boolean;
 };
 
 export function optionalRequire(requirer: () => { default: React.ComponentType }) {
@@ -135,7 +160,15 @@ const PERSISTENCE_KEY = 'NAVIGATION_STATE_V1';
 export default function MainNavigator() {
   const { name: themeName } = useTheme();
   const [isReady, setIsReady] = React.useState(Platform.OS === 'web');
+  const [isNavigationReady, setNavigationReady] = React.useState(false);
   const [initialState, setInitialState] = React.useState();
+  const navigationRef = React.useRef<BareExpoNavigationRef>(null);
+  const navigateToAppIntent = React.useCallback((target: AppIntentNavigationTarget) => {
+    return navigateToAppIntentScreen(navigationRef.current, target);
+  }, []);
+  const navigateToInitialScreen = React.useCallback(() => {
+    return navigateToInitialAppScreen(navigationRef.current);
+  }, []);
 
   React.useEffect(() => {
     if (isReady) {
@@ -177,19 +210,27 @@ export default function MainNavigator() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ObserveNavigationContainer
+        ref={navigationRef}
         linking={linking}
         initialState={initialState}
-        onStateChange={(state) => {
+        onReady={() => setNavigationReady(true)}
+        onStateChange={(state: NavigationState | undefined) => {
           AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
         }}>
-        <Switch.Navigator
-          screenOptions={{ headerShown: false }}
-          initialRouteName="main"
-          id={undefined}>
-          {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
-          {Search && <Switch.Screen name="searchNavigator" component={Search} />}
-          <Switch.Screen name="main" component={TabNavigator} />
-        </Switch.Navigator>
+        <AppIntentsNavigationProvider navigateToInitialAppScreen={navigateToInitialScreen}>
+          <AppIntentsNavigationHandler
+            isNavigationReady={isNavigationReady}
+            navigateToAppIntent={navigateToAppIntent}
+          />
+          <Switch.Navigator
+            screenOptions={{ headerShown: false }}
+            initialRouteName="main"
+            id={undefined}>
+            {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+            {Search && <Switch.Screen name="searchNavigator" component={Search} />}
+            <Switch.Screen name="main" component={TabNavigator} />
+          </Switch.Navigator>
+        </AppIntentsNavigationProvider>
         <StatusBar style={themeName === 'light' ? 'dark' : 'light'} />
       </ObserveNavigationContainer>
     </GestureHandlerRootView>

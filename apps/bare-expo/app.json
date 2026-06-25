@@ -52,6 +52,12 @@
       "expo-video",
       "expo-background-fetch",
       [
+        "expo-app-intents",
+        {
+          "directory": "../native-component-list/app-intents"
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",
@@ -109,8 +115,10 @@
       "outOfTreePlatforms": true,
       "inlineModules": {
         "watchedDirectories": [
-          "../native-component-list/src/screens/inlineModules/inlineModulesExamples"
-        ]
+          "../native-component-list/src/screens/inlineModules/inlineModulesExamples",
+          "../native-component-list/app-intents"
+        ],
+        "xcodeProjectTargets": ["BareExpo"]
       }
     }
   }

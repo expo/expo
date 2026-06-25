@@ -48,6 +48,7 @@
     "expo": "workspace:*",
     "expo-2d-context": "^0.0.4",
     "expo-age-range": "workspace:*",
+    "expo-app-intents": "workspace:*",
     "expo-app-metrics": "workspace:*",
     "expo-apple-authentication": "workspace:*",
     "expo-application": "workspace:*",
