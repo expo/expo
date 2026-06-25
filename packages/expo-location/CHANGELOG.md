@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.1.11 — 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
 ## 55.1.10 — 2026-05-13
 
 _This version does not introduce any user-facing changes._

@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.31 — 2026-06-25
+
+### 🐛 Bug fixes
+
 - [Android] Restore the "Open React Native dev menu" entry in the dev menu's Tools section (regressed in [#38759](https://github.com/expo/expo/pull/38759)). ([#47047](https://github.com/expo/expo/pull/47047) by [@lindboe](https://github.com/lindboe))
 - [Android] Re-enable the Fast Refresh toggle in the dev menu's Tools section. ([#47136](https://github.com/expo/expo/pull/47136) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
 
 ## 55.0.30 — 2026-05-19
 

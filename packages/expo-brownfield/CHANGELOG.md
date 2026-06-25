@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Make `ReactNativeHostManager` accessible directly to Objective-C. ([#46227](https://github.com/expo/expo/pull/46227) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.25 — 2026-06-25
+
+### 🎉 New features
+
+- [iOS] Make `ReactNativeHostManager` accessible directly to Objective-C. ([#46227](https://github.com/expo/expo/pull/46227) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 55.0.24 — 2026-05-19
 

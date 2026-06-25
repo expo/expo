@@ -1,6 +1,6 @@
 {
   "name": "expo-contacts",
-  "version": "55.0.14",
+  "version": "55.0.15",
   "description": "Provides access to the phone's system contacts.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
