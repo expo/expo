@@ -1,6 +1,6 @@
-import { Button, HStack, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { Button, HStack, RNHostView, Spacer, Text, VStack } from '@expo/ui/swift-ui';
 import { buttonStyle, contentShape, foregroundStyle, shapes } from '@expo/ui/swift-ui/modifiers';
-import { Children, type ReactNode } from 'react';
+import { Children, isValidElement, type ReactNode } from 'react';
 
 import { extractListItemSlots } from './ListItemSlots';
 import type { ListItemProps } from './types';
@@ -20,6 +20,16 @@ function renderSupporting(node: ReactNode): ReactNode {
     );
   }
   return node;
+}
+
+// A raw RN view (e.g. `<View style={{ width: 20, height: 20 }} />`) has no intrinsic size, so when
+// embedded directly in the SwiftUI row it stretches to fill the available space instead of honoring
+// its layout size. Wrap each accessory in `RNHostView matchContents` so SwiftUI pins it to the RN
+// content's measured size. SwiftUI-native content (e.g. `Text`/`Image`) renders at its natural size.
+function renderAccessory(node: ReactNode): ReactNode {
+  const wrapped = wrapStrings(node);
+  if (!isValidElement(wrapped)) return wrapped;
+  return <RNHostView matchContents>{wrapped}</RNHostView>;
 }
 
 /**
@@ -42,14 +52,14 @@ export function ListItem(props: ListItemProps) {
 
   return (
     <Button onPress={onPress} modifiers={[buttonStyle('plain')]} testID={testID}>
-      <HStack alignment="center" spacing={12} modifiers={[contentShape(shapes.rectangle())]}>
-        {wrapStrings(leading)}
+      <HStack spacing={12} modifiers={[contentShape(shapes.rectangle())]}>
+        {renderAccessory(leading)}
         <VStack alignment="leading" spacing={2}>
           <>{wrapStrings(slots.headline)}</>
           {supporting != null ? renderSupporting(supporting) : null}
         </VStack>
         <Spacer />
-        {wrapStrings(trailing)}
+        {renderAccessory(trailing)}
       </HStack>
     </Button>
   );
