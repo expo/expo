@@ -8,6 +8,7 @@
 
 - [iOS] Skip reading and hashing embedded assets on first launch by default, serving them from the app binary instead of copying them into the updates cache. ([#47284](https://github.com/expo/expo/pull/47284) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Allow overriding the package used to detect the installed dev client via the `expo.updates.devClientPackage`. ([#48020](https://github.com/expo/expo/pull/48020) by [@alanjhughes](https://github.com/alanjhughes))
+- Resolve relative asset URLs from `updateUrl` base URL ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
