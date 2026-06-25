@@ -16,7 +16,17 @@ ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NET
 ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
 ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
 ENV['RCT_HERMES_V1_ENABLED'] ||= '0' if podfile_properties['expo.useHermesV1'] == 'false'
-ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] != 'false'
+# An explicit `ios.usePrecompiledModules: false` in `expo-build-properties` must
+# win over an ambient default-on env (e.g. EAS Build exports
+# `EXPO_USE_PRECOMPILED_MODULES=1`). `||=` only set-if-unset, so a pre-set `=1`
+# survived the project's opt-out and the modules stayed precompiled — silently
+# dropping `patch-package` patches from the produced .ipa.
+# See https://github.com/expo/expo/issues/46953
+if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] == 'false'
+  ENV['EXPO_USE_PRECOMPILED_MODULES'] = '0'
+else
+  ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'
+end
 platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
 
 prepare_react_native_project!

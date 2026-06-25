@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] `ios.usePrecompiledModules: false` now hard-clears `EXPO_USE_PRECOMPILED_MODULES` in the generated Podfile, so the project's explicit opt-out overrides a pre-set `EXPO_USE_PRECOMPILED_MODULES=1` (e.g. on EAS Build). Previously the env var won and modules stayed precompiled, silently dropping `patch-package` patches from the produced .ipa. ([#46953](https://github.com/expo/expo/issues/46953))
 - [Android] Make the precompiled header reusable by passing `-Xclang -fno-pch-timestamp`, so ccache can reuse it across builds. ([#46915](https://github.com/expo/expo/pull/46915) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
