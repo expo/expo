@@ -4,10 +4,7 @@ const { createModulesTransform } = require('./jest-modules-transform.cjs');
 
 // NOTE: Many modules ship as ESM-only but are otherwise ready to be used directly
 // We can manually list them here to extend support to them and only transpile to CJS with SWC
-const cjsTransformIncludeNames = [
-  '@react-navigation',
-  'standard-navigation',
-];
+const cjsTransformIncludeNames = ['@react-navigation', 'standard-navigation'];
 
 // WARN: Packages here ship Flow/untranspiled source or ESM and assume a transforming bundler
 // Anything not listed (e.g. plain-CommonJS deps) runs as-is to keep test transforms fast
