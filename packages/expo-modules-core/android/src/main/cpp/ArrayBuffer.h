@@ -15,7 +15,18 @@ class JavaScriptRuntime;
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
-class ArrayBufferStorage {
+class ArrayBufferScopedAccessAsyncCallback : public jni::JavaClass<ArrayBufferScopedAccessAsyncCallback> {
+public:
+  static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/jni/ArrayBufferScopedAccessAsyncCallback;";
+
+  static void invoke(
+    jobject self,
+    jobject result,
+    jthrowable error
+  );
+};
+
+class ArrayBufferStorage : public std::enable_shared_from_this<ArrayBufferStorage> {
 public:
   virtual ~ArrayBufferStorage() = default;
 
@@ -145,6 +156,12 @@ public:
     jni::alias_ref<JNIFunctionBody::javaobject> body
   ) override;
 
+  void withJSBytesAsync(
+    int policy,
+    jni::alias_ref<JNIFunctionBody::javaobject> body,
+    jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback
+  );
+
 private:
   [[nodiscard]] std::shared_ptr<JavaScriptRuntime> runtimeOrThrow();
 
@@ -202,6 +219,12 @@ public:
 
   [[nodiscard]] jni::local_ref<jni::JObject> withMutableJSBytes(
     jni::alias_ref<JNIFunctionBody::javaobject> body
+  );
+
+  void withJSBytesAsync(
+    int policy,
+    jni::alias_ref<JNIFunctionBody::javaobject> body,
+    jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback
   );
 
   [[nodiscard]] uint8_t* data();

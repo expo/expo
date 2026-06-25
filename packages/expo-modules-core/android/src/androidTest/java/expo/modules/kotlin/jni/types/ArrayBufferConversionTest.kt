@@ -3,11 +3,13 @@
 package expo.modules.kotlin.jni.types
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.jni.ArrayBuffer
 import expo.modules.kotlin.jni.ArrayBufferJSBytesAccessPolicy
 import expo.modules.kotlin.jni.JavaScriptArrayBuffer
 import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.jni.inlineModule
+import expo.modules.kotlin.jni.waitForAsyncFunction
 import expo.modules.kotlin.jni.withJSIInterop
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -210,6 +212,45 @@ class ArrayBufferConversionTest {
         const view = new Uint8Array(buffer, 1, 2);
         expo.modules.TestModule.fillWithMutableJSBytes(view, 7);
         Array.from(new Uint8Array(buffer));
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result.map { it.getInt() }).containsExactly(1, 7, 7, 4, 5).inOrder()
+  }
+
+  @Test
+  fun array_buffer_with_js_bytes_async_reads_js_backed_array_buffer_without_detaching() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) { methodQueue ->
+    val result = waitForAsyncFunction(
+      methodQueue,
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
+        const view = new Uint8Array(buffer);
+        expo.modules.TestModule.readWithJSBytesAsync(buffer, 4).then(initialBytes => {
+          view[0] = 9;
+          return expo.modules.TestModule.readWithJSBytesAsync(buffer, 4).then(updatedBytes => {
+            return [initialBytes, updatedBytes, expo.modules.TestModule.isArrayBufferNativeBacked(buffer)];
+          });
+        });
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(1, 2, 3, 4).inOrder()
+    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(9, 2, 3, 4).inOrder()
+    Truth.assertThat(result[2].getBool()).isFalse()
+  }
+
+  @Test
+  fun array_buffer_with_mutable_js_bytes_async_mutates_original_js_backed_typed_array_view_range() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) { methodQueue ->
+    val result = waitForAsyncFunction(
+      methodQueue,
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4, 5]).buffer;
+        const view = new Uint8Array(buffer, 1, 2);
+        expo.modules.TestModule.fillWithMutableJSBytesAsync(view, 7).then(() => Array.from(new Uint8Array(buffer)));
       """.trimIndent()
     ).getArray()
 
@@ -624,6 +665,24 @@ class ArrayBufferConversionTest {
 
     Function("fillWithMutableJSBytes") { buffer: ArrayBuffer, value: Int ->
       buffer.withMutableJSBytes { scopedBuffer ->
+        scopedBuffer.rewind()
+        while (scopedBuffer.hasRemaining()) {
+          scopedBuffer.put(value.toByte())
+        }
+      }
+    }
+
+    AsyncFunction("readWithJSBytesAsync") Coroutine { buffer: ArrayBuffer, count: Int ->
+      buffer.withJSBytesAsync { scopedBuffer ->
+        scopedBuffer.rewind()
+        List(count.coerceAtMost(scopedBuffer.remaining())) {
+          scopedBuffer.get().toInt() and 0xff
+        }
+      }
+    }
+
+    AsyncFunction("fillWithMutableJSBytesAsync") Coroutine { buffer: ArrayBuffer, value: Int ->
+      buffer.withMutableJSBytesAsync { scopedBuffer ->
         scopedBuffer.rewind()
         while (scopedBuffer.hasRemaining()) {
           scopedBuffer.put(value.toByte())

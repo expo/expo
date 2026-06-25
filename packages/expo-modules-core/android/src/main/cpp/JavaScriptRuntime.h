@@ -76,6 +76,8 @@ public:
 
   void executeSync(std::function<void(jsi::Runtime &)> &&func);
 
+  void executeAsync(std::function<void(jsi::Runtime &)> &&func) noexcept;
+
   std::shared_ptr<react::CallInvoker> jsInvoker;
 
 private:

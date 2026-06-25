@@ -106,4 +106,8 @@ void JavaScriptRuntime::executeSync(std::function<void(jsi::Runtime &)> &&func) 
   jsInvoker->invokeSync(std::move(func));
 }
 
+void JavaScriptRuntime::executeAsync(std::function<void(jsi::Runtime &)> &&func) noexcept {
+  jsInvoker->invokeAsync(std::move(func));
+}
+
 } // namespace expo

@@ -4,6 +4,9 @@ import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.Exceptions
 import java.nio.ByteBuffer
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 enum class ArrayBufferJSBytesAccessPolicy {
   /**
@@ -15,6 +18,12 @@ enum class ArrayBufferJSBytesAccessPolicy {
    * Requires the scoped buffer to point at this ArrayBuffer's current backing storage.
    */
   REQUIRE_ZERO_COPY
+}
+
+@DoNotStrip
+internal fun interface ArrayBufferScopedAccessAsyncCallback {
+  @DoNotStrip
+  fun invoke(result: Any?, error: Throwable?)
 }
 
 /**
@@ -95,6 +104,35 @@ class ArrayBuffer : Destructible {
   private external fun withJSBytes(policy: Int, body: JNIFunctionBody): Any?
 
   /**
+   * Provides scoped access to this buffer's visible bytes without blocking the caller while
+   * JavaScript-backed storage hops to the JavaScript thread.
+   *
+   * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
+   * Do not store it, return it, or access it after [body] returns.
+   */
+  @Throws(Throwable::class)
+  suspend fun <R> withJSBytesAsync(
+    policy: ArrayBufferJSBytesAccessPolicy = ArrayBufferJSBytesAccessPolicy.ALLOW_COPY,
+    body: (ByteBuffer) -> R
+  ): R {
+    if (isNativeBacked()) {
+      return withJSBytes(policy, body)
+    }
+    return withScopedJSBytesAsync(
+      schedule = { jniBody, callback ->
+        withJSBytesAsync(policy.ordinal, jniBody, callback)
+      },
+      body = body
+    )
+  }
+
+  private external fun withJSBytesAsync(
+    policy: Int,
+    body: JNIFunctionBody,
+    callback: ArrayBufferScopedAccessAsyncCallback
+  )
+
+  /**
    * Provides scoped mutable access to this buffer's visible bytes.
    *
    * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
@@ -111,6 +149,49 @@ class ArrayBuffer : Destructible {
 
   @Throws(Throwable::class)
   private external fun withMutableJSBytes(body: JNIFunctionBody): Any?
+
+  /**
+   * Provides scoped mutable access to this buffer's visible bytes without blocking the caller while
+   * JavaScript-backed storage hops to the JavaScript thread.
+   *
+   * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
+   * Do not store it, return it, or access it after [body] returns. JavaScript-backed
+   * buffers require real zero-copy access and never fall back to a mutable temporary copy.
+   */
+  @Throws(Throwable::class)
+  suspend fun <R> withMutableJSBytesAsync(body: (ByteBuffer) -> R): R {
+    return withJSBytesAsync(ArrayBufferJSBytesAccessPolicy.REQUIRE_ZERO_COPY, body)
+  }
+
+  private suspend fun <R> withScopedJSBytesAsync(
+    schedule: (JNIFunctionBody, ArrayBufferScopedAccessAsyncCallback) -> Unit,
+    body: (ByteBuffer) -> R
+  ): R = suspendCancellableCoroutine { continuation ->
+    val callback = ArrayBufferScopedAccessAsyncCallback { result, error ->
+      if (!continuation.isActive) {
+        return@ArrayBufferScopedAccessAsyncCallback
+      }
+      if (error != null) {
+        continuation.resumeWithException(error)
+      } else {
+        @Suppress("UNCHECKED_CAST")
+        continuation.resume(result as R)
+      }
+    }
+
+    try {
+      schedule(
+        JNIFunctionBody { args ->
+          body(args[0] as ByteBuffer)
+        },
+        callback
+      )
+    } catch (error: Throwable) {
+      if (continuation.isActive) {
+        continuation.resumeWithException(error)
+      }
+    }
+  }
 
   /**
    * Creates a native-owned copy of this ArrayBuffer.
