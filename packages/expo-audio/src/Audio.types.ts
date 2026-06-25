@@ -393,6 +393,19 @@ export type RecordingOptions = {
    */
   directory?: RecordingDirectory;
   /**
+   * The basename of the recording file (without extension). The SDK appends `extension`
+   * and writes into `<directory>/Audio/<fileName><extension>`.
+   *
+   * If omitted, defaults to a random UUID (`recording-<uuid>`).
+   *
+   * Path separators (`/`, `\`) and parent-directory references (`..`) are rejected
+   * at runtime so callers cannot escape the recording directory.
+   *
+   * @platform android
+   * @platform ios
+   */
+  fileName?: string;
+  /**
    * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
    */
   isMeteringEnabled?: boolean;

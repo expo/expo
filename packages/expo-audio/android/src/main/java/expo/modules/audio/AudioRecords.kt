@@ -42,7 +42,8 @@ data class RecordingOptions(
   @Field val maxFileSize: Int?,
   @Field val isMeteringEnabled: Boolean = false,
   @Field val audioSource: RecordingSource?,
-  @Field val directory: RecordingDirectory?
+  @Field val directory: RecordingDirectory?,
+  @Field val fileName: String? = null
 ) : Record
 
 enum class RecordingDirectory(val value: String) : Enumerable {
