@@ -14,6 +14,7 @@ import expo.modules.updates.db.enums.UpdateStatus
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.net.URI
 import java.text.ParseException
 import java.util.*
 
@@ -100,22 +101,46 @@ class ExpoUpdatesUpdate private constructor(
       manifest: ExpoUpdatesManifest,
       extensions: JSONObject?,
       configuration: UpdatesConfiguration
-    ): ExpoUpdatesUpdate = ExpoUpdatesUpdate(
-      manifest,
-      id = UUID.fromString(manifest.getID()),
-      configuration.scopeKey,
-      commitTime = try {
-        UpdatesUtils.parseDateString(manifest.getCreatedAt())
-      } catch (e: ParseException) {
-        Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
-        Date()
-      },
-      runtimeVersion = manifest.getRuntimeVersion(),
-      launchAsset = manifest.getLaunchAsset(),
-      assets = manifest.getAssets(),
-      extensions = extensions,
-      url = configuration.updateUrl,
-      requestHeaders = configuration.requestHeaders
-    )
+    ): ExpoUpdatesUpdate {
+      val resolvedManifest = ExpoUpdatesManifest(
+        resolveManifestAssetUrls(manifest.getRawJson(), configuration.updateUrl)
+      )
+      return ExpoUpdatesUpdate(
+        resolvedManifest,
+        id = UUID.fromString(resolvedManifest.getID()),
+        configuration.scopeKey,
+        commitTime = try {
+          UpdatesUtils.parseDateString(resolvedManifest.getCreatedAt())
+        } catch (e: ParseException) {
+          Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
+          Date()
+        },
+        runtimeVersion = resolvedManifest.getRuntimeVersion(),
+        launchAsset = resolvedManifest.getLaunchAsset(),
+        assets = resolvedManifest.getAssets(),
+        extensions = extensions,
+        url = configuration.updateUrl,
+        requestHeaders = configuration.requestHeaders
+      )
+    }
+
+    private fun resolveManifestAssetUrls(manifestJson: JSONObject, baseUrl: Uri): JSONObject {
+      val resolvedManifestJson = JSONObject(manifestJson.toString())
+      val launchAsset = resolvedManifestJson.getJSONObject("launchAsset")
+      launchAsset.put("url", resolveUrl(launchAsset.getString("url"), baseUrl))
+
+      val assets = resolvedManifestJson.getNullable<JSONArray>("assets")
+      if (assets != null) {
+        for (i in 0 until assets.length()) {
+          val asset = assets.getJSONObject(i)
+          asset.put("url", resolveUrl(asset.getString("url"), baseUrl))
+        }
+      }
+      return resolvedManifestJson
+    }
+
+    private fun resolveUrl(url: String, baseUrl: Uri): String {
+      return URI(baseUrl.toString()).resolve(url).toString()
+    }
   }
 }

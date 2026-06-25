@@ -83,7 +83,11 @@ class InternalHeadlessAppLoader(private val context: Context) :
         override fun onManifestCompleted(manifest: Manifest) {
           Exponent.instance.runOnUiThread {
             try {
-              setManifest(manifestUrl!!, manifest, ExponentUrls.toHttp(manifest.getBundleURL()))
+              val bundleUrl = ExponentUrls.toHttp(
+                ExponentUrls.resolveManifestUrl(manifest.getBundleURL(), manifestUrl!!)
+              )
+              activityIdToBundleUrl.put(activityId, bundleUrl)
+              setManifest(manifestUrl!!, manifest, bundleUrl)
             } catch (e: JSONException) {
               this@InternalHeadlessAppLoader.callback!!.onComplete(false, Exception(e.message))
             }

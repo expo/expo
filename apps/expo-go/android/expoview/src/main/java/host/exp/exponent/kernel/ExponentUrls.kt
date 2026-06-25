@@ -4,8 +4,10 @@ package host.exp.exponent.kernel
 import android.net.Uri
 import expo.modules.jsonutils.require
 import host.exp.exponent.Constants
+import host.exp.exponent.ExponentManifest
 import okhttp3.Request
 import org.json.JSONObject
+import java.net.URI
 
 object ExponentUrls {
   private val HTTPS_HOSTS = setOf(
@@ -26,6 +28,11 @@ object ExponentUrls {
     val uri = Uri.parse(rawUrl)
     val useHttps = isHttpsHost(uri.host) || rawUrl.startsWith("exps")
     return uri.buildUpon().scheme(if (useHttps) "https" else "http").build().toString()
+  }
+
+  @JvmStatic fun resolveManifestUrl(rawUrl: String, manifestUrl: String): String {
+    val baseUrl = ExponentManifest.httpManifestUrl(manifestUrl).toString()
+    return URI(baseUrl).resolve(rawUrl).toString()
   }
 
   @JvmStatic fun addExponentHeadersToUrl(urlString: String): Request.Builder {

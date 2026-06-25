@@ -16,7 +16,10 @@ public final class ExpoUpdatesUpdate: Update {
     config: UpdatesConfig,
     database: UpdatesDatabase
   ) -> Update {
-    let manifest = withExpoUpdatesManifest
+    let manifest = ExpoUpdatesManifest(rawManifestJSON: resolveManifestAssetUrls(
+      manifestJson: withExpoUpdatesManifest.rawManifestJSON(),
+      baseUrl: config.updateUrl
+    ))
     let assetHeaders: [String: Any] = extensions.optionalValue(forKey: "assetRequestHeaders") ?? [:]
 
     let updateId = manifest.rawId()
@@ -93,5 +96,31 @@ public final class ExpoUpdatesUpdate: Update {
       url: config.updateUrl,
       requestHeaders: config.requestHeaders
     )
+  }
+
+  private static func resolveManifestAssetUrls(manifestJson: [String: Any], baseUrl: URL) -> [String: Any] {
+    var resolvedManifestJson = manifestJson
+
+    var launchAsset: [String: Any] = resolvedManifestJson.requiredValue(forKey: "launchAsset")
+    let launchAssetUrlString: String = launchAsset.requiredValue(forKey: "url")
+    launchAsset["url"] = resolveUrl(launchAssetUrlString, baseUrl: baseUrl).absoluteString
+    resolvedManifestJson["launchAsset"] = launchAsset
+
+    if var assets: [[String: Any]] = resolvedManifestJson.optionalValue(forKey: "assets") {
+      assets = assets.map { asset in
+        var resolvedAsset = asset
+        let assetUrlString: String = resolvedAsset.requiredValue(forKey: "url")
+        resolvedAsset["url"] = resolveUrl(assetUrlString, baseUrl: baseUrl).absoluteString
+        return resolvedAsset
+      }
+      resolvedManifestJson["assets"] = assets
+    }
+
+    return resolvedManifestJson
+  }
+
+  private static func resolveUrl(_ urlString: String, baseUrl: URL) -> URL {
+    return URL(string: urlString, relativeTo: baseUrl)?.absoluteURL
+      ?? URL(string: urlString).require("asset url should be a valid URL")
   }
 }

@@ -193,6 +193,33 @@ internal class DevLauncherManifestParserTest {
   }
 
   @Test
+  fun `parseManifest resolves relative bundle URL`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/dev/manifest").toString()),
+      null
+    )
+
+    server.enqueue(
+      MockResponse().setBody(
+        """
+        {
+          "name": "testproject",
+          "slug": "testproject",
+          "sdkVersion": "UNVERSIONED",
+          "bundleUrl": "index.bundle?platform=android"
+        }
+        """.trimIndent()
+      )
+    )
+
+    val manifest = manifestParser.parseManifest()
+
+    Truth.assertThat(manifest.getBundleURL())
+      .isEqualTo(server.url("/dev/index.bundle?platform=android").toString())
+  }
+
+  @Test
   fun `checks if parseManifest fails on unsuccessful response`() {
     val manifestParser = DevLauncherManifestParser(
       client,

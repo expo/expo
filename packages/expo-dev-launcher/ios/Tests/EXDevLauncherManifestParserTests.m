@@ -219,6 +219,35 @@
   [self waitForExpectationsWithTimeout:5 handler:nil];
 }
 
+- (void)testParseManifest_ResolvesRelativeBundleURL
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/dev/manifest"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    NSString *manifestString = @"{\"name\":\"testproject\",\"slug\":\"testproject\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"index.bundle?platform=ios\"}";
+    NSData *jsonData = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
+    return [HTTPStubsResponse responseWithData:jsonData statusCode:200 headers:nil];
+  }];
+
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc]
+                                         initWithURL:[NSURL URLWithString:@"http://ohhttpstubs/dev/manifest"]
+                                         installationID:nil
+                                         session:NSURLSession.sharedSession
+                                         requestTimeout:NSURLSessionConfiguration.defaultSessionConfiguration.timeoutIntervalForRequest];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"should resolve relative bundle URL"];
+
+  [parser tryToParseManifest:^(EXManifestsManifest * _Nonnull manifest) {
+    XCTAssertEqualObjects(@"http://ohhttpstubs/dev/index.bundle?platform=ios", manifest.bundleUrl);
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
 - (void)testParseManifest
 {
   [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
