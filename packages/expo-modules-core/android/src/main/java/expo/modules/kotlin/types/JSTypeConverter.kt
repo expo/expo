@@ -7,7 +7,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.formatters.FormattedRecord
 import expo.modules.kotlin.typedarray.RawTypedArrayHolder
 import expo.modules.kotlin.types.folly.FollyDynamicExtensionConverter
-import io.github.lukmccall.pika.PIntrospectionData
+import io.github.expo.pika.PIntrospectionData
 import java.io.File
 import java.net.URI
 import java.net.URL

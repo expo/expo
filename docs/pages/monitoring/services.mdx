@@ -17,11 +17,16 @@ Once your app is released, you can track anonymized usage data to give you insig
 
 ## EAS Insights
 
-Expo provides the [`expo-insights`](/eas-insights/introduction/) library, which tracks information related to [EAS Update](/deploy/send-over-the-air-updates/). This data includes the app version, platform, OS version, and update adoption. After you install it and release production builds on the app stores, you'll be able to see additional data on your project dashboard:
+[EAS Insights](/eas-insights/introduction/) is a dashboard that surfaces trends across your project, grouped into three tabs:
+
+- **[App usage](/eas-insights/app-usage/)**: Usage of your app across platforms, app store versions, and time, aggregated from [EAS Update](/deploy/send-over-the-air-updates/) requests and the `expo-insights` library.
+- **[Workflows](/eas-insights/workflows/)**: Run counts, success rates, and trends for your [EAS Workflows](/eas/workflows/introduction/).
+- **[Maestro](/eas-insights/maestro/)**: Pass, flake, and failure trends for the [Maestro](https://maestro.dev/) end-to-end tests you run in EAS Workflows.
 
 <ContentSpotlight
-  alt="Active user insights on the EAS dashboard."
-  src="/static/images/monitoring/monitor-your-app/expo-insights.webp"
+  alt="The Insights dashboard in the EAS dashboard, with tabs for App usage, Workflows, and Maestro."
+  src="/static/images/eas-insights/insights-overview-light.webp"
+  darkSrc="/static/images/eas-insights/insights-overview-dark.webp"
 />
 
 Get started with the following guide:

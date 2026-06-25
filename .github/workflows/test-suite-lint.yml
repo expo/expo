@@ -39,6 +39,9 @@ jobs:
       - name: 🚨 Lint test-suite files
         run: pnpm lint --max-warnings 0
         working-directory: apps/test-suite
+      - name: 💅 Check formatting
+        run: pnpm format --check
+        working-directory: apps/test-suite
       - name: 🧪 Run unit tests
         run: pnpm test
         working-directory: apps/test-suite

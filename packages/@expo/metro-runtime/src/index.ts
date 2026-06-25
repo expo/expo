@@ -6,7 +6,6 @@
  */
 
 import './location/install';
-
 import '@expo/metro-runtime/rsc/runtime';
 
 if (__DEV__) {

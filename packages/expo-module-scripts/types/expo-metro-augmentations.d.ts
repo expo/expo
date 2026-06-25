@@ -8,7 +8,7 @@ import * as __metroDeltaBundlerTypes from '@expo/metro/metro/DeltaBundler/types'
 declare module '@expo/metro/metro/DeltaBundler/types' {
   const enum _AsyncDependencyType {
     /** @privateRemarks Augmentation adds `asyncType: 'worker'` to possible values for worker chunk splitting */
-    worker = 'worker'
+    worker = 'worker',
   }
 }
 

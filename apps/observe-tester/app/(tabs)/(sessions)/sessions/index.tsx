@@ -36,9 +36,9 @@ type SessionRowData = {
   href: Href;
 };
 
-// A startup crash not attributed to any session (from `getOrphanedCrashReports`).
-// Keyed by position since crash reports have no id; the detail screen re-fetches
-// the same ordered list and looks the report up by index.
+// A startup crash not attributed to any session — the orphans (`sessionId` null)
+// among `getAllCrashReports`. Keyed by position since crash reports have no id;
+// the detail screen re-fetches the same ordered list and looks the report up by index.
 type OrphanRowData = {
   kind: 'orphan';
   index: number;
@@ -78,9 +78,12 @@ export default function SessionsList() {
       .map(inactiveSessionToRow)
       .sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
 
-    // Startup crashes that predate any session — Android only, hence the optional call.
-    const orphanReports = (await AppMetrics.getOrphanedCrashReports?.()) ?? [];
-    const orphans: OrphanRowData[] = orphanReports.map(orphanCrashToRow);
+    // Startup crashes that predate any session — the orphans among all reports.
+    // Android only, hence the optional call.
+    const allReports = (await AppMetrics.getAllCrashReports?.()) ?? [];
+    const orphans: OrphanRowData[] = allReports
+      .filter((report) => report.sessionId == null)
+      .map(orphanCrashToRow);
 
     setSections([
       ...(active.length ? [{ title: 'Active', data: active }] : []),

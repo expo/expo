@@ -1,10 +1,10 @@
 import { parse } from 'node:url';
 import { type WebSocket, WebSocketServer, type RawData as WebSocketRawData } from 'ws';
 
+import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
 import { createBroadcaster } from './utils/createSocketBroadcaster';
 import { createSocketMap, type SocketId } from './utils/createSocketMap';
 import { parseRawMessage, serializeMessage } from './utils/socketMessages';
-import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
 
 type MessageSocketOptions = {
   logger: {

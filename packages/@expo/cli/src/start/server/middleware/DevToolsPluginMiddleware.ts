@@ -3,11 +3,11 @@ import { convertRequest, respond } from 'expo-server/adapter/http';
 import type * as http from 'http';
 import send from 'send';
 
-import { ExpoMiddleware } from './ExpoMiddleware';
-import type { ServerRequest, ServerResponse } from './server.types';
 import type { DevToolsPlugin } from '../DevToolsPlugin';
 import type DevToolsPluginManager from '../DevToolsPluginManager';
 import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import { ExpoMiddleware } from './ExpoMiddleware';
+import type { ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:devToolsPlugin') as typeof console.log;
 

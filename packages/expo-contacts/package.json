@@ -2,6 +2,23 @@
   "name": "expo-contacts",
   "version": "56.0.7",
   "description": "Provides access to the phone's system contacts.",
+  "keywords": [
+    "contacts",
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/contacts/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-contacts"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -34,36 +51,17 @@
       "default": "./build/index.js"
     }
   },
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "contacts"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-contacts"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/contacts/",
-  "jest": {
-    "preset": "expo-module-scripts"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
@@ -76,5 +74,8 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

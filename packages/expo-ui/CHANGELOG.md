@@ -10,6 +10,7 @@
 
 - [iOS] Added a `modifiers` prop to `ListItem` to override its default `buttonStyle(.plain)`. ([#47124](https://github.com/expo/expo/pull/47124) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `presentationSizing` modifier (`automatic`/`fitted`/`form`/`page`) to control sheet sizing, and applied `fitted` in `community/bottom-sheet` dynamic sizing so the sheet hugs its content on iPad instead of opening near full-screen. ([#47050](https://github.com/expo/expo/pull/47050) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added the SwiftUI `accessibilityElement` modifier, which collapses a view's subtree into a single accessibility element via `ignore`, `combine`, or `contain`. ([#47156](https://github.com/expo/expo/pull/47156) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added the SwiftUI `activityBackgroundTint` modifier for setting Live Activity background. ([#46756](https://github.com/expo/expo/pull/46756) by [@jakex7](https://github.com/jakex7))
 - [iOS] Added the SwiftUI `imageScale` modifier to scale SF Symbols within a view relative to the surrounding text (`small`, `medium`, `large`). ([#46774](https://github.com/expo/expo/pull/46774) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [jetpack-compose] Added `onGloballyPositioned` modifier, which reports a composable's window position and size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -35,6 +36,9 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix universal `ListItem` stretching a fixed-size raw RN view in its leading/trailing slot to fill the row instead of honoring its size, matching Android. ([#46883](https://github.com/expo/expo/issues/46883) by [@david-videau-ortega](https://github.com/david-videau-ortega)) ([#47236](https://github.com/expo/expo/pull/47236) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix the `@expo-ui/community/datetime-picker` dialog ignoring `minimumDate`/`maximumDate` for its year range, so the calendar and year picker no longer always span 1900–2100. ([#47206](https://github.com/expo/expo/issues/47206) by [@vioodle](https://github.com/vioodle)) ([#47213](https://github.com/expo/expo/pull/47213) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS][Android] Fix a scrollable (e.g. `FlatList`) inside `@expo/ui/community/bottom-sheet` not scrolling when the `<BottomSheet>` is mounted inside another same-orientation list (such as a `FlatList` header). ([#47197](https://github.com/expo/expo/pull/47197) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `community/datetime-picker` field collapsing to zero width — invisible and untappable — when its parent doesn't stretch it (e.g. `alignItems: 'center'`). ([#47033](https://github.com/expo/expo/pull/47033) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix Mac Catalyst build failure with `activityBackgroundTint` ([#46929](https://github.com/expo/expo/pull/46929) by [@theeket](https://github.com/theeket))
 - [iOS] Fix the SwiftUI `listRowInsets` modifier being ignored when every edge is set to `0`, so a row can now reset all of its insets. ([#47000](https://github.com/expo/expo/pull/47000) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -55,9 +59,11 @@
 - [iOS] Fix `TextField` and `SecureField` worklet `onTextChange` firing more than once per keystroke (when a change triggers reformatting) and on programmatic text updates. ([#46483](https://github.com/expo/expo/pull/46483) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `font` modifier dropping Dynamic Type scaling (`relativeTo`) and `weight` on concatenated `Text` runs. The Text-concatenation path now resolves the same `Font` as the view path. ([#46509](https://github.com/expo/expo/pull/46509) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [android] Fix universal `TextInput` ignoring `style` `backgroundColor` / `borderWidth` and not applying `textAlign` to the placeholder. ([#46441](https://github.com/expo/expo/pull/46441) by [@duyanhv](https://github.com/duyanhv))
+- [android] Fix `Switch` alignment when `label` is provided ([#47088](https://github.com/expo/expo/pull/47088) by [@rklomp](https://github.com/rklomp))
 
 ### 💡 Others
 
+- Export public component props as interfaces to support module augmentation. by [@Brentlok](https://github.com/Brentlok)
 - [universal] Revamp web universal components (`Button`, `Checkbox`, `FieldGroup`, `Picker`, `Slider`,`Switch`,`TextInput`) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258), [#46541](https://github.com/expo/expo/pull/46541) by [@zoontek](https://github.com/zoontek))
 - [iOS][android] Removed the `react-native-reanimated` dependency from the worklet integration; worklet features rely on `react-native-worklets` directly. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway))
 

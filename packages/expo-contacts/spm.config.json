@@ -4,9 +4,7 @@
     {
       "name": "ExpoContacts",
       "podName": "ExpoContacts",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -25,12 +23,7 @@
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "Contacts",
-            "ContactsUI"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "Contacts", "ContactsUI"]
         }
       ]
     }

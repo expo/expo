@@ -1,14 +1,6 @@
 'use client';
 import React, { useCallback, useEffect } from 'react';
 
-import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
-import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
-import type { ModalStackNavigatorProps, ModalStackViewProps } from './types';
-import {
-  convertStackStateToNonModalState,
-  findLastNonModalIndex,
-  isTransparentModalPresentation,
-} from './utils';
 import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 import { withLayoutContext } from '../../layouts/withLayoutContext';
 import type {
@@ -31,6 +23,14 @@ import type {
   NativeStackNavigationOptions,
 } from '../../react-navigation/native-stack';
 import { NativeStackView } from '../../react-navigation/native-stack';
+import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
+import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
+import type { ModalStackNavigatorProps, ModalStackViewProps } from './types';
+import {
+  convertStackStateToNonModalState,
+  findLastNonModalIndex,
+  isTransparentModalPresentation,
+} from './utils';
 
 function ModalStackNavigator({
   initialRouteName,

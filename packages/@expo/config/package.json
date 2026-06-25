@@ -2,6 +2,26 @@
   "name": "@expo/config",
   "version": "56.0.9",
   "description": "A library for interacting with the app.json",
+  "keywords": [
+    "expo",
+    "json",
+    "react",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/config#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/config"
+  },
+  "files": [
+    "build",
+    "paths"
+  ],
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -23,35 +43,19 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "jest",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/config"
-  },
-  "keywords": [
-    "json",
-    "react-native",
-    "expo",
-    "react"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/config#readme",
-  "files": [
-    "build",
-    "paths"
-  ],
   "dependencies": {
     "@expo/config-plugins": "workspace:~56.0.8",
     "@expo/config-types": "workspace:^56.0.5",
@@ -70,8 +74,5 @@
     "@types/semver": "^7.5.8",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

@@ -187,6 +187,22 @@ object MenuIcons {
   }
 
   @Composable
+  fun Gear(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.gear_fill),
+      contentDescription = "React Native dev menu",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
   fun Refresh(
     size: Dp,
     tint: Color,

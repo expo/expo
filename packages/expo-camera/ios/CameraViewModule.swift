@@ -73,6 +73,10 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     View(CameraView.self) {
       Events(cameraEvents)
 
+      OnViewDidUpdateProps { (view: CameraView) in
+        view.startSessionIfNeeded()
+      }
+
       Prop("facing") { (view, type: CameraType?) in
         if let type, view.presetCamera != type.toPosition() {
           view.presetCamera = type.toPosition()
@@ -117,8 +121,8 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           view.pictureSize = pictureSize
           return
         }
-        if pictureSize == nil && view.pictureSize != .high {
-          view.pictureSize = .high
+        if pictureSize == nil && view.pictureSize != .photo {
+          view.pictureSize = .photo
         }
       }
 

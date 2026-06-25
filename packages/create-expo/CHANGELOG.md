@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
+
+- Improved monorepo support ([#46434](https://github.com/expo/expo/pull/46434) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 

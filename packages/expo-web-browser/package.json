@@ -2,6 +2,25 @@
   "name": "expo-web-browser",
   "version": "56.0.5",
   "description": "Provides access to the system's web browser and supports handling redirects. On iOS, it uses SFSafariViewController or ASWebAuthenticationSession, depending on the method you call, and on Android it uses ChromeCustomTabs. As of iOS 11, SFSafariViewController no longer shares cookies with Safari, so if you are using WebBrowser for authentication you will want to use WebBrowser.openAuthSessionAsync, and if you just want to open a webpage (such as your app privacy policy), then use WebBrowser.openBrowserAsync.",
+  "keywords": [
+    "browser",
+    "expo",
+    "expo-web-browser",
+    "react-native",
+    "web"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/webbrowser/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-web-browser"
+  },
+  "sideEffects": false,
   "main": "build/WebBrowser.js",
   "types": "build/WebBrowser.d.ts",
   "exports": {
@@ -15,38 +34,17 @@
     },
     "./package.json": "./package.json"
   },
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-web-browser",
-    "web",
-    "browser"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-web-browser"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/webbrowser/",
-  "jest": {
-    "preset": "expo-module-scripts"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
@@ -57,5 +55,8 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

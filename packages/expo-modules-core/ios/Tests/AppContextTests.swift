@@ -21,12 +21,53 @@ struct AppContextTests {
     let recovered = AppContext.from(runtime: try runtime)
     #expect(recovered === appContext)
   }
-
   @Test
   func `from(runtime:) returns nil for a runtime without the core object`() {
     // A bare runtime that was never prepared by an app context has no `global.expo`.
     let bareRuntime = JavaScriptRuntime()
     #expect(AppContext.from(runtime: bareRuntime) == nil)
+  }
+
+  // MARK: - moduleProviderClassNames
+
+  @Test
+  func `maps bundle names to qualified class names`() {
+    let classNames = AppContext.moduleProviderClassNames(
+      withName: "ExpoModulesProvider",
+      bundleNames: ["MyApp"]
+    )
+
+    #expect(classNames == [
+      "MyApp.ExpoModulesProvider"
+    ])
+  }
+
+  @Test
+  func `deduplicates identical candidates`() {
+    let classNames = AppContext.moduleProviderClassNames(
+      withName: "ExpoModulesProvider",
+      bundleNames: ["ExpoApp", "ExpoApp"]
+    )
+
+    #expect(classNames == [
+      "ExpoApp.ExpoModulesProvider"
+    ])
+  }
+
+  @Test
+  func `preserves order and emits both candidates when CFBundleExecutable differs from CFBundleName`() {
+    // When CFBundleExecutable differs from CFBundleName (e.g. dotted bundle name), both
+    // candidates are emitted with the executable-derived one first, since it is the Swift
+    // module name by construction.
+    let classNames = AppContext.moduleProviderClassNames(
+      withName: "ExpoModulesProvider",
+      bundleNames: ["Universal_internal", "Universal.internal"]
+    )
+
+    #expect(classNames == [
+      "Universal_internal.ExpoModulesProvider",
+      "Universal.internal.ExpoModulesProvider"
+    ])
   }
 
   // MARK: - NativeState

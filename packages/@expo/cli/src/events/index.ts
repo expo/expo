@@ -1,9 +1,9 @@
 import { Console } from 'node:console';
 import path from 'node:path';
 
+import { env } from '../utils/env';
 import type { EventBuilder, EventLoggerBuilder, EventShape } from './builder';
 import { LogStream, writeEvent } from './stream';
-import { env } from '../utils/env';
 
 interface InitMetadata {
   format: 'v0-jsonl' | (string & {});
