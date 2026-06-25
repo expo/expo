@@ -107,9 +107,6 @@ internal struct ObservabilityManager {
     case .success:
       ObserveUserDefaults.lastDispatchDate = Date.now
     case .partialSuccess(let partial):
-      // The batch reached the server; bump `lastDispatchDate` so stale-cursor repair
-      // doesn't trip. Surface the per-record rejection count and any server message at
-      // warn level so the loss is visible without conflating it with a wholesale drop.
       ObserveUserDefaults.lastDispatchDate = Date.now
       observeLogger.warn(
         "[EAS Observe] Partial success on batch of \(events.count) metric event(s) past "
@@ -177,8 +174,9 @@ internal struct ObservabilityManager {
     )
     switch result {
     case .success, .retryableFailure:
-      break
+      ObserveUserDefaults.lastDispatchDate = Date.now
     case .partialSuccess(let partial):
+      ObserveUserDefaults.lastDispatchDate = Date.now
       observeLogger.warn(
         "[EAS Observe] Partial success on batch of \(resourceLogs.count) log event(s) past "
           + "id \(highestId): server rejected \(partial.rejectedCount) "

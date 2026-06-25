@@ -112,12 +112,12 @@ struct ObservabilityClassifyResponseTests {
   }
 
   @Test
-  func `408 502 504 are retryable`() {
+  func `429 502 504 are retryable`() {
     // 429 and 503 have their own dedicated tests above (with and without Retry-After);
     // this loop covers the remaining retryable codes in OTLP's set. 412 (Precondition
     // Failed) is intentionally NOT here — it's not in OTLP's retryable set and would
     // correctly fall through to .nonRetryableFailure.
-    for code in [408, 502, 504] {
+    for code in [429, 502, 504] {
       let result = DispatchUtils.classifyResponse(
         statusCode: code,
         retryAfterHeader: nil,

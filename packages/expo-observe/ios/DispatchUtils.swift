@@ -153,10 +153,9 @@ internal enum DispatchUtils {
       return .success
     }
 
-    // Retryable per OTLP. `408` lacks a real-world Retry-After in practice but the spec admits
-    // it; carry the header through unchanged so server can override us.
+    // Retryable per OTLP.
     switch statusCode {
-    case 408, 429, 502, 503, 504:
+    case 429, 502, 503, 504:
       return .retryableFailure(retryAfter: retryAfter)
     default:
       let excerpt = bodyExcerpt()
@@ -187,15 +186,26 @@ internal enum DispatchUtils {
       guard seconds.isFinite else { return nil }
       return clampToBounds(seconds, base: base, cap: cap)
     }
+
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")
     formatter.timeZone = TimeZone(identifier: "GMT")
+    // IMF-fixdate only; others fall through to backoff
     formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
-    if let date = formatter.date(from: raw) {
+
+    if let date = cachedFormatter.date(from: raw) {
       return clampToBounds(date.timeIntervalSinceNow, base: base, cap: cap)
     }
     return nil
   }
+
+  static let cachedFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone(identifier: "GMT")
+    formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+    return formatter
+  }()
 
   /// Clamps a server-supplied retry delay into the client's `[base, cap]` window. Used by
   /// `parseRetryAfter` so the gate is bounded regardless of what the server sent.
