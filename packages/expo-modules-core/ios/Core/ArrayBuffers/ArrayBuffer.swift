@@ -37,7 +37,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   }
 
   /// Allocates a new native ArrayBuffer of the given size with zero-initialized memory.
-  convenience init(size: Int, initializeToZero: Bool = true) {
+  public convenience init(size: Int, initializeToZero: Bool = true) {
     let data = UnsafeMutablePointer<UInt8>.allocate(capacity: size)
     if initializeToZero {
       data.initialize(repeating: 0, count: size)
@@ -45,6 +45,12 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
     self.init(owning: data, count: size) {
       data.deallocate()
     }
+  }
+
+  /// Allocates a new native ArrayBuffer of the given size.
+  @available(*, deprecated, renamed: "init(size:initializeToZero:)", message: "Use ArrayBuffer(size:initializeToZero:) instead.")
+  public static func allocate(size: Int, initializeToZero: Bool = true) -> ArrayBuffer {
+    return ArrayBuffer(size: size, initializeToZero: initializeToZero)
   }
 
   deinit {
