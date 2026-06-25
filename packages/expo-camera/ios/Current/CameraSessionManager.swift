@@ -21,7 +21,7 @@ protocol CameraSessionManagerDelegate: AnyObject {
   var barcodeScanner: BarcodeScanner? { get }
 
   func emitAvailableLenses()
-  func changePreviewOrientation()
+  func configurePreviewRotation()
 }
 
 class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
@@ -336,6 +336,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     defer {
       session.commitConfiguration()
       delegate.emitAvailableLenses()
+      delegate.configurePreviewRotation()
     }
     if let captureDeviceInput {
       session.removeInput(captureDeviceInput)
@@ -407,7 +408,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
 
     session.commitConfiguration()
     addErrorNotification()
-    delegate.changePreviewOrientation()
+    delegate.configurePreviewRotation()
     delegate.barcodeScanner?.maybeStartBarcodeScanning()
     updateCameraIsActive()
     DispatchQueue.main.async { [weak delegate] in
