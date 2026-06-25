@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import type { ModifierConfig } from '../../types';
 /**
  * Props for the [`ListItem.Leading`](#listitemleading) slot marker.
  */
@@ -55,5 +56,12 @@ export interface ListItemProps {
      * Identifier used to locate the component in end-to-end tests.
      */
     testID?: string;
+    /**
+     * Platform-specific modifier escape hatch. Pass an array of modifier configs
+     * from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
+     * On iOS these are applied to the underlying SwiftUI `Button` and can override
+     * its default `buttonStyle(.plain)`.
+     */
+    modifiers?: ModifierConfig[];
 }
 //# sourceMappingURL=types.d.ts.map
