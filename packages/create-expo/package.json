@@ -32,7 +32,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "test": "jest",
     "test:e2e": "jest --config e2e/jest.config.js --runInBand",
-    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
+    "sync-agent-templates": "node scripts/sync-agent-templates.js",
+    "prepublishOnly": "pnpm run sync-agent-templates && pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
