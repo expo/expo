@@ -149,6 +149,23 @@ internal class DevLauncherManifestParserTest {
   }
 
   @Test
+  fun `isManifestUrl includes forwarding headers`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/dev/manifest").toString()),
+      null
+    )
+
+    server.enqueue(MockResponse().setResponseCode(200))
+    manifestParser.isManifestUrl()
+
+    val request = server.takeRequest()
+    Truth.assertThat(request.getHeader("forwarded")).contains("proto=http")
+    Truth.assertThat(request.getHeader("x-forwarded-host")).isEqualTo(server.url("/").host + ":" + server.port)
+    Truth.assertThat(request.getHeader("x-forwarded-proto")).isEqualTo("http")
+  }
+
+  @Test
   fun `checks if parseManifest parses successful response`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
       client,

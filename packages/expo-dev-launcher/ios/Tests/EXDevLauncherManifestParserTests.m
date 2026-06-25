@@ -190,6 +190,35 @@
   [self waitForExpectationsWithTimeout:5 handler:nil];
 }
 
+- (void)testIsManifestURL_RequestIncludesForwardingHeaders
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/dev/manifest"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    XCTAssertEqualObjects(@"host=\"ohhttpstubs\";proto=http", request.allHTTPHeaderFields[@"Forwarded"]);
+    XCTAssertEqualObjects(@"ohhttpstubs", request.allHTTPHeaderFields[@"X-Forwarded-Host"]);
+    XCTAssertEqualObjects(@"http", request.allHTTPHeaderFields[@"X-Forwarded-Proto"]);
+    return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:nil];
+  }];
+
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc]
+                                         initWithURL:[NSURL URLWithString:@"http://ohhttpstubs/dev/manifest"]
+                                         installationID:nil
+                                         session:NSURLSession.sharedSession
+                                         requestTimeout:NSURLSessionConfiguration.defaultSessionConfiguration.timeoutIntervalForRequest];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"request should include forwarding headers"];
+
+  [parser isManifestURLWithCompletion:^(BOOL isManifestURL) {
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
 - (void)testParseManifest
 {
   [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
