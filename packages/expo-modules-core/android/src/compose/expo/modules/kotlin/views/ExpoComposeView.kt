@@ -88,6 +88,9 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+    if (shouldUseAndroidLayout && !isAttachedToWindow) {
+      return
+    }
     super.onLayout(changed, left, top, right, bottom)
 
     // Makes sure the child ComposeView is sticky with the current hosting view

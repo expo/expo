@@ -1,5 +1,13 @@
 import fs from 'fs';
 
+import { resolveExpoModule } from '../autolinking/findModules';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
+import { createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
+import { createMemoizer, type Memoizer } from '../memoize';
+import { getSupportPackageForPlatform } from '../platforms';
+import type { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
+import { resolveReactNativeModule } from '../reactNativeConfig';
+import { loadConfigAsync } from '../reactNativeConfig/config';
 import type { PackageRevision, SupportedPlatform } from '../types';
 import { scanDependenciesRecursively } from './resolution';
 import { scanDependenciesFromRNProjectConfig } from './rncliLocal';
@@ -10,14 +18,6 @@ import {
   DependencyResolutionSource,
 } from './types';
 import { filterMapResolutionResult, mergeResolutionResults } from './utils';
-import { resolveExpoModule } from '../autolinking/findModules';
-import type { AutolinkingOptions } from '../commands/autolinkingOptions';
-import { createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
-import { createMemoizer, type Memoizer } from '../memoize';
-import { getSupportPackageForPlatform } from '../platforms';
-import type { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
-import { resolveReactNativeModule } from '../reactNativeConfig';
-import { loadConfigAsync } from '../reactNativeConfig/config';
 
 export interface CachedDependenciesSearchOptions {
   includeNames: Set<string>;

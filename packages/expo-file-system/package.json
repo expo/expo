@@ -2,6 +2,24 @@
   "name": "expo-file-system",
   "version": "56.0.7",
   "description": "Provides access to the local file system on the device.",
+  "keywords": [
+    "expo",
+    "file",
+    "file-system",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/filesystem/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-file-system"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -26,37 +44,17 @@
       "default": "./build/legacy/index.js"
     }
   },
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "file-system",
-    "file"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-file-system"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/filesystem/",
-  "jest": {
-    "preset": "expo-module-scripts"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
@@ -67,5 +65,8 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

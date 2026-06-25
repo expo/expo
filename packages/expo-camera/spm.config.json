@@ -4,9 +4,7 @@
     {
       "name": "ExpoCamera",
       "podName": "ExpoCamera",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -26,20 +24,14 @@
             "Hermes",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "AVFoundation"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "AVFoundation"]
         }
       ]
     },
     {
       "name": "ExpoCameraBarcodeScanning",
       "podName": "ExpoCameraBarcodeScanning",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "autolinkWhen": {
         "podfileProperty": "expo.camera.barcode-scanner-enabled",
         "disabledValue": "false"
@@ -60,16 +52,9 @@
           "name": "ExpoCameraBarcodeScanning",
           "path": "ios/barcode-scanning",
           "pattern": "**/*.swift",
-          "dependencies": [
-            "ExpoCamera",
-            "ZXingObjC"
-          ],
+          "dependencies": ["ExpoCamera", "ZXingObjC"],
           "compilerFlags": {
-            "swift": [
-              "-DZXINGOBJC_USE_SUBSPECS",
-              "-DZXINGOBJC_PDF417",
-              "-DZXINGOBJC_ONED"
-            ]
+            "swift": ["-DZXINGOBJC_USE_SUBSPECS", "-DZXINGOBJC_PDF417", "-DZXINGOBJC_ONED"]
           }
         }
       ]

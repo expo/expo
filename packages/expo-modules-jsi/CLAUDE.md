@@ -15,6 +15,7 @@ apple/
 ├── Products/                      # Build output (xcframeworks)
 ├── Sources/
 │   ├── ExpoModulesJSI/            # Main Swift library
+│   │   ├── Coding/                # JavaScriptCodable/Decodable/Encodable + stdlib conformances
 │   │   ├── Contexts/              # Bridging contexts for host functions/objects
 │   │   ├── Extensions/            # Swift extensions (e.g. Task+immediate)
 │   │   ├── Protocols/             # JavaScriptType, JavaScriptRepresentable, etc.

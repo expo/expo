@@ -1,13 +1,13 @@
 import { promises as fs } from 'fs';
 
-import { getAccessToken, getSession, setSessionAsync } from './UserSettings';
-import { getSessionUsingBrowserAuthFlowAsync } from './expoSsoLauncher';
 import * as Log from '../../log';
 import { getDevelopmentCodeSigningDirectory } from '../../utils/codesigning';
 import { env } from '../../utils/env';
 import { getExpoWebsiteBaseUrl } from '../endpoint';
 import { UserQuery, type Actor } from '../graphql/queries/UserQuery';
 import { fetchAsync } from '../rest/client';
+import { getAccessToken, getSession, setSessionAsync } from './UserSettings';
+import { getSessionUsingBrowserAuthFlowAsync } from './expoSsoLauncher';
 
 const debug = require('debug')('expo:api:user') as typeof console.log;
 

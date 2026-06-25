@@ -15,7 +15,6 @@ import {
   SearchBar,
 } from 'react-native-screens';
 
-import { processFonts } from './FontProcessor';
 import { Color } from '../../../utils/color';
 import { getHeaderTitle, HeaderTitle } from '../../elements';
 import { type Route, type Theme, useLocale, useTheme } from '../../native';
@@ -26,6 +25,7 @@ import type {
   NativeStackHeaderItemMenuSubmenu,
   NativeStackNavigationOptions,
 } from '../types';
+import { processFonts } from './FontProcessor';
 
 type Props = NativeStackNavigationOptions & {
   headerTopInsetEnabled: boolean;

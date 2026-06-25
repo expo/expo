@@ -3,6 +3,7 @@ We've set up the Expo SDK to help us keep it reliable and clean and be confident
 ## Getting Started
 
 Make sure you can run the unit tests, lint and TypeScript:
+
 ```sh
 pnpm test  # This starts the test watcher
 pnpm lint
@@ -16,6 +17,7 @@ The Expo repository is carefully configured so changes to the `expo` package sho
 ## Unit tests
 
 The first thing we do when working on the Expo SDK is to start the unit test watcher:
+
 ```sh
 pnpm test
 ```

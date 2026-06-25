@@ -4,8 +4,8 @@ import { isValidElement } from 'react';
 
 import { useRoute } from '../react-navigation/native';
 import { useNavigation } from '../useNavigation';
-import { useSafeLayoutEffect } from './useSafeLayoutEffect';
 import { isRoutePreloadedInStack } from '../utils/stack';
+import { useSafeLayoutEffect } from './useSafeLayoutEffect';
 
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
   /**

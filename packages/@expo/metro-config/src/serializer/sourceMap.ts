@@ -5,12 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Central indirection for sourcemap operations in `@expo/metro-config`
-// and `@expo/cli`. Implementations are loaded lazily — `metro-source-map`
-// (and its transitive `@babel/traverse`) at top level adds ~100ms to
-// `@expo/cli` startup.
-import type { SourceMapGeneratorOptions } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
-import type { Module } from '@expo/metro/metro/DeltaBundler/types';
 import type {
   BabelSourceMapSegment,
   BasicSourceMap,
@@ -20,6 +14,12 @@ import type {
   MixedSourceMap,
 } from '@expo/metro/metro-source-map';
 import type GeneratorClass from '@expo/metro/metro-source-map/Generator';
+// Central indirection for sourcemap operations in `@expo/metro-config`
+// and `@expo/cli`. Implementations are loaded lazily — `metro-source-map`
+// (and its transitive `@babel/traverse`) at top level adds ~100ms to
+// `@expo/cli` startup.
+import type { SourceMapGeneratorOptions } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
+import type { Module } from '@expo/metro/metro/DeltaBundler/types';
 
 import type { ModuleSourceMap } from './jsOutput';
 import { PackedMap, SENTINEL, STRIDE, isSerializableSourceMap } from './packedMap';

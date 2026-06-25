@@ -9,15 +9,15 @@
 
 ### 🎉 New features
 
+- Add `File.preview()` and `File.canPreview()` methods for opening files with platform-native preview flows. (by [@eliotgevers](https://github.com/eliotgevers))
 - `file.slice()` is now lazy — returns a `FileSlice` that defers I/O until the data is consumed, avoiding eager reads of the entire file into memory. ([#46848](https://github.com/expo/expo/pull/46848) by [@barthap](https://github.com/barthap))
-  —
-  Reply to this email directly, view it on GitHub, or unsubscribe.
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
 - Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376) by [@wh201906](https://github.com/wh201906))
+- Improved `FileHandle` docs. ([#46849](https://github.com/expo/expo/pull/46849) by [@barthap](https://github.com/barthap))
 
 ## 56.0.7 — 2026-05-20
 

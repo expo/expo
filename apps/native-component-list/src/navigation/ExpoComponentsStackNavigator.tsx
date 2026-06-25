@@ -3,8 +3,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import * as React from 'react';
 
-import getStackNavWithConfig from './StackConfig';
-import { optionalRequire } from './routeBuilder';
 import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
@@ -20,6 +18,8 @@ import { UIScreens } from '../screens/UI/UIScreen';
 import { UIUniversalScreens } from '../screens/UIUniversal/UIUniversalScreen';
 import { VideoScreens } from '../screens/Video/VideoScreen';
 import { type ScreenConfig } from '../types/ScreenConfig';
+import getStackNavWithConfig from './StackConfig';
+import { optionalRequire } from './routeBuilder';
 
 const Stack = createNativeStackNavigator();
 

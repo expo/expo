@@ -3,10 +3,10 @@ import React from 'react';
 import type { ColorValue } from 'react-native';
 import { Drawer } from 'vaul';
 
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 import modalStyles from './modalStyles';
 import type { CSSWithVars } from './types';
 import { useIsDesktop } from './utils';
-import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 
 function ModalStackRouteDrawer({
   routeKey,

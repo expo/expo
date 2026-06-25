@@ -4,6 +4,8 @@ import { Directory } from './Directory';
 import ExpoFileSystem from './ExpoFileSystem';
 import {
   FileMode,
+  type FileCanPreviewOptions,
+  type FilePreviewOptions,
   type PickFileOptions,
   type PickMultipleFilesOptions,
   type PickMultipleFilesResult,
@@ -174,10 +176,25 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     return Paths.basename(this.uri);
   }
 
+  /**
+   * Creates a `ReadableStream` that reads from this file using a `FileHandle` internally.
+   *
+   * The stream reads in 1024-byte chunks by default. The underlying file handle is
+   * closed automatically when the stream is fully consumed or cancelled.
+   *
+   * @return A byte-oriented `ReadableStream` backed by this file.
+   */
   readableStream() {
     return new ReadableStream(new FileSystemReadableStreamSource(super.open(FileMode.ReadOnly)));
   }
 
+  /**
+   * Creates a `WritableStream` that writes to this file using a `FileHandle` internally.
+   *
+   * The underlying file handle is closed automatically when the stream is closed or aborted.
+   *
+   * @return A `WritableStream` that accepts `Uint8Array` chunks.
+   */
   writableStream() {
     return new WritableStream<Uint8Array>(
       new FileSystemWritableSink(super.open(FileMode.WriteOnly))
@@ -199,6 +216,12 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     }).formData();
   }
 
+  /**
+   * Returns a `ReadableStream` for this file. This is an alias for `readableStream()`
+   * and implements the `Blob.stream()` interface.
+   *
+   * @return A byte-oriented `ReadableStream` backed by this file.
+   */
   stream(): ReadableStream<Uint8Array<ArrayBuffer>> {
     return this.readableStream();
   }
@@ -210,6 +233,38 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     const relEnd =
       end == null ? fileSize : end < 0 ? Math.max(fileSize + end, 0) : Math.min(end, fileSize);
     return new FileSlice(this, relStart, Math.max(relStart, relEnd), contentType ?? this.type);
+  }
+
+  /**
+   * Determines whether the platform can preview this file.
+   *
+   * On iOS, this checks whether Quick Look can preview the file. On Android, this checks whether
+   * an installed app can handle the preview intent for the file's MIME type.
+   * Invalid files and files the app cannot read reject instead of returning `false`. If the file
+   * does not exist, the promise resolves to `false`.
+   *
+   * @param options Preview options.
+   * @returns A promise that resolves to `true` if the file can be previewed, and `false` otherwise.
+   * @platform android
+   * @platform ios
+   */
+  canPreview(options?: FileCanPreviewOptions): Promise<boolean> {
+    return super.canPreview(options ?? {});
+  }
+
+  /**
+   * Opens this file with the platform's file preview flow.
+   *
+   * On iOS, this presents Quick Look. On Android, this starts an `ACTION_VIEW` intent.
+   * The promise resolves once the preview has been presented or handed off to another app.
+   * The promise rejects if the file does not exist or cannot be previewed.
+   *
+   * @param options Preview options.
+   * @platform android
+   * @platform ios
+   */
+  preview(options?: FilePreviewOptions): Promise<void> {
+    return super.preview(options ?? {});
   }
 
   /**

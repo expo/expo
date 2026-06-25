@@ -40,6 +40,8 @@ on:
       - '!**/.npmignore'
       - '!**/.eslintrc*'
       - '!**/.prettierrc*'
+      - '!**/oxlint.config.*'
+      - '!**/.oxfmtrc*'
       - '!**/.gitattributes'
       - '!**/.watchmanconfig'
       - '!**/.fingerprintignore'

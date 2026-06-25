@@ -108,9 +108,9 @@ function createBuildHost(baseDir, inputDir, outDir, typecheck) {
 async function transformSources(files, srcDir, outDir, format, writeFileIfChanged, opts) {
   const moduleConfig =
     format === 'cjs'
-      ? { type: 'commonjs', lazy: true, importInterop: 'swc', exportInteropAnnotation: true }
+      ? { type: 'commonjs', lazy: true, ignoreDynamic: true, importInterop: 'swc', exportInteropAnnotation: true }
       : format === 'script'
-        ? { type: 'commonjs', strict: true, strictMode: false, noInterop: true }
+        ? { type: 'commonjs', strict: true, ignoreDynamic: true, strictMode: false, noInterop: true }
         : { type: 'es6' };
 
   await Promise.all(

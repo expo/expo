@@ -2,6 +2,27 @@
   "name": "expo-media-library",
   "version": "56.0.6",
   "description": "Provides access to user's media library.",
+  "keywords": [
+    "cameraroll",
+    "expo",
+    "library",
+    "media",
+    "photos",
+    "react-native",
+    "videos"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/media-library/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-media-library"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -34,38 +55,18 @@
       "default": "./build/index.js"
     }
   },
-  "sideEffects": false,
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "media",
-    "library",
-    "cameraroll",
-    "photos",
-    "videos"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-media-library"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/media-library/",
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",

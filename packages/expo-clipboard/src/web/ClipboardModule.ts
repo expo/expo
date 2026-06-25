@@ -1,3 +1,10 @@
+import type {
+  ClipboardImage,
+  GetImageOptions,
+  GetStringOptions,
+  SetStringOptions,
+} from '../Clipboard.types';
+import { StringFormat } from '../Clipboard.types';
 import {
   ClipboardUnavailableException,
   CopyFailureException,
@@ -13,13 +20,6 @@ import {
   htmlToPlainText,
   isClipboardPermissionDeniedAsync,
 } from './Utils';
-import type {
-  ClipboardImage,
-  GetImageOptions,
-  GetStringOptions,
-  SetStringOptions,
-} from '../Clipboard.types';
-import { StringFormat } from '../Clipboard.types';
 
 export default {
   async getStringAsync(options: GetStringOptions): Promise<string> {

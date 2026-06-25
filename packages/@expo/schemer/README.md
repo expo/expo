@@ -8,7 +8,8 @@
 <!-- Body -->
 
 Details can be found here:
-* https://paper.dropbox.com/doc/Expo-Schema-Validation-Library-mQU07rRejSnEe4Vf5dkcS
+
+- https://paper.dropbox.com/doc/Expo-Schema-Validation-Library-mQU07rRejSnEe4Vf5dkcS
 
 ## Usage
 

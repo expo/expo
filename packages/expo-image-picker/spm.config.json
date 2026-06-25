@@ -4,9 +4,7 @@
     {
       "name": "ExpoImagePicker",
       "podName": "ExpoImagePicker",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",

@@ -1,8 +1,5 @@
 import chalk from 'chalk';
 
-import type { StartOptions } from './commandsTable';
-import { BLT, printHelp, printItem, printUsage } from './commandsTable';
-import { createDevToolsMenuItems } from './createDevToolsMenuItems';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { learnMore } from '../../utils/link';
@@ -17,6 +14,9 @@ import {
   queryAllInspectorAppsAsync,
   promptInspectorAppAsync,
 } from '../server/middleware/inspector/JsInspector';
+import type { StartOptions } from './commandsTable';
+import { BLT, printHelp, printItem, printUsage } from './commandsTable';
+import { createDevToolsMenuItems } from './createDevToolsMenuItems';
 
 const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
 
