@@ -847,6 +847,23 @@ module Expo
       # build time when switching Debug↔Release configurations.
       def configure_use_frameworks(installer)
         return unless prebuilt_react_active?
+
+        # Modern modular prebuilt React (React.xcframework + flattened ReactNativeHeaders, no VFS
+        # overlay): React Native's rncore.rb wires the header resolution — <React/...> and
+        # `@import React` via the framework, and the relocated namespaces (<react/...>, <yoga/...>,
+        # RCTDeprecation/, ...) via a clang module map at React-Core-prebuilt/Headers/module.modulemap.
+        # But RN's pod-target loop only covers the React-* pods; it misses every Expo pod (Expo,
+        # ExpoModulesCore, ExpoImage, ...). Re-apply that module-map coverage to the pods RN missed so
+        # their <React/...> explicit-module precompile resolves the lowercase namespaces modularly
+        # instead of tripping -Wnon-modular-include-in-framework-module. (The coverage self-skips if the
+        # prebuilt did not actually ship the module map — see ensure_modular_react_header_flags.)
+        unless prebuilt_react_uses_vfs?(installer)
+          ensure_modular_react_header_flags(installer)
+          return
+        end
+
+        # Legacy VFS prebuilt React: the use_frameworks! compat below only applies when use_frameworks!
+        # is active.
         return if linkage(installer).nil?
 
         react_prebuilt_dir = File.join(installer.sandbox.root, 'React-Core-prebuilt')
@@ -861,6 +878,86 @@ module Expo
         inject_isystem_flags(installer, target_support_dir)
 
         Pod::UI.puts "[Expo] ".blue + "Created non-framework React modulemap for use_frameworks! compatibility"
+      end
+
+      # Central discriminator for how the prebuilt React-Core-prebuilt pod exposes its headers. Two
+      # layouts ship today; everything that branches on "are we modular?" should route through here
+      # rather than re-deriving it (the signals diverged once before — keying on the transient
+      # Headers/module.modulemap — and silently broke the build):
+      #
+      #   - Legacy VFS: a single React.xcframework whose headers live at React.xcframework/Headers;
+      #     <react/...>/<yoga/...> are made resolvable via a generated clang VFS overlay. Expo must
+      #     install use_frameworks! compatibility (non-framework modulemap + -isystem) for it.
+      #   - Modern framework-resolved: ReactNativeHeaders' headers are flattened into a top-level
+      #     React-Core-prebuilt/Headers/ directory and vended as ordinary public pod headers, while
+      #     <React/...> resolves through the framework. No VFS, no module-map flag, no Expo compat.
+      #
+      # The presence of the flattened top-level Headers/ directory is the stable signal: it is the
+      # pod's header_mappings_dir output (re-created by prepare_command on every build-time re-extract),
+      # unlike Headers/module.modulemap which the modern layout copies in transiently and then discards.
+      def prebuilt_react_uses_vfs?(installer)
+        return false unless prebuilt_react_active?
+
+        react_prebuilt_dir = File.join(installer.sandbox.root, 'React-Core-prebuilt')
+        !Dir.exist?(File.join(react_prebuilt_dir, 'Headers'))
+      end
+
+      # Mirrors React Native's rncore.rb add_prebuilt_header_search_paths for the pods RN's own loop
+      # misses (it only covers the React-* pod targets, not the Expo pods). Re-applies the flattened
+      # ReactNativeHeaders module map + header search path idempotently, skipping any xcconfig that
+      # already carries the flag (those RN already covered).
+      #
+      # Gated on the module map actually existing: the Maven prebuilt path (RCT_USE_PREBUILT_RNCORE
+      # without RCT_TESTONLY_RNCORE_TARBALL_PATH) can install a React-Core-prebuilt that does not ship
+      # Headers/module.modulemap. Pointing -fmodule-map-file at a missing file fails `ScanDependencies`
+      # ("module map file ... not found"), so when it is absent we inject nothing and warn — the
+      # faithful path is a tarball that ships ReactNativeHeaders via RCT_TESTONLY_RNCORE_TARBALL_PATH.
+      def ensure_modular_react_header_flags(installer)
+        module_map_file = File.join(installer.sandbox.root, 'React-Core-prebuilt', 'Headers', 'module.modulemap')
+        unless File.exist?(module_map_file)
+          Pod::UI.warn "[Expo] Prebuilt React-Core-prebuilt is missing Headers/module.modulemap — " \
+            "skipping Expo module-map coverage. If the build fails with a missing module map or " \
+            "-Wnon-modular-include, the installed prebuilt React does not match React Native's " \
+            "CocoaPods scripts; install a tarball that ships ReactNativeHeaders via " \
+            "RCT_TESTONLY_RNCORE_TARBALL_PATH."
+          return
+        end
+
+        module_map = '$(PODS_ROOT)/React-Core-prebuilt/Headers/module.modulemap'
+        header_path = '"$(PODS_ROOT)/React-Core-prebuilt/Headers"'
+        cflags_flag = "-fmodule-map-file=#{module_map}"
+        swift_flag = "-Xcc -fmodule-map-file=#{module_map}"
+        swift_flags = "-Xcc -Wno-incomplete-umbrella #{swift_flag}"
+
+        patched = 0
+        Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+          original = content.dup
+
+          # Each flag is ensured INDEPENDENTLY (not "skip the pod if the module-map flag is present").
+          # A pod can carry the -fmodule-map-file flag from its own podspec (e.g. react-native-reanimated
+          # 4.x adds it) yet still lack the flattened-headers search path — in which case the module map
+          # activates the yoga/react modules but <yoga/style/Style.h> & co. textually fail to resolve
+          # (the modules' headers live under React-Core-prebuilt/Headers/). Add whichever piece is absent.
+          content = append_xcconfig_flag(content, 'HEADER_SEARCH_PATHS', header_path) unless content.include?(header_path)
+          content = append_xcconfig_flag(content, 'OTHER_CFLAGS', cflags_flag) unless content.include?(cflags_flag)
+          content = append_xcconfig_flag(content, 'OTHER_SWIFT_FLAGS', swift_flags) unless content.include?(swift_flag)
+
+          next if content == original
+          File.write(xcconfig_path, content)
+          patched += 1
+        end
+
+        Pod::UI.puts "[Expo] ".blue + "Ensured modular React header flags on #{patched} xcconfig(s)"
+      end
+
+      # Appends `value` to an xcconfig `key` line (preserving $(inherited)), or adds the key if absent.
+      def append_xcconfig_flag(content, key, value)
+        if content =~ /^#{Regexp.escape(key)}\s*=.*$/
+          content.sub(/^(#{Regexp.escape(key)}\s*=.*)$/) { "#{$1} #{value}" }
+        else
+          (content.end_with?("\n") ? content : content + "\n") + "#{key} = $(inherited) #{value}\n"
+        end
       end
 
       # TODO(ExpoModulesJSI-xcframework): Remove this method when ExpoModulesJSI.xcframework
