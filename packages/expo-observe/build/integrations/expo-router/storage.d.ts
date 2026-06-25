@@ -1,11 +1,10 @@
-import type { ActionDispatchedEvent } from 'expo-router';
 export interface ScreenTimes {
     dispatchTime?: number;
     isAppLaunch?: boolean;
     lastInteractiveCall?: number;
 }
 export interface PendingAction {
-    actionType: ActionDispatchedEvent['actionType'];
+    actionType: string;
     dispatchTime: number;
 }
 export interface RouterIntegrationStorage {

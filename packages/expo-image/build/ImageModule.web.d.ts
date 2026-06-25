@@ -8,6 +8,8 @@ declare class ImageModule extends NativeModule implements ImageNativeModule {
     configureCache(_: ImageCacheConfig): void;
     loadAsync(source: ImageSource): Promise<ImageRef>;
     getCachePathAsync(_: string): Promise<string | null>;
+    writeToCacheAsync(_: string | ImageRef, __: string): Promise<void>;
+    readFromCacheAsync(_: string): Promise<ImageRef | null>;
     generateBlurhashAsync(_: string | ImageRef, __: [number, number] | {
         width: number;
         height: number;

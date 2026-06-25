@@ -1,5 +1,5 @@
-import type { NavigationContainerRef } from '@react-navigation/native';
 import { type ReactNode } from 'react';
+import type { NavigationContainerRefLike } from './types';
 export interface ObserveNavigationProviderProps {
     /**
      * The navigation ref the app passes to its navigation container. Create it
@@ -7,7 +7,7 @@ export interface ObserveNavigationProviderProps {
      * and pass the same ref to the container, for example
      * `<Navigation ref={navigationRef} />`.
      */
-    navigationRef: NavigationContainerRef<ReactNavigation.RootParamList>;
+    navigationRef: NavigationContainerRefLike;
     children: ReactNode;
 }
 /**

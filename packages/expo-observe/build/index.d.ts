@@ -1,5 +1,7 @@
 import Observe from './module';
 export { default as AppMetrics } from 'expo-app-metrics';
+export { ObserveInteractiveMarker } from './ObserveInteractiveMarker';
+export type { ObserveInteractiveMarkerProps } from './ObserveInteractiveMarker';
 export { ObserveRoot } from './ObserveRoot';
 export { Observe };
 /** @deprecated Import the named `Observe` export instead. */
