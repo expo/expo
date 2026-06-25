@@ -7,7 +7,8 @@ const precommit = path.resolve(__dirname, '../.git/hooks/pre-commit');
 
 const hook = `
 #!/bin/sh
-pnpm exec lint-staged --quiet --relative
+[ -f node_modules/.bin/lint-staged ] || exit 0
+exec node_modules/.bin/lint-staged --quiet --relative
 `.trim();
 
 // In git worktrees `.git` is a file rather than a directory and hooks are
