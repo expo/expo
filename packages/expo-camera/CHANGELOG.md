@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Enabled responsive capture and fast capture prioritization on iOS for lower shutter lag and faster successive photo captures.
+
 ### 🐛 Bug fixes
 
 - [Android] Use the selected camera to determine video stabilization support. ([#45896](https://github.com/expo/expo/pull/45896) by [@vivekjm](https://github.com/vivekjm))
