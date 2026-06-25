@@ -1,161 +1,574 @@
----
-title: EAS Build
-sidebar_title: Introduction
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+// App.js - تطبيق أتمتة إنستغرام
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
+  Share,
+  Platform
+} from 'react-native';
+import { WebView } from 'react-native-webview';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+const INSTAGRAM_URL = 'https://www.instagram.com/accounts/login/';
+const COOKIES_KEY = '@instagram_cookies';
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { FAQ } from '~/ui/components/FAQ';
-import { Terminal } from '~/ui/components/Snippet';
+export default function App() {
+  const webViewRef = useRef(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [cookies, setCookies] = useState(null);
+  const [showWebView, setShowWebView] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState('');
+  const [username, setUsername] = useState('');
 
-**EAS Build** is a hosted Expo Application Services (EAS) service that builds app binaries (also called [standalone apps](/more/glossary-of-terms/#standalone-app)) for your Expo and React Native projects.
+  useEffect(() => {
+    loadSavedCookies();
+  }, []);
 
-EAS Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+  const loadSavedCookies = async () => {
+    try {
+      const savedCookies = await AsyncStorage.getItem(COOKIES_KEY);
+      if (savedCookies) {
+        setCookies(JSON.parse(savedCookies));
+        setIsLoggedIn(true);
+        const parsed = JSON.parse(savedCookies);
+        extractUsername(parsed);
+      }
+    } catch (error) {
+      console.error('Error loading cookies:', error);
+    }
+  };
 
-EAS Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+  const extractUsername = (cookiesArray) => {
+    const usernameCookie = cookiesArray.find(c => c.name === 'ds_user' || c.name === 'username');
+    if (usernameCookie) {
+      setUsername(usernameCookie.value);
+    }
+  };
 
-## Quick start
+  const handleWebViewNavigation = async (navState) => {
+    const { url } = navState;
+    
+    // Check if user has successfully logged in
+    if (url.includes('instagram.com') && !url.includes('login')) {
+      setStatus('تم تسجيل الدخول بنجاح! جاري استخراج الجلسة...');
+      setLoading(true);
+      
+      try {
+        // Extract cookies from WebView
+        const jsCode = `
+          (function() {
+            return document.cookie;
+          })();
+        `;
+        
+        const cookieString = await webViewRef.current?.injectJavaScript(jsCode);
+        
+        // Wait a bit for the promise to resolve
+        setTimeout(async () => {
+          const extractedCookies = await extractCookiesFromWebView();
+          if (extractedCookies && extractedCookies.length > 0) {
+            await saveCookies(extractedCookies);
+            setCookies(extractedCookies);
+            setIsLoggedIn(true);
+            extractUsername(extractedCookies);
+            setStatus('تم حفظ الجلسة بنجاح!');
+            setShowWebView(false);
+          }
+          setLoading(false);
+        }, 2000);
+      } catch (error) {
+        console.error('Error extracting cookies:', error);
+        setStatus('فشل في استخراج الجلسة');
+        setLoading(false);
+      }
+    }
+  };
 
-> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+  const extractCookiesFromWebView = async () => {
+    try {
+      const cookieScript = `
+        (function() {
+          var cookies = document.cookie.split(';');
+          var cookieArray = [];
+          cookies.forEach(function(cookie) {
+            var parts = cookie.trim().split('=');
+            if (parts[0] && parts[1]) {
+              cookieArray.push({
+                name: parts[0].trim(),
+                value: parts[1].trim(),
+                domain: '.instagram.com',
+                path: '/',
+                secure: true,
+                httpOnly: false
+              });
+            }
+          });
+          return JSON.stringify(cookieArray);
+        })();
+      `;
+      
+      const result = await webViewRef.current?.injectJavaScript(cookieScript);
+      // Parse the result if it comes back as string
+      if (result) {
+        return JSON.parse(result);
+      }
+    } catch (error) {
+      console.error('Error in extractCookiesFromWebView:', error);
+    }
+    return [];
+  };
 
-To build your app, run the following command:
+  const saveCookies = async (cookiesArray) => {
+    try {
+      const cookiesJson = JSON.stringify(cookiesArray);
+      await AsyncStorage.setItem(COOKIES_KEY, cookiesJson);
+      
+      // Also save to file
+      const fileUri = FileSystem.documentDirectory + 'instagram_session.json';
+      await FileSystem.writeAsStringAsync(fileUri, cookiesJson);
+      
+      Alert.alert('نجاح', 'تم حفظ الجلسة في ملف instagram_session.json');
+    } catch (error) {
+      console.error('Error saving cookies:', error);
+      Alert.alert('خطأ', 'فشل في حفظ الجلسة');
+    }
+  };
 
-<Terminal cmd={['$ eas build --platform all']} />
+  const exportCookies = async () => {
+    if (!cookies) {
+      Alert.alert('تنبيه', 'لا توجد جلسة محفوظة');
+      return;
+    }
 
-This command sends your project to EAS Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
+    try {
+      const fileUri = FileSystem.documentDirectory + 'instagram_session.json';
+      const fileInfo = await FileSystem.getInfoAsync(fileUri);
+      
+      if (fileInfo.exists) {
+        await Sharing.shareAsync(fileUri, {
+          mimeType: 'application/json',
+          dialogTitle: 'تصدير ملف الجلسة',
+          UTI: 'public.json'
+        });
+      } else {
+        Alert.alert('خطأ', 'الملف غير موجود');
+      }
+    } catch (error) {
+      console.error('Error sharing file:', error);
+      Alert.alert('خطأ', 'فشل في مشاركة الملف');
+    }
+  };
 
-## Key features
+  const clearSession = async () => {
+    Alert.alert(
+      'تأكيد',
+      'هل أنت متأكد من حذف الجلسة؟',
+      [
+        { text: 'إلغاء', style: 'cancel' },
+        {
+          text: 'حذف',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem(COOKIES_KEY);
+              const fileUri = FileSystem.documentDirectory + 'instagram_session.json';
+              await FileSystem.deleteAsync(fileUri, { idempotent: true });
+              setCookies(null);
+              setIsLoggedIn(false);
+              setUsername('');
+              setStatus('تم حذف الجلسة');
+              Alert.alert('تم', 'تم حذف الجلسة بنجاح');
+            } catch (error) {
+              console.error('Error clearing session:', error);
+            }
+          }
+        }
+      ]
+    );
+  };
 
-- Cloud builds for Android and iOS with consistent environments
-- Automatically provision and manage app signing credentials or use your own
-- Share [internal distribution](/build/internal-distribution/) builds with a URL
-- Automate builds with [build profiles](/build/eas-json/#build-profiles) in **eas.json** (named sets of build settings) and integrations with [EAS Workflows](/eas/workflows/get-started/) or [CI pipelines](/build/building-on-ci/)
-- Auto-submit successful builds to app stores via [`--auto-submit`](/build/automate-submissions/) and EAS Submit
-- First-class [`expo-updates` integration](/build/updates/) with per-profile channels and [runtime version](/eas-update/runtime-versions/) guidance
-- Reuse [development builds](/develop/development-builds/introduction/) across your team. When two team members run `eas build:dev` and the project fingerprint matches, the existing build is downloaded from EAS instead of creating a new one
-- Faster builds via [dependency caching and custom cache paths](/build-reference/caching/)
-- Install builds and updates on devices with [Expo Orbit](https://expo.dev/orbit)
+  const startLogin = () => {
+    setShowWebView(true);
+    setStatus('جارٍ فتح صفحة تسجيل الدخول...');
+  };
 
-## When to use EAS Build
+  if (showWebView) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" />
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => setShowWebView(false)}
+          >
+            <Text style={styles.backButtonText}>✕ إغلاق</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>تسجيل الدخول</Text>
+        </View>
+        
+        {loading && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#E1306C" />
+            <Text style={styles.loadingText}>{status}</Text>
+          </View>
+        )}
+        
+        <WebView
+          ref={webViewRef}
+          source={{ uri: INSTAGRAM_URL }}
+          onNavigationStateChange={handleWebViewNavigation}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          sharedCookiesEnabled={true}
+          thirdPartyCookiesEnabled={true}
+          startInLoadingState={true}
+          renderLoading={() => (
+            <View style={styles.webViewLoading}>
+              <ActivityIndicator size="large" color="#E1306C" />
+              <Text style={styles.loadingText}>جارٍ تحميل إنستغرام...</Text>
+            </View>
+          )}
+          style={styles.webView}
+          userAgent="Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36"
+        />
+      </SafeAreaView>
+    );
+  }
 
-| Scenario                                                                             | Recommendation |
-| ------------------------------------------------------------------------------------ | -------------- |
-| Build production-ready binaries for app stores                                       | <YesIcon />    |
-| Share builds with testers via [internal distribution](/build/internal-distribution/) | <YesIcon />    |
-| Consistent builds across team members without local environment setup                | <YesIcon />    |
-| Automate builds from CI or [EAS Workflows](/eas/workflows/get-started/)              | <YesIcon />    |
-| Managed app signing credentials                                                      | <YesIcon />    |
-| Debugging native code locally                                                        | <NoIcon />     |
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.mainContent}>
+          {/* Header */}
+          <View style={styles.titleContainer}>
+            <Text style={styles.emoji}>📸</Text>
+            <Text style={styles.title}>إنستغرام سشن</Text>
+            <Text style={styles.subtitle}>مدير الجلسات الآمن</Text>
+          </View>
 
-## Frequently asked questions
+          {/* Status Card */}
+          <View style={styles.statusCard}>
+            <View style={[styles.statusDot, isLoggedIn ? styles.statusOnline : styles.statusOffline]} />
+            <Text style={styles.statusText}>
+              {isLoggedIn ? 'متصل' : 'غير متصل'}
+            </Text>
+            {username ? (
+              <Text style={styles.username}>@{username}</Text>
+            ) : null}
+          </View>
 
-<FAQ>
+          {/* Action Buttons */}
+          <View style={styles.buttonContainer}>
+            {!isLoggedIn ? (
+              <TouchableOpacity
+                style={[styles.button, styles.loginButton]}
+                onPress={startLogin}
+              >
+                <Text style={styles.buttonText}>🔐 تسجيل الدخول إلى إنستغرام</Text>
+              </TouchableOpacity>
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={[styles.button, styles.exportButton]}
+                  onPress={exportCookies}
+                >
+                  <Text style={styles.buttonText}>📤 تصدير ملف الجلسة</Text>
+                </TouchableOpacity>
 
-<Collapsible summary="How do I share builds with my team before submitting to app stores?">
+                <TouchableOpacity
+                  style={[styles.button, styles.reloginButton]}
+                  onPress={startLogin}
+                >
+                  <Text style={styles.buttonText}>🔄 تسجيل دخول جديد</Text>
+                </TouchableOpacity>
 
-Use [internal distribution](/build/internal-distribution/) to share builds with a URL. Set `"distribution": "internal"` in your [build profile](/build/eas-json/#build-profiles) in **eas.json** to generate installable Android Package (APK) files for Android or [ad hoc builds](/build/internal-distribution/) for iOS.
+                <TouchableOpacity
+                  style={[styles.button, styles.clearButton]}
+                  onPress={clearSession}
+                >
+                  <Text style={[styles.buttonText, styles.clearButtonText]}>🗑️ حذف الجلسة</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
 
-</Collapsible>
+          {/* Session Info */}
+          {cookies && (
+            <View style={styles.infoCard}>
+              <Text style={styles.infoTitle}>معلومات الجلسة:</Text>
+              <Text style={styles.infoText}>عدد الكوكيز: {cookies.length}</Text>
+              <Text style={styles.infoText}>الحالة: نشطة ✅</Text>
+              <Text style={styles.infoText}>الملف: instagram_session.json</Text>
+            </View>
+          )}
 
-<Collapsible summary="Can I use EAS Build with existing React Native projects?">
+          {/* Status Message */}
+          {status ? (
+            <View style={styles.messageBox}>
+              <Text style={styles.messageText}>{status}</Text>
+            </View>
+          ) : null}
 
-Yes. EAS Build works with existing React Native projects created with `npx react-native init` or similar tools. See [Overview of using Expo with existing React Native apps](/bare/overview/) for more information.
+          {/* Instructions */}
+          <View style={styles.instructionsCard}>
+            <Text style={styles.instructionsTitle}>📋 طريقة الاستخدام:</Text>
+            <Text style={styles.instructionsText}>
+              1. اضغط على زر تسجيل الدخول{'\n'}
+              2. سجل دخولك في إنستغرام بأمان{'\n'}
+              3. سيتم حفظ الجلسة تلقائياً{'\n'}
+              4. يمكنك تصدير ملف الجلسة وقتما تشاء
+            </Text>
+          </View>
 
-</Collapsible>
+          {/* Warning */}
+          <View style={styles.warningCard}>
+            <Text style={styles.warningText}>
+              ⚠️ تنبيه: هذا التطبيق للأغراض التعليمية فقط. استخدامه مع إنستغرام قد يخالف شروط الخدمة.
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 
-<Collapsible summary="Does EAS Build handle app signing credentials?">
-
-Yes. EAS Build can generate and manage Android [keystores](/app-signing/app-credentials/#android), iOS [provisioning profiles](/app-signing/app-credentials/#ios) and [distribution certificates](/app-signing/app-credentials/#ios), or use credentials you provide. See [App signing credentials](/app-signing/app-credentials/) for more information.
-
-</Collapsible>
-
-<Collapsible summary="Can I run builds locally instead of in the cloud?">
-
-Yes. Use [local builds](/build-reference/local-builds/) with `eas build --local` to run builds on your machine. This is useful for debugging or for security policies that require local builds.
-
-</Collapsible>
-
-<Collapsible summary="Can I use EAS Build with EAS Workflows or CI pipelines?">
-
-Yes. EAS Build integrates with [EAS Workflows](/eas/workflows/get-started/) using the `build` job type. Add a build job to your workflow configuration, for example:
-
-```yaml
-jobs:
-  build_ios:
-    type: build
-    params:
-      platform: ios
-```
-
-The build job supports builds for both platforms or conditional builds based on the branch:
-
-```yaml
-jobs:
-  build:
-    type: build
-    params:
-      platform: all
-      profile: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
-```
-
-For more information and other usage examples, see the [EAS Workflows build job](/eas/workflows/pre-packaged-jobs#build).
-
-EAS Build supports [builds from GitHub](/build/building-from-github/) and [building on CI](/build/building-on-ci/) with any provider.
-
-</Collapsible>
-
-<Collapsible summary="What build server infrastructure does EAS Build use?">
-
-Android builds run on Linux runners hosted in Google Cloud Platform, and iOS builds run on macOS runners hosted in Expo's macOS cloud. See [Build server infrastructure](/build-reference/infrastructure/).
-
-</Collapsible>
-
-</FAQ>
-
-## Get started
-
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Automate submissions"
-  description="Learn how EAS Build can take your successful builds and handle uploading them to app stores automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FAFAFA',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
+  mainContent: {
+    flex: 1,
+    padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#DBDBDB',
+    elevation: 2,
+  },
+  backButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 20,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#262626',
+    fontWeight: '500',
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#262626',
+    marginRight: 50,
+  },
+  webView: {
+    flex: 1,
+  },
+  webViewLoading: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    zIndex: 1000,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#262626',
+    textAlign: 'center',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  emoji: {
+    fontSize: 50,
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#262626',
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#8E8E8E',
+  },
+  statusCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  statusDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 10,
+  },
+  statusOnline: {
+    backgroundColor: '#4CAF50',
+  },
+  statusOffline: {
+    backgroundColor: '#9E9E9E',
+  },
+  statusText: {
+    fontSize: 16,
+    color: '#262626',
+    flex: 1,
+  },
+  username: {
+    fontSize: 16,
+    color: '#E1306C',
+    fontWeight: '500',
+  },
+  buttonContainer: {
+    marginBottom: 20,
+  },
+  button: {
+    padding: 18,
+    borderRadius: 12,
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  loginButton: {
+    backgroundColor: '#E1306C',
+  },
+  exportButton: {
+    backgroundColor: '#4CAF50',
+  },
+  reloginButton: {
+    backgroundColor: '#2196F3',
+  },
+  clearButton: {
+    backgroundColor: '#FFEBEE',
+    borderWidth: 1,
+    borderColor: '#FFCDD2',
+  },
+  clearButtonText: {
+    color: '#D32F2F',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  infoCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  infoTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#262626',
+    marginBottom: 8,
+  },
+  infoText: {
+    fontSize: 14,
+    color: '#8E8E8E',
+    marginBottom: 4,
+  },
+  messageBox: {
+    backgroundColor: '#E3F2FD',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  messageText: {
+    fontSize: 14,
+    color: '#1976D2',
+    textAlign: 'center',
+  },
+  instructionsCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  instructionsTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#262626',
+    marginBottom: 8,
+  },
+  instructionsText: {
+    fontSize: 14,
+    color: '#8E8E8E',
+    lineHeight: 24,
+  },
+  warningCard: {
+    backgroundColor: '#FFF3E0',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#FFE0B2',
+  },
+  warningText: {
+    fontSize: 13,
+    color: '#E65100',
+    lineHeight: 20,
+  },
+});
