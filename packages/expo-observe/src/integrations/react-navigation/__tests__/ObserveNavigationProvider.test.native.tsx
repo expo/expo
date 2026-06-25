@@ -9,14 +9,21 @@ import {
 } from '../context';
 import * as initModule from '../init';
 
-jest.mock('expo-app-metrics', () => ({
-  __esModule: true,
-  default: {
-    markInteractive: jest.fn(),
-    getMainSession: jest.fn(async () => ({ id: 'session-1' })),
-    addCustomMetricToSession: jest.fn(),
-  },
-}));
+jest.mock('expo-app-metrics', () => {
+  const mainSession = {
+    id: 'session-1',
+    type: 'main',
+    startDate: '2026-01-01T00:00:00.000Z',
+    addMetric: jest.fn(),
+  };
+  return {
+    __esModule: true,
+    default: {
+      markInteractive: jest.fn(),
+      getMainSession: jest.fn(() => mainSession),
+    },
+  };
+});
 
 jest.mock('../init', () => ({
   __esModule: true,
@@ -75,9 +82,11 @@ const handleStateChangeModule = require('../handleStateChange') as {
 const reactNavigationModule = require('../reactNavigation') as {
   __setOptionalReactNavigation: (value: unknown) => void;
 };
-const appMetrics = require('expo-app-metrics').default as {
-  addCustomMetricToSession: jest.Mock;
-};
+const mockAddMetric = (
+  require('expo-app-metrics').default as {
+    getMainSession: () => { addMetric: jest.Mock };
+  }
+).getMainSession().addMetric;
 
 const mockIsInitialized = initModule.isInitialized as jest.Mock;
 const attachActionListenerMock = actionListenerModule.attachActionListener;
@@ -89,7 +98,9 @@ const stateChangeHandler = handleStateChangeModule.__handler;
 // `createNavigationContainerRef()`.
 const stateListenerCleanup = jest.fn();
 const fakeNavigationRef = {
-  addListener: jest.fn((event: string) => (event === 'state' ? stateListenerCleanup : () => {})),
+  addListener: jest.fn((event: string, _cb: (e?: unknown) => void) =>
+    event === 'state' ? stateListenerCleanup : () => {}
+  ),
   getRootState: jest.fn((): unknown => undefined),
   isReady: jest.fn(() => false),
 };
@@ -299,12 +310,10 @@ describe('ObserveNavigationProvider', () => {
     getStateListener()!();
     await flushAsync();
 
-    const coldTtrCalls = appMetrics.addCustomMetricToSession.mock.calls.filter(
-      (c) => c[0].name === 'cold_ttr'
-    );
+    const coldTtrCalls = mockAddMetric.mock.calls.filter((c) => c[0].name === 'cold_ttr');
     expect(coldTtrCalls).toHaveLength(1);
     expect(coldTtrCalls[0][0].routeName).toBe('/Home');
-    expect(appMetrics.addCustomMetricToSession).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
   });
 
   it('moves all listeners to a new ref when navigationRef identity changes between renders', () => {

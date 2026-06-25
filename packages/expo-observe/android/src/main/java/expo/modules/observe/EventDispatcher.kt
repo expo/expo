@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.Log
 import expo.modules.easclient.EASClientID
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -18,7 +16,6 @@ class EventDispatcher(
   val context: Context,
   val projectId: String,
   val baseUrl: String,
-  private val useOpenTelemetry: Boolean = false,
   private val httpClient: OkHttpClient = OkHttpClient()
 ) {
   private val baseProjectUrl: String
@@ -27,8 +24,7 @@ class EventDispatcher(
       else -> "$baseUrl/$projectId"
     }
 
-  private fun metricsEndpointUrl(): String =
-    if (useOpenTelemetry) "$baseProjectUrl/v1/metrics" else baseProjectUrl
+  private fun metricsEndpointUrl(): String = "$baseProjectUrl/v1/metrics"
 
   private fun logsEndpointUrl(): String = "$baseProjectUrl/v1/logs"
 
@@ -40,22 +36,9 @@ class EventDispatcher(
       }
       val easId = EASClientID(context).uuid.toString()
       try {
-        val json = Json {
-          prettyPrint = true
-        }
-
-        val body = if (useOpenTelemetry) {
-          val otRequestBody = OTRequestBody(
-            resourceMetrics = events.map { it.toOTEvent(easId) }
-          )
-          otRequestBody.toJson(prettyPrint = true)
-        } else {
-          val payload = Payload(
-            easClientId = easId,
-            events = events
-          )
-          json.encodeToString(Payload.serializer(), payload)
-        }
+        val body = OTRequestBody(
+          resourceMetrics = events.map { it.toOTEvent(easId) }
+        ).toJson(prettyPrint = true)
 
         executePost(continuation, metricsEndpointUrl(), body)
       } catch (e: Exception) {
@@ -103,6 +86,13 @@ class EventDispatcher(
     val request = Request
       .Builder()
       .url(endpointUrl)
+      // Tells the expo-app-metrics network observer to skip this request so our own telemetry
+      // uploads don't get logged back into the network-request stream. The interceptor strips
+      // the header before forwarding so the server never sees it. The name is duplicated here
+      // rather than imported: expo-observe must not depend on expo-app-metrics internals. Keep
+      // it in sync with `INTERNAL_HEADER_NAME` in
+      // `expo-app-metrics/android/.../networkrequests/NetworkRequestInterceptor.kt`.
+      .addHeader("Expo-AppMetrics-Skip", "1")
       .post(body.toRequestBody("application/json".toMediaType()))
       .build()
 
@@ -124,9 +114,3 @@ class EventDispatcher(
     private const val TAG = "EasObserve"
   }
 }
-
-@Serializable
-data class Payload(
-  val easClientId: String,
-  val events: List<Event>
-)

@@ -1,10 +1,10 @@
-import type { NavigationContainerRef } from '@react-navigation/native';
 import { forwardRef, useImperativeHandle, type ComponentProps, type Ref } from 'react';
 
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 import { ObserveNavigationProvider } from './ObserveNavigationProvider';
 import { isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
-import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
+import type { NavigationContainerRefLike } from './types';
 
 const NavigationContainer = optionalReactNavigation?.NavigationContainer;
 const useNavigationContainerRef = optionalReactNavigation?.useNavigationContainerRef;
@@ -15,7 +15,7 @@ export type ObserveNavigationContainerProps = NavigationContainerProps;
 
 function ObserveNavigationContainerImpl(
   props: ObserveNavigationContainerProps,
-  forwardedRef: Ref<NavigationContainerRef<ReactNavigation.RootParamList>>
+  forwardedRef: Ref<NavigationContainerRefLike>
 ) {
   if (!NavigationContainer || !useNavigationContainerRef) {
     throw new Error(
@@ -27,11 +27,7 @@ function ObserveNavigationContainerImpl(
   const { children, ...rest } = props;
   const navigationRef = useNavigationContainerRef();
 
-  useImperativeHandle(
-    forwardedRef,
-    () => navigationRef as unknown as NavigationContainerRef<ReactNavigation.RootParamList>,
-    [navigationRef]
-  );
+  useImperativeHandle(forwardedRef, () => navigationRef, [navigationRef]);
 
   useAssertValueDoesNotChange(
     isInitialized(),
@@ -39,10 +35,7 @@ function ObserveNavigationContainerImpl(
   );
 
   return (
-    <ObserveNavigationProvider
-      navigationRef={
-        navigationRef as unknown as NavigationContainerRef<ReactNavigation.RootParamList>
-      }>
+    <ObserveNavigationProvider navigationRef={navigationRef}>
       <NavigationContainer
         {...rest}
         ref={navigationRef as unknown as NavigationContainerProps['ref']}>
