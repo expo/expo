@@ -323,7 +323,7 @@ describe('getHtml', () => {
       }),
       expect.objectContaining({
         request,
-        assets: { css: ['/style.css'], js: ['/app.js'] },
+        assets: { css: ['/style.css'], externalCss: [], js: ['/app.js'] },
       })
     );
     expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
@@ -362,8 +362,53 @@ describe('getHtml', () => {
       expect.objectContaining({
         assets: {
           css: ['/global.css'],
+          externalCss: [],
           js: ['/runtime.js', '/entry.js', '/layout-chunk.js', '/index-chunk.js'],
         },
+      })
+    );
+  });
+
+  it('merges top-level and per-route external CSS', async () => {
+    const mockSSRModule = createMockSSRModule();
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: {
+          css: [],
+          externalCss: [{ href: 'https://fonts.googleapis.com/css2?family=Roboto' }],
+          js: [],
+        },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+        assets: {
+          css: [],
+          externalCss: [
+            { href: 'https://example.com/route.css', media: 'screen and (min-width: 900px)' },
+          ],
+          js: [],
+        },
+      })
+    );
+
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        assets: expect.objectContaining({
+          externalCss: [
+            { href: 'https://fonts.googleapis.com/css2?family=Roboto' },
+            { href: 'https://example.com/route.css', media: 'screen and (min-width: 900px)' },
+          ],
+        }),
       })
     );
   });
