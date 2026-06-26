@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add `updates.excludeFromBackup` config option to exclude the updates directory from device backups.
+- [iOS] Add `updates.excludeFromBackup` config option to exclude the updates directory from device backups. ([#47290](https://github.com/expo/expo/pull/47290) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
