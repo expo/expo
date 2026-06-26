@@ -45,8 +45,11 @@ object AppStartupManager {
   // and the JS thread. @Volatile guarantees writes are visible across threads so the
   // one-shot guards (hasRecorded*) don't spuriously fire twice.
   @Volatile private var bundleLoadStartTime: Long? = null
+
   @Volatile private var launchTimeInMillis: Long? = null
+
   @Volatile private var hasRecordedInteractive = false
+
   @Volatile private var hasRecordedFirstRender = false
 
   @Volatile
