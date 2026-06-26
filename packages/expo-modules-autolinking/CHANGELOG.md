@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Respect an explicit `ios.usePrecompiledModules: false` even when `EXPO_USE_PRECOMPILED_MODULES` is already set in the environment (e.g. EAS Build). ([#46983](https://github.com/expo/expo/pull/46983) by [@ryanda9910](https://github.com/ryanda9910))
+
 ### 💡 Others
 
 ## 56.0.16 — 2026-06-15
