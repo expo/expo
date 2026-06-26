@@ -1,18 +1,28 @@
 {
   "name": "expo-image",
-  "title": "Expo Image",
   "version": "56.0.9",
   "description": "A cross-platform, performant image component for React Native and Expo with Web support",
+  "keywords": [
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/image/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-image"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
@@ -22,26 +32,18 @@
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/image/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-image"
-  },
-  "keywords": [
-    "react-native"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "dependencies": {
     "sf-symbols-typescript": "^2.2.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
@@ -58,7 +60,5 @@
       "optional": true
     }
   },
-  "jest": {
-    "preset": "expo-module-scripts"
-  }
+  "title": "Expo Image"
 }

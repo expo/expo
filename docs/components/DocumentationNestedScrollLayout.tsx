@@ -151,7 +151,10 @@ export default function DocumentationNestedScrollLayout({
             'max-lg:overflow-auto',
             isMobileMenuVisible && 'hidden'
           )}>
-          <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
+          <ScrollContainer
+            ref={contentRef}
+            scrollHandler={scrollHandler}
+            className="[scrollbar-gutter:stable]">
             <div
               className={mergeClasses(
                 'mx-auto max-w-screen-xl transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',

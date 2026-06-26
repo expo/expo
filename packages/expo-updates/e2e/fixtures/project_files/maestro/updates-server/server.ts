@@ -457,7 +457,7 @@ app.get('/delay', async (req: Request, res: Response) => {
     res.status(400).send('Missing delay');
     return;
   }
-  const delay = parseInt(req.query.ms as string);
+  const delay = parseInt(req.query.ms as string, 10);
   await setTimeout(delay);
   res.status(200).send('OK');
 });

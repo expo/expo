@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-06-15T11:39:09.228Z"
+    "fetchedAt": "2026-06-19T11:21:53.683Z"
   },
-  "totalSkills": 15,
+  "totalSkills": 16,
   "skills": [
     {
       "name": "add-app-clip",
@@ -45,6 +45,11 @@
       "name": "expo-dev-client",
       "description": "Build and distribute Expo development clients locally or via TestFlight.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-dev-client/SKILL.md"
+    },
+    {
+      "name": "expo-examples",
+      "description": "Expo's official example projects — the expo/examples repo of ~70 `with-*` integrations (Stripe, Clerk, Supabase, OpenAI, maps, Reanimated, SQLite, Skia, NativeWind, and more). Use when integrating a third-party library or service into an existing Expo app and you want the canonical, version-matched pattern to adapt, or when scaffolding a new project from one with `npx create-expo --example`.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-examples/SKILL.md"
     },
     {
       "name": "expo-module",

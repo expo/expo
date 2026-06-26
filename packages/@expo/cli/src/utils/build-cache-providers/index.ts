@@ -8,10 +8,10 @@ import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
 import * as Log from '../../log';
 import { ensureDependenciesAsync } from '../../start/doctor/dependencies/ensureDependenciesAsync';
 import { CommandError } from '../errors';
+import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
 
 const debug = require('debug')('expo:run:build-cache-provider') as typeof console.log;
 

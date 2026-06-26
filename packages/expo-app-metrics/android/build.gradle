@@ -30,9 +30,11 @@ buildscript {
     }
 
   dependencies {
+    classpath("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:${kotlinVersion}")
     classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${getKspVersion()}"
   }
 }
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 apply plugin: 'com.google.devtools.ksp'
 
 group = 'expo.modules.appmetrics'

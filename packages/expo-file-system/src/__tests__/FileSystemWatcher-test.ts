@@ -71,7 +71,7 @@ describeNative('FileSystemWatcher', () => {
     }));
 
     const callback = jest.fn();
-    const _watcher = new FileSystemWatcher(
+    new FileSystemWatcher(
       'file:///project',
       callback,
       { events: ['renamed'] },
@@ -156,7 +156,7 @@ describeNative('FileSystemWatcher', () => {
       stop,
     }));
 
-    const _watcher = new FileSystemWatcher(
+    new FileSystemWatcher(
       'file:///project/file.txt',
       callback,
       { events: ['modified'] },

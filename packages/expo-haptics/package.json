@@ -2,33 +2,46 @@
   "name": "expo-haptics",
   "version": "56.0.3",
   "description": "Provides access to the system's haptics engine on iOS, vibration effects on Android, and Web Vibration API on web.",
-  "main": "build/Haptics.js",
-  "types": "build/Haptics.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "expo-build src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
-  },
   "keywords": [
-    "react-native",
     "expo",
     "expo-haptics",
-    "haptics"
+    "haptics",
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/haptics/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-haptics"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "sideEffects": false,
+  "main": "build/Haptics.js",
+  "types": "build/Haptics.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/Haptics.ts",
+        "default": "./build/Haptics.d.ts"
+      },
+      "expo-source": "./src/Haptics.ts",
+      "default": "./build/Haptics.js"
+    },
+    "./package.json": "./package.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/haptics/",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
   "dependencies": {},
   "devDependencies": {
     "expo": "workspace:*",
@@ -36,16 +49,5 @@
   },
   "peerDependencies": {
     "expo": "*"
-  },
-  "exports": {
-    ".": {
-      "types": {
-        "source": "./src/Haptics.ts",
-        "default": "./build/Haptics.d.ts"
-      },
-      "source": "./src/Haptics.ts",
-      "default": "./build/Haptics.js"
-    },
-    "./package.json": "./package.json"
   }
 }

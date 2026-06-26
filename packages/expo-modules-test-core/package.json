@@ -1,44 +1,46 @@
 {
   "name": "expo-modules-test-core",
   "version": "56.0.5",
-  "main": "./app.plugin.js",
   "description": "Module providing native testing utilities for testing Expo modules",
   "keywords": [
-    "react-native",
     "expo",
     "expo-modules",
     "expo-modules-core",
-    "expo-modules-test-core"
+    "expo-modules-test-core",
+    "react-native"
   ],
-  "scripts": {
-    "build": "expo-build cjs:src",
-    "test": "expo-module test",
-    "lint": "expo-module lint",
-    "clean": "expo-module clean"
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-test-core",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
   },
-  "bin": {
-    "expo-modules-test-core": "./bin/cli.js"
-  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-modules-test-core"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "bin": {
+    "expo-modules-test-core": "./bin/cli.js"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-test-core",
+  "main": "./app.plugin.js",
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "clean": "expo-module clean",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
   "dependencies": {
     "@types/node": "^22.14.0",
+    "expo-type-information": "workspace:^0.0.5",
     "glob": "^13.0.0",
-    "prettier": "^3.8.3",
     "xml-js": "^1.6.11",
-    "yaml": "^2.8.3",
-    "expo-type-information": "workspace:^0.0.5"
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "expo-module-scripts": "workspace:*"
   }
 }

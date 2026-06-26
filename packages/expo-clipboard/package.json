@@ -2,31 +2,34 @@
   "name": "expo-clipboard",
   "version": "56.0.3",
   "description": "Provides an interface for getting and setting Clipboard content on Android, iOS, macOS and Web.",
-  "main": "build/Clipboard.js",
-  "types": "build/Clipboard.d.ts",
-  "scripts": {
-    "build": "expo-build src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
-  },
   "keywords": [
-    "react-native",
     "expo",
-    "expo-clipboard"
+    "expo-clipboard",
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/clipboard",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-clipboard"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "main": "build/Clipboard.js",
+  "types": "build/Clipboard.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/clipboard",
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.2.0",

@@ -2,34 +2,36 @@
   "name": "expo-store-review",
   "version": "56.0.3",
   "description": "Provides access to native APIs for in-app reviews.",
-  "main": "build/StoreReview.js",
-  "types": "build/StoreReview.d.ts",
-  "scripts": {
-    "build": "expo-build src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
-  },
   "keywords": [
-    "react-native",
+    "app-store",
     "expo",
     "expo-store-review",
-    "reviews",
-    "app-store",
-    "google-play-store"
+    "google-play-store",
+    "react-native",
+    "reviews"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-store-review"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "main": "build/StoreReview.js",
+  "types": "build/StoreReview.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
   "dependencies": {},
   "devDependencies": {
     "expo": "workspace:*",

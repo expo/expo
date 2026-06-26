@@ -2,16 +2,34 @@
   "name": "expo-glass-effect",
   "version": "56.0.4",
   "description": "A component that renders a native glass effect view on iOS.",
+  "keywords": [
+    "apple",
+    "expo",
+    "expo-glass-effect",
+    "liquid-glass",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/glass-effect/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-glass-effect"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
@@ -19,31 +37,13 @@
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
-  "keywords": [
-    "react-native",
-    "apple",
-    "liquid-glass",
-    "expo",
-    "expo-glass-effect"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-glass-effect"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/glass-effect/",
   "dependencies": {},
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
@@ -57,5 +57,8 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

@@ -1,9 +1,9 @@
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import { BodyText } from '../components/BodyText';
 import BouncyBox from './GestureHandler/BouncyBox';
 import FancyButton from './GestureHandler/FancyButton';
-import { BodyText } from '../components/BodyText';
 
 export default function GestureHandlerListScreen() {
   return (

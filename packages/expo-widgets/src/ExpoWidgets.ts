@@ -14,6 +14,7 @@ class WidgetStub {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(_name: string, _layout: string, _initialProps?: Record<string, any>) {}
   reload(): void {}
+  updateSnapshot(_props: Record<string, any>): void {}
   updateTimeline(_entries: ExpoTimelineEntry[]): void {}
   async getTimeline(): Promise<ExpoTimelineEntry[]> {
     return [];

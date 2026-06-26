@@ -2,42 +2,45 @@
   "name": "expo-dev-menu",
   "version": "56.0.15",
   "description": "Expo/React Native module with the developer menu.",
-  "main": "build/DevMenu.js",
-  "types": "build/DevMenu.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "pnpm run build:lib && pnpm run build:plugin",
-    "build:lib": "expo-build src",
-    "build:plugin": "expo-build --base plugin cjs:src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
-  },
   "keywords": [
-    "expo",
-    "react-native",
-    "dev-menu",
     "dev",
-    "menu"
+    "dev-menu",
+    "expo",
+    "menu",
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-dev-menu"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "sideEffects": false,
+  "main": "build/DevMenu.js",
+  "types": "build/DevMenu.d.ts",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev",
   "dependencies": {
     "expo-dev-menu-interface": "workspace:~56.0.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/react-native": "^13.3.0",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",

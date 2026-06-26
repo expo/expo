@@ -1,44 +1,45 @@
 {
   "name": "expo-live-photo",
-  "title": "Expo Video",
   "version": "56.0.3",
   "description": "Library, which makes it possible to display live photos on iOS",
+  "keywords": [
+    "expo",
+    "live",
+    "live-photo",
+    "photo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/live-photo/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-live-photo"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     }
   },
-  "sideEffects": false,
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/live-photo/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-live-photo"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "live-photo",
-    "photo",
-    "live"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.2.0",
@@ -49,5 +50,6 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  }
+  },
+  "title": "Expo Video"
 }

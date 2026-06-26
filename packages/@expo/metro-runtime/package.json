@@ -2,25 +2,13 @@
   "name": "@expo/metro-runtime",
   "version": "56.0.13",
   "description": "Tools for making advanced Metro bundler features work",
-  "sideEffects": true,
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
   "keywords": [],
-  "author": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
   "license": "MIT",
-  "exports": {
-    ".": {
-      "types": {
-        "source": "./src/index.ts",
-        "default": "./build/index.d.ts"
-      },
-      "source": "./src/index.ts",
-      "default": "./build/index.js"
-    },
-    "./rsc/runtime.js": "./rsc/runtime.js",
-    "./rsc/runtime": "./rsc/runtime.js",
-    "./package.json": "./package.json"
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
   },
   "files": [
     "build",
@@ -29,17 +17,45 @@
     "assets",
     "!**/__tests__"
   ],
+  "sideEffects": true,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./rsc/runtime.js": "./rsc/runtime.js",
+    "./rsc/runtime": "./rsc/runtime.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git"
+  "dependencies": {
+    "@expo/log-box": "workspace:^56.0.12",
+    "anser": "^1.4.9",
+    "pretty-format": "^29.7.0",
+    "stacktrace-parser": "^0.1.10",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.0",
+    "expo-constants": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "react-dom": "19.2.3"
   },
   "peerDependencies": {
     "@expo/log-box": "workspace:^56.0.12",
@@ -52,18 +68,5 @@
     "react-dom": {
       "optional": true
     }
-  },
-  "dependencies": {
-    "@expo/log-box": "workspace:^56.0.12",
-    "anser": "^1.4.9",
-    "stacktrace-parser": "^0.1.10",
-    "pretty-format": "^29.7.0",
-    "whatwg-fetch": "^3.0.0"
-  },
-  "devDependencies": {
-    "@types/react": "~19.2.0",
-    "expo-constants": "workspace:*",
-    "expo-module-scripts": "workspace:*",
-    "react-dom": "19.2.3"
   }
 }

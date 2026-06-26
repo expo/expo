@@ -96,6 +96,7 @@ The file or directory does not need to exist — an error will be thrown from th
 - Available properties, such as `type`, `size`, `creationDate`, and more
 - Ability to read and write files as streams or using the `FileHandle` class
 - Easy file download/upload using `downloadFileAsync` or `expo/fetch`
+- File previews using platform-native flows
 
 ## Examples
 
@@ -184,6 +185,52 @@ await src.write(await response.bytes());
 
 </Collapsible>
 
+<Collapsible summary="Previewing files">
+
+Use `File.preview()` to open a local file with the platform's file preview flow. File preview is currently supported on Android and iOS. On iOS, this presents Quick Look, which supports many common file types such as PDFs, images, text files, CSV files, and Office documents. On Android, this opens an `ACTION_VIEW` intent, so support depends on apps installed on the device that can handle the file's MIME type.
+
+```ts example.ts
+import { File, Paths } from 'expo-file-system';
+
+const file = await File.downloadFileAsync(
+  'https://pdfobject.com/pdf/sample.pdf',
+  new File(Paths.cache, 'sample.pdf')
+);
+
+if (await file.canPreview()) {
+  await file.preview({ title: 'Sample PDF' });
+}
+```
+
+The `mimeType` option defaults to the file's `type` property. If the file extension does not identify the type correctly, pass `mimeType` explicitly, especially on Android where the MIME type is used to find compatible apps. When Android cannot resolve a MIME type, `canPreview()` resolves to `false` and `preview()` rejects.
+
+`canPreview()` rejects if the file is invalid or cannot be read. It resolves to `false` when the file does not exist or when the platform cannot preview it.
+
+`preview()` resolves once the native preview has been presented or handed off to another app. It rejects if the file does not exist, cannot be read, or no preview is available. It does not wait for the user to dismiss the viewer.
+
+If a share sheet is useful in your app, you can compose this with [`expo-sharing`](./sharing/) when previewing fails:
+
+```ts example.ts
+import { File, Paths } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+
+// This can be a file created, picked, or downloaded earlier.
+const file = new File(Paths.cache, 'report.pdf');
+
+try {
+  await file.preview({ title: 'Report' });
+} catch {
+  if (await Sharing.isAvailableAsync()) {
+    await Sharing.shareAsync(file.uri, {
+      dialogTitle: 'Share report',
+      mimeType: file.type || 'application/pdf',
+    });
+  }
+}
+```
+
+</Collapsible>
+
 <Collapsible summary={<>Uploading files using <CODE>expo/fetch</CODE></>}>
 
 You can upload files as blobs directly with `fetch` built into the Expo package:
@@ -237,6 +284,39 @@ try {
 } catch (error) {
   console.error(error);
 }
+```
+
+</Collapsible>
+
+<Collapsible summary="Random-access reads with FileHandle">
+
+Use [`FileHandle`](#filehandle) for efficient, random-access reads of large files without loading the entire file into memory. Obtain a handle by calling `file.open()`, read or write at any position using the `offset` property, and always close the handle when finished.
+
+```ts example.ts
+import { File, Paths, FileMode } from 'expo-file-system';
+
+const file = new File(Paths.document, 'recording.wav');
+const handle = file.open(FileMode.ReadOnly);
+
+// Read the WAV header (first 44 bytes)
+const header = handle.readBytesSync(44);
+const sampleRate = new DataView(header.buffer).getUint32(24, true);
+console.log(`Sample rate: ${sampleRate} Hz`);
+
+// Seek to a specific offset and read a chunk
+handle.offset = 1024;
+const chunk = await handle.readBytes(4096);
+console.log(`Read ${chunk.length} bytes from offset 1024`);
+
+// Read an entire file in 64 KB chunks
+handle.offset = 0;
+const CHUNK_SIZE = 64 * 1024;
+while (handle.offset! < handle.size!) {
+  const data = await handle.readBytes(CHUNK_SIZE);
+  // Process data...
+}
+
+handle.close();
 ```
 
 </Collapsible>

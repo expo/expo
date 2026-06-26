@@ -73,7 +73,7 @@ describe(ObserveInteractiveMarker, () => {
     rerender(<ObserveInteractiveMarker params={{ cacheHit: 'other' }} />);
 
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toEqual(
+    expect(warnSpy.mock.calls[0]![0]).toEqual(
       expect.stringContaining('[expo-observe] <ObserveInteractiveMarker>')
     );
     warnSpy.mockRestore();

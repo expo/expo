@@ -2,50 +2,50 @@
   "name": "expo-crypto",
   "version": "56.0.4",
   "description": "Provides cryptography primitives for Android, iOS and web.",
-  "main": "build/Crypto.js",
-  "types": "build/Crypto.d.ts",
-  "exports": {
-    ".": {
-      "types": {
-        "source": "./src/Crypto.ts",
-        "default": "./build/Crypto.d.ts"
-      },
-      "source": "./src/Crypto.ts",
-      "default": "./build/Crypto.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "sideEffects": false,
-  "scripts": {
-    "build": "expo-build src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
-  },
   "keywords": [
+    "android",
+    "crypto",
+    "expo",
+    "ios",
+    "native",
     "react-native",
     "react-native-web",
-    "expo",
-    "crypto",
-    "ios",
-    "android",
-    "web",
-    "native"
+    "web"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/crypto/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-crypto"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "sideEffects": false,
+  "main": "build/Crypto.js",
+  "types": "build/Crypto.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/Crypto.ts",
+        "default": "./build/Crypto.d.ts"
+      },
+      "expo-source": "./src/Crypto.ts",
+      "default": "./build/Crypto.js"
+    },
+    "./package.json": "./package.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/crypto/",
-  "jest": {
-    "preset": "expo-module-scripts"
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {},
   "devDependencies": {
@@ -54,5 +54,8 @@
   },
   "peerDependencies": {
     "expo": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

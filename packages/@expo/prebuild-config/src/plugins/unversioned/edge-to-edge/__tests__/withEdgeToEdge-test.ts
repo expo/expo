@@ -3,18 +3,20 @@ import { WarningAggregator } from '@expo/config-plugins';
 import type { ExpoConfig } from '@expo/config-types';
 
 import { applyEdgeToEdge } from '../withEdgeToEdge';
-import { restoreDefaultTheme } from '../withRestoreDefaultTheme';
-
-const mockWithRestoreDefaultTheme = jest.fn((config) => config);
+import { restoreDefaultTheme, withRestoreDefaultTheme } from '../withRestoreDefaultTheme';
 
 jest.mock('../withRestoreDefaultTheme', () => {
   const originalModule = jest.requireActual('../withRestoreDefaultTheme');
   return {
     __esModule: true,
     ...originalModule,
-    withRestoreDefaultTheme: mockWithRestoreDefaultTheme,
+    withRestoreDefaultTheme: jest.fn((config) => config),
   };
 });
+
+const mockWithRestoreDefaultTheme = withRestoreDefaultTheme as jest.MockedFunction<
+  typeof withRestoreDefaultTheme
+>;
 
 // Mock WarningAggregator
 jest.mock('@expo/config-plugins', () => {
@@ -182,7 +184,8 @@ describe('applyEdgeToEdge', () => {
     const config: ExpoConfig = {
       name: 'test',
       slug: 'test',
-      android: { edgeToEdgeEnabled: true },
+      // `edgeToEdgeEnabled` is a removed key; setting it asserts the deprecation warning fires.
+      android: { edgeToEdgeEnabled: true } as NonNullable<ExpoConfig['android']>,
     };
     applyEdgeToEdge(config);
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(

@@ -43,6 +43,7 @@ exceptions:
   - '.*Apple Developer Portal.*'
   - '.*Apple ID.*'
   - '.*Apple Pay.*'
+  - '.*Argent.*'
   - '.*Asset Links.*'
   - '.*Async Storage.*'
   - '.*Autolinking.*'
@@ -133,6 +134,7 @@ exceptions:
   - '.*HTTPS.*'
   - '.*Info\.plist.*'
   - '.*iOS.*Simulator.*'
+  - '.*JDK.*'
   - '.*JSON.*'
   - '.*JavaScript.*'
   - '.*JavaScriptCore.*'
@@ -312,6 +314,8 @@ exceptions:
   - Live Activity
   - 'Prerequisite: Creating widget'
   - 'Prerequisite: Creating Live Activity'
+  - 'Prerequisite: Creating a widget'
+  - 'Prerequisite: Creating a Live Activity'
   - Hiding the Tab bar
   - Integrated vs Isolated
   - Expo Skills

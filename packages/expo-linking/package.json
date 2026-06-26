@@ -2,23 +2,39 @@
   "name": "expo-linking",
   "version": "56.0.12",
   "description": "Create and open deep links universally",
+  "keywords": [
+    "expo",
+    "expo-linking",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/linking",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-linking"
+  },
   "main": "build/Linking.js",
   "types": "build/Linking.d.ts",
   "exports": {
     ".": {
       "react-server": {
         "types": {
-          "source": "./src/Linking.server.ts",
+          "expo-source": "./src/Linking.server.ts",
           "default": "./build/Linking.server.js"
         },
-        "source": "./src/Linking.server.ts",
+        "expo-source": "./src/Linking.server.ts",
         "default": "./build/Linking.server.js"
       },
       "types": {
-        "source": "./src/Linking.ts",
+        "expo-source": "./src/Linking.ts",
         "default": "./build/Linking.d.ts"
       },
-      "source": "./src/Linking.ts",
+      "expo-source": "./src/Linking.ts",
       "default": "./build/Linking.js"
     },
     "./package.json": "./package.json"
@@ -26,41 +42,24 @@
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-linking"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-linking"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/linking",
   "dependencies": {
     "expo-constants": "workspace:~56.0.16",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0",
     "@types/invariant": "^2.2.33",
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   }
 }

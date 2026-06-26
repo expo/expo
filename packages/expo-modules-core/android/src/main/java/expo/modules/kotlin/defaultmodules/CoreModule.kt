@@ -8,6 +8,7 @@ import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.WorkletRuntimeInstaller
+import expo.modules.kotlin.jni.WorkletsSoLoader
 import expo.modules.kotlin.modules.DEFAULT_MODULE_VIEW
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -98,6 +99,13 @@ class CoreModule : Module() {
     }
 
     Function("installOnUIRuntime") { uiRuntimeHolder: JavaScriptObject ->
+      if (!WorkletsSoLoader.isAvailable) {
+        throw IllegalStateException(
+          "Couldn't install Expo Modules on the worklets UI runtime because the worklets " +
+            "integration isn't available. Make sure `react-native-worklets` is installed and rebuild the app."
+        )
+      }
+
       val runtimePointer = WorkletRuntimeInstaller.resolveUIRuntimePointer(uiRuntimeHolder)
       if (runtimePointer == 0L) {
         throw IllegalStateException(

@@ -1,10 +1,18 @@
-import { getMockConfig } from 'expo-router/build/testing-library/mock-config';
+import { getMockConfig as getMockConfigUntyped } from 'expo-router/build/testing-library/mock-config';
 
+import type { ExpoRouterRuntimeManifest } from '../../start/server/metro/MetroBundlerDevServer';
 import {
   getHtmlFiles,
   getPathVariations,
   getFilesToExportFromServerAsync,
 } from '../exportStaticAsync';
+
+// `getMockConfig` returns a structurally-close subset of the runtime manifest (it omits the
+// top-level `initialRouteName`), so retype it to the manifest shape the export helpers expect.
+const getMockConfig = (
+  ...args: Parameters<typeof getMockConfigUntyped>
+): ExpoRouterRuntimeManifest =>
+  getMockConfigUntyped(...args) as unknown as ExpoRouterRuntimeManifest;
 
 jest.mock('expo-router/build/views/Navigator', () => ({}));
 jest.mock('expo-constants', () => ({}));

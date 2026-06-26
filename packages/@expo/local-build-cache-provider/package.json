@@ -2,15 +2,34 @@
   "name": "@expo/local-build-cache-provider",
   "version": "56.0.8",
   "description": "Local build cache provider for Expo",
+  "keywords": [
+    "build-cache-provider",
+    "expo",
+    "local-build-cache",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/local-build-cache-provider#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/local-build-cache-provider"
+  },
+  "files": [
+    "build"
+  ],
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
@@ -18,30 +37,13 @@
   "scripts": {
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "typecheck": "expo-module typecheck"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/local-build-cache-provider"
-  },
-  "keywords": [
-    "expo",
-    "react-native",
-    "build-cache-provider",
-    "local-build-cache"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/local-build-cache-provider#readme",
-  "files": [
-    "build"
-  ],
   "dependencies": {
     "@expo/config": "workspace:~56.0.9",
     "chalk": "^4.1.2"

@@ -1,6 +1,6 @@
-import { DownloadTask, File, Directory, Paths, UploadTask } from '../..';
 import { __resetMockFileSystem } from '../../mocks/FileSystem';
 import { FileMode } from '../File.types';
+import { DownloadTask, File, Directory, Paths, UploadTask } from '../index';
 
 beforeEach(() => {
   __resetMockFileSystem();
@@ -65,6 +65,8 @@ describe('expo-file-system new API', () => {
     expect(typeof file.writeSync).toBe('function');
     expect(typeof file.json).toBe('function');
     expect(typeof file.formData).toBe('function');
+    expect(typeof file.canPreview).toBe('function');
+    expect(typeof file.preview).toBe('function');
   });
 
   it('File.json parses file text', async () => {
@@ -90,7 +92,7 @@ describe('expo-file-system new API', () => {
       configurable: true,
       get: () => 'multipart/form-data; boundary=test',
     });
-    global.Response = ResponseMock as typeof Response;
+    global.Response = ResponseMock as unknown as typeof Response;
 
     try {
       await expect(file.formData()).resolves.toBe(formData);
@@ -102,6 +104,29 @@ describe('expo-file-system new API', () => {
       headers: { 'Content-Type': 'multipart/form-data; boundary=test' },
     });
     expect(response.formData).toHaveBeenCalledTimes(1);
+  });
+
+  it('File.canPreview reflects mock file existence', async () => {
+    const file = new File(Paths.cache, 'preview.pdf');
+
+    await expect(file.canPreview()).resolves.toBe(false);
+
+    await file.write('mock pdf');
+
+    await expect(file.canPreview()).resolves.toBe(true);
+  });
+
+  it('File.preview rejects when mock file does not exist', async () => {
+    const file = new File(Paths.cache, 'missing.pdf');
+
+    await expect(file.preview()).rejects.toThrow('File does not exist');
+  });
+
+  it('File.preview resolves when mock file exists', async () => {
+    const file = new File(Paths.cache, 'existing-preview.pdf');
+    await file.write('mock pdf');
+
+    await expect(file.preview()).resolves.toBeUndefined();
   });
 
   it('Directory has inherited methods from native mock', () => {
@@ -196,7 +221,7 @@ describe('expo-file-system behavioral mock', () => {
     const children = dir.list();
     expect(children).toHaveLength(1);
     expect(children[0]).toBeInstanceOf(File);
-    expect(children[0].uri).toBe(file.uri);
+    expect(children[0]!.uri).toBe(file.uri);
   });
 
   it('Directory.info returns child names, size, and deterministic metadata', () => {

@@ -2,19 +2,38 @@
   "name": "expo-sqlite",
   "version": "56.0.4",
   "description": "Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "keywords": [
+    "async-storage",
+    "expo",
+    "react-native",
+    "sql",
+    "sqlite",
+    "storage"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/sqlite/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-sqlite"
+  },
   "sideEffects": [
     "./localStorage/install.js"
   ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./kv-store": {
@@ -33,41 +52,21 @@
     "build:plugin": "expo-build --base plugin cjs:src",
     "bundle:webui": "pushd dev-plugin-webui && bun run build && popd && rm -rf dev-plugin-dist && mv dev-plugin-webui/dist dev-plugin-dist",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "sqlite",
-    "sql",
-    "storage",
-    "async-storage"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-sqlite"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/sqlite/",
-  "jest": {
-    "preset": "expo-module-scripts"
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
     "await-lock": "^2.2.2"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
-    "@types/better-sqlite3": "^7.6.6",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "better-sqlite3": "^11.6.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react-error-boundary": "^4.0.11"
@@ -76,5 +75,8 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

@@ -2,37 +2,37 @@
   "name": "expo-print",
   "version": "56.0.3",
   "description": "Provides an API for Android and iOS (AirPrint) printing functionality.",
-  "main": "build/Print.js",
-  "types": "build/Print.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "expo-build src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly"
-  },
   "keywords": [
-    "react-native",
-    "expo",
-    "print",
+    "airprint",
     "android",
+    "expo",
     "ios",
-    "airprint"
+    "print",
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/print/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-print"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/print/",
-  "jest": {
-    "preset": "expo-module-scripts"
+  "sideEffects": false,
+  "main": "build/Print.js",
+  "types": "build/Print.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {},
   "devDependencies": {
@@ -42,5 +42,8 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

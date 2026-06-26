@@ -7,7 +7,6 @@ const mockPrompts = prompts as unknown as jest.Mock;
 
 const fetchMock = jest.fn();
 beforeAll(() => {
-  // @ts-expect-error - polyfill global fetch for tests
   global.fetch = fetchMock;
 });
 

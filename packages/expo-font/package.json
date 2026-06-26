@@ -2,32 +2,48 @@
   "name": "expo-font",
   "version": "56.0.5",
   "description": "Load fonts at runtime and use them in React Native components.",
+  "keywords": [
+    "expo",
+    "font",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/font/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-font"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "exports": {
     ".": {
       "react-server": {
         "types": {
-          "source": "./src/index.server.ts",
+          "expo-source": "./src/index.server.ts",
           "default": "./build/index.d.ts"
         },
-        "source": "./src/index.server.ts",
+        "expo-source": "./src/index.server.ts",
         "default": "./build/index.server.js"
       },
       "types": {
-        "source": "./src/index.ts",
+        "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
-      "source": "./src/index.ts",
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./build/server": {
       "types": {
-        "source": "./src/server.ts",
+        "expo-source": "./src/server.ts",
         "default": "./build/server.d.ts"
       },
-      "source": "./src/server.ts",
+      "expo-source": "./src/server.ts",
       "default": "./build/server.js"
     },
     "./app.plugin": "./app.plugin.js",
@@ -39,30 +55,12 @@
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "test:plugin": "expo-module test plugin",
-    "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "font"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-font"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/font/",
-  "jest": {
-    "preset": "expo-module-scripts"
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
     "fontfaceobserver": "^2.1.0"
@@ -70,6 +68,7 @@
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
     "@types/fontfaceobserver": "^2.1.3",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*"

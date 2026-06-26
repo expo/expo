@@ -36,11 +36,14 @@
     "postinstall": "pnpm copy-latest && pnpm generate-static-resources && pnpm install-vale"
   },
   "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=24"
+  },
   "dependencies": {
     "@expo/styleguide": "^14.1.5",
     "@expo/styleguide-base": "^3.1.2",
     "@expo/styleguide-cookie-consent": "^2.1.2",
-    "@expo/styleguide-icons": "^4.2.4",
+    "@expo/styleguide-icons": "^4.2.5",
     "@expo/styleguide-search-ui": "^9.1.7",
     "@formatjs/intl-localematcher": "^0.8.5",
     "@kapaai/react-sdk": "^0.9.6",
@@ -99,7 +102,7 @@
     "@types/gtag.js": "^0.0.20",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.24",
-    "@types/node": "^22.18.11",
+    "@types/node": "^24.12.2",
     "@types/nprogress": "^0.2.3",
     "@types/prismjs": "^1.26.6",
     "@types/react": "^19.2.14",
@@ -159,8 +162,5 @@
     "patchedDependencies": {
       "next@16.2.6": "patches/next@16.2.6.patch"
     }
-  },
-  "volta": {
-    "node": "22.13.1"
   }
 }

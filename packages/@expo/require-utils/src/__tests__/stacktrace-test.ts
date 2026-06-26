@@ -434,7 +434,7 @@ describe('source-mapped frames', () => {
   });
 
   it('falls back to V8 format when findEntry returns no originalSource', () => {
-    findSourceMap.mockReturnValue({ findEntry: () => ({}) } as ReturnType<
+    findSourceMap.mockReturnValue({ findEntry: () => ({}) } as unknown as ReturnType<
       typeof nodeModule.findSourceMap
     >);
     const site = mockCallSite({

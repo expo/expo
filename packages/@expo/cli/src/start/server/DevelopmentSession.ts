@@ -12,8 +12,9 @@ import * as ProjectDevices from '../project/devices';
 const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
 
 export class DevelopmentSession {
-  /** If the `startAsync` was successfully called */
-  private hasActiveSession = false;
+  /** If the `startAsync` was successfully called. Underscored + public so tests can observe when
+   * the fire-and-forget ping completes (it is set last) instead of polling. */
+  _hasActiveSession = false;
 
   private abortController: AbortController | undefined;
 
@@ -69,7 +70,7 @@ export class DevelopmentSession {
             deviceIds,
             signal: this.abortController.signal,
           });
-          this.hasActiveSession = true;
+          this._hasActiveSession = true;
         }
       } catch (error: any) {
         debug(`Error updating development session API: ${error}`);
@@ -96,13 +97,13 @@ export class DevelopmentSession {
     } else if (this.abortController) {
       this.abortController.abort();
       return false;
-    } else if (!this.hasActiveSession) {
+    } else if (!this._hasActiveSession) {
       return false;
     }
 
     // Clear out the development session, even if the call fails.
     // This blocks subsequent calls to `stopAsync`
-    this.hasActiveSession = false;
+    this._hasActiveSession = false;
 
     try {
       const deviceIds = await this.getDeviceInstallationIdsAsync();

@@ -86,7 +86,8 @@ async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
     '/',
     getPlatformBundlers('/', { web: { bundler: 'metro' } })
   );
-  devServer['getAvailablePortAsync'] = jest.fn(() => Promise.resolve(3000));
+  (devServer as unknown as { getAvailablePortAsync: () => Promise<number> }).getAvailablePortAsync =
+    jest.fn(() => Promise.resolve(3000));
   // Tested in the superclass
   devServer['postStartAsync'] = jest.fn(async () => {});
   devServer['startImplementationAsync'] = jest.fn(devServer['startImplementationAsync']);
@@ -117,6 +118,13 @@ describe('startAsync', () => {
     });
 
     expect(instantiateMetroAsync).toHaveBeenCalled();
+    expect(instantiateMetroAsync).toHaveBeenCalledWith(
+      devServer,
+      expect.any(Object),
+      expect.objectContaining({
+        devToolsPluginManager: devServer['devToolsPluginManager'],
+      })
+    );
   });
 });
 
@@ -244,9 +252,10 @@ describe('API Route output warning', () => {
 describe('getStaticPageAsync', () => {
   beforeEach(() => {
     jest.mocked(getConfig).mockReturnValue({
-      // @ts-expect-error
       pkg: {},
       exp: {
+        name: 'test',
+        slug: 'test',
         web: {
           output: 'server',
         },
@@ -256,7 +265,7 @@ describe('getStaticPageAsync', () => {
           },
         },
       },
-    });
+    } as unknown as ReturnType<typeof getConfig>);
   });
 
   it('returns a ReadableStream for non-RSC development SSR', async () => {
@@ -287,7 +296,7 @@ describe('getStaticPageAsync', () => {
       ],
     }));
 
-    devServer['ssrLoadModule'] = ssrLoadModule;
+    devServer['ssrLoadModule'] = ssrLoadModule as unknown as (typeof devServer)['ssrLoadModule'];
     devServer['getStaticResourcesAsync'] = getStaticResourcesAsync as any;
 
     const request = new ImmutableRequest(new Request('http://localhost:8081/posts/123'));
@@ -308,7 +317,8 @@ describe('getStaticPageAsync', () => {
       metadata: null,
       request,
       assets: {
-        css: ['https://example.com/font.css'],
+        css: [],
+        externalCss: [{ href: 'https://example.com/font.css' }],
         inlineCss: [{ source: 'body { color: red; }', hmrId: 'app_global_css' }],
         js: [expect.stringContaining('/index.bundle?')],
       },
@@ -317,9 +327,10 @@ describe('getStaticPageAsync', () => {
 
   it('preserves the string HTML path when SSR streaming is disabled', async () => {
     jest.mocked(getConfig).mockReturnValue({
-      // @ts-expect-error
       pkg: {},
       exp: {
+        name: 'test',
+        slug: 'test',
         web: {
           output: 'static',
         },
@@ -329,11 +340,13 @@ describe('getStaticPageAsync', () => {
           },
         },
       },
-    });
+    } as unknown as ReturnType<typeof getConfig>);
 
     const devServer = createDevServerForStaticPageTests();
     const getStaticContent = jest.fn(async () => '<html><head></head><body></body></html>');
-    devServer['ssrLoadModule'] = jest.fn(async () => ({ getStaticContent }));
+    devServer['ssrLoadModule'] = jest.fn(async () => ({
+      getStaticContent,
+    })) as unknown as (typeof devServer)['ssrLoadModule'];
     devServer['getStaticResourcesAsync'] = jest.fn(async () => ({ artifacts: [] })) as any;
 
     const result = await devServer['getStaticPageAsync']('/posts/123', htmlRoute);
@@ -348,9 +361,10 @@ describe('getStaticPageAsync', () => {
 
   it('normalizes loader Response data and passes dynamic params to metadata', async () => {
     jest.mocked(getConfig).mockReturnValue({
-      // @ts-expect-error
       pkg: {},
       exp: {
+        name: 'test',
+        slug: 'test',
         web: {
           output: 'server',
         },
@@ -361,7 +375,7 @@ describe('getStaticPageAsync', () => {
           },
         },
       },
-    });
+    } as unknown as ReturnType<typeof getConfig>);
 
     const devServer = createDevServerForStaticPageTests();
     devServer.executeServerDataLoaderAsync = jest.fn(async () =>

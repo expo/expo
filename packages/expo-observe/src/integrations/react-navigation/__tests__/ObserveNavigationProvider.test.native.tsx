@@ -98,7 +98,9 @@ const stateChangeHandler = handleStateChangeModule.__handler;
 // `createNavigationContainerRef()`.
 const stateListenerCleanup = jest.fn();
 const fakeNavigationRef = {
-  addListener: jest.fn((event: string) => (event === 'state' ? stateListenerCleanup : () => {})),
+  addListener: jest.fn((event: string, _cb: (e?: unknown) => void) =>
+    event === 'state' ? stateListenerCleanup : () => {}
+  ),
   getRootState: jest.fn((): unknown => undefined),
   isReady: jest.fn(() => false),
 };

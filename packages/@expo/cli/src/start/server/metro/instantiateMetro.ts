@@ -1,6 +1,11 @@
 import { type ExpoConfig, getConfig, getPlatformsFromConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
+import type { createStableModuleIdFactory } from '@expo/metro-config';
+import { loadUserConfig } from '@expo/metro-config';
+import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
+import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import type { Reporter } from '@expo/metro/metro';
+import { Terminal } from '@expo/metro/metro-core';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
 import type { TransformOptions } from '@expo/metro/metro/DeltaBundler/Worker';
@@ -9,15 +14,20 @@ import type MetroHmrServer from '@expo/metro/metro/HmrServer';
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { Terminal } from '@expo/metro/metro-core';
-import type { createStableModuleIdFactory } from '@expo/metro-config';
-import { loadUserConfig } from '@expo/metro-config';
-import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
-import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import chalk from 'chalk';
 import type http from 'http';
 import path from 'path';
 
+import { events, shouldReduceLogs } from '../../../events';
+import { Log } from '../../../log';
+import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
+import type DevToolsPluginManager from '../DevToolsPluginManager';
+import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import { createCorsMiddleware } from '../middleware/CorsMiddleware';
+import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
+import { prependMiddleware } from '../middleware/mutations';
+import { getPlatformBundlers } from '../platformBundlers';
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
@@ -27,14 +37,6 @@ import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
-import { events, shouldReduceLogs } from '../../../events';
-import { Log } from '../../../log';
-import { env } from '../../../utils/env';
-import { CommandError } from '../../../utils/errors';
-import { createCorsMiddleware } from '../middleware/CorsMiddleware';
-import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
-import { prependMiddleware } from '../middleware/mutations';
-import { getPlatformBundlers } from '../platformBundlers';
 
 // prettier-ignore
 export const event = events('metro', (t) => [
@@ -348,7 +350,12 @@ export async function instantiateMetroAsync(
     exp = getConfig(metroBundler.projectRoot, {
       skipSDKVersionRequirement: true,
     }).exp,
-  }: { isExporting: boolean; exp?: ExpoConfig }
+    devToolsPluginManager,
+  }: {
+    isExporting: boolean;
+    exp?: ExpoConfig;
+    devToolsPluginManager: DevToolsPluginManager;
+  }
 ): Promise<{
   metro: MetroServer;
   hmrServer: MetroHmrServer<MetroHmrClient> | null;
@@ -410,6 +417,25 @@ export async function instantiateMetroAsync(
 
     const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint();
     Object.assign(websocketEndpoints, devtoolsWebsocketEndpoints);
+
+    // Register WebSocket endpoints contributed by DevTools plugins. A plugin's `serverEntryPoint`
+    // exports a `webSocketHandlers` map (route -> connection handler); each becomes a `ws` server
+    // mounted at `/_expo/plugins/<name>/<route>`, reusing Metro's exact-path upgrade dispatch (and
+    // its shutdown cleanup). Endpoints must be known before the server starts, so unlike the
+    // fetch-based request handler, plugin server modules are loaded eagerly here.
+    for (const plugin of await devToolsPluginManager.queryPluginsAsync()) {
+      try {
+        for (const [route, server] of Object.entries(await plugin.getWebSocketServersAsync())) {
+          Object.assign(websocketEndpoints, {
+            [`${DevToolsPluginEndpoint}/${plugin.packageName}${route}`]: server,
+          });
+        }
+      } catch (error: any) {
+        Log.warn(
+          `Skipping WebSocket endpoints for DevTools plugin "${plugin.packageName}": ${error.message ?? error}`
+        );
+      }
+    }
   }
 
   // Attach Expo Atlas if enabled

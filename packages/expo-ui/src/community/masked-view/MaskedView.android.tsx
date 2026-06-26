@@ -1,11 +1,11 @@
 import { requireNativeView } from 'expo';
 import { StyleSheet, View } from 'react-native';
 
-import type { MaskedViewProps } from './types';
 import { Host } from '../../jetpack-compose/Host';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
 import { Slot } from '../../jetpack-compose/SlotView';
 import { fillMaxSize } from '../../jetpack-compose/modifiers';
+import type { MaskedViewProps } from './types';
 
 const MaskNativeView: React.ComponentType<{
   alignment?: 'topStart';

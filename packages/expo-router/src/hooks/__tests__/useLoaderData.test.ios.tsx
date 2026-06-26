@@ -1,7 +1,7 @@
 import { act } from '@testing-library/react-native';
+import { expectTypeOf } from 'expect-type';
 import React from 'react';
 import { Text } from 'react-native';
-import { expectType } from 'tsd';
 
 import { router, Slot } from '../../exports';
 import Tabs from '../../layouts/Tabs';
@@ -172,7 +172,10 @@ describe(useLoaderData, () => {
       initialUrl: '/',
     });
 
-    expectType<{ user: { id: number; name: string }; timestamp: number }>(result.current);
+    expectTypeOf(result.current).toEqualTypeOf<{
+      user: { id: number; name: string };
+      timestamp: number;
+    }>();
   });
 
   it('resolves loader data for non-focused tab route', () => {
