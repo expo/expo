@@ -79,6 +79,25 @@ class ArrayBufferConversionTest {
   }
 
   @Test
+  fun array_buffer_arg_should_copy_js_allocated_array_buffer_without_js_heap_access_executor() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    setJSHeapAccessExecutor(null)
+
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2]).buffer;
+        const isNativeBacked = expo.modules.TestModule.isArrayBufferNativeBacked(buffer);
+        expo.modules.TestModule.fillArrayBuffer(buffer, 0x42);
+        [isNativeBacked, Array.from(new Uint8Array(buffer))]
+      """.trimIndent()
+    ).getArray()
+
+    Truth.assertThat(result[0].getBool()).isTrue()
+    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(1, 2).inOrder()
+  }
+
+  @Test
   fun array_buffer_arg_should_share_native_backed_array_buffer() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {

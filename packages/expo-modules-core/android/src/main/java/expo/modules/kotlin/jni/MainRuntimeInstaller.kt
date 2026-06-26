@@ -23,19 +23,26 @@ class MainRuntimeInstaller(
       jsRuntimePointer,
       runtimeContext.deallocator,
       jsInvokerHolder
-    )
+    ).also {
+      it.setJSHeapAccessExecutor(ImmediateJSHeapAccessExecutor)
+    }
   }
 
   fun install(
     jsRuntimePointer: Long,
     runtimeExecutor: RuntimeExecutor
   ): JSIContext {
+    val reactContext = runtimeContext.reactContext
     return install(
       runtimeContext.weak(),
       jsRuntimePointer,
       runtimeContext.deallocator,
       runtimeExecutor
-    )
+    ).also {
+      if (reactContext != null) {
+        it.setJSHeapAccessExecutor(MainJSHeapAccessExecutor(reactContext))
+      }
+    }
   }
 
   @Suppress("unused")
