@@ -81,33 +81,4 @@ void JavaScriptRuntime::drainJSEventLoop() {
   while (!runtime->drainMicrotasks()) {}
 }
 
-bool JavaScriptRuntime::supportsSyncExecution() {
-  if (supportsSyncExecution_.has_value()) {
-    return supportsSyncExecution_.value();
-  }
-
-  try {
-    bool wasCalled = false;
-    jsInvoker->invokeSync([&wasCalled](jsi::Runtime &) {
-      wasCalled = true;
-    });
-    supportsSyncExecution_ = wasCalled;
-  } catch (...) {
-    supportsSyncExecution_ = false;
-  }
-
-  return supportsSyncExecution_.value();
-}
-
-void JavaScriptRuntime::executeSync(std::function<void(jsi::Runtime &)> &&func) {
-  if (!supportsSyncExecution()) {
-    throw std::runtime_error("Synchronous JavaScript runtime execution is not supported.");
-  }
-  jsInvoker->invokeSync(std::move(func));
-}
-
-void JavaScriptRuntime::executeAsync(std::function<void(jsi::Runtime &)> &&func) noexcept {
-  jsInvoker->invokeAsync(std::move(func));
-}
-
 } // namespace expo
