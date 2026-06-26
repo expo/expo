@@ -178,6 +178,12 @@ export type LogRecord = {
  */
 export type LogEventOptions = {
   /**
+   * Optional human-friendly label for the event. Unlike `name` (a stable machine
+   * identifier), this is meant for display in dashboards and is not constrained
+   * to a naming scheme.
+   */
+  displayName?: string | null;
+  /**
    * Optional free-form message describing the event.
    */
   body?: string | null;
