@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `updates.excludeFromBackup` config option to exclude the updates directory from device backups.
+
 ### 🐛 Bug fixes
 
 - [Android] Widen `UpdatesLogEntry.create`'s catch from `JSONException` to `Exception` so log-line parse failures consistently degrade to "skip the entry" instead of propagating. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))

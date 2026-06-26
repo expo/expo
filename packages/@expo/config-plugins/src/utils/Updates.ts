@@ -235,3 +235,7 @@ export function getDisableAntiBrickingMeasures(
 ): boolean | undefined {
   return config.updates?.disableAntiBrickingMeasures;
 }
+
+export function getUpdatesExcludeFromBackup(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
+  return config.updates?.excludeFromBackup ?? false;
+}
