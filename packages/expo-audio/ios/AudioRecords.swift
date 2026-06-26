@@ -40,6 +40,7 @@ enum PitchCorrectionQuality: String, Enumerable {
 
 struct RecordingOptions: Record {
   @Field var directory: RecordingDirectory?
+  @Field var fileName: String?
   @Field var `extension`: String
   @Field var sampleRate: Double
   @Field var numberOfChannels: Double
