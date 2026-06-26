@@ -1,4 +1,4 @@
-import { type EventSubscription, UnavailabilityError, Platform } from 'expo-modules-core';
+import { type EventSubscription, UnavailabilityError, Platform } from 'expo';
 
 import type {
   ClipboardImage,
@@ -9,8 +9,7 @@ import type {
 } from './Clipboard.types';
 import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 
-// TODO(@kitten): Remove re-export from EMC
-export type { EventSubscription as Subscription } from 'expo-modules-core';
+export type { EventSubscription as Subscription } from 'expo';
 
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt

@@ -1,4 +1,4 @@
-import type { SharedObject } from 'expo-modules-core';
+import type { SharedObject } from 'expo';
 
 export type AudioStreamEncoding = 'float32' | 'int16';
 
