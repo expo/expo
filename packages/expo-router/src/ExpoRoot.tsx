@@ -1,6 +1,14 @@
 'use client';
 
-import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
+import Constants from 'expo-constants';
+import {
+  type PropsWithChildren,
+  Fragment,
+  type ComponentType,
+  use,
+  useEffect,
+  useMemo,
+} from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -14,6 +22,8 @@ import { ServerContext } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
+import { LoaderCacheContext } from './loaders/LoaderCache';
+import { subscribeToLoaderWarming } from './loaders/loaderBootstrap';
 import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
 import type { LinkingOptions, NavigationAction } from './react-navigation/native';
@@ -136,6 +146,20 @@ function ContextNavigator({
   const store = useStore(context, linking, serverUrl);
 
   useDomComponentNavigation();
+
+  // Same cache `useLoaderData` reads, so the warm and the read can't diverge.
+  const loaderCache = use(LoaderCacheContext);
+
+  // Warm the focused leaf's loader on navigation commit. Client- and flag-gated; mounts once.
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (!Constants.expoConfig?.extra?.router?.unstable_useServerDataLoaders) {
+      return;
+    }
+    return subscribeToLoaderWarming(loaderCache);
+  }, [loaderCache]);
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
