@@ -3,7 +3,7 @@
 'use client';
 
 import React from 'react';
-import { View, StyleSheet, findNodeHandle, Platform } from 'react-native';
+import { View, StyleSheet, findNodeHandle, Platform, type ViewStyle } from 'react-native';
 
 import type { BlurMethod, BlurViewProps } from './BlurView.types';
 import { NativeBlurView } from './NativeBlurModule';
@@ -11,6 +11,22 @@ import { NativeBlurView } from './NativeBlurModule';
 type BlurViewState = {
   blurTargetId?: number | null;
 };
+
+const nativeBlurViewRadiusStyleKeys = [
+  'borderBottomEndRadius',
+  'borderBottomLeftRadius',
+  'borderBottomRightRadius',
+  'borderBottomStartRadius',
+  'borderEndEndRadius',
+  'borderEndStartRadius',
+  'borderRadius',
+  'borderStartEndRadius',
+  'borderStartStartRadius',
+  'borderTopEndRadius',
+  'borderTopLeftRadius',
+  'borderTopRightRadius',
+  'borderTopStartRadius',
+] as const;
 
 // TODO: Class components are not supported with React Server Components.
 export default class BlurView extends React.Component<BlurViewProps, BlurViewState> {
@@ -84,6 +100,11 @@ export default class BlurView extends React.Component<BlurViewProps, BlurViewSta
       children,
       ...props
     } = this.props;
+    const nativeBlurViewRadiusStyle = getNativeBlurViewRadiusStyle(style);
+    const nativeBlurViewStyle = nativeBlurViewRadiusStyle
+      ? [StyleSheet.absoluteFill, nativeBlurViewRadiusStyle]
+      : StyleSheet.absoluteFill;
+
     return (
       <View {...props} style={[styles.container, style]}>
         <NativeBlurView
@@ -93,12 +114,41 @@ export default class BlurView extends React.Component<BlurViewProps, BlurViewSta
           intensity={intensity}
           blurReductionFactor={blurReductionFactor}
           blurMethod={this._getBlurMethod()}
-          style={StyleSheet.absoluteFill}
+          style={nativeBlurViewStyle}
         />
         {children}
       </View>
     );
   }
+}
+
+function getNativeBlurViewRadiusStyle(style: BlurViewProps['style']): ViewStyle | undefined {
+  const flatStyle = StyleSheet.flatten(style);
+  if (!flatStyle) {
+    return undefined;
+  }
+
+  const radiusStyle: ViewStyle = {};
+  let hasRadiusStyle = false;
+
+  nativeBlurViewRadiusStyleKeys.forEach((key) => {
+    const value = flatStyle[key];
+    if (value != null) {
+      (radiusStyle as Record<string, unknown>)[key] = value;
+      hasRadiusStyle = true;
+    }
+  });
+
+  if (!hasRadiusStyle) {
+    return undefined;
+  }
+
+  if (flatStyle.borderCurve != null) {
+    radiusStyle.borderCurve = flatStyle.borderCurve;
+  }
+
+  radiusStyle.overflow = 'hidden';
+  return radiusStyle;
 }
 
 const styles = StyleSheet.create({

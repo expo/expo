@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `BlurView` not applying border radius styles to the native blur layer. ([#18615](https://github.com/expo/expo/issues/18615) by [@mvincentong](https://github.com/mvincentong)) ([#45691](https://github.com/expo/expo/pull/45691) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 ## 56.0.3 — 2026-05-06
