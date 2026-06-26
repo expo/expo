@@ -24,7 +24,6 @@ appId: ${APP_ID}
 - scrollUntilVisible:
     element:
       text: 'Open DevTools'
-    direction: DOWN
 
 # Assert that information about the app
 # is correctly loaded
