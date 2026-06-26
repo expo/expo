@@ -244,7 +244,7 @@ internal struct RedactedModifier: ViewModifier, Record {
       case .placeholder: set.insert(.placeholder)
       case .privacy: set.insert(.privacy)
       case .invalidated:
-        if #available(iOS 17.0, tvOS 17.0, *) {
+        if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
           set.insert(.invalidated)
         }
       }
