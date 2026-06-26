@@ -40,12 +40,8 @@ import kotlin.coroutines.suspendCoroutine
 
 class ReactActivityDelegateWrapper(
   private val activity: ReactActivity,
-  private val isNewArchitectureEnabled: Boolean, // TODO(@lukmccall): Unused since SDK 55, remove in SDK 56
   @get:VisibleForTesting internal var delegate: ReactActivityDelegate
 ) : ReactActivityDelegate(activity, null) {
-  constructor(activity: ReactActivity, delegate: ReactActivityDelegate) :
-    this(activity, false, delegate)
-
   private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
   private val reactActivityHandlers = ExpoModulesPackage.packageList
