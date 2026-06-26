@@ -3,6 +3,7 @@ package expo.modules.kotlin.jni
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.interfaces.DoNotStrip
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 @DoNotStrip
 interface JSHeapAccessExecutor {
@@ -45,7 +46,14 @@ class MainJSHeapAccessExecutor(
     }
 
     try {
-      latch.await()
+      // Bounded wait: if the JS thread is shutting down after enqueue but before drain,
+      // an unbounded await() would block the caller (or finalizer thread) forever.
+      if (!latch.await(5, TimeUnit.SECONDS)) {
+        throw IllegalStateException(
+          "Timed out waiting for the JavaScript thread to process ArrayBuffer access. " +
+            "The JS thread may be blocked or shutting down."
+        )
+      }
     } catch (exception: InterruptedException) {
       Thread.currentThread().interrupt()
       throw exception

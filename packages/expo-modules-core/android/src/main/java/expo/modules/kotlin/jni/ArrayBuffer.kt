@@ -63,6 +63,8 @@ class ArrayBuffer : Destructible {
   /**
    * Returns a direct [ByteBuffer] for this ArrayBuffer's underlying data.
    * When [copyBorrowed] is true, borrowed storage is copied into a new direct [ByteBuffer].
+   * JavaScript-backed storage always copies regardless of [copyBorrowed], since JS heap
+   * memory cannot be safely exposed outside a scoped JS thread access.
    */
   external fun toDirectBuffer(copyBorrowed: Boolean): ByteBuffer
 

@@ -8,6 +8,7 @@
 #include "TypedArray.h"
 
 #include <fbjni/ByteBuffer.h>
+#include <mutex>
 
 namespace expo {
 
@@ -216,6 +217,7 @@ public:
 
 private:
   std::shared_ptr<ArrayBufferStorage> storage;
+  std::mutex storageMutex_;
 };
 
 } // namespace expo

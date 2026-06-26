@@ -141,13 +141,17 @@ jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferObject(
 }
 
 std::shared_ptr<JSHeapAccessExecutorHolder> getJSHeapAccessExecutor(JSIContext *jsiContext) {
+  if (jsiContext->jsHeapAccessExecutor) {
+    return jsiContext->jsHeapAccessExecutor;
+  }
   static const auto method = JSIContext::javaClassStatic()
     ->getMethod<jni::local_ref<JSHeapAccessExecutorJavaClass::javaobject>()>("getJSHeapAccessExecutor");
   auto executor = method(jsiContext->javaPart_);
   if (!executor) {
     return nullptr;
   }
-  return std::make_shared<JSHeapAccessExecutorHolder>(executor);
+  jsiContext->jsHeapAccessExecutor = std::make_shared<JSHeapAccessExecutorHolder>(executor);
+  return jsiContext->jsHeapAccessExecutor;
 }
 
 jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferFromJSIArrayBuffer(
@@ -587,6 +591,7 @@ jsi::Value ArrayBuffer::toJSIValue(jsi::Runtime &runtime) {
 }
 
 jni::local_ref<jni::JByteBuffer> ArrayBuffer::toDirectBuffer(bool copyBorrowed) {
+  std::lock_guard<std::mutex> lock(storageMutex_);
   auto byteBuffer = storage->toDirectBuffer(copyBorrowed);
   if (!storage->isNativeBacked()) {
     storage = std::make_shared<ByteBufferArrayBufferStorage>(byteBuffer);
@@ -595,30 +600,39 @@ jni::local_ref<jni::JByteBuffer> ArrayBuffer::toDirectBuffer(bool copyBorrowed) 
 }
 
 bool ArrayBuffer::isNativeBacked() {
+  std::lock_guard<std::mutex> lock(storageMutex_);
   return storage->isNativeBacked();
 }
 
 jni::local_ref<jni::JObject> ArrayBuffer::withJSBytes(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
-  return storage->withJSBytes(body);
+  std::unique_lock<std::mutex> lock(storageMutex_);
+  auto localStorage = storage;
+  lock.unlock();
+  return localStorage->withJSBytes(body);
 }
 
 void ArrayBuffer::withJSBytesAsync(
   jni::alias_ref<JNIFunctionBody::javaobject> body,
   jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback
 ) {
-  if (auto jsStorage = std::dynamic_pointer_cast<JavaScriptBackedArrayBufferStorage>(storage)) {
+  std::unique_lock<std::mutex> lock(storageMutex_);
+  auto localStorage = storage;
+  lock.unlock();
+
+  if (auto jsStorage = std::dynamic_pointer_cast<JavaScriptBackedArrayBufferStorage>(localStorage)) {
     jsStorage->withJSBytesAsync(body, callback);
     return;
   }
 
   invokeScopedAccessBodyAsync(callback, [&]() {
-    return storage->withJSBytes(body);
+    return localStorage->withJSBytes(body);
   });
 }
 
 uint8_t *ArrayBuffer::data() {
+  std::lock_guard<std::mutex> lock(storageMutex_);
   if (!storage->isNativeBacked()) {
     auto byteBuffer = storage->toDirectBuffer(true);
     storage = std::make_shared<ByteBufferArrayBufferStorage>(byteBuffer);
