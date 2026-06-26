@@ -466,6 +466,65 @@ export const hidden = (hidden: boolean = true) => createModifier('hidden', { hid
 export const disabled = (disabled: boolean = true) => createModifier('disabled', { disabled });
 
 /**
+ * Adds a redaction reason to this view hierarchy, replacing rendered content
+ * with placeholders. Useful for skeleton loading states. Maps to SwiftUI's
+ * `redacted(reason:)`.
+ *
+ * `placeholder` redacts the whole subtree; `privacy` and `invalidated` redact
+ * only descendants marked `privacySensitive()` or `invalidatableContent()`.
+ * Reasons are additive and can be combined in an array; use `unredacted()` to
+ * exempt a subtree. The `invalidated` reason requires iOS 17+.
+ *
+ * @param reasons - The redaction reason or reasons to apply (an empty array applies none). Defaults to `'placeholder'`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/redacted(reason:)).
+ */
+export const redacted = (
+  reasons:
+    | 'placeholder'
+    | 'privacy'
+    | 'invalidated'
+    | ('placeholder' | 'privacy' | 'invalidated')[] = 'placeholder'
+) =>
+  createModifier('redacted', {
+    reasons: Array.isArray(reasons) ? reasons : [reasons],
+  });
+
+/**
+ * Removes any redaction reason inherited from an ancestor `redacted(...)` for
+ * this subtree. The counterpart to `redacted`; use it to exempt specific content
+ * from a redacted parent. Maps to SwiftUI's `unredacted()`.
+ *
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/unredacted()).
+ */
+export const unredacted = () => createModifier('unredacted', {});
+
+/**
+ * Marks the view as containing sensitive, private data, redacted only when the
+ * `privacy` redaction reason is applied to an ancestor (for example `redacted('privacy')`).
+ * It has no effect on its own and does not auto-redact screenshots. Maps to
+ * SwiftUI's `privacySensitive(_:)`.
+ *
+ * @param sensitive - Whether the view contains sensitive content. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/privacysensitive(_:)).
+ */
+export const privacySensitive = (sensitive: boolean = true) =>
+  createModifier('privacySensitive', { sensitive });
+
+/**
+ * Marks the view's content as invalidatable. It is restyled with the "pending
+ * update" appearance only when the `invalidated` redaction reason is applied to
+ * an ancestor (for example `redacted('invalidated')`). Maps to SwiftUI's
+ * `invalidatableContent(_:)`.
+ *
+ * @param invalidatable - Whether the content can be invalidated. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/invalidatablecontent(_:)).
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ */
+export const invalidatableContent = (invalidatable: boolean = true) =>
+  createModifier('invalidatableContent', { invalidatable });
+
+/**
  * Sets the z-index (display order) of a view.
  * @param index - The z-index value.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/zindex(_:)).
@@ -1467,6 +1526,10 @@ export type BuiltInModifier =
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>
+  | ReturnType<typeof redacted>
+  | ReturnType<typeof unredacted>
+  | ReturnType<typeof privacySensitive>
+  | ReturnType<typeof invalidatableContent>
   | ReturnType<typeof zIndex>
   | ReturnType<typeof blur>
   | ReturnType<typeof brightness>

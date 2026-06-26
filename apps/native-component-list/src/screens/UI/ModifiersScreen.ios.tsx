@@ -77,6 +77,9 @@ import {
   shapes,
   resizable,
   tint,
+  redacted,
+  unredacted,
+  privacySensitive,
 } from '@expo/ui/swift-ui/modifiers';
 import { useAssets } from 'expo-asset';
 import { useState } from 'react';
@@ -108,6 +111,8 @@ export default function ModifiersScreen() {
   const [allowTightening, setAllowsTightening] = useState(false);
 
   const [kerningValue, setKerning] = useState(0);
+  const [redactLoading, setRedactLoading] = useState(true);
+  const [redactPrivacy, setRedactPrivacy] = useState(true);
 
   const multilineTextAlignmentOptions = ['center', 'leading', 'trailing'];
   const [multilineTextAlignmentIndex, setMultilineTextAlignment] = useState(0);
@@ -513,6 +518,54 @@ export default function ModifiersScreen() {
                 <Image systemName="star.fill" />
                 <Text modifiers={[font({ textStyle: 'body' })]}>large</Text>
               </HStack>
+            </VStack>
+          </Section>
+          <Section title="Redacted">
+            <VStack alignment="leading" spacing={12}>
+              <Toggle
+                label="Simulate loading"
+                isOn={redactLoading}
+                onIsOnChange={setRedactLoading}
+              />
+              <VStack
+                alignment="leading"
+                spacing={6}
+                modifiers={redactLoading ? [redacted('placeholder')] : undefined}>
+                <Text modifiers={[font({ textStyle: 'headline' })]}>Jane Appleseed</Text>
+                <Text modifiers={[font({ textStyle: 'subheadline' })]}>
+                  Product Designer · San Francisco
+                </Text>
+                <Text modifiers={[font({ textStyle: 'body' })]}>
+                  Building delightful native experiences.
+                </Text>
+              </VStack>
+              <VStack
+                alignment="leading"
+                spacing={6}
+                modifiers={redactLoading ? [redacted('placeholder')] : undefined}>
+                <Text modifiers={[font({ textStyle: 'body' })]}>Profile details</Text>
+                <Text modifiers={[font({ textStyle: 'footnote' }), unredacted()]}>
+                  Loading… (unredacted, stays visible)
+                </Text>
+              </VStack>
+
+              <Toggle
+                label="Hide sensitive info"
+                isOn={redactPrivacy}
+                onIsOnChange={setRedactPrivacy}
+              />
+              <VStack
+                alignment="leading"
+                spacing={6}
+                modifiers={redactPrivacy ? [redacted('privacy')] : undefined}>
+                <Text modifiers={[font({ textStyle: 'subheadline' })]}>Account balance</Text>
+                <Text modifiers={[font({ textStyle: 'title' }), privacySensitive()]}>
+                  $12,480.55
+                </Text>
+                <Text modifiers={[font({ textStyle: 'footnote' })]}>
+                  Only the balance is privacySensitive; the labels stay visible
+                </Text>
+              </VStack>
             </VStack>
           </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
