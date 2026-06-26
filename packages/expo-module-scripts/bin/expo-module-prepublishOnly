@@ -2,13 +2,28 @@
 
 process.env.EXPO_NONINTERACTIVE = 1;
 
-// Intentionally a no-op. Packages are built ahead of publishing by Turborepo (`turbo build`,
-// run via the `prepare` hook on `pnpm install` and by the publish pipeline), so there is nothing
-// to do here. This used to run `expo-module-clean` + `expo-module-build`, but packages now build
-// with the SWC-based `expo-build` and set `noEmit: true` in their `tsconfig.json` (tsc is only
-// used for type-checking) — so the tsc-based `expo-module-build` emitted nothing and the clean
-// left an empty `build/` to be published.
-async function runAsync() {}
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import {
+  commandRunner,
+  findTurboWorkspaceRoot,
+  packageManagerExecAsync,
+} from '../utils/commandUtils.js';
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+async function runAsync() {
+  console.log('Preparing module for publishing');
+  await commandRunner(path.join(dirname, 'expo-module-clean'));
+
+  // avoid expensive rebuilds in turbo workspaces
+  if (findTurboWorkspaceRoot()) {
+    // turbo run is automatically package scoped based on the pkg in cwd
+    await packageManagerExecAsync(['turbo', 'run', 'build']);
+  } else {
+    await commandRunner(path.join(dirname, 'expo-module-build'));
+  }
+}
 
 (async () => {
   try {

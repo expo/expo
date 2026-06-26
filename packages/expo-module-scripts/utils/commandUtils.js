@@ -1,4 +1,10 @@
 import spawnAsync from '@expo/spawn-async';
+import fs from 'node:fs';
+import path from 'node:path';
+// `resolve-workspace-root` is CommonJS, so destructure off the default import under ESM.
+import resolveWorkspaceRootPkg from 'resolve-workspace-root';
+
+const { resolveWorkspaceRoot } = resolveWorkspaceRootPkg;
 
 export async function commandRunner(command, params = [], { cwd } = {}) {
   return await spawnAsync(command, params, {
@@ -55,6 +61,18 @@ export async function packageManagerRunAsync(params, { cwd } = {}) {
   }
 
   return commandRunner(command, args, { cwd });
+}
+
+/** Returns the workspace root for `cwd` if it has a `turbo.json`, otherwise `null`. */
+export function findTurboWorkspaceRoot(cwd = process.cwd()) {
+  const workspaceRoot = resolveWorkspaceRoot(cwd);
+  if (!workspaceRoot) {
+    return null;
+  }
+  const hasTurboConfig =
+    fs.existsSync(path.join(workspaceRoot, 'turbo.json')) ||
+    fs.existsSync(path.join(workspaceRoot, 'turbo.jsonc'));
+  return hasTurboConfig ? workspaceRoot : null;
 }
 
 export function getArgs({ maybeAddWatchFlag = false } = {}) {
