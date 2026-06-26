@@ -60,6 +60,34 @@ for (const outputMode of outputModes) {
       expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
     });
 
+    test('fetches the loader at navigation-commit, before the screen renders', async ({ page }) => {
+      const loaderRequests: string[] = [];
+      page.on('request', (request) => {
+        if (request.url().includes('/_expo/loaders/')) {
+          loaderRequests.push(request.url());
+        }
+      });
+
+      await page.goto(expoStart.url.href);
+
+      // `/warm-probe` gates its `useLoaderData` child behind a Suspense boundary, so the data-reading
+      // component does not render until the test releases the gate.
+      await page.click('a[href="/warm-probe"]');
+      await page.waitForSelector('[data-testid="gate-fallback"]');
+
+      // The data-reading component is provably not rendered yet, so any loader request can only have
+      // come from the navigation-commit warm — not the render-time fallback in `useLoaderData`.
+      await expect(page.locator('[data-testid="warm-result"]')).not.toBeVisible();
+      expect(loaderRequests).toContainEqual(expect.stringContaining('/_expo/loaders/warm-probe'));
+
+      // Releasing the gate renders the screen from the warmed cache — no second request.
+      await page.evaluate(() => (globalThis as any).__releaseWarmGate?.());
+      await page.waitForSelector('[data-testid="warm-result"]');
+      expect(
+        loaderRequests.filter((url) => url.includes('/_expo/loaders/warm-probe'))
+      ).toHaveLength(1);
+    });
+
     test('caches loader data for subsequent navigations', async ({ page }) => {
       const loaderRequests: string[] = [];
       page.on('request', (request) => {

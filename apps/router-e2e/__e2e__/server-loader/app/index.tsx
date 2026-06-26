@@ -51,6 +51,7 @@ const IndexScreen = () => {
         <SiteLink href="/(group)">Go to Grouped Index</SiteLink>
         <SiteLink href="/static-helper">Go to Static Helper</SiteLink>
         <SiteLink href="/server-helper">Go to Server Helper</SiteLink>
+        <SiteLink href="/warm-probe">Go to Warm Probe</SiteLink>
       </SiteLinks>
     </>
   );
