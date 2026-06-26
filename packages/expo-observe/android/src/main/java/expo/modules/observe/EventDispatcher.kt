@@ -23,8 +23,8 @@ class EventDispatcher(
 ) {
   private fun endpointUrl(): String {
     val base = when (baseUrl.endsWith("/")) {
-      true -> "${baseUrl}${projectId}"
-      else -> "${baseUrl}/${projectId}"
+      true -> "${baseUrl}$projectId"
+      else -> "$baseUrl/$projectId"
     }
     return if (useOpenTelemetry) "$base/v1/metrics" else base
   }

@@ -22,7 +22,7 @@
     "expo-updates": "55.0.25",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "react-native": "0.83.6"
+    "react-native": "0.83.10"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
