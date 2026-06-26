@@ -3,8 +3,8 @@ import type { ReactNode } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import type { LinkMenuActionProps } from '../../../../link/elements';
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import type { StackHeaderItemSharedProps } from '../shared';
 
 export interface StackToolbarMenuProps {
