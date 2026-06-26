@@ -21,7 +21,7 @@ export function Talks() {
         <Button
           theme="secondary"
           className="ml-auto"
-          rightSlot={<ArrowRightIcon />}
+          rightSlot={<ArrowRightIcon aria-hidden="true" />}
           href="/additional-resources/#talks">
           See more talks
         </Button>
@@ -86,18 +86,21 @@ export function TalkGridCell({
         />
         <div className="flex min-h-7.5 items-start justify-between gap-1 bg-default px-4 py-3">
           <LABEL className="block leading-normal">{title}</LABEL>
-          <ArrowUpRightIcon className="mt-1 icon-sm shrink-0 text-icon-secondary" />
+          <ArrowUpRightIcon
+            aria-hidden="true"
+            className="mt-1 icon-sm shrink-0 text-icon-secondary"
+          />
         </div>
       </div>
       <div className="flex flex-col gap-0.5 bg-default px-4 pb-2">
         {description && (
           <CALLOUT theme="secondary" className="flex items-center gap-2">
-            <Users02Icon className="icon-xs shrink-0 text-icon-tertiary" />
+            <Users02Icon aria-hidden="true" className="icon-xs shrink-0 text-icon-tertiary" />
             {description}
           </CALLOUT>
         )}
         <CALLOUT theme="secondary" className="flex items-center gap-2">
-          <AtSignIcon className="icon-xs shrink-0 text-icon-tertiary" />
+          <AtSignIcon aria-hidden="true" className="icon-xs shrink-0 text-icon-tertiary" />
           {event}
         </CALLOUT>
       </div>

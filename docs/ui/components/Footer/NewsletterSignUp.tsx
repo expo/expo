@@ -67,7 +67,7 @@ export const NewsletterSignUp = () => {
   return (
     <div className="max-w-87.5 flex-1 max-md:max-w-full">
       <CALLOUT className="flex items-center gap-2 font-medium text-secondary" id="newsletter-label">
-        <Mail01Icon className="shrink-0 text-icon-tertiary" />
+        <Mail01Icon aria-hidden="true" className="shrink-0 text-icon-tertiary" />
         {intl.formatMessage({ id: 'footerNewsletterTitle' })}
       </CALLOUT>
       <form
