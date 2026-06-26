@@ -5,6 +5,7 @@ import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
+
 import {
   cleanCopyValue,
   getCodeData,
