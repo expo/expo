@@ -141,14 +141,15 @@ With the `types` list, you can trigger the workflow only on the specified pull r
 
 - `opened`
 - `edited`
+- `base_ref_changed`
 - `ready_for_review`
 - `reopened`
 - `synchronize`
 - `labeled`
 
-The `edited` type follows GitHub's `pull_request.edited` behavior and triggers when the pull request title, body, or base branch changes. The `branches` filter matches the pull request's current base branch, so retargeting a pull request to a matching branch can trigger a workflow.
+The `edited` type follows GitHub's `pull_request.edited` behavior and triggers when the pull request title, body, or base branch changes. To trigger only when the pull request's base branch changes, use `base_ref_changed`.
 
-To run a job only when the pull request's base branch changes, use `types: ['edited']` with a job-level `if` condition that checks the webhook payload, such as `${{ github.event.changes.base.ref.from }}`.
+The `branches` filter matches the pull request's current base branch, so retargeting a pull request to a matching branch can trigger a workflow.
 
 With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory trigger the workflow. Supports globs. By default, changes to any path trigger the workflow.
 
@@ -804,7 +805,7 @@ type GitHubContext = {
 };
 ```
 
-> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes all fields from GitHub's Pull Request webhook payload, including commonly used values like `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. The commonly used fields are shown above, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
+> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 
