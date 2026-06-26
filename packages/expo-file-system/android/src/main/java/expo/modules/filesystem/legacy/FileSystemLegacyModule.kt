@@ -43,7 +43,6 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import java.io.BufferedInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -183,29 +182,10 @@ open class FileSystemLegacyModule : Module() {
       val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, FilePermissionService.Permission.READ)
 
-      // TODO:Bacon: Add more encoding types to match iOS
       val encoding = options.encoding
-      var contents: String?
-      if (encoding == EncodingType.BASE64) {
-        getInputStream(uri).use { inputStream ->
-          contents = if (options.length != null && options.position != null) {
-            val buffer = ByteArray(options.length)
-            inputStream.skip(options.position.toLong())
-            val bytesRead = inputStream.read(buffer, 0, options.length)
-            Base64.encodeToString(buffer, 0, bytesRead, Base64.NO_WRAP)
-          } else {
-            val inputData = getInputStreamBytes(inputStream)
-            Base64.encodeToString(inputData, Base64.NO_WRAP)
-          }
-        }
-      } else {
-        contents = when {
-          uri.scheme == "file" -> IOUtils.toString(FileInputStream(uri.toFile()))
-          uri.scheme == "asset" -> IOUtils.toString(openAssetInputStream(uri))
-          uri.scheme == null -> IOUtils.toString(openResourceInputStream(uriStr))
-          uri.isSAFUri -> IOUtils.toString(context.contentResolver.openInputStream(uri))
-          else -> throw IOException("Unsupported scheme for location '$uri'.")
-        }
+
+      val contents = getInputStreamForReading(uri, uriStr).use { inputStream ->
+        readInputStreamAsString(inputStream, encoding, options)
       }
       return@AsyncFunction contents
     }
@@ -1077,6 +1057,15 @@ open class FileSystemLegacyModule : Module() {
   }
 
   @Throws(IOException::class)
+  private fun getInputStreamForReading(uri: Uri, uriStr: String) = when {
+    uri.scheme == "file" -> FileInputStream(uri.toFile())
+    uri.scheme == "asset" -> openAssetInputStream(uri)
+    uri.scheme == null -> openResourceInputStream(uriStr)
+    uri.isSAFUri -> context.contentResolver.openInputStream(uri)!!
+    else -> throw IOException("Unsupported scheme for location '$uri'.")
+  }
+
+  @Throws(IOException::class)
   private fun getOutputStream(uri: Uri, append: Boolean = false) = when {
     uri.scheme == "file" -> FileOutputStream(uri.toFile(), append)
     uri.isSAFUri -> context.contentResolver.openOutputStream(uri, if (append) "wa" else "w")!!
@@ -1103,27 +1092,6 @@ open class FileSystemLegacyModule : Module() {
     get() = scheme == "content" && host?.startsWith("com.android.externalstorage") ?: false
 
   private fun parseFileUri(uriStr: String) = uriStr.substring(uriStr.indexOf(':') + 3)
-
-  @Throws(IOException::class)
-  private fun getInputStreamBytes(inputStream: InputStream): ByteArray {
-    val bytesResult: ByteArray
-    val byteBuffer = ByteArrayOutputStream()
-    val bufferSize = 1024
-    val buffer = ByteArray(bufferSize)
-    try {
-      var len: Int
-      while (inputStream.read(buffer).also { len = it } != -1) {
-        byteBuffer.write(buffer, 0, len)
-      }
-      bytesResult = byteBuffer.toByteArray()
-    } finally {
-      try {
-        byteBuffer.close()
-      } catch (ignored: IOException) {
-      }
-    }
-    return bytesResult
-  }
 
   // Copied out of React Native's `NetworkingModule.java`
   private fun translateHeaders(headers: Headers): Bundle {

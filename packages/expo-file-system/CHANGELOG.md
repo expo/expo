@@ -18,6 +18,7 @@
 - Added `./next` subpath to package `exports` field to resolve Metro bundler warning. ([#44793](https://github.com/expo/expo/pull/44793) by [@chang-in](https://github.com/chang-in))
 - Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support. ([#47176](https://github.com/expo/expo/pull/47176) by [@barthap](https://github.com/barthap))
 - Fixed potential file offset races when asynchronous and synchronous `FileHandle` operations overlap on Android and iOS. ([#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
+- Fixed `readAsStringAsync` to respect `position` and `length` when reading UTF-8 strings. ([#20291](https://github.com/expo/expo/issues/20291) by [@mvincentong](https://github.com/mvincentong)) ([#45714](https://github.com/expo/expo/pull/45714) by [@mvincentong](https://github.com/mvincentong))
 
 ### 💡 Others
 
