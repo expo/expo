@@ -21,7 +21,10 @@ appId: ${APP_ID}
 - assertVisible:
     text: 'Toggle element inspector'
     enabled: true
-- assertVisible: 'Open DevTools'
+- scrollUntilVisible:
+    element:
+      text: 'Open DevTools'
+    direction: DOWN
 
 # Assert that information about the app
 # is correctly loaded
