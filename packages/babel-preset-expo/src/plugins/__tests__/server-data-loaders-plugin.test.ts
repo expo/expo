@@ -95,9 +95,9 @@ function transformTest(code: string, { bundleType, ...defaultOverrideOpts }: Tra
 
 describe('client and server', () => {
   describe.each<BundleTypes>(['client', 'server'])(
-    'removes loader exports for %s bundles',
+    'replaces loader exports with a no-op stub for %s bundles',
     (bundleType: BundleTypes) => {
-      it('removes `export async function loader() {}`', () => {
+      it('stubs `export async function loader() {}`', () => {
         const res = transformTest(
           `
       import { useLoaderData } from 'expo-router';
@@ -119,6 +119,7 @@ describe('client and server', () => {
         expect(res.code).toMatchInlineSnapshot(`
           "import { useLoaderData } from 'expo-router';
           import { jsx as _jsx } from "react/jsx-runtime";
+          export const loader = () => {};
           export default function Index() {
             const data = useLoaderData();
             return /*#__PURE__*/_jsx("div", {
@@ -128,7 +129,7 @@ describe('client and server', () => {
       `);
       });
 
-      it('removes `export function loader() {}`', () => {
+      it('stubs `export function loader() {}`', () => {
         const res = transformTest(
           `
       import { useLoaderData } from 'expo-router';
@@ -150,6 +151,7 @@ describe('client and server', () => {
         expect(res.code).toMatchInlineSnapshot(`
               "import { useLoaderData } from 'expo-router';
               import { jsx as _jsx } from "react/jsx-runtime";
+              export const loader = () => {};
               export default function Index() {
                 const data = useLoaderData();
                 return /*#__PURE__*/_jsx("div", {
@@ -159,7 +161,7 @@ describe('client and server', () => {
           `);
       });
 
-      it('removes `export const loader = async () => {}`', () => {
+      it('stubs `export const loader = async () => {}`', () => {
         const res = transformTest(
           `
       import { useLoaderData } from 'expo-router';
@@ -181,6 +183,7 @@ describe('client and server', () => {
         expect(res.code).toMatchInlineSnapshot(`
               "import { useLoaderData } from 'expo-router';
               import { jsx as _jsx } from "react/jsx-runtime";
+              export const loader = () => {};
               export default function Index() {
                 const data = useLoaderData();
                 return /*#__PURE__*/_jsx("div", {
@@ -190,7 +193,7 @@ describe('client and server', () => {
           `);
       });
 
-      it('removes `export const loader = () => {}`', () => {
+      it('stubs `export const loader = () => {}`', () => {
         const res = transformTest(
           `
       import { useLoaderData } from 'expo-router';
@@ -212,6 +215,7 @@ describe('client and server', () => {
         expect(res.code).toMatchInlineSnapshot(`
               "import { useLoaderData } from 'expo-router';
               import { jsx as _jsx } from "react/jsx-runtime";
+              export const loader = () => {};
               export default function Index() {
                 const data = useLoaderData();
                 return /*#__PURE__*/_jsx("div", {
@@ -221,7 +225,7 @@ describe('client and server', () => {
           `);
       });
 
-      it('removes `export const loader = async function() {}`', () => {
+      it('stubs `export const loader = async function() {}`', () => {
         const res = transformTest(
           `
       import { useLoaderData } from 'expo-router';
@@ -243,6 +247,7 @@ describe('client and server', () => {
         expect(res.code).toMatchInlineSnapshot(`
               "import { useLoaderData } from 'expo-router';
               import { jsx as _jsx } from "react/jsx-runtime";
+              export const loader = () => {};
               export default function Index() {
                 const data = useLoaderData();
                 return /*#__PURE__*/_jsx("div", {
@@ -252,7 +257,7 @@ describe('client and server', () => {
           `);
       });
 
-      it('removes `export const loader = function() {}`', () => {
+      it('stubs `export const loader = function() {}`', () => {
         const res = transformTest(
           `
       import { useLoaderData } from 'expo-router';
@@ -274,6 +279,7 @@ describe('client and server', () => {
         expect(res.code).toMatchInlineSnapshot(`
               "import { useLoaderData } from 'expo-router';
               import { jsx as _jsx } from "react/jsx-runtime";
+              export const loader = () => {};
               export default function Index() {
                 const data = useLoaderData();
                 return /*#__PURE__*/_jsx("div", {
@@ -287,6 +293,29 @@ describe('client and server', () => {
 });
 
 describe('client', () => {
+  describe('replaces loader with a stub', () => {
+    it('keeps a no-op `loader` export so the route is detectable at runtime', () => {
+      const res = transformTest(
+        `
+      export async function loader() {
+        return { data: 'secret-server-only' };
+      }
+
+      export default function Index() {
+        return <div>Index</div>;
+      }
+    `,
+        { bundleType: 'client' }
+      );
+
+      // The implementation (and its server-only deps) is stripped from the client bundle...
+      expect(res.code).not.toContain('secret-server-only');
+      // ...but a truthy no-op stub remains so `loadRoute().loader` stays detectable on the client.
+      expect(res.code).toContain('export const loader = () => {}');
+      expect(res.metadata.loaderReference).toBe('/app/index');
+    });
+  });
+
   describe('preserves non-loader exports', () => {
     it('preserves other named exports', () => {
       const res = transformTest(
@@ -312,6 +341,7 @@ describe('client', () => {
       expect(res.code).toMatchInlineSnapshot(`
         "import { useLoaderData } from 'expo-router';
         import { jsx as _jsx } from "react/jsx-runtime";
+        export const loader = () => {};
         export const unstable_settings = {
           anchor: 'index'
         };
@@ -350,7 +380,8 @@ describe('client', () => {
       expect(res.code).toMatchInlineSnapshot(`
         "import { useLoaderData } from 'expo-router';
         import { jsx as _jsx } from "react/jsx-runtime";
-        export const unstable_settings = {
+        export const loader = () => {},
+          unstable_settings = {
             anchor: 'index'
           },
           generateStaticParams = () => [{
@@ -403,7 +434,7 @@ describe('client', () => {
 
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
-      expect(res.code).toMatchInlineSnapshot(`""`);
+      expect(res.code).toMatchInlineSnapshot(`"export const loader = () => {};"`);
     });
 
     it('skips files outside app directory', () => {
@@ -474,6 +505,7 @@ describe('server', () => {
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
         "import { jsx as _jsx } from "react/jsx-runtime";
+        export const loader = () => {};
         export const unstable_settings = {
           anchor: 'index'
         };

@@ -68,10 +68,11 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
             markWithLoaderReference(state);
 
             if (!isLoaderBundle) {
-              // Client bundles: remove loader
-              debug('Found and removed loader function declaration');
+              // Stub rather than remove: keeps `loadRoute().loader` truthy on the client for loader
+              // detection, while dropping the server-only implementation.
+              debug('Found and stubbed loader function declaration');
               markForConstantFolding(state);
-              path.remove();
+              path.node.declaration = createLoaderStubDeclaration(t);
             }
             // Loader bundle: keep the loader
           } else if (name && isLoaderBundle) {
@@ -113,24 +114,21 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
               }
             );
           } else {
-            // Client bundles: remove loader declarations
-            declaration.declarations = declaration.declarations.filter(
-              (declarator: t.VariableDeclarator) => {
-                const name = t.isIdentifier(declarator.id) ? declarator.id.name : null;
-                if (name && isLoaderIdentifier(name)) {
-                  debug('Found and removed loader variable declaration');
-                  hasModified = true;
-                  return false;
-                }
-                return true;
+            // Stub the loader initializer in place (see the function-declaration branch above).
+            for (const declarator of declaration.declarations) {
+              const name = t.isIdentifier(declarator.id) ? declarator.id.name : null;
+              if (name && isLoaderIdentifier(name)) {
+                debug('Found and stubbed loader variable declaration');
+                declarator.init = createLoaderStub(t);
+                hasModified = true;
               }
-            );
+            }
           }
 
           if (hasModified) {
             markForConstantFolding(state);
 
-            // If all declarations were removed, remove the export
+            // Filtering can empty a loader-bundle declaration; drop the empty export.
             if (declaration.declarations.length === 0) {
               path.remove();
             }
@@ -146,6 +144,16 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
  */
 function isLoaderIdentifier(name: string): boolean {
   return name === LOADER_EXPORT_NAME;
+}
+
+function createLoaderStub(t: typeof import('@babel/core').types) {
+  return t.arrowFunctionExpression([], t.blockStatement([]));
+}
+
+function createLoaderStubDeclaration(t: typeof import('@babel/core').types) {
+  return t.variableDeclaration('const', [
+    t.variableDeclarator(t.identifier(LOADER_EXPORT_NAME), createLoaderStub(t)),
+  ]);
 }
 
 function assertExpoMetadata(metadata: any): asserts metadata is {
