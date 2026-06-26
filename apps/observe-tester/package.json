@@ -44,7 +44,7 @@
     "react-dom": "19.2.3",
     "react-native": "0.86.0",
     "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.25.2"
+    "react-native-screens": "4.26.0-nightly-20260625-9b9b39fa5"
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
