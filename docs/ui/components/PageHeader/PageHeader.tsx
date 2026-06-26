@@ -6,7 +6,7 @@ import { MarkdownActionsDropdown } from '~/ui/components/MarkdownActions/Markdow
 import { hasDynamicData, shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/paths';
 import { H1, P } from '~/ui/components/Text';
 
-import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI';
+import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI/AskPageAITrigger';
 import { PageCliVersion } from './PageCliVersion';
 import { PagePackageVersion } from './PagePackageVersion';
 import { PagePlatformTags } from './PagePlatformTags';
