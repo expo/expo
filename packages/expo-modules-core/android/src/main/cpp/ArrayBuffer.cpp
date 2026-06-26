@@ -4,6 +4,8 @@
 #include "JavaScriptRuntime.h"
 #include "JSIContext.h"
 
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+
 namespace expo {
 
 namespace {
@@ -140,6 +142,15 @@ jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferObject(
   return value;
 }
 
+bool supportsJSBackedArrayBufferStorage(JSIContext *jsiContext) {
+#if UNIT_TEST
+  return jsiContext->runtimeHolder->supportsSyncExecution();
+#else
+  jsi::Runtime& rt = jsiContext->runtimeHolder->get();
+  return facebook::react::RuntimeSchedulerBinding::getBinding(rt) != nullptr;
+#endif
+}
+
 jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferFromJSIArrayBuffer(
   JSIContext *jsiContext,
   jsi::Runtime &runtime,
@@ -160,7 +171,7 @@ jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferFromJSIArrayBuffer(
     );
   }
 
-  if (length > 0 && jsiContext->runtimeHolder->supportsSyncExecution()) {
+  if (length > 0 && supportsJSBackedArrayBufferStorage(jsiContext)) {
     return makeArrayBufferObject(
       jsiContext,
       std::make_shared<JavaScriptBackedArrayBufferStorage>(

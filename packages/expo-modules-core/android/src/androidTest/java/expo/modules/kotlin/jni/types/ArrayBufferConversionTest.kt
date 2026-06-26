@@ -240,14 +240,16 @@ class ArrayBufferConversionTest {
     val result = waitForAsyncFunction(
       methodQueue,
       """
-        const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
-        const view = new Uint8Array(buffer);
-        expo.modules.TestModule.readWithJSBytesAsync(buffer, 4).then(initialBytes => {
-          view[0] = 9;
-          return expo.modules.TestModule.readWithJSBytesAsync(buffer, 4).then(updatedBytes => {
-            return [initialBytes, updatedBytes, expo.modules.TestModule.isArrayBufferNativeBacked(buffer)];
+        (() => {
+          const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
+          const view = new Uint8Array(buffer);
+          return expo.modules.TestModule.readWithJSBytesAsync(buffer, 4).then(initialBytes => {
+            view[0] = 9;
+            return expo.modules.TestModule.readWithJSBytesAsync(buffer, 4).then(updatedBytes => {
+              return [initialBytes, updatedBytes, expo.modules.TestModule.isArrayBufferNativeBacked(buffer)];
+            });
           });
-        });
+        })()
       """.trimIndent()
     ).getArray()
 
@@ -263,9 +265,11 @@ class ArrayBufferConversionTest {
     val result = waitForAsyncFunction(
       methodQueue,
       """
-        const buffer = new Uint8Array([1, 2, 3, 4, 5]).buffer;
-        const view = new Uint8Array(buffer, 1, 2);
-        expo.modules.TestModule.fillWithMutableJSBytesAsync(view, 7).then(() => Array.from(new Uint8Array(buffer)));
+        (() => {
+          const buffer = new Uint8Array([1, 2, 3, 4, 5]).buffer;
+          const view = new Uint8Array(buffer, 1, 2);
+          return expo.modules.TestModule.fillWithMutableJSBytesAsync(view, 7).then(() => Array.from(new Uint8Array(buffer)));
+        })()
       """.trimIndent()
     ).getArray()
 
