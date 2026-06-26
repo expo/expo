@@ -271,7 +271,7 @@ internal struct InvalidatableContentModifier: ViewModifier, Record {
   @Field var invalidatable: Bool = true
 
   func body(content: Content) -> some View {
-    if #available(iOS 17.0, tvOS 17.0, *) {
+    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
       content.invalidatableContent(invalidatable)
     } else {
       content
