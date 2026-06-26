@@ -21,11 +21,11 @@ class ArrayBufferConversionTest {
     jsValue = "new Uint8Array([0x00, 0xff]).buffer",
     nativeAssertion = { arrayBuffer ->
       Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
-      Truth.assertThat(arrayBuffer.isNativeBacked()).isFalse()
+      Truth.assertThat(arrayBuffer.isNativeBacked()).isTrue()
       Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
       Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(0xff.toByte())
       Truth.assertThat(arrayBuffer.read2Byte(0)).isEqualTo(-256)
-      Truth.assertThat(arrayBuffer.isNativeBacked()).isFalse()
+      Truth.assertThat(arrayBuffer.isNativeBacked()).isTrue()
     },
     map = {},
     jsAssertion = {}
@@ -36,10 +36,10 @@ class ArrayBufferConversionTest {
     jsValue = "new Uint8Array([0x00, 0xff]).buffer",
     nativeAssertion = { arrayBuffer ->
       Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
-      Truth.assertThat(arrayBuffer.isNativeBacked()).isFalse()
+      Truth.assertThat(arrayBuffer.isNativeBacked()).isTrue()
       Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
       Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(0xff.toByte())
-      Truth.assertThat(arrayBuffer.isNativeBacked()).isFalse()
+      Truth.assertThat(arrayBuffer.isNativeBacked()).isTrue()
     },
     map = { it },
     jsAssertion = { jsValue ->
@@ -120,7 +120,7 @@ class ArrayBufferConversionTest {
   }
 
   @Test
-  fun array_buffer_typed_array_arg_should_be_js_backed_until_direct_buffer_access() = withJSIInterop(
+  fun array_buffer_typed_array_arg_should_copy_js_allocated_view_without_js_heap_executor() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {
     val result = evaluateScript(
@@ -134,13 +134,13 @@ class ArrayBufferConversionTest {
       """.trimIndent()
     ).getArray()
 
-    Truth.assertThat(result[0].getBool()).isFalse()
+    Truth.assertThat(result[0].getBool()).isTrue()
     Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(1, 2, 3, 4, 5).inOrder()
     Truth.assertThat(result[2].getArray().map { it.getInt() }).containsExactly(0x42, 0x42).inOrder()
   }
 
   @Test
-  fun array_buffer_with_js_bytes_reads_js_backed_array_buffer_without_detaching() = withJSIInterop(
+  fun array_buffer_with_js_bytes_reads_copied_js_array_buffer_without_js_heap_executor() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {
     val result = evaluateScript(
@@ -156,11 +156,11 @@ class ArrayBufferConversionTest {
 
     Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(1, 2, 3, 4).inOrder()
     Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(9, 2, 3, 4).inOrder()
-    Truth.assertThat(result[2].getBool()).isFalse()
+    Truth.assertThat(result[2].getBool()).isTrue()
   }
 
   @Test
-  fun array_buffer_with_js_bytes_reads_js_backed_typed_array_view_range() = withJSIInterop(
+  fun array_buffer_with_js_bytes_reads_copied_js_typed_array_view_range() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {
     val result = evaluateScript(
@@ -203,7 +203,7 @@ class ArrayBufferConversionTest {
   }
 
   @Test
-  fun array_buffer_with_mutable_js_bytes_mutates_original_js_backed_array_buffer() = withJSIInterop(
+  fun array_buffer_with_mutable_js_bytes_does_not_mutate_original_js_array_buffer_without_js_heap_executor() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {
     val result = evaluateScript(
@@ -214,11 +214,11 @@ class ArrayBufferConversionTest {
       """.trimIndent()
     ).getArray()
 
-    Truth.assertThat(result.map { it.getInt() }).containsExactly(7, 7, 7, 7).inOrder()
+    Truth.assertThat(result.map { it.getInt() }).containsExactly(1, 2, 3, 4).inOrder()
   }
 
   @Test
-  fun array_buffer_with_mutable_js_bytes_mutates_original_js_backed_typed_array_view_range() = withJSIInterop(
+  fun array_buffer_with_mutable_js_bytes_does_not_mutate_original_js_typed_array_view_without_js_heap_executor() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {
     val result = evaluateScript(
@@ -230,11 +230,11 @@ class ArrayBufferConversionTest {
       """.trimIndent()
     ).getArray()
 
-    Truth.assertThat(result.map { it.getInt() }).containsExactly(1, 7, 7, 4, 5).inOrder()
+    Truth.assertThat(result.map { it.getInt() }).containsExactly(1, 2, 3, 4, 5).inOrder()
   }
 
   @Test
-  fun array_buffer_with_js_bytes_async_reads_js_backed_array_buffer_without_detaching() = withJSIInterop(
+  fun array_buffer_with_js_bytes_async_reads_copied_js_array_buffer_without_js_heap_executor() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) { methodQueue ->
     val result = waitForAsyncFunction(
@@ -255,11 +255,11 @@ class ArrayBufferConversionTest {
 
     Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(1, 2, 3, 4).inOrder()
     Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(9, 2, 3, 4).inOrder()
-    Truth.assertThat(result[2].getBool()).isFalse()
+    Truth.assertThat(result[2].getBool()).isTrue()
   }
 
   @Test
-  fun array_buffer_with_mutable_js_bytes_async_mutates_original_js_backed_typed_array_view_range() = withJSIInterop(
+  fun array_buffer_with_mutable_js_bytes_async_does_not_mutate_original_js_typed_array_view_without_js_heap_executor() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) { methodQueue ->
     val result = waitForAsyncFunction(
@@ -273,7 +273,7 @@ class ArrayBufferConversionTest {
       """.trimIndent()
     ).getArray()
 
-    Truth.assertThat(result.map { it.getInt() }).containsExactly(1, 7, 7, 4, 5).inOrder()
+    Truth.assertThat(result.map { it.getInt() }).containsExactly(1, 2, 3, 4, 5).inOrder()
   }
 
   @Test
@@ -296,7 +296,7 @@ class ArrayBufferConversionTest {
   }
 
   @Test
-  fun array_buffer_unscoped_direct_buffer_access_detaches_js_backed_storage() = withJSIInterop(
+  fun array_buffer_unscoped_direct_buffer_access_does_not_mutate_original_js_buffer() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {
     val result = evaluateScript(
@@ -312,7 +312,7 @@ class ArrayBufferConversionTest {
   }
 
   @Test
-  fun array_buffer_returning_js_backed_full_buffer_preserves_identity() = withJSIInterop(
+  fun array_buffer_returning_copied_js_buffer_does_not_preserve_identity_without_js_heap_executor() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {
     val result = evaluateScript(
@@ -322,11 +322,11 @@ class ArrayBufferConversionTest {
       """.trimIndent()
     )
 
-    Truth.assertThat(result.getBool()).isTrue()
+    Truth.assertThat(result.getBool()).isFalse()
   }
 
   @Test
-  fun array_buffer_returning_js_backed_typed_array_view_returns_visible_range_buffer() = withJSIInterop(
+  fun array_buffer_returning_copied_typed_array_view_returns_visible_range_buffer() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) {
     val result = evaluateScript(

@@ -4,8 +4,6 @@
 #include "JavaScriptRuntime.h"
 #include "JSIContext.h"
 
-#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
-
 namespace expo {
 
 namespace {
@@ -142,13 +140,14 @@ jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferObject(
   return value;
 }
 
-bool supportsJSBackedArrayBufferStorage(JSIContext *jsiContext) {
-#if UNIT_TEST
-  return jsiContext->runtimeHolder->supportsSyncExecution();
-#else
-  jsi::Runtime& rt = jsiContext->runtimeHolder->get();
-  return facebook::react::RuntimeSchedulerBinding::getBinding(rt) != nullptr;
-#endif
+std::shared_ptr<JSHeapAccessExecutorHolder> getJSHeapAccessExecutor(JSIContext *jsiContext) {
+  static const auto method = JSIContext::javaClassStatic()
+    ->getMethod<jni::local_ref<JSHeapAccessExecutorJavaClass::javaobject>()>("getJSHeapAccessExecutor");
+  auto executor = method(jsiContext->javaPart_);
+  if (!executor) {
+    return nullptr;
+  }
+  return std::make_shared<JSHeapAccessExecutorHolder>(executor);
 }
 
 jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferFromJSIArrayBuffer(
@@ -171,11 +170,13 @@ jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferFromJSIArrayBuffer(
     );
   }
 
-  if (length > 0 && supportsJSBackedArrayBufferStorage(jsiContext)) {
+  auto executor = getJSHeapAccessExecutor(jsiContext);
+  if (length > 0 && executor) {
     return makeArrayBufferObject(
       jsiContext,
       std::make_shared<JavaScriptBackedArrayBufferStorage>(
         jsiContext->runtimeHolder,
+        std::move(executor),
         std::make_shared<jsi::ArrayBuffer>(std::move(arrayBuffer)),
         offset,
         length
@@ -305,13 +306,27 @@ jni::local_ref<jni::JObject> MutableBufferViewArrayBufferStorage::withJSBytes(
 
 JavaScriptBackedArrayBufferStorage::JavaScriptBackedArrayBufferStorage(
   std::weak_ptr<JavaScriptRuntime> runtime,
+  std::shared_ptr<JSHeapAccessExecutorHolder> executor,
   std::shared_ptr<jsi::ArrayBuffer> arrayBuffer,
   size_t offset,
   size_t length
 ) : _runtime(std::move(runtime)),
+    _executor(std::move(executor)),
     _arrayBuffer(std::move(arrayBuffer)),
     _offset(offset),
     _length(length) {}
+
+JavaScriptBackedArrayBufferStorage::~JavaScriptBackedArrayBufferStorage() {
+  auto arrayBuffer = new std::shared_ptr<jsi::ArrayBuffer>(std::move(_arrayBuffer));
+  try {
+    _executor->runSync([arrayBuffer]() {
+      delete arrayBuffer;
+    });
+  } catch (...) {
+    // If the JS queue is no longer available, intentionally leak the retained JS handle
+    // instead of destroying it from a non-JS thread.
+  }
+}
 
 uint8_t *JavaScriptBackedArrayBufferStorage::data() {
   throwArrayBufferAccessException(
@@ -345,11 +360,13 @@ void JavaScriptBackedArrayBufferStorage::validateBounds(jsi::Runtime &runtime) {
 void JavaScriptBackedArrayBufferStorage::readBytes(size_t position, void *destination, size_t length) {
   validateByteRange(size(), position, length);
   auto runtime = runtimeOrThrow();
+  (void)runtime;
   std::exception_ptr exception;
 
   try {
-    runtime->executeSync([&](jsi::Runtime &rt) {
+    _executor->runSync([this, runtime, position, destination, length, &exception]() {
       try {
+        jsi::Runtime &rt = runtime->get();
         validateBounds(rt);
         memcpy(destination, _arrayBuffer->data(rt) + _offset + position, length);
       } catch (...) {
@@ -367,12 +384,14 @@ void JavaScriptBackedArrayBufferStorage::readBytes(size_t position, void *destin
 
 jni::local_ref<jni::JByteBuffer> JavaScriptBackedArrayBufferStorage::toDirectBuffer(bool) {
   auto runtime = runtimeOrThrow();
+  (void)runtime;
   jni::global_ref<jni::JByteBuffer> result;
   std::exception_ptr exception;
 
   try {
-    runtime->executeSync([&](jsi::Runtime &rt) {
+    _executor->runSync([this, runtime, &result, &exception]() {
       try {
+        jsi::Runtime &rt = runtime->get();
         validateBounds(rt);
         auto byteBuffer = copyToDirectBuffer(_arrayBuffer->data(rt) + _offset, _length);
         result = jni::make_global(byteBuffer);
@@ -416,14 +435,16 @@ jni::local_ref<jni::JObject> JavaScriptBackedArrayBufferStorage::withJSBytes(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   auto runtime = runtimeOrThrow();
+  (void)runtime;
   auto bodyRef = jni::make_global(body);
   jni::global_ref<jni::JObject> result;
   bool hasResult = false;
   std::exception_ptr exception;
 
   try {
-    runtime->executeSync([&](jsi::Runtime &rt) {
+    _executor->runSync([this, runtime, &bodyRef, &result, &hasResult, &exception]() {
       try {
+        jsi::Runtime &rt = runtime->get();
         validateBounds(rt);
         auto byteBuffer = jni::JByteBuffer::wrapBytes(_arrayBuffer->data(rt) + _offset, _length);
         byteBuffer->order(jni::JByteOrder::nativeOrder());
@@ -460,20 +481,30 @@ void JavaScriptBackedArrayBufferStorage::withJSBytesAsync(
   auto bodyRef = jni::make_global(body);
   auto callbackRef = jni::make_global(callback);
 
-  runtime->executeAsync([
+  bool wasQueued = _executor->runAsync([
     self = std::move(self),
+    runtime = std::move(runtime),
     bodyRef = std::move(bodyRef),
     callbackRef = std::move(callbackRef)
-  ](jsi::Runtime &rt) mutable {
+  ]() mutable {
     auto localCallback = jni::static_ref_cast<ArrayBufferScopedAccessAsyncCallback>(callbackRef);
     invokeScopedAccessBodyAsync(localCallback, [&]() {
+      jsi::Runtime &rt = runtime->get();
       self->validateBounds(rt);
       auto byteBuffer = jni::JByteBuffer::wrapBytes(self->_arrayBuffer->data(rt) + self->_offset, self->_length);
       byteBuffer->order(jni::JByteOrder::nativeOrder());
       auto localBody = jni::static_ref_cast<JNIFunctionBody>(bodyRef);
       return invokeBodyWithByteBuffer(localBody, std::move(byteBuffer));
     });
+    self.reset();
   });
+  if (!wasQueued) {
+    invokeScopedAccessAsyncCallback(
+      callback,
+      nullptr,
+      UnexpectedException::create("Cannot schedule ArrayBuffer access on the JavaScript queue.")
+    );
+  }
 }
 
 void ArrayBuffer::registerNatives() {

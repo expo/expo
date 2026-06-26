@@ -4,16 +4,17 @@
 #include "JNIFunctionBody.h"
 #include "JNIDeallocator.h"
 #include "JSIContext.h"
+#include "JSHeapAccessExecutorHolder.h"
 #include "TypedArray.h"
 
 #include <fbjni/ByteBuffer.h>
 
 namespace expo {
 
-class JavaScriptRuntime;
-
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
+
+class JavaScriptRuntime;
 
 class ArrayBufferScopedAccessAsyncCallback : public jni::JavaClass<ArrayBufferScopedAccessAsyncCallback> {
 public:
@@ -113,10 +114,13 @@ class JavaScriptBackedArrayBufferStorage: public ArrayBufferStorage {
 public:
   JavaScriptBackedArrayBufferStorage(
     std::weak_ptr<JavaScriptRuntime> runtime,
+    std::shared_ptr<JSHeapAccessExecutorHolder> executor,
     std::shared_ptr<jsi::ArrayBuffer> arrayBuffer,
     size_t offset,
     size_t length
   );
+
+  ~JavaScriptBackedArrayBufferStorage() override;
 
   [[nodiscard]] uint8_t* data() override;
 
@@ -147,6 +151,7 @@ private:
   void validateBounds(jsi::Runtime &runtime);
 
   std::weak_ptr<JavaScriptRuntime> _runtime;
+  std::shared_ptr<JSHeapAccessExecutorHolder> _executor;
   std::shared_ptr<jsi::ArrayBuffer> _arrayBuffer;
   size_t _offset;
   size_t _length;
