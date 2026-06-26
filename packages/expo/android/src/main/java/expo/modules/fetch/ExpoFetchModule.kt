@@ -30,7 +30,7 @@ class ExpoFetchModule : Module() {
       .addInterceptor(TransparentCompressionInterceptor)
       .build()
   }
-  private val cookieHandler by lazy { ForwardingCookieHandler(reactContext) }
+  private val cookieHandler by lazy { ForwardingCookieHandler() }
   private val cookieJarContainer by lazy { client.cookieJar as CookieJarContainer }
 
   private val reactContext: ReactContext
