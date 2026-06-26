@@ -19,7 +19,6 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.interfaces.ReactActivityHandler.DelayLoadAppHandler
@@ -93,10 +92,6 @@ class ReactActivityDelegateWrapper(
 
   override fun getReactHost(): ReactHost? {
     return _reactHost
-  }
-
-  override fun getReactInstanceManager(): ReactInstanceManager {
-    return delegate.reactInstanceManager
   }
 
   override fun getMainComponentName(): String? {
