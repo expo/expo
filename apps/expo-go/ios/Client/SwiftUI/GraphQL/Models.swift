@@ -53,7 +53,7 @@ struct UserActor: Codable {
   let username: String
   let firstName: String?
   let lastName: String?
-  let profilePhoto: String?
+  let primaryAccountProfileImageUrl: String?
   let bestContactEmail: String?
   let accounts: [Account]
   let fullName: String?
@@ -64,7 +64,7 @@ struct UserActor: Codable {
     case username
     case firstName
     case lastName
-    case profilePhoto
+    case primaryAccountProfileImageUrl
     case bestContactEmail
     case accounts
     case fullName
@@ -88,7 +88,7 @@ struct Account: Codable {
 struct UserActorSimple: Codable {
   let id: String
   let username: String
-  let profilePhoto: String?
+  let primaryAccountProfileImageUrl: String?
   let firstName: String?
   let fullName: String?
   let lastName: String?
