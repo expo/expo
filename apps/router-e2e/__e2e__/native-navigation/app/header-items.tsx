@@ -135,6 +135,7 @@ export default function HeaderItemsScreen() {
             hidden={!showLeftButton2}
             separateBackground={leftButton2SeparateBackground}
             selected={leftButton2Selected}
+            icon={process.env.EXPO_OS === 'ios' ? 'star' : searchIcon}
             onPress={handleLeftButton2Press}
             style={{
               fontWeight: 500,
@@ -142,7 +143,6 @@ export default function HeaderItemsScreen() {
               color: '#f0f',
             }}>
             <Stack.Toolbar.Label>Button 2</Stack.Toolbar.Label>
-            <Stack.Toolbar.Icon sf="star" />
             <Stack.Toolbar.Badge>33</Stack.Toolbar.Badge>
           </Stack.Toolbar.Button>
 

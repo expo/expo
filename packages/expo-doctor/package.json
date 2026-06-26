@@ -1,39 +1,37 @@
 {
   "name": "expo-doctor",
   "version": "1.19.8",
-  "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [
+    "android",
     "expo",
-    "ios",
     "expo-doctor",
-    "android"
+    "ios"
   ],
   "homepage": "https://docs.expo.dev",
+  "license": "MIT",
+  "author": "Expo <support@expo.dev>",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-doctor"
   },
-  "author": "Expo <support@expo.dev>",
-  "license": "MIT",
   "bin": "./bin/expo-doctor.js",
   "files": [
     "bin",
     "build"
   ],
+  "main": "build/index.js",
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "test": "jest",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
-  },
-  "engines": {
-    "node": "^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0"
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
@@ -48,9 +46,9 @@
     "@vercel/ncc": "^0.38.3",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "expo-modules-autolinking": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "expo-modules-autolinking": "workspace:*",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "ignore": "^5.3.2",
@@ -60,5 +58,8 @@
     "resolve-workspace-root": "^2.0.0",
     "semver": "7.5.4",
     "terminal-link": "^2.1.1"
+  },
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
   }
 }

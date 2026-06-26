@@ -889,7 +889,7 @@ export async function test(t: any) {
       t.expect(result.id).toBeDefined();
       t.expect(result.creationTime).toBeDefined();
       t.expect(result.duration).toBe(null);
-      t.expect(result.filename.toLowerCase()).toMatch(/\.png/);
+      t.expect(result.filename?.toLowerCase()).toMatch(/\.png/);
       t.expect(result.height).toBeGreaterThan(0);
       t.expect(result.mediaType).toBeDefined();
       t.expect(new Date(result.modificationTime).getFullYear()).toBeGreaterThan(1970);
@@ -916,7 +916,7 @@ export async function test(t: any) {
       t.expect(result.id).toBeDefined();
       t.expect(result.creationTime).toBeDefined();
       t.expect(result.duration).toBeGreaterThan(0);
-      t.expect(result.filename.toLowerCase()).toMatch(/\.mp4/);
+      t.expect(result.filename?.toLowerCase()).toMatch(/\.mp4/);
       t.expect(result.height).toBeGreaterThan(0);
       t.expect(result.mediaType).toBeDefined();
       t.expect(new Date(result.modificationTime).getFullYear()).toBeGreaterThan(1970);

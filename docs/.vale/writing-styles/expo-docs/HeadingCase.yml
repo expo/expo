@@ -314,6 +314,8 @@ exceptions:
   - Live Activity
   - 'Prerequisite: Creating widget'
   - 'Prerequisite: Creating Live Activity'
+  - 'Prerequisite: Creating a widget'
+  - 'Prerequisite: Creating a Live Activity'
   - Hiding the Tab bar
   - Integrated vs Isolated
   - Expo Skills

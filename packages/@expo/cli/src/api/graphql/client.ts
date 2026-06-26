@@ -157,7 +157,7 @@ export const { query, mutate } = (() => {
         queryCache.set(variablesKey, data);
       }
       const keys = Object.keys(data);
-      if (keys.length > 0 && keys.some((key) => data[key as keyof typeof data] != null)) {
+      if (keys.some((key) => data[key as keyof typeof data] != null)) {
         return data;
       }
     }

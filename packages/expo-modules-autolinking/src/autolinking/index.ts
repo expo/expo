@@ -1,5 +1,3 @@
-import { findModulesAsync } from './findModules';
-import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
 import type { AutolinkingOptions } from '../commands/autolinkingOptions';
 import { createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
 import type {
@@ -8,6 +6,8 @@ import type {
   SearchResults,
   SupportedPlatform,
 } from '../types';
+import { findModulesAsync } from './findModules';
+import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
 
 export { getConfiguration } from './getConfiguration';
 

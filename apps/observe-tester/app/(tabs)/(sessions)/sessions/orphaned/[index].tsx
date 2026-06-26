@@ -10,10 +10,11 @@ import { Divider } from '@/components/Divider';
 import { useTheme } from '@/utils/theme';
 
 // Detail for a startup crash that isn't attributed to any session. The list passes
-// the report's position in `getOrphanedCrashReports`; we re-fetch that ordered list
-// and look it up by index, since crash reports have no stable id. The index is only
-// stable within a launch, but orphaned crashes are only produced at startup — never
-// while the app is foregrounded — so the list can't shift under an open detail screen.
+// the report's position among the orphans (`sessionId` null) in `getAllCrashReports`;
+// we re-fetch and filter that same ordered list and look it up by index, since crash
+// reports have no stable id. The index is only stable within a launch, but orphaned
+// crashes are only produced at startup — never while the app is foregrounded — so the
+// list can't shift under an open detail screen.
 export default function OrphanedCrashScreen() {
   const theme = useTheme();
   const { index } = useLocalSearchParams<{ index: string }>();
@@ -23,9 +24,10 @@ export default function OrphanedCrashScreen() {
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
-      AppMetrics.getOrphanedCrashReports?.().then((reports) => {
+      AppMetrics.getAllCrashReports?.().then((reports) => {
         if (cancelled) return;
-        setReport(reports[Number(index)] ?? null);
+        const orphans = reports.filter((report) => report.sessionId == null);
+        setReport(orphans[Number(index)] ?? null);
         setLoaded(true);
       });
       return () => {

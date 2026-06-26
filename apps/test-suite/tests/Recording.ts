@@ -15,8 +15,8 @@ import { File, Paths } from 'expo-file-system';
 import { isMatch } from 'lodash';
 import { Platform } from 'react-native';
 
-import { waitFor } from './helpers';
 import * as TestUtils from '../TestUtils';
+import { waitFor } from './helpers';
 
 export const name = 'Recording';
 

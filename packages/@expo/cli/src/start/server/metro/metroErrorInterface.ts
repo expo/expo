@@ -14,15 +14,15 @@ import type { StackFrame } from 'stacktrace-parser';
 import { parse } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
-import type { LogBoxLogData } from './log-box/LogBoxLog';
-import { LogBoxLog } from './log-box/LogBoxLog';
-import type { CodeFrame, StackFrame as MetroStackFrame } from './log-box/LogBoxSymbolication';
-import { getStackFormattedLocation } from './log-box/formatProjectFilePath';
 import { Log } from '../../../log';
 import { stripAnsi } from '../../../utils/ansi';
 import { env } from '../../../utils/env';
 import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
+import type { LogBoxLogData } from './log-box/LogBoxLog';
+import { LogBoxLog } from './log-box/LogBoxLog';
+import type { CodeFrame, StackFrame as MetroStackFrame } from './log-box/LogBoxSymbolication';
+import { getStackFormattedLocation } from './log-box/formatProjectFilePath';
 
 const isDebug = require('debug').enabled('expo:start:server:metro');
 

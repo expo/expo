@@ -1,13 +1,13 @@
 import type { NativeModule, PermissionResponse } from 'expo';
 
-import type { NativeAlbumClass } from './NativeAlbumClass.types';
-import type { NativeAssetClass } from './NativeAssetClass.types';
-import type { NativeQueryClass } from './NativeQueryClass.types';
 import type {
   GranularPermission,
   MediaTypeFilter,
   MediaLibraryAssetsChangeEvent,
 } from '../../types';
+import type { NativeAlbumClass } from './NativeAlbumClass.types';
+import type { NativeAssetClass } from './NativeAssetClass.types';
+import type { NativeQueryClass } from './NativeQueryClass.types';
 
 export declare class NativeMediaLibraryModuleClass extends NativeModule<{
   mediaLibraryDidChange: (event: MediaLibraryAssetsChangeEvent) => void;

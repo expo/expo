@@ -31,9 +31,9 @@ struct JavaScriptCodableEnumerableTests {
   @Test
   func `decodes and encodes a string enum`() throws {
     let runtime = try runtime
-    let decoded = try CodableColor.decode(runtime.eval("'green'"), appContext: appContext, runtime: runtime)
+    let decoded = try CodableColor.decode(runtime.eval("'green'"), in: runtime)
     #expect(decoded == .green)
-    let encoded = try CodableColor.encode(.red, appContext: appContext, runtime: runtime)
+    let encoded = try CodableColor.encode(.red, in: runtime)
     #expect(encoded.getString() == "red")
   }
 
@@ -42,9 +42,9 @@ struct JavaScriptCodableEnumerableTests {
   @Test
   func `decodes and encodes an int enum`() throws {
     let runtime = try runtime
-    let decoded = try CodablePriority.decode(runtime.eval("2"), appContext: appContext, runtime: runtime)
+    let decoded = try CodablePriority.decode(runtime.eval("2"), in: runtime)
     #expect(decoded == .high)
-    let encoded = try CodablePriority.encode(.low, appContext: appContext, runtime: runtime)
+    let encoded = try CodablePriority.encode(.low, in: runtime)
     #expect(encoded.getInt() == 1)
   }
 
@@ -54,7 +54,7 @@ struct JavaScriptCodableEnumerableTests {
   func `enum decode throws on an unknown raw value`() throws {
     let runtime = try runtime
     #expect(throws: (any Error).self) {
-      _ = try CodableColor.decode(runtime.eval("'purple'"), appContext: appContext, runtime: runtime)
+      _ = try CodableColor.decode(runtime.eval("'purple'"), in: runtime)
     }
   }
 }

@@ -11,6 +11,7 @@
 import MetroHMRClient from '@expo/metro/metro-runtime/modules/HMRClient';
 import prettyFormat, { plugins } from 'pretty-format';
 
+import type { MarshalledProps } from '../dom/dom-entry';
 import {
   getConnectionError,
   getFullBundlerUrl,
@@ -19,7 +20,6 @@ import {
   resetErrorOverlay,
   showLoading,
 } from './hmrUtils';
-import type { MarshalledProps } from '../dom/dom-entry';
 
 declare global {
   interface Window {

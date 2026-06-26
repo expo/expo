@@ -11,11 +11,11 @@
 import * as React from 'react';
 import { NativeEventEmitter } from 'react-native';
 
+import { parseErrorStack } from '../utils/parseErrorStack';
 import { LogBoxLog, LogContext } from './LogBoxLog';
 import type { LogLevel, MetroStackFrame, StackType, Category, Message } from './Types';
 import type { ExtendedExceptionData } from './parseLogBoxLog';
 import { isError, parseLogBoxException, parseLogBoxLog } from './parseLogBoxLog';
-import { parseErrorStack } from '../utils/parseErrorStack';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 

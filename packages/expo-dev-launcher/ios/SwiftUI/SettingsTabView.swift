@@ -33,7 +33,7 @@ struct SettingsTabView: View {
       VStack(alignment: .leading, spacing: 24) {
         SafeAreaTopPadding(manualInset: viewModel.topSafeAreaInset)
         titleSection
-        showMenuAtLaunch
+        launchBehaviour
         gestures
 
         Text(selectedGesturesInfoMessage)
@@ -82,17 +82,40 @@ struct SettingsTabView: View {
     #endif
   }
 
-  private var showMenuAtLaunch: some View {
-    HStack {
-      Image("show-menu-at-launch", bundle: getDevLauncherBundle())
-        .resizable()
-        .frame(width: 24, height: 24)
-        .opacity(0.6)
-      Toggle("Show menu at launch", isOn: $viewModel.showOnLaunch)
+  private var launchBehaviour: some View {
+    VStack(alignment: .leading) {
+      Text("Launch behaviour".uppercased())
+        .font(.caption)
+        .foregroundColor(.primary.opacity(0.6))
+
+      VStack(spacing: 0) {
+        HStack {
+          Image("show-menu-at-launch", bundle: getDevLauncherBundle())
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 24, height: 24)
+            .opacity(0.6)
+          Toggle("Show menu at launch", isOn: $viewModel.showOnLaunch)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 12)
+
+        Divider()
+
+        HStack {
+          Image(systemName: "arrow.trianglehead.clockwise.rotate.90")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 24, height: 24)
+            .opacity(0.6)
+          Toggle("Auto-launch most recent app", isOn: $viewModel.autoLaunchMostRecent)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 12)
+      }
+      .background(Color.expoSecondarySystemBackground)
+      .cornerRadius(12)
     }
-    .padding()
-    .background(Color.expoSecondarySystemBackground)
-    .cornerRadius(12)
   }
 
   private var titleSection: some View {

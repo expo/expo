@@ -3,8 +3,8 @@ import { useVideoPlayer, VideoView, VideoThumbnail } from 'expo-video';
 import { useCallback, useState } from 'react';
 import { PixelRatio, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { bigBuckBunnySource } from './videoSources';
 import Button from '../../components/Button';
+import { bigBuckBunnySource } from './videoSources';
 
 export default function VideoScreen() {
   const [thumbnails, setThumbnails] = useState<VideoThumbnail[]>([]);

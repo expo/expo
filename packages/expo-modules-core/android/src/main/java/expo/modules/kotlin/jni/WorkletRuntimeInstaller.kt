@@ -24,6 +24,10 @@ class WorkletRuntimeInstaller(
   ): JSIContext
 
   companion object {
+    init {
+      WorkletsSoLoader.loadIfPresent()
+    }
+
     /**
      * Resolves the raw UI `jsi::Runtime*` (as a Long) from a `react-native-worklets`
      * UI runtime holder. Returns 0 when worklets isn't installed or the holder

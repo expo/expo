@@ -6,14 +6,14 @@ import React from 'react';
 import { StyleSheet, Text, View, Platform, Image } from 'react-native';
 
 import { usePathname, useRouter } from '../hooks';
-import { NoSSR } from './NoSSR';
 import { Link } from '../link/Link';
-import { useNavigation } from '../useNavigation';
-import { useSafeLayoutEffect } from './useSafeLayoutEffect';
 import { useRoute } from '../react-navigation/native';
 import type { Href } from '../types';
+import { useNavigation } from '../useNavigation';
 import { isRoutePreloadedInStack } from '../utils/stack';
 import { Pressable } from '../views/Pressable';
+import { NoSSR } from './NoSSR';
+import { useSafeLayoutEffect } from './useSafeLayoutEffect';
 
 /**
  * Default screen for unmatched routes.

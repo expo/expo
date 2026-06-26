@@ -6,9 +6,5 @@
     "resolveJsonModule": true,
     "types": ["jest", "node"]
   },
-  "include": ["./src"],
-  // `*.tsd.ts` files are type-assertion tests run by `jest-runner-tsd` (see `test:tsd`),
-  // which uses its own compiler that understands `expectError`. They intentionally contain
-  // type errors, so they must be excluded from the regular `tsc` typecheck.
-  "exclude": ["**/*.tsd.ts"]
+  "include": ["./src"]
 }

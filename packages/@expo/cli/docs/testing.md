@@ -2,12 +2,12 @@
 
 ## Test Types
 
-| Type | Location | Command | Description |
-|------|----------|---------|-------------|
-| Unit | `src/**/__tests__/` | `pnpm test` | Fast, isolated tests with mocked dependencies |
-| E2E CLI | `e2e/__tests__/` | `pnpm test:e2e` | Full CLI command tests in real projects |
-| Playwright | `e2e/playwright/` | `pnpm test:playwright` | Browser-based Metro web/server tests |
-| Router E2E | `apps/router-e2e/__e2e__/` | See router-e2e section | Expo Router integration tests |
+| Type       | Location                   | Command                | Description                                   |
+| ---------- | -------------------------- | ---------------------- | --------------------------------------------- |
+| Unit       | `src/**/__tests__/`        | `pnpm test`            | Fast, isolated tests with mocked dependencies |
+| E2E CLI    | `e2e/__tests__/`           | `pnpm test:e2e`        | Full CLI command tests in real projects       |
+| Playwright | `e2e/playwright/`          | `pnpm test:playwright` | Browser-based Metro web/server tests          |
+| Router E2E | `apps/router-e2e/__e2e__/` | See router-e2e section | Expo Router integration tests                 |
 
 ## Unit Tests
 
@@ -39,28 +39,28 @@ Mock implementations live in `__mocks__` directories. Jest automatically uses th
 
 Global mocks for npm packages and Node.js built-ins:
 
-| Mock | Description |
-|------|-------------|
-| `fs.ts`, `fs/promises.ts` | Uses `memfs` for in-memory filesystem |
-| `os.ts` | Stubs `homedir()` → `/home`, `tmpdir()` → `/tmp` |
-| `child_process.ts` | Empty mock for process spawning |
-| `resolve-from.ts` | Resolves from memfs paths, falls back to real resolver |
-| `ora.ts` | No-op spinner |
-| `@expo/spawn-async.ts` | Returns empty successful result |
-| `@expo/package-manager.ts` | Mock package manager |
-| `@expo/image-utils.ts` | Mock image processing |
+| Mock                       | Description                                            |
+| -------------------------- | ------------------------------------------------------ |
+| `fs.ts`, `fs/promises.ts`  | Uses `memfs` for in-memory filesystem                  |
+| `os.ts`                    | Stubs `homedir()` → `/home`, `tmpdir()` → `/tmp`       |
+| `child_process.ts`         | Empty mock for process spawning                        |
+| `resolve-from.ts`          | Resolves from memfs paths, falls back to real resolver |
+| `ora.ts`                   | No-op spinner                                          |
+| `@expo/spawn-async.ts`     | Returns empty successful result                        |
+| `@expo/package-manager.ts` | Mock package manager                                   |
+| `@expo/image-utils.ts`     | Mock image processing                                  |
 
 #### Source Mocks (`/src/**/__mocks__/`)
 
 Mocks for internal modules, colocated with source:
 
-| Location | Mocks |
-|----------|-------|
-| `src/__mocks__/` | `log.ts` - silences console output |
-| `src/utils/__mocks__/` | `createTempPath.ts`, `downloadExpoGoAsync.ts`, `exit.ts`, `port.ts` |
-| `src/start/server/__mocks__/` | `AsyncNgrok.ts`, `Bonjour.ts`, `DevelopmentSession.ts` |
-| `src/start/platforms/__mocks__/` | Platform launcher mocks |
-| `src/api/user/__mocks__/` | User API mocks |
+| Location                         | Mocks                                                               |
+| -------------------------------- | ------------------------------------------------------------------- |
+| `src/__mocks__/`                 | `log.ts` - silences console output                                  |
+| `src/utils/__mocks__/`           | `createTempPath.ts`, `downloadExpoGoAsync.ts`, `exit.ts`, `port.ts` |
+| `src/start/server/__mocks__/`    | `AsyncNgrok.ts`, `Bonjour.ts`, `DevelopmentSession.ts`              |
+| `src/start/platforms/__mocks__/` | Platform launcher mocks                                             |
+| `src/api/user/__mocks__/`        | User API mocks                                                      |
 
 ### Working with the In-Memory Filesystem
 
@@ -70,7 +70,7 @@ Unit tests use `memfs` for filesystem operations. Set up test files with `vol`:
 import { vol } from 'memfs';
 
 beforeEach(() => {
-  vol.reset();  // Clear filesystem between tests
+  vol.reset(); // Clear filesystem between tests
 });
 
 it('reads a config file', () => {
@@ -130,7 +130,9 @@ module.exports = {
 
 // Option 3: Full mock with types
 import type { MyType } from 'my-package';
-export const myFunction = jest.fn<MyType, []>(() => ({ /* mock data */ }));
+export const myFunction = jest.fn<MyType, []>(() => ({
+  /* mock data */
+}));
 ```
 
 ### Writing Unit Tests
@@ -172,14 +174,14 @@ E2E tests run actual CLI commands against real project fixtures.
 
 Located in `e2e/utils/`:
 
-| File | Purpose |
-|------|---------|
-| `expo.ts` | `executeExpoAsync()`, `createExpoStart()`, `createExpoServe()` |
-| `server.ts` | `createBackgroundServer()`, `findFreePortAsync()` |
-| `process.ts` | Process spawning and output collection |
-| `hmr.ts` | Hot module replacement testing utilities |
-| `package.ts` | Package tarball creation for linking |
-| `path.ts` | Temporary directory management |
+| File         | Purpose                                                        |
+| ------------ | -------------------------------------------------------------- |
+| `expo.ts`    | `executeExpoAsync()`, `createExpoStart()`, `createExpoServe()` |
+| `server.ts`  | `createBackgroundServer()`, `findFreePortAsync()`              |
+| `process.ts` | Process spawning and output collection                         |
+| `hmr.ts`     | Hot module replacement testing utilities                       |
+| `package.ts` | Package tarball creation for linking                           |
+| `path.ts`    | Temporary directory management                                 |
 
 ### Custom Matchers
 
@@ -192,7 +194,7 @@ expect(somePath).toMatchPath(/packages\/.*\/src/);
 
 // Asymmetric matcher
 expect({ path: '/foo/bar' }).toEqual({
-  path: expect.pathMatching('/foo/bar')
+  path: expect.pathMatching('/foo/bar'),
 });
 ```
 
@@ -204,11 +206,11 @@ Fixtures are in `e2e/fixtures/`. Create test projects with:
 import { setupTestProjectWithOptionsAsync } from './utils';
 
 const projectRoot = await setupTestProjectWithOptionsAsync(
-  'my-test',      // unique test name
-  'with-assets',  // fixture name from e2e/fixtures/
+  'my-test', // unique test name
+  'with-assets', // fixture name from e2e/fixtures/
   {
-    reuseExisting: false,  // set true for faster local iteration
-    linkExpoPackages: ['expo-router'],  // link local packages
+    reuseExisting: false, // set true for faster local iteration
+    linkExpoPackages: ['expo-router'], // link local packages
   }
 );
 ```
@@ -312,7 +314,7 @@ test.describe('fast-refresh', () => {
     cwd: projectRoot,
     env: {
       NODE_ENV: 'development',
-      E2E_ROUTER_SRC: 'fast-refresh',  // __e2e__ subdirectory
+      E2E_ROUTER_SRC: 'fast-refresh', // __e2e__ subdirectory
     },
   });
 
@@ -375,11 +377,11 @@ apps/router-e2e/__e2e__/
 
 Configure which project to run via environment variables:
 
-| Variable | Description |
-|----------|-------------|
-| `E2E_ROUTER_SRC` | Subdirectory name in `__e2e__/` (e.g., `fast-refresh`) |
-| `E2E_ROUTER_JS_ENGINE` | JavaScript engine (`hermes`, `jsc`) |
-| `E2E_ROUTER_ASYNC` | Async chunk loading mode |
+| Variable               | Description                                            |
+| ---------------------- | ------------------------------------------------------ |
+| `E2E_ROUTER_SRC`       | Subdirectory name in `__e2e__/` (e.g., `fast-refresh`) |
+| `E2E_ROUTER_JS_ENGINE` | JavaScript engine (`hermes`, `jsc`)                    |
+| `E2E_ROUTER_ASYNC`     | Async chunk loading mode                               |
 
 ### Running Router E2E Tests
 
@@ -462,7 +464,7 @@ For faster iteration, reuse test projects:
 
 ```ts
 const projectRoot = await setupTestProjectWithOptionsAsync('my-test', 'fixture', {
-  reuseExisting: true,  // Skip reinstall if project exists
+  reuseExisting: true, // Skip reinstall if project exists
 });
 ```
 

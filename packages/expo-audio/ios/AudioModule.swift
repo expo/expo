@@ -265,15 +265,16 @@ public class AudioModule: Module {
       Function("updateLockScreenMetadata") { (player: AudioPlayer, metadata: Metadata?) in
         if player.isActiveForLockScreen {
           player.metadata = metadata
-          MediaController.shared.updateNowPlayingInfo(for: player)
+          MediaController.shared.refreshActivePlayable(player, options: player.lockScreenOptions)
         }
       }
 
       Function("clearLockScreenControls") { (player: AudioPlayer) in
         if player.isActiveForLockScreen {
           player.metadata = nil
+          player.lockScreenOptions = nil
           player.isActiveForLockScreen = false
-          MediaController.shared.setActivePlayer(nil)
+          MediaController.shared.setActivePlayable(nil)
         }
       }
 
@@ -401,7 +402,30 @@ public class AudioModule: Module {
         playlist.clear()
       }
 
+      Function("setActiveForLockScreen") { (playlist: AudioPlaylist, active: Bool, metadata: Metadata?, options: LockScreenOptions?) in
+        playlist.setActiveForLockScreen(active, metadata: metadata, options: options)
+      }
+
+      Function("updateLockScreenMetadata") { (playlist: AudioPlaylist, metadata: Metadata?) in
+        if playlist.isActiveForLockScreen {
+          playlist.metadata = metadata
+          MediaController.shared.refreshActivePlayable(playlist, options: playlist.lockScreenOptions)
+        }
+      }
+
+      Function("clearLockScreenControls") { (playlist: AudioPlaylist) in
+        if playlist.isActiveForLockScreen {
+          playlist.metadata = nil
+          playlist.lockScreenOptions = nil
+          playlist.isActiveForLockScreen = false
+          MediaController.shared.setActivePlayable(nil)
+        }
+      }
+
       Function("destroy") { playlist in
+        if playlist.isActiveForLockScreen {
+          playlist.setActiveForLockScreen(false, metadata: nil, options: nil)
+        }
         self.registry.remove(playlist)
       }
     }
@@ -825,18 +849,17 @@ public class AudioModule: Module {
   }
 
   private func deactivateSession() {
-    // We need to give isPlaying time to update before running this
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-      guard let self else {
+    Task {
+      // Give isPlaying time to update before deciding whether to deactivate.
+      try? await Task.sleep(for: .milliseconds(100))
+      let hasActivePlayables = registry.allPlayables.contains { $0.isPlaying }
+      guard !hasActivePlayables else {
         return
       }
-      let hasActivePlayables = self.registry.allPlayables.contains { $0.isPlaying }
-      if !hasActivePlayables {
-        do {
-          try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
-        } catch {
-          print("Failed to deactivate audio session: \(error)")
-        }
+      do {
+        try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+      } catch {
+        print("Failed to deactivate audio session: \(error)")
       }
     }
   }

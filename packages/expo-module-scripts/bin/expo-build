@@ -59,7 +59,7 @@ function parseTargets(positionals) {
   });
 }
 
-function createBuildHost(baseDir, outDir, typecheck) {
+function createBuildHost(baseDir, inputDir, outDir, typecheck) {
   const configPath = path.join(baseDir, 'tsconfig.json');
   const parsed = ts.getParsedCommandLineOfConfigFile(
     configPath,
@@ -69,6 +69,7 @@ function createBuildHost(baseDir, outDir, typecheck) {
       declaration: true,
       declarationMap: false,
       noCheck: !typecheck,
+      rootDir: path.resolve(baseDir, inputDir),
       outDir: path.resolve(baseDir, outDir),
     },
     {
@@ -107,9 +108,9 @@ function createBuildHost(baseDir, outDir, typecheck) {
 async function transformSources(files, srcDir, outDir, format, writeFileIfChanged, opts) {
   const moduleConfig =
     format === 'cjs'
-      ? { type: 'commonjs', lazy: true, importInterop: 'swc', exportInteropAnnotation: true }
+      ? { type: 'commonjs', lazy: true, ignoreDynamic: true, importInterop: 'swc', exportInteropAnnotation: true }
       : format === 'script'
-        ? { type: 'commonjs', strict: true, strictMode: false, noInterop: true }
+        ? { type: 'commonjs', strict: true, ignoreDynamic: true, strictMode: false, noInterop: true }
         : { type: 'es6' };
 
   await Promise.all(
@@ -245,6 +246,7 @@ if (allFiles.length === 0 && allDeclFiles.length === 0 && allAssetFiles.length =
 
 const { parsed, compilerHost, writtenFiles, writeFileIfChanged } = createBuildHost(
   baseDir,
+  targets[0].input,
   targets[0].output,
   typecheck
 );

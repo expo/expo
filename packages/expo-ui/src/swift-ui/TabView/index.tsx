@@ -1,11 +1,11 @@
 import { requireNativeView } from 'expo';
 
-import { Tab } from './Tab';
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
+import { Tab } from './Tab';
 
-export type TabViewProps = {
+export interface TabViewProps extends CommonViewModifierProps {
   /**
    * The selected tab (controlled mode). Pair with `onSelectionChange`.
    * Pass `defaultSelection` instead to let the native view manage state.
@@ -24,7 +24,7 @@ export type TabViewProps = {
    * `<TabView.Tab>` elements defining the pages.
    */
   children: React.ReactElement | React.ReactElement[];
-} & CommonViewModifierProps;
+}
 
 type NativeTabViewProps = Omit<TabViewProps, 'onSelectionChange'> &
   ViewEvent<'onSelectionChange', { selection: string }>;

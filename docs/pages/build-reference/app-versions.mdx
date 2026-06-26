@@ -107,7 +107,7 @@ To build your project locally in Android Studio or Xcode using the same version 
 
 ### Limitations
 
-- `eas build:version:sync` command on Android does not support bare projects with multiple flavors. However, the rest of the remote versioning functionality should work with all projects.
+- `eas build:version:sync` command on Android does not support [existing React Native projects](/bare/overview/) with multiple flavors. However, the rest of the remote versioning functionality should work with all projects.
 - `autoIncrement` does not support the `version` option.
 - It's not supported if you are using EAS Update and runtime policy set to `"runtimeVersion": { "policy": "nativeVersion" }`. For similar behavior, use the `"appVersion"` policy instead.
 

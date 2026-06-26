@@ -1,6 +1,10 @@
 {
   "name": "@expo/log-box",
   "version": "56.0.12",
+  "description": "Error overlay for universal Expo apps.",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box",
+  "license": "MIT",
+  "author": "Expo",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -50,9 +54,10 @@
   },
   "scripts": {
     "start": "expo start",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json",
+    "typecheck": "tsc",
     "clean": "run-p clean:lib clean:bundle",
     "clean:lib": "rimraf build",
     "clean:bundle": "rimraf dist",
@@ -81,16 +86,17 @@
     "react-dom": "19.2.3",
     "react-native": "0.86.0",
     "react-native-web": "^0.21.0",
-    "rimraf": "^6.1.2",
-    "typescript-plugin-css-modules": "^5.2.0"
+    "rimraf": "^6.1.2"
   },
   "peerDependencies": {
     "@expo/dom-webview": "workspace:^56.0.5",
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   },
-  "license": "MIT",
-  "author": "Expo",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box",
-  "description": "Error overlay for universal Expo apps."
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  }
 }

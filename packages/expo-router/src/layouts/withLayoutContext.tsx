@@ -14,9 +14,9 @@ import type { EventMapBase, NavigationState } from '../react-navigation/native';
 import type { PickPartial } from '../types';
 import type { ScreenProps } from '../useScreens';
 import { useSortedScreens } from '../useScreens';
-import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
+import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 
 export function useFilterScreenChildren(
   children: ReactNode,

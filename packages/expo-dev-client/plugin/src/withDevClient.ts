@@ -1,9 +1,9 @@
-import type { ExpoConfig } from 'expo/config';
-import { createRunOncePlugin } from 'expo/config-plugins';
 // @ts-expect-error missing types
 import withDevLauncher from 'expo-dev-launcher/app.plugin';
 // @ts-expect-error missing types
 import withDevMenu from 'expo-dev-menu/app.plugin';
+import type { ExpoConfig } from 'expo/config';
+import { createRunOncePlugin } from 'expo/config-plugins';
 
 import type { PluginConfigType } from './pluginConfig';
 import { withGeneratedAndroidScheme } from './withGeneratedAndroidScheme';
