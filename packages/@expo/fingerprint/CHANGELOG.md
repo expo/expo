@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Pin E2E test to SDK 55 templates and exclude native-toolchain node modules (`cross-spawn`, `typescript`, etc.) from config loading. ([#46194](https://github.com/expo/expo/pull/46194) by [@kudo](https://github.com/kudo))
+
 ## 0.16.7 — 2026-05-05
 
 _This version does not introduce any user-facing changes._
