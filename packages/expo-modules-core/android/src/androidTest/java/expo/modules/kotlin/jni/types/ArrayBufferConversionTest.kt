@@ -343,40 +343,6 @@ class ArrayBufferConversionTest {
   }
 
   @Test
-  fun array_buffer_copy_borrowed_direct_buffer_should_detach_native_backed_storage() = withJSIInterop(
-    nativeBackedArrayBufferModule()
-  ) {
-    val result = evaluateScript(
-      """
-        const buffer = expo.modules.TestModule.createArrayBuffer(4);
-        const view = new Uint8Array(buffer);
-        view.fill(1);
-        const processedBuffer = expo.modules.TestModule.fillArrayBufferCopyBorrowed(buffer, 0x42);
-        [Array.from(view), Array.from(new Uint8Array(processedBuffer))]
-      """.trimIndent()
-    ).getArray()
-
-    Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(1, 1, 1, 1).inOrder()
-    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(1, 1, 1, 1).inOrder()
-  }
-
-  @Test
-  fun array_buffer_copy_borrowed_direct_buffer_should_preserve_owned_storage_behavior() = withJSIInterop(
-    nativeBackedArrayBufferModule()
-  ) {
-    val result = evaluateScript(
-      """
-        const originalBuffer = new Uint8Array([1, 2, 3, 4]).buffer;
-        const processedBuffer = expo.modules.TestModule.fillArrayBufferCopyBorrowed(originalBuffer, 0x42);
-        [Array.from(new Uint8Array(originalBuffer)), Array.from(new Uint8Array(processedBuffer))]
-      """.trimIndent()
-    ).getArray()
-
-    Truth.assertThat(result[0].getArray().map { it.getInt() }).containsExactly(1, 2, 3, 4).inOrder()
-    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(0x42, 0x42, 0x42, 0x42).inOrder()
-  }
-
-  @Test
   fun java_script_object_get_array_buffer_should_still_return_legacy_js_array_buffer() = withJSIInterop {
     val jsObject = evaluateScript("new Uint8Array([1, 2, 3]).buffer").getObject()
     val arrayBuffer: JavaScriptArrayBuffer = jsObject.getArrayBuffer()
@@ -646,16 +612,6 @@ class ArrayBufferConversionTest {
 
     Function("fillArrayBuffer") { buffer: ArrayBuffer, value: Int ->
       buffer.toDirectBuffer().apply {
-        rewind()
-        while (hasRemaining()) {
-          put(value.toByte())
-        }
-      }
-      buffer
-    }
-
-    Function("fillArrayBufferCopyBorrowed") { buffer: ArrayBuffer, value: Int ->
-      buffer.toDirectBuffer(copyBorrowed = true).apply {
         rewind()
         while (hasRemaining()) {
           put(value.toByte())

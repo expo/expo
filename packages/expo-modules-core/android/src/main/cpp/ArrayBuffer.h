@@ -40,7 +40,7 @@ public:
 
   virtual void readBytes(size_t position, void *destination, size_t length) = 0;
 
-  [[nodiscard]] virtual jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) = 0;
+  [[nodiscard]] virtual jni::local_ref<jni::JByteBuffer> toDirectBuffer() = 0;
 
   [[nodiscard]] virtual std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer() = 0;
 
@@ -65,7 +65,7 @@ public:
 
   [[nodiscard]] bool isNativeBacked() const noexcept override;
 
-  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) override;
+  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer() override;
 
   [[nodiscard]] std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer() override;
 
@@ -95,7 +95,7 @@ public:
 
   [[nodiscard]] bool isNativeBacked() const noexcept override;
 
-  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) override;
+  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer() override;
 
   [[nodiscard]] std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer() override;
 
@@ -131,7 +131,7 @@ public:
 
   [[nodiscard]] bool isNativeBacked() const noexcept override;
 
-  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed) override;
+  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer() override;
 
   [[nodiscard]] std::shared_ptr<jsi::MutableBuffer> jsiMutableBuffer() override;
 
@@ -193,7 +193,7 @@ public:
 
   [[nodiscard]] jsi::Value toJSIValue(jsi::Runtime &runtime);
 
-  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer(bool copyBorrowed);
+  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer();
 
   [[nodiscard]] bool isNativeBacked();
 

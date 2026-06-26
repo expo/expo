@@ -238,7 +238,7 @@ void ByteBufferArrayBufferStorage::readBytes(size_t position, void *destination,
   memcpy(destination, data() + position, length);
 }
 
-jni::local_ref<jni::JByteBuffer> ByteBufferArrayBufferStorage::toDirectBuffer(bool) {
+jni::local_ref<jni::JByteBuffer> ByteBufferArrayBufferStorage::toDirectBuffer() {
   return jni::make_local(_byteBuffer);
 }
 
@@ -253,7 +253,7 @@ jsi::Value ByteBufferArrayBufferStorage::toJSIValue(jsi::Runtime &runtime) {
 jni::local_ref<jni::JObject> ByteBufferArrayBufferStorage::withJSBytes(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
-  return invokeBodyWithByteBuffer(body, toDirectBuffer(false));
+  return invokeBodyWithByteBuffer(body, toDirectBuffer());
 }
 
 MutableBufferViewArrayBufferStorage::MutableBufferViewArrayBufferStorage(
@@ -281,14 +281,7 @@ void MutableBufferViewArrayBufferStorage::readBytes(size_t position, void *desti
   memcpy(destination, data() + position, length);
 }
 
-jni::local_ref<jni::JByteBuffer> MutableBufferViewArrayBufferStorage::toDirectBuffer(bool copyBorrowed) {
-  if (copyBorrowed) {
-    auto byteBuffer = jni::JByteBuffer::allocateDirect(static_cast<jint>(_length));
-    byteBuffer->order(jni::JByteOrder::nativeOrder());
-    memcpy(byteBuffer->getDirectAddress(), data(), _length);
-    return byteBuffer;
-  }
-
+jni::local_ref<jni::JByteBuffer> MutableBufferViewArrayBufferStorage::toDirectBuffer() {
   auto byteBuffer = jni::JByteBuffer::wrapBytes(data(), _length);
   byteBuffer->order(jni::JByteOrder::nativeOrder());
   return byteBuffer;
@@ -305,7 +298,7 @@ jsi::Value MutableBufferViewArrayBufferStorage::toJSIValue(jsi::Runtime &runtime
 jni::local_ref<jni::JObject> MutableBufferViewArrayBufferStorage::withJSBytes(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
-  return invokeBodyWithByteBuffer(body, toDirectBuffer(false));
+  return invokeBodyWithByteBuffer(body, toDirectBuffer());
 }
 
 JavaScriptBackedArrayBufferStorage::JavaScriptBackedArrayBufferStorage(
@@ -386,7 +379,7 @@ void JavaScriptBackedArrayBufferStorage::readBytes(size_t position, void *destin
   }
 }
 
-jni::local_ref<jni::JByteBuffer> JavaScriptBackedArrayBufferStorage::toDirectBuffer(bool) {
+jni::local_ref<jni::JByteBuffer> JavaScriptBackedArrayBufferStorage::toDirectBuffer() {
   auto runtime = runtimeOrThrow();
   (void)runtime;
   jni::global_ref<jni::JByteBuffer> result;
@@ -415,7 +408,7 @@ jni::local_ref<jni::JByteBuffer> JavaScriptBackedArrayBufferStorage::toDirectBuf
 }
 
 std::shared_ptr<jsi::MutableBuffer> JavaScriptBackedArrayBufferStorage::jsiMutableBuffer() {
-  auto byteBuffer = toDirectBuffer(true);
+  auto byteBuffer = toDirectBuffer();
   return std::make_shared<ByteBufferJSIMutableBuffer>(byteBuffer);
 }
 
@@ -590,9 +583,9 @@ jsi::Value ArrayBuffer::toJSIValue(jsi::Runtime &runtime) {
   return storage->toJSIValue(runtime);
 }
 
-jni::local_ref<jni::JByteBuffer> ArrayBuffer::toDirectBuffer(bool copyBorrowed) {
+jni::local_ref<jni::JByteBuffer> ArrayBuffer::toDirectBuffer() {
   std::lock_guard<std::mutex> lock(storageMutex_);
-  auto byteBuffer = storage->toDirectBuffer(copyBorrowed);
+  auto byteBuffer = storage->toDirectBuffer();
   if (!storage->isNativeBacked()) {
     storage = std::make_shared<ByteBufferArrayBufferStorage>(byteBuffer);
   }
@@ -634,7 +627,7 @@ void ArrayBuffer::withJSBytesAsync(
 uint8_t *ArrayBuffer::data() {
   std::lock_guard<std::mutex> lock(storageMutex_);
   if (!storage->isNativeBacked()) {
-    auto byteBuffer = storage->toDirectBuffer(true);
+    auto byteBuffer = storage->toDirectBuffer();
     storage = std::make_shared<ByteBufferArrayBufferStorage>(byteBuffer);
   }
   return storage->data();

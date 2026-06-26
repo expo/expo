@@ -56,17 +56,13 @@ class ArrayBuffer : Destructible {
   external fun readDouble(position: Int): Double
 
   /**
-   * Returns a direct [ByteBuffer] that wraps this ArrayBuffer's underlying data.
-   */
-  fun toDirectBuffer(): ByteBuffer = toDirectBuffer(copyBorrowed = false)
-
-  /**
    * Returns a direct [ByteBuffer] for this ArrayBuffer's underlying data.
-   * When [copyBorrowed] is true, borrowed storage is copied into a new direct [ByteBuffer].
-   * JavaScript-backed storage always copies regardless of [copyBorrowed], since JS heap
-   * memory cannot be safely exposed outside a scoped JS thread access.
+   *
+   * When native-owned, the returned buffer wraps the same backing memory (zero-copy).
+   * When JavaScript-backed, the data is copied and the ArrayBuffer is detached from the
+   * JS heap — prefer [withJSBytes] or [withJSBytesAsync] for scoped zero-copy access.
    */
-  external fun toDirectBuffer(copyBorrowed: Boolean): ByteBuffer
+  external fun toDirectBuffer(): ByteBuffer
 
   /**
    * Whether this buffer's visible byte range is backed by native memory that can be accessed
