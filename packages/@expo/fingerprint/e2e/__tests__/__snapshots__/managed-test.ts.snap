@@ -3,6 +3,20 @@
 exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
 [
   {
+    "filePath": "node_modules/@expo/dom-webview/android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/@expo/log-box/android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
     "filePath": "node_modules/expo/android",
     "reasons": [
       "expoAutolinkingAndroid",
@@ -10,7 +24,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "dir",
   },
   {
-    "filePath": "node_modules/expo-application/android",
+    "filePath": "node_modules/expo-asset/android",
     "reasons": [
       "expoAutolinkingAndroid",
     ],
@@ -52,26 +66,33 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "dir",
   },
   {
-    "filePath": "node_modules/expo-modules-core/android-annotation",
+    "filePath": "node_modules/expo-modules-core/expo-module-gradle-plugin",
     "reasons": [
       "expoAutolinkingAndroid",
     ],
     "type": "dir",
   },
   {
-    "filePath": "node_modules/expo-modules-core/android-annotation-processor",
-    "reasons": [
-      "expoAutolinkingAndroid",
-    ],
-    "type": "dir",
-  },
-  {
-    "contents": "{"extraDependencies":{"androidMavenRepos":[],"iosPods":{}},"modules":[{"packageName":"expo","packageVersion":"49.0.16","projects":[{"name":"expo","sourceDir":"node_modules/expo/android"}],"modules":[]},{"packageName":"expo-application","packageVersion":"5.3.1","projects":[{"name":"expo-application","sourceDir":"node_modules/expo-application/android"}],"modules":[]},{"packageName":"expo-constants","packageVersion":"14.4.2","projects":[{"name":"expo-constants","sourceDir":"node_modules/expo-constants/android"}],"modules":["expo.modules.constants.ConstantsModule"]},{"packageName":"expo-file-system","packageVersion":"15.4.5","projects":[{"name":"expo-file-system","sourceDir":"node_modules/expo-file-system/android"}],"modules":["expo.modules.filesystem.FileSystemModule"]},{"packageName":"expo-font","packageVersion":"11.4.0","projects":[{"name":"expo-font","sourceDir":"node_modules/expo-font/android"}],"modules":[]},{"packageName":"expo-keep-awake","packageVersion":"12.3.0","projects":[{"name":"expo-keep-awake","sourceDir":"node_modules/expo-keep-awake/android"}],"modules":[]},{"packageName":"expo-modules-core","packageVersion":"1.5.11","projects":[{"name":"expo-modules-core","sourceDir":"node_modules/expo-modules-core/android"},{"name":"expo-modules-core$android-annotation","sourceDir":"node_modules/expo-modules-core/android-annotation"},{"name":"expo-modules-core$android-annotation-processor","sourceDir":"node_modules/expo-modules-core/android-annotation-processor"}],"modules":[]}]}",
+    "contents": "{"extraDependencies":[],"coreFeatures":[],"modules":[{"packageName":"@expo/dom-webview","projects":[{"name":"expo-dom-webview","sourceDir":"node_modules/@expo/dom-webview/android","modules":[{"classifier":"expo.modules.webview.DomWebViewModule","name":null}],"services":[],"packages":[],"publication":{"groupId":"expo.modules.webview","artifactId":"expo.modules.webview","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"},{"packageName":"@expo/log-box","projects":[{"name":"expo-log-box","sourceDir":"node_modules/@expo/log-box/android","modules":[],"services":[],"packages":["expo.modules.logbox.ExpoLogBoxPackage"]}],"packageVersion":"*"},{"packageName":"expo","projects":[{"name":"expo","sourceDir":"node_modules/expo/android","modules":[{"classifier":"expo.modules.fetch.ExpoFetchModule","name":null}],"services":[],"packages":["expo.modules.ExpoModulesPackage"]}],"packageVersion":"*"},{"packageName":"expo-asset","projects":[{"name":"expo-asset","sourceDir":"node_modules/expo-asset/android","modules":[{"classifier":"expo.modules.asset.AssetModule","name":null}],"services":[],"packages":[],"publication":{"groupId":"expo.modules.asset","artifactId":"expo.modules.asset","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"},{"packageName":"expo-constants","projects":[{"name":"expo-constants","sourceDir":"node_modules/expo-constants/android","modules":[{"classifier":"expo.modules.constants.ConstantsModule","name":null}],"services":["expo.modules.constants.ConstantsService"],"packages":[]}],"packageVersion":"*"},{"packageName":"expo-file-system","projects":[{"name":"expo-file-system","sourceDir":"node_modules/expo-file-system/android","modules":[{"classifier":"expo.modules.filesystem.FileSystemModule","name":null},{"classifier":"expo.modules.filesystem.legacy.FileSystemLegacyModule","name":null}],"services":[],"packages":[],"publication":{"groupId":"host.exp.exponent","artifactId":"expo.modules.filesystem","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"},{"packageName":"expo-font","projects":[{"name":"expo-font","sourceDir":"node_modules/expo-font/android","modules":[{"classifier":"expo.modules.font.FontLoaderModule","name":null},{"classifier":"expo.modules.font.FontUtilsModule","name":null}],"services":[],"packages":[],"publication":{"groupId":"host.exp.exponent","artifactId":"expo.modules.font","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"},{"packageName":"expo-keep-awake","projects":[{"name":"expo-keep-awake","sourceDir":"node_modules/expo-keep-awake/android","modules":[{"classifier":"expo.modules.keepawake.KeepAwakeModule","name":null}],"services":[],"packages":[],"publication":{"groupId":"host.exp.exponent","artifactId":"expo.modules.keepawake","version":"*","repository":"local-maven-repo"}}],"packageVersion":"*"},{"packageName":"expo-modules-core","projects":[{"name":"expo-modules-core","sourceDir":"node_modules/expo-modules-core/android","modules":[],"services":[],"packages":["expo.modules.adapters.react.ReactAdapterPackage","expo.modules.core.BasePackage","expo.modules.kotlin.edgeToEdge.EdgeToEdgePackage"]}],"plugins":[{"id":"expo-module-gradle-plugin","group":"expo.modules","sourceDir":"node_modules/expo-modules-core/expo-module-gradle-plugin","applyToRootProject":false}],"packageVersion":"*"}]}",
     "id": "expoAutolinkingConfig:android",
     "reasons": [
       "expoAutolinkingAndroid",
     ],
     "type": "contents",
+  },
+  {
+    "filePath": "node_modules/@expo/dom-webview/ios",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/@expo/log-box",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
   },
   {
     "filePath": "node_modules/expo",
@@ -81,7 +102,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "dir",
   },
   {
-    "filePath": "node_modules/expo-application/ios",
+    "filePath": "node_modules/expo-asset/ios",
     "reasons": [
       "expoAutolinkingIos",
     ],
@@ -123,7 +144,14 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "dir",
   },
   {
-    "contents": "{"extraDependencies":{"androidMavenRepos":[],"iosPods":{}},"modules":[{"packageName":"expo","packageVersion":"49.0.16","pods":[{"podName":"Expo","podspecDir":"node_modules/expo"}],"swiftModuleNames":["Expo"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-application","packageVersion":"5.3.1","pods":[{"podName":"EXApplication","podspecDir":"node_modules/expo-application/ios"}],"swiftModuleNames":["EXApplication"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-constants","packageVersion":"14.4.2","pods":[{"podName":"EXConstants","podspecDir":"node_modules/expo-constants/ios"}],"swiftModuleNames":["EXConstants"],"modules":["ConstantsModule"],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-file-system","packageVersion":"15.4.5","pods":[{"podName":"EXFileSystem","podspecDir":"node_modules/expo-file-system/ios"}],"swiftModuleNames":["EXFileSystem"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-font","packageVersion":"11.4.0","pods":[{"podName":"EXFont","podspecDir":"node_modules/expo-font/ios"}],"swiftModuleNames":["EXFont"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-keep-awake","packageVersion":"12.3.0","pods":[{"podName":"ExpoKeepAwake","podspecDir":"node_modules/expo-keep-awake/ios"}],"swiftModuleNames":["ExpoKeepAwake"],"modules":["KeepAwakeModule"],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-modules-core","packageVersion":"1.5.11","pods":[{"podName":"ExpoModulesCore","podspecDir":"node_modules/expo-modules-core"}],"swiftModuleNames":["ExpoModulesCore"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false}]}",
+    "filePath": "node_modules/expo-modules-core",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "contents": "{"extraDependencies":[],"coreFeatures":[],"modules":[{"packageName":"@expo/dom-webview","pods":[{"podName":"ExpoDomWebView","podspecDir":"node_modules/@expo/dom-webview/ios"}],"swiftModuleNames":["ExpoDomWebView"],"modules":[{"name":null,"class":"DomWebViewModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"@expo/log-box","pods":[{"podName":"ExpoLogBox","podspecDir":"node_modules/@expo/log-box"}],"swiftModuleNames":["ExpoLogBox"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo","pods":[{"podName":"Expo","podspecDir":"node_modules/expo"}],"swiftModuleNames":["Expo"],"modules":[{"name":null,"class":"ExpoFetchModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-asset","pods":[{"podName":"ExpoAsset","podspecDir":"node_modules/expo-asset/ios"}],"swiftModuleNames":["ExpoAsset"],"modules":[{"name":null,"class":"AssetModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-constants","pods":[{"podName":"EXConstants","podspecDir":"node_modules/expo-constants/ios"}],"swiftModuleNames":["EXConstants"],"modules":[{"name":null,"class":"ConstantsModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-file-system","pods":[{"podName":"ExpoFileSystem","podspecDir":"node_modules/expo-file-system/ios"}],"swiftModuleNames":["ExpoFileSystem"],"modules":[{"name":null,"class":"FileSystemModule"},{"name":null,"class":"FileSystemLegacyModule"}],"appDelegateSubscribers":["FileSystemBackgroundSessionHandler"],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-font","pods":[{"podName":"ExpoFont","podspecDir":"node_modules/expo-font/ios"}],"swiftModuleNames":["ExpoFont"],"modules":[{"name":null,"class":"FontLoaderModule"},{"name":null,"class":"FontUtilsModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-keep-awake","pods":[{"podName":"ExpoKeepAwake","podspecDir":"node_modules/expo-keep-awake/ios"}],"swiftModuleNames":["ExpoKeepAwake"],"modules":[{"name":null,"class":"KeepAwakeModule"}],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"},{"packageName":"expo-modules-core","pods":[{"podName":"ExpoModulesCore","podspecDir":"node_modules/expo-modules-core"},{"podName":"ExpoModulesJSI","podspecDir":"node_modules/expo-modules-core"}],"swiftModuleNames":["ExpoModulesCore","ExpoModulesJSI"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false,"packageVersion":"*"}]}",
     "id": "expoAutolinkingConfig:ios",
     "reasons": [
       "expoAutolinkingIos",
@@ -139,7 +167,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "file",
   },
   {
-    "filePath": "assets/adaptive-icon.png",
+    "filePath": "assets/android-icon-foreground.png",
     "overrideHashKey": "expoConfigExternalFile:contentsOnly",
     "reasons": [
       "expoConfigExternalFile",
@@ -147,7 +175,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "file",
   },
   {
-    "filePath": "assets/splash.png",
+    "filePath": "assets/android-icon-background.png",
     "overrideHashKey": "expoConfigExternalFile:contentsOnly",
     "reasons": [
       "expoConfigExternalFile",
@@ -155,7 +183,15 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "type": "file",
   },
   {
-    "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#ffffff","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"fingerprint-e2e-managed","orientation":"portrait","platforms":["android","ios"],"sdkVersion":"49.0.0","slug":"fingerprint-e2e-managed","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+    "filePath": "assets/splash-icon.png",
+    "overrideHashKey": "expoConfigExternalFile:contentsOnly",
+    "reasons": [
+      "expoConfigExternalFile",
+    ],
+    "type": "file",
+  },
+  {
+    "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#E6F4FE","backgroundImage":"./assets/android-icon-background.png","foregroundImage":"./assets/android-icon-foreground.png","monochromeImage":"./assets/android-icon-monochrome.png"}},"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"fingerprint-e2e-managed","orientation":"portrait","platforms":["android","ios"],"sdkVersion":"55.0.0","slug":"fingerprint-e2e-managed","splash":{"backgroundColor":"#ffffff","image":"./assets/splash-icon.png","resizeMode":"contain"},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
     "id": "expoConfig",
     "reasons": [
       "expoConfig",
@@ -180,20 +216,35 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
   {
     "filePath": "node_modules/expo",
     "reasons": [
-      "rncoreAutolinking",
+      "rncoreAutolinkingAndroid",
     ],
     "type": "dir",
   },
   {
-    "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
-    "id": "rncoreAutolinkingConfig",
+    "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}}",
+    "id": "rncoreAutolinkingConfig:android",
     "reasons": [
-      "rncoreAutolinking",
+      "rncoreAutolinkingAndroid",
     ],
     "type": "contents",
   },
   {
-    "contents": "{"name":"react-native","version":"0.72.10","bin":"./cli.js","description":"A framework for building native apps using React","license":"MIT","repository":"github:facebook/react-native","engines":{"node":">=16"},"types":"types","jest-junit":{"outputDirectory":"reports/junit","outputName":"js-test-results.xml"},"files":["android","build.gradle.kts","cli.js","flow","flow-typed","gradle.properties","index.js","interface.js","jest-preset.js","jest","Libraries","LICENSE","local-cli","React-Core.podspec","react-native.config.js","React.podspec","React","ReactAndroid","ReactCommon","README.md","rn-get-polyfills.js","scripts/compose-source-maps.js","scripts/find-node-for-xcode.sh","scripts/generate-codegen-artifacts.js","scripts/generate-provider-cli.js","scripts/generate-specs-cli.js","scripts/codegen","!scripts/codegen/__tests__","!scripts/codegen/__test_fixtures__","scripts/hermes/hermes-utils.js","scripts/hermes/prepare-hermes-for-build.js","scripts/ios-configure-glog.sh","scripts/xcode/with-environment.sh","scripts/launchPackager.bat","scripts/launchPackager.command","scripts/native_modules.rb","scripts/node-binary.sh","scripts/packager.sh","scripts/packager-reporter.js","scripts/react_native_pods_utils/script_phases.rb","scripts/react_native_pods_utils/script_phases.sh","scripts/react_native_pods.rb","scripts/cocoapods","!scripts/cocoapods/__tests__","scripts/react-native-xcode.sh","sdks/.hermesversion","sdks/hermes-engine","sdks/hermesc","settings.gradle.kts","template.config.js","template","!template/node_modules","!template/package-lock.json","!template/yarn.lock","third-party-podspecs","types"],"scripts":{"prepack":"cp ../../README.md ."},"peerDependencies":{"react":"18.2.0"},"dependencies":{"@jest/create-cache-key-function":"^29.2.1","@react-native-community/cli":"11.3.10","@react-native-community/cli-platform-android":"11.3.10","@react-native-community/cli-platform-ios":"11.3.10","@react-native/assets-registry":"^0.72.0","@react-native/codegen":"^0.72.8","@react-native/gradle-plugin":"^0.72.11","@react-native/js-polyfills":"^0.72.1","@react-native/normalize-colors":"^0.72.0","@react-native/virtualized-lists":"^0.72.8","abort-controller":"^3.0.0","anser":"^1.4.9","base64-js":"^1.1.2","deprecated-react-native-prop-types":"^4.2.3","ansi-regex":"^5.0.0","event-target-shim":"^5.0.1","flow-enums-runtime":"^0.0.5","invariant":"^2.2.4","jest-environment-node":"^29.2.1","jsc-android":"^250231.0.0","memoize-one":"^5.0.0","metro-runtime":"0.76.8","metro-source-map":"0.76.8","mkdirp":"^0.5.1","nullthrows":"^1.1.1","pretty-format":"^26.5.2","promise":"^8.3.0","react-devtools-core":"^4.27.2","react-refresh":"^0.4.0","react-shallow-renderer":"^16.15.0","regenerator-runtime":"^0.13.2","scheduler":"0.24.0-canary-efb381bbf-20230505","stacktrace-parser":"^0.1.10","use-sync-external-store":"^1.0.0","whatwg-fetch":"^3.0.0","ws":"^6.2.2","yargs":"^17.6.2"},"codegenConfig":{"libraries":[{"name":"FBReactNativeSpec","type":"modules","ios":{},"android":{},"jsSrcsDir":"Libraries"},{"name":"rncore","type":"components","ios":{},"android":{},"jsSrcsDir":"Libraries"}]}}",
+    "filePath": "node_modules/expo",
+    "reasons": [
+      "rncoreAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","version":"*","configurations":[],"scriptPhases":[]}}}}",
+    "id": "rncoreAutolinkingConfig:ios",
+    "reasons": [
+      "rncoreAutolinkingIos",
+    ],
+    "type": "contents",
+  },
+  {
+    "contents": "{"name":"react-native","version":"0.83.6","description":"A framework for building native apps using React","license":"MIT","repository":{"type":"git","url":"git+https://github.com/facebook/react-native.git","directory":"packages/react-native"},"homepage":"https://reactnative.dev/","keywords":["react","react-native","android","ios","mobile","cross-platform","app-framework","mobile-development"],"bugs":"https://github.com/facebook/react-native/issues","engines":{"node":">= 20.19.4"},"bin":{"react-native":"cli.js"},"main":"./index.js","types":"types","exports":{".":{"react-native-strict-api":"./types_generated/index.d.ts","types":"./types/index.d.ts","default":"./index.js"},"./*":{"react-native-strict-api":null,"types":"./*.d.ts","default":"./*.js"},"./*.js":{"react-native-strict-api":null,"default":"./*.js"},"./Libraries/*.d.ts":{"react-native-strict-api":null,"default":"./Libraries/*.d.ts"},"./scripts/*":"./scripts/*","./src/*":{"react-native-strict-api":null,"default":"./src/*.js"},"./types/*.d.ts":{"react-native-strict-api":null,"default":"./types/*.d.ts"},"./gradle/*":null,"./React/*":null,"./ReactAndroid/*":null,"./ReactApple/*":null,"./ReactCommon/*":null,"./sdks/*":null,"./src/fb_internal/*":"./src/fb_internal/*","./third-party-podspecs/*":null,"./types/*":null,"./types_generated/*":null,"./package.json":"./package.json"},"jest-junit":{"outputDirectory":"reports/junit","outputName":"js-test-results.xml"},"files":["build.gradle.kts","cli.js","flow","gradle.properties","gradle/libs.versions.toml","index.js","index.js.flow","interface.js","jest-preset.js","jest","Libraries","LICENSE","React-Core.podspec","React-Core-prebuilt.podspec","react-native.config.js","React.podspec","React","!React/Fabric/RCTThirdPartyFabricComponentsProvider.*","ReactAndroid","!ReactAndroid/.cxx","!ReactAndroid/build","!ReactAndroid/external-artifacts/artifacts","!ReactAndroid/external-artifacts/build","!ReactAndroid/hermes-engine/.cxx","!ReactAndroid/hermes-engine/build","!ReactAndroid/src/main/third-party","!ReactAndroid/src/test","ReactApple","ReactCommon","README.md","rn-get-polyfills.js","scripts/replace-rncore-version.js","scripts/bundle.js","scripts/cocoapods","scripts/codegen","scripts/compose-source-maps.js","scripts/find-node-for-xcode.sh","scripts/generate-codegen-artifacts.js","scripts/generate-provider-cli.js","scripts/generate-specs-cli.js","scripts/hermes/hermes-utils.js","scripts/hermes/prepare-hermes-for-build.js","scripts/ios-configure-glog.sh","scripts/native_modules.rb","scripts/node-binary.sh","scripts/packager-reporter.js","scripts/packager.sh","scripts/react_native_pods_utils/script_phases.rb","scripts/react_native_pods_utils/script_phases.sh","scripts/react_native_pods.rb","scripts/react-native-xcode.sh","scripts/xcode/ccache-clang.sh","scripts/xcode/ccache-clang++.sh","scripts/xcode/ccache.conf","scripts/xcode/with-environment.sh","sdks/.hermesversion","sdks/.hermesv1version","sdks/hermes-engine","sdks/hermesc","settings.gradle.kts","src","!src/private/testing","third-party-podspecs","types","types_generated","!**/__docs__/**","!**/__fixtures__/**","!**/__flowtests__/**","!**/__mocks__/**","!**/__tests__/**","!**/__typetests__/**"],"scripts":{"prepack":"node ./scripts/prepack.js","featureflags":"node ./scripts/featureflags/index.js"},"peerDependencies":{"@types/react":"^19.1.1","react":"^19.2.0"},"peerDependenciesMeta":{"@types/react":{"optional":true}},"dependencies":{"@jest/create-cache-key-function":"^29.7.0","@react-native/assets-registry":"0.83.6","@react-native/codegen":"0.83.6","@react-native/community-cli-plugin":"0.83.6","@react-native/gradle-plugin":"0.83.6","@react-native/js-polyfills":"0.83.6","@react-native/normalize-colors":"0.83.6","@react-native/virtualized-lists":"0.83.6","abort-controller":"^3.0.0","anser":"^1.4.9","ansi-regex":"^5.0.0","babel-jest":"^29.7.0","babel-plugin-syntax-hermes-parser":"0.32.0","base64-js":"^1.5.1","commander":"^12.0.0","flow-enums-runtime":"^0.0.6","glob":"^7.1.1","hermes-compiler":"0.14.1","invariant":"^2.2.4","jest-environment-node":"^29.7.0","memoize-one":"^5.0.0","metro-runtime":"^0.83.6","metro-source-map":"^0.83.6","nullthrows":"^1.1.1","pretty-format":"^29.7.0","promise":"^8.3.0","react-devtools-core":"^6.1.5","react-refresh":"^0.14.0","regenerator-runtime":"^0.13.2","scheduler":"0.27.0","semver":"^7.1.3","stacktrace-parser":"^0.1.10","whatwg-fetch":"^3.0.0","ws":"^7.5.10","yargs":"^17.6.2"},"codegenConfig":{"libraries":[{"name":"FBReactNativeSpec","type":"all","ios":{"modules":{"AccessibilityManager":{"unstableRequiresMainQueueSetup":true},"Appearance":{"unstableRequiresMainQueueSetup":true},"AppState":{"unstableRequiresMainQueueSetup":true},"DeviceInfo":{"unstableRequiresMainQueueSetup":true},"PlatformConstants":{"unstableRequiresMainQueueSetup":true},"StatusBarManager":{"unstableRequiresMainQueueSetup":true}}},"android":{},"jsSrcsDir":"src"}]}}",
     "id": "package:react-native",
     "reasons": [
       "package:react-native",

@@ -154,7 +154,7 @@ async function parseCoreAutolinkingSourcesAsync({ config, reasons, contentsId, p
         ? `react-native core autolinking dir for ${platform}`
         : 'react-native core autolinking dir';
     const results = [];
-    const { root } = config;
+    const root = await (0, Utils_1.maybeGetRealPathAsync)(config.root);
     const autolinkingConfig = {};
     for (const [depName, depData] of Object.entries(config.dependencies)) {
         try {
