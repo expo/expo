@@ -110,6 +110,8 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
 class AudioLockScreenOptions(
   @Field val showSeekForward: Boolean,
   @Field val showSeekBackward: Boolean,
+  @Field val showNextTrack: Boolean = false,
+  @Field val showPreviousTrack: Boolean = false,
   @Field val isLiveStream: Boolean? = null
 ) : Record
 

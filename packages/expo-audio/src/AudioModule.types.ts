@@ -532,6 +532,36 @@ export declare class AudioPlaylist extends SharedObject<AudioPlaylistEvents> {
   clear(): void;
 
   /**
+   * Sets or removes this audio playlist as the active playlist for lock screen controls.
+   * Only one audio player or playlist can control the lock screen at a time.
+   *
+   * > **Note:** For lock screen controls to work correctly, [`interruptionMode`](#interruptionmode) must be set to `doNotMix` using [`setAudioModeAsync`](#audiosetaudiomodeasyncmode).
+   * > Without this, the OS might not associate lock screen controls with your playlist.
+   *
+   * @param active Whether this playlist should be active for lock screen controls.
+   * @param metadata Optional metadata to display on the lock screen (title, artist, album, artwork).
+   * @param options Optional configuration to configure the lock screen controls.
+   */
+  setActiveForLockScreen(
+    active: boolean,
+    metadata?: AudioMetadata,
+    options?: AudioLockScreenOptions
+  ): void;
+
+  /**
+   * Updates the metadata displayed on the lock screen for this playlist.
+   * This method only has an effect if this playlist is currently active for lock screen controls.
+   * @param metadata The metadata to display (title, artist, album, artwork).
+   */
+  updateLockScreenMetadata(metadata: AudioMetadata): void;
+
+  /**
+   * Removes this playlist from lock screen controls if it's currently active.
+   * This will clear the lock screen's now playing info.
+   */
+  clearLockScreenControls(): void;
+
+  /**
    * Destroy the playlist and free up resources.
    */
   destroy(): void;
