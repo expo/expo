@@ -14,6 +14,31 @@ describe(stripGroupSegmentsFromPath, () => {
     );
     expect(stripGroupSegmentsFromPath('(foo)/(bar)')).toBe('');
   });
+
+  it(`preserves query params containing parentheses`, () => {
+    expect(stripGroupSegmentsFromPath('/page?a=(value)')).toBe('/page?a=(value)');
+    expect(stripGroupSegmentsFromPath('/page?a=(a)&b=b')).toBe('/page?a=(a)&b=b');
+    expect(stripGroupSegmentsFromPath('/page?phone=(123)+456-7890')).toBe(
+      '/page?phone=(123)+456-7890'
+    );
+  });
+
+  it(`strips groups from pathname but preserves query params with parentheses`, () => {
+    expect(stripGroupSegmentsFromPath('/(group)/page?a=(value)')).toBe('/page?a=(value)');
+    expect(stripGroupSegmentsFromPath('/(app)/(tabs)/home?id=(abc)&name=test')).toBe(
+      '/home?id=(abc)&name=test'
+    );
+  });
+
+  it(`preserves hash fragments`, () => {
+    expect(stripGroupSegmentsFromPath('/page#section(1)')).toBe('/page#section(1)');
+    expect(stripGroupSegmentsFromPath('/(group)/page#(hash)')).toBe('/page#(hash)');
+  });
+
+  it(`preserves query params and hash together`, () => {
+    expect(stripGroupSegmentsFromPath('/page?a=(val)#(hash)')).toBe('/page?a=(val)#(hash)');
+    expect(stripGroupSegmentsFromPath('/(group)/page?a=(val)#frag')).toBe('/page?a=(val)#frag');
+  });
 });
 
 describe(matchGroupName, () => {
