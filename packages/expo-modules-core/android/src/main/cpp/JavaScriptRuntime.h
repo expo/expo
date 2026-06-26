@@ -29,6 +29,26 @@ class JSIContext;
  */
 class JavaScriptRuntime : public std::enable_shared_from_this<JavaScriptRuntime> {
 public:
+  // Marks call paths that already have exclusive access to this runtime, such as
+  // a JS host function currently executing native module code.
+  class ExclusiveRuntimeAccessScope {
+  public:
+    explicit ExclusiveRuntimeAccessScope(JavaScriptRuntime &runtime) noexcept;
+
+    ~ExclusiveRuntimeAccessScope();
+
+    ExclusiveRuntimeAccessScope(const ExclusiveRuntimeAccessScope &) = delete;
+
+    ExclusiveRuntimeAccessScope &operator=(const ExclusiveRuntimeAccessScope &) = delete;
+
+    static bool isActiveFor(const JavaScriptRuntime &runtime) noexcept;
+
+  private:
+    JavaScriptRuntime *previousRuntime;
+
+    static thread_local JavaScriptRuntime *currentRuntime;
+  };
+
   JavaScriptRuntime(
     jsi::Runtime *runtime,
     std::shared_ptr<react::CallInvoker> jsInvoker

@@ -4,6 +4,7 @@
 #include "JavaReferencesCache.h"
 #include "Exceptions.h"
 #include "JavaCallback.h"
+#include "JavaScriptRuntime.h"
 #include "types/JNIToJSIConverter.h"
 #include "JSReferencesCache.h"
 
@@ -168,6 +169,7 @@ jni::local_ref<jobject> MethodMetadata::callJNISync(
     return nullptr;
   }
 
+  JavaScriptRuntime::ExclusiveRuntimeAccessScope runtimeAccessScope(*getJSIContext(rt)->runtimeHolder);
   auto convertedArgs = convertJSIArgsToJNI(env, rt, thisValue, args, count);
   auto result = JNIFunctionBody::invoke(this->jBodyReference.get(), convertedArgs);
   env->DeleteLocalRef(convertedArgs);

@@ -10,6 +10,24 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
+thread_local JavaScriptRuntime *JavaScriptRuntime::ExclusiveRuntimeAccessScope::currentRuntime = nullptr;
+
+JavaScriptRuntime::ExclusiveRuntimeAccessScope::ExclusiveRuntimeAccessScope(
+  JavaScriptRuntime &runtime
+) noexcept : previousRuntime(currentRuntime) {
+  currentRuntime = &runtime;
+}
+
+JavaScriptRuntime::ExclusiveRuntimeAccessScope::~ExclusiveRuntimeAccessScope() {
+  currentRuntime = previousRuntime;
+}
+
+bool JavaScriptRuntime::ExclusiveRuntimeAccessScope::isActiveFor(
+  const JavaScriptRuntime &runtime
+) noexcept {
+  return currentRuntime == &runtime;
+}
+
 JavaScriptRuntime::JavaScriptRuntime(
   jsi::Runtime *runtime,
   std::shared_ptr<react::CallInvoker> jsInvoker
@@ -100,14 +118,31 @@ bool JavaScriptRuntime::supportsSyncExecution() {
 }
 
 void JavaScriptRuntime::executeSync(std::function<void(jsi::Runtime &)> &&func) {
+  if (ExclusiveRuntimeAccessScope::isActiveFor(*this)) {
+    func(*runtime);
+    return;
+  }
+
   if (!supportsSyncExecution()) {
     throw std::runtime_error("Synchronous JavaScript runtime execution is not supported.");
   }
-  jsInvoker->invokeSync(std::move(func));
+  jsInvoker->invokeSync([this, func = std::move(func)](jsi::Runtime &rt) mutable {
+    ExclusiveRuntimeAccessScope scope(*this);
+    func(rt);
+  });
 }
 
 void JavaScriptRuntime::executeAsync(std::function<void(jsi::Runtime &)> &&func) noexcept {
-  jsInvoker->invokeAsync(std::move(func));
+  auto runtimeHolder = weak_from_this();
+  jsInvoker->invokeAsync([runtimeHolder, func = std::move(func)](jsi::Runtime &rt) mutable {
+    auto runtime = runtimeHolder.lock();
+    if (runtime == nullptr) {
+      return;
+    }
+
+    ExclusiveRuntimeAccessScope scope(*runtime);
+    func(rt);
+  });
 }
 
 } // namespace expo

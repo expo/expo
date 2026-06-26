@@ -234,6 +234,26 @@ class ArrayBufferConversionTest {
   }
 
   @Test
+  fun array_buffer_scoped_js_bytes_work_inside_sync_function_call() = withJSIInterop(
+    nativeBackedArrayBufferModule()
+  ) {
+    val result = evaluateScript(
+      """
+        const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
+        const scopedResult = expo.modules.TestModule.readAndMutateWithScopedJSBytes(buffer, 7);
+        [scopedResult, Array.from(new Uint8Array(buffer))];
+      """.trimIndent()
+    ).getArray()
+
+    val scopedResult = result[0].getArray()
+
+    Truth.assertThat(scopedResult[0].getArray().map { it.getInt() }).containsExactly(1, 2, 3, 4).inOrder()
+    Truth.assertThat(scopedResult[1].getArray().map { it.getInt() }).containsExactly(7, 7, 7, 7).inOrder()
+    Truth.assertThat(scopedResult[2].getBool()).isFalse()
+    Truth.assertThat(result[1].getArray().map { it.getInt() }).containsExactly(7, 7, 7, 7).inOrder()
+  }
+
+  @Test
   fun array_buffer_with_js_bytes_async_reads_js_backed_array_buffer_without_detaching() = withJSIInterop(
     nativeBackedArrayBufferModule()
   ) { methodQueue ->
@@ -680,6 +700,31 @@ class ArrayBufferConversionTest {
           scopedBuffer.put(value.toByte())
         }
       }
+    }
+
+    Function("readAndMutateWithScopedJSBytes") { buffer: ArrayBuffer, value: Int ->
+      val initialBytes = buffer.withJSBytes { scopedBuffer ->
+        scopedBuffer.rewind()
+        List(scopedBuffer.remaining()) {
+          scopedBuffer.get().toInt() and 0xff
+        }
+      }
+
+      buffer.withMutableJSBytes { scopedBuffer ->
+        scopedBuffer.rewind()
+        while (scopedBuffer.hasRemaining()) {
+          scopedBuffer.put(value.toByte())
+        }
+      }
+
+      val updatedBytes = buffer.withJSBytes { scopedBuffer ->
+        scopedBuffer.rewind()
+        List(scopedBuffer.remaining()) {
+          scopedBuffer.get().toInt() and 0xff
+        }
+      }
+
+      listOf(initialBytes, updatedBytes, buffer.isNativeBacked())
     }
 
     Function("inspectWithJSBytes") { buffer: ArrayBuffer ->
