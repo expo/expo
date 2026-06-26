@@ -30,7 +30,7 @@
     "format": "expo-module format",
     "test": "jest",
     "test:snapshots": "jest --updateSnapshot",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "pnpm clean && turbo run build",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },

@@ -45,7 +45,7 @@
     "format": "expo-module format",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
-    "prepublishOnly": "pnpm run clean && pnpm run build"
+    "prepublishOnly": "pnpm run clean && turbo run build"
   },
   "dependencies": {
     "commander": "^12.1.0",

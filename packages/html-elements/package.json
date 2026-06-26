@@ -50,7 +50,7 @@
     "test": "pnpm test:babel && pnpm test:src",
     "test:src": "jest",
     "test:babel": "jest --config babel/jest.config.js",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "pnpm clean && turbo run build",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },

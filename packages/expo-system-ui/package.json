@@ -30,7 +30,7 @@
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "test": "jest",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "pnpm clean && turbo run build",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },

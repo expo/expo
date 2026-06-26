@@ -42,7 +42,7 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "test": "jest",
-    "prepublishOnly": "pnpm run clean && pnpm run build"
+    "prepublishOnly": "pnpm run clean && turbo run build"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.8.8",
