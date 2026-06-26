@@ -15,9 +15,6 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   private let skipTimeInterval = 10.0
   private var timeObserver: Any?
   private weak var mostRecentInteractionPlayer: AVPlayer?
-  // Mutated off the main thread (from `VideoPlayer.showNowPlayingNotification`'s setter and `deinit`)
-  // and iterated on the main thread (e.g. the `pauseCommand` target). `NSHashTable` is not
-  // thread-safe, so guard it with `SynchronizedHashTable` to avoid mutate-during-iterate crashes.
   private let players = SynchronizedHashTable<VideoPlayer>(weakObjects: true)
   private var artworkDataTask: URLSessionDataTask?
 

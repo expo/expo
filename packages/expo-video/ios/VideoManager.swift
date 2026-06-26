@@ -13,10 +13,6 @@ class VideoManager {
   private static var managerQueue = DispatchQueue(label: "com.expo.video.manager.managerQueue")
   private var mediaServicesResetObserver: NSObjectProtocol?
   private var videoViews = NSHashTable<VideoView>.weakObjects()
-  // `videoPlayers` is accessed concurrently: registered/unregistered from `VideoPlayer.init`/`deinit`
-  // (any thread), iterated in `setAudioSession()` on `managerQueue`, and read by `hasRegisteredPlayers`
-  // on the caller's thread. `NSHashTable` is not thread-safe, so we guard it with the package's
-  // `SynchronizedHashTable` (NSLock-backed) to avoid mutate-during-iterate crashes.
   private let videoPlayers = SynchronizedHashTable<VideoPlayer>(weakObjects: true)
 
   var hasRegisteredPlayers: Bool {
