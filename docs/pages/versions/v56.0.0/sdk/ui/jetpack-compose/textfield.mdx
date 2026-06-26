@@ -38,10 +38,10 @@ Expo UI provides three text field components that match the official Jetpack Com
 
 Bind a [`useNativeState`](usenativestate) observable to `value`. The field tracks the user's input on its own, and you read the current value from `text.value`. The filled style shown here is the default Material3 text input.
 
-```tsx BasicTextFieldExample.tsx
+```tsx UncontrolledTextFieldExample.tsx
 import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
 
-export default function BasicTextFieldExample() {
+export default function UncontrolledTextFieldExample() {
   const text = useNativeState('');
 
   return (

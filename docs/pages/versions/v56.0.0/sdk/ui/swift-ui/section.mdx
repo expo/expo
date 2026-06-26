@@ -95,6 +95,7 @@ Use the `isExpanded` prop to control whether the section is expanded or collapse
 ```tsx CollapsibleSectionExample.tsx
 import { useState } from 'react';
 import { Host, List, Section, Text } from '@expo/ui/swift-ui';
+import { listStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function CollapsibleSectionExample() {
   const [favoritesExpanded, setFavoritesExpanded] = useState(false);
@@ -102,7 +103,7 @@ export default function CollapsibleSectionExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <List listStyle="sidebar">
+      <List modifiers={[listStyle('sidebar')]}>
         <Section
           title="Favorites"
           isExpanded={favoritesExpanded}
