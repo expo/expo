@@ -854,6 +854,23 @@ type AppStoreConnectContext = {
   build_upload?: {
     id: string;
     state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
+    cf_bundle_version?: string;
+    build?: {
+      id: string;
+    };
+  };
+  app_version?: {
+    id: string;
+    state: string;
+  };
+  external_beta?: {
+    id: string;
+    state: string;
+  };
+  beta_feedback?: {
+    id: string;
+    type: 'crash' | 'screenshot';
+    url: string;
   };
 };
 ```
@@ -878,6 +895,32 @@ jobs:
         Upload complete for App Store Connect app: ${{ app_store_connect.app.id }}
         Upload ID: ${{ app_store_connect.build_upload.id }}
         Upload state: ${{ app_store_connect.build_upload.state }}
+```
+
+Use `build_upload.build.id` as the `asc_build_id` for a `testflight` job:
+
+```yaml .eas/workflows/testflight-after-asc-upload.yml
+name: Distribute to TestFlight after ASC upload
+
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  distribute_to_testflight:
+    name: Distribute to TestFlight
+    type: testflight
+    params:
+      asc_build_id: ${{ app_store_connect.build_upload.build.id }}
+      internal_groups:
+        - QA Team
+      external_groups:
+        - Public Beta
+      changelog: |
+        Build ${{ app_store_connect.build_upload.cf_bundle_version }} is ready for testing.
+      submit_beta_review: true
 ```
 
 #### `env`
@@ -1220,7 +1263,7 @@ This job outputs the following properties:
 
 #### `testflight`
 
-Distributes iOS builds to TestFlight internal and external testing groups. See [TestFlight job documentation](/eas/workflows/pre-packaged-jobs#testflight) for detailed information and examples.
+Distributes iOS builds to TestFlight internal and external testing groups. Provide exactly one of `build_id` (upload a build and submit to TestFlight) or `asc_build_id` (submit an already uploaded build). See [TestFlight job documentation](/eas/workflows/pre-packaged-jobs#testflight) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1229,21 +1272,30 @@ jobs:
     type: testflight
     # @end #
     params:
-      build_id: string # required
-      profile: string # optional, default: production
+      build_id: string # required to upload and submit to TestFlight; mutually exclusive with asc_build_id
+      profile: string # optional, default: production; only when uploading and submitting
+      wait_processing_timeout_seconds: number # optional, default: 1800 (30 minutes); only when uploading and submitting in one job
+      asc_build_id: string # required to submit an already uploaded build; mutually exclusive with build_id
       internal_groups: string[] # optional
       external_groups: string[] # optional
       changelog: string # optional
       submit_beta_review: boolean # optional
-      wait_processing_timeout_seconds: number # optional, default: 1800 (30 minutes)
 ```
 
-This job outputs the following properties:
+When uploading and submitting with `build_id`, this job outputs the following properties:
 
 ```json
 {
   "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
   "ios_bundle_identifier": string | null // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+}
+```
+
+When submitting an already uploaded build with `asc_build_id`, this job outputs the following properties:
+
+```json
+{
+  "asc_build_id": string | null // App Store Connect build ID
 }
 ```
 
