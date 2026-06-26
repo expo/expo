@@ -58,12 +58,12 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
 
   // The second invocation happens after the client has hydrated on initial load, so we look up the data injected
   // by `<PreloadedDataScript />` using `globalThis.__EXPO_ROUTER_LOADER_DATA__`
-  if (typeof window !== 'undefined' && globalThis.__EXPO_ROUTER_LOADER_DATA__) {
-    if (globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath]) {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
-    }
+  if (typeof window !== 'undefined' && globalThis.__EXPO_ROUTER_LOADER_DATA__?.[resolvedPath]) {
+    return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
   }
 
+  // Usually a cache read — `loaderBootstrap` warms this on navigation commit. Falls back to fetching
+  // for routes reached without a warm (deep link, direct load, an unfocused sibling).
   const result = getLoaderData<LoaderFunctionResult<T>>({
     resolvedPath,
     cache: loaderCache,
