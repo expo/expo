@@ -1,5 +1,5 @@
 name: E2E Test Suite for Expo Brownfield (Isolated)
-# test
+
 on:
   workflow_dispatch: {}
   push:
