@@ -33,7 +33,8 @@
     "expo-skills-sync": "node --experimental-strip-types ./ui/components/ExpoSkillsTable/sync-expo-skills.js",
     "expo-mcp-sync": "node --experimental-strip-types ./ui/components/ExpoMCPToolsTable/sync-expo-mcp-tools.js",
     "install-vale": "node --experimental-strip-types scripts/install-vale.ts",
-    "postinstall": "pnpm copy-latest && pnpm generate-static-resources && pnpm install-vale"
+    "postinstall": "pnpm copy-latest && pnpm generate-static-resources && pnpm install-vale",
+    "upstream-sync": "node --experimental-strip-types ./scripts/upstream-sync.ts"
   },
   "packageManager": "pnpm@10.33.0",
   "engines": {
