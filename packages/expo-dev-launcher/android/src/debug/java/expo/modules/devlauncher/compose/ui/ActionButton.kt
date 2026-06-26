@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import com.composeunstyled.Button
+import com.composeunstyled.UnstyledButton
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.ripple.ripple
@@ -29,7 +29,7 @@ fun ActionButton(
   enabled: Boolean = true,
   onClick: () -> Unit = {}
 ) {
-  Button(
+  UnstyledButton(
     onClick = onClick,
     enabled = enabled,
     shape = RoundedCornerShape(borderRadius),

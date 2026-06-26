@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
-import com.composeunstyled.Icon
+import com.composeunstyled.UnstyledIcon
 import expo.modules.devmenu.R
 
 object MenuIcons {
@@ -16,7 +16,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.x_close),
       contentDescription = "Close",
       tint = tint,
@@ -32,7 +32,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.check),
       contentDescription = "Selected",
       tint = tint,
@@ -48,7 +48,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.arrow_back),
       contentDescription = "Back",
       tint = tint,
@@ -64,7 +64,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.layers),
       contentDescription = "Components",
       tint = tint,
@@ -80,7 +80,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.chevron_right),
       contentDescription = "Open",
       tint = tint,
@@ -96,7 +96,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.copy),
       contentDescription = "Copy",
       tint = tint,
@@ -112,7 +112,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.refresh),
       contentDescription = "Reload",
       tint = tint,
@@ -128,7 +128,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.home),
       contentDescription = "Home",
       tint = tint,
@@ -144,7 +144,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.performance),
       contentDescription = "Performance monitor",
       tint = tint,
@@ -160,7 +160,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.inspect),
       contentDescription = "Element inspector",
       tint = tint,
@@ -176,9 +176,25 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.code_brackets),
       contentDescription = "DevTools",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
+  fun Gear(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    UnstyledIcon(
+      painter = painterResource(R.drawable.gear_fill),
+      contentDescription = "React Native dev menu",
       tint = tint,
       modifier = Modifier
         .size(size)
@@ -192,7 +208,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.fast_refresh),
       contentDescription = "Fast Refresh",
       tint = tint,
@@ -208,7 +224,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.dev_menu_fab_icon),
       contentDescription = "Toggle Dev Menu",
       tint = tint,
@@ -224,7 +240,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.alert),
       contentDescription = "Warning",
       tint = tint,
@@ -240,7 +256,7 @@ object MenuIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.lightbulb),
       contentDescription = "Lightbulb",
       tint = tint,

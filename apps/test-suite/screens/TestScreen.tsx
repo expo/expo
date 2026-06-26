@@ -4,11 +4,11 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 
 import ExponentTest from '../ExponentTest';
 import { getTestModules, Module } from '../TestModules';
-import { getScreenIdForLinking, getSelectedTestNames } from './getScreenIdForLinking';
 import Portal from '../components/Portal';
 import RunnerError from '../components/RunnerError';
 import Suites from '../components/Suites';
 import { JasmineResult, Suite } from '../types';
+import { getScreenIdForLinking, getSelectedTestNames } from './getScreenIdForLinking';
 
 const FLUSH_INTERVAL = 500;
 

@@ -1,8 +1,8 @@
 import type { SyntheticEvent } from 'react';
 
-import type { ImageWrapperEvents } from './ImageWrapper.types';
 import type { ImageSource } from '../Image.types';
 import { isBlurhashString } from '../utils/resolveSources';
+import type { ImageWrapperEvents } from './ImageWrapper.types';
 
 export function getImageWrapperEventHandler(
   events: ImageWrapperEvents | undefined,

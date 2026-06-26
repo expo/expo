@@ -26,7 +26,5 @@ it('returns false for page without native reload capabilities', () => {
     })
   ).toBe(false);
 
-  expect(
-    pageIsSupported({ title: 'Hermes React Native', capabilities: { capabilities: {} } })
-  ).toBe(false);
+  expect(pageIsSupported({ title: 'Hermes React Native', capabilities: {} })).toBe(false);
 });

@@ -32,6 +32,10 @@ internal func forwardingSwiftErrorsToJS(
 ) -> facebook.jsi.Value {
   do {
     return try body()
+  } catch let jsError as JavaScriptError {
+    // Relay the wrapped `jsi::JSError` directly so the thrown value reaches JS as-is, which may be
+    // an arbitrary value rather than an `Error` instance.
+    expo.CppError.setCurrent(jsError.toJSError())
   } catch let throwable as JavaScriptThrowable {
     expo.CppError.setCurrent(JavaScriptError(runtime, from: throwable).toJSError())
   } catch let cppError as expo.CppError {
@@ -53,6 +57,10 @@ internal func forwardingSwiftErrorsToJS(
 ) {
   do {
     try body()
+  } catch let jsError as JavaScriptError {
+    // Relay the wrapped `jsi::JSError` directly so the thrown value reaches JS as-is, which may be
+    // an arbitrary value rather than an `Error` instance.
+    expo.CppError.setCurrent(jsError.toJSError())
   } catch let throwable as JavaScriptThrowable {
     expo.CppError.setCurrent(JavaScriptError(runtime, from: throwable).toJSError())
   } catch let cppError as expo.CppError {

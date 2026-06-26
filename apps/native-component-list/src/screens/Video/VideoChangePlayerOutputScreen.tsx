@@ -3,11 +3,11 @@ import { useVideoPlayer, VideoPlayer, VideoView } from 'expo-video';
 import React, { useCallback, useRef, useState } from 'react';
 import { Platform, View, StyleSheet, Text } from 'react-native';
 
-import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
-import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
 import TitledSwitch from '../../components/TitledSwitch';
+import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
+import { styles } from './videoStyles';
 
 const playerFactory = (player: VideoPlayer) => {
   player.loop = true;

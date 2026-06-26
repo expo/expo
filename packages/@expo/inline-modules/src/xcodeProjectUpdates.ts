@@ -13,9 +13,16 @@ export interface InlineModulesXcodeParams {
 }
 
 type UUID = string;
-interface FileSystemSynchronizedGroup {
+
+/**
+ * A `PBXNativeTarget` object as stored in the pbxproj. The `fileSystemSynchronizedGroups`
+ * field isn't part of the upstream `PBXNativeTarget` type declaration, so we model it here.
+ */
+type NativeTarget = NonNullable<
+  XcodeProject['hash']['project']['objects']['PBXNativeTarget'][string]
+> & {
   fileSystemSynchronizedGroups?: { value: string; comment?: string }[];
-}
+};
 
 function escapeXMLCharacters(original: string): string {
   const noAmps = original.replace('&', '&amp;');
@@ -38,10 +45,10 @@ function getNativeTargetSynchronizedGroupsMap(pbxProject: XcodeProject) {
   const nativeTargetSynchronizedGroups = new Map<UUID, Set<UUID>>();
 
   for (const target of pbxProject.getFirstProject().firstProject.targets) {
-    const nativeTargetGroup = objects.PBXNativeTarget[target.value];
+    const nativeTargetGroup = objects.PBXNativeTarget[target.value] as NativeTarget | undefined;
     const synchronizedGroups = new Set<UUID>();
 
-    if (nativeTargetGroup.fileSystemSynchronizedGroups) {
+    if (nativeTargetGroup?.fileSystemSynchronizedGroups) {
       for (const synchronizedGroup of nativeTargetGroup.fileSystemSynchronizedGroups) {
         synchronizedGroups.add(synchronizedGroup.value);
       }
@@ -61,7 +68,7 @@ function prepareSynchronizedRootGroups(pbxProject: XcodeProject): {
       if (key.endsWith('_comment')) {
         continue;
       }
-      const groupObject = objects.PBXFileSystemSynchronizedRootGroup[key];
+      const groupObject = objects.PBXFileSystemSynchronizedRootGroup[key]!;
       fsSynchronizedRootGroups.set(groupObject.path, key);
     }
   } else {
@@ -96,7 +103,7 @@ export async function updateXcodeProject(
   const nativeTargetSynchronizedGroups = getNativeTargetSynchronizedGroupsMap(pbxProject);
   const addWatchedDirectoryToTarget = (
     targetUUID: UUID,
-    nativeTargetGroup: FileSystemSynchronizedGroup,
+    nativeTargetGroup: NativeTarget,
     dir: string,
     dirUUID: UUID
   ) => {
@@ -117,14 +124,15 @@ export async function updateXcodeProject(
   };
 
   const { fsSynchronizedRootGroups } = prepareSynchronizedRootGroups(pbxProject);
-  const getOrCreateWatchedDirectoryUUID = (dir: string) => {
+  const getOrCreateWatchedDirectoryUUID = (dir: string): UUID => {
     const dirRelativeToIos = path.join(projectRootRelativeToIos, dir);
-    if (fsSynchronizedRootGroups.has(dirRelativeToIos)) {
-      return fsSynchronizedRootGroups.get(dirRelativeToIos);
+    const existingUUID = fsSynchronizedRootGroups.get(dirRelativeToIos);
+    if (existingUUID !== undefined) {
+      return existingUUID;
     }
 
     const newUUID = pbxProject.generateUuid();
-    objects.PBXGroup[mainGroupUUID].children.push({
+    objects.PBXGroup[mainGroupUUID]!.children.push({
       value: newUUID,
       comment: dir,
     });
@@ -144,7 +152,10 @@ export async function updateXcodeProject(
     .getFirstProject()
     .firstProject.targets.filter((target: { value: UUID; comment: string }) => {
       const targetUuid = target.value;
-      const targetName = pbxNativeTarget[targetUuid].name;
+      const targetName = pbxNativeTarget[targetUuid]?.name;
+      if (targetName === undefined) {
+        return false;
+      }
       if (!xcodeProjectTargets) {
         // If the xcodeProjectTargets are not provided, default to the main target
         return targetName === getMainTargetName(inlineModulesXcodeParams);
@@ -156,7 +167,7 @@ export async function updateXcodeProject(
     const dirUUID = getOrCreateWatchedDirectoryUUID(watchedDirectory);
 
     for (const target of targetsToUpdate) {
-      const nativeTargetGroup = objects.PBXNativeTarget[target.value];
+      const nativeTargetGroup = objects.PBXNativeTarget[target.value] as NativeTarget;
       addWatchedDirectoryToTarget(target.value, nativeTargetGroup, watchedDirectory, dirUUID);
     }
   }

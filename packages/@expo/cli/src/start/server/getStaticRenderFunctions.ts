@@ -9,15 +9,15 @@ import { evalModule } from '@expo/require-utils';
 import fs from 'fs';
 import path from 'path';
 
-import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
-import type { ExpoMetroOptions } from './middleware/metroOptions';
-import { createBundleUrlPath } from './middleware/metroOptions';
-import { augmentLogs } from './serverLogLikeMetro';
 import { delayAsync } from '../../utils/delay';
 import { isPathInside } from '../../utils/dir';
 import { SilentError } from '../../utils/errors';
 import { toPosixPath } from '../../utils/filePath';
 import { profile } from '../../utils/profile';
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
+import type { ExpoMetroOptions } from './middleware/metroOptions';
+import { createBundleUrlPath } from './middleware/metroOptions';
+import { augmentLogs } from './serverLogLikeMetro';
 
 const debug = require('debug')('expo:start:server:getStaticRenderFunctions') as typeof console.log;
 

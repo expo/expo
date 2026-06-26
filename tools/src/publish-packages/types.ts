@@ -27,6 +27,7 @@ export type CommandOptions = {
   cascadeAll: boolean;
   skipAndroidArtifacts: boolean;
   skipIosPrebuilds: boolean;
+  skipTurboChecks: boolean;
   /**
    * When true, automatically selects packages whose current package.json version
    * has already been bumped locally but that version has not been published yet.

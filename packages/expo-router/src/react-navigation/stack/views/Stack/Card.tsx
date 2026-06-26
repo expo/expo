@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
+import { Color } from '../../../../utils/color';
 import useLatestCallback from '../../../../utils/useLatestCallback';
 import type { LocaleDirection } from '../../../native';
 import type {
@@ -30,7 +31,6 @@ import {
   type PanGestureHandlerGestureEvent,
 } from '../GestureHandler';
 import { CardContent } from './CardContent';
-import { Color } from '../../../../utils/color';
 
 type Props = {
   animated: boolean;

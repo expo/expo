@@ -131,7 +131,7 @@ dependencies {
 
   debugOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 
-  debugOnly("com.composables:core:1.43.1")
+  debugOnly("com.composables:core:1.49.9")
 
   testImplementation 'androidx.test:core:1.7.0'
   testImplementation 'androidx.test:core-ktx:1.7.0'

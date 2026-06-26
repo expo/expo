@@ -54,6 +54,9 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 📦 Install react-native submodule dependencies
         run: yarn install
         working-directory: react-native-lab/react-native

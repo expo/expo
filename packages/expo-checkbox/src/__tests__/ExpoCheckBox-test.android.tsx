@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react-native';
-import React from 'react';
 
 import Checkbox from '../Checkbox';
 

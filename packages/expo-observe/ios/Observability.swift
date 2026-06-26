@@ -8,7 +8,6 @@ internal struct ObservabilityManager {
   private static var metricsEndpointUrl: URL? = nil
   private static var logsEndpointUrl: URL? = nil
   private static var projectId: String? = nil
-  private static var useOpenTelemetry = false
 
   internal static func dispatch() async {
     // Compute once and reuse for both signals — `shouldDispatch()` reads the persisted config, the
@@ -51,12 +50,7 @@ internal struct ObservabilityManager {
       return
     }
     do {
-      let body: any Encodable
-      if useOpenTelemetry {
-        body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
-      } else {
-        body = RequestBody(easClientId: easClientId, events: events)
-      }
+      let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
       let success = try await sendRequest(to: endpointUrl, body: body)
       if success {
         ObserveUserDefaults.lastDispatchDate = Date.now
@@ -68,10 +62,6 @@ internal struct ObservabilityManager {
   }
 
   private static func dispatchLogs(shouldDispatch: Bool) async {
-    // Logs are only sent in OpenTelemetry mode — there is no legacy logs endpoint.
-    guard useOpenTelemetry else {
-      return
-    }
     repairLogCursorIfStale()
 
     let cursor = ObserveUserDefaults.lastDispatchedLogId
@@ -193,20 +183,8 @@ internal struct ObservabilityManager {
       return
     }
     AppMetricsActor.isolated {
-      if useOpenTelemetry {
-        self.metricsEndpointUrl = url.appendingPathComponent("\(projectId)/v1/metrics")
-        self.logsEndpointUrl = url.appendingPathComponent("\(projectId)/v1/logs")
-      } else {
-        self.metricsEndpointUrl = url.appendingPathComponent(projectId)
-        self.logsEndpointUrl = nil
-      }
-    }
-  }
-
-  internal nonisolated static func setUseOpenTelemetry(_ enabled: Bool?) {
-    let enabled = enabled ?? true
-    AppMetricsActor.isolated {
-      self.useOpenTelemetry = enabled
+      self.metricsEndpointUrl = url.appendingPathComponent("\(projectId)/v1/metrics")
+      self.logsEndpointUrl = url.appendingPathComponent("\(projectId)/v1/logs")
     }
   }
 

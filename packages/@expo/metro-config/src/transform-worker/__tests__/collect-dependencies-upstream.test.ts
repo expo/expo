@@ -30,8 +30,8 @@ import type {
 import collectDependencies, { InvalidRequireCallError } from '../collect-dependencies';
 
 const generateOptions = { concise: true, sourceType: 'module' };
-const codeFromAst = (ast) => generate(ast, generateOptions).code;
-const comparableCode = (code) => code.trim().replace(/\s+/g, ' ');
+const codeFromAst = (ast: t.Node) => generate(ast, generateOptions).code;
+const comparableCode = (code: string) => code.trim().replace(/\s+/g, ' ');
 const { any, objectContaining } = expect;
 
 const opts: Options = {
@@ -1534,7 +1534,7 @@ it('integration: records locations of inlined dependencies (Metro ESM)', () => {
   `);
 
   // Verify that dependencies have been inlined into the console.log call.
-  expect(codeFromAst(transformedAst)).toMatch(/^console\.log/);
+  expect(codeFromAst(nullthrows(transformedAst))).toMatch(/^console\.log/);
 });
 
 it('integration: records locations of inlined dependencies (Babel ESM)', () => {

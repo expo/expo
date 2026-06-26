@@ -1,4 +1,3 @@
-import { fetch } from 'expo/fetch';
 import AppMetrics, {
   type LogRecord,
   type Metric,
@@ -7,6 +6,7 @@ import AppMetrics, {
   type NetworkRequestObserver,
   type NetworkRequestStartedEvent,
 } from 'expo-app-metrics';
+import { fetch } from 'expo/fetch';
 
 export const name = 'AppMetrics';
 
@@ -506,6 +506,92 @@ export function test({ describe, expect, it, afterEach }) {
           release();
         }
       });
+    });
+  });
+
+  describe('error handler', () => {
+    // `installErrorHandler` ran on import, wrapping `global.ErrorUtils`. The end-to-end test drives
+    // the native `reportError` path with a non-fatal error and reads the recorded `exception` log
+    // event back from the main session. (A fatal error can't be round-tripped in-process: it goes to
+    // the file sink and is ingested on the next launch — see the native `PendingErrorStore` tests.)
+    // A separate test drives the installed global handler to cover the JS wrapper's forwarding logic.
+    //
+    // The event follows OpenTelemetry's exception-in-logs convention: event name `exception`, with
+    // `exception.type` / `exception.message` / `exception.stacktrace` attributes, plus `expo.error.*`
+    // for the bits OTel has no field for (capture source, fatal flag).
+    async function waitForExceptionLog(
+      predicate: (log: LogRecord) => boolean,
+      timeoutMs = EVENT_TIMEOUT_MS
+    ): Promise<LogRecord> {
+      const session = AppMetrics.getMainSession();
+      const deadline = Date.now() + timeoutMs;
+      while (Date.now() < deadline) {
+        const logs = await session.getLogs();
+        const match = logs.find((log) => log.name === 'exception' && predicate(log));
+        if (match) {
+          return match;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      throw new Error(`Timed out after ${timeoutMs}ms waiting for the exception log event`);
+    }
+
+    it('installs by wrapping the global ErrorUtils handler', () => {
+      // The handler is installed when expo-app-metrics is imported, so a global handler is present.
+      expect(typeof ErrorUtils.getGlobalHandler()).toBe('function');
+    });
+
+    // Only non-fatal errors are readable via `getLogs` in-process: the fatal path writes to the file
+    // sink and is ingested on the next launch, so it can't be round-tripped here. Fatal persistence is
+    // covered by the native `PendingErrorStore` write/drain tests.
+    it('records a non-fatal error as an exception log event with OTel attributes', async () => {
+      const message = `test-suite error ${Date.now()}`;
+      AppMetrics.reportError({
+        source: 'global',
+        type: 'TypeError',
+        message,
+        stacktrace: 'onPress@index.bundle:42:7',
+        isFatal: false,
+      });
+
+      const log = await waitForExceptionLog(
+        (entry) => (entry.attributes ?? {})['exception.message'] === message
+      );
+      expect(log.severity).toBe('error');
+
+      const attributes = log.attributes ?? {};
+      expect(attributes['exception.type']).toBe('TypeError');
+      expect(attributes['exception.message']).toBe(message);
+      expect(attributes['exception.stacktrace']).toBe('onPress@index.bundle:42:7');
+      expect(attributes['expo.error.source']).toBe('global');
+      expect(attributes['expo.error.is_fatal']).toBe(false);
+    });
+
+    it('forwards an error from the installed global handler', () => {
+      // Exercise the JS wrapper itself (forward + raw stack) by driving the handler that
+      // `installErrorHandler` registered on import, with `reportError` stubbed to capture what it
+      // forwards. A non-fatal error is used so chaining to React Native's real handler only surfaces
+      // a dev console warning rather than a red box.
+      const installedHandler = ErrorUtils.getGlobalHandler();
+      const originalReportError = AppMetrics.reportError;
+      const reported: Parameters<typeof AppMetrics.reportError>[0][] = [];
+      AppMetrics.reportError = (error) => {
+        reported.push(error);
+      };
+      try {
+        const error = new Error('installed-handler forward');
+        installedHandler(error, false);
+
+        expect(reported.length).toBe(1);
+        expect(reported[0].source).toBe('global');
+        expect(reported[0].type).toBe('Error');
+        expect(reported[0].message).toBe('installed-handler forward');
+        expect(reported[0].isFatal).toBe(false);
+        // The wrapper forwards the raw engine stack string unchanged.
+        expect(reported[0].stacktrace).toBe(error.stack);
+      } finally {
+        AppMetrics.reportError = originalReportError;
+      }
     });
   });
 }

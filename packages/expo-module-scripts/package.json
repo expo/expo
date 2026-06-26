@@ -2,24 +2,35 @@
   "name": "expo-module-scripts",
   "version": "56.0.2",
   "description": "A private package for various tasks for Expo module packages like compiling and testing",
-  "main": "index.js",
-  "type": "module",
+  "keywords": [
+    "babel-preset",
+    "expo",
+    "jest-preset"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-module-scripts#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/expo-module-scripts"
+  },
   "bin": {
+    "expo-build": "bin/expo-build",
     "expo-module": "bin/expo-module.js"
   },
+  "type": "module",
+  "main": "index.js",
   "exports": {
     "./package.json": "./package.json",
-    "./babel.config.*": {
-      "require": "./babel.config.*.cjs"
+    "./oxlint.config.base": {
+      "import": "./oxlint.config.base.js"
     },
-    "./babel.config.*.js": {
-      "require": "./babel.config.*.cjs"
-    },
-    "./eslintrc.base.js": {
-      "require": "./eslintrc.base.cjs"
-    },
-    "./eslint.config.base": {
-      "require": "./eslint.config.base.cjs"
+    "./oxlint.config.base.js": {
+      "import": "./oxlint.config.base.js"
     },
     "./jest-preset-*": {
       "import": "./jest-preset-*.cjs",
@@ -32,6 +43,14 @@
     "./jest-preset": {
       "import": "./jest-preset.cjs",
       "require": "./jest-preset.cjs"
+    },
+    "./createJestPreset": {
+      "import": "./createJestPreset.cjs",
+      "require": "./createJestPreset.cjs"
+    },
+    "./createCompositeJestPreset": {
+      "import": "./createCompositeJestPreset.cjs",
+      "require": "./createCompositeJestPreset.cjs"
     },
     "./jest-preset.js": {
       "import": "./jest-preset.cjs",
@@ -49,57 +68,14 @@
     "./tsconfig.*": "./tsconfig.*.json",
     "./tsconfig": "./tsconfig.json"
   },
-  "scripts": {
-    "lint": "expo-module eslint ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/expo/expo.git",
-    "directory": "packages/expo-module-scripts"
-  },
-  "keywords": [
-    "babel-preset",
-    "jest-preset",
-    "expo"
-  ],
-  "author": "Expo",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-module-scripts#readme",
-  "dependencies": {
-    "@babel/cli": "^7.23.4",
-    "@babel/plugin-transform-export-namespace-from": "^7.23.4",
-    "@babel/preset-env": "^7.23.8",
-    "@babel/preset-typescript": "^7.23.3",
-    "@expo/spawn-async": "^1.8.0",
-    "@react-native/jest-preset": "0.86.0-rc.3",
-    "@testing-library/react-native": "^13.3.0",
-    "@types/jest": "^29.2.1",
-    "babel-plugin-dynamic-import-node": "^2.3.3",
-    "commander": "^12.1.0",
-    "eslint-config-universe": "workspace:^15.2.0",
-    "glob": "^13.0.0",
-    "jest-expo": "workspace:~56.0.4",
-    "jest-snapshot-prettier": "npm:prettier@^2",
-    "jest-watch-typeahead": "2.2.1",
-    "resolve-workspace-root": "^2.0.0",
-    "ts-jest": "~29.4.7"
-  },
-  "devDependencies": {
-    "@expo/metro": "~56.0.0",
-    "@babel/core": "^7.26.0"
-  },
   "publishConfig": {
     "executableFiles": [
-      "./bin/expo-module-babel",
       "./bin/expo-module-build",
       "./bin/expo-module-clean",
       "./bin/expo-module-configure",
-      "./bin/expo-module-eslint",
+      "./bin/expo-module-depscheck",
+      "./bin/expo-module-format",
       "./bin/expo-module-jest",
-      "./bin/expo-module-lint",
       "./bin/expo-module-prepare",
       "./bin/expo-module-prepublishOnly",
       "./bin/expo-module-readme",
@@ -108,5 +84,31 @@
       "./bin/expo-module-typecheck",
       "./bin/expo-module.js"
     ]
+  },
+  "scripts": {
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@expo/spawn-async": "^1.8.0",
+    "@react-native/jest-preset": "0.86.0",
+    "@swc-contrib/mut-cjs-exports": "^14.13.0",
+    "@swc/core": "^1.15.18",
+    "@swc/jest": "^0.2.39",
+    "@testing-library/react-native": "^13.3.0",
+    "@types/jest": "^29.2.1",
+    "commander": "^12.1.0",
+    "glob": "^13.0.0",
+    "jest-expo": "workspace:~56.0.4",
+    "jest-snapshot-prettier": "npm:prettier@^2",
+    "jest-watch-typeahead": "2.2.1",
+    "oxlint-config-universe": "^0.0.3",
+    "resolve-workspace-root": "^2.0.0",
+    "typescript": "^6.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@expo/metro": "~56.0.0"
   }
 }

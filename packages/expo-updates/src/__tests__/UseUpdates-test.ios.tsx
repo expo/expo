@@ -1,5 +1,4 @@
 import { act, render, screen } from '@testing-library/react-native';
-import React from 'react';
 
 import UseUpdatesTestApp from './UseUpdatesTestApp';
 import type { Manifest, UpdatesNativeStateMachineContext } from '../Updates.types';

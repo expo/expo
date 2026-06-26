@@ -10,7 +10,7 @@ import {
 
 describe(openJsInspector, () => {
   it('executes POST /open-debugger with the given app information', async () => {
-    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
 
     // The URL parameters that should be sent for the inspectable target
     const params = new URLSearchParams();
@@ -35,7 +35,7 @@ describe(queryAllInspectorAppsAsync, () => {
 
     expect(result.length).toBe(entities.length);
     for (let i = 0; i < result.length; ++i) {
-      expect(result[i].webSocketDebuggerUrl).toBe(entities[i].webSocketDebuggerUrl);
+      expect(result[i]!.webSocketDebuggerUrl).toBe(entities[i]!.webSocketDebuggerUrl);
     }
 
     expect(scope.isDone()).toBe(true);
@@ -53,7 +53,7 @@ describe(queryAllInspectorAppsAsync, () => {
     const result = await queryAllInspectorAppsAsync('http://localhost:8081');
     expect(result.length).toBe(entities.length);
     for (let i = 0; i < result.length; ++i) {
-      expect(result[i].webSocketDebuggerUrl).toBe(entities[i].webSocketDebuggerUrl);
+      expect(result[i]!.webSocketDebuggerUrl).toBe(entities[i]!.webSocketDebuggerUrl);
     }
 
     expect(scope.isDone()).toBe(true);

@@ -20,6 +20,9 @@ public final class MainSession: Session, @unchecked Sendable {
     AppMetrics.registerMetricKitSubscriber()
     #endif
 
+    // Ingest fatal JS errors that a previous launch wrote to disk before terminating.
+    AppMetrics.ingestPendingErrors()
+
     AppMetricsActor.isolated { [self] in
       self.frameMetricsRecorder.start()
     }

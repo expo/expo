@@ -25,6 +25,13 @@ open class SharedObject: AnySharedObject {
   public internal(set) weak var appContext: AppContext?
 
   /**
+   Weak reference to the native state that owns this `SharedObject` and bridges
+   it to its JS counterpart. Populated by `SharedObjectRegistry.add` and used to
+   recover the paired JS object without going through the registry's id table.
+   */
+  internal weak var nativeState: SharedObjectNativeState?
+
+  /**
    The default public initializer of the shared object.
    */
   public init() {}
@@ -85,5 +92,68 @@ extension SharedObject: EventEmitter {
       return nil
     }
     return try body(target)
+  }
+}
+
+// MARK: - Recovering the native object from JS
+
+extension SharedObject {
+  /// Recovers the native shared object paired with the given JS object, reading it off the object's
+  /// `SharedObjectNativeState`. Callers holding a `JavaScriptValue` or borrowed `JavaScriptUnownedValue`
+  /// convert it first via `asObject()` / `asObject(in:)`.
+  ///
+  /// Returns the base `SharedObject`. Callers wanting a concrete subclass use the `as:` overload, which
+  /// performs a checked downcast.
+  ///
+  /// Throws `NotFoundException` when the object carries no native state.
+  @JavaScriptActor
+  public static func native(from jsObject: borrowing JavaScriptObject) throws -> SharedObject {
+    guard let native = jsObject.getNativeState(as: SharedObjectNativeState.self)?.native else {
+      throw NotFoundException()
+    }
+    return native
+  }
+
+  /// Recovers the native shared object and casts it to the given subclass, e.g.
+  /// `SharedObject.native(from: jsObject, as: Cache.self)`. The target type is an explicit argument
+  /// rather than inferred from the return type, so the checked cast can never be skipped by omitting a
+  /// contextual type. `@inlinable` so the `as?` specializes in the caller's module as a plain
+  /// concrete-class cast. Throws `TypeMismatchException` when the paired native object isn't `type`.
+  @JavaScriptActor
+  @inlinable
+  public static func native<SharedObjectType: SharedObject>(
+    from jsObject: borrowing JavaScriptObject,
+    as type: SharedObjectType.Type
+  ) throws -> SharedObjectType {
+    let native = try native(from: jsObject)
+    guard let typed = native as? SharedObjectType else {
+      throw TypeMismatchException((expected: SharedObjectType.self, actual: Swift.type(of: native)))
+    }
+    return typed
+  }
+
+  /// Thrown when a JS object has no paired native object, for example a foreign JS object that carries
+  /// no `SharedObjectNativeState`.
+  internal final class NotFoundException: Exception, @unchecked Sendable {
+    override var code: String {
+      "ERR_NATIVE_SHARED_OBJECT_NOT_FOUND"
+    }
+
+    override var reason: String {
+      "Unable to find the native shared object associated with given JavaScript object"
+    }
+  }
+
+  /// Thrown when the native shared object paired with a JS object exists but isn't the expected subclass.
+  /// `@usableFromInline` so `native(from:)`'s inlinable generic overloads can throw it.
+  @usableFromInline
+  internal final class TypeMismatchException: GenericException<(expected: Any.Type, actual: Any.Type)>, @unchecked Sendable {
+    override var code: String {
+      "ERR_NATIVE_SHARED_OBJECT_TYPE_MISMATCH"
+    }
+
+    override var reason: String {
+      "Expected the native shared object to be '\(param.expected)', but found '\(param.actual)'"
+    }
   }
 }

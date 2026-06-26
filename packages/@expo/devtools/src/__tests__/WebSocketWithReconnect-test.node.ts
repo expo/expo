@@ -1,6 +1,6 @@
 import { WebSocket, WebSocketServer } from 'ws';
 
-import { WebSocketWithReconnect } from '../WebSocketWithReconnect';
+import { WebSocketWithReconnect, type WebSocketMessageEvent } from '../WebSocketWithReconnect';
 
 // @ts-expect-error - The WebSocket from ws is not compatible with the globalThis.WebSocket
 globalThis.WebSocket = WebSocket;
@@ -24,7 +24,7 @@ describe(WebSocketWithReconnect, () => {
     });
 
     ws = new WebSocketWithReconnect('ws://localhost:8000');
-    let received = '';
+    let received: WebSocketMessageEvent['data'] = '';
     ws.addEventListener('message', (e) => {
       received = e.data;
     });

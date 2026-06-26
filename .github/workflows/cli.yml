@@ -53,6 +53,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # JS-only jobs, so skip the ~685 MB @shopify/react-native-skia prebuilt-binary download.
+  SKIP_SKIA_DOWNLOAD: '1'
+
 jobs:
   jest-ubuntu:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
@@ -88,6 +92,9 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -146,6 +153,9 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       - name: 🔎 Type Check CLI
         working-directory: packages/@expo/cli
@@ -190,6 +200,9 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       - name: 🎭 Get Playwright information
         id: playwright-info
@@ -271,6 +284,9 @@ jobs:
 
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       - name: 🎭 Get Playwright information
         id: playwright-info

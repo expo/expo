@@ -3,9 +3,11 @@ import * as SQLite from 'expo-sqlite';
 
 import { dumpDatabase, importDatabase } from '../sqliteDump';
 
-jest.mock('../../../node_modules/expo-sqlite/build/ExpoSQLite.js', () =>
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require('../../../../src/__mocks__/ExpoSQLite')
+jest.mock(
+  '../../../../src/ExpoSQLite',
+  () =>
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('../../../../src/__mocks__/ExpoSQLite')
 );
 
 const originalConsoleError = console.error;

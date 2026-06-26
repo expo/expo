@@ -40,6 +40,8 @@ on:
       - '!**/.npmignore'
       - '!**/.eslintrc*'
       - '!**/.prettierrc*'
+      - '!**/oxlint.config.*'
+      - '!**/.oxfmtrc*'
       - '!**/.gitattributes'
       - '!**/.watchmanconfig'
       - '!**/.fingerprintignore'
@@ -84,6 +86,9 @@ jobs:
           bare-expo-macos-pods: 'true'
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/macos

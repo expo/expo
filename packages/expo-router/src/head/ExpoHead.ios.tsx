@@ -1,11 +1,11 @@
 import type { JSX } from 'react';
 import React from 'react';
 
+import { useLocalSearchParams, useUnstableGlobalHref, usePathname, useSegments } from '../hooks';
 import { useIsFocused } from '../useIsFocused';
 import type { UserActivity } from './ExpoHeadModule';
 import { ExpoHead } from './ExpoHeadModule';
 import { getStaticUrlFromExpoRouter } from './url';
-import { useLocalSearchParams, useUnstableGlobalHref, usePathname, useSegments } from '../hooks';
 
 function urlToId(url: string) {
   return url.replace(/[^a-zA-Z0-9]/g, '-');

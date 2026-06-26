@@ -1,8 +1,8 @@
 import { Text as ComposeText } from '@expo/ui/jetpack-compose';
 
+import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { TextProps } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 const textAlignMap: Record<string, 'start' | 'center' | 'end'> = {
   left: 'start',

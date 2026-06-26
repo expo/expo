@@ -36,6 +36,7 @@ export type ActivityFamily = 'small' | 'medium';
  * - `accessoryCircular` - Circular accessory widget for the Lock Screen.
  * - `accessoryRectangular` - Rectangular accessory widget for the Lock Screen.
  * - `accessoryInline` - Inline accessory widget for the Lock Screen.
+ * @platform iOS
  */
 export type WidgetFamily =
   | 'systemSmall'
@@ -49,12 +50,14 @@ export type WidgetFamily =
 export type WidgetEnvironment<T extends object | undefined = undefined> = {
   /**
    * The date of this timeline entry.
+   * @platform iOS
    */
-  date: Date;
+  date?: Date;
   /**
    * The widget family.
+   * @platform iOS
    */
-  widgetFamily: WidgetFamily;
+  widgetFamily?: WidgetFamily;
   /**
    * The color scheme of the widget's environment.
    */
@@ -275,18 +278,19 @@ export type LiveActivityEvents = {
 export declare class NativeWidgetObject extends SharedObject {
   constructor(name: string, layout: string, initialProps?: Record<string, any>);
   reload(): void;
+  updateSnapshot(props: Record<string, any>): void;
   updateTimeline(entries: ExpoTimelineEntry[]): void;
   getTimeline(): Promise<ExpoTimelineEntry[]>;
 }
 
 export declare class NativeLiveActivityFactory extends SharedObject {
   constructor(name: string, layout: string);
-  start(props?: string, url?: string): NativeLiveActivity;
+  start(props?: string, url?: string, staleDate?: number): NativeLiveActivity;
   getInstances(): NativeLiveActivity[];
 }
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
-  update(props?: string): Promise<void>;
+  update(props?: string, staleDate?: number): Promise<void>;
   end(
     dismissalPolicy?: string,
     afterDate?: number,

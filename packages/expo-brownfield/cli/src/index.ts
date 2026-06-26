@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 
-import { buildAndroid, buildIos, mangle, tasksAndroid } from './commands';
 import packageJson from '../../package.json';
+import { buildAndroid, buildIos, mangle, tasksAndroid } from './commands';
 
 const program = new Command();
 

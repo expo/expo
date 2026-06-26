@@ -5,9 +5,11 @@ import type { DirectoryCreateOptions, DirectoryInfo } from '../Directory.types';
 import type { File as PublicFile } from '../File';
 import type {
   FileCreateOptions,
+  FileCanPreviewOptions,
   FileHandle,
   FileInfo,
   FileMode,
+  FilePreviewOptions,
   FileWriteOptions,
   InfoOptions,
   PickMultipleFilesOptions,
@@ -277,6 +279,14 @@ export declare class NativeFileSystemFile {
    * @throws Error if the file does not exist or cannot be opened.
    */
   open(mode?: FileMode): FileHandle;
+  /**
+   * Determines whether the platform can preview this file.
+   */
+  canPreview(options?: FileCanPreviewOptions): Promise<boolean>;
+  /**
+   * Opens this file with the platform's file preview flow.
+   */
+  preview(options?: FilePreviewOptions): Promise<void>;
   upload(url: string, options?: UploadOptions): Promise<UploadResult>;
   createUploadTask(url: string, options?: UploadOptions): UploadTask;
   watch(

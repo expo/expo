@@ -1,11 +1,26 @@
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
 
-import { DevToolsPlugin } from './DevToolsPlugin';
+import { events } from '../../events';
 import { Log } from '../../log';
+import { DevToolsPlugin } from './DevToolsPlugin';
 
 const debug = require('debug')('expo:start:server:devtools');
 
 export const DevToolsPluginEndpoint = '/_expo/plugins';
+
+export const event = events('expo', (t) => [
+  t.event<
+    'dev-tools-plugin:load',
+    {
+      plugins: {
+        packageName: string;
+        bannerTitle: string;
+        cliBanner: boolean;
+        webpageEndpoint: string | undefined;
+      }[];
+    }
+  >(),
+]);
 
 export default class DevToolsPluginManager {
   private plugins: DevToolsPlugin[] | null = null;
@@ -15,14 +30,21 @@ export default class DevToolsPluginManager {
   public async queryPluginsAsync(): Promise<DevToolsPlugin[]> {
     if (!this.plugins) {
       this.plugins = await this.queryAutolinkedPluginsAsync(this.projectRoot);
+      event('dev-tools-plugin:load', {
+        plugins: this.plugins.map((plugin) => ({
+          packageName: plugin.packageName,
+          bannerTitle: plugin.bannerTitle,
+          cliBanner: plugin.cliBanner,
+          webpageEndpoint: plugin.webpageEndpoint,
+        })),
+      });
     }
     return this.plugins;
   }
 
-  public async queryPluginWebpageRootAsync(pluginName: string): Promise<string | null> {
+  public async queryPluginAsync(pluginName: string): Promise<DevToolsPlugin | null> {
     const plugins = await this.queryPluginsAsync();
-    const plugin = plugins.find((p) => p.packageName === pluginName);
-    return plugin?.webpageRoot ?? null;
+    return plugins.find((p) => p.packageName === pluginName) ?? null;
   }
 
   private async queryAutolinkedPluginsAsync(projectRoot: string): Promise<DevToolsPlugin[]> {

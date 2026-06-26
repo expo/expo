@@ -1,6 +1,8 @@
+import type { AndroidConfig } from 'expo/config-plugins';
 import { withAndroidStyles } from 'expo/config-plugins';
 
 import { compileMockModWithResultsAsync } from './mockMods';
+import type { PluginConfigType } from '../pluginConfig';
 import { withBuildProperties } from '../withBuildProperties';
 
 jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
@@ -113,26 +115,26 @@ const userDefined = [
 describe(withBuildProperties, () => {
   it('correctly modifies the theme for dark mode support', async () => {
     const { modResults } = await createModResult(true);
-    const { style } = modResults.resources;
+    const style = modResults.resources.style!;
     const appTheme = style.find(({ $ }) => $.name === 'AppTheme');
-    expect(appTheme.$.parent).toBe('Theme.AppCompat.DayNight.NoActionBar');
+    expect(appTheme!.$.parent).toBe('Theme.AppCompat.DayNight.NoActionBar');
   });
 
   it('removes the `ResetEditText` style', async () => {
     const { modResults } = await createModResult(true);
-    const { style } = modResults.resources;
+    const style = modResults.resources.style!;
     const resetEditText = style.find(({ $ }) => $.name === 'ResetEditText');
     expect(resetEditText).toBeUndefined();
   });
 
   it('correctly removes the hardcoded colors from the `AppTheme`', async () => {
     const { modResults } = await createModResult(true);
-    const { style } = modResults.resources;
+    const style = modResults.resources.style!;
 
     const excludedAttributes = ['android:textColor', 'android:editTextStyle'];
 
     const appTheme = style.find(({ $ }) => $.name === 'AppTheme');
-    const items = appTheme.item.filter(({ $ }) => excludedAttributes.includes($.name));
+    const items = appTheme!.item.filter(({ $ }) => excludedAttributes.includes($.name));
     expect(items).toHaveLength(0);
   });
 
@@ -144,13 +146,16 @@ describe(withBuildProperties, () => {
   it('does not override user defined styles', async () => {
     const { modResults } = await createModResult(true, userDefined);
 
-    const userStyle = modResults.resources.style.find(({ $ }) => $.name === 'MyTheme');
+    const userStyle = modResults.resources.style!.find(({ $ }) => $.name === 'MyTheme');
     expect(userStyle).toBeDefined();
   });
 });
 
-async function createModResult(useDayNightTheme: boolean, style: any[] = defaultStyles) {
-  return compileMockModWithResultsAsync(
+async function createModResult(
+  useDayNightTheme: boolean,
+  style: AndroidConfig.Resources.ResourceGroupXML[] = defaultStyles
+) {
+  return compileMockModWithResultsAsync<AndroidConfig.Resources.ResourceXML, PluginConfigType>(
     {},
     {
       plugin: withBuildProperties,

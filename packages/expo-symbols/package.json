@@ -2,53 +2,68 @@
   "name": "expo-symbols",
   "version": "56.0.5",
   "description": "Provides access to the SF Symbols library on iOS, and Material Symbols on Android and web, for Expo and React Native apps.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
-  "exports": {
-    ".": "./build/index.js",
-    "./androidWeights/*": "./build/android/weights/*/index.js"
-  },
   "keywords": [
-    "react-native",
     "expo",
     "expo-symbols",
-    "symbols",
+    "ios",
+    "react-native",
     "sfsymbols",
-    "ios"
+    "symbols"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/symbols/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-symbols"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./androidWeights/*": {
+      "types": {
+        "expo-source": "./src/android/weights/*/index.ts",
+        "default": "./build/android/weights/*/index.d.ts"
+      },
+      "expo-source": "./src/android/weights/*/index.ts",
+      "default": "./build/android/weights/*/index.js"
+    },
+    "./package.json": "./package.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/symbols/",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
   "dependencies": {
-    "sf-symbols-typescript": "^2.0.0",
-    "@expo-google-fonts/material-symbols": "^0.4.1"
+    "@expo-google-fonts/material-symbols": "^0.4.1",
+    "sf-symbols-typescript": "^2.0.0"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
-    "expo": "workspace:*",
     "expo-font": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
+    "expo-font": "*",
     "react": "*",
-    "react-native": "*",
-    "expo-font": "*"
+    "react-native": "*"
   }
 }

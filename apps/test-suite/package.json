@@ -2,14 +2,15 @@
   "name": "test-suite",
   "version": "1.0.0",
   "description": "Test suite for the Expo SDK",
+  "license": "MIT",
+  "author": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "tsc": "tsc --noEmit -p ./tsconfig.json",
     "test": "jest"
   },
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "@expo/html-elements": "workspace:*",
     "@expo/styleguide-base": "^1.0.1",
@@ -69,7 +70,6 @@
     "expo-task-manager": "workspace:*",
     "expo-video": "workspace:*",
     "expo-web-browser": "workspace:*",
-    "firebase": "^9.3.0",
     "getenv": "^2.0.0",
     "i18n-js": "^3.1.0",
     "invariant": "^2.2.4",
@@ -77,9 +77,9 @@
     "lodash": "^4.17.19",
     "path": "^0.12.7",
     "react": "19.2.3",
-    "react-native": "0.86.0-rc.3",
+    "react-native": "0.86.0",
     "react-native-gesture-handler": "~2.32.0",
-    "react-native-safe-area-context": "^5.6.2",
+    "react-native-safe-area-context": "^5.7.0",
     "semver": "^7.7.4"
   },
   "devDependencies": {
@@ -87,7 +87,8 @@
     "@types/invariant": "^2.2.35",
     "@types/jasmine": "^5.1.15",
     "@types/react": "~19.2.0",
-    "@types/semver": "^7.7.1"
+    "@types/semver": "^7.7.1",
+    "expo-module-scripts": "workspace:*"
   },
   "browserslist": [
     ">0.2%",

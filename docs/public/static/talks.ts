@@ -1,5 +1,13 @@
 export const TALKS = [
   {
+    title: 'Expo keynote',
+    event: 'App.js Conf 2026',
+    description: 'Charlie Cheever',
+    videoId: '605Id2fhmXE',
+    uploadDate: '2026-06-12',
+    home: true,
+  },
+  {
     title: 'Keynote: streamline React Native development',
     event: 'App.js Conf 2025',
     description: 'Charlie Cheever, Jon Samp',
@@ -50,7 +58,6 @@ export const TALKS = [
     description: 'Gabriel Donadel',
     videoId: 'K7yC3JKfWYU',
     uploadDate: '2024-06-11',
-    home: true,
   },
   {
     title: 'Keynote: community & workflows',
@@ -437,6 +444,24 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'Introducing "Observe": Performance monitoring for React Native apps',
+    event: 'Expo Tutorials',
+    videoId: '5JqK9JLD140',
+    uploadDate: '2026-06-16',
+  },
+  {
+    title: "Highlights from the largest Expo conference of the year: App.js '26",
+    event: 'Expo Tutorials',
+    videoId: 'EEbdiZFXayg',
+    uploadDate: '2026-06-04',
+  },
+  {
+    title: 'Where is Expo Go?',
+    event: 'Expo Tutorials',
+    videoId: 'bu8X9mCL0Ek',
+    uploadDate: '2026-05-27',
+  },
   {
     title: "What's New in Expo SDK 56: Expo UI, Inline Swift/Kotlin Modules, and Faster Builds",
     event: 'Expo Tutorials',

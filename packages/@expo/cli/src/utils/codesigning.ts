@@ -17,8 +17,6 @@ import path from 'path';
 import type { Dictionary } from 'structured-headers';
 import { parseDictionary } from 'structured-headers';
 
-import { env } from './env';
-import { CommandError } from './errors';
 import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermediateCertificate';
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
 import { UnexpectedServerError, UnexpectedServerData } from '../api/graphql/client';
@@ -28,6 +26,8 @@ import { tryGetUserAsync } from '../api/user/actions';
 import type { Actor } from '../api/user/user';
 import * as Log from '../log';
 import { learnMore } from '../utils/link';
+import { env } from './env';
+import { CommandError } from './errors';
 
 const debug = require('debug')('expo:codesigning') as typeof console.log;
 

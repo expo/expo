@@ -6,6 +6,8 @@
  */
 import type { types as t } from '@babel/core';
 import generate from '@babel/generator';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
+import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
 import type {
   MixedOutput,
   Module,
@@ -15,21 +17,9 @@ import type {
 import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 import { locToKey } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import type { SerializerConfigT } from '@expo/metro/metro-config';
-import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
 import assert from 'assert';
 import util from 'node:util';
 
-import type { ExpoJsOutput } from './jsOutput';
-import { isExpoJsOutput } from './jsOutput';
-import {
-  countLinesAndTerminateSourceMap,
-  installPackedMap,
-  packRawMappings,
-  type SerializableSourceMap,
-} from './packedMap';
-import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { type BabelSourceMapSegment } from './sourceMap';
 import type { Dependency, DependencyData } from '../transform-worker/collect-dependencies';
 import collectDependencies, {
   getKeyForDependency,
@@ -41,6 +31,16 @@ import {
   InvalidRequireCallError,
   minifyCode,
 } from '../transform-worker/metro-transform-worker';
+import type { ExpoJsOutput } from './jsOutput';
+import { isExpoJsOutput } from './jsOutput';
+import {
+  countLinesAndTerminateSourceMap,
+  installPackedMap,
+  packRawMappings,
+  type SerializableSourceMap,
+} from './packedMap';
+import { hasSideEffectWithDebugTrace } from './sideEffects';
+import { type BabelSourceMapSegment } from './sourceMap';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
