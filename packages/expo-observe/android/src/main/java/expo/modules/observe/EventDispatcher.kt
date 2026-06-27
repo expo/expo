@@ -128,8 +128,7 @@ class EventDispatcher(
         Log.w(
           OBSERVE_TAG,
           "Server responded with ${response.code} (partial success, rejected " +
-            "${result.partial.rejectedCount}: ${result.partial.errorMessage ?: "no error message"}) " +
-            "and data: $responseBody"
+            "${result.partial.rejectedCount}: ${result.partial.errorMessage ?: "no error message"}) "
         )
       is DispatchResult.RetryableFailure ->
         Log.w(OBSERVE_TAG, "Server responded with ${response.code} (retryable) and data: $responseBody")
