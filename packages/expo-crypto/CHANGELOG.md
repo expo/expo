@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `AESSealedData.fromCombined()` throwing on Android when given a base64-encoded string. ([#47274](https://github.com/expo/expo/issues/47274))
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-26
