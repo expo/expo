@@ -18,6 +18,14 @@ object TimeUtils {
    */
   fun getWallClockMillis(): Long = System.currentTimeMillis()
 
+  /**
+   * Wall-clock delta in milliseconds from `from` to `to` (positive if `to` is in the future
+   * relative to `from`, negative if it's in the past). Defaults `from` to now. Used by
+   * `expo-observe`'s `Retry-After` parser to compute how long the server wants us to wait.
+   * Centralized here so tests can stub the time read via `mockkObject(TimeUtils)`.
+   */
+  fun millisUntil(to: Date, from: Date = Date()): Long = to.time - from.time
+
   fun getProcessStartTimeInMillis(): Long = Process.getStartUptimeMillis()
 
   fun getProcessStartTimestamp(): String {

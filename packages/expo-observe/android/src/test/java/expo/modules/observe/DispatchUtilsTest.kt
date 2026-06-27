@@ -1,5 +1,11 @@
 package expo.modules.observe
 
+import expo.modules.appmetrics.utils.TimeUtils
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.slot
+import io.mockk.unmockkObject
+import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -373,39 +379,65 @@ class DispatchUtilsParseRetryAfterTest {
 
   @Test
   fun `HTTP-date inside bounds parses to a delta near the actual offset`() {
-    // Build a header 5 minutes (300 s) in the future — comfortably inside [60, 900].
-    val now = 1_700_000_000_000L
-    val futureMs = now + 300_000L
-    val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
-    formatter.timeZone = TimeZone.getTimeZone("GMT")
-    val header = formatter.format(Date(futureMs))
+    // The header is parsed into a Date and handed to TimeUtils.millisUntil along with "now";
+    // we mock millisUntil to return a known delta (5 min, comfortably inside [60, 900]) and
+    // also verify the parser routed the parsed Date through the helper.
+    mockkObject(TimeUtils)
+    try {
+      val capturedTo = slot<Date>()
+      every { TimeUtils.millisUntil(capture(capturedTo), any()) } returns 300_000L
 
-    val parsed = DispatchUtils.parseRetryAfter(header, base = base, cap = cap, now = now)
-    assertNotNull(parsed)
-    assertTrue("expected ~300_000 ms, got $parsed", parsed!! in 295_000L..305_000L)
+      val headerInstant = 1_700_000_300_000L
+      val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
+      formatter.timeZone = TimeZone.getTimeZone("GMT")
+      val header = formatter.format(Date(headerInstant))
+
+      val parsed = DispatchUtils.parseRetryAfter(header, base = base, cap = cap)
+      assertEquals(300_000L, parsed)
+
+      verify { TimeUtils.millisUntil(any(), any()) }
+      // SimpleDateFormat with second precision drops sub-second portions, but the captured
+      // Date should match the header instant within ±1 s.
+      assertTrue(
+        "expected captured Date near $headerInstant, got ${capturedTo.captured.time}",
+        capturedTo.captured.time in (headerInstant - 1000L)..(headerInstant + 1000L)
+      )
+    } finally {
+      unmockkObject(TimeUtils)
+    }
   }
 
   @Test
   fun `HTTP-date in the past clamps up to base`() {
-    val now = 1_700_000_000_000L
-    val pastMs = now - 3_600_000L
-    val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
-    formatter.timeZone = TimeZone.getTimeZone("GMT")
-    val header = formatter.format(Date(pastMs))
+    mockkObject(TimeUtils)
+    try {
+      every { TimeUtils.millisUntil(any(), any()) } returns -3_600_000L
 
-    assertEquals(base, DispatchUtils.parseRetryAfter(header, base = base, cap = cap, now = now))
+      val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
+      formatter.timeZone = TimeZone.getTimeZone("GMT")
+      val header = formatter.format(Date(1_699_996_400_000L))
+
+      assertEquals(base, DispatchUtils.parseRetryAfter(header, base = base, cap = cap))
+    } finally {
+      unmockkObject(TimeUtils)
+    }
   }
 
   @Test
   fun `HTTP-date far in the future clamps down to cap`() {
-    // Two hours from now is well past the 15-minute cap.
-    val now = 1_700_000_000_000L
-    val farFutureMs = now + 7_200_000L
-    val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
-    formatter.timeZone = TimeZone.getTimeZone("GMT")
-    val header = formatter.format(Date(farFutureMs))
+    // Two hours ahead is well past the 15-minute cap.
+    mockkObject(TimeUtils)
+    try {
+      every { TimeUtils.millisUntil(any(), any()) } returns 7_200_000L
 
-    assertEquals(cap, DispatchUtils.parseRetryAfter(header, base = base, cap = cap, now = now))
+      val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
+      formatter.timeZone = TimeZone.getTimeZone("GMT")
+      val header = formatter.format(Date(1_700_007_200_000L))
+
+      assertEquals(cap, DispatchUtils.parseRetryAfter(header, base = base, cap = cap))
+    } finally {
+      unmockkObject(TimeUtils)
+    }
   }
 
   // MARK: -- Custom client bounds

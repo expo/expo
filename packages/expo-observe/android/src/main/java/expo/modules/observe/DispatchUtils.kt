@@ -117,8 +117,7 @@ object DispatchUtils {
   fun parseRetryAfter(
     header: String?,
     base: Long = backoffBaseMs,
-    cap: Long = backoffCapMs,
-    now: Long = TimeUtils.getWallClockMillis()
+    cap: Long = backoffCapMs
   ): Long? {
     val raw = header?.trim() ?: return null
     if (raw.isEmpty()) return null
@@ -133,7 +132,7 @@ object DispatchUtils {
     formatter.timeZone = TimeZone.getTimeZone("GMT")
     val parsed = runCatching { formatter.parse(raw) }.getOrNull()
     if (parsed != null) {
-      return clampToBounds(parsed.time - now, base, cap)
+      return clampToBounds(TimeUtils.millisUntil(parsed), base, cap)
     }
     return null
   }
