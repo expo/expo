@@ -13,13 +13,13 @@ import org.junit.Test
 class DispatchUtilsRetryGateTest {
   private val now: Long = 1_700_000_000_000L
 
-  /// Backoff stub that returns `attempt * 10` so each test can pick the expected delay by
-  /// counting from `consecutiveRetryableFailures + 1`. Avoids the random source in
-  /// `computeBackoffDelay` and lets us assert exact deadlines.
+  // Backoff stub that returns `attempt * 10` so each test can pick the expected delay by
+  // counting from `consecutiveRetryableFailures + 1`. Avoids the random source in
+  // `computeBackoffDelay` and lets us assert exact deadlines.
   private val stubbedBackoff: (Int) -> Long = { (it * 10).toLong() }
 
-  /// `Success` is the all-clear: counter resets to 0, gate is left alone so any active gate
-  /// (which shouldn't exist if we got this far, but defensively) keeps its semantics.
+  // `Success` is the all-clear: counter resets to 0, gate is left alone so any active gate
+  // (which shouldn't exist if we got this far, but defensively) keeps its semantics.
   @Test
   fun `Success resets the counter and leaves the gate alone`() {
     val state = DispatchUtils.RetryGateState(
@@ -33,11 +33,11 @@ class DispatchUtilsRetryGateTest {
       backoff = stubbedBackoff
     )
     assertEquals(0, next.consecutiveRetryableFailures)
-    assertEquals(state.dispatchAfterMs, next.dispatchAfterMs)  // untouched
+    assertEquals(state.dispatchAfterMs, next.dispatchAfterMs) // untouched
   }
 
-  /// `PartialSuccess` is treated the same as success for gate purposes: the bytes landed on
-  /// the server, so the gate stays where it is and the counter resets.
+  // `PartialSuccess` is treated the same as success for gate purposes: the bytes landed on
+  // the server, so the gate stays where it is and the counter resets.
   @Test
   fun `PartialSuccess resets the counter and leaves the gate alone`() {
     val state = DispatchUtils.RetryGateState(
@@ -55,9 +55,9 @@ class DispatchUtilsRetryGateTest {
     assertEquals(state.dispatchAfterMs, next.dispatchAfterMs)
   }
 
-  /// `NonRetryableFailure` is treated the same as success for gate purposes: a permanent
-  /// drop doesn't suggest the server is unhealthy, so the counter resets and we don't
-  /// introduce a new pause for subsequent batches.
+  // `NonRetryableFailure` is treated the same as success for gate purposes: a permanent
+  // drop doesn't suggest the server is unhealthy, so the counter resets and we don't
+  // introduce a new pause for subsequent batches.
   @Test
   fun `NonRetryable resets the counter and leaves the gate alone`() {
     val state = DispatchUtils.RetryGateState(
@@ -74,9 +74,9 @@ class DispatchUtilsRetryGateTest {
     assertEquals(state.dispatchAfterMs, next.dispatchAfterMs)
   }
 
-  /// First retryable failure (from `.initial`): counter goes to 1, gate is `now + backoff(1)`.
-  /// `retryAfterMs` is `null`, so we fall through to `computeBackoffDelay` (the stubbed value
-  /// of 10 here).
+  // First retryable failure (from `.initial`): counter goes to 1, gate is `now + backoff(1)`.
+  // `retryAfterMs` is `null`, so we fall through to `computeBackoffDelay` (the stubbed value
+  // of 10 here).
   @Test
   fun `first retryable with no Retry-After uses computed backoff`() {
     val next = DispatchUtils.nextRetryGateState(
@@ -89,9 +89,9 @@ class DispatchUtilsRetryGateTest {
     assertEquals(now + 10L, next.dispatchAfterMs)
   }
 
-  /// Subsequent retryable failures: counter increments before the backoff lookup so the
-  /// helper passes `nextCount` (not `currentCount`) into the backoff function. Verifies that
-  /// 3rd failure → backoff(3) (= 30 with the stub), not backoff(2).
+  // Subsequent retryable failures: counter increments before the backoff lookup so the
+  // helper passes `nextCount` (not `currentCount`) into the backoff function. Verifies that
+  // 3rd failure → backoff(3) (= 30 with the stub), not backoff(2).
   @Test
   fun `nth retryable passes nextCount into backoff function`() {
     val state = DispatchUtils.RetryGateState(
@@ -108,8 +108,8 @@ class DispatchUtilsRetryGateTest {
     assertEquals(now + 30L, next.dispatchAfterMs)
   }
 
-  /// Server-supplied `retryAfterMs` wins over the computed backoff. The backoff stub here
-  /// returns small values, but the explicit 90_000 ms value should be honored.
+  // Server-supplied `retryAfterMs` wins over the computed backoff. The backoff stub here
+  // returns small values, but the explicit 90_000 ms value should be honored.
   @Test
   fun `retryable with server Retry-After uses the server delay`() {
     val next = DispatchUtils.nextRetryGateState(
@@ -122,10 +122,10 @@ class DispatchUtilsRetryGateTest {
     assertEquals(now + 90_000L, next.dispatchAfterMs)
   }
 
-  /// `retryAfterMs: 0L` is valid and means "try again immediately." Still counts as a
-  /// failure for the counter (so a misbehaving server can't suppress the exponential backoff
-  /// by always responding 429 with `Retry-After: 0`) but the gate deadline equals `now`, so
-  /// the next dispatch round runs without waiting.
+  // `retryAfterMs: 0L` is valid and means "try again immediately." Still counts as a
+  // failure for the counter (so a misbehaving server can't suppress the exponential backoff
+  // by always responding 429 with `Retry-After: 0`) but the gate deadline equals `now`, so
+  // the next dispatch round runs without waiting.
   @Test
   fun `retryable with zero Retry-After still increments counter`() {
     val next = DispatchUtils.nextRetryGateState(
@@ -138,9 +138,9 @@ class DispatchUtilsRetryGateTest {
     assertEquals(now, next.dispatchAfterMs)
   }
 
-  /// Backoff function is never consulted when the server sends `Retry-After`. Verifies the
-  /// server-delay branch doesn't accidentally also call into `backoff`, which would defeat
-  /// the purpose of letting the server steer.
+  // Backoff function is never consulted when the server sends `Retry-After`. Verifies the
+  // server-delay branch doesn't accidentally also call into `backoff`, which would defeat
+  // the purpose of letting the server steer.
   @Test
   fun `retryable with server Retry-After does not invoke the backoff function`() {
     var backoffCalled = false
@@ -156,9 +156,9 @@ class DispatchUtilsRetryGateTest {
     assertFalse(backoffCalled)
   }
 
-  /// Sequence test: 2 retryable failures then a success returns the counter to zero. The
-  /// gate from the second failure is left in place (it will naturally expire by the time the
-  /// next dispatch round happens).
+  // Sequence test: 2 retryable failures then a success returns the counter to zero. The
+  // gate from the second failure is left in place (it will naturally expire by the time the
+  // next dispatch round happens).
   @Test
   fun `retryable then retryable then success drives counter back to zero`() {
     val after1 = DispatchUtils.nextRetryGateState(

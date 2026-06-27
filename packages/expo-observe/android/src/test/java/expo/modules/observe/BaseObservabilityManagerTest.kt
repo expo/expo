@@ -1166,7 +1166,7 @@ class BaseObservabilityManagerTest {
       val manager = createManager(currentTimeMs = { nowMs })
 
       manager.dispatchUnsentMetrics()
-      nowMs += 120_000L  // jump past the 60-second gate
+      nowMs += 120_000L // jump past the 60-second gate
       manager.dispatchUnsentMetrics()
 
       coVerify(exactly = 2) { mockEventDispatcher.dispatch(any()) }

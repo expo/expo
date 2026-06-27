@@ -7,7 +7,6 @@ import io.mockk.slot
 import io.mockk.unmockkObject
 import io.mockk.verify
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -246,33 +245,33 @@ class DispatchUtilsClassifyResponseTest {
 }
 
 class DispatchUtilsShouldRemovePendingTest {
-  /// On `Success`, the queue moves past the dispatched batch so the next round reads only
-  /// newer rows. Unchanged from the pre-OTLP behavior; locked here for the table.
+  // On `Success`, the queue moves past the dispatched batch so the next round reads only
+  // newer rows. Unchanged from the pre-OTLP behavior; locked here for the table.
   @Test
   fun `Success removes pending IDs`() {
     assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.Success))
   }
 
-  /// `Retryable` is the "leave them alone" case — the next dispatch round picks the same
-  /// rows up again. This is what keeps an in-flight outage from losing telemetry.
+  // `Retryable` is the "leave them alone" case — the next dispatch round picks the same
+  // rows up again. This is what keeps an in-flight outage from losing telemetry.
   @Test
   fun `Retryable keeps pending IDs`() {
     assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure()))
     assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure(retryAfterMs = 30_000L)))
   }
 
-  /// `PartialSuccess` removes pending IDs like `Success` does: the bytes landed on the
-  /// server (a subset was rejected server-side, but the batch as a whole was accepted), so
-  /// re-sending the same rows would just trip the same rejection.
+  // `PartialSuccess` removes pending IDs like `Success` does: the bytes landed on the
+  // server (a subset was rejected server-side, but the batch as a whole was accepted), so
+  // re-sending the same rows would just trip the same rejection.
   @Test
   fun `PartialSuccess removes pending IDs`() {
     val partial = OTPartialSuccess(rejectedDataPoints = 1, errorMessage = "x")
     assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.PartialSuccess(partial)))
   }
 
-  /// The acceptance-criterion behavior: a non-retryable response (e.g. 400, 403) drops the
-  /// offending batch. Without this, the next round would re-send the same rows and the
-  /// server would refuse them again, wedging the queue indefinitely.
+  // The acceptance-criterion behavior: a non-retryable response (e.g. 400, 403) drops the
+  // offending batch. Without this, the next round would re-send the same rows and the
+  // server would refuse them again, wedging the queue indefinitely.
   @Test
   fun `NonRetryable removes pending IDs`() {
     assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.NonRetryableFailure("HTTP 400")))
@@ -304,8 +303,8 @@ class DispatchUtilsParseRetryAfterTest {
     // Neither a Long/Double nor an RFC 7231 HTTP-date — caller should fall through to backoff.
     val cases = listOf(
       "tomorrow morning",
-      "Mon Jun 16",  // partial date, missing time + year + zone
-      "30 minutes",  // delta-seconds doesn't accept units
+      "Mon Jun 16", // partial date, missing time + year + zone
+      "30 minutes", // delta-seconds doesn't accept units
       "30s",
       "abc",
       "300/600",

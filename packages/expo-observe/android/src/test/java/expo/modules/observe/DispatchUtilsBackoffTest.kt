@@ -12,9 +12,9 @@ class DispatchUtilsBackoffTest {
   private val base: Long = 60_000L
   private val cap: Long = 900_000L
 
-  /// Attempt 1 with no jitter (random=0) is the zero floor of the exponential schedule.
-  /// Attempt 1 with full jitter (random near 1.0) approaches the unjittered base interval.
-  /// Together these prove the jitter range is `[0, base * 2^(attempt-1))`.
+  // Attempt 1 with no jitter (random=0) is the zero floor of the exponential schedule.
+  // Attempt 1 with full jitter (random near 1.0) approaches the unjittered base interval.
+  // Together these prove the jitter range is `[0, base * 2^(attempt-1))`.
   @Test
   fun `attempt one jitter zero is zero`() {
     val delay = DispatchUtils.computeBackoffDelay(
@@ -39,21 +39,21 @@ class DispatchUtilsBackoffTest {
     assertTrue("expected delay < base, got $delay", delay < base)
   }
 
-  /// The exponential schedule doubles between attempts: attempt 2 reaches 2 × base,
-  /// attempt 3 reaches 4 × base, …, all multiplied by the jitter draw.
+  // The exponential schedule doubles between attempts: attempt 2 reaches 2 × base,
+  // attempt 3 reaches 4 × base, …, all multiplied by the jitter draw.
   @Test
   fun `attempts two through four double the unjittered ceiling`() {
-    val r: () -> Double = { 0.5 }  // pin jitter to exactly half
+    val r: () -> Double = { 0.5 } // pin jitter to exactly half
     val two = DispatchUtils.computeBackoffDelay(attempt = 2, base = base, cap = cap, random = r)
     val three = DispatchUtils.computeBackoffDelay(attempt = 3, base = base, cap = cap, random = r)
     val four = DispatchUtils.computeBackoffDelay(attempt = 4, base = base, cap = cap, random = r)
-    assertEquals(base * 2 / 2, two)   // 60_000
-    assertEquals(base * 4 / 2, three)  // 120_000
-    assertEquals(base * 8 / 2, four)   // 240_000
+    assertEquals(base * 2 / 2, two) // 60_000
+    assertEquals(base * 4 / 2, three) // 120_000
+    assertEquals(base * 8 / 2, four) // 240_000
   }
 
-  /// Once `base * 2^(attempt-1)` would exceed `cap`, the unjittered ceiling clamps to `cap`.
-  /// Verified with attempt 5 (would be 16 × 60_000 = 960_000 > 900_000).
+  // Once `base * 2^(attempt-1)` would exceed `cap`, the unjittered ceiling clamps to `cap`.
+  // Verified with attempt 5 (would be 16 × 60_000 = 960_000 > 900_000).
   @Test
   fun `attempt above cap threshold clamps to cap times jitter`() {
     // attempt 5 → 60_000 × 16 = 960_000; cap = 900_000 → clamps to 900_000, jitter 0.5 → 450_000.
