@@ -685,7 +685,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 -(nullable NSString *)getAppExpirationDate
 { 
-  // App Store and Simulator builds have don't have mobileprovision
+  // App Store and Simulator builds don't have mobileprovision
   NSString *path = [[NSBundle mainBundle] pathForResource:@"embedded" ofType:@"mobileprovision"];
   if (!path) {
     return nil;
