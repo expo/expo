@@ -132,6 +132,8 @@ object DispatchUtils {
       return clampToBounds((it * 1000L).toLong(), base, cap)
     }
 
+    // IMF-fixdate only; others fall through to backoff
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Date#syntax
     val formatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
     formatter.timeZone = TimeZone.getTimeZone("GMT")
     val parsed = runCatching { formatter.parse(raw) }.getOrNull()
