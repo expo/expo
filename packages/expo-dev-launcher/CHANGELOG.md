@@ -37,6 +37,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Add a Settings toggle to switch between auto-launching the most recent app and showing the launcher. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Add build's expiration date to Settings. ([#47190](https://github.com/expo/expo/pull/47190) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 

@@ -676,7 +676,69 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
   }
 
+  NSString *appExpirationDate = [self getAppExpirationDate];
+  if (appExpirationDate) {
+    [buildInfo setObject:appExpirationDate forKey:@"appExpirationDate"];
+  }
+
   return buildInfo;
+}
+
+-(nullable NSString *)getAppExpirationDate
+{ 
+  // App Store and Simulator builds don't have mobileprovision
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"embedded" ofType:@"mobileprovision"];
+  if (!path) {
+    return nil;
+  }
+ 
+  NSError *error;
+  NSString *profileString = [NSString stringWithContentsOfFile:path encoding:NSASCIIStringEncoding error:&error];
+  if (!profileString) {
+    return nil;
+  }
+
+  NSScanner *scanner = [NSScanner scannerWithString:profileString];
+  if (![scanner scanUpToString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" intoString:nil]) {
+    return nil;
+  }
+
+  NSString *plistString;
+  if (![scanner scanUpToString:@"</plist>" intoString:&plistString]) {
+    return nil;
+  }
+  plistString = [plistString stringByAppendingString:@"</plist>"];
+
+  NSData *plistData = [plistString dataUsingEncoding:NSUTF8StringEncoding];
+  id plist = [NSPropertyListSerialization propertyListWithData:plistData
+                                                       options:NSPropertyListImmutable
+                                                        format:NULL
+                                                         error:NULL];
+  NSDate *expiration = [plist isKindOfClass:[NSDictionary class]] ? plist[@"ExpirationDate"] : nil;
+  if (![expiration isKindOfClass:[NSDate class]]) {
+    return nil;
+  }
+
+  NSDateFormatter *formatter = [NSDateFormatter new];
+  formatter.dateStyle = NSDateFormatterMediumStyle;
+  formatter.timeStyle = NSDateFormatterNoStyle;
+  NSString *formattedDate = [formatter stringFromDate:expiration];
+ 
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *today = [calendar startOfDayForDate:[NSDate date]];
+  NSDate *expirationDay = [calendar startOfDayForDate:expiration];
+  NSInteger days = [calendar components:NSCalendarUnitDay fromDate:today toDate:expirationDay options:0].day;
+
+  NSString *relative; 
+  if (days == 0) {
+    relative = @"today";
+  } else if (days == 1) {
+    relative = @"1 day";
+  } else {
+    relative = [NSString stringWithFormat:@"%ld days", (long)days];
+  }
+
+  return relative;
 }
 
 -(NSString *)getAppIcon

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Expose the embedded provisioning profile's `expirationDate`. ([#47190](https://github.com/expo/expo/pull/47190) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

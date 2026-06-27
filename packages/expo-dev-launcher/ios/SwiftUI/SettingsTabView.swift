@@ -17,7 +17,8 @@ struct SettingsTabView: View {
       "runtimeVersion": viewModel.buildInfo["runtimeVersion"] as? String ?? "",
       "sdkVersion": viewModel.structuredBuildInfo.sdkVersion ?? "",
       "appName": viewModel.buildInfo["appName"] as? String ?? "",
-      "appVersion": viewModel.buildInfo["appVersion"] as? String ?? ""
+      "appVersion": viewModel.buildInfo["appVersion"] as? String ?? "",
+      "appExpirationDate": viewModel.buildInfo["appExpirationDate"] as? String ?? ""
     ]
 
     do {
@@ -51,6 +52,10 @@ struct SettingsTabView: View {
 
           VStack(spacing: 0) {
             version
+            if let expiration = viewModel.buildInfo["appExpirationDate"] as? String {
+              Divider()
+              expirationRow(expiration)
+            }
             Divider()
             copyToClipboardButton
           }
@@ -164,6 +169,17 @@ struct SettingsTabView: View {
       Text("Version")
       Spacer()
       Text(viewModel.buildInfo["appVersion"] as? String ?? "")
+        .foregroundColor(.secondary)
+    }
+    .padding(.horizontal)
+    .padding(.vertical, 12)
+  }
+
+  private func expirationRow(_ text: String) -> some View {
+    HStack {
+      Text("Expires in")
+      Spacer()
+      Text(text)
         .foregroundColor(.secondary)
     }
     .padding(.horizontal)
