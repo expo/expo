@@ -34,7 +34,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
   "dependencies": {
     "expo-application": "workspace:~57.0.0",
-    "expo-constants": "workspace:~57.0.0",
+    "expo-constants": "workspace:~57.0.1",
     "expo-crypto": "workspace:~57.0.0",
     "expo-linking": "workspace:~57.0.0",
     "expo-web-browser": "workspace:~57.0.0",

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Added the SwiftUI `redacted`, `unredacted`, `privacySensitive`, and `invalidatableContent` modifiers, mapping SwiftUI's redaction family for native skeleton-loading and sensitive-content states. ([#47269](https://github.com/expo/expo/pull/47269) by [@ramonclaudio](https://github.com/ramonclaudio))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.1 — 2026-06-27
+
+### 🎉 New features
+
+- [iOS] Added the SwiftUI `redacted`, `unredacted`, `privacySensitive`, and `invalidatableContent` modifiers, mapping SwiftUI's redaction family for native skeleton-loading and sensitive-content states. ([#47269](https://github.com/expo/expo/pull/47269) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ## 57.0.0 — 2026-06-25
 
