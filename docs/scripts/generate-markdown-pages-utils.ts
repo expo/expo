@@ -307,16 +307,16 @@ export function convertMdxInstructionToMarkdown(
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Keep every tab panel, each prefixed with its label as an h4 (ENG-21907).
   // Must run before the button removal below, since labels live in the buttons.
-  main.find('[data-reach-tabs]').each((_, tabsEl) => {
+  main.find('[data-md="tabs"]').each((_, tabsEl) => {
     const $tabs = $(tabsEl);
     const ownLabels = $tabs
-      .find('[data-reach-tab]')
-      .filter((_, btn) => $(btn).closest('[data-reach-tabs]').is($tabs))
+      .children('[role="tablist"]')
+      .find('[role="tab"]')
       .map((_, btn) => $(btn).text().replace(/\s+/g, ' ').trim())
       .get();
     $tabs
-      .find('[data-reach-tab-panel]')
-      .filter((_, panel) => $(panel).closest('[data-reach-tabs]').is($tabs))
+      .find('[role="tabpanel"]')
+      .filter((_, panel) => $(panel).closest('[data-md="tabs"]').is($tabs))
       .each((i, panel) => {
         const label = ownLabels[i];
         if (label) {

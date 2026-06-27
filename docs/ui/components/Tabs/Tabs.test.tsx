@@ -21,7 +21,7 @@ describe('Tabs server rendering', () => {
       </Tabs>
     );
 
-    const panels = [...doc.querySelectorAll('[data-reach-tab-panel]')];
+    const panels = [...doc.querySelectorAll('[role="tabpanel"]')];
     expect(panels).toHaveLength(3);
 
     const byText = (text: string) => panels.find(p => p.textContent?.includes(text));
@@ -48,7 +48,7 @@ describe('Tabs server rendering', () => {
         <Tab label="Two">PanelTwo</Tab>
       </Tabs>
     );
-    const ids = [...doc.querySelectorAll('[data-reach-tab-panel]')].map(p => p.id);
+    const ids = [...doc.querySelectorAll('[role="tabpanel"]')].map(p => p.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 });
