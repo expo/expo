@@ -66,7 +66,11 @@ object DispatchUtils {
       // still landed server-side but a subset was rejected; surface that as `PartialSuccess`
       // so the caller can log the count and message clearly. Pending-ID removal and gate
       // behavior for `PartialSuccess` match `Success`.
-      val partial = responseBody?.let { parsePartialSuccess(it) }
+      val partial = responseBody?.takeIf { it.isNotBlank() }?.let { body ->
+        runCatching {
+          responseJson.decodeFromString(OTServiceResponse.serializer(), body).partialSuccess
+        }.getOrNull()
+      }
       if (partial != null && partial.rejectedCount > 0) {
         return DispatchResult.PartialSuccess(partial)
       }
@@ -154,13 +158,6 @@ object DispatchUtils {
   }
 
   private val responseJson = Json { ignoreUnknownKeys = true }
-
-  private fun parsePartialSuccess(body: String): OTPartialSuccess? {
-    if (body.isBlank()) return null
-    return runCatching {
-      responseJson.decodeFromString(OTServiceResponse.serializer(), body).partialSuccess
-    }.getOrNull()
-  }
 
   // MARK: -- Retry gate + exponential backoff
 
