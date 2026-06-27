@@ -8,6 +8,8 @@ import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class ObservabilityManager(
   // TODO(@lukmccall): Consider saving context as weak reference to avoid potential memory leaks
@@ -104,6 +106,20 @@ class BaseObservabilityManager(
   private var logsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
 
   /**
+   * Per-signal mutexes that serialize same-signal dispatch calls. Two `dispatchEvents`
+   * invocations from JS can otherwise land on the same `BaseObservabilityManager` instance
+   * concurrently and race on the gate's read-modify-write (and double-POST the same pending
+   * rows). The metrics and logs paths take separate mutexes so they can still run in
+   * parallel — only same-signal calls serialize.
+   *
+   * Worst case without these would be benign (a dropped gate update or a duplicate dispatch),
+   * since the pending-ID stores are already DB-backed and telemetry is best-effort — but the
+   * gate is in-memory state with no other synchronization, so close the race explicitly.
+   */
+  private val metricsDispatchMutex = Mutex()
+  private val logsDispatchMutex = Mutex()
+
+  /**
    * Returns true and logs when an active retry gate suppresses this dispatch round. Called
    * inside each per-signal dispatch method rather than at a shared entry point, so a backoff
    * on one endpoint doesn't suppress traffic on the other.
@@ -132,7 +148,7 @@ class BaseObservabilityManager(
     backoff = { DispatchUtils.computeBackoffDelay(it) }
   )
 
-  suspend fun dispatchUnsentMetrics() {
+  suspend fun dispatchUnsentMetrics(): Unit = metricsDispatchMutex.withLock {
     val pendingIds = pendingMetricsManager.getAllPendingMetricIds()
     if (pendingIds.isEmpty()) {
       return
@@ -194,7 +210,7 @@ class BaseObservabilityManager(
    * Dispatches log events to `/v1/logs`. Independent from the metrics path —
    * a logs failure doesn't affect the metrics pending table and vice versa.
    */
-  suspend fun dispatchUnsentLogs() {
+  suspend fun dispatchUnsentLogs(): Unit = logsDispatchMutex.withLock {
     val pendingIds = pendingLogsManager.getAllPendingLogIds()
     if (pendingIds.isEmpty()) {
       return
