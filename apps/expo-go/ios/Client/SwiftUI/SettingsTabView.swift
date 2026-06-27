@@ -3,6 +3,7 @@
 import SwiftUI
 import AuthenticationServices
 import AppTrackingTransparency
+import EXApplication
 
 struct SettingsTabView: View {
   @Binding var selectedTab: HomeTab
@@ -126,6 +127,10 @@ struct SettingsTabView: View {
             AppInfoRow(label: "Client Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")
             Divider()
             AppInfoRow(label: "Supported SDK", value: getExpoSDKVersion())
+            if let expiration = appExpirationValue() {
+              Divider()
+              AppInfoRow(label: "Expires in", value: expiration)
+            }
           }
           .background(Color.expoSecondarySystemBackground)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
@@ -204,6 +209,24 @@ struct SettingsTabView: View {
 
   private func getExpoSDKVersion() -> String {
     return getSupportedSDKVersion()
+  }
+
+  private func appExpirationValue() -> String? {
+    guard let expiration = EXProvisioningProfile.main().expirationDate() else {
+      return nil
+    }
+
+    let calendar = Calendar.current
+    let today = calendar.startOfDay(for: Date())
+    let expirationDay = calendar.startOfDay(for: expiration)
+    let days = calendar.dateComponents([.day], from: today, to: expirationDay).day ?? 0
+
+    if days == 0 {
+      return "today"
+    } else if days == 1 {
+      return "1 day"
+    }
+    return "\(days) days"
   }
 
   private func copyBuildInfoToClipboard() {
