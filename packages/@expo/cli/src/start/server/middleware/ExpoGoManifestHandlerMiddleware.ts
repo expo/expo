@@ -41,6 +41,14 @@ interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
   expectSignature: string | null;
 }
 
+function shouldUseRelativeManifestUrls(req: ServerRequest): boolean {
+  return !!(
+    req.headers['forwarded'] ||
+    req.headers['x-forwarded-host'] ||
+    req.headers['x-forwarded-proto']
+  );
+}
+
 export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoManifestRequestInfo> {
   public getParsedHeaders(req: ServerRequest): ExpoGoManifestRequestInfo {
     let platform = parsePlatformHeader(req);
@@ -91,6 +99,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       expectSignature: expectSignature ? String(expectSignature) : null,
       hostname: stripPort(req.headers['host']),
       protocol: req.headers['x-forwarded-proto'] as 'http' | 'https' | undefined,
+      ...(shouldUseRelativeManifestUrls(req) ? { shouldUseRelativeManifestUrls: true } : null),
     };
   }
 

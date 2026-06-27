@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Resolve relative asset URLs from `updateUrl` base URL ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 - [Android] Widen `UpdatesLogEntry.create`'s catch from `JSONException` to `Exception` so log-line parse failures consistently degrade to "skip the entry" instead of propagating. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))

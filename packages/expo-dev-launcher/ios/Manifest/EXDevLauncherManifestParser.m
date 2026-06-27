@@ -81,7 +81,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
       }
     }
     NSError *error;
-    NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    NSMutableDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
     if (!jsonObject) {
       NSMutableDictionary *details = [NSMutableDictionary dictionary];
       details[NSLocalizedDescriptionKey] = [NSString stringWithFormat:@"Couldn't parse the manifest. %@", (error ? error.localizedDescription : @"")];
@@ -91,6 +91,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
       onError([[NSError alloc] initWithDomain:@"DevelopmentClient" code:1 userInfo:details]);
       return;
     }
+    [self _resolveManifestUrls:jsonObject];
     EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:jsonObject];
     onParsed(manifest);
   }];
@@ -103,6 +104,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
   [request setHTTPMethod:method];
   [request setValue:@"ios" forHTTPHeaderField:@"expo-platform"];
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"accept"];
+  [self _setForwardedHeadersOnRequest:request];
   [request setTimeoutInterval:self.requestTimeout];
   if (self.installationID) {
     [request setValue:self.installationID forHTTPHeaderField:@"Expo-Dev-Client-ID"];
@@ -115,6 +117,45 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
     }
   }];
   [dataTask resume];
+}
+
+- (void)_setForwardedHeadersOnRequest:(NSMutableURLRequest *)request
+{
+  NSURLComponents *components = [NSURLComponents componentsWithURL:self.url resolvingAgainstBaseURL:NO];
+  if (!components.host || !components.scheme) {
+    return;
+  }
+
+  NSString *authority = components.port ? [NSString stringWithFormat:@"%@:%@", components.host, components.port] : components.host;
+  [request setValue:[NSString stringWithFormat:@"host=\"%@\";proto=%@", authority, components.scheme] forHTTPHeaderField:@"Forwarded"];
+  [request setValue:authority forHTTPHeaderField:@"X-Forwarded-Host"];
+  [request setValue:components.scheme forHTTPHeaderField:@"X-Forwarded-Proto"];
+}
+
+- (void)_resolveManifestUrls:(NSMutableDictionary *)manifestJson
+{
+  NSString *bundleUrl = manifestJson[@"bundleUrl"];
+  if (bundleUrl) {
+    manifestJson[@"bundleUrl"] = [self _resolveUrlString:bundleUrl];
+  }
+
+  NSMutableDictionary *launchAsset = manifestJson[@"launchAsset"];
+  if (launchAsset[@"url"]) {
+    launchAsset[@"url"] = [self _resolveUrlString:launchAsset[@"url"]];
+  }
+
+  NSArray *assets = manifestJson[@"assets"];
+  for (NSMutableDictionary *asset in assets) {
+    if (asset[@"url"]) {
+      asset[@"url"] = [self _resolveUrlString:asset[@"url"]];
+    }
+  }
+}
+
+- (NSString *)_resolveUrlString:(NSString *)urlString
+{
+  NSURL *resolvedUrl = [NSURL URLWithString:urlString relativeToURL:self.url];
+  return resolvedUrl.absoluteURL.absoluteString ?: urlString;
 }
 
 @end
