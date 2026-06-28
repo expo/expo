@@ -89,7 +89,7 @@
   "devDependencies": {
     "@types/react": "~19.2.0",
     "compression": "^1.8.0",
-    "esbuild": "^0.25.8",
+    "esbuild": "^0.28.1",
     "express": "^5.1.0",
     "getenv": "^2.0.0",
     "morgan": "^1.10.0",
