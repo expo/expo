@@ -65,7 +65,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
+    "@babel/core": "^7.29.6",
     "@types/diff": "^5.0.2",
     "@types/folder-hash": "^4.0.4",
     "@types/fs-extra": "^11.0.4",

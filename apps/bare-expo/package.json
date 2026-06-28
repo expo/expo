@@ -96,7 +96,7 @@
     "test-suite": "workspace:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "^7.29.6",
     "@expo/cli": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/react": "~19.2.0",

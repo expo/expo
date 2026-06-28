@@ -153,7 +153,7 @@
     "victory-native": "^37.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.7",
+    "@babel/core": "^7.29.6",
     "@types/fbemitter": "^2.0.32",
     "@types/i18n-js": "^3.0.1",
     "@types/pixi.js": "^4.8.6",

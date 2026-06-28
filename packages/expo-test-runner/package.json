@@ -37,7 +37,7 @@
     "unique-string": "~2.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.7",
+    "@babel/core": "^7.29.6",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   }

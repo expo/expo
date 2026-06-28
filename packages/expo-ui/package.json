@@ -151,7 +151,7 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
+    "@babel/core": "^7.29.6",
     "@testing-library/react-native": "^13.3.0",
     "@types/babel__core": "^7.20.5",
     "@types/jest": "^29.2.1",

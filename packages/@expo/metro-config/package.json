@@ -72,7 +72,7 @@
   },
   "dependencies": {
     "@babel/code-frame": "^7.20.0",
-    "@babel/core": "^7.20.0",
+    "@babel/core": "^7.29.6",
     "@babel/generator": "^7.20.5",
     "@expo/config": "workspace:~56.0.9",
     "@expo/env": "workspace:~2.3.0",

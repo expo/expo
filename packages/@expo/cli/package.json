@@ -113,7 +113,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "^7.29.6",
     "@expo/fingerprint": "workspace:*",
     "@expo/mcp-tunnel": "~0.2.3",
     "@expo/ngrok": "^4.1.3",
