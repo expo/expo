@@ -48,15 +48,75 @@ struct SharedObjectRegistryTests {
   }
 
   @Test
-  func `native state holds the paired weak JS object after add`() throws {
+  func `native state holds the paired JS object per runtime after add`() throws {
+    let runtime = try runtime
     let nativeObject = TestSharedObject()
     let jsObject = try runtime.createObject()
     registry.add(native: nativeObject, javaScript: jsObject)
 
-    // The native side carries a back-pointer to its native state, which holds a
-    // `JavaScriptWeakObject` to the JS counterpart. `lock()` should resolve.
-    let resolved = nativeObject.nativeState?.pairedWeakObject?.lock() != nil
+    // The native side carries a back-pointer to its native state, which maps the runtime to its
+    // paired JS counterpart. Recovering it for this runtime should resolve.
+    let resolved = nativeObject.nativeState?.javaScriptObject(in: runtime) != nil
     #expect(resolved)
+  }
+
+  @Test
+  func `javaScriptObject(in:) is repeatable, not consumed on first read`() throws {
+    let runtime = try runtime
+    let nativeObject = TestSharedObject()
+    let jsObject = runtime.createObject()
+    registry.add(native: nativeObject, javaScript: jsObject)
+    let nativeState = try #require(nativeObject.nativeState)
+
+    // Reading the pairing must not consume it: two consecutive lookups for the same runtime should
+    // both resolve to the originally paired JS object.
+    #expect(nativeState.javaScriptObject(in: runtime)?.asValue() == jsObject.asValue())
+    #expect(nativeState.javaScriptObject(in: runtime)?.asValue() == jsObject.asValue())
+  }
+
+  @Test
+  func `native object is paired independently per runtime`() throws {
+    let primaryRuntime = try runtime
+    let secondaryRuntime = JavaScriptRuntime()
+
+    let nativeObject = TestSharedObject()
+    let primaryObject = primaryRuntime.createObject()
+    registry.add(native: nativeObject, javaScript: primaryObject)
+
+    // Pair the same native object with a second runtime's JS object, reusing the existing native state.
+    let nativeState = try #require(nativeObject.nativeState)
+    let secondaryObject = secondaryRuntime.createObject()
+    secondaryObject.setNativeState(nativeState)
+    nativeState.setJavaScriptObject(secondaryObject, in: secondaryRuntime)
+
+    // Each runtime resolves to its own JS counterpart. Compare within a runtime only (cross-runtime
+    // strict-equality is meaningless).
+    #expect(nativeState.javaScriptObject(in: primaryRuntime)?.asValue() == primaryObject.asValue())
+    #expect(nativeState.javaScriptObject(in: secondaryRuntime)?.asValue() == secondaryObject.asValue())
+  }
+
+  @Test
+  func `the same native state is shared across runtimes, not duplicated`() throws {
+    let primaryRuntime = try runtime
+    let secondaryRuntime = JavaScriptRuntime()
+
+    let nativeObject = TestSharedObject()
+    let primaryObject = primaryRuntime.createObject()
+    registry.add(native: nativeObject, javaScript: primaryObject)
+
+    // Attach the existing native state to a second runtime's JS object, reusing the shared C++ pointee.
+    let nativeState = try #require(nativeObject.nativeState)
+    let secondaryObject = secondaryRuntime.createObject()
+    secondaryObject.setNativeState(nativeState)
+    nativeState.setJavaScriptObject(secondaryObject, in: secondaryRuntime)
+
+    // Both runtimes' JS objects recover the very same `SharedObjectNativeState` instance — the state is
+    // shared, not duplicated per runtime.
+    let recoveredFromPrimary = primaryObject.getNativeState(as: SharedObjectNativeState.self)
+    let recoveredFromSecondary = secondaryObject.getNativeState(as: SharedObjectNativeState.self)
+    #expect(recoveredFromPrimary === nativeState)
+    #expect(recoveredFromSecondary === nativeState)
+    #expect(recoveredFromPrimary === recoveredFromSecondary)
   }
 
   @Test
@@ -72,6 +132,26 @@ struct SharedObjectRegistryTests {
 
     #expect(registry.get(id) == nil)
     #expect(nativeObject.sharedObjectId == 0)
+  }
+
+  @Test
+  func `re-adding a still-paired native object reuses its id and single registry entry`() throws {
+    let primaryRuntime = try runtime
+    let secondaryRuntime = JavaScriptRuntime()
+
+    let nativeObject = TestSharedObject()
+    let firstId = registry.add(native: nativeObject, javaScript: primaryRuntime.createObject())
+
+    // Pair the same, still-alive native object again (e.g. from a second runtime). Because it already
+    // carries a native state, `add` must reuse that state's id rather than mint a new one — otherwise
+    // the C++ `NativeState.objectId` (which drives the releaser/`delete`) would disagree with
+    // `sharedObjectId`, leaking the first registry entry.
+    let secondId = registry.add(native: nativeObject, javaScript: secondaryRuntime.createObject())
+
+    #expect(secondId == firstId)
+    #expect(nativeObject.sharedObjectId == firstId)
+    #expect(registry.size == 1)
+    #expect(registry.get(firstId)?.native === nativeObject)
   }
 
   @Test
