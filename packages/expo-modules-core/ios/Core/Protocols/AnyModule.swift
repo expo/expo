@@ -34,7 +34,7 @@ public protocol AnyModule: AnyObject, AnyArgument {
   /// host functions are installed alongside the DSL-described surface. Framework-internal
   /// (leading underscore). Modules that don't use the macro fall back to the default no-op.
   @JavaScriptActor
-  func _decorateModule(object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime, appContext: AppContext) throws
+  func _decorateModule(object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws
 }
 
 public extension AnyModule {
@@ -53,7 +53,7 @@ public extension AnyModule {
   }
 
   @JavaScriptActor
-  func _decorateModule(object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime, appContext: AppContext) throws {
+  func _decorateModule(object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
     // No-op by default — only `@ExpoModule`-macro modules synthesize a real implementation.
   }
 }
