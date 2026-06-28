@@ -6,7 +6,7 @@ protocol LockScreenPlayable: AnyObject {
   var id: String { get }
   var isActiveForLockScreen: Bool { get set }
   var metadata: Metadata? { get set }
-  var lockScreenPlayer: AVPlayer { get }
+  var lockScreenPlayer: AVPlayer? { get }
   var duration: Double { get }
   var currentTime: Double { get }
   var isPlaying: Bool { get }
@@ -19,6 +19,7 @@ protocol LockScreenPlayable: AnyObject {
   func pause()
   func nextTrack()
   func previousTrack()
+  func seek(to time: Double, toleranceBefore: Double?, toleranceAfter: Double?) async
 }
 
 extension LockScreenPlayable {
@@ -98,7 +99,7 @@ class MediaController {
       return
     }
 
-    let nextArtworkItemIdentifier = playable.lockScreenPlayer.currentItem.map { ObjectIdentifier($0) }
+    let nextArtworkItemIdentifier = playable.lockScreenPlayer?.currentItem.map { ObjectIdentifier($0) } ?? ObjectIdentifier(playable)
     if currentArtworkItemIdentifier != nextArtworkItemIdentifier {
       resetArtworkState()
       currentArtworkItemIdentifier = nextArtworkItemIdentifier
@@ -129,7 +130,7 @@ class MediaController {
       info[MPMediaItemPropertyPlaybackDuration] = playable.duration
       info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = playable.currentTime
     }
-    info[MPNowPlayingInfoPropertyPlaybackRate] = playable.isPlaying ? playable.lockScreenPlayer.rate : 0.0
+    info[MPNowPlayingInfoPropertyPlaybackRate] = playable.isPlaying ? playable.currentRate : 0.0
     info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.audio.rawValue
   }
 
@@ -148,7 +149,7 @@ class MediaController {
   }
 
   private func applyAssetMetadata(_ info: inout [String: Any], for playable: any LockScreenPlayable) {
-    guard let currentItem = playable.lockScreenPlayer.currentItem,
+    guard let currentItem = playable.lockScreenPlayer?.currentItem,
       let asset = currentItem.asset as? AVURLAsset else {
       return
     }
@@ -322,8 +323,10 @@ class MediaController {
         return .commandFailed
       }
 
-      let seekTime = CMTime(seconds: event.positionTime, preferredTimescale: 1)
-      playable.lockScreenPlayer.seek(to: seekTime)
+      let seekTime = event.positionTime
+      Task {
+        await playable.seek(to: seekTime, toleranceBefore: nil, toleranceAfter: nil)
+      }
 
       return .success
     }
@@ -336,9 +339,11 @@ class MediaController {
         return .commandFailed
       }
 
-      let currentTime = playable.lockScreenPlayer.currentTime()
-      let seekTime = currentTime + CMTime(seconds: event.interval, preferredTimescale: 1)
-      playable.lockScreenPlayer.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
+      let currentTime = playable.currentTime
+      let seekTime = currentTime + event.interval
+      Task {
+        await playable.seek(to: seekTime, toleranceBefore: 0.0, toleranceAfter: 0.0)
+      }
 
       return .success
     }
@@ -351,9 +356,11 @@ class MediaController {
         return .commandFailed
       }
 
-      let currentTime = playable.lockScreenPlayer.currentTime()
-      let seekTime = currentTime - CMTime(seconds: event.interval, preferredTimescale: 1)
-      playable.lockScreenPlayer.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
+      let currentTime = playable.currentTime
+      let seekTime = currentTime - event.interval
+      Task {
+        await playable.seek(to: seekTime, toleranceBefore: 0.0, toleranceAfter: 0.0)
+      }
 
       return .success
     }

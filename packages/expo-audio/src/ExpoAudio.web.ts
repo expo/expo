@@ -203,6 +203,20 @@ export function getPreloadedSources(): string[] {
   return AudioModule.getPreloadedSources();
 }
 
+/**
+ * Exposes mathematical utility helper to convert semitones to pitch ratio.
+ */
+export function semitonesToRatio(semitones: number): number {
+  return Math.pow(2, semitones / 12);
+}
+
+/**
+ * Exposes mathematical utility helper to convert pitch ratio to semitones.
+ */
+export function ratioToSemitones(ratio: number): number {
+  return 12 * Math.log2(ratio);
+}
+
 export { useAudioStream } from './AudioStream.web';
 
 export { AudioModule };

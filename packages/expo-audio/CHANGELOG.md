@@ -8,7 +8,9 @@
 
 - Added support for storing recordings in the app document directory on Android and iOS. ([#46189](https://github.com/expo/expo/pull/46189) by [@shubh73](https://github.com/shubh73))
 - Support lockscreen controls with playlists. ([#46020](https://github.com/expo/expo/pull/46020) by [@alanjhughes](https://github.com/alanjhughes))
-
+- [iOS] Added independent pitch shifting using `AVAudioUnitTimePitch`, decoupled from playback rate. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@nherring](https://github.com/nherring))
+- [Android] Added independent pitch shifting using `SonicAudioProcessor` via ExoPlayer's `DefaultAudioSink`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@nherring](https://github.com/nherring))
+- [Web] Added independent pitch shifting using a pure Web Audio API phase vocoder adapted from `jungle.js`. Includes CORS-safe fallback for cross-origin streams. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@nherring](https://github.com/nherring))
 ### 🐛 Bug fixes
 
 - [Android] Give the lock-screen `MediaSession` instances a unique ID so concurrent active players (and the basic session) no longer collide on the empty default. ([#47101](https://github.com/expo/expo/issues/47101) by [@tsushanth](https://github.com/tsushanth))

@@ -44,6 +44,22 @@ AudioModule.AudioPlayer.prototype.setPlaybackRate = function (
   }
 };
 
+// `pitch` is defined as a non-configurable property on the native prototype,
+// so we do not attempt to override it in Javascript here. Clamping is performed
+// on the native and web implementations instead.
+
+
+if (Platform.OS === 'android') {
+  Object.defineProperty(AudioModule.AudioPlayer.prototype, 'isPitchControlSupported', {
+    get() {
+      return true;
+    },
+    configurable: true,
+    enumerable: true,
+  });
+}
+
+
 // Audio recording prototypes should not be shimmed on tvOS, where they do not exist
 if (!Platform.isTV || Platform.OS !== 'ios') {
   const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
@@ -656,6 +672,20 @@ export async function clearAllPreloadedSources(): Promise<void> {
  */
 export async function getPreloadedSources(): Promise<string[]> {
   return AudioModule.getPreloadedSources();
+}
+
+/**
+ * Exposes mathematical utility helper to convert semitones to pitch ratio.
+ */
+export function semitonesToRatio(semitones: number): number {
+  return Math.pow(2, semitones / 12);
+}
+
+/**
+ * Exposes mathematical utility helper to convert pitch ratio to semitones.
+ */
+export function ratioToSemitones(ratio: number): number {
+  return 12 * Math.log2(ratio);
 }
 
 export { useAudioStream } from './AudioStream';

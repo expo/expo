@@ -53,7 +53,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     ref.currentItem?.duration.isIndefinite ?? false
   }
 
-  var lockScreenPlayer: AVPlayer {
+  var lockScreenPlayer: AVPlayer? {
     ref
   }
 
@@ -157,13 +157,30 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
   }
 
   func seekTo(seconds: Double) async {
-    let time = CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-      ref.seek(to: time) { [weak self] _ in
-        if let self {
-          self.updateStatus(with: ["currentTime": self.currentTime])
+    await seek(to: seconds, toleranceBefore: nil, toleranceAfter: nil)
+  }
+
+  func seek(to time: Double, toleranceBefore: Double?, toleranceAfter: Double?) async {
+    let cmTime = CMTime(seconds: time, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    if let before = toleranceBefore, let after = toleranceAfter {
+      let cmBefore = CMTime(seconds: before, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+      let cmAfter = CMTime(seconds: after, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+      await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+        ref.seek(to: cmTime, toleranceBefore: cmBefore, toleranceAfter: cmAfter) { [weak self] _ in
+          if let self {
+            self.updateStatus(with: ["currentTime": self.currentTime])
+          }
+          continuation.resume()
         }
-        continuation.resume()
+      }
+    } else {
+      await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+        ref.seek(to: cmTime) { [weak self] _ in
+          if let self {
+            self.updateStatus(with: ["currentTime": self.currentTime])
+          }
+          continuation.resume()
+        }
       }
     }
   }

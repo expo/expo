@@ -4,9 +4,11 @@ import {
   setAudioModeAsync,
   setIsAudioActiveAsync,
   createAudioPlayer,
+  requestRecordingPermissionsAsync,
   AudioMode,
   AudioPlayer,
   AudioStatus,
+  AudioSample,
   PitchCorrectionQuality,
 } from 'expo-audio';
 import { isMatch } from 'lodash';
@@ -14,7 +16,9 @@ import { Platform } from 'react-native';
 
 export const name = 'Audio';
 
-const mainTestingSource = require('../assets/LLizard.mp3');
+let mainTestingSource: any = require('../assets/LLizard.mp3');
+// Pure 440 Hz sine wave — single frequency makes ZCR-based pitch detection reliable.
+let sine440Source: any = require('../assets/sine440.wav');
 const soundUri = 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3';
 const hlsStreamUri =
   'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8';
@@ -72,6 +76,11 @@ export function test({ describe, expect, it, ...t }: any) {
 
     t.beforeAll(async () => {
       await setIsAudioActiveAsync(true);
+      const [mainAsset] = await Asset.loadAsync(mainTestingSource);
+      mainTestingSource = mainAsset;
+      
+      const [sineAsset] = await Asset.loadAsync(sine440Source);
+      sine440Source = sineAsset;
     });
 
     t.afterEach(async () => {
@@ -212,6 +221,51 @@ export function test({ describe, expect, it, ...t }: any) {
       });
     });
 
+    describe('Player.pitch', () => {
+      it('sets and gets the pitch', async () => {
+        player = createAudioPlayer(mainTestingSource);
+        await retryForStatus(player, { isLoaded: true });
+        player.pitch = 5.0;
+        expect(player.pitch).toBeCloseTo(5.0, 1);
+      });
+
+      it('supports pitch control for same-origin local assets', async () => {
+        player = createAudioPlayer(mainTestingSource);
+        expect(player.isPitchControlSupported).toBe(true);
+        player.pitch = 5.0;
+        expect(player.pitch).toBeCloseTo(5.0, 1);
+      });
+
+      it('does NOT support pitch control for cross-origin assets without CORS options on Web', async () => {
+        player = createAudioPlayer({ uri: 'https://example.com/audio.mp3' });
+        if (Platform.OS === 'web' || Platform.OS === 'ios') {
+          expect(player.isPitchControlSupported).toBe(false);
+          player.pitch = 5.0;
+          expect(player.pitch).toBe(0); // Gracefully clamped to 0
+        } else {
+          expect(player.isPitchControlSupported).toBe(true); // Android always supports it
+          player.pitch = 5.0;
+          expect(player.pitch).toBeCloseTo(5.0, 1);
+        }
+      });
+
+      it('supports pitch control for cross-origin assets with CORS options', async () => {
+        player = createAudioPlayer({ uri: 'https://example.com/audio.mp3', headers: { CORS: 'true' } });
+        // NOTE: On native, the `headers` prop just gets passed as HTTP headers; it doesn't change pitch support logic.
+        // However, on iOS, remote URLs still don't support pitch control.
+        if (Platform.OS === 'ios') {
+          expect(player.isPitchControlSupported).toBe(false);
+          player.pitch = 5.0;
+          expect(player.pitch).toBe(0);
+        } else {
+          expect(player.isPitchControlSupported).toBe(true);
+          player.pitch = 5.0;
+          expect(player.pitch).toBeCloseTo(5.0, 1);
+        }
+      });
+    });
+
+
     describe('Player.setPlaybackRate()', () => {
       let rate = 0;
       let pitchCorrectionQuality: PitchCorrectionQuality = 'low';
@@ -266,6 +320,209 @@ export function test({ describe, expect, it, ...t }: any) {
       }
     });
 
+    describe('Player.shouldCorrectPitch', () => {
+      t.beforeEach(async () => {
+        player = createAudioPlayer(mainTestingSource);
+        await retryForStatus(player, { isLoaded: true });
+      });
+
+      it('defaults to true', () => {
+        expect(player.shouldCorrectPitch).toBe(true);
+        expect(player.currentStatus.shouldCorrectPitch).toBe(true);
+      });
+
+      it('can be set to false', () => {
+        player.shouldCorrectPitch = false;
+        expect(player.shouldCorrectPitch).toBe(false);
+        expect(player.currentStatus.shouldCorrectPitch).toBe(false);
+      });
+
+      it('can be toggled back to true', () => {
+        player.shouldCorrectPitch = false;
+        expect(player.shouldCorrectPitch).toBe(false);
+        player.shouldCorrectPitch = true;
+        expect(player.shouldCorrectPitch).toBe(true);
+        expect(player.currentStatus.shouldCorrectPitch).toBe(true);
+      });
+
+      it('reflects correctly in currentStatus after setPlaybackRate with shouldCorrectPitch = true', () => {
+        player.shouldCorrectPitch = true;
+        player.setPlaybackRate(1.5);
+        expect(player.currentStatus.shouldCorrectPitch).toBe(true);
+        expect(player.currentStatus.playbackRate).toBeCloseTo(1.5, 2);
+      });
+
+      it('reflects correctly in currentStatus after setPlaybackRate with shouldCorrectPitch = false', () => {
+        player.shouldCorrectPitch = false;
+        player.setPlaybackRate(0.75);
+        expect(player.currentStatus.shouldCorrectPitch).toBe(false);
+        expect(player.currentStatus.playbackRate).toBeCloseTo(0.75, 2);
+      });
+
+      if (Platform.OS === 'ios') {
+        it('applies low pitchCorrectionQuality', () => {
+          player.shouldCorrectPitch = true;
+          player.setPlaybackRate(0.5, 'low');
+          expect(player.shouldCorrectPitch).toBe(true);
+          expect(player.currentStatus.playbackRate).toBeCloseTo(0.5, 2);
+        });
+
+        it('applies medium pitchCorrectionQuality', () => {
+          player.shouldCorrectPitch = true;
+          player.setPlaybackRate(1.0, 'medium');
+          expect(player.shouldCorrectPitch).toBe(true);
+          expect(player.currentStatus.playbackRate).toBeCloseTo(1.0, 2);
+        });
+
+        it('applies high pitchCorrectionQuality', () => {
+          player.shouldCorrectPitch = true;
+          player.setPlaybackRate(1.5, 'high');
+          expect(player.shouldCorrectPitch).toBe(true);
+          expect(player.currentStatus.playbackRate).toBeCloseTo(1.5, 2);
+        });
+      }
+    });
+
+    describe('Player.shouldCorrectPitch (audio signal)', () => {
+      /**
+       * Collects PCM frames from a player's audioSampleUpdate events.
+       * Returns when `targetFrames` frames have been accumulated or `timeoutMs` elapses.
+       */
+      function collectFrames(
+        p: AudioPlayer,
+        targetFrames: number,
+        timeoutMs = 5000
+      ): Promise<number[]> {
+        return new Promise((resolve, reject) => {
+          const frames: number[] = [];
+          const timer = setTimeout(() => {
+            sub.remove();
+            if (frames.length > 0) {
+              resolve(frames); // Return what we have — partial data is still usable
+            } else {
+              reject(new Error(`No audio samples received within ${timeoutMs}ms`));
+            }
+          }, timeoutMs);
+
+          const sub = p.addListener('audioSampleUpdate', (data: AudioSample) => {
+            const isSilent = data.channels.every(ch => ch.frames.every(f => f === 0));
+            if (isSilent && frames.length === 0) {
+              return; // Ignore initial silence
+            }
+            for (const ch of data.channels) {
+              frames.push(...ch.frames);
+            }
+            if (frames.length >= targetFrames) {
+              clearTimeout(timer);
+              sub.remove();
+              resolve(frames.slice(0, targetFrames));
+            }
+          });
+        });
+      }
+
+      /**
+       * Zero-crossing rate: fraction of adjacent-sample sign changes.
+       * For a sine wave at frequency f played at sample rate sr:
+       *   ZCR ≈ 2f / sr
+       * So ZCR is proportional to pitch — doubling the pitch doubles ZCR.
+       */
+      function zeroCrossingRate(frames: number[]): number {
+        let crossings = 0;
+        for (let i = 1; i < frames.length; i++) {
+          if ((frames[i] >= 0) !== (frames[i - 1] >= 0)) crossings++;
+        }
+        return crossings / frames.length;
+      }
+
+      // On Android the Visualizer requires RECORD_AUDIO permission.
+      t.beforeAll(async () => {
+        await requestRecordingPermissionsAsync();
+      });
+
+      t.afterEach(async () => {
+        if (player) {
+          player.setAudioSamplingEnabled(false);
+          try { player.release(); } catch (_) {}
+          player = null;
+        }
+      });
+
+      it('pitch is preserved (ZCR unchanged) at 2× speed with shouldCorrectPitch = true', async () => {
+        const FRAMES = 8192;
+
+        // 1× baseline
+        player = createAudioPlayer(sine440Source);
+        await retryForStatus(player, { isLoaded: true });
+        player.shouldCorrectPitch = true;
+        player.setPlaybackRate(1.0);
+        player.setAudioSamplingEnabled(true);
+        player.play();
+        const frames1x = await collectFrames(player, FRAMES);
+        const zcr1x = zeroCrossingRate(frames1x);
+        player.pause();
+        player.setAudioSamplingEnabled(false);
+        player.release();
+        player = null;
+
+        // 2× with pitch correction ON — pitch should stay the same as 1×
+        player = createAudioPlayer(sine440Source);
+        await retryForStatus(player, { isLoaded: true });
+        player.shouldCorrectPitch = true;
+        player.setPlaybackRate(2.0);
+        player.setAudioSamplingEnabled(true);
+        player.play();
+        
+        // Wait 250ms for the phase vocoder to settle before collecting frames
+        await new Promise(resolve => setTimeout(resolve, 250));
+        
+        const frames2xCorrected = await collectFrames(player, FRAMES);
+        const zcr2xCorrected = zeroCrossingRate(frames2xCorrected);
+
+        // Ratio should be ≈ 1.0 (pitch preserved). Allow ±50% for platform/DSP algorithm variance.
+        const ratio = zcr2xCorrected / zcr1x;
+        expect(ratio).toBeGreaterThan(0.5);
+        expect(ratio).toBeLessThan(1.5);
+      }, 20000);
+
+      it('pitch is shifted (ZCR doubled) at 2× speed with shouldCorrectPitch = false', async () => {
+        const FRAMES = 8192;
+
+        // 1× baseline
+        player = createAudioPlayer(sine440Source);
+        await retryForStatus(player, { isLoaded: true });
+        player.shouldCorrectPitch = true;
+        player.setPlaybackRate(1.0);
+        player.setAudioSamplingEnabled(true);
+        player.play();
+        const frames1x = await collectFrames(player, FRAMES);
+        const zcr1x = zeroCrossingRate(frames1x);
+        player.pause();
+        player.setAudioSamplingEnabled(false);
+        player.release();
+        player = null;
+
+        // 2× with pitch correction OFF — pitch should rise ~2× (chipmunk effect)
+        player = createAudioPlayer(sine440Source);
+        await retryForStatus(player, { isLoaded: true });
+        player.shouldCorrectPitch = false;
+        player.setPlaybackRate(2.0);
+        player.setAudioSamplingEnabled(true);
+        player.play();
+        
+        // Wait 250ms for the varispeed to settle
+        await new Promise(resolve => setTimeout(resolve, 250));
+
+        const frames2xShifted = await collectFrames(player, FRAMES);
+        const zcr2xShifted = zeroCrossingRate(frames2xShifted);
+
+        // Ratio should be ≈ 2.0 (pitch doubled). Allow ±50% for platform/DSP algorithm variance.
+        const ratio = zcr2xShifted / zcr1x;
+        expect(ratio).toBeGreaterThan(1.4);
+        expect(ratio).toBeLessThan(3.0);
+      }, 20000);
+    });
+
     describe('Player properties', () => {
       t.beforeEach(async () => {
         player = createAudioPlayer(mainTestingSource);
@@ -281,6 +538,7 @@ export function test({ describe, expect, it, ...t }: any) {
         expect(player.shouldCorrectPitch).toBe(true);
         expect(player.currentTime).toBe(0);
         expect(player.duration).toBeGreaterThan(0);
+        expect(player.pitch).toBe(0);
       });
 
       it('has valid currentStatus object', async () => {
@@ -329,6 +587,17 @@ export function test({ describe, expect, it, ...t }: any) {
 
       player.setPlaybackRate(5.0);
       expect(player.playbackRate).toBeLessThanOrEqual(2.0);
+    });
+
+    it('handles pitch bounds correctly (clamps within [-24.0, 24.0])', async () => {
+      player = createAudioPlayer(mainTestingSource);
+      await retryForStatus(player, { isLoaded: true });
+
+      player.pitch = 30.0;
+      expect(player.pitch).toBeCloseTo(24.0, 1);
+
+      player.pitch = -35.0;
+      expect(player.pitch).toBeCloseTo(-24.0, 1);
     });
 
     it('handles seeking correctly', async () => {

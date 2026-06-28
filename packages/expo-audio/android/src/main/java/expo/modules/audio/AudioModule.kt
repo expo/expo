@@ -457,8 +457,21 @@ class AudioModule : Module() {
       Property("shouldCorrectPitch") { player ->
         player.preservesPitch
       }.set { player, preservesPitch: Boolean ->
-        player.preservesPitch = preservesPitch
+        runOnMain {
+          player.preservesPitch = preservesPitch
+        }
       }
+
+      Property("pitch") { player ->
+        runOnMain {
+          player.pitch
+        }
+      }.set { player, pitch: Float ->
+        runOnMain {
+          player.pitch = pitch
+        }
+      }
+
 
       Property("currentTime") { player ->
         runOnMain {

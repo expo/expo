@@ -24,6 +24,7 @@ export default function AudioPlayer({
   const [currentSource, setCurrentSource] = React.useState(source);
   const player = useAudioPlayer(source, { downloadFirst, crossOrigin });
   const status = useAudioPlayerStatus(player);
+  const [pitch, setPitchState] = React.useState(0);
 
   const setVolume = (volume: number) => {
     player.volume = volume;
@@ -42,10 +43,16 @@ export default function AudioPlayer({
     player.setPlaybackRate(rate);
   };
 
+  const setPitch = (value: number) => {
+    player.pitch = value;
+    setPitchState(value);
+  };
+
   const replaceSource = () => {
     const source = currentSource === localSource ? remoteSource : localSource;
     player.replace(source);
     setCurrentSource(source);
+    setPitchState(0);
   };
 
   return (
@@ -53,6 +60,7 @@ export default function AudioPlayer({
       {...status}
       audioPan={0}
       volume={player.volume}
+      pitch={pitch}
       style={style}
       play={() => {
         // expo-audio does not support looping
@@ -75,6 +83,7 @@ export default function AudioPlayer({
       setRate={setRate}
       setIsMuted={setIsMuted}
       setVolume={setVolume}
+      setPitch={player.isPitchControlSupported ? setPitch : undefined}
       extraIndicator={<JsiAudioBar isPlaying={status.playing} player={player} />}
     />
   );
