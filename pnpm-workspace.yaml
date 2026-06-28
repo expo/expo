@@ -61,3 +61,6 @@ minimumReleaseAgeExclude:
   - 'expo-modules-jsi'
   - 'babel-preset-expo'
   - 'jest-expo'
+
+allowBuilds:
+  '@shopify/react-native-skia': true

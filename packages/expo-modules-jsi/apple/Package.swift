@@ -17,10 +17,20 @@ let podsRoot = resolvePodsRoot()
 // `REACT_NATIVE_PATH` is exported by Xcode for hosts that build RN from a
 // non-npm location, e.g. Expo Go.
 let publicHeaders = "\(podsRoot)/Headers/Public"
-let reactNative =
-  ProcessInfo.processInfo.environment["RN_ROOT"]
-  ?? ProcessInfo.processInfo.environment["REACT_NATIVE_PATH"]
-  ?? "\(podsRoot)/../../node_modules/react-native"
+let reactNative: String = {
+  if let envPath = ProcessInfo.processInfo.environment["RN_ROOT"] ?? ProcessInfo.processInfo.environment["REACT_NATIVE_PATH"] {
+    return envPath
+  }
+  let repoRoot = ProcessInfo.processInfo.environment["EXPO_ROOT_DIR"] ?? URL(fileURLWithPath: packageDir)
+    .deletingLastPathComponent() // expo-modules-jsi
+    .deletingLastPathComponent() // packages
+    .deletingLastPathComponent() // repo root
+    .path
+  if FileManager.default.fileExists(atPath: "\(repoRoot)/node_modules/react-native") {
+    return "\(repoRoot)/node_modules/react-native"
+  }
+  return "\(podsRoot)/../../node_modules/react-native"
+}()
 let headerSearchPaths = [
   publicHeaders,
   "\(publicHeaders)/React-jsi",
