@@ -179,6 +179,39 @@ struct JavaScriptErrorTests {
     #expect(caught.getObject().getProperty("message").getString() == "native failure")
   }
 
+  // MARK: - JavaScriptError.from(_:in:) helper
+
+  @Test
+  func `from returns an existing JavaScriptError unchanged`() {
+    // An existing `JavaScriptError` must be returned as the very same instance so its wrapped
+    // value (which may be an arbitrary JS value) reaches JS unchanged.
+    let original = JavaScriptError(runtime, value: JavaScriptValue(runtime, "just a string"))
+    let result = JavaScriptError.from(original, in: runtime)
+
+    #expect(result === original)
+    #expect(result.toValue().getString() == "just a string")
+  }
+
+  @Test
+  func `from routes a JavaScriptThrowable through the code-preserving initializer`() {
+    let throwable = CodedError(message: "Not found", code: "ERR_NOT_FOUND")
+    let object = JavaScriptError.from(throwable, in: runtime).toValue().getObject()
+
+    #expect(object.getProperty("message").getString() == "Not found")
+    #expect(object.getProperty("code").getString() == "ERR_NOT_FOUND")
+  }
+
+  @Test
+  func `from stringifies any other native error into a generic Error`() {
+    struct TestError: Error, CustomStringConvertible {
+      var description: String { "native failure" }
+    }
+    let object = JavaScriptError.from(TestError(), in: runtime).toValue().getObject()
+
+    #expect(object.getProperty("message").getString() == "native failure")
+    #expect(object.getProperty("code").isUndefined() == true)
+  }
+
   @Test
   func `nested host function errors are independent`() throws {
     let outer = runtime.createFunction("outer") { [self] _, _ in

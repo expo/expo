@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed a use-after-free when a `JavaScriptPromise` outlives its runtime (e.g. an async function's promise held by a completion handler that fires after `reloadAsync()`) by having the runtime's `LongLivedObjectCollection` own its JSI values and release them on the JavaScript thread when the wrapper is dropped or at teardown, instead of against a freed runtime. ([#47521](https://github.com/expo/expo/pull/47521) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Preserve the `code` on the JavaScript error when an async function rejects with a `JavaScriptThrowable` (e.g. an `Exception`), instead of stringifying it and dropping the `code`, mirroring the synchronous throw path. ([#47259](https://github.com/expo/expo/pull/47259) by [@wwdrew](https://github.com/wwdrew))
 
 ### 💡 Others
 
