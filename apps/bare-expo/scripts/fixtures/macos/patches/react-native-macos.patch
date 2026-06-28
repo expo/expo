@@ -1,8 +1,8 @@
 diff --git a/react-native.config.js b/react-native.config.js
-index a34cefa6cf076b7ddca4a6dd9e0f6be8f4b9891a..b38a2837e35555d3834fb35578c45886d455329c 100644
+index 3bdd6b5e8ff20b097865b83c4310345d3be4a5ef..fc2992a360adb1c4b7bc2bd2703e1f2682125c86 100644
 --- a/react-native.config.js
 +++ b/react-native.config.js
-@@ -83,7 +83,19 @@ try {
+@@ -87,7 +87,19 @@ try {
  }
  
  // $FlowFixMe[untyped-import]
@@ -23,7 +23,7 @@ index a34cefa6cf076b7ddca4a6dd9e0f6be8f4b9891a..b38a2837e35555d3834fb35578c45886
  const {
    bundleCommand,
    startCommand,
-@@ -156,7 +168,9 @@ if (android != null) {
+@@ -160,7 +172,9 @@ if (android != null) {
  }
  
  // [macOS
@@ -57,37 +57,3 @@ index d8e9c7cec2f57c124cc2b2fc52b69de8940d3eb5..3eede671066cb814ca43567815e166ac
  
      name = package["name"]
      podspec_path = package_config["podspecPath"]
-diff --git a/third-party-podspecs/fmt.podspec b/third-party-podspecs/fmt.podspec
-index 2f38990e226c13f483aaf1b986302d4094243814..a40c5755e049974e98a4038c177661d2bdc5681f 100644
---- a/third-party-podspecs/fmt.podspec
-+++ b/third-party-podspecs/fmt.podspec
-@@ -8,14 +8,14 @@ fmt_git_url = fmt_config[:git]
- 
- Pod::Spec.new do |spec|
-   spec.name = "fmt"
--  spec.version = "11.0.2"
-+  spec.version = "12.1.0"
-   spec.license = { :type => "MIT" }
-   spec.homepage = "https://github.com/fmtlib/fmt"
-   spec.summary = "{fmt} is an open-source formatting library for C++. It can be used as a safe and fast alternative to (s)printf and iostreams."
-   spec.authors = "The fmt contributors"
-   spec.source = {
-     :git => fmt_git_url,
--    :tag => "11.0.2"
-+    :tag => "12.1.0"
-   }
-   spec.pod_target_xcconfig = {
-     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
-diff --git a/third-party-podspecs/RCT-Folly.podspec b/third-party-podspecs/RCT-Folly.podspec
-index 8852179b6ce2ef6ae64e0239edb2594925ff8bc1..040c4f0ca82e6a7342d5b3ed54e556431e5853d2 100644
---- a/third-party-podspecs/RCT-Folly.podspec
-+++ b/third-party-podspecs/RCT-Folly.podspec
-@@ -25,7 +25,7 @@ Pod::Spec.new do |spec|
-   spec.dependency "DoubleConversion"
-   spec.dependency "glog"
-   spec.dependency "fast_float", "8.0.0"
--  spec.dependency "fmt", "11.0.2"
-+  spec.dependency "fmt", "12.1.0"
-   spec.compiler_flags = '-Wno-documentation -faligned-new'
-   spec.source_files = 'folly/String.cpp',
-                       'folly/Conv.cpp',
