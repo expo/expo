@@ -100,6 +100,12 @@ async function setupProjectPackageJsonAsync(
     }
   }
 
+  // Also force transitive repo packages (e.g. `expo-modules-autolinking`) to
+  // the workspace copy, so pnpm can't pull a published version that lags it.
+  for (const name of repoPackageNames) {
+    resolutions[name] = 'workspace:*';
+  }
+
   await writeJsonFileAsync(packageJsonPath, {
     ...packageJson,
 
