@@ -580,8 +580,8 @@ export type DocumentScanningOptions = {
   /**
    * The JPEG compression quality of the saved page images, between `0` and `1`. `0` means
    * compress for the smallest size, `1` means compress for maximum quality.
-   * > On Android the value is mapped to ML Kit's nearest supported quality.
-   * @default 0.9
+   * > Has no effect on Android, where the ML Kit scanner controls image compression.
+   * @default 1
    */
   quality?: number;
 };
