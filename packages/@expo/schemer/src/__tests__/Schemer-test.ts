@@ -189,7 +189,7 @@ describe('Manual Validation Individual Unit Tests', () => {
       expect.objectContaining({
         errorCode: ErrorCodes.INVALID_CONTENT_TYPE,
         message:
-          "field '.icon' should point to .icon directory but the path at './fixtures/check.png' is not a directory",
+          "field 'icon' should point to .icon directory but the path at './fixtures/check.png' is not a directory",
       })
     );
   });

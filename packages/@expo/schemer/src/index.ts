@@ -47,6 +47,8 @@ const ERROR_CODES: Record<string, ErrorCode> = {
   not: 'SCHEMA_INVALID_NOT',
 };
 
+const toFieldPath = (path: string): string => (path[0] === '.' ? path.slice(1) : path);
+
 export default class Schemer {
   options: SchemerOptions;
   schema: JSONSchema;
@@ -65,7 +67,7 @@ export default class Schemer {
   _formatValidationError({ keyword, path, value, message }: SchemaUtilsError): ValidationError {
     return new ValidationError({
       errorCode: ERROR_CODES[keyword] ?? 'SCHEMA_VALIDATION_ERROR',
-      fieldPath: path,
+      fieldPath: toFieldPath(path),
       message,
       data: value,
       meta: undefined,
@@ -122,7 +124,7 @@ export default class Schemer {
       const meta = subSchema.meta as Meta | undefined;
       if (path && meta?.asset) {
         assets.push({
-          fieldPath: path,
+          fieldPath: toFieldPath(path),
           data: value as string,
           meta,
         });
