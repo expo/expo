@@ -22,6 +22,8 @@
 
 ### 💡 Others
 
+- Rewrite native tabs using standard-navigation ([#46457](https://github.com/expo/expo/pull/46457) by [@Ubax](https://github.com/Ubax))
+
 ## 56.2.7 — 2026-05-26
 
 ### 🐛 Bug fixes
