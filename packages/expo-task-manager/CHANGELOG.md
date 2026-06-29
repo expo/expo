@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix static framework builds with `useFrameworks: "static"` by importing `ExpoModulesCore` as a module from public task manager headers. ([#45274](https://github.com/expo/expo/issues/45274) by [@mvincentong](https://github.com/mvincentong)) ([#45822](https://github.com/expo/expo/pull/45822) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26

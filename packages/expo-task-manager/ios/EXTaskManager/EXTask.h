@@ -1,8 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXTaskManagerInterface.h>
-#import <ExpoModulesCore/EXTaskInterface.h>
-#import <ExpoModulesCore/EXTaskConsumerInterface.h>
+@import ExpoModulesCore;
 
 NS_ASSUME_NONNULL_BEGIN
 
