@@ -1,15 +1,14 @@
-import { validate, ValidationError as SchemaValidationError, JSONSchema } from '@expo/schema-utils';
+import {
+  validate,
+  visit,
+  ValidationError as SchemaValidationError,
+  JSONSchema,
+} from '@expo/schema-utils';
 import fs from 'fs';
-import traverse from 'json-schema-traverse';
 import path from 'path';
 import imageProbe from 'probe-image-size';
 
 import { SchemerError, ValidationError } from './Error';
-import { get, fieldPathToSchema, schemaPointerToFieldPath } from './Util';
-
-function lowerFirst(str: string): string {
-  return str.charAt(0).toLowerCase() + str.slice(1);
-}
 
 interface Meta {
   asset?: boolean;
@@ -165,13 +164,13 @@ export default class Schemer {
 
   async _validateAssetsAsync(data: any) {
     const assets: AssetField[] = [];
-    traverse(this.schema, { allKeys: true }, (subSchema, jsonPointer, a, b, c, d, property) => {
-      if (property && subSchema.meta && subSchema.meta.asset) {
-        const fieldPath = schemaPointerToFieldPath(jsonPointer);
+    visit(this.schema, data, (subSchema, value, path) => {
+      const meta = subSchema.meta as Meta | undefined;
+      if (path && meta?.asset) {
         assets.push({
-          fieldPath,
-          data: get(data, lowerFirst(fieldPath)) || get(data, fieldPath),
-          meta: subSchema.meta,
+          fieldPath: pathToFieldPath(path),
+          data: value as string,
+          meta,
         });
       }
     });
@@ -310,31 +309,5 @@ export default class Schemer {
         await this._validateDirectoryAsync({ fieldPath, data, meta });
       }
     }
-  }
-
-  async validateProperty(fieldPath: string, data: any) {
-    const subSchema = fieldPathToSchema(this.schema, fieldPath);
-    this._validateSchema(subSchema, data);
-
-    if (subSchema.meta && subSchema.meta.asset) {
-      await this._validateAssetAsync({ fieldPath, data, meta: subSchema.meta });
-    }
-    this._throwOnErrors();
-  }
-
-  validateName(name: string) {
-    return this.validateProperty('name', name);
-  }
-
-  validateSlug(slug: string) {
-    return this.validateProperty('slug', slug);
-  }
-
-  validateSdkVersion(version: string) {
-    return this.validateProperty('sdkVersion', version);
-  }
-
-  validateIcon(iconPath: string) {
-    return this.validateProperty('icon', iconPath);
   }
 }
