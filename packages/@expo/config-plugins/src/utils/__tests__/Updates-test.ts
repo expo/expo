@@ -14,6 +14,7 @@ import {
   getUpdatesRequestHeadersStringified,
   getUpdatesEnabled,
   getUpdatesTimeout,
+  getUpdatesExcludeFromBackup,
   getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
   FINGERPRINT_RUNTIME_VERSION_SENTINEL,
@@ -186,6 +187,20 @@ describe(getUpdatesUseEmbeddedUpdate, () => {
 
   it('returns true if updates.useEmbeddedUpdate is undefined', () => {
     expect(getUpdatesUseEmbeddedUpdate({ updates: {} })).toBe(true);
+  });
+});
+
+describe(getUpdatesExcludeFromBackup, () => {
+  it('returns true if updates.excludeFromBackup is true', () => {
+    expect(getUpdatesExcludeFromBackup({ updates: { excludeFromBackup: true } })).toBe(true);
+  });
+
+  it('returns false if updates.excludeFromBackup is false', () => {
+    expect(getUpdatesExcludeFromBackup({ updates: { excludeFromBackup: false } })).toBe(false);
+  });
+
+  it('returns false if updates.excludeFromBackup is undefined', () => {
+    expect(getUpdatesExcludeFromBackup({ updates: {} })).toBe(false);
   });
 });
 

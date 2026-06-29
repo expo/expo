@@ -75,6 +75,18 @@ public final class UpdatesUtils: NSObject {
     return updatesDirectory
   }
 
+  // Re-applied on every launch so toggling the config back off re-includes the directory. Only affects backup size.
+  public static func setExcludedFromBackup(_ directory: URL, excluded: Bool, logger: UpdatesLogger) {
+    var url = directory
+    do {
+      var resourceValues = URLResourceValues()
+      resourceValues.isExcludedFromBackup = excluded
+      try url.setResourceValues(resourceValues)
+    } catch {
+      logger.warn(message: "Failed to set isExcludedFromBackup=\(excluded) on updates directory: \(error.localizedDescription)")
+    }
+  }
+
   // MARK: - Internal methods
 
   public static func defaultNativeStateMachineContextJson() -> [String: Any?] {
