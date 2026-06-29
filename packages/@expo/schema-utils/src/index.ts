@@ -94,6 +94,6 @@ export function validate<T>(schema: JSONSchema<T>, value: unknown): asserts valu
   }
 }
 
-export function visit<T>(schema: JSONSchema<T>, visitor: SchemaVisitor): void {
-  visitNode(derefSchemaCache(schema).schema, visitor);
+export function visit<T>(schema: JSONSchema<T>, value: unknown, visitor: SchemaVisitor): void {
+  visitNode(derefSchemaCache(schema).schema, value, visitor);
 }
