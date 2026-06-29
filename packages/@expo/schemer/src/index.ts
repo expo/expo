@@ -8,7 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import imageProbe from 'probe-image-size';
 
-import { SchemerError, ValidationError } from './Error';
+import { SchemerError, ValidationError, type ErrorCode } from './Error';
 
 interface Meta {
   asset?: boolean;
@@ -40,18 +40,12 @@ interface SchemaUtilsError {
 
 export { SchemerError, ValidationError, ErrorCodes, type ErrorCode } from './Error';
 
-function pathToFieldPath(schemaUtilsPath: string): string {
-  return schemaUtilsPath.replace(/\[(\d+)\]/g, '.$1').replace(/^\./, '');
-}
-
-// `required`/`additionalProperties` errors append the offending key to the path;
-// the field path excludes it and the message names it instead.
-function splitLastSegment(fieldPath: string): { parentPath: string; key: string } {
-  const index = fieldPath.lastIndexOf('.');
-  return index === -1
-    ? { parentPath: '', key: fieldPath }
-    : { parentPath: fieldPath.slice(0, index), key: fieldPath.slice(index + 1) };
-}
+const ERROR_CODES: Record<string, ErrorCode> = {
+  additionalProperties: 'SCHEMA_ADDITIONAL_PROPERTY',
+  required: 'SCHEMA_MISSING_REQUIRED_PROPERTY',
+  pattern: 'SCHEMA_INVALID_PATTERN',
+  not: 'SCHEMA_INVALID_NOT',
+};
 
 export default class Schemer {
   options: SchemerOptions;
@@ -69,53 +63,13 @@ export default class Schemer {
   }
 
   _formatValidationError({ keyword, path, value, message }: SchemaUtilsError): ValidationError {
-    const fieldPath = pathToFieldPath(path);
-    switch (keyword) {
-      case 'additionalProperties': {
-        const { parentPath, key } = splitLastSegment(fieldPath);
-        return new ValidationError({
-          errorCode: 'SCHEMA_ADDITIONAL_PROPERTY',
-          fieldPath: parentPath,
-          message: `should NOT have additional property '${key}'`,
-          data: value,
-          meta: undefined,
-        });
-      }
-      case 'required': {
-        const { parentPath, key } = splitLastSegment(fieldPath);
-        return new ValidationError({
-          errorCode: 'SCHEMA_MISSING_REQUIRED_PROPERTY',
-          fieldPath: parentPath,
-          message: `is missing required property '${key}'`,
-          data: value,
-          meta: undefined,
-        });
-      }
-      case 'pattern':
-        return new ValidationError({
-          errorCode: 'SCHEMA_INVALID_PATTERN',
-          fieldPath,
-          message: `'${fieldPath}' ${message}`,
-          data: value,
-          meta: undefined,
-        });
-      case 'not':
-        return new ValidationError({
-          errorCode: 'SCHEMA_INVALID_NOT',
-          fieldPath,
-          message: `'${fieldPath}' ${message}`,
-          data: value,
-          meta: undefined,
-        });
-      default:
-        return new ValidationError({
-          errorCode: 'SCHEMA_VALIDATION_ERROR',
-          fieldPath,
-          message: message || 'Validation error',
-          data: value,
-          meta: undefined,
-        });
-    }
+    return new ValidationError({
+      errorCode: ERROR_CODES[keyword] ?? 'SCHEMA_VALIDATION_ERROR',
+      fieldPath: path,
+      message,
+      data: value,
+      meta: undefined,
+    });
   }
 
   getErrors(): ValidationError[] {
@@ -133,7 +87,7 @@ export default class Schemer {
   }
 
   async validateAll(data: any) {
-    this._validateSchema(this.schema, data);
+    this._validateSchema(data);
     await this._validateAssetsAsync(data);
     this._throwOnErrors();
   }
@@ -144,13 +98,13 @@ export default class Schemer {
   }
 
   async validateSchemaAsync(data: any) {
-    this._validateSchema(this.schema, data);
+    this._validateSchema(data);
     this._throwOnErrors();
   }
 
-  _validateSchema(schema: JSONSchema, data: any) {
+  _validateSchema(data: any) {
     try {
-      validate(schema, data);
+      validate(this.schema, data);
     } catch (error: any) {
       if (error instanceof SchemaValidationError) {
         for (const validationError of error.errors) {
@@ -168,7 +122,7 @@ export default class Schemer {
       const meta = subSchema.meta as Meta | undefined;
       if (path && meta?.asset) {
         assets.push({
-          fieldPath: pathToFieldPath(path),
+          fieldPath: path,
           data: value as string,
           meta,
         });
