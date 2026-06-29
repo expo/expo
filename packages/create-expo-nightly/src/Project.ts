@@ -164,8 +164,9 @@ export async function prebuildAppAsync(projectRoot: string, templateTarballPath:
  */
 export async function setupGradleForNightlyAsync(projectRoot: string, expoRepoPath: string) {
   const nightlyGradleVersion = '9.4.1';
-  const skipMetadataVersionCheck = 'freeCompilerArgs.add("-Xskip-metadata-version-check")';
 
+  // react-native nightlies can require a newer Gradle than the stable template ships with, so bump
+  // the generated project's Gradle wrapper to a version recent enough to run their Android plugin.
   const wrapperPropertiesPath = path.join(
     projectRoot,
     'android',
@@ -184,10 +185,19 @@ export async function setupGradleForNightlyAsync(projectRoot: string, expoRepoPa
     )
   );
 
+  const skipMetadataVersionCheck = 'freeCompilerArgs.add("-Xskip-metadata-version-check")';
   const packagesPath = path.join(expoRepoPath, 'packages');
 
+  const expoModuleGradlePlugin = path.join(
+    packagesPath,
+    'expo-modules-core',
+    'expo-module-gradle-plugin'
+  );
+
+  // The Expo Gradle plugins are compiled with an older Kotlin than the one bundled with that newer
+  // Gradle, so skip the metadata check to let them compile against its newer kotlin-stdlib.
   const pluginRoots = [
-    path.join(packagesPath, 'expo-modules-core', 'expo-module-gradle-plugin'),
+    expoModuleGradlePlugin,
     path.join(packagesPath, 'expo-modules-autolinking', 'android', 'expo-gradle-plugin'),
   ];
 
@@ -209,6 +219,8 @@ export async function setupGradleForNightlyAsync(projectRoot: string, expoRepoPa
     }
   }
 
+  // AGP 9 (pulled in by recent nightlies) ships built-in Kotlin support that clashes with the
+  // template's explicit `kotlin.android` plugin, so drop it and let AGP's built-in Kotlin take over.
   const appBuildGradlePath = path.join(projectRoot, 'android', 'app', 'build.gradle');
   const appBuildGradle = await fs.promises.readFile(appBuildGradlePath, 'utf8');
 
@@ -216,6 +228,34 @@ export async function setupGradleForNightlyAsync(projectRoot: string, expoRepoPa
     appBuildGradlePath,
     appBuildGradle.replace(/^apply plugin: ["']org\.jetbrains\.kotlin\.android["']\r?\n/m, '')
   );
+
+  // AGP 9 disables the `buildConfig` feature by default, but several Expo modules declare custom
+  // BuildConfig fields. Enable it for every module through the shared plugin so they keep compiling.
+  const androidLibraryExtensionPath = path.join(
+    packagesPath,
+    'expo-modules-core',
+    'expo-module-gradle-plugin',
+    'src',
+    'main',
+    'kotlin',
+    'expo',
+    'modules',
+    'plugin',
+    'android',
+    'AndroidLibraryExtension.kt'
+  );
+
+  const androidLibraryExtension = await fs.promises.readFile(androidLibraryExtensionPath, 'utf8');
+
+  if (!androidLibraryExtension.includes('buildFeatures.buildConfig = true')) {
+    await fs.promises.writeFile(
+      androidLibraryExtensionPath,
+      androidLibraryExtension.replace(
+        /^(\s*)(this\.compileSdk = compileSdk)$/m,
+        '$1$2\n$1buildFeatures.buildConfig = true'
+      )
+    );
+  }
 }
 
 export async function installCocoaPodsAsync(projectRoot: string) {
