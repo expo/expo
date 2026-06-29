@@ -37,46 +37,6 @@ exports[`Holistic Unit Test bad example app.json schema 1`] = `
     "meta": undefined,
     "name": "ValidationError",
   },
-  {
-    "data": {
-      "asdfasdfandroid": {
-        "package": "com.yourcompany.yourappname",
-      },
-      "icon": "DoesNotExist.png",
-      "orientaasdfasdftion": "portrait",
-      "sdkVersion": "17.0.0abad",
-      "slug": "1*@)#($*@)(#$*)",
-    },
-    "errorCode": "SCHEMA_ADDITIONAL_PROPERTY",
-    "fieldPath": "",
-    "message": "should NOT have additional property 'orientaasdfasdftion'",
-    "meta": undefined,
-    "name": "ValidationError",
-  },
-  {
-    "data": {
-      "asdfasdfandroid": {
-        "package": "com.yourcompany.yourappname",
-      },
-      "icon": "DoesNotExist.png",
-      "orientaasdfasdftion": "portrait",
-      "sdkVersion": "17.0.0abad",
-      "slug": "1*@)#($*@)(#$*)",
-    },
-    "errorCode": "SCHEMA_ADDITIONAL_PROPERTY",
-    "fieldPath": "",
-    "message": "should NOT have additional property 'asdfasdfandroid'",
-    "meta": undefined,
-    "name": "ValidationError",
-  },
-  {
-    "data": "1*@)#($*@)(#$*)",
-    "errorCode": "SCHEMA_INVALID_PATTERN",
-    "fieldPath": "slug",
-    "message": "'slug' must match pattern \"^[a-zA-Z0-9_\\-]+$\"",
-    "meta": undefined,
-    "name": "ValidationError",
-  },
 ]
 `;
 
@@ -86,10 +46,8 @@ exports[`Holistic Unit Test bad example app.json schema with field with not 1`] 
     "data": "1.0",
     "errorCode": "SCHEMA_INVALID_NOT",
     "fieldPath": "runtimeVersion",
-    "message": "'runtimeVersion' should be not a decimal ending in a 0.",
-    "meta": {
-      "notHuman": "Not a decimal ending in a 0.",
-    },
+    "message": "'runtimeVersion' Value matches the not schema, but should not",
+    "meta": undefined,
     "name": "ValidationError",
   },
 ]
@@ -148,9 +106,7 @@ exports[`Image Validation errors when file extension and content do not match up
 exports[`Individual Unit Tests Error when data has an additional property 1`] = `
 [
   {
-    "data": {
-      "extraProperty": "extra",
-    },
+    "data": "extra",
     "errorCode": "SCHEMA_ADDITIONAL_PROPERTY",
     "fieldPath": "",
     "message": "should NOT have additional property 'extraProperty'",

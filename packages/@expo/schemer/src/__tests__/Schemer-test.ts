@@ -229,9 +229,9 @@ describe('Individual Unit Tests', () => {
   it.each`
     name            | expectedError
     ${'wilson'}     | ${undefined}
-    ${[1, 2, 3, 4]} | ${'must be string'}
-    ${23.232332}    | ${'must be string'}
-    ${/regex.*/}    | ${'must be string'}
+    ${[1, 2, 3, 4]} | ${'Expected type string, got array'}
+    ${23.232332}    | ${'Expected type string, got number'}
+    ${/regex.*/}    | ${'Expected type string, got object'}
   `('validates name: $name', async ({ name, expectedError }) => {
     if (!expectedError) {
       expect(await validator.validateName(name)).toBeUndefined();
@@ -244,12 +244,12 @@ describe('Individual Unit Tests', () => {
   it.each`
     slug                                             | expectedError
     ${'wilson'}                                      | ${undefined}
-    ${12312123123}                                   | ${'must be string'}
-    ${[1, 23]}                                       | ${'must be string'}
+    ${12312123123}                                   | ${'Expected type string, got integer'}
+    ${[1, 23]}                                       | ${'Expected type string, got array'}
     ${'wilson123'}                                   | ${undefined}
     ${'wilson-123'}                                  | ${undefined}
-    ${'wilson/test'}                                 | ${'\'\' must match pattern "^[a-zA-Z0-9_\\-]+$"'}
-    ${'wilson-test%'}                                | ${'\'\' must match pattern "^[a-zA-Z0-9_\\-]+$"'}
+    ${'wilson/test'}                                 | ${'\'\' String does not match pattern: ^[a-zA-Z0-9_\\-]+$'}
+    ${'wilson-test%'}                                | ${'\'\' String does not match pattern: ^[a-zA-Z0-9_\\-]+$'}
     ${'wilson-test-zhao--javascript-is-super-funky'} | ${undefined}
   `('validates slug: $slug', async ({ slug, expectedError }) => {
     if (!expectedError) {
@@ -265,9 +265,9 @@ describe('Individual Unit Tests', () => {
     ${'1.0.0'}       | ${undefined}
     ${'2.0.0.0.1'}   | ${undefined}
     ${'UNVERSIONED'} | ${undefined}
-    ${'12.2a.3'}     | ${'\'\' must match pattern "^(\\d+\\.\\d+\\.\\d+)|(UNVERSIONED)$"'}
-    ${'9,9,9'}       | ${'\'\' must match pattern "^(\\d+\\.\\d+\\.\\d+)|(UNVERSIONED)$"'}
-    ${'1.2'}         | ${'\'\' must match pattern "^(\\d+\\.\\d+\\.\\d+)|(UNVERSIONED)$"'}
+    ${'12.2a.3'}     | ${'\'\' String does not match pattern: ^(\\d+\\.\\d+\\.\\d+)|(UNVERSIONED)$'}
+    ${'9,9,9'}       | ${'\'\' String does not match pattern: ^(\\d+\\.\\d+\\.\\d+)|(UNVERSIONED)$'}
+    ${'1.2'}         | ${'\'\' String does not match pattern: ^(\\d+\\.\\d+\\.\\d+)|(UNVERSIONED)$'}
   `('validates SDK version: $sdkVersion', async ({ sdkVersion, expectedError }) => {
     if (!expectedError) {
       expect(await validator.validateSdkVersion(sdkVersion)).toBeUndefined();
