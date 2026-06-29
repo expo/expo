@@ -7,7 +7,9 @@ import 'react-native/Libraries/Core/InitializeCore';
 import '../../types';
 import { installAbortSignalPatch } from './AbortSignal';
 import { installFormDataPatch } from './FormData';
+import { ImportMetaRegistry } from './ImportMetaRegistry';
 import { installGlobal as install } from './installGlobal';
+import structuredClonePolyfill from './structuredClone';
 
 // https://encoding.spec.whatwg.org/#textdecoder
 install('TextDecoder', () => require('./TextDecoder').TextDecoder);
@@ -24,10 +26,12 @@ install('DOMException', () => require('./DOMException').DOMException);
 // https://streams.spec.whatwg.org/#rs
 // ReadableStream is injected by Metro as a global
 
-install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').ImportMetaRegistry);
+// Resolve eagerly: Jest 30 reads these enumerable globals during teardown (`resetModules`),
+// so a lazy `require` in the getter would load a module after the test scope closed and throw.
+install('__ExpoImportMetaRegistry', () => ImportMetaRegistry);
 
 // https://html.spec.whatwg.org/multipage/structured-data.html#structuredclone
-install('structuredClone', () => require('@ungap/structured-clone').default);
+install('structuredClone', () => structuredClonePolyfill);
 
 installFormDataPatch(FormData);
 installAbortSignalPatch(AbortSignal);
