@@ -98,7 +98,7 @@ public final class ModuleRegistry: Sequence {
     }
   }
 
-  internal func getModule<ModuleProtocol>(implementing protocol: ModuleProtocol.Type) -> ModuleProtocol? {
+  public func getModule<ModuleProtocol>(implementing protocol: ModuleProtocol.Type) -> ModuleProtocol? {
     return registry.withLock { registry in
       for holder in registry.values {
         if let module = holder.module as? ModuleProtocol {
