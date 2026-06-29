@@ -109,10 +109,16 @@ internal class LocationResponse(
   constructor(location: Location) : this(
     coords = LocationObjectCoords(location),
     timestamp = location.time.toDouble(),
-    mocked = location.isFromMockProvider
+    mocked = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      location.isMock
+    } else {
+      @Suppress("DEPRECATION") // When minSdkVersion is 31, this code will be removed and the above code will be used instead.
+      location.isFromMockProvider
+    }
   )
 
   internal fun <BundleType : BaseBundle> toBundle(bundleTypeClass: Class<BundleType>): BundleType {
+    @Suppress("UNCHECKED_CAST")
     val bundle: BundleType = when (bundleTypeClass) {
       PersistableBundle::class.java -> PersistableBundle()
       else -> Bundle()
@@ -156,6 +162,7 @@ internal class LocationObjectCoords(
   )
 
   internal fun <BundleType : BaseBundle> toBundle(bundleTypeClass: Class<BundleType>): BundleType {
+    @Suppress("UNCHECKED_CAST")
     val bundle: BundleType = when (bundleTypeClass) {
       PersistableBundle::class.java -> PersistableBundle()
       else -> Bundle()
