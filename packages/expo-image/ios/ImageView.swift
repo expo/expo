@@ -384,11 +384,21 @@ public final class ImageView: ExpoView {
   var placeholderImage: UIImage?
 
   /**
+   Whether the loaded placeholder image was generated from an image hash.
+   */
+  var isPlaceholderImageHash = false
+
+  /**
    Content fit for the placeholder. `scale-down` seems to be the best choice for spinners
    and that the placeholders are usually smaller than the proper image, but it doesn't
    apply to blurhash that by default could use the same fitting as the proper image.
    */
   var placeholderContentFit: ContentFit = .scaleDown
+
+  /**
+   Whether `placeholderContentFit` is using the default value rather than an explicit prop.
+   */
+  var usesDefaultPlaceholderContentFit = true
 
   /**
    Same as `bestSource`, but for placeholders.
@@ -438,7 +448,7 @@ public final class ImageView: ExpoView {
         return
       }
       self.placeholderImage = placeholder
-      self.placeholderContentFit = isPlaceholderHash ? self.contentFit : self.placeholderContentFit
+      self.isPlaceholderImageHash = isPlaceholderHash
       self.displayPlaceholderIfNecessary()
     }
   }
@@ -450,7 +460,16 @@ public final class ImageView: ExpoView {
     guard canDisplayPlaceholder, let placeholder = placeholderImage else {
       return
     }
-    setImage(placeholder, contentFit: placeholderContentFit, isPlaceholder: true)
+    setImage(
+      placeholder,
+      contentFit: placeholderContentFitForDisplay(
+        placeholderContentFit: placeholderContentFit,
+        contentFit: contentFit,
+        isPlaceholderHash: isPlaceholderImageHash,
+        usesDefaultPlaceholderContentFit: usesDefaultPlaceholderContentFit
+      ),
+      isPlaceholder: true
+    )
   }
 
   // MARK: - Processing
@@ -872,4 +891,13 @@ func localAssetName(from url: URL?) -> String? {
     path.removeFirst()
   }
   return path.isEmpty ? nil : path
+}
+
+func placeholderContentFitForDisplay(
+  placeholderContentFit: ContentFit,
+  contentFit: ContentFit,
+  isPlaceholderHash: Bool,
+  usesDefaultPlaceholderContentFit: Bool
+) -> ContentFit {
+  return isPlaceholderHash && usesDefaultPlaceholderContentFit ? contentFit : placeholderContentFit
 }
