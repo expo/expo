@@ -5,8 +5,10 @@ import {
   BaseValidationError,
   ValidationError as ValidationResult,
 } from './validate';
+import { visitNode, SchemaVisitor } from './visit';
 
 export type { JSONSchema } from './JSONSchema';
+export type { SchemaVisitor } from './visit';
 
 const CACHE_SYMBOL = Symbol('@expo/schema-utils');
 
@@ -90,4 +92,8 @@ export function validate<T>(schema: JSONSchema<T>, value: unknown): asserts valu
   if (result) {
     throw new ValidationError(result, data.schema);
   }
+}
+
+export function visit<T>(schema: JSONSchema<T>, visitor: SchemaVisitor): void {
+  visitNode(derefSchemaCache(schema).schema, visitor);
 }
