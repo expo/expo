@@ -2,6 +2,7 @@ import { SharedRef } from 'expo';
 import type { ReactNode } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import type { BasicTextStyle } from '../../../../utils/font';
 import type { StackHeaderItemSharedProps } from '../shared';
 export interface StackToolbarButtonProps {
@@ -179,5 +180,8 @@ export interface NativeToolbarButtonProps {
     variant?: 'plain' | 'done' | 'prominent';
     label?: string;
     source?: ImageSourcePropType;
+    /** Badge overlay on the icon. Only rendered in left/right placements.
+     * @platform android */
+    badge?: NativeStackHeaderItemButton['badge'];
 }
 //# sourceMappingURL=types.d.ts.map

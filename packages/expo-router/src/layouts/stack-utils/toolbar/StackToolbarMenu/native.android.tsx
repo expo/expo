@@ -14,6 +14,7 @@ import type { NativeToolbarMenuActionProps, NativeToolbarMenuProps } from './typ
 import { Label } from '../../../../primitives';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { getFirstChildOfType } from '../../../../utils/children';
+import { getBadgeContentDescription, ToolbarItemBadge } from '../ToolbarItemBadge';
 import { useToolbarColors } from '../context';
 import {
   DEFAULT_DESTRUCTIVE_COLOR,
@@ -55,6 +56,12 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     setExpanded(false);
     parentClose?.();
   }, [parentClose]);
+
+  if (process.env.NODE_ENV !== 'production' && isNested && props.badge) {
+    console.warn(
+      'Stack.Toolbar.Badge on a nested Stack.Toolbar.Menu is not supported on Android; it is only rendered on a root menu. The badge will be ignored.'
+    );
+  }
 
   // Inline nested: render children directly with a divider separator
   if (isNested && props.inline) {
@@ -121,6 +128,20 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     return null;
   }
 
+  const iconButton = (
+    <IconButton
+      onClick={() => setExpanded(true)}
+      enabled={!props.disabled}
+      modifiers={[background(backgroundColor)]}>
+      <Icon
+        source={props.source}
+        tint={sourceTint}
+        size={24}
+        contentDescription={getBadgeContentDescription(props.accessibilityLabel, props.badge)}
+      />
+    </IconButton>
+  );
+
   return (
     <AnimatedItemContainer visible={!props.hidden}>
       <DropdownMenu
@@ -128,17 +149,9 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
         onDismissRequest={() => setExpanded(false)}
         color={backgroundColor}>
         <DropdownMenu.Trigger>
-          <IconButton
-            onClick={() => setExpanded(true)}
-            enabled={!props.disabled}
-            modifiers={[background(backgroundColor)]}>
-            <Icon
-              source={props.source}
-              tint={sourceTint}
-              size={24}
-              contentDescription={props.accessibilityLabel}
-            />
-          </IconButton>
+          <ToolbarItemBadge badge={props.badge} disabled={props.disabled}>
+            {iconButton}
+          </ToolbarItemBadge>
         </DropdownMenu.Trigger>
         <DropdownMenu.Items>
           <ToolbarMenuCloseContext value={closeMenu}>{props.children}</ToolbarMenuCloseContext>

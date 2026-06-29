@@ -5,6 +5,7 @@ exports.NativeToolbarButton = void 0;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const jetpack_compose_1 = require("@expo/ui/jetpack-compose");
 const AnimatedItemContainer_1 = require("../../../../toolbar/AnimatedItemContainer");
+const ToolbarItemBadge_1 = require("../ToolbarItemBadge");
 const context_1 = require("../context");
 const defaults_1 = require("../defaults");
 /**
@@ -25,7 +26,8 @@ const NativeToolbarButton = (props) => {
     const tintColor = props.imageRenderingMode === 'original'
         ? null
         : (props.tintColor ?? toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)());
-    return ((0, jsx_runtime_1.jsx)(AnimatedItemContainer_1.AnimatedItemContainer, { visible: !props.hidden, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.IconButton, { onClick: props.onPress, enabled: !props.disabled, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: tintColor, size: 24, contentDescription: props.accessibilityLabel }) }) }));
+    const button = ((0, jsx_runtime_1.jsx)(jetpack_compose_1.IconButton, { onClick: props.onPress, enabled: !props.disabled, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: tintColor, size: 24, contentDescription: (0, ToolbarItemBadge_1.getBadgeContentDescription)(props.accessibilityLabel, props.badge) }) }));
+    return ((0, jsx_runtime_1.jsx)(AnimatedItemContainer_1.AnimatedItemContainer, { visible: !props.hidden, children: (0, jsx_runtime_1.jsx)(ToolbarItemBadge_1.ToolbarItemBadge, { badge: props.badge, disabled: props.disabled, children: button }) }));
 };
 exports.NativeToolbarButton = NativeToolbarButton;
 //# sourceMappingURL=native.android.js.map

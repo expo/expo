@@ -5,5 +5,7 @@ export declare function convertTextStyleToRNTextStyle<BaseStyleType extends Pick
     fontWeight?: ConvertedFontWeightType;
 }) | undefined;
 export type BasicTextStyle = Pick<TextStyle, 'fontSize' | 'fontWeight' | 'fontFamily' | 'color'>;
+export type ComposeFontWeight = 'normal' | 'bold' | `${NumericFontWeight}`;
+export declare function convertFontWeightToComposeFontWeight(fontWeight: string | number | undefined): ComposeFontWeight | undefined;
 export {};
 //# sourceMappingURL=font.d.ts.map
