@@ -31,6 +31,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
+import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
 import expo.modules.apploader.AppLoaderProvider;
 import expo.modules.apploader.HeadlessAppLoader;
 import expo.modules.core.interfaces.SingletonModule;
@@ -647,12 +648,17 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
   }
 
+  // Bounds how long the HeadlessJsTask keeps JS alive. Finite so the worker
+  // can reschedule before the ~10-minute OS kill, and so a missing JS
+  // AppRegistry handler doesn't strand the task forever.
+  private static final long HEADLESS_TASK_TIMEOUT_MS = 2L * 60L * 1000L;
+
   private void invokeStartHeadlessTask(ReactContext reactContext, String appScopeKey) {
     HeadlessJsTaskContext headlessContext = HeadlessJsTaskContext.getInstance(reactContext);
     HeadlessJsTaskConfig taskConfig = new HeadlessJsTaskConfig(
       "expo-task-manager",
       new WritableNativeMap(),
-      0, // no timeout, managed by the task consumer
+      HEADLESS_TASK_TIMEOUT_MS,
       true // allow in foreground to avoid exceptions if app returns
     );
 
@@ -661,10 +667,49 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
         int taskId = headlessContext.startTask(taskConfig);
         sHeadlessTaskIds.put(appScopeKey, taskId);
         Log.i(TAG, "Started headless task " + taskId + " to keep JS timers alive for '" + appScopeKey + "'");
+
+        headlessContext.addTaskEventListener(new HeadlessJsTaskEventListener() {
+          @Override
+          public void onHeadlessJsTaskStart(int id) {}
+
+          @Override
+          public void onHeadlessJsTaskFinish(int id) {
+            if (id != taskId) {
+              return;
+            }
+            headlessContext.removeTaskEventListener(this);
+            flushOrphanedTaskCallbacks(appScopeKey);
+          }
+        });
       } catch (Exception e) {
         Log.w(TAG, "Failed to start headless task: " + e.getMessage());
       }
     });
+  }
+
+  // Fails any TaskExecutionCallbacks whose events were never delivered to JS
+  // (e.g. AppRegistry had no handler for "expo-task-manager", or the headless
+  // task timed out). `sEvents[appScopeKey]` only retains undelivered events —
+  // `notifyTaskFinished` removes them on delivery.
+  private void flushOrphanedTaskCallbacks(String appScopeKey) {
+    List<String> pendingEvents = sEvents.get(appScopeKey);
+    if (pendingEvents == null || pendingEvents.isEmpty()) {
+      return;
+    }
+
+    // Copy because callback.onFinished may mutate sEvents through notifyTaskFinished.
+    List<String> snapshot = new ArrayList<>(pendingEvents);
+    for (String eventId : snapshot) {
+      TaskExecutionCallback callback = sTaskCallbacks.remove(eventId);
+      if (callback == null) {
+        continue;
+      }
+      Log.w(TAG, "Headless task finished without JS delivering event '" + eventId
+        + "' for '" + appScopeKey + "'. Check that expo-task-manager is imported at bundle entry.");
+      callback.onFinished(null);
+    }
+    sEvents.remove(appScopeKey);
+    mTasksAndEventsRepository.removeEvents(appScopeKey);
   }
 
   private void waitForReactContextAndStartTask(Context context, String appScopeKey) {

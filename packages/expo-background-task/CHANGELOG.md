@@ -99,6 +99,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [iOS] Fixed a race when rescheduling background tasks concurrently. ([#44666](https://github.com/expo/expo/pull/44666) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Complete the per-consumer `CompletableDeferred` when `executeTask` throws synchronously, so one failing consumer doesn't stall `awaitAll()`. ([#45029](https://github.com/expo/expo/pull/45029) by [@chocky335](https://github.com/chocky335))
 
 ## 55.0.14 - 2026-04-09
 
