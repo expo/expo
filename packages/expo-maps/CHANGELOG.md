@@ -13,7 +13,7 @@
 
 ### 💡 Others
 
-- Promote Expo Maps from alpha to stable.
+- Promote Expo Maps from alpha to stable. ([#47338](https://github.com/expo/expo/pull/47338) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.1 - 2026-07-15
 
