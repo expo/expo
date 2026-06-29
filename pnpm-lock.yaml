@@ -3631,6 +3631,9 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
+      '@types/ungap__structured-clone':
+        specifier: ^1.2.0
+        version: 1.2.0
       expo-updates:
         specifier: workspace:*
         version: link:../expo-updates
@@ -9699,6 +9702,9 @@ packages:
 
   '@types/uglify-js@3.17.5':
     resolution: {integrity: sha512-TU+fZFBTBcXj/GpDpDaBmgWk/gn96kMZ+uocaFUlV2f8a6WdMzzI44QBCmGcCiYR0Y6ZlNRiyUyKKt5nl/lbzQ==}
+
+  '@types/ungap__structured-clone@1.2.0':
+    resolution: {integrity: sha512-ZoaihZNLeZSxESbk9PUAPZOlSpcKx81I1+4emtULDVmBLkYutTcMlCj2K9VNlf9EWODxdO6gkAqEaLorXwZQVA==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -18826,6 +18832,8 @@ snapshots:
   '@types/uglify-js@3.17.5':
     dependencies:
       source-map: 0.6.1
+
+  '@types/ungap__structured-clone@1.2.0': {}
 
   '@types/unist@3.0.3': {}
 

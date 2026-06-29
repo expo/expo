@@ -229,6 +229,7 @@
     "@expo/metro-runtime": "workspace:*",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
+    "@types/ungap__structured-clone": "^1.2.0",
     "expo-updates": "workspace:*",
     "npm-run-all2": "^8.0.4",
     "react": "19.2.3",
