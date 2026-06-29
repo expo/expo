@@ -159,11 +159,14 @@ export async function prebuildAppAsync(projectRoot: string, templateTarballPath:
   });
 }
 
-// react-native nightlies can require a newer Gradle than the stable template ships with.
-const NIGHTLY_GRADLE_VERSION = '9.4.1';
+/**
+ * Apply the Gradle tweaks needed to build the generated project against react-native nightlies.
+ */
+export async function setupGradleForNightlyAsync(projectRoot: string, expoRepoPath: string) {
+  const nightlyGradleVersion = '9.4.1';
+  const skipMetadataVersionCheck = 'freeCompilerArgs.add("-Xskip-metadata-version-check")';
 
-export async function setupGradleWrapperAsync(projectRoot: string) {
-  const propertiesPath = path.join(
+  const wrapperPropertiesPath = path.join(
     projectRoot,
     'android',
     'gradle',
@@ -171,28 +174,21 @@ export async function setupGradleWrapperAsync(projectRoot: string) {
     'gradle-wrapper.properties'
   );
 
-  const properties = await fs.promises.readFile(propertiesPath, 'utf8');
+  const wrapperProperties = await fs.promises.readFile(wrapperPropertiesPath, 'utf-8');
 
-  const nextProperties = properties.replace(
-    /^(distributionUrl=.*gradle-).*(-bin\.zip)$/m,
-    `$1${NIGHTLY_GRADLE_VERSION}$2`
+  await fs.promises.writeFile(
+    wrapperPropertiesPath,
+    wrapperProperties.replace(
+      /^(distributionUrl=.*gradle-).*(-bin\.zip)$/m,
+      `$1${nightlyGradleVersion}$2`
+    )
   );
 
-  await fs.promises.writeFile(propertiesPath, nextProperties);
-}
-
-export async function setupGradlePluginKotlinAsync(expoRepoPath: string) {
-  const skipMetadataVersionCheck = 'freeCompilerArgs.add("-Xskip-metadata-version-check")';
+  const packagesPath = path.join(expoRepoPath, 'packages');
 
   const pluginRoots = [
-    path.join(expoRepoPath, 'packages', 'expo-modules-core', 'expo-module-gradle-plugin'),
-    path.join(
-      expoRepoPath,
-      'packages',
-      'expo-modules-autolinking',
-      'android',
-      'expo-gradle-plugin'
-    ),
+    path.join(packagesPath, 'expo-modules-core', 'expo-module-gradle-plugin'),
+    path.join(packagesPath, 'expo-modules-autolinking', 'android', 'expo-gradle-plugin'),
   ];
 
   for (const pluginRoot of pluginRoots) {
@@ -211,6 +207,13 @@ export async function setupGradlePluginKotlinAsync(expoRepoPath: string) {
         }
       }
     }
+  }
+
+  const gradlePropertiesPath = path.join(projectRoot, 'android', 'gradle.properties');
+  const gradleProperties = await fs.promises.readFile(gradlePropertiesPath, 'utf8');
+
+  if (!/^android\.builtInKotlin=/m.test(gradleProperties)) {
+    await fs.promises.appendFile(gradlePropertiesPath, '\nandroid.builtInKotlin=false\n');
   }
 }
 
