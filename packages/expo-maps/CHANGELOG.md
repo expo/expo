@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Promote Expo Maps from alpha to stable.
+
 ## 56.0.6 — 2026-05-21
 
 ### 🐛 Bug fixes
