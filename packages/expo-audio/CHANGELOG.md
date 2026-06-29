@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix playlist `currentIndex` freezing after the first auto-advance. ([#47257](https://github.com/expo/expo/pull/47257) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 57.0.0 — 2026-06-25
