@@ -239,7 +239,7 @@ object MediaLibraryUtils {
     return if (useCameraDir) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_PICTURES
   }
 
-  @Deprecated("It uses deprecated Android method under the hood. See implementation for details.")
+  // It uses deprecated Android method under the hood. See implementation for details.
   fun getEnvDirectoryForAssetType(mimeType: String?, useCameraDir: Boolean): File =
     Environment.getExternalStoragePublicDirectory(getRelativePathForAssetType(mimeType, useCameraDir))
 
