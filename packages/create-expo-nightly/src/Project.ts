@@ -174,7 +174,7 @@ export async function setupGradleForNightlyAsync(projectRoot: string, expoRepoPa
     'gradle-wrapper.properties'
   );
 
-  const wrapperProperties = await fs.promises.readFile(wrapperPropertiesPath, 'utf-8');
+  const wrapperProperties = await fs.promises.readFile(wrapperPropertiesPath, 'utf8');
 
   await fs.promises.writeFile(
     wrapperPropertiesPath,
@@ -209,12 +209,13 @@ export async function setupGradleForNightlyAsync(projectRoot: string, expoRepoPa
     }
   }
 
-  const gradlePropertiesPath = path.join(projectRoot, 'android', 'gradle.properties');
-  const gradleProperties = await fs.promises.readFile(gradlePropertiesPath, 'utf8');
+  const appBuildGradlePath = path.join(projectRoot, 'android', 'app', 'build.gradle');
+  const appBuildGradle = await fs.promises.readFile(appBuildGradlePath, 'utf8');
 
-  if (!/^android\.builtInKotlin=/m.test(gradleProperties)) {
-    await fs.promises.appendFile(gradlePropertiesPath, '\nandroid.builtInKotlin=false\n');
-  }
+  await fs.promises.writeFile(
+    appBuildGradlePath,
+    appBuildGradle.replace(/^apply plugin: ["']org\.jetbrains\.kotlin\.android["']\r?\n/m, '')
+  );
 }
 
 export async function installCocoaPodsAsync(projectRoot: string) {
