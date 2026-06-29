@@ -280,7 +280,11 @@ public final class UpdatesDatabase: NSObject {
   }
 
   public func markUpdateFinished(_ update: Update) throws {
-    if update.status != UpdateStatus.StatusDevelopment {
+    // With copying off, embedded updates have no asset rows, so they must stay StatusEmbedded to keep
+    // launching from the bundle. Promoting to StatusReady would route launch through the database
+    // asset path, which has no rows for them.
+    let keepEmbedded = update.status == UpdateStatus.StatusEmbedded && !UpdatesUtils.shouldCopyEmbeddedAssets()
+    if update.status != UpdateStatus.StatusDevelopment && !keepEmbedded {
       update.status = UpdateStatus.StatusReady
     }
 
