@@ -18,6 +18,7 @@
 - Allow async routes to rehydrate synchronously by carrying through preloaded modules preventing FOUC in production output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
 - Fix type inference for `unstable_createStandardRouterNavigator` ([#46737](https://github.com/expo/expo/pull/46737) by [@Ubax](https://github.com/Ubax))
 - Preserve a system time mocked with `jest.setSystemTime` across `renderRouter` ([#46978](https://github.com/expo/expo/pull/46978) by [@Ubax](https://github.com/Ubax))
+- Preserve parenthesized values in query params and hash fragments when stripping group segments from paths. ([#26664](https://github.com/expo/expo/issues/26664) by [@mvincentong](https://github.com/mvincentong)) ([#44189](https://github.com/expo/expo/pull/44189) by [@mvincentong](https://github.com/mvincentong))
 
 ### 💡 Others
 
