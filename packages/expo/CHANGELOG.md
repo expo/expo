@@ -21,6 +21,7 @@
 - [iOS] Add ExpoBundleConfiguration to derive RCTBundleConfiguration from the normalized bundle URL instead of default shared settings singleton ([#48010](https://github.com/expo/expo/pull/48010) by [@kitten](https://github.com/kitten))
 - [iOS] Resolve the dev server port from the `RCTMetroPort` Info.plist key at runtime so bare projects without expo-dev-client connect to their own Metro instance instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix async imports (`import(...)`) via `asyncRequireModule` not a thenable instead of a full promise shape ([#48550](https://github.com/expo/expo/pull/48550) by [@kitten](https://github.com/kitten))
+- Fixed `jest-expo` test suites failing to run on Jest 30 with `You are trying to import a file outside of the scope of the test code`, caused by the `structuredClone` and `__ExpoImportMetaRegistry` winter globals lazily requiring modules during environment teardown. ([#47332](https://github.com/expo/expo/pull/47332) by [@netconomy-stephan-dum](https://github.com/netconomy-stephan-dum), [@janpe](https://github.com/janpe))
 
 ### 💡 Others
 
