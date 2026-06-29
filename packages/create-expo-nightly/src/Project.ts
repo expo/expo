@@ -159,6 +159,28 @@ export async function prebuildAppAsync(projectRoot: string, templateTarballPath:
   });
 }
 
+// react-native nightlies can require a newer Gradle than the stable template ships with.
+const NIGHTLY_GRADLE_VERSION = '9.4.1';
+
+export async function setupGradleWrapperAsync(projectRoot: string) {
+  const propertiesPath = path.join(
+    projectRoot,
+    'android',
+    'gradle',
+    'wrapper',
+    'gradle-wrapper.properties'
+  );
+
+  const properties = await fs.promises.readFile(propertiesPath, 'utf8');
+
+  const nextProperties = properties.replace(
+    /^(distributionUrl=.*gradle-).*(-bin\.zip)$/m,
+    `$1${NIGHTLY_GRADLE_VERSION}$2`
+  );
+
+  await fs.promises.writeFile(propertiesPath, nextProperties);
+}
+
 export async function installCocoaPodsAsync(projectRoot: string) {
   await runAsync('pod', ['install'], { cwd: path.join(projectRoot, 'ios') });
 }
