@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix wrong permissions for text() and bytes(). ([#42422](https://github.com/expo/expo/pull/42422)) by [@simoneldevig](https://github.com/simoneldevig))
+
 ### 💡 Others
 
 - Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376) by [@wh201906](https://github.com/wh201906))
