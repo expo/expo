@@ -7,7 +7,11 @@ export enum SourceSkips {
 
   //#region - ExpoConfig source (e.g., app.json, app.config.js, etc.)
 
-  /** Versions in app.json, including `version`, `android.versionCode`, and `ios.buildNumber`. */
+  /**
+   * Versions in app.json, including `version`, `android.versionCode`, `ios.buildNumber`, and the
+   * platform-specific overrides `ios.version` and `android.version` (which take precedence over
+   * the top-level `version`).
+   */
   ExpoConfigVersions = 1 << 0,
 
   /** `runtimeVersion` in app.json if it is a string. */
@@ -60,12 +64,4 @@ export enum SourceSkips {
 
   /** The [extra](https://docs.expo.dev/versions/latest/config/app/#extra) section in app.json */
   ExpoConfigExtraSection = 1 << 12,
-
-  /**
-   * Platform-specific version overrides in app.json, including `ios.version` and `android.version`.
-   * These take precedence over the top-level `version`. Use this when versioning each platform
-   * independently, so a version bump on one platform does not invalidate the other platform's
-   * fingerprint.
-   */
-  ExpoConfigPlatformVersions = 1 << 13,
 }

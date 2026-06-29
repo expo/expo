@@ -135,12 +135,9 @@ function normalizeExpoConfig(
   if (sourceSkips & SourceSkips.ExpoConfigVersions) {
     delete normalizedConfig.version;
     delete normalizedConfig.android?.versionCode;
-    delete normalizedConfig.ios?.buildNumber;
-  }
-
-  if (sourceSkips & SourceSkips.ExpoConfigPlatformVersions) {
-    delete normalizedConfig.ios?.version;
     delete normalizedConfig.android?.version;
+    delete normalizedConfig.ios?.buildNumber;
+    delete normalizedConfig.ios?.version;
   }
 
   if (sourceSkips & SourceSkips.ExpoConfigRuntimeVersionIfString) {

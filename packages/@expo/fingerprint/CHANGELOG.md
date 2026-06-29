@@ -4,9 +4,9 @@
 
 ### 🛠 Breaking changes
 
-### 🎉 New features
+- Extended `SourceSkips.ExpoConfigVersions` to also strip the platform-specific version overrides `ios.version` and `android.version` (which take precedence over the top-level `version`). Projects already setting this flag will see their fingerprint hash change after upgrading.
 
-- Added `SourceSkips.ExpoConfigPlatformVersions` to exclude `ios.version` and `android.version` from the fingerprint, so per-platform version bumps do not invalidate the fingerprint.
+### 🎉 New features
 
 ### 🐛 Bug fixes
 
