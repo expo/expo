@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Added support for storing recordings in the app document directory on Android and iOS. ([#46189](https://github.com/expo/expo/pull/46189) by [@shubh73](https://github.com/shubh73))
-- Added `fileName` option to `RecordingOptions` to allow specifying the recording file basename on Android and iOS. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@silwalprabin](https://github.com/silwalprabin))
+- Added `fileName` option to `RecordingOptions` to allow specifying the recording file basename on Android and iOS. ([#47265](https://github.com/expo/expo/pull/47265) by [@silwalprabin](https://github.com/silwalprabin))
 
 ### 🐛 Bug fixes
 
