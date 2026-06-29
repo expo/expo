@@ -568,6 +568,40 @@ export type ScanningOptions = {
 };
 
 /**
+ * @platform android
+ * @platform ios
+ */
+export type DocumentScanningOptions = {
+  /**
+   * Whether to also produce a multi-page PDF of the scan in addition to per-page images.
+   * @default false
+   */
+  requestPdf?: boolean;
+  /**
+   * The JPEG compression quality of the saved page images, between `0` and `1`. `0` means
+   * compress for the smallest size, `1` means compress for maximum quality.
+   * > On Android the value is mapped to ML Kit's nearest supported quality.
+   * @default 0.9
+   */
+  quality?: number;
+};
+
+/**
+ * @platform android
+ * @platform ios
+ */
+export type DocumentScanningResult = {
+  /**
+   * An ordered array of `file://` URIs, one per scanned page image.
+   */
+  pages: string[];
+  /**
+   * A `file://` URI of the generated multi-page PDF. Only present when `requestPdf` was `true`.
+   */
+  pdfUri?: string;
+};
+
+/**
  * The available barcode types that can be scanned.
  */
 export type BarcodeType =
@@ -642,10 +676,14 @@ export declare class CameraNativeModule extends NativeModule<CameraEvents> {
   Picture: typeof PictureRef;
 
   readonly isModernBarcodeScannerAvailable: boolean;
+  readonly isDocumentScannerAvailable: boolean;
   readonly toggleRecordingAsyncAvailable: boolean;
   readonly isAvailableAsync: () => Promise<boolean>;
   readonly launchScanner: (options?: ScanningOptions) => Promise<void>;
   readonly dismissScanner: () => Promise<void>;
+  readonly scanDocumentAsync: (
+    options?: DocumentScanningOptions
+  ) => Promise<DocumentScanningResult | null>;
   readonly scanFromURLAsync: (
     url: string,
     barcodeTypes?: BarcodeType[]

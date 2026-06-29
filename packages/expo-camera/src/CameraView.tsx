@@ -8,6 +8,8 @@ import type {
   CameraViewProps,
   CameraRecordingOptions,
   CameraViewRef,
+  DocumentScanningOptions,
+  DocumentScanningResult,
   ScanningOptions,
   ScanningResult,
   VideoCodec,
@@ -79,6 +81,7 @@ export default class CameraView extends Component<CameraViewProps> {
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+) or the Google code scanner (Android).
    */
   static isModernBarcodeScannerAvailable: boolean = CameraManager.isModernBarcodeScannerAvailable;
+  static isDocumentScannerAvailable: boolean = CameraManager.isDocumentScannerAvailable;
   /**
    * Check whether the current device has a camera. This is useful for web and simulators cases.
    * This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser).
@@ -236,6 +239,25 @@ export default class CameraView extends Component<CameraViewProps> {
     if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
       await CameraManager.dismissScanner();
     }
+  }
+
+  /**
+   * Presents a system document scanner. On iOS this uses VisionKit's
+   * [`VNDocumentCameraViewController`](https://developer.apple.com/documentation/visionkit/vndocumentcameraviewcontroller);
+   * on Android it uses the [ML Kit document scanner](https://developers.google.com/ml-kit/vision/doc-scanner).
+   * Resolves with the scanned pages once the user saves, or `null` if they cancel.
+   * @param options A map of `DocumentScanningOptions`.
+   * @return A promise resolving to a [`DocumentScanningResult`](#documentscanningresult), or `null` on cancel or when unavailable.
+   * @platform android
+   * @platform ios
+   */
+  static async scanDocumentAsync(
+    options?: DocumentScanningOptions
+  ): Promise<DocumentScanningResult | null> {
+    if (Platform.OS === 'web' || !CameraView.isDocumentScannerAvailable) {
+      return null;
+    }
+    return (await CameraManager.scanDocumentAsync(options ?? {})) ?? null;
   }
 
   /**
