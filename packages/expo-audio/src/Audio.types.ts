@@ -396,7 +396,7 @@ export type RecordingOptions = {
    * The basename of the recording file (without extension). The SDK appends `extension`
    * and writes into `<directory>/Audio/<fileName><extension>`.
    *
-   * If omitted, defaults to a random UUID (`recording-<uuid>`).
+   * If omitted, defaults to a random UUID.
    *
    * Path separators (`/`, `\`) and parent-directory references (`..`) are rejected
    * at runtime so callers cannot escape the recording directory.
