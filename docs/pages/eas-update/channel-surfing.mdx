@@ -7,6 +7,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
 **Channel surfing** lets an installed release build request updates from a different EAS Update channel at runtime.
@@ -99,13 +100,25 @@ export async function clearUpdateChannelOverrideAsync() {
 
 ## Test channel surfing
 
-To test channel surfing, install a release build that points to the channel you want to start from. If you use [EAS Build](/build/introduction/), create the build with a profile that includes the starting `channel`. For local testing, you can use an Android [APK build](/build-reference/apk/) or an [iOS Simulator build](/build-reference/simulators/).
+<Step label="1">
+
+Install a release build that points to the channel you want to start from. If you use [EAS Build](/build/introduction/), create the build with a profile that includes the starting `channel`. For local testing, you can use an Android [APK build](/build-reference/apk/) or an [iOS Simulator build](/build-reference/simulators/).
+
+</Step>
+
+<Step label="2">
 
 Publish an update with a visible change to another compatible channel:
 
 <Terminal cmd={['$ eas update --channel preview']} />
 
+</Step>
+
+<Step label="3">
+
 Open the installed app and trigger your channel switcher to select `preview`. The app should check for an update, fetch the compatible update from the `preview` channel, and reload into it.
+
+</Step>
 
 ## Risks and considerations when switching channels
 
