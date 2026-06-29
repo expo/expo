@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `visit` to walk a value against a JSON schema ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
