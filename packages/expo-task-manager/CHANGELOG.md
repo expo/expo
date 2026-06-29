@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix `NullPointerException` in `TaskService.executeTask` when a background job runs while the app context has been released (e.g. headless location tasks restored after the process was killed). ([#46449](https://github.com/expo/expo/pull/46449) by [@rarf](https://github.com/rarf))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26
