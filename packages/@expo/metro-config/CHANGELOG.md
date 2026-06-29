@@ -10,6 +10,7 @@
 
 - Fix stack frame collapsing for Windows paths. ([#46645](https://github.com/expo/expo/pull/46645) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Bump `hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+- Treat dynamic imports with rejection handlers as optional dependencies, ported from [react/metro#1697](https://github.com/react/metro/pull/1697) ([#47334](https://github.com/expo/expo/pull/47334) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
