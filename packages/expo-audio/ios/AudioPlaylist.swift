@@ -82,13 +82,13 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     sources.count
   }
 
-  init(_ ref: AVQueuePlayer, sources: [AudioSource], interval: Double, loopMode: LoopMode) {
+  init(_ ref: AVQueuePlayer, sources: [AudioSource], items: [AVPlayerItem?], interval: Double, loopMode: LoopMode) {
     self.interval = interval
     self.loopMode = loopMode
     self.sources = sources
+    self.playerItems = items
     super.init(ref)
 
-    self.playerItems = ref.items().map { $0 as AVPlayerItem? }
     ref.actionAtItemEnd = loopMode == .single ? .pause : .advance
     setupPublisher()
     addPlaybackEndNotification()

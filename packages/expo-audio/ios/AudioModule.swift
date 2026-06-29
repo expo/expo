@@ -289,9 +289,10 @@ public class AudioModule: Module {
 
     Class(AudioPlaylist.self) {
       Constructor { (sources: [AudioSource], updateInterval: Double, loopMode: LoopMode) -> AudioPlaylist in
-        let items = sources.compactMap { AudioUtils.createAVPlayerItem(from: $0) }
-        let avQueuePlayer = AVQueuePlayer(items: items)
-        let playlist = AudioPlaylist(avQueuePlayer, sources: sources, interval: updateInterval, loopMode: loopMode)
+        // Keep one slot per source, nil where an item can't be created, so playerItems stays aligned with sources.
+        let items = sources.map { AudioUtils.createAVPlayerItem(from: $0) }
+        let avQueuePlayer = AVQueuePlayer(items: items.compactMap { $0 })
+        let playlist = AudioPlaylist(avQueuePlayer, sources: sources, items: items, interval: updateInterval, loopMode: loopMode)
         playlist.owningRegistry = self.registry
         self.registry.add(playlist)
         return playlist
