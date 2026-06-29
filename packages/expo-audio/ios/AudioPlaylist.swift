@@ -7,10 +7,13 @@ private enum PlaylistConstants {
   static let trackChanged = "trackChanged"
 }
 
-public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
+public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayable {
   let id = UUID().uuidString
   private let interval: Double
   private(set) var currentRate: Float = 1.0
+  var isActiveForLockScreen = false
+  var metadata: Metadata?
+  var lockScreenOptions: LockScreenOptions?
 
   var loopMode: LoopMode = .none
   var wasPlaying = false
@@ -46,6 +49,22 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
     ref.timeControlStatus == .playing
   }
 
+  var isLive: Bool {
+    ref.currentItem?.duration.isIndefinite ?? false
+  }
+
+  var lockScreenPlayer: AVPlayer {
+    ref
+  }
+
+  var supportsNextTrack: Bool {
+    true
+  }
+
+  var supportsPreviousTrack: Bool {
+    true
+  }
+
   var isBuffering: Bool {
     ref.isBuffering(isPlaying: isPlaying)
   }
@@ -68,10 +87,18 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
   func play(at rate: Float) {
     registerTimeObserver()
     ref.playImmediately(atRate: rate)
+
+    if isActiveForLockScreen {
+      MediaController.shared.updateNowPlayingInfo(for: self)
+    }
   }
 
   func pause() {
     ref.pause()
+
+    if isActiveForLockScreen {
+      MediaController.shared.updateNowPlayingInfo(for: self)
+    }
   }
 
   func next() {
@@ -101,6 +128,14 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
     } else if loopMode == .all && !sources.isEmpty {
       skipTo(index: sources.count - 1)
     }
+  }
+
+  func nextTrack() {
+    next()
+  }
+
+  func previousTrack() {
+    previous()
   }
 
   func skipTo(index: Int) {
@@ -217,6 +252,17 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
     }
   }
 
+  func setActiveForLockScreen(_ active: Bool = true, metadata: Metadata? = nil, options: LockScreenOptions?) {
+    self.metadata = metadata
+    self.isActiveForLockScreen = active
+    self.lockScreenOptions = active ? options : nil
+    if active {
+      MediaController.shared.setActivePlayable(self, options: options)
+    } else {
+      MediaController.shared.setActivePlayable(nil)
+    }
+  }
+
   func currentStatus() -> [String: Any] {
     return [
       "id": id,
@@ -239,6 +285,10 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
     var arguments = currentStatus()
     arguments.merge(dict) { _, new in new }
     self.emit(event: PlaylistConstants.playlistStatusUpdate, payload: arguments)
+
+    if isActiveForLockScreen {
+      MediaController.shared.updateNowPlayingInfo(for: self)
+    }
   }
 
   private func validIndex(_ index: Int) -> Bool {
@@ -367,6 +417,10 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
 
     if let endObserver {
       NotificationCenter.default.removeObserver(endObserver)
+    }
+
+    if isActiveForLockScreen {
+      MediaController.shared.setActivePlayable(nil)
     }
 
     ref.pause()

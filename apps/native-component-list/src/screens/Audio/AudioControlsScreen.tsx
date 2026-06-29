@@ -35,6 +35,8 @@ enum LockScreenButton {
 }
 
 export default function AudioControlsScreen(props: any) {
+  const [activeLockScreenPlayer, setActiveLockScreenPlayer] = useState<string | null>(null);
+
   React.useLayoutEffect(() => {
     AudioModule.setAudioModeAsync({
       shouldPlayInBackground: true,
@@ -53,24 +55,72 @@ export default function AudioControlsScreen(props: any) {
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <HeadingText>Lock Screen controls</HeadingText>
 
-      <HeadingText>Local Source</HeadingText>
-      <AudioPlayer source={localSource} />
+      <AudioPlayer
+        title="Local Source"
+        source={localSource}
+        activeLockScreenPlayer={activeLockScreenPlayer}
+        setActiveLockScreenPlayer={setActiveLockScreenPlayer}
+      />
 
-      <HeadingText>Remote Source</HeadingText>
-      <AudioPlayer source={remoteSource} />
+      <AudioPlayer
+        title="Remote Source"
+        source={remoteSource}
+        activeLockScreenPlayer={activeLockScreenPlayer}
+        setActiveLockScreenPlayer={setActiveLockScreenPlayer}
+      />
 
-      <HeadingText>Live Stream (HLS)</HeadingText>
-      <AudioPlayer source={liveStreamSource} />
+      <AudioPlayer
+        title="Live Stream (HLS)"
+        source={liveStreamSource}
+        activeLockScreenPlayer={activeLockScreenPlayer}
+        setActiveLockScreenPlayer={setActiveLockScreenPlayer}
+      />
     </ScrollView>
   );
 }
 
-function AudioPlayer({ source }: { source: AudioSource | string | number }) {
+function AudioPlayer({
+  title,
+  source,
+  activeLockScreenPlayer,
+  setActiveLockScreenPlayer,
+}: {
+  title: string;
+  source: AudioSource | string | number;
+  activeLockScreenPlayer: string | null;
+  setActiveLockScreenPlayer: (player: string | null) => void;
+}) {
   const player = useAudioPlayer(source);
   const status = useAudioPlayerStatus(player);
-  const [enabled, setEnabled] = useState(false);
   const [metadata, setMetadata] = useState<1 | 2>(1);
   const [options, setOptions] = useState<AudioLockScreenOptions>();
+  const isActiveForLockScreen = activeLockScreenPlayer === title;
+
+  const getMetadata = (preset: 1 | 2) => {
+    return preset === 1
+      ? {
+          title: 'Test',
+          artist: 'Test artist',
+          artworkUrl: artworkUrl1,
+        }
+      : {
+          title: 'Test 2',
+          artist: 'Test artist 2',
+          artworkUrl: artworkUrl2,
+        };
+  };
+
+  const setLockScreenOptions = (
+    updater: (options?: AudioLockScreenOptions) => AudioLockScreenOptions
+  ) => {
+    setOptions((currentOptions) => {
+      const nextOptions = updater(currentOptions);
+      if (isActiveForLockScreen) {
+        player.setActiveForLockScreen(true, getMetadata(metadata), nextOptions);
+      }
+      return nextOptions;
+    });
+  };
 
   const setIsMuted = (isMuted: boolean) => {
     player.muted = isMuted;
@@ -92,16 +142,17 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
   const toggleButton = (button: LockScreenButton) => {
     switch (button) {
       case LockScreenButton.SEEK_FORWARD:
-        setOptions((o) => ({ ...o, showSeekForward: !o?.showSeekForward }));
+        setLockScreenOptions((o) => ({ ...o, showSeekForward: !o?.showSeekForward }));
         break;
       case LockScreenButton.SEEK_BACKWARD:
-        setOptions((o) => ({ ...o, showSeekBackward: !o?.showSeekBackward }));
+        setLockScreenOptions((o) => ({ ...o, showSeekBackward: !o?.showSeekBackward }));
         break;
     }
   };
 
   return (
     <View>
+      <HeadingText>{title}</HeadingText>
       <Player
         {...status}
         isLive={status.isLive}
@@ -123,20 +174,16 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
       />
       <View style={styles.btnContainer}>
         <Button
-          title={`${enabled ? 'Disable' : 'Enable'} Lock Screen controls`}
+          title={`${isActiveForLockScreen ? 'Disable' : 'Enable'} Lock Screen controls`}
           onPress={() => {
-            player.setActiveForLockScreen(
-              !enabled,
-              {
-                title: 'Test',
-                artist: 'Test artist',
-                artworkUrl: artworkUrl1,
-              },
-              options
-            );
-            setEnabled((e) => !e);
+            const nextActive = !isActiveForLockScreen;
+            player.setActiveForLockScreen(nextActive, getMetadata(metadata), options);
+            setActiveLockScreenPlayer(nextActive ? title : null);
           }}
         />
+        <Text style={styles.statusText}>
+          lock screen: {isActiveForLockScreen ? 'active' : 'inactive'}
+        </Text>
         <BodyText>Lock screen buttons:</BodyText>
         <View style={styles.optionRow}>
           <Checkbox
@@ -155,7 +202,9 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
         <View style={styles.optionRow}>
           <Checkbox
             value={options?.isLiveStream ?? false}
-            onValueChange={() => setOptions((o) => ({ ...o, isLiveStream: !o?.isLiveStream }))}
+            onValueChange={() =>
+              setLockScreenOptions((o) => ({ ...o, isLiveStream: !o?.isLiveStream }))
+            }
           />
           <BodyText style={styles.optionsText}>Force live stream</BodyText>
         </View>
@@ -170,23 +219,12 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
           <Text style={styles.statusText}>error: {status.error ?? 'null'}</Text>
         </View>
         <Button
-          title="Update Metadata"
+          title={`Update Metadata (${metadata === 1 ? 'Test 2' : 'Test'})`}
+          disabled={!isActiveForLockScreen}
           onPress={() => {
-            if (metadata === 1) {
-              player.updateLockScreenMetadata({
-                title: 'Test 2',
-                artist: 'Test artist 2',
-                artworkUrl: artworkUrl2,
-              });
-              setMetadata(2);
-            } else {
-              player.updateLockScreenMetadata({
-                title: 'Test',
-                artist: 'Test artist',
-                artworkUrl: artworkUrl1,
-              });
-              setMetadata(1);
-            }
+            const nextMetadata = metadata === 1 ? 2 : 1;
+            player.updateLockScreenMetadata(getMetadata(nextMetadata));
+            setMetadata(nextMetadata);
           }}
         />
       </View>

@@ -83,6 +83,20 @@ open class SharedObject: AnySharedObject {
   public func emit<P: AnyArgument>(event: String, arguments: sending P) {
     emit(event: event, payload: arguments)
   }
+
+  // MARK: - Macro-synthesized JSI hooks
+
+  /// Binds the class's `@JS` members onto its JavaScript prototype. Overridden by the `@SharedObject`
+  /// macro; a `class func` (not a protocol requirement) so dispatch resolves per subclass.
+  @JavaScriptActor
+  open class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
+
+  /// Builds a native instance from the JS constructor arguments, or `nil` to use the DSL `Constructor`
+  /// path. Overridden by the `@SharedObject` macro from the class's `@JS init`.
+  @JavaScriptActor
+  open class func _constructSharedObject(this: JavaScriptValue, arguments: borrowing JavaScriptValuesBuffer, in runtime: JavaScriptRuntime) throws -> SharedObject? {
+    return nil
+  }
 }
 
 extension SharedObject: EventEmitter {

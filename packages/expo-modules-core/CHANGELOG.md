@@ -15,9 +15,11 @@
 - [iOS] Added `Module.emit` that sends an event directly to the module's own JavaScript object, mirroring `SharedObject.emit`. Both now share an `EventEmitter` protocol. ([#46555](https://github.com/expo/expo/pull/46555) by [@tsapeta](https://github.com/tsapeta))
 - Add `useReleasingSharedObjectWithLifecycle` hook. ([#46494](https://github.com/expo/expo/pull/46494) by [@behenate](https://github.com/behenate))
 - [iOS] Added `SharedObject.native(from:)` that recovers the native shared object paired with a JavaScript object, with a generic overload that returns the concrete subclass directly. ([#47054](https://github.com/expo/expo/pull/47054) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `@SharedObject` now binds `@JS` methods, properties and the `@JS init` directly onto the class prototype, so they no longer need `Function(…)` / `Property(…)` / `Constructor { … }` definition entries. ([#47107](https://github.com/expo/expo/pull/47107) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
+- [iOS] Pair a native shared object with one JavaScript object per runtime, so a shared object exposed to several runtimes (e.g. the main and UI runtimes, or worklet contexts) keeps a live pairing in each instead of only the one paired last. ([#47238](https://github.com/expo/expo/pull/47238) by [@tsapeta](https://github.com/tsapeta))
 - [Android][compose] Guard `onLayout` against detached window to prevent `LayoutNode should be attached to an owner` crash. ([#47085](https://github.com/expo/expo/pull/47085) by [@roitium](https://github.com/roitium))
 - [Android] Fix Jetpack Compose `Host` content disappearing before a react-native-screens pop animation finishes, by deferring composition disposal to window detach while the view is still on-screen for a transition. ([#45914](https://github.com/expo/expo/issues/45914), [#47086](https://github.com/expo/expo/issues/47086) by [@aubrey-wodonga](https://github.com/aubrey-wodonga)) ([#47099](https://github.com/expo/expo/pull/47099) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `Record` arguments crashing with a `NullPointerException` in R8-optimized release builds when converted through the reflection fallback path. ([#46852](https://github.com/expo/expo/pull/46852) by [@lukmccall](https://github.com/lukmccall))

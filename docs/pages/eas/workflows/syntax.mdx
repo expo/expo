@@ -140,10 +140,16 @@ With the `branches` list, you can trigger the workflow only when those specified
 With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) triggers the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
 
 - `opened`
+- `edited`
+- `base_ref_changed`
 - `ready_for_review`
 - `reopened`
 - `synchronize`
 - `labeled`
+
+The `edited` type follows GitHub's `pull_request.edited` behavior and triggers when the pull request title, body, or base branch changes. To trigger only when the pull request's base branch changes, use `base_ref_changed`.
+
+The `branches` filter matches the pull request's current base branch, so retargeting a pull request to a matching branch can trigger a workflow.
 
 With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory trigger the workflow. Supports globs. By default, changes to any path trigger the workflow.
 
@@ -767,6 +773,7 @@ type GitHubContext = {
   repository?: string;
   repository_owner?: string;
   event?: {
+    action?: string;
     label?: {
       name: string;
     };
@@ -784,6 +791,13 @@ type GitHubContext = {
       merged: boolean | null;
       // ... Other fields from the GitHub Pull Request webhook payload
     };
+    changes?: {
+      base?: {
+        ref?: {
+          from: string;
+        };
+      };
+    };
     number?: number;
     schedule?: string;
     inputs?: Record<string, string | number | boolean>;
@@ -791,7 +805,7 @@ type GitHubContext = {
 };
 ```
 
-> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes all fields from GitHub's Pull Request webhook payload. The commonly used fields are shown above, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
+> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 
@@ -854,6 +868,23 @@ type AppStoreConnectContext = {
   build_upload?: {
     id: string;
     state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
+    cf_bundle_version?: string;
+    build?: {
+      id: string;
+    };
+  };
+  app_version?: {
+    id: string;
+    state: string;
+  };
+  external_beta?: {
+    id: string;
+    state: string;
+  };
+  beta_feedback?: {
+    id: string;
+    type: 'crash' | 'screenshot';
+    url: string;
   };
 };
 ```
@@ -878,6 +909,32 @@ jobs:
         Upload complete for App Store Connect app: ${{ app_store_connect.app.id }}
         Upload ID: ${{ app_store_connect.build_upload.id }}
         Upload state: ${{ app_store_connect.build_upload.state }}
+```
+
+Use `build_upload.build.id` as the `asc_build_id` for a `testflight` job:
+
+```yaml .eas/workflows/testflight-after-asc-upload.yml
+name: Distribute to TestFlight after ASC upload
+
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  distribute_to_testflight:
+    name: Distribute to TestFlight
+    type: testflight
+    params:
+      asc_build_id: ${{ app_store_connect.build_upload.build.id }}
+      internal_groups:
+        - QA Team
+      external_groups:
+        - Public Beta
+      changelog: |
+        Build ${{ app_store_connect.build_upload.cf_bundle_version }} is ready for testing.
+      submit_beta_review: true
 ```
 
 #### `env`
@@ -1220,7 +1277,7 @@ This job outputs the following properties:
 
 #### `testflight`
 
-Distributes iOS builds to TestFlight internal and external testing groups. See [TestFlight job documentation](/eas/workflows/pre-packaged-jobs#testflight) for detailed information and examples.
+Distributes iOS builds to TestFlight internal and external testing groups. Provide exactly one of `build_id` (upload a build and submit to TestFlight) or `asc_build_id` (submit an already uploaded build). See [TestFlight job documentation](/eas/workflows/pre-packaged-jobs#testflight) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1229,21 +1286,30 @@ jobs:
     type: testflight
     # @end #
     params:
-      build_id: string # required
-      profile: string # optional, default: production
+      build_id: string # required to upload and submit to TestFlight; mutually exclusive with asc_build_id
+      profile: string # optional, default: production; only when uploading and submitting
+      wait_processing_timeout_seconds: number # optional, default: 1800 (30 minutes); only when uploading and submitting in one job
+      asc_build_id: string # required to submit an already uploaded build; mutually exclusive with build_id
       internal_groups: string[] # optional
       external_groups: string[] # optional
       changelog: string # optional
       submit_beta_review: boolean # optional
-      wait_processing_timeout_seconds: number # optional, default: 1800 (30 minutes)
 ```
 
-This job outputs the following properties:
+When uploading and submitting with `build_id`, this job outputs the following properties:
 
 ```json
 {
   "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
   "ios_bundle_identifier": string | null // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+}
+```
+
+When submitting an already uploaded build with `asc_build_id`, this job outputs the following properties:
+
+```json
+{
+  "asc_build_id": string | null // App Store Connect build ID
 }
 ```
 

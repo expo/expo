@@ -139,7 +139,7 @@ public final class ModuleHolder {
 
       // Install the `@JS` members the `@ExpoModule` macro binds directly into the JS object
       // (the direct-JSI path). A no-op for modules that don't use the macro.
-      try module._decorateModule(object: object, in: appContext.runtime, appContext: appContext)
+      try module._decorateModule(object: object, in: appContext.runtime)
 
       return object
     } catch {

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `timeInterval` and `distanceInterval` being ignored for background location updates. ([#46788](https://github.com/expo/expo/issues/46788) by [@doshisunny](https://github.com/doshisunny))
+
 ### 💡 Others
 
 - Simplify re-export of `LocationEventEmitter` ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))

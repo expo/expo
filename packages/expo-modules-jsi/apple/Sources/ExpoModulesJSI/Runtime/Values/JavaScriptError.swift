@@ -50,6 +50,21 @@ public final class JavaScriptError: Error, Sendable {
     }
   }
 
+  /// Returns the `JavaScriptError` representing an arbitrary native error. An existing
+  /// `JavaScriptError` is returned unchanged so its wrapped value reaches JS as-is; a
+  /// `JavaScriptThrowable` is routed through the code-preserving initializer above; any
+  /// other error is stringified into a generic `Error`.
+  @inlinable
+  public static func from(_ error: any Error, in runtime: JavaScriptRuntime) -> JavaScriptError {
+    if let jsError = error as? JavaScriptError {
+      return jsError
+    }
+    if let throwable = error as? JavaScriptThrowable {
+      return JavaScriptError(runtime, from: throwable)
+    }
+    return JavaScriptError(runtime, message: String(describing: error))
+  }
+
   /// Returns the error as a `JavaScriptValue`, which may be an arbitrary value rather than an
   /// `Error` instance when the error was created from one.
   public func toValue() -> JavaScriptValue {

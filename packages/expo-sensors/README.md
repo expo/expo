@@ -7,7 +7,7 @@
   </a>
 </p>
 
-Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.
+Provides access to a hardware device's accelerometer, barometer, device motion, gyroscope, light sensor, magnetometer, and pedometer.
 
 # API documentation
 
@@ -38,7 +38,22 @@ No additional set up necessary for basic usage.
 
 Run `npx pod-install` after installing the npm package.
 
-**Note:** to access DeviceMotion stats on iOS, the NSMotionUsageDescription key must be present in your Info.plist.
+**Note:** to access DeviceMotion stats on iOS, the `NSMotionUsageDescription` key must be present in your `Info.plist`. The included config plugin adds this key with a default message. To customize the message — or disable the permission entirely — configure the plugin in your `app.json`/`app.config.js`:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Allow $(PRODUCT_NAME) to access your device motion."
+        }
+      ]
+    ]
+  }
+}
+```
 
 # Contributing
 
