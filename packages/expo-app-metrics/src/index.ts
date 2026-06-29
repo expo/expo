@@ -2,6 +2,8 @@ import { installErrorHandler } from './installErrorHandler';
 
 export { default } from './module';
 export { AppMetricsRoot } from './AppMetricsRoot';
+export { AppMetricsErrorBoundary } from './AppMetricsErrorBoundary';
+export type { AppMetricsErrorBoundaryProps } from './AppMetricsErrorBoundary';
 export type { Session } from './Session';
 export * from './types';
 export * from './useNetworkRequestObserver';

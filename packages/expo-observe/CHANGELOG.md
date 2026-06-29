@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Expose `ObserveErrorBoundary`, a React error boundary that records render-phase errors as `exception` log events and renders a `fallback` in place of the crashed subtree. ([#47340](https://github.com/expo/expo/pull/47340) by [@tsapeta](https://github.com/tsapeta))
 - Add ObserveInteractiveMarker component ([#46909](https://github.com/expo/expo/pull/46909) by [@Ubax](https://github.com/Ubax))
 - Expose configure event ([#47388](https://github.com/expo/expo/pull/47388) by [@Ubax](https://github.com/Ubax))
 - Add `filteredParams` configuration option to navigation integrations ([#47488](https://github.com/expo/expo/pull/47488) by [@Ubax](https://github.com/Ubax))

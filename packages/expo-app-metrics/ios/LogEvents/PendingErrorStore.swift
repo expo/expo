@@ -18,6 +18,7 @@ enum PendingErrorStore {
     let type: String?
     let message: String
     let stacktrace: String?
+    let componentStack: String?
     let sessionId: String
     let timestamp: String
   }
