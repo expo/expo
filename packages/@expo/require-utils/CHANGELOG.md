@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Throw a clear error when `import.meta` is used in a `.ts`/`.cts` module loaded as CommonJS, instead of failing with a cryptic "exports is not defined in ES module scope" or silently evaluating to `undefined`. ([#PR](https://github.com/expo/expo/pull/PR) by [@jiunshinn](https://github.com/jiunshinn))
+- Throw a clear error when `import.meta` is used in a `.ts`/`.cts` module loaded as CommonJS, instead of failing with a cryptic "exports is not defined in ES module scope" or silently evaluating to `undefined`. ([#47358](https://github.com/expo/expo/pull/47358) by [@jiunshinn](https://github.com/jiunshinn))
 
 ### 💡 Others
 
