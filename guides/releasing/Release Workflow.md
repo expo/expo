@@ -113,6 +113,7 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 - Run `et generate-docs-api-data` to regenerate `unversioned` API data files before cutting new documentation version.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK.
 - Run `pnpm schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.mdx` from `unversioned` to the new versioned schema file.
+- Run `pnpm versions-schema-sync` in the `docs` directory to fetch the new version's `native-modules.json`, which the package-version header on each SDK page requires. This fetches from `exp.host`, so the new SDK's packages must already be published and synced to the versions endpoint (see [0.6. Publish `next` packages](#06-publish-next-packages)). If the packages are not live yet, the fetch returns nothing, so run this step once they are but you should create the `native-modules.json` file for the new SDK version before cutting the release branch.
 - Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
 - Commit and push changes to main.
 
