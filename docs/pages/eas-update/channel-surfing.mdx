@@ -9,7 +9,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
-Channel surfing lets an installed release build request updates from a different EAS Update channel at runtime.
+**Channel surfing** lets an installed release build request updates from a different EAS Update channel at runtime.
 
 In the default EAS Update flow, a build includes an update URL and request headers at build time. The `expo-channel-name` request header determines which channel the build requests updates from. Channel surfing stores a runtime override for that request header on the device.
 
@@ -19,15 +19,14 @@ Channel surfing does not change native code or bypass update compatibility rules
 
 ## When to use channel surfing
 
-Use channel surfing when the same native runtime can load updates from more than one channel.
-
 You can use channel surfing to:
 
+- When the same native runtime can load updates from more than one channel.
 - Allow a single installed app to move between channels on demand. The app can switch channels at runtime instead of remaining tied to the channel defined at build time.
-- Enable preview and testing on real builds so that developers, QA, or other stakeholders can try in-progress updates using the same production build that users have installed.
+- Enable preview and testing on real builds. Developers, QA, and other stakeholders can try in-progress updates using the same production build that users have installed.
 - Speed up iteration and validation by redirecting the app to another channel, without waiting for a new build.
 
-For developer-focused testing, use a [development build with `expo-dev-client`](/eas-update/expo-dev-client/) to preview compatible updates. This does not use `Updates.setUpdateRequestHeadersOverride()`, which is not supported in development builds.
+For developer-focused testing and to preview compatible updates, use a [development build with `expo-dev-client`](/eas-update/expo-dev-client/) library installed. This does not use `Updates.setUpdateRequestHeadersOverride()`, which is not supported in development builds.
 
 <Prerequisites>
   <Requirement title="EAS Update configured">
@@ -54,9 +53,8 @@ For developer-focused testing, use a [development build with `expo-dev-client`](
 
 ## Switch channels
 
-Provide an app-level trigger for changing channels, such as a hidden menu for trusted users or another mechanism that fits your workflow. When a channel is selected, use [`Updates.setUpdateRequestHeadersOverride()`](/versions/latest/sdk/updates/#updatessetupdaterequestheadersoverriderequestheaders) to override the `expo-channel-name` request header. After setting the override, check for an update, fetch it if available, and reload the app.
+Provide an app-level trigger for changing channels, such as a hidden menu for trusted users or another mechanism that fits your workflow. When a channel is selected, use [`Updates.setUpdateRequestHeadersOverride()`](/versions/latest/sdk/updates/#updatessetupdaterequestheadersoverriderequestheaders) to override the `expo-channel-name` request header. After setting the override, check for an update, fetch it if available, and reload the app:
 
-```ts
 import * as Updates from 'expo-updates';
 
 export async function switchUpdateChannelAsync(channel: string) {
@@ -78,9 +76,8 @@ The override persists on the device. After it is set, future update checks use t
 
 ## Switch back to the build channel
 
-Pass `null` to `Updates.setUpdateRequestHeadersOverride()` to clear the request header override and return to the channel configured in the build.
+Pass `null` to `Updates.setUpdateRequestHeadersOverride()` to clear the request header override and return to the channel configured in the build:
 
-```ts
 import * as Updates from 'expo-updates';
 
 export async function clearUpdateChannelOverrideAsync() {
@@ -100,7 +97,7 @@ export async function clearUpdateChannelOverrideAsync() {
 
 ## Test channel surfing
 
-To test channel surfing, install a release build that points to the channel you want to start from. If you use [EAS Build](/build/introduction/), create the build with a profile that includes the starting `channel`. For local testing, you can use an [iOS Simulator build](/build-reference/simulators/) or an Android [APK build](/build-reference/apk/).
+To test channel surfing, install a release build that points to the channel you want to start from. If you use [EAS Build](/build/introduction/), create the build with a profile that includes the starting `channel`. For local testing, you can use an Android [APK build](/build-reference/apk/) or an [iOS Simulator build](/build-reference/simulators/).
 
 Publish an update with a visible change to another compatible channel:
 
