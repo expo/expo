@@ -27,6 +27,7 @@ export class GLView extends React.Component {
      * It's useful for headless rendering or in case you want to keep just one context per application and share it between multiple components.
      * It is slightly faster than usual context as it doesn't swap framebuffers and doesn't present them on the canvas,
      * however it may require you to take a snapshot in order to present its results.
+     * Note that the context created using `createContextAsync` has to be destroyed using `destroyContextAsync`.
      * Also, keep in mind that you need to set up a viewport and create your own framebuffer and texture that you will be drawing to, before you take a snapshot.
      * @return A promise that resolves to WebGL context object. See [WebGL API](#webgl-api) for more details.
      */
@@ -35,7 +36,7 @@ export class GLView extends React.Component {
         return getGl(exglCtxId);
     }
     /**
-     * Destroys given context.
+     * Destroys given context. This method is intended to use to destroy headless context created with `createContextAsync`.
      * @param exgl WebGL context to destroy.
      * @return A promise that resolves to boolean value that is `true` if given context existed and has been destroyed successfully.
      */
