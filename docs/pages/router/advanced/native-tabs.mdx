@@ -10,7 +10,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
-import { DiffBlock } from '~/ui/components/Snippet';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { TabsGroup, Tabs, Tab } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
@@ -397,6 +397,56 @@ export default function TabLayout() {
 ```
 
 > **info** Asset catalog icons support the `renderingMode` prop, just like `src` icons. When `iconColor` is set, icons default to `template` rendering. Otherwise, they default to `original`.
+
+#### Vector icons
+
+You can render icons from an icon font, such as the ones provided by [`react-native-vector-icons`](https://github.com/oblador/react-native-vector-icons), by passing an image source to the `src` prop. Each icon set exposes a `getImageSourceSync` method that rasterizes a glyph to an image source you can pass directly to `src`.
+
+This is useful on Android, where the built-in `md` prop only renders outlined Material Symbols. An icon font like Material Design Icons provides both outlined and filled glyphs (for example, `home-outline` and `home`), so you can show distinct default and selected icons.
+
+To start, install the icon set you want to use along with `@react-native-vector-icons/get-image`, which provides the native module that `getImageSourceSync` relies on. The example below uses the `@react-native-vector-icons/material-design-icons` icon set:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @react-native-vector-icons/material-design-icons @react-native-vector-icons/get-image'],
+    yarn: ['$ yarn expo install @react-native-vector-icons/material-design-icons @react-native-vector-icons/get-image'],
+    pnpm: ['$ pnpm expo install @react-native-vector-icons/material-design-icons @react-native-vector-icons/get-image'],
+    bun: ['$ bun expo install @react-native-vector-icons/material-design-icons @react-native-vector-icons/get-image'],
+  }}
+/>
+
+> **info** `getImageSourceSync` requires a development build. Rebuild your app after installing the packages so the native module and icon font are bundled.
+
+`getImageSourceSync` is synchronous, so compute the image sources once at module scope rather than on each render. Combine `src` with `sf` to use the vector icon on Android and SF Symbols on iOS. On iOS, `sf` takes precedence over `src`; on Android, the icon falls back to `src`.
+
+```tsx src/app/_layout.tsx
+import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+const homeIcon = MaterialDesignIcons.getImageSourceSync('home', 24, 'black');
+const starOutlineIcon = MaterialDesignIcons.getImageSourceSync('star-outline', 24, 'black');
+const starIcon = MaterialDesignIcons.getImageSourceSync('star', 24, 'black');
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        {/* `sf` is used on iOS, `src` (the vector icon) on Android. */}
+        <NativeTabs.Trigger.Icon sf="house" src={homeIcon} />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="explore">
+        {/* Outlined when unselected, filled when selected. */}
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'star', selected: 'star.fill' }}
+          src={{ default: starOutlineIcon, selected: starIcon }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+> **info** Distinct selected icons for `src` on Android require SDK 56 or later. See the note at the [start of this section](#icon).
 
 ### Label
 
