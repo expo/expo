@@ -76,4 +76,30 @@ describe('evalModule', () => {
       default: 'test',
     });
   });
+
+  it('throws a helpful error when .ts code uses import.meta (loaded as CommonJS)', () => {
+    expect(() =>
+      evalModule(`export const dir = import.meta.dirname;`, path.join(basepath, 'eval.ts'))
+    ).toThrow(/import\.meta/);
+  });
+
+  it('does not confuse "import.meta" inside a string or comment for the meta-property', () => {
+    const mod = evalModule(
+      `// import.meta.dirname is unavailable here\nexport const note = 'use import.meta in .mts files';`,
+      path.join(basepath, 'eval.ts')
+    );
+
+    expect(mod).toEqual({
+      note: 'use import.meta in .mts files',
+    });
+  });
+
+  it('accepts .mts code using import.meta (loaded as an ES module)', () => {
+    const mod = evalModule(
+      `export const hasMeta = typeof import.meta.url === 'string';`,
+      path.join(basepath, 'eval.mts')
+    );
+
+    expect(mod.hasMeta).toBe(true);
+  });
 });

@@ -63,6 +63,32 @@ function maybeReadFileSync(filename: string) {
   }
 }
 
+/** Whether the source contains an `import.meta` meta-property, ignoring string and comment
+ * occurrences. Used to detect `import.meta` in files that are loaded as CommonJS. */
+function sourceUsesImportMeta(tsModule: typeof import('typescript'), code: string): boolean {
+  const sourceFile = tsModule.createSourceFile(
+    'module.ts',
+    code,
+    tsModule.ScriptTarget.Latest,
+    false
+  );
+  let found = false;
+  const visit = (node: ts.Node): void => {
+    if (found) {
+      return;
+    } else if (
+      tsModule.isMetaProperty(node) &&
+      node.keywordToken === tsModule.SyntaxKind.ImportKeyword
+    ) {
+      found = true;
+    } else {
+      tsModule.forEachChild(node, visit);
+    }
+  };
+  visit(sourceFile);
+  return found;
+}
+
 type Format = 'commonjs' | 'module' | 'module-typescript' | 'commonjs-typescript' | 'typescript';
 
 function toFormat(filename: string, isLegacy: true): Format;
@@ -304,6 +330,24 @@ function evalModule(
         mode: 'transform',
         sourceMap: true,
       });
+    }
+
+    // `import.meta` survives the CommonJS transpile but can't be evaluated as CommonJS,
+    // so fail early with an actionable error instead of a cryptic Node failure. The cheap
+    // regex avoids parsing the file again unless it's likely affected.
+    if (
+      format === 'commonjs-typescript' &&
+      /\bimport\s*\.\s*meta\b/.test(code) &&
+      (!ts || sourceUsesImportMeta(ts, code))
+    ) {
+      throw new SyntaxError(
+        `Cannot use "import.meta" in "${path.basename(filename)}". ` +
+          `".ts" and ".cts" files are loaded as CommonJS for backwards compatibility, ` +
+          `and "import.meta" only exists in ES modules.\n` +
+          `Replace "import.meta.dirname" with "__dirname" and "import.meta.url" with ` +
+          `"require('node:url').pathToFileURL(__filename).href", or rename the file to ".mts" ` +
+          `to load it as an ES module.`
+      );
     }
 
     if (inputCode !== code) {
