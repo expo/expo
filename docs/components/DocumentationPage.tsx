@@ -22,6 +22,7 @@ import { buildBreadcrumbListSchema, buildTechArticleSchema } from '~/constants/s
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
+import { AskPageAILoading } from '~/ui/components/AskPageAI/AskPageAILoading';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { InlineHelp } from '~/ui/components/InlineHelp';
@@ -39,6 +40,7 @@ const { LATEST_VERSION } = versions;
 
 const AskPageAILazyMount = dynamic(() => import('~/ui/components/AskPageAI/AskPageAILazyMount'), {
   ssr: false,
+  loading: () => <AskPageAILoading />,
 });
 
 export type DocPageProps = PropsWithChildren<PageMetadata>;
