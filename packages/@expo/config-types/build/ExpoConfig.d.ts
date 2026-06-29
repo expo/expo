@@ -241,6 +241,10 @@ export interface ExpoConfig {
      */
     experiments?: {
         /**
+         * Enable experimental support for select out-of-tree platforms, if their support packages are installed.
+         */
+        outOfTreePlatforms?: boolean;
+        /**
          * Apply Expo Autolinking's search results to Metro's module resolution. This forces your project's dependencies on `react`, `react-dom`, and `react-native`, and the autolinked versions of any Expo and React Native modules to be resolved when bundling your app. This prevents version misalignment and is useful for monorepos and to prevent conflicts.
          */
         autolinkingModuleResolution?: boolean;
