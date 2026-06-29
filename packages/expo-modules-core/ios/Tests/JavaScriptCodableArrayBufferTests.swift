@@ -18,7 +18,7 @@ struct JavaScriptCodableArrayBufferTests {
   }
 
   @Test
-  func `decodes JS-backed ArrayBuffer as lazy JavaScript-backed view`() throws {
+  func `decodes JS-backed ArrayBuffer as JavaScript-backed view until data access`() throws {
     let runtime = try runtime
     let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
     let decoded = try ArrayBuffer.decode(value, in: runtime)
@@ -26,10 +26,11 @@ struct JavaScriptCodableArrayBufferTests {
     #expect(decoded.byteLength == 3)
     #expect(decoded.isNativeBacked == false)
     #expect(Array(decoded.data) == [1, 2, 3])
+    #expect(decoded.isNativeBacked == true)
   }
 
   @Test
-  func `decodes borrowed JavaScript value as lazy JavaScript-backed view`() throws {
+  func `decodes borrowed JavaScript value as JavaScript-backed view until data access`() throws {
     let runtime = try runtime
     let value = try runtime.eval(
       """
@@ -44,10 +45,11 @@ struct JavaScriptCodableArrayBufferTests {
     #expect(decoded.byteLength == 2)
     #expect(decoded.isNativeBacked == false)
     #expect(Array(decoded.data) == [2, 3])
+    #expect(decoded.isNativeBacked == true)
   }
 
   @Test
-  func `decodes JS-backed typed array view as lazy JavaScript-backed view range`() throws {
+  func `decodes JS-backed typed array view as JavaScript-backed view range until data access`() throws {
     let runtime = try runtime
     let value = try runtime.eval(
       """
@@ -60,6 +62,7 @@ struct JavaScriptCodableArrayBufferTests {
     #expect(decoded.byteLength == 2)
     #expect(decoded.isNativeBacked == false)
     #expect(Array(decoded.data) == [2, 3])
+    #expect(decoded.isNativeBacked == true)
   }
 
   @Test
