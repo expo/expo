@@ -33,6 +33,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
           data-md="platform-badge"
         >
           <svg
+            aria-hidden="true"
             class="translate-z mt-[-0.5px] icon-2xs shrink-0 text-palette-green12 opacity-80"
             fill="none"
             role="img"
@@ -89,6 +90,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
           data-text="true"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 icon-sm text-icon-secondary"
             fill="none"
             role="img"

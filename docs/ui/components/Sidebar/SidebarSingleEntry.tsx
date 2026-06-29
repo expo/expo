@@ -44,6 +44,7 @@ export const SidebarSingleEntry = ({
           {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
           {...(isActive && mainSection && { 'data-main-section': mainSection })}>
           <Icon
+            aria-hidden="true"
             className={mergeClasses(
               'shrink-0',
               secondary ? 'icon-xs' : 'icon-sm',
@@ -53,7 +54,9 @@ export const SidebarSingleEntry = ({
           <span className={mergeClasses(allowCompactDisplay && 'compact-height:hidden')}>
             {title}
           </span>
-          {isExternal && <ArrowUpRightIcon className="ml-auto icon-sm text-icon-secondary" />}
+          {isExternal && (
+            <ArrowUpRightIcon aria-hidden="true" className="ml-auto icon-sm text-icon-secondary" />
+          )}
         </LinkBase>
       </Tooltip.Trigger>
       <Tooltip.Content
