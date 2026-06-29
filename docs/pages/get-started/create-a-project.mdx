@@ -17,7 +17,9 @@ We also make [Expo Application Services (EAS)](https://expo.dev/eas), a set of s
 - [Node.js (LTS)](https://nodejs.org/en/).
 - macOS, Windows (Powershell and [WSL 2](https://expo.fyi/wsl)), and Linux are supported.
 
-We recommend starting with the default project created by `create-expo-app`. The default project includes example code to help you get started.
+## Start with a default project
+
+We recommend starting with the default project created by [`create-expo-app`](/more/create-expo/). The default project includes example code to help you get started.
 
 To create a new project, run the following command:
 
@@ -31,6 +33,34 @@ To create a new project, run the following command:
 />
 
 > **Note:** During the SDK 56 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-56` to create an SDK 56 project. You can also choose a different template by adding the [`--template` option](/more/create-expo/#--template).
+
+## Start from an example
+
+Instead of the default project, you can start from one of the [Expo examples](https://github.com/expo/examples). These are small apps that each demonstrate a specific feature or integration, such as Expo Router, Expo Widgets, or a camera screen.
+
+To browse the full list and pick one interactively, run `create-expo-app` with the [`--example`](/more/create-expo/#--example) option and no name:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --example'],
+    yarn: ['$ yarn create expo-app --example'],
+    pnpm: ['$ pnpm create expo-app --example'],
+    bun: ['$ bun create expo --example'],
+  }}
+/>
+
+To create a known example directly, pass its name:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --example with-router'],
+    yarn: ['$ yarn create expo-app --example with-router'],
+    pnpm: ['$ pnpm create expo-app --example with-router'],
+    bun: ['$ bun create expo --example with-router'],
+  }}
+/>
+
+> **info** The rest of the guides in this **"Get started"** section follows the default project. An example app may be organized differently but the concepts are the same.
 
 ## Next step
 
