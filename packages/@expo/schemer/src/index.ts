@@ -1,6 +1,4 @@
-import type { ErrorObject, Options } from 'ajv';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
+import { validate, ValidationError as SchemaValidationError, JSONSchema } from '@expo/schema-utils';
 import fs from 'fs';
 import traverse from 'json-schema-traverse';
 import path from 'path';
@@ -13,7 +11,7 @@ function lowerFirst(str: string): string {
   return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-type Meta = {
+interface Meta {
   asset?: boolean;
   dimensions?: {
     width: number;
@@ -22,114 +20,107 @@ type Meta = {
   square?: boolean;
   contentTypePattern?: string;
   contentTypeHuman?: string;
-};
+}
 
-type SchemerOptions = Options & {
+interface SchemerOptions {
   rootDir?: string;
-};
+}
 
-type AssetField = { fieldPath: string; data: string; meta: Meta };
+interface AssetField {
+  fieldPath: string;
+  data: string;
+  meta: Meta;
+}
+
+interface SchemaUtilsError {
+  message: string;
+  path: string;
+  keyword: string;
+  value: unknown;
+}
 
 export { SchemerError, ValidationError, ErrorCodes, type ErrorCode } from './Error';
 
+function pathToFieldPath(schemaUtilsPath: string): string {
+  return schemaUtilsPath.replace(/\[(\d+)\]/g, '.$1').replace(/^\./, '');
+}
+
+// `required`/`additionalProperties` errors append the offending key to the path;
+// the field path excludes it and the message names it instead.
+function splitLastSegment(fieldPath: string): { parentPath: string; key: string } {
+  const index = fieldPath.lastIndexOf('.');
+  return index === -1
+    ? { parentPath: '', key: fieldPath }
+    : { parentPath: fieldPath.slice(0, index), key: fieldPath.slice(index + 1) };
+}
+
 export default class Schemer {
   options: SchemerOptions;
-  ajv: Ajv;
-  schema: object;
+  schema: JSONSchema;
   rootDir: string;
   manualValidationErrors: ValidationError[];
-  // Schema is a JSON Schema object
-  constructor(schema: object, options: SchemerOptions = {}) {
-    this.options = {
-      allErrors: true,
-      verbose: true,
-      meta: true,
-      strict: false,
-      unicodeRegExp: false,
-      ...options,
-    };
+  schemaValidationErrors: ValidationError[];
 
-    this.ajv = new Ajv(this.options);
-    addFormats(this.ajv, { mode: 'full' });
+  constructor(schema: JSONSchema, options: SchemerOptions = {}) {
+    this.options = { ...options };
     this.schema = schema;
-    this.rootDir = this.options.rootDir || __dirname;
+    this.rootDir = (this.options.rootDir as string) || __dirname;
     this.manualValidationErrors = [];
+    this.schemaValidationErrors = [];
   }
 
-  _formatAjvErrorMessage({
-    keyword,
-    instancePath,
-    params,
-    parentSchema,
-    data,
-    message,
-  }: ErrorObject) {
-    const meta = parentSchema && (parentSchema as any).meta;
-    // This removes the "." in front of a fieldPath
-    instancePath = instancePath.slice(1);
+  _formatValidationError({ keyword, path, value, message }: SchemaUtilsError): ValidationError {
+    const fieldPath = pathToFieldPath(path);
     switch (keyword) {
       case 'additionalProperties': {
+        const { parentPath, key } = splitLastSegment(fieldPath);
         return new ValidationError({
           errorCode: 'SCHEMA_ADDITIONAL_PROPERTY',
-          fieldPath: instancePath,
-          message: `should NOT have additional property '${(params as any).additionalProperty}'`,
-          data,
-          meta,
+          fieldPath: parentPath,
+          message: `should NOT have additional property '${key}'`,
+          data: value,
+          meta: undefined,
         });
       }
-      case 'required':
+      case 'required': {
+        const { parentPath, key } = splitLastSegment(fieldPath);
         return new ValidationError({
           errorCode: 'SCHEMA_MISSING_REQUIRED_PROPERTY',
-          fieldPath: instancePath,
-          message: `is missing required property '${(params as any).missingProperty}'`,
-          data,
-          meta,
+          fieldPath: parentPath,
+          message: `is missing required property '${key}'`,
+          data: value,
+          meta: undefined,
         });
-      case 'pattern': {
-        //@TODO Parse the message in a less hacky way. Perhaps for regex validation errors, embed the error message under the meta tag?
-        const regexHuman = meta?.regexHuman;
-        const regexErrorMessage = regexHuman
-          ? `'${instancePath}' should be a ${regexHuman[0].toLowerCase() + regexHuman.slice(1)}`
-          : `'${instancePath}' ${message}`;
+      }
+      case 'pattern':
         return new ValidationError({
           errorCode: 'SCHEMA_INVALID_PATTERN',
-          fieldPath: instancePath,
-          message: regexErrorMessage,
-          data,
-          meta,
+          fieldPath,
+          message: `'${fieldPath}' ${message}`,
+          data: value,
+          meta: undefined,
         });
-      }
-      case 'not': {
-        const notHuman = meta?.notHuman;
-        const notHumanErrorMessage = notHuman
-          ? `'${instancePath}' should be ${notHuman[0].toLowerCase() + notHuman.slice(1)}`
-          : `'${instancePath}' ${message}`;
+      case 'not':
         return new ValidationError({
           errorCode: 'SCHEMA_INVALID_NOT',
-          fieldPath: instancePath,
-          message: notHumanErrorMessage,
-          data,
-          meta,
+          fieldPath,
+          message: `'${fieldPath}' ${message}`,
+          data: value,
+          meta: undefined,
         });
-      }
       default:
         return new ValidationError({
           errorCode: 'SCHEMA_VALIDATION_ERROR',
-          fieldPath: instancePath,
+          fieldPath,
           message: message || 'Validation error',
-          data,
-          meta,
+          data: value,
+          meta: undefined,
         });
     }
   }
 
   getErrors(): ValidationError[] {
-    // Convert AJV JSONSchema errors to our ValidationErrors
-    let valErrors: ValidationError[] = [];
-    if (this.ajv.errors) {
-      valErrors = this.ajv.errors.map((error) => this._formatAjvErrorMessage(error));
-    }
-    return [...valErrors, ...this.manualValidationErrors];
+    return [...this.schemaValidationErrors, ...this.manualValidationErrors];
   }
 
   _throwOnErrors() {
@@ -137,13 +128,13 @@ export default class Schemer {
     const errors = this.getErrors();
     if (errors.length > 0) {
       this.manualValidationErrors = [];
-      this.ajv.errors = [];
+      this.schemaValidationErrors = [];
       throw new SchemerError(errors);
     }
   }
 
   async validateAll(data: any) {
-    await this._validateSchemaAsync(data);
+    this._validateSchema(this.schema, data);
     await this._validateAssetsAsync(data);
     this._throwOnErrors();
   }
@@ -154,12 +145,22 @@ export default class Schemer {
   }
 
   async validateSchemaAsync(data: any) {
-    await this._validateSchemaAsync(data);
+    this._validateSchema(this.schema, data);
     this._throwOnErrors();
   }
 
-  _validateSchemaAsync(data: any) {
-    this.ajv.validate(this.schema, data);
+  _validateSchema(schema: JSONSchema, data: any) {
+    try {
+      validate(schema, data);
+    } catch (error: any) {
+      if (error instanceof SchemaValidationError) {
+        for (const validationError of error.errors) {
+          this.schemaValidationErrors.push(this._formatValidationError(validationError));
+        }
+      } else {
+        throw error;
+      }
+    }
   }
 
   async _validateAssetsAsync(data: any) {
@@ -313,7 +314,7 @@ export default class Schemer {
 
   async validateProperty(fieldPath: string, data: any) {
     const subSchema = fieldPathToSchema(this.schema, fieldPath);
-    this.ajv.validate(subSchema, data);
+    this._validateSchema(subSchema, data);
 
     if (subSchema.meta && subSchema.meta.asset) {
       await this._validateAssetAsync({ fieldPath, data, meta: subSchema.meta });
