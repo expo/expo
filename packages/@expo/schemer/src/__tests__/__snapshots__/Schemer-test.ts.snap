@@ -5,7 +5,7 @@ exports[`Holistic Unit Test bad example app.json - invalid path for app icon 1`]
   {
     "data": "./unknown/path.png",
     "errorCode": "INVALID_ASSET_URI",
-    "fieldPath": "icon",
+    "fieldPath": ".icon",
     "message": "cannot access file at './unknown/path.png'",
     "meta": {
       "asset": true,
@@ -32,8 +32,8 @@ exports[`Holistic Unit Test bad example app.json schema 1`] = `
       "slug": "1*@)#($*@)(#$*)",
     },
     "errorCode": "SCHEMA_MISSING_REQUIRED_PROPERTY",
-    "fieldPath": "",
-    "message": "is missing required property 'name'",
+    "fieldPath": ".name",
+    "message": "Required property "name" is missing",
     "meta": undefined,
     "name": "ValidationError",
   },
@@ -45,8 +45,8 @@ exports[`Holistic Unit Test bad example app.json schema with field with not 1`] 
   {
     "data": "1.0",
     "errorCode": "SCHEMA_INVALID_NOT",
-    "fieldPath": "runtimeVersion",
-    "message": "'runtimeVersion' Value matches the not schema, but should not",
+    "fieldPath": ".runtimeVersion",
+    "message": "Value matches the not schema, but should not",
     "meta": undefined,
     "name": "ValidationError",
   },
@@ -58,8 +58,8 @@ exports[`Image Validation errors for webp images 1`] = `
   {
     "data": "./fixtures/webp.webp",
     "errorCode": "INVALID_CONTENT_TYPE",
-    "fieldPath": "Android.adaptiveIcon.foregroundImage",
-    "message": "field 'Android.adaptiveIcon.foregroundImage' should point to .png image but the file at './fixtures/webp.webp' has type webp",
+    "fieldPath": ".android.adaptiveIcon.foregroundImage",
+    "message": "field '.android.adaptiveIcon.foregroundImage' should point to .png image but the file at './fixtures/webp.webp' has type webp",
     "meta": {
       "asset": true,
       "contentTypeHuman": ".png image",
@@ -71,7 +71,7 @@ exports[`Image Validation errors for webp images 1`] = `
   {
     "data": "./fixtures/webp.webp",
     "errorCode": "NOT_SQUARE",
-    "fieldPath": "Android.adaptiveIcon.foregroundImage",
+    "fieldPath": ".android.adaptiveIcon.foregroundImage",
     "message": "image should be square, but the file at './fixtures/webp.webp' has dimensions 320x214",
     "meta": {
       "asset": true,
@@ -89,7 +89,7 @@ exports[`Image Validation errors when file extension and content do not match up
   {
     "data": "./fixtures/secretlyPng.jpg",
     "errorCode": "FILE_EXTENSION_MISMATCH",
-    "fieldPath": "icon",
+    "fieldPath": ".icon",
     "message": "the file extension should match the content, but the file extension is .jpg while the file content at './fixtures/secretlyPng.jpg' is of type png",
     "meta": {
       "asset": true,
@@ -108,8 +108,8 @@ exports[`Individual Unit Tests Error when data has an additional property 1`] = 
   {
     "data": "extra",
     "errorCode": "SCHEMA_ADDITIONAL_PROPERTY",
-    "fieldPath": "",
-    "message": "should NOT have additional property 'extraProperty'",
+    "fieldPath": ".extraProperty",
+    "message": "Additional property "extraProperty" is not allowed",
     "meta": undefined,
     "name": "ValidationError",
   },
@@ -123,8 +123,8 @@ exports[`Individual Unit Tests Error when missing Required Property 1`] = `
       "noName": "",
     },
     "errorCode": "SCHEMA_MISSING_REQUIRED_PROPERTY",
-    "fieldPath": "",
-    "message": "is missing required property 'name'",
+    "fieldPath": ".name",
+    "message": "Required property "name" is missing",
     "meta": undefined,
     "name": "ValidationError",
   },
@@ -136,8 +136,8 @@ exports[`Manual Validation Individual Unit Tests Local icon dimensions wrong 1`]
   {
     "data": "./fixtures/check.png",
     "errorCode": "INVALID_DIMENSIONS",
-    "fieldPath": "icon",
-    "message": "'icon' should have dimensions 400x401, but the file at './fixtures/check.png' has dimensions 512x512",
+    "fieldPath": ".icon",
+    "message": "'.icon' should have dimensions 400x401, but the file at './fixtures/check.png' has dimensions 512x512",
     "meta": {
       "asset": true,
       "contentTypePattern": "^image/png$",
