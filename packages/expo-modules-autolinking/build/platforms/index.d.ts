@@ -15,3 +15,4 @@ declare function getLinkingImplementationForPlatform(platform: 'devtools'): Plat
 declare function getLinkingImplementationForPlatform(platform: 'web'): PlatformImplementations['web'];
 declare function getLinkingImplementationForPlatform(platform: SupportedPlatform): PlatformImplementations[keyof PlatformImplementations];
 export { getLinkingImplementationForPlatform };
+export declare function getSupportPackageForPlatform(platform: SupportedPlatform): string | null;

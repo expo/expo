@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var _exportNames = {
+  getPlatformsFromConfig: true,
   getConfig: true,
   getPackageJson: true,
   getConfigFilePaths: true,
@@ -19,6 +20,7 @@ exports.getConfigFilePaths = getConfigFilePaths;
 exports.getDefaultTarget = getDefaultTarget;
 exports.getNameFromConfig = getNameFromConfig;
 exports.getPackageJson = getPackageJson;
+exports.getPlatformsFromConfig = getPlatformsFromConfig;
 exports.getProjectConfigDescription = getProjectConfigDescription;
 exports.getProjectConfigDescriptionWithPaths = getProjectConfigDescriptionWithPaths;
 exports.getWebOutputPath = getWebOutputPath;
@@ -164,13 +166,37 @@ function reduceExpoObject(config) {
  * @param projectRoot
  * @param exp
  */
-function getSupportedPlatforms(projectRoot) {
+function getSupportedPlatforms(projectRoot, exp) {
   const platforms = [];
   if ((0, _requireUtils().resolveFrom)(projectRoot, 'react-native/package.json')) {
     platforms.push('ios', 'android');
   }
   if ((0, _requireUtils().resolveFrom)(projectRoot, 'react-dom/package.json')) {
     platforms.push('web');
+  }
+  // TODO(@kitten): Update when XDL schema is modified
+  if (exp.experiments?.outOfTreePlatforms) {
+    if ((0, _requireUtils().resolveFrom)(projectRoot, 'react-native-tvos/package.json')) {
+      platforms.push('tvos');
+    }
+    if ((0, _requireUtils().resolveFrom)(projectRoot, 'react-native-macos/package.json')) {
+      platforms.push('macos');
+    }
+  }
+  return platforms;
+}
+
+/**
+ * Resolves the platforms a project targets, as configured or detected.
+ *
+ * @param projectRoot
+ * @param exp
+ */
+function getPlatformsFromConfig(projectRoot, exp) {
+  let platforms = exp?.platforms ?? getSupportedPlatforms(projectRoot, exp);
+  // TODO(@kitten): Update when XDL schema is modified
+  if (!exp.experiments?.outOfTreePlatforms) {
+    platforms = platforms.filter(platform => platform === 'android' || platform === 'ios' || platform === 'web');
   }
   return platforms;
 }
@@ -535,10 +561,9 @@ function ensureConfigHasDefaultValues({
   } catch (error) {
     if (!skipSDKVersionRequirement) throw error;
   }
-  let platforms = exp.platforms;
-  if (!platforms) {
-    platforms = getSupportedPlatforms(projectRoot);
-  }
+
+  // TODO(@kitten): Remove once platforms are updated in XDL schema
+  const platforms = getPlatformsFromConfig(projectRoot, exp);
   return {
     exp: {
       ...expWithDefaults,

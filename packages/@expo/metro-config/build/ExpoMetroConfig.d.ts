@@ -37,6 +37,8 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         unstable_conditionsByPlatform: {
             ios: string[];
             android: string[];
+            tvos: string[];
+            macos: string[];
             web: string[];
         };
         resolverMainFields: string[];

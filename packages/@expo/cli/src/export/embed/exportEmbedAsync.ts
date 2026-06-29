@@ -111,13 +111,18 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   ensureProcessExitsAfterDelay();
 }
 
+// Apple platforms (ios/tvos/macos) all build via Xcode and share the same bundle output and
+// error-reporting handling.
+const isApplePlatform = (platform: string): boolean =>
+  platform === 'ios' || platform === 'tvos' || platform === 'macos';
+
 export async function exportEmbedInternalAsync(projectRoot: string, options: Options) {
   // Ensure we delete the old bundle to trigger a failure if the bundle cannot be created.
   await removeAsync(options.bundleOutput);
 
   // The iOS bundle is copied in to the Xcode project, so we need to remove the old one
   // to prevent Xcode from loading the old one after a build failure.
-  if (options.platform === 'ios') {
+  if (isApplePlatform(options.platform)) {
     const previousPath = guessCopiedAppleBundlePath(options.bundleOutput);
     if (previousPath && fs.existsSync(previousPath)) {
       debug('Removing previous iOS bundle:', previousPath);
@@ -289,7 +294,7 @@ export async function exportEmbedBundleAndAssetsAsync(
     if (isError(error)) {
       // Log using Xcode error format so the errors are picked up by xcodebuild.
       // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script
-      if (options.platform === 'ios') {
+      if (isApplePlatform(options.platform)) {
         // If the error is about to be presented in Xcode, strip the ansi characters from the message.
         if ('message' in error && isExecutingFromXcodebuild()) {
           error.message = stripAnsi(error.message) as string;
@@ -420,7 +425,7 @@ export async function exportEmbedAssetsAsync(
     if (isError(error)) {
       // Log using Xcode error format so the errors are picked up by xcodebuild.
       // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script
-      if (options.platform === 'ios') {
+      if (isApplePlatform(options.platform)) {
         // If the error is about to be presented in Xcode, strip the ansi characters from the message.
         if ('message' in error && isExecutingFromXcodebuild()) {
           error.message = stripAnsi(error.message) as string;

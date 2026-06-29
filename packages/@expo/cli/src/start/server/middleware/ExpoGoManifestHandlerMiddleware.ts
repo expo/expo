@@ -126,7 +126,9 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       (await Updates.getRuntimeVersionAsync(
         this.projectRoot,
         { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
-        requestOptions.platform
+        // TODO(@kitten): Runtime-version resolution only reads ios/android config
+        // tvos/macos fall back to the shared `runtimeVersion` until they get explicit support
+        requestOptions.platform as 'android' | 'ios'
       ));
     if (!runtimeVersion) {
       throw new CommandError(

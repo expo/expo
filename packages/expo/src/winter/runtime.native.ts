@@ -1,6 +1,10 @@
 // This file configures the runtime environment to increase compatibility with WinterCG.
 // https://wintercg.org/
 
+// WARN(@kitten): We must ensure that the core react-native globals are initialized before ours
+// Otherwise we're relying on `getModulesRunBeforeMainModule` which is unstable or can be missing
+import 'react-native/Libraries/Core/InitializeCore';
+
 import { installFormDataPatch } from './FormData';
 import { installGlobal as install } from './installGlobal';
 

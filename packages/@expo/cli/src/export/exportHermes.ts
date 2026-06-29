@@ -55,8 +55,11 @@ export function isEnableHermesManaged(
     case 'android': {
       return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
     }
-    case 'ios': {
-      return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
+    case 'ios':
+    case 'tvos':
+    case 'macos': {
+      // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
+      return ((expoConfig.ios as any)?.jsEngine ?? (expoConfig as any).jsEngine) !== 'jsc';
     }
     default:
       return false;
@@ -102,7 +105,12 @@ export async function maybeThrowFromInconsistentEngineAsync(
     );
   }
 
-  if (platform === 'ios' && (await maybeInconsistentEngineIosAsync(projectRoot, isHermesManaged))) {
+  // TODO(@kitten): Since Hermes is now assumed, we loosen the relevant check for tvos and macos and just
+  // assume we should look at the ios folder, and can otherwise assume Hermes
+  if (
+    (platform === 'ios' || platform === 'tvos' || platform === 'macos') &&
+    (await maybeInconsistentEngineIosAsync(projectRoot, isHermesManaged))
+  ) {
     throw new Error(
       `JavaScript engine configuration is inconsistent between ${configFileName} and iOS native project.\n` +
         `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
@@ -249,6 +257,10 @@ export function isAndroidUsingHermes(projectRoot: string) {
 }
 
 export function isIosUsingHermes(projectRoot: string) {
+  // Assume Hermes and/or just check iOS
+  if (!fs.existsSync(path.join(projectRoot, 'ios'))) {
+    return true;
+  }
   // If nullish, then assume Hermes is used.
   return isHermesPossiblyEnabled(projectRoot) !== false;
 }

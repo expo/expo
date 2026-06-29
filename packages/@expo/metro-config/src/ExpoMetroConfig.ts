@@ -60,6 +60,28 @@ export interface DefaultConfigOptions {
 let hasWarnedAboutExotic = false;
 let hasWarnedAboutReactNative = false;
 
+function getReactNativeHostPackage(platform?: string | null): string {
+  // NOTE(@kitten): Duplicated as `getSupportPackageForPlatform` in expo-modules-autolinking
+  switch (platform) {
+    case 'tvos':
+      return 'react-native-tvos';
+    case 'macos':
+      return 'react-native-macos';
+    default:
+      return 'react-native';
+  }
+}
+
+function getReactNativeHostPath(projectRoot: string, platform?: string | null): string {
+  const hostPackage = getReactNativeHostPackage(platform);
+  // TODO(@kitten): Switch to `@expo/require-utils` / assess manual require.resolve
+  return path.dirname(
+    resolveFrom.silent(projectRoot, `${hostPackage}/package.json`) ??
+      resolveFrom.silent(projectRoot, 'react-native/package.json') ??
+      'react-native/package.json'
+  );
+}
+
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
 function patchMetroGraphToSupportUncachedModules() {
@@ -294,11 +316,13 @@ export function getDefaultConfig(
       unstable_conditionsByPlatform: {
         ios: ['react-native'],
         android: ['react-native'],
+        tvos: ['react-native'],
+        macos: ['react-native'],
         // This is removed for server platforms.
         web: ['browser'],
       },
       resolverMainFields: ['react-native', 'browser', 'main'],
-      platforms: ['ios', 'android'],
+      platforms: ['ios', 'android', 'tvos', 'macos'],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
           // Add default support for `expo-image` file types.
@@ -339,8 +363,11 @@ export function getDefaultConfig(
 
       getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [
-          // MUST be first
-          require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
+          // NOTE(@kitten): `getModulesRunBeforeMainModule` is deprecated, but still partially expected
+          // We instead add the canonical path, but don't expect or enforce Metro to re-order modules
+          require.resolve(
+            path.join(getReactNativeHostPath(projectRoot), 'Libraries/Core/InitializeCore')
+          ),
         ];
 
         const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter/index.ts');
@@ -367,8 +394,9 @@ export function getDefaultConfig(
           return [];
         }
 
-        // Native behavior.
-        return require(path.join(reactNativePath, 'rn-get-polyfills'))();
+        return require(
+          path.join(getReactNativeHostPath(projectRoot, platform), 'rn-get-polyfills')
+        )();
       },
     },
     server: {
