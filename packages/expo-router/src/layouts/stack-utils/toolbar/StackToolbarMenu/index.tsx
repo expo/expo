@@ -121,7 +121,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     }
   }
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' && placement === 'bottom') {
     const hasBadge = getFirstChildOfType(props.children, StackToolbarBadge);
     if (hasBadge) {
       console.warn(
@@ -141,6 +141,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
       imageRenderingMode={imageRenderingMode}
       label={computedLabel}
       title={computedMenuTitle}
+      badge={sharedProps?.badge}
       children={validChildren}
     />
   );

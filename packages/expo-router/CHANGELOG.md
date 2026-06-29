@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [android] Support `Stack.Toolbar.Badge` in header left/right placements ([#46537](https://github.com/expo/expo/pull/46537) by [@benjaminkomen](https://github.com/benjaminkomen))
+- [android] Support `Stack.Toolbar.Badge` on `Stack.Toolbar.Menu` icons in header left/right placements ([#47276](https://github.com/expo/expo/pull/47276) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

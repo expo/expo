@@ -9,6 +9,7 @@ const react_1 = require("react");
 const primitives_1 = require("../../../../primitives");
 const AnimatedItemContainer_1 = require("../../../../toolbar/AnimatedItemContainer");
 const children_1 = require("../../../../utils/children");
+const ToolbarItemBadge_1 = require("../ToolbarItemBadge");
 const context_1 = require("../context");
 const defaults_1 = require("../defaults");
 const arrowRightIcon = require('../../../../../assets/arrow_right.xml');
@@ -40,6 +41,9 @@ const NativeToolbarMenu = (props) => {
         setExpanded(false);
         parentClose?.();
     }, [parentClose]);
+    if (process.env.NODE_ENV !== 'production' && isNested && props.badge) {
+        console.warn('Stack.Toolbar.Badge on a nested Stack.Toolbar.Menu is not supported on Android; it is only rendered on a root menu. The badge will be ignored.');
+    }
     // Inline nested: render children directly with a divider separator
     if (isNested && props.inline) {
         return ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(jetpack_compose_1.HorizontalDivider, {}), props.children] }));
@@ -62,7 +66,8 @@ const NativeToolbarMenu = (props) => {
         }
         return null;
     }
-    return ((0, jsx_runtime_1.jsx)(AnimatedItemContainer_1.AnimatedItemContainer, { visible: !props.hidden, children: (0, jsx_runtime_1.jsxs)(jetpack_compose_1.DropdownMenu, { expanded: expanded, onDismissRequest: () => setExpanded(false), color: backgroundColor, children: [(0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Trigger, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.IconButton, { onClick: () => setExpanded(true), enabled: !props.disabled, modifiers: [(0, modifiers_1.background)(backgroundColor)], children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: sourceTint, size: 24, contentDescription: props.accessibilityLabel }) }) }), (0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Items, { children: (0, jsx_runtime_1.jsx)(ToolbarMenuCloseContext, { value: closeMenu, children: props.children }) })] }) }));
+    const iconButton = ((0, jsx_runtime_1.jsx)(jetpack_compose_1.IconButton, { onClick: () => setExpanded(true), enabled: !props.disabled, modifiers: [(0, modifiers_1.background)(backgroundColor)], children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: sourceTint, size: 24, contentDescription: (0, ToolbarItemBadge_1.getBadgeContentDescription)(props.accessibilityLabel, props.badge) }) }));
+    return ((0, jsx_runtime_1.jsx)(AnimatedItemContainer_1.AnimatedItemContainer, { visible: !props.hidden, children: (0, jsx_runtime_1.jsxs)(jetpack_compose_1.DropdownMenu, { expanded: expanded, onDismissRequest: () => setExpanded(false), color: backgroundColor, children: [(0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Trigger, { children: (0, jsx_runtime_1.jsx)(ToolbarItemBadge_1.ToolbarItemBadge, { badge: props.badge, disabled: props.disabled, children: iconButton }) }), (0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Items, { children: (0, jsx_runtime_1.jsx)(ToolbarMenuCloseContext, { value: closeMenu, children: props.children }) })] }) }));
 };
 exports.NativeToolbarMenu = NativeToolbarMenu;
 /**

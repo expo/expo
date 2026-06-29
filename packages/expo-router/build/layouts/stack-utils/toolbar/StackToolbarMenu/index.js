@@ -85,14 +85,14 @@ const StackToolbarMenu = (props) => {
             throw new Error(`Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`);
         }
     }
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' && placement === 'bottom') {
         const hasBadge = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarBadge);
         if (hasBadge) {
             console.warn('Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.');
         }
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    return ((0, jsx_runtime_1.jsx)(native_1.NativeToolbarMenu, { ...props, icon: icon, source: source, xcassetName: xcassetName, image: props.image, imageRenderingMode: imageRenderingMode, label: computedLabel, title: computedMenuTitle, children: validChildren }));
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeToolbarMenu, { ...props, icon: icon, source: source, xcassetName: xcassetName, image: props.image, imageRenderingMode: imageRenderingMode, label: computedLabel, title: computedMenuTitle, badge: sharedProps?.badge, children: validChildren }));
 };
 exports.StackToolbarMenu = StackToolbarMenu;
 function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = false) {
