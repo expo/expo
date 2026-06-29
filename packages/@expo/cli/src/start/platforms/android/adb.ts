@@ -292,14 +292,17 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
  * @param device.pid a value like `emulator-5554` from `abd devices`
  */
 export async function getAdbNameForDeviceIdAsync(device: DeviceContext): Promise<string | null> {
-  const results = await getServer().runAsync(adbArgs(device.pid, 'emu', 'avd', 'name'));
-
-  if (results.match(/could not connect to TCP port .*: Connection refused/)) {
-    // Can also occur when the emulator does not exist.
-    throw new CommandError('EMULATOR_NOT_FOUND', results);
+  try {
+    // Attempt to get the AVD name via the emulator console
+    const results = await getServer().runAsync(adbArgs(device.pid, 'emu', 'avd', 'name'));
+    return sanitizeAdbDeviceName(results) ?? null;
+  } catch (error: any) {
+    // If the 'emu' command fails (common on third-party emulators like LDPlayer 
+    // where the telnet port is not available or localized errors occur),
+    // we fallback to the device PID as the name to prevent a fatal crash.
+    debug(`Could not get AVD name for device ${device.pid}: ${error.message}`);
+    return device.pid;
   }
-
-  return sanitizeAdbDeviceName(results) ?? null;
 }
 
 export async function isDeviceBootedAsync({
