@@ -184,26 +184,31 @@ export async function setupGradleWrapperAsync(projectRoot: string) {
 export async function setupGradlePluginKotlinAsync(expoRepoPath: string) {
   const skipMetadataVersionCheck = 'freeCompilerArgs.add("-Xskip-metadata-version-check")';
 
-  const pluginRoot = path.join(
-    expoRepoPath,
-    'packages',
-    'expo-modules-autolinking',
-    'android',
-    'expo-gradle-plugin'
-  );
+  const pluginRoots = [
+    path.join(expoRepoPath, 'packages', 'expo-modules-core', 'expo-module-gradle-plugin'),
+    path.join(
+      expoRepoPath,
+      'packages',
+      'expo-modules-autolinking',
+      'android',
+      'expo-gradle-plugin'
+    ),
+  ];
 
-  for await (const relativePath of fs.promises.glob('*/build.gradle.kts', { cwd: pluginRoot })) {
-    const buildGradlePath = path.join(pluginRoot, relativePath);
-    const contents = await fs.promises.readFile(buildGradlePath, 'utf8');
+  for (const pluginRoot of pluginRoots) {
+    for await (const relativePath of fs.promises.glob('**/build.gradle.kts', { cwd: pluginRoot })) {
+      const buildGradlePath = path.join(pluginRoot, relativePath);
+      const contents = await fs.promises.readFile(buildGradlePath, 'utf8');
 
-    if (!contents.includes(skipMetadataVersionCheck)) {
-      const nextContents = contents.replace(
-        /^(\s*)(jvmTarget\.set\(JvmTarget\.JVM_11\))$/m,
-        `$1$2\n$1${skipMetadataVersionCheck}`
-      );
+      if (!contents.includes(skipMetadataVersionCheck)) {
+        const nextContents = contents.replace(
+          /^(\s*)(jvmTarget\.set\(JvmTarget\.JVM_11\))$/m,
+          `$1$2\n$1${skipMetadataVersionCheck}`
+        );
 
-      if (nextContents !== contents) {
-        await fs.promises.writeFile(buildGradlePath, nextContents);
+        if (nextContents !== contents) {
+          await fs.promises.writeFile(buildGradlePath, nextContents);
+        }
       }
     }
   }
