@@ -5,8 +5,8 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -27,8 +27,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.get
-import androidx.core.view.size
+import androidx.core.view.forEach
 import androidx.core.view.updateLayoutParams
 import com.canhub.cropper.CropImage
 import com.canhub.cropper.CropImageOptions
@@ -117,13 +116,14 @@ class ExpoCropImageActivity :
   private fun applyCustomizationToOptions(options: CropImageOptions, colors: CustomizationColors) {
     // Set the current icon color for menu tinting
     currentIconColor = colors.toolbarIconColor
-
-    options.activityBackgroundColor = colors.activityBackgroundColor
-    options.activityMenuIconColor = colors.toolbarIconColor
-    options.activityMenuTextColor = colors.toolbarActionTextColor
-    options.toolbarBackButtonColor = colors.backButtonIconColor
-    options.toolbarColor = colors.toolbarColor
-    options.toolbarTitleColor = colors.toolbarIconColor
+    with(options) {
+      activityBackgroundColor = colors.activityBackgroundColor
+      activityMenuIconColor = colors.toolbarIconColor
+      activityMenuTextColor = colors.toolbarActionTextColor
+      toolbarBackButtonColor = colors.backButtonIconColor
+      toolbarColor = colors.toolbarColor
+      toolbarTitleColor = colors.toolbarIconColor
+    }
   }
 
   private fun setupContentView() {
@@ -137,9 +137,8 @@ class ExpoCropImageActivity :
 
     // Inset the crop view margins so it doesn't overlap with system bars or display cutouts
     ViewCompat.setOnApplyWindowInsetsListener(cropImageView) { view, insets ->
-      val values = insets.getInsets(
-        WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-      )
+      val insetsType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+      val values = insets.getInsets(insetsType)
 
       view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
         setMargins(values.left, values.top, values.right, values.bottom)
@@ -187,52 +186,48 @@ class ExpoCropImageActivity :
   }
 
   private fun applyActivityBackground() {
-    cropImageOptions.activityBackgroundColor.let { activityBackgroundColor ->
-      binding.root.setBackgroundColor(activityBackgroundColor)
-    }
+    val activityBackgroundColor = cropImageOptions.activityBackgroundColor
+    binding.root.setBackgroundColor(activityBackgroundColor)
   }
 
   private fun applyToolbarCustomization() {
-    supportActionBar?.let { actionBar ->
-      title = cropImageOptions.activityTitle.ifEmpty { "" }
-      actionBar.setDisplayHomeAsUpEnabled(true)
-      applyToolbarColor(actionBar)
-      applyToolbarTitleColor()
-      applyToolbarBackButtonColor(actionBar)
-    }
+    val actionBar = supportActionBar ?: return
+    title = cropImageOptions.activityTitle.ifEmpty { "" }
+    actionBar.setDisplayHomeAsUpEnabled(true)
+    actionBar.applyToolbarColor()
+    applyToolbarTitleColor()
+    actionBar.applyToolbarBackButtonColor()
   }
 
-  private fun applyToolbarColor(actionBar: ActionBar) {
-    cropImageOptions.toolbarColor?.let { toolbarColor ->
-      actionBar.setBackgroundDrawable(toolbarColor.toDrawable())
+  private fun ActionBar.applyToolbarColor() {
+    cropImageOptions.toolbarColor?.toDrawable().let { toolbarColorDrawable ->
+      setBackgroundDrawable(toolbarColorDrawable)
     }
   }
 
   private fun applyToolbarTitleColor() {
-    cropImageOptions.toolbarTitleColor?.let { toolbarTitleColor ->
-      val spannableTitle: Spannable = SpannableString(title)
-      spannableTitle.setSpan(
-        ForegroundColorSpan(toolbarTitleColor),
-        0,
-        spannableTitle.length,
-        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-      )
-      title = spannableTitle
-    }
+    val toolbarTitleColor = cropImageOptions.toolbarTitleColor ?: return
+    val spannableTitle: Spannable = SpannableString(title)
+    spannableTitle.setSpan(
+      ForegroundColorSpan(toolbarTitleColor),
+      0,
+      spannableTitle.length,
+      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+    )
+    title = spannableTitle
   }
 
-  private fun applyToolbarBackButtonColor(actionBar: ActionBar) {
-    cropImageOptions.toolbarBackButtonColor?.let { backBtnColor ->
-      try {
-        val upArrow = ContextCompat.getDrawable(
-          this,
-          CropperR.drawable.ic_arrow_back_24
-        )
-        upArrow?.colorFilter = PorterDuffColorFilter(backBtnColor, PorterDuff.Mode.SRC_ATOP)
-        actionBar.setHomeAsUpIndicator(upArrow)
-      } catch (e: Exception) {
-        Log.w("ExpoCropImage", "Failed to set back button color", e)
-      }
+  private fun ActionBar.applyToolbarBackButtonColor() {
+    val backBtnColor = cropImageOptions.toolbarBackButtonColor ?: return
+    try {
+      val upArrow = ContextCompat.getDrawable(
+        this@ExpoCropImageActivity,
+        CropperR.drawable.ic_arrow_back_24
+      )
+      upArrow?.colorFilter = PorterDuffColorFilter(backBtnColor, PorterDuff.Mode.SRC_ATOP)
+      setHomeAsUpIndicator(upArrow)
+    } catch (e: Exception) {
+      Log.w("ExpoCropImage", "Failed to set back button color", e)
     }
   }
 
@@ -266,121 +261,90 @@ class ExpoCropImageActivity :
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
-    if (cropImageOptions.skipEditing) return true
+    if (cropImageOptions.skipEditing) {
+      return true
+    }
     menuInflater.inflate(CropperR.menu.crop_image_menu, menu)
-
-    if (!cropImageOptions.allowRotation) {
-      menu.removeItem(CropperR.id.ic_rotate_left_24)
-      menu.removeItem(CropperR.id.ic_rotate_right_24)
-    } else if (cropImageOptions.allowCounterRotation) {
-      menu.findItem(CropperR.id.ic_rotate_left_24).isVisible = true
+    menu.setItemsVisibility()
+    menu.setCropIcon()
+    if (cropImageOptions.activityMenuIconColor != 0) {
+      menu.forEachItem {
+        it.updateIconColor(cropImageOptions.activityMenuIconColor)
+      }
     }
-
-    if (!cropImageOptions.allowFlipping) menu.removeItem(CropperR.id.ic_flip_24)
-
-    if (cropImageOptions.cropMenuCropButtonTitle != null) {
-      menu.findItem(CropperR.id.crop_image_menu_crop).title =
-        cropImageOptions.cropMenuCropButtonTitle
+    cropImageOptions.activityMenuTextColor?.let { menuItemsTextColor ->
+      menu.forEachItem {
+        it.updateTextColor(menuItemsTextColor)
+      }
     }
+    menu.forEachItem {
+      it.setIconTintColor(currentIconColor)
+    }
+    return true
+  }
 
-    var cropIcon: Drawable? = null
+  private fun Menu.setCropIcon() {
     try {
       if (cropImageOptions.cropMenuCropButtonIcon != 0) {
-        cropIcon = ContextCompat.getDrawable(this, cropImageOptions.cropMenuCropButtonIcon)
-        menu.findItem(CropperR.id.crop_image_menu_crop).icon = cropIcon
+        val cropIcon = ContextCompat.getDrawable(this@ExpoCropImageActivity, cropImageOptions.cropMenuCropButtonIcon)
+        findItem(CropperR.id.crop_image_menu_crop).icon = cropIcon
       }
     } catch (e: Exception) {
       Log.w("ExpoCropImage", "Failed to read menu crop drawable", e)
     }
+  }
 
-    if (cropImageOptions.activityMenuIconColor != 0) {
-      updateMenuItemIconColor(
-        menu,
-        CropperR.id.ic_rotate_left_24,
-        cropImageOptions.activityMenuIconColor
-      )
-      updateMenuItemIconColor(
-        menu,
-        CropperR.id.ic_rotate_right_24,
-        cropImageOptions.activityMenuIconColor
-      )
-      updateMenuItemIconColor(menu, CropperR.id.ic_flip_24, cropImageOptions.activityMenuIconColor)
-
-      if (cropIcon != null) {
-        updateMenuItemIconColor(
-          menu,
-          CropperR.id.crop_image_menu_crop,
-          cropImageOptions.activityMenuIconColor
-        )
-      }
+  private fun Menu.setItemsVisibility() {
+    if (!cropImageOptions.allowRotation) {
+      removeItem(CropperR.id.ic_rotate_left_24)
+      removeItem(CropperR.id.ic_rotate_right_24)
+    } else if (cropImageOptions.allowCounterRotation) {
+      findItem(CropperR.id.ic_rotate_left_24).isVisible = true
     }
-    cropImageOptions.activityMenuTextColor?.let { menuItemsTextColor ->
-      val menuItemIds = listOf(
-        CropperR.id.ic_rotate_left_24,
-        CropperR.id.ic_rotate_right_24,
-        CropperR.id.ic_flip_24,
-        CropperR.id.ic_flip_24_horizontally,
-        CropperR.id.ic_flip_24_vertically,
-        CropperR.id.crop_image_menu_crop
-      )
-      for (itemId in menuItemIds) {
-        updateMenuItemTextColor(menu, itemId, menuItemsTextColor)
-      }
+    if (!cropImageOptions.allowFlipping) {
+      removeItem(CropperR.id.ic_flip_24)
     }
-
-    tintAllMenuItems(menu)
-    return true
+    if (cropImageOptions.cropMenuCropButtonTitle != null) {
+      findItem(CropperR.id.crop_image_menu_crop).title =
+        cropImageOptions.cropMenuCropButtonTitle
+    }
   }
 
   override fun onPrepareOptionsMenu(menu: Menu): Boolean {
     val result = super.onPrepareOptionsMenu(menu)
-    tintAllMenuItems(menu)
+    menu.forEachItem {
+      it.setIconTintColor(currentIconColor)
+    }
     return result
   }
 
-  override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-    CropperR.id.crop_image_menu_crop -> {
-      cropImage()
-      true
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    when (item.itemId) {
+      CropperR.id.crop_image_menu_crop -> cropImage()
+      CropperR.id.ic_rotate_left_24 -> cropImageView?.rotateImage(-cropImageOptions.rotationDegrees)
+      CropperR.id.ic_rotate_right_24 -> cropImageView?.rotateImage(cropImageOptions.rotationDegrees)
+      CropperR.id.ic_flip_24_horizontally -> cropImageView?.flipImageHorizontally()
+      CropperR.id.ic_flip_24_vertically -> cropImageView?.flipImageVertically()
+      android.R.id.home -> setResultCancel()
+      else -> return super.onOptionsItemSelected(item)
     }
-    CropperR.id.ic_rotate_left_24 -> {
-      cropImageView?.rotateImage(-cropImageOptions.rotationDegrees)
-      true
-    }
-    CropperR.id.ic_rotate_right_24 -> {
-      cropImageView?.rotateImage(cropImageOptions.rotationDegrees)
-      true
-    }
-    CropperR.id.ic_flip_24_horizontally -> {
-      cropImageView?.flipImageHorizontally()
-      true
-    }
-    CropperR.id.ic_flip_24_vertically -> {
-      cropImageView?.flipImageVertically()
-      true
-    }
-    android.R.id.home -> {
-      setResultCancel()
-      true
-    }
-    else -> super.onOptionsItemSelected(item)
+    return true
   }
 
   override fun onSetImageUriComplete(view: CropImageView, uri: Uri, error: Exception?) {
-    if (error == null) {
-      if (cropImageOptions.initialCropWindowRectangle != null) {
-        cropImageView?.cropRect = cropImageOptions.initialCropWindowRectangle
-      }
-
-      if (cropImageOptions.initialRotation > 0) {
-        cropImageView?.rotatedDegrees = cropImageOptions.initialRotation
-      }
-
-      if (cropImageOptions.skipEditing) {
-        cropImage()
-      }
-    } else {
+    if (error != null) {
       setResult(null, error, 1)
+    }
+    if (cropImageOptions.initialCropWindowRectangle != null) {
+      cropImageView?.cropRect = cropImageOptions.initialCropWindowRectangle
+    }
+
+    if (cropImageOptions.initialRotation > 0) {
+      cropImageView?.rotatedDegrees = cropImageOptions.initialRotation
+    }
+
+    if (cropImageOptions.skipEditing) {
+      cropImage()
     }
   }
 
@@ -390,49 +354,55 @@ class ExpoCropImageActivity :
   // endregion
 
   // region Menu Helpers
-  private fun tintAllMenuItems(menu: Menu) {
-    for (i in 0 until menu.size) {
-      menu[i].icon?.mutate()?.setTint(currentIconColor)
+  private fun Menu.forEachItem(action: (MenuItem) -> Unit) {
+    forEach { menuItem ->
+      action(menuItem)
+      menuItem.subMenu?.forEachItem(action)
     }
   }
 
-  private fun updateMenuItemTextColor(menu: Menu, itemId: Int, color: Int) {
-    val menuItem = menu.findItem(itemId) ?: return
-    val menuTitle = menuItem.title
-    if (menuTitle?.isNotBlank() == true) {
-      try {
-        val spannableTitle: Spannable = SpannableString(menuTitle)
-        spannableTitle.setSpan(
-          ForegroundColorSpan(color),
-          0,
-          spannableTitle.length,
-          Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        menuItem.title = spannableTitle
-      } catch (e: Exception) {
-        Log.w("ExpoCropImage", "Failed to update menu item color", e)
+  private fun MenuItem.updateTextColor(color: Int) {
+    val menuTitle = title
+    if (menuTitle.isNullOrBlank()) {
+      Log.w("ExpoCropImage", "Menu item title is null or blank, cannot update text color")
+      return
+    }
+
+    try {
+      val plainTitle = menuTitle.toString()
+      val spannableTitle = SpannableString(menuTitle)
+      spannableTitle.setSpan(
+        ForegroundColorSpan(color),
+        0,
+        spannableTitle.length,
+        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+      )
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        tooltipText = plainTitle
+        contentDescription = plainTitle
       }
+      title = spannableTitle
+    } catch (e: Exception) {
+      Log.w("ExpoCropImage", "Failed to update menu item color", e)
     }
   }
 
-  private fun updateMenuItemIconColor(menu: Menu, itemId: Int, color: Int) {
-    val menuItem = menu.findItem(itemId)
-    if (menuItem != null) {
-      val menuItemIcon = menuItem.icon
-      if (menuItemIcon != null) {
-        try {
-          menuItemIcon.apply {
-            mutate()
-            colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-              color,
-              BlendModeCompat.SRC_ATOP
-            )
-          }
-          menuItem.icon = menuItemIcon
-        } catch (e: Exception) {
-          Log.w("ExpoCropImage", "Failed to update menu item color", e)
-        }
-      }
+  private fun MenuItem.setIconTintColor(color: Int) {
+    icon?.mutate()?.setTint(color)
+  }
+
+  private fun MenuItem.updateIconColor(color: Int) {
+    val menuItemIcon = icon?.mutate()
+      ?: return
+
+    try {
+      menuItemIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+        color,
+        BlendModeCompat.SRC_ATOP
+      )
+      icon = menuItemIcon
+    } catch (e: Exception) {
+      Log.w("ExpoCropImage", "Failed to update menu item icon color", e)
     }
   }
   // endregion
