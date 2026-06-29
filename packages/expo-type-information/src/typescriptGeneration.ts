@@ -889,7 +889,6 @@ export function buildExposedModuleTypesDeclarations(
     buildClass({ classDeclaration, exported: true, declaration: true });
 
   return joinTSNodesWithNewlines([
-    createImportDeclaration({ namedImportsNames: ['NativeModule'], importFromName: 'expo' }),
     ctx.module.classes.map(classDeclarationMap),
     buildModuleEventsTypeDeclaration(ctx.module, options),
   ]);
@@ -900,6 +899,7 @@ export function buildExposedTypesDeclarations(
   options: { exported?: boolean; declare?: boolean }
 ): ts.Node[] {
   return [
+    ...createImportDeclaration({ namedImportsNames: ['NativeModule'], importFromName: 'expo' }),
     ...buildExposedCommonTypesDeclarations(ctx, options),
     ...buildExposedModuleTypesDeclarations(ctx, options),
   ];
@@ -1253,6 +1253,7 @@ export async function generateFullTsInterface(
       moduleTypesFileNodes = joinTSNodesWithNewlines([
         createGeneratedPrefix(),
         createImportAllDeclaration('./CommonTypes.types'),
+        createImportDeclaration({ namedImportsNames: ['NativeModule'], importFromName: 'expo' }),
         buildExposedModuleTypesDeclarations(ctx, { exported: true }),
         ...ctx.module.views.map((view) => buildViewPropsInterface(view, { exported: true })),
       ]);
