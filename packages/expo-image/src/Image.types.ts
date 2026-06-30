@@ -792,9 +792,21 @@ export declare class ImageRef extends SharedRef<'image'> {
 }
 
 /**
+ * Module-level events emitted by the native `ExpoImage` module.
  * @hidden
  */
-export declare class ImageNativeModule extends NativeModule {
+export type ImageModuleEvents = {
+  /**
+   * Fires from every relevant load path (`loadAsync`, `useImage`, and the rendered `<Image>` view)
+   * with the decoded pixel size.
+   */
+  imageLoaded: (event: { url: string; width: number; height: number }) => void;
+};
+
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule<ImageModuleEvents> {
   // TODO: Add missing function declarations
   Image: typeof ImageRef;
 
