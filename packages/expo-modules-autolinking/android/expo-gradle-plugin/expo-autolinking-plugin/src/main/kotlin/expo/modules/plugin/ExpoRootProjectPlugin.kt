@@ -1,5 +1,6 @@
 package expo.modules.plugin
 
+import com.android.build.api.dsl.CommonExtension
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
 import org.gradle.api.Plugin
@@ -18,8 +19,36 @@ class ExpoRootProjectPlugin : Plugin<Project> {
 
     with(rootProject) {
       defineDefaultProperties(libs)
+      overrideCmakeVersion()
       disableLinkedModulesLintWhenRequested()
     }
+  }
+}
+
+/**
+ * Applies the `android.cmakeVersion` property (set through `expo-build-properties`) to the app and
+ * every autolinked native module that builds C++ code with CMake.
+ *
+ * The Android Gradle plugin otherwise defaults to CMake 3.22.1, whose bundled Ninja breaks on
+ * Windows with paths longer than 260 characters. Letting users pick a newer CMake version lifts
+ * that limit without having to edit each module's `build.gradle`.
+ */
+internal fun Project.overrideCmakeVersion() {
+  val cmakeVersion = (findProperty("android.cmakeVersion") as? String)?.takeIf { it.isNotBlank() }
+    ?: return
+
+  logger.quiet(
+    "${"[ExpoRootProject]".withColor(Colors.GREEN)} Overriding CMake version: ${cmakeVersion.withColor(Colors.GREEN)}"
+  )
+
+  val applyCmakeVersion = { subproject: Project ->
+    val android = subproject.extensions.getByType(CommonExtension::class.java)
+    android.externalNativeBuild.cmake.version = cmakeVersion
+  }
+
+  subprojects { subproject ->
+    subproject.plugins.withId("com.android.application") { applyCmakeVersion(subproject) }
+    subproject.plugins.withId("com.android.library") { applyCmakeVersion(subproject) }
   }
 }
 
