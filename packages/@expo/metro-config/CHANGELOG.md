@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Treat dynamic imports with rejection handlers as optional dependencies, ported from [react/metro#1697](https://github.com/react/metro/pull/1697) ([#47334](https://github.com/expo/expo/pull/47334) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - [Internal] Deduplicate find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
