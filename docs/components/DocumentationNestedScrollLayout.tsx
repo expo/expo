@@ -111,9 +111,9 @@ export default function DocumentationNestedScrollLayout({
                     aria-pressed={!isSidebarCollapsed}
                     onClick={onSidebarToggle}>
                     {isSidebarCollapsed ? (
-                      <ChevronRightIcon className="icon-sm" />
+                      <ChevronRightIcon aria-hidden="true" className="icon-sm" />
                     ) : (
-                      <ChevronLeftIcon className="icon-sm" />
+                      <ChevronLeftIcon aria-hidden="true" className="icon-sm" />
                     )}
                     <span className="sr-only">
                       {isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}

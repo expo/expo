@@ -271,7 +271,7 @@ function spawnXcodeBuild(
     error += stringData;
   });
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     buildProcess.on('close', (code: number) => {
       resolve({ code, results, error });
     });

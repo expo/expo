@@ -1,8 +1,8 @@
 import tty from 'node:tty';
 import { toQR } from 'toqr';
 
-import { env } from './env';
 import * as Log from '../log';
+import { env } from './env';
 
 export interface QROutput {
   lines: number;

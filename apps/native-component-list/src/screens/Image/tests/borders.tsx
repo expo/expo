@@ -1,6 +1,6 @@
-import { anyAnimationDriver, jsOnlyAnimationDriver, tintColor, tintColor2 } from './constants';
 import { images } from '../images';
 import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
+import { anyAnimationDriver, jsOnlyAnimationDriver, tintColor, tintColor2 } from './constants';
 
 const imageTests: ImageTestGroup = {
   name: 'Borders',

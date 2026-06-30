@@ -1,14 +1,13 @@
 import './expect';
 import './mocks';
-
 import type { RenderResult } from '@testing-library/react-native';
 
-import { type MockContextConfig, getMockContext } from './mock-config';
 import { ExpoRoot } from '../ExpoRoot';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { ReactNavigationState } from '../global-state/router-store';
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
+import { type MockContextConfig, getMockContext } from './mock-config';
 
 export { type MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 

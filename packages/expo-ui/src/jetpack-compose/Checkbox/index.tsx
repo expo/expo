@@ -16,7 +16,7 @@ export type CheckboxColors = {
   disabledIndeterminateColor?: ColorValue;
 };
 
-export type CheckboxProps = {
+export interface CheckboxProps {
   /**
    * Indicates whether the checkbox is checked.
    */
@@ -38,7 +38,7 @@ export type CheckboxProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 type NativeCheckboxProps = Omit<CheckboxProps, 'onCheckedChange'> & {
   nativeClickable: boolean;
@@ -75,7 +75,7 @@ export function Checkbox(props: CheckboxProps) {
  */
 export type ToggleableState = 'on' | 'off' | 'indeterminate';
 
-export type TriStateCheckboxProps = {
+export interface TriStateCheckboxProps {
   /**
    * The toggleable state of the checkbox: `'on'`, `'off'`, or `'indeterminate'`.
    */
@@ -97,7 +97,7 @@ export type TriStateCheckboxProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 type NativeTriStateCheckboxProps = Omit<TriStateCheckboxProps, 'onClick'> & {
   nativeClickable: boolean;

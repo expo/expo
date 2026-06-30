@@ -2,11 +2,11 @@ import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navig
 import Fuse from 'fuse.js';
 import React from 'react';
 
-import ComponentListScreen from './ComponentListScreen';
 import { useTheme } from '../../../common/ThemeProvider';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import { screenApiItems as ApiScreenApiItems } from '../navigation/ExpoApisStackNavigator';
 import { screenApiItems as ComponentScreenApiItems } from '../navigation/ExpoComponentsStackNavigator';
+import ComponentListScreen from './ComponentListScreen';
 
 const fuse = new Fuse(ApiScreenApiItems.concat(ComponentScreenApiItems), { keys: ['name'] });
 

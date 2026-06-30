@@ -3,8 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 
-import { env } from './env';
 import * as Log from '../log';
+import { env } from './env';
 
 const debug = require('debug')('expo:utils:editor') as typeof console.log;
 

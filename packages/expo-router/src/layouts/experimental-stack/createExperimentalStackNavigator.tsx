@@ -2,13 +2,6 @@
 import * as React from 'react';
 import { use, useMemo } from 'react';
 
-import { ExperimentalStackView } from './ExperimentalStackView';
-import type {
-  ExperimentalStackNavigationEventMap,
-  ExperimentalStackNavigationOptions,
-  ExperimentalStackNavigationProp,
-  ExperimentalStackNavigatorProps,
-} from './types';
 import {
   CompositionContext,
   mergeOptions,
@@ -30,6 +23,13 @@ import {
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../react-navigation/native';
+import { ExperimentalStackView } from './ExperimentalStackView';
+import type {
+  ExperimentalStackNavigationEventMap,
+  ExperimentalStackNavigationOptions,
+  ExperimentalStackNavigationProp,
+  ExperimentalStackNavigatorProps,
+} from './types';
 
 function ExperimentalStackNavigator({
   id,

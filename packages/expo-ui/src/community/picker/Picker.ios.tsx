@@ -1,12 +1,5 @@
 import * as React from 'react';
 
-import {
-  extractPickerItems,
-  PickerItem,
-  type PickerItemProps,
-  type PickerItemValue,
-  type PickerProps,
-} from './types';
 import { Host } from '../../swift-ui/Host';
 import { Picker as SwiftUIPicker } from '../../swift-ui/Picker';
 import { Text } from '../../swift-ui/Text';
@@ -20,6 +13,13 @@ import {
 import { pickerStyle } from '../../swift-ui/modifiers/pickerStyle';
 import { tag } from '../../swift-ui/modifiers/tag';
 import { type ModifierConfig } from '../../types';
+import {
+  extractPickerItems,
+  PickerItem,
+  type PickerItemProps,
+  type PickerItemValue,
+  type PickerProps,
+} from './types';
 
 /**
  * A drop-in replacement for `@react-native-picker/picker` on iOS.

@@ -280,6 +280,25 @@ struct JavaScriptPromiseTests {
   }
 
   @Test
+  func `reject promise from a task while awaiting`() async throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+
+    struct TestError: Error {}
+
+    // Reject after the await has already suspended on the pending promise. This must throw, not
+    // resume the awaiting caller with the rejection value as if it were fulfilled.
+    Task.detached {
+      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+      promise.reject(TestError())
+    }
+
+    await #expect(throws: Error.self) {
+      try await promise.await()
+    }
+  }
+
+  @Test
   func `settling promise more than once is ignored`() async throws {
     struct TestError: Error, Sendable {}
 

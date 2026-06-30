@@ -1,4 +1,3 @@
-import { fetch } from 'expo/fetch';
 import AppMetrics, {
   type LogRecord,
   type Metric,
@@ -7,6 +6,7 @@ import AppMetrics, {
   type NetworkRequestObserver,
   type NetworkRequestStartedEvent,
 } from 'expo-app-metrics';
+import { fetch } from 'expo/fetch';
 
 export const name = 'AppMetrics';
 

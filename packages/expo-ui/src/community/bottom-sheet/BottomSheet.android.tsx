@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
-import { BottomSheetContext, BottomSheetInternalContext } from './context';
-import type { BottomSheetMethods, BottomSheetProps } from './types';
-import { parseSnapPoint } from './types';
 import { Host } from '../../jetpack-compose/Host';
 import { ModalBottomSheet, type ModalBottomSheetRef } from '../../jetpack-compose/ModalBottomSheet';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
+import { BottomSheetContext, BottomSheetInternalContext } from './context';
+import { SheetScrollContextReset } from './scrollContextReset';
+import type { BottomSheetMethods, BottomSheetProps } from './types';
+import { parseSnapPoint } from './types';
 
 export { useBottomSheet } from './context';
 
@@ -199,7 +200,9 @@ export function BottomSheet(props: BottomSheetProps) {
               shouldDismissOnClickOutside: enablePanDownToClose,
             }}>
             <RNHostView matchContents={fitToContents}>
-              <View style={fitToContents ? undefined : { flex: 1 }}>{children}</View>
+              <View style={fitToContents ? undefined : { flex: 1 }}>
+                <SheetScrollContextReset>{children}</SheetScrollContextReset>
+              </View>
             </RNHostView>
           </ModalBottomSheet>
         </Host>

@@ -2,9 +2,26 @@
   "name": "@expo/dom-webview",
   "version": "56.0.5",
   "description": "A WebView specifically designed for Expo DOM components",
+  "keywords": [
+    "dom",
+    "expo",
+    "react-native",
+    "webview"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/dom-webview",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/dom-webview"
+  },
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "exports": {
     ".": {
       "types": {
@@ -19,33 +36,14 @@
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "syncBrowserScripts": "./scripts/buildBrowserScripts.ts",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "dom",
-    "webview"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/dom-webview"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/dom-webview",
-  "jest": {
-    "preset": "expo-module-scripts"
   },
   "dependencies": {},
   "devDependencies": {
@@ -56,5 +54,8 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

@@ -14,11 +14,6 @@
 namespace jsi = facebook::jsi;
 
 /**
- Property name of the core object in the global scope of the Expo JS runtime.
- */
-NSString *const EXGlobalCoreObjectPropertyName = @"expo";
-
-/**
  Property name used to define the modules host object in the main object of the
  Expo JS runtime.
  */

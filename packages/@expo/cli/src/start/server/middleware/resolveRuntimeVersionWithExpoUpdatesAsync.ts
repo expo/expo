@@ -1,9 +1,9 @@
-import type { RuntimePlatform } from './resolvePlatform';
 import { env } from '../../../utils/env';
 import {
   ExpoUpdatesCLIModuleNotFoundError,
   expoUpdatesCommandAsync,
 } from '../../../utils/expoUpdatesCli';
+import type { RuntimePlatform } from './resolvePlatform';
 
 const debug = require('debug')('expo:start:server:middleware:resolveRuntimeVersion');
 

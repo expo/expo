@@ -22,6 +22,8 @@ Expo UI BottomSheet matches the official SwiftUI [sheet API](<https://developer.
   alt="A BottomSheet at medium detent showing a Sort By list with Most Recent selected"
 />
 
+> **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
+
 ## Installation
 
 <APIInstallSection />
@@ -88,7 +90,7 @@ Use the [`presentationDetents`](modifiers/#presentationdetentsdetents-options) m
 
 ```tsx BottomSheetWithDetentsExample.tsx
 import { useState } from 'react';
-import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, Group, Text, VStack } from '@expo/ui/swift-ui';
 import { presentationDetents } from '@expo/ui/swift-ui/modifiers';
 
 export default function BottomSheetWithDetentsExample() {
@@ -177,7 +179,7 @@ Use the [`presentationBackgroundInteraction`](modifiers/#presentationbackgroundi
 
 ```tsx BottomSheetWithBackgroundInteractionExample.tsx
 import { useState } from 'react';
-import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, Group, Text, VStack } from '@expo/ui/swift-ui';
 import {
   presentationDetents,
   presentationBackgroundInteraction,
@@ -211,7 +213,7 @@ Use the [`interactiveDismissDisabled`](modifiers/#interactivedismissdisabledisdi
 
 ```tsx NonDismissibleBottomSheetExample.tsx
 import { useState } from 'react';
-import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, Group, Text, VStack } from '@expo/ui/swift-ui';
 import { interactiveDismissDisabled } from '@expo/ui/swift-ui/modifiers';
 
 export default function NonDismissibleBottomSheetExample() {
@@ -242,7 +244,7 @@ Use `RNHostView` to embed React Native components inside the bottom sheet. Set `
 ```tsx BottomSheetWithRNContentExample.tsx
 import { useState } from 'react';
 import { Pressable, Text as RNText, View } from 'react-native';
-import { Host, BottomSheet, Button, RNHostView, VStack } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, Group, RNHostView, VStack } from '@expo/ui/swift-ui';
 import { presentationDragIndicator } from '@expo/ui/swift-ui/modifiers';
 
 export default function BottomSheetWithRNContentExample() {
@@ -299,7 +301,7 @@ When using React Native content with `flex: 1`, omit the `matchContents` prop on
 ```tsx BottomSheetWithFlexRNContentExample.tsx
 import { useState } from 'react';
 import { Text as RNText, View } from 'react-native';
-import { Host, BottomSheet, Button, RNHostView, VStack } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, Group, RNHostView, VStack } from '@expo/ui/swift-ui';
 import { presentationDetents, presentationDragIndicator } from '@expo/ui/swift-ui/modifiers';
 
 export default function BottomSheetWithFlexRNContentExample() {

@@ -2,9 +2,58 @@
   "name": "expo",
   "version": "56.0.5",
   "description": "The Expo SDK",
-  "main": "build/Expo.js",
-  "module": "build/Expo.js",
-  "types": "build/Expo.d.ts",
+  "keywords": [
+    "expo"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo"
+  },
+  "bin": {
+    "expo": "bin/cli",
+    "expo-modules-autolinking": "bin/autolinking",
+    "fingerprint": "bin/fingerprint"
+  },
+  "files": [
+    "android",
+    "bin",
+    "build",
+    "internal",
+    "ios",
+    "scripts",
+    "src",
+    "AppEntry.js",
+    "Expo.podspec",
+    "bundledNativeModules.json",
+    "expo-module.config.json",
+    "metro-config.js",
+    "metro-config.d.ts",
+    "dom",
+    "config",
+    "config-plugins.js",
+    "config-plugins.d.ts",
+    "devtools.js",
+    "devtools.d.ts",
+    "fetch.js",
+    "fetch.d.ts",
+    "fingerprint.js",
+    "fingerprint.d.ts",
+    "local-build-cache-provider.js",
+    "local-build-cache-provider.d.ts",
+    "react-native.config.js",
+    "requiresExtraSetup.json",
+    "tsconfig.base.json",
+    "types",
+    "virtual",
+    "template.tgz"
+  ],
   "sideEffects": [
     "*.fx.tsx",
     "*.fx.web.tsx",
@@ -15,6 +64,9 @@
     "./src/async-require/*.ts",
     "./build/async-require/*.js"
   ],
+  "main": "build/Expo.js",
+  "module": "build/Expo.js",
+  "types": "build/Expo.d.ts",
   "exports": {
     ".": {
       "types": {
@@ -127,70 +179,25 @@
       "default": "./*.js"
     }
   },
-  "bin": {
-    "expo": "bin/cli",
-    "expo-modules-autolinking": "bin/autolinking",
-    "fingerprint": "bin/fingerprint"
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/node-binary.sh",
+      "./scripts/react-native-xcode.sh",
+      "./scripts/xcode/with-environment.sh",
+      "./scripts/compose-source-maps.js",
+      "./scripts/resolveAppEntry.js"
+    ]
   },
-  "files": [
-    "android",
-    "bin",
-    "build",
-    "internal",
-    "ios",
-    "scripts",
-    "src",
-    "AppEntry.js",
-    "Expo.podspec",
-    "bundledNativeModules.json",
-    "expo-module.config.json",
-    "metro-config.js",
-    "metro-config.d.ts",
-    "dom",
-    "config",
-    "config-plugins.js",
-    "config-plugins.d.ts",
-    "devtools.js",
-    "devtools.d.ts",
-    "fetch.js",
-    "fetch.d.ts",
-    "fingerprint.js",
-    "fingerprint.d.ts",
-    "local-build-cache-provider.js",
-    "local-build-cache-provider.d.ts",
-    "react-native.config.js",
-    "requiresExtraSetup.json",
-    "tsconfig.base.json",
-    "types",
-    "virtual",
-    "template.tgz"
-  ],
   "scripts": {
     "build": "../expo-module-scripts/bin/expo-build src",
     "clean": "rimraf build",
-    "lint": "eslint src",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "test": "jest",
     "prepublishOnly": "run-s clean build",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "jest": {
-    "preset": "../expo-module-scripts/jest-preset.cjs"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo"
-  },
-  "keywords": [
-    "expo"
-  ],
-  "author": "Expo",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@expo/cli": "workspace:^56.1.12",
@@ -234,8 +241,8 @@
     "@expo/dom-webview": "*",
     "@expo/metro-runtime": "*",
     "react": "*",
-    "react-native": "*",
     "react-dom": "*",
+    "react-native": "*",
     "react-native-web": "*",
     "react-native-webview": "*"
   },
@@ -256,13 +263,10 @@
       "optional": true
     }
   },
-  "publishConfig": {
-    "executableFiles": [
-      "./scripts/node-binary.sh",
-      "./scripts/react-native-xcode.sh",
-      "./scripts/xcode/with-environment.sh",
-      "./scripts/compose-source-maps.js",
-      "./scripts/resolveAppEntry.js"
-    ]
+  "jest": {
+    "preset": "../expo-module-scripts/jest-preset.cjs"
+  },
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
   }
 }

@@ -35,6 +35,28 @@ export async function packageManagerExecAsync(params, { cwd } = {}) {
   return commandRunner(command, args, { cwd });
 }
 
+export async function packageManagerRunAsync(params, { cwd } = {}) {
+  let command = '';
+  const args = [];
+
+  const npmConfigUserAgent = process.env.npm_config_user_agent;
+  if (npmConfigUserAgent?.includes('yarn')) {
+    command = 'yarn';
+    args.push(...params);
+  } else if (npmConfigUserAgent?.includes('pnpm')) {
+    command = 'pnpm';
+    args.push('run', ...params);
+  } else if (npmConfigUserAgent?.includes('bun')) {
+    command = 'bun';
+    args.push('run', ...params);
+  } else {
+    command = 'npm';
+    args.push('run', ...params);
+  }
+
+  return commandRunner(command, args, { cwd });
+}
+
 export function getArgs({ maybeAddWatchFlag = false } = {}) {
   let args = process.argv.slice(2);
   if (maybeAddWatchFlag) {

@@ -2,40 +2,38 @@
   "name": "expo-brightness",
   "version": "56.0.5",
   "description": "Provides an API to get and set screen brightness.",
-  "main": "build/Brightness.js",
-  "types": "build/Brightness.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "pnpm run build:lib && pnpm run build:plugin",
-    "build:lib": "expo-build src",
-    "build:plugin": "expo-build --base plugin cjs:src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "jest",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
-    "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
-  },
   "keywords": [
-    "react-native",
+    "brightness",
     "expo",
     "expo-brightness",
-    "brightness"
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/brightness/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-brightness"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/brightness/",
-  "jest": {
-    "preset": "expo-module-scripts"
+  "sideEffects": false,
+  "main": "build/Brightness.js",
+  "types": "build/Brightness.d.ts",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
@@ -46,5 +44,8 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

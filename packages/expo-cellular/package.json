@@ -2,6 +2,22 @@
   "name": "expo-cellular",
   "version": "56.0.5",
   "description": "Provides information about the user’s cellular service provider",
+  "keywords": [
+    "expo",
+    "expo-cellular",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/cellular/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-cellular"
+  },
   "main": "build/Cellular.js",
   "types": "build/Cellular.d.ts",
   "scripts": {
@@ -9,27 +25,12 @@
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-cellular"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-cellular"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/cellular/",
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",

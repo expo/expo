@@ -207,11 +207,11 @@ export function MarkdownActionsDropdown() {
       aria-haspopup="menu"
       aria-label={intl.formatMessage({ id: 'copyPageActions' })}>
       <div className="flex flex-row items-center gap-1.5">
-        <Copy04Icon className="icon-xs text-icon-secondary" />
+        <Copy04Icon aria-hidden="true" className="icon-xs text-icon-secondary" />
         <FOOTNOTE crawlable={false} theme="secondary" className="whitespace-nowrap">
           {intl.formatMessage({ id: 'copyPage' })}
         </FOOTNOTE>
-        <ChevronDownIcon className="icon-xs text-icon-secondary" />
+        <ChevronDownIcon aria-hidden="true" className="icon-xs text-icon-secondary" />
       </div>
     </Button>
   );

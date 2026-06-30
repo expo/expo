@@ -1,5 +1,5 @@
-import { fetch } from 'expo/fetch';
 import * as FS from 'expo-file-system/legacy';
+import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
 export const name = 'Fetch';
