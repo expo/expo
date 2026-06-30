@@ -1328,6 +1328,7 @@ jobs:
       platform: string # optional - android | ios | all, defaults to all
       branch: string # optional
       channel: string # optional - cannot be used with branch
+      rollout_percentage: number # optional - 0 to 100, defaults to 100
       private_key_path: string # optional
       upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
 ```
