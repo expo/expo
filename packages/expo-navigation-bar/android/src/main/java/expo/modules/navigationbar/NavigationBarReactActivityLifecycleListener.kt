@@ -39,7 +39,13 @@ class NavigationBarReactActivityLifecycleListener : ReactActivityLifecycleListen
     val theme = activity.theme
     val window = activity.window
 
-    if (!theme.getBooleanAttribute(R.attr.expoEnforceNavigationBarContrast, true)) {
+    val resId = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      R.attr.expoEnforceNavigationBarContrast
+    } else {
+      android.R.attr.enforceNavigationBarContrast
+    }
+
+    if (!theme.getBooleanAttribute(resId, true)) {
       window.disableNavigationBarContrast()
     }
 
