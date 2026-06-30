@@ -55,6 +55,7 @@ const schema = {
                 compileSdkVersion: { type: 'integer', nullable: true },
                 targetSdkVersion: { type: 'integer', nullable: true },
                 buildToolsVersion: { type: 'string', nullable: true },
+                cmakeVersion: { type: 'string', nullable: true },
                 kotlinVersion: { type: 'string', nullable: true },
                 enableMinifyInReleaseBuilds: { type: 'boolean', nullable: true },
                 enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },

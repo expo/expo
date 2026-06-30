@@ -77,6 +77,10 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
      */
     buildToolsVersion?: string;
     /**
+     * Override the CMake version, applied to the app and all autolinked native modules.
+     */
+    cmakeVersion?: string;
+    /**
      * Override the Kotlin version used when building the app.
      */
     kotlinVersion?: string;
