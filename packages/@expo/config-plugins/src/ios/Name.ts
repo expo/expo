@@ -80,6 +80,7 @@ export function setName(
   return {
     ...infoPlist,
     CFBundleName: sanitizedName(name),
+    CFBundleExecutable: sanitizedName(name),
   };
 }
 
