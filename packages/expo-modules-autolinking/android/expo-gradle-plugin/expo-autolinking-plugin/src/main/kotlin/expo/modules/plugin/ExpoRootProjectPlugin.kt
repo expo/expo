@@ -19,21 +19,17 @@ class ExpoRootProjectPlugin : Plugin<Project> {
 
     with(rootProject) {
       defineDefaultProperties(libs)
-      overrideCmakeVersion()
+      maybeOverrideCmakeVersion()
       disableLinkedModulesLintWhenRequested()
     }
   }
 }
 
 /**
- * Applies the `android.cmakeVersion` property (set through `expo-build-properties`) to the app and
- * every autolinked native module that builds C++ code with CMake.
- *
- * The Android Gradle plugin otherwise defaults to CMake 3.22.1, whose bundled Ninja breaks on
- * Windows with paths longer than 260 characters. Letting users pick a newer CMake version lifts
- * that limit without having to edit each module's `build.gradle`.
+ * Maybe override the `android.externalNativeBuild.cmake.version` for all subprojects. Set via
+ * `android.cmakeVersion` in **gradle.properties**.
  */
-internal fun Project.overrideCmakeVersion() {
+private fun Project.maybeOverrideCmakeVersion() {
   val cmakeVersion = (findProperty("android.cmakeVersion") as? String)?.takeIf { it.isNotBlank() }
     ?: return
 
