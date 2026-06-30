@@ -117,23 +117,19 @@ internal class LocationResponse(
     }
   )
 
-  internal fun <BundleType : BaseBundle> toBundle(bundleTypeClass: Class<BundleType>): BundleType {
-    @Suppress("UNCHECKED_CAST")
-    val bundle: BundleType = when (bundleTypeClass) {
-      PersistableBundle::class.java -> PersistableBundle()
-      else -> Bundle()
-    } as? BundleType
-      ?: throw ConversionException(LocationResponse::class.java, bundleTypeClass, "Unsupported bundleTypeClass")
+  internal fun toBundle() = Bundle().apply {
+    putLocationResponseFields()
+    putBundle("coords", coords?.toBundle())
+  }
 
-    return bundle.apply {
-      timestamp?.let { putDouble("timestamp", it) }
-      mocked?.let { putBoolean("mocked", it) }
-      if (bundle is PersistableBundle) {
-        (this as PersistableBundle).putPersistableBundle("coords", coords?.toBundle(PersistableBundle::class.java))
-      } else if (bundle is Bundle) {
-        (this as Bundle).putBundle("coords", coords?.toBundle(Bundle::class.java))
-      }
-    }
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putLocationResponseFields()
+    putPersistableBundle("coords", coords?.toPersistableBundle())
+  }
+
+  private fun BaseBundle.putLocationResponseFields() {
+    timestamp?.let { putDouble("timestamp", it) }
+    mocked?.let { putBoolean("mocked", it) }
   }
 }
 
@@ -161,24 +157,22 @@ internal class LocationObjectCoords(
     speed = location.speed.toDouble()
   )
 
-  internal fun <BundleType : BaseBundle> toBundle(bundleTypeClass: Class<BundleType>): BundleType {
-    @Suppress("UNCHECKED_CAST")
-    val bundle: BundleType = when (bundleTypeClass) {
-      PersistableBundle::class.java -> PersistableBundle()
-      else -> Bundle()
-    } as? BundleType
-      ?: throw ConversionException(LocationObjectCoords::class.java, bundleTypeClass, "Requested an unsupported bundle type")
+  internal fun toBundle() = Bundle().apply {
+    putLocationObjectCoordsFields()
+  }
 
-    bundle.apply {
-      latitude?.let { putDouble("latitude", it) }
-      longitude?.let { putDouble("longitude", it) }
-      altitude?.let { putDouble("altitude", it) }
-      accuracy?.let { putDouble("accuracy", it) }
-      altitudeAccuracy?.let { putDouble("altitudeAccuracy", it) }
-      heading?.let { putDouble("heading", it) }
-      speed?.let { putDouble("speed", it) }
-    }
-    return bundle
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putLocationObjectCoordsFields()
+  }
+
+  private fun BaseBundle.putLocationObjectCoordsFields() {
+    latitude?.let { putDouble("latitude", it) }
+    longitude?.let { putDouble("longitude", it) }
+    altitude?.let { putDouble("altitude", it) }
+    accuracy?.let { putDouble("accuracy", it) }
+    altitudeAccuracy?.let { putDouble("altitudeAccuracy", it) }
+    heading?.let { putDouble("heading", it) }
+    speed?.let { putDouble("speed", it) }
   }
 }
 

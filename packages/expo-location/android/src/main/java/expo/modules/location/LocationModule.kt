@@ -18,7 +18,6 @@ import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
-import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -663,7 +662,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
   internal fun sendLocationResponse(watchId: Int, response: LocationResponse) {
     val responseBundle = bundleOf()
-    responseBundle.putBundle("location", response.toBundle(Bundle::class.java))
+    responseBundle.putBundle("location", response.toBundle())
     responseBundle.putInt("watchId", watchId)
     sendEvent(LOCATION_EVENT_NAME, responseBundle)
   }
