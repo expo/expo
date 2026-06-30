@@ -11,6 +11,7 @@ import type {
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type ExpoImage from './ExpoImage';
+import type { ExpoImageIntegrationConfig } from './observe';
 
 export type ImageSource = {
   /**
@@ -885,3 +886,16 @@ export type ImageCacheConfig = {
    */
   maxMemoryCount?: number;
 };
+
+// Register the `'expo-image'` key on expo-observe's open `ObserveIntegrationsConfig` interface via
+// declaration merging, so `Observe.configure({ integrations: { 'expo-image': ... } })` is suggested
+// and type-checked. The config type itself lives in `observe.ts` (imported at the top of this file).
+// This augmentation lives here, not in `observe.ts`, because `index.ts` reaches `observe.ts` only
+// through a runtime value import that is elided from the emitted `index.d.ts` — so an augmentation
+// there would not ship to consumers. `Image.types.ts` is re-exported via `export *`, which survives
+// declaration emit, so the augmentation is always in the package's public type graph.
+declare module 'expo-observe' {
+  interface ObserveIntegrationsConfig {
+    'expo-image'?: boolean | ExpoImageIntegrationConfig;
+  }
+}
