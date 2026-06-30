@@ -160,6 +160,72 @@ export default function App() {
 }
 ```
 
+### Custom marker icons
+
+You can use the [`useImage`](/versions/v57.0.0/sdk/image/#useimage) hook from `expo-image` to load custom marker and annotation icons.
+
+<Tabs>
+<Tab label="Google Maps">
+
+The following example shows how to display a custom marker icon with Google Maps on Android.
+
+```tsx
+import { useImage } from 'expo-image';
+import { GoogleMaps } from 'expo-maps';
+
+export default function Map() {
+  const icon = useImage('https://example.com/marker.svg', { maxWidth: 48, maxHeight: 48 });
+
+  return (
+    <GoogleMaps.View
+      style={{ flex: 1 }}
+      markers={[
+        {
+          coordinates: { latitude: 37.78825, longitude: -122.4324 },
+          icon: icon ?? undefined,
+          anchor: { x: 0.5, y: 0.5 },
+        },
+      ]}
+    />
+  );
+}
+```
+
+`GoogleMaps.Marker.icon` expects an image reference, such as the value returned by the `useImage` hook from the `expo-image` package. It does not accept an image source directly.
+
+The loaded image dimensions determine the marker size, not a marker style prop. For SVG icons, set `width`, `height`, and `viewBox` in the SVG, or pass `maxWidth` and `maxHeight` to the `useImage` hook. You can use `anchor` to align custom icons with their coordinates.
+
+</Tab>
+<Tab label="Apple Maps">
+
+The following example shows how to display a custom annotation icon with Apple Maps on iOS.
+
+```tsx
+import { useImage } from 'expo-image';
+import { AppleMaps } from 'expo-maps';
+
+export default function Map() {
+  const icon = useImage('https://example.com/marker.svg');
+
+  return (
+    <AppleMaps.View
+      style={{ flex: 1 }}
+      annotations={[
+        {
+          coordinates: { latitude: 37.78825, longitude: -122.4324 },
+          icon: icon ?? undefined,
+        },
+      ]}
+    />
+  );
+}
+```
+
+`AppleMaps.Annotation.icon` expects an image reference, such as the value returned by the `useImage` hook from the `expo-image` library. You can use `AppleMaps.Annotation` for custom image icons. `AppleMaps.Marker` supports marker-specific options such as `systemImage`, `monogram`, and `tintColor`.
+
+</Tab>
+</Tabs>
+
 ## API
 
 ```js
