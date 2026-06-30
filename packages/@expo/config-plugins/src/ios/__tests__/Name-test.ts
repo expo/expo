@@ -28,6 +28,21 @@ describe(setName, () => {
   it(`makes no changes to the infoPlist no name is provided`, () => {
     expect(setName({} as any, {})).toMatchObject({});
   });
+
+  it(`sanitizes CFBundleName to a valid identifier, mirroring PRODUCT_NAME`, () => {
+    // CFBundleName feeds the ExpoModulesProvider class-name lookup as a fallback
+    // for CFBundleExecutable, so it must be identifier-safe. The user-visible name
+    // is CFBundleDisplayName (set raw by setDisplayName), not CFBundleName.
+    for (const [input, output] of [
+      ['My Appæ', 'MyApp'],
+      ['My Cool Thing', 'MyCoolThing'],
+      ['h"&<world/>🚀', 'hworld'],
+    ] as [string, string][]) {
+      expect(setName({ name: input }, {})).toMatchObject({
+        CFBundleName: output,
+      });
+    }
+  });
 });
 describe(setProductName, () => {
   const projectRoot = '/';

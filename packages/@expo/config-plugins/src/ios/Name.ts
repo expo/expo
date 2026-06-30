@@ -77,9 +77,13 @@ export function setName(
     return infoPlist;
   }
 
+  // `CFBundleName` is used as a fallback to resolve the app's `ExpoModulesProvider`
+  // class name (`AppContext.modulesProvider`), so it must be a valid identifier —
+  // mirroring `setProductName`, which sanitizes `PRODUCT_NAME` for the same lookup.
+  // `CFBundleDisplayName` (set raw by `setDisplayName`) remains the user-visible name.
   return {
     ...infoPlist,
-    CFBundleName: name,
+    CFBundleName: sanitizedName(name),
   };
 }
 
