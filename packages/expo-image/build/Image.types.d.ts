@@ -646,9 +646,24 @@ export declare class ImageRef extends SharedRef<'image'> {
     readonly isAnimated?: boolean;
 }
 /**
+ * Module-level events emitted by the native `ExpoImage` module.
  * @hidden
  */
-export declare class ImageNativeModule extends NativeModule {
+export type ImageModuleEvents = {
+    /**
+     * Fires from every relevant load path (`loadAsync`, `useImage`, and the rendered `<Image>` view)
+     * with the decoded pixel size.
+     */
+    imageLoaded: (event: {
+        url: string;
+        width: number;
+        height: number;
+    }) => void;
+};
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule<ImageModuleEvents> {
     Image: typeof ImageRef;
     loadAsync(source: ImageSource, options?: ImageLoadOptions): Promise<ImageRef>;
     prefetch(urls: string[], cachePolicy: ImagePrefetchOptions['cachePolicy'], headers?: Record<string, string>): Promise<boolean>;

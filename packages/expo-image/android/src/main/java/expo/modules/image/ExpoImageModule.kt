@@ -50,8 +50,18 @@ import java.io.FileOutputStream
 import java.net.URL
 
 class ExpoImageModule : Module() {
+  // Whether JS subscribed to `imageLoaded`. Skips the per-image-load bridge hop when nothing is
+  // listening
+  @Volatile
+  private var hasImageLoadedListener = false
+
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
+
+    Events("imageLoaded")
+
+    OnStartObserving("imageLoaded") { hasImageLoadedListener = true }
+    OnStopObserving("imageLoaded") { hasImageLoadedListener = false }
 
     OnCreate {
       appContext.reactContext?.registerComponentCallbacks(ExpoImageComponentCallbacks)
@@ -177,7 +187,9 @@ class ExpoImageModule : Module() {
     }
 
     AsyncFunction("loadAsync") Coroutine { source: SourceMap, options: ImageLoadOptions? ->
-      ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load()
+      val image = ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load()
+      emitImageLoaded(source.uri ?: "", image.ref.intrinsicWidth, image.ref.intrinsicHeight)
+      image
     }
 
     suspend fun generatePlaceholder(
@@ -419,5 +431,19 @@ class ExpoImageModule : Module() {
         }
       }
     }
+  }
+
+  fun emitImageLoaded(url: String, width: Int, height: Int) {
+    if (!hasImageLoadedListener || width <= 0 || height <= 0 || url.isEmpty()) {
+      return
+    }
+    sendEvent(
+      "imageLoaded",
+      mapOf(
+        "url" to url,
+        "width" to width,
+        "height" to height
+      )
+    )
   }
 }

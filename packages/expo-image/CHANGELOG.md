@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added an `imageLoaded` module event emitted with the decoded pixel size from every load path. ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -21,8 +23,6 @@ _This version does not introduce any user-facing changes._
 - Added `Image.writeToCacheAsync` and `Image.readFromCacheAsync` to seed and read the image cache by cache key. ([#46620](https://github.com/expo/expo/pull/46620) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.11 — 2026-06-10
-
-### 🐛 Bug fixes
 
 - [Android] Fixed image staying blank when its `source` changes while a `transition` cross-fade is still running. ([#46752](https://github.com/expo/expo/pull/46752) by [@zoontek](https://github.com/zoontek))
 

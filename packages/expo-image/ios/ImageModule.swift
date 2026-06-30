@@ -8,8 +8,17 @@ internal import SDWebImageSVGCoder
 public final class ImageModule: Module {
   lazy var prefetcher = SDWebImagePrefetcher.shared
 
+  // Whether JS subscribed to `imageLoaded`. Skips the per-image-load bridge hop when nothing is
+  // listening
+  private var hasImageLoadedListener = false
+
   public func definition() -> ModuleDefinition {
     Name("ExpoImage")
+
+    Events("imageLoaded")
+
+    OnStartObserving("imageLoaded") { self.hasImageLoadedListener = true }
+    OnStopObserving("imageLoaded") { self.hasImageLoadedListener = false }
 
     OnCreate {
       ImageModule.registerCoders()
@@ -288,8 +297,15 @@ public final class ImageModule: Module {
       return Image(cachedImage)
     }
 
-    AsyncFunction("loadAsync") { (source: ImageSource, options: ImageLoadOptions?) -> Image? in
+    AsyncFunction("loadAsync") { [weak appContext = self.appContext] (source: ImageSource, options: ImageLoadOptions?) -> Image? in
       let image = try await ImageLoadTask(source, options: options ?? ImageLoadOptions()).load()
+      // Going through the `appContext` instead of capturing `self` keeps this `@Sendable async` closure from forcing 
+      // the whole module to be Sendable.
+      appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
+        url: source.uri?.absoluteString ?? "",
+        width: image.size.width * image.scale,
+        height: image.size.height * image.scale
+      )
       return Image(image)
     }
 
@@ -302,6 +318,17 @@ public final class ImageModule: Module {
         return imageFormatToMediaType(image.ref.sd_imageFormat)
       }
     }
+  }
+
+  func emitImageLoaded(url: String, width: CGFloat, height: CGFloat) {
+    guard hasImageLoadedListener, width > 0, height > 0, !url.isEmpty else {
+      return
+    }
+    emit(event: "imageLoaded", payload: [
+      "url": url,
+      "width": Double(width),
+      "height": Double(height)
+    ])
   }
 
   func generatePlaceholder(

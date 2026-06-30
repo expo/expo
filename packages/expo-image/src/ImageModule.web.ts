@@ -1,9 +1,15 @@
 import { NativeModule, registerWebModule } from 'expo-modules-core';
 
-import type { ImageCacheConfig, ImageRef, ImageSource, ImageNativeModule } from './Image.types';
+import type {
+  ImageCacheConfig,
+  ImageRef,
+  ImageSource,
+  ImageNativeModule,
+  ImageModuleEvents,
+} from './Image.types';
 import ImageRefWeb from './web/ImageRef';
 
-class ImageModule extends NativeModule implements ImageNativeModule {
+class ImageModule extends NativeModule<ImageModuleEvents> implements ImageNativeModule {
   Image: typeof ImageRef = ImageRefWeb;
 
   async prefetch(urls: string | string[], _: unknown, __: unknown): Promise<boolean> {

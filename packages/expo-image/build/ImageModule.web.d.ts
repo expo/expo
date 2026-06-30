@@ -1,6 +1,6 @@
 import { NativeModule } from 'expo-modules-core';
-import type { ImageCacheConfig, ImageRef, ImageSource, ImageNativeModule } from './Image.types';
-declare class ImageModule extends NativeModule implements ImageNativeModule {
+import type { ImageCacheConfig, ImageRef, ImageSource, ImageNativeModule, ImageModuleEvents } from './Image.types';
+declare class ImageModule extends NativeModule<ImageModuleEvents> implements ImageNativeModule {
     Image: typeof ImageRef;
     prefetch(urls: string | string[], _: unknown, __: unknown): Promise<boolean>;
     clearMemoryCache(): Promise<boolean>;
