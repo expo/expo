@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Sanitize `CFBundleName` to a valid identifier via the shared `sanitizedName` helper, matching `PRODUCT_NAME`. Prevents dead `ExpoModulesProvider` class-name candidates when `config.name` contains non-identifier characters (e.g. `æ`, whitespace). `CFBundleDisplayName` remains the user-visible name. ([#47383](https://github.com/expo/expo/pull/47383) by [@rolfb](https://github.com/rolfb))
+
 ### 💡 Others
 
 ## 56.0.8 — 2026-05-23
