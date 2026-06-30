@@ -1860,7 +1860,7 @@ importers:
         specifier: workspace:^0.8.0
         version: link:../plist
       '@expo/prebuild-config':
-        specifier: workspace:^57.0.2
+        specifier: workspace:^57.0.3
         version: link:../prebuild-config
       '@expo/require-utils':
         specifier: workspace:^57.0.0
@@ -2842,7 +2842,7 @@ importers:
         specifier: ^4.3.1
         version: 4.4.3
       expo-modules-autolinking:
-        specifier: workspace:~57.0.2
+        specifier: workspace:~57.0.3
         version: link:../../expo-modules-autolinking
       resolve-from:
         specifier: ^5.0.0
@@ -3475,7 +3475,7 @@ importers:
         specifier: ^7.20.0
         version: 7.29.2
       '@expo/cli':
-        specifier: workspace:^57.0.2
+        specifier: workspace:^57.0.3
         version: link:../@expo/cli
       '@expo/config':
         specifier: workspace:~57.0.1
@@ -3526,10 +3526,10 @@ importers:
         specifier: workspace:~57.0.0
         version: link:../expo-keep-awake
       expo-modules-autolinking:
-        specifier: workspace:~57.0.2
+        specifier: workspace:~57.0.3
         version: link:../expo-modules-autolinking
       expo-modules-core:
-        specifier: workspace:~57.0.0
+        specifier: workspace:~57.0.1
         version: link:../expo-modules-core
       pretty-format:
         specifier: ^29.7.0
@@ -4133,7 +4133,7 @@ importers:
   packages/expo-dev-client:
     dependencies:
       expo-dev-launcher:
-        specifier: workspace:~57.0.2
+        specifier: workspace:~57.0.3
         version: link:../expo-dev-launcher
       expo-dev-menu:
         specifier: workspace:~57.0.3
