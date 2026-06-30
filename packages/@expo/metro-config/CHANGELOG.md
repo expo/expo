@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Treat dynamic imports with rejection handlers as optional dependencies, ported from [react/metro#1697](https://github.com/react/metro/pull/1697) ([#47334](https://github.com/expo/expo/pull/47334) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 57.0.1 — 2026-06-27
