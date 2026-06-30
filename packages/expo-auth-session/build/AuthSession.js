@@ -16,7 +16,7 @@ export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
 // @needsAudit @docsMissing
 /**
  * Get the URL that your authentication provider needs to redirect to. For example: `https://auth.expo.io/@your-username/your-app-slug`. You can pass an additional path component to be appended to the default redirect URL.
- * > **Note** This method will throw an exception if you're using the bare workflow on native.
+ * > **Note** This method will throw an exception in an existing React Native project on native.
  *
  * @param path
  * @return
@@ -37,10 +37,10 @@ export function getRedirectUrl(path) {
 // @needsAudit
 /**
  * Create a redirect url for the current platform and environment. You need to manually define the redirect that will be used in
- * a bare workflow React Native app, or an Expo standalone app, this is because it cannot be inferred automatically.
+ * an existing React Native project or a production build, because it cannot be inferred automatically.
  * - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
- * - **Managed workflow:** Uses the `scheme` property of your app config.
- * - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
+ * - **CNG projects:** Uses the `scheme` property of your app config.
+ * - **Existing React Native apps:** Falls back to using the `native` option.
  *
  * @param options Additional options for configuring the path.
  * @return The `redirectUri` to use in an authentication request.

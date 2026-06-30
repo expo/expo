@@ -68,8 +68,8 @@ export type AuthSessionRedirectUriOptions = {
      */
     preferLocalhost?: boolean;
     /**
-     * Manual scheme to use in Bare and Standalone native app contexts. Takes precedence over all other properties.
-     * You must define the URI scheme that will be used in a custom built native application or standalone Expo application.
+     * Manual scheme to use in existing React Native projects and production builds. Takes precedence over all other properties.
+     * You must define the URI scheme that will be used in a custom-built native application or production build.
      * The value should conform to your native app's URI schemes.
      * You can see conformance with `npx uri-scheme list`.
      */
