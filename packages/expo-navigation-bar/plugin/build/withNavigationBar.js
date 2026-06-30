@@ -64,33 +64,17 @@ const setNavigationBarStyles = ({ hidden, style }, styles) => {
 };
 exports.setNavigationBarStyles = setNavigationBarStyles;
 function applyEnforceNavigationBarContrast(config, enforceNavigationBarContrast) {
-    const enforceNavigationBarContrastItem = {
-        _: enforceNavigationBarContrast ? 'true' : 'false',
-        $: {
-            name: 'android:enforceNavigationBarContrast',
-            'tools:targetApi': '29',
-        },
-    };
-    const { style = [] } = config.modResults.resources;
-    const mainThemeIndex = style.findIndex(({ $ }) => $.name === 'AppTheme');
-    if (mainThemeIndex === -1) {
-        return config;
-    }
-    const mainTheme = style[mainThemeIndex];
-    if (mainTheme != null) {
-        const enforceIndex = mainTheme.item.findIndex(({ $ }) => $.name === 'android:enforceNavigationBarContrast');
-        if (enforceIndex !== -1) {
-            mainTheme.item[enforceIndex] = enforceNavigationBarContrastItem;
-            return config;
+    const androidAttr = 'android:enforceNavigationBarContrast';
+    const expoAttr = 'expoEnforceNavigationBarContrast';
+    const attrs = new Set([androidAttr, expoAttr]);
+    const value = String(enforceNavigationBarContrast);
+    config.modResults.resources.style = config.modResults.resources.style?.map((style) => {
+        if (style.$.name === 'AppTheme') {
+            style.item = style.item.filter((item) => !attrs.has(item.$.name));
+            style.item.push({ $: { name: androidAttr, 'tools:targetApi': '29' }, _: value }, { $: { name: expoAttr }, _: value });
         }
-        config.modResults.resources.style = [
-            {
-                $: mainTheme.$,
-                item: [enforceNavigationBarContrastItem, ...mainTheme.item],
-            },
-            ...style.filter(({ $ }) => $.name !== 'AppTheme'),
-        ];
-    }
+        return style;
+    });
     return config;
 }
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withNavigationBar, pkg.name, pkg.version);
