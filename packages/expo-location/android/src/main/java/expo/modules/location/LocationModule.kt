@@ -66,9 +66,10 @@ import expo.modules.location.records.ReverseGeocodeLocation
 import expo.modules.location.records.ReverseGeocodeResponse
 import expo.modules.location.taskConsumers.GeofencingTaskConsumer
 import expo.modules.location.taskConsumers.LocationTaskConsumer
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.util.Locale
-import kotlin.collections.emptyList
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -766,21 +767,18 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       throw NoGeocodeException()
     }
 
-    return suspendCancellableCoroutine { continuation ->
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      suspendCancellableCoroutine { continuation ->
         Geocoder(mContext, Locale.getDefault()).getFromLocationName(address, 1) { addresses ->
           val results = addresses.mapNotNull { address -> address?.toGeocodeResponse() }
           continuation.resume(results)
         }
-      } else {
+      }
+    } else {
+      withContext(Dispatchers.IO) {
         @Suppress("DEPRECATION") // When minSdkVersion is 33, this code will be removed and the above code will be used instead.
-        val addresses = Geocoder(mContext, Locale.getDefault()).getFromLocationName(address, 1)
-        if (addresses == null) {
-          continuation.resume(emptyList())
-          return@suspendCancellableCoroutine
-        }
-        val results = addresses.mapNotNull { it.toGeocodeResponse() }
-        continuation.resume(results)
+        val addresses = Geocoder(mContext, Locale.getDefault()).getFromLocationName(address, 1).orEmpty()
+        addresses.mapNotNull { it.toGeocodeResponse() }
       }
     }
   }
@@ -813,8 +811,8 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       longitude = location.longitude
     }
 
-    return suspendCancellableCoroutine { continuation ->
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      suspendCancellableCoroutine { continuation ->
         Geocoder(mContext, Locale.getDefault()).getFromLocation(androidLocation.latitude, androidLocation.longitude, 1) { addresses ->
           val results = addresses.mapNotNull { address ->
             address?.let {
@@ -823,19 +821,16 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
           }
           continuation.resume(results)
         }
-      } else {
+      }
+    } else {
+      withContext(Dispatchers.IO) {
         @Suppress("DEPRECATION") // When minSdkVersion is 33, this code will be removed and the above code will be used instead.
-        val addresses = Geocoder(mContext, Locale.getDefault()).getFromLocation(androidLocation.latitude, androidLocation.longitude, 1)
-        if (addresses == null) {
-          continuation.resume(emptyList())
-          return@suspendCancellableCoroutine
-        }
-        val results = addresses.mapNotNull { address ->
+        val addresses = Geocoder(mContext, Locale.getDefault()).getFromLocation(androidLocation.latitude, androidLocation.longitude, 1).orEmpty()
+        return@withContext addresses.mapNotNull { address ->
           address?.let {
             ReverseGeocodeResponse(it)
           }
         }
-        continuation.resume(results)
       }
     }
   }
