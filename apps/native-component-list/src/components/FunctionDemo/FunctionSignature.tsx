@@ -48,9 +48,15 @@ function argumentsToString(args: FunctionArgument[], parameters: FunctionParamet
     .join(', ');
 }
 
-function convertObjectArgumentToString(arg: FunctionArgument, parameter: ObjectParameter) {
+function convertObjectArgumentToString(
+  arg: FunctionArgument,
+  parameter: ObjectParameter,
+  indentationLevel = 0
+): string {
+  const indentation = '  '.repeat(indentationLevel);
+
   const properties = parameter.properties
-    .map((property) => {
+    .map((property): string | undefined => {
       // skip object properties unsupported on the current platform
       if (!isCurrentPlatformSupported(property.platforms)) {
         return;
@@ -79,6 +85,10 @@ function convertObjectArgumentToString(arg: FunctionArgument, parameter: ObjectP
         return;
       }
 
+      if (property.type === 'object') {
+        return `${property.name}: ${convertObjectArgumentToString(value, property, indentationLevel + 1)}`;
+      }
+
       if (property.type === 'enum') {
         const stringArgument = convertEnumArgumentToString(value, property);
         if (!stringArgument) return;
@@ -88,9 +98,9 @@ function convertObjectArgumentToString(arg: FunctionArgument, parameter: ObjectP
       return `${property.name}: ${property.type === 'string' ? `"${value}"` : value}`;
     })
     .filter((entry) => !!entry) // filter out all void values
-    .join(',\n  ');
+    .join(`,\n  ${indentation}`);
 
-  return `{\n  ${properties}\n}`;
+  return `{\n  ${indentation}${properties}\n${indentation}}`;
 }
 
 function convertEnumArgumentToString(arg: FunctionArgument, { name, values }: EnumParameter) {
