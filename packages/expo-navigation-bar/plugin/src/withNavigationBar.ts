@@ -125,37 +125,25 @@ export function applyEnforceNavigationBarContrast(
   config: ResourceXMLConfig,
   enforceNavigationBarContrast: boolean
 ): ResourceXMLConfig {
-  const enforceNavigationBarContrastItem = {
-    _: enforceNavigationBarContrast ? 'true' : 'false',
-    $: {
-      name: 'android:enforceNavigationBarContrast',
-      'tools:targetApi': '29',
-    },
-  };
-  const { style = [] } = config.modResults.resources;
-  const mainThemeIndex = style.findIndex(({ $ }) => $.name === 'AppTheme');
-  if (mainThemeIndex === -1) {
-    return config;
-  }
-  const mainTheme = style[mainThemeIndex];
+  const androidAttr = 'android:enforceNavigationBarContrast';
+  const expoAttr = 'expoEnforceNavigationBarContrast';
+  const attrs = new Set([androidAttr, expoAttr]);
+  const value = String(enforceNavigationBarContrast);
 
-  if (mainTheme != null) {
-    const enforceIndex = mainTheme.item.findIndex(
-      ({ $ }) => $.name === 'android:enforceNavigationBarContrast'
-    );
-    if (enforceIndex !== -1) {
-      mainTheme.item[enforceIndex] = enforceNavigationBarContrastItem;
-      return config;
+  config.modResults.resources.style = config.modResults.resources.style?.map(
+    (style): typeof style => {
+      if (style.$.name === 'AppTheme') {
+        style.item = style.item.filter((item) => !attrs.has(item.$.name));
+
+        style.item.push(
+          { $: { name: expoAttr }, _: value },
+          { $: { name: androidAttr, 'tools:targetApi': '29' }, _: value }
+        );
+      }
+
+      return style;
     }
-
-    config.modResults.resources.style = [
-      {
-        $: mainTheme.$,
-        item: [enforceNavigationBarContrastItem, ...mainTheme.item],
-      },
-      ...style.filter(({ $ }) => $.name !== 'AppTheme'),
-    ];
-  }
+  );
 
   return config;
 }
