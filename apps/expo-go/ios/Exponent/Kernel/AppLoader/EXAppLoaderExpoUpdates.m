@@ -607,14 +607,8 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
 
   EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
 
-  NSArray *sdkVersions = @[
-    [EXVersions sharedInstance].sdkVersion,
-    [NSString stringWithFormat:@"exposdk:%@", [EXVersions sharedInstance].sdkVersion],
-    @"UNVERSIONED",
-    @"exposdk:UNVERSIONED"
-  ];
   _selectionPolicy = [[EXUpdatesSelectionPolicy alloc]
-                      initWithLauncherSelectionPolicy:[[EXExpoGoLauncherSelectionPolicyFilterAware alloc] initWithSdkVersions:sdkVersions]
+                      initWithLauncherSelectionPolicy:[[EXExpoGoLauncherSelectionPolicyFilterAware alloc] initWithSupportedSdkVersion:[EXVersions sharedInstance].sdkVersion]
                       loaderSelectionPolicy:[[EXUpdatesLoaderSelectionPolicyFilterAware alloc] initWithConfig:_config]
                       reaperSelectionPolicy:[EXUpdatesReaperSelectionPolicyDevelopmentClient new]];
 
