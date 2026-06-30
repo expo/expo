@@ -1650,6 +1650,91 @@ describe('optional dependencies', () => {
     validateDependencies(dependencies, 4);
   });
 
+  describe('dynamic import with rejection handler', () => {
+    it('import().catch(handler) is optional', () => {
+      const ast = astFromCode(`
+        import('optional-async-a').catch(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(handler, onReject) is optional', () => {
+      const ast = astFromCode(`
+        import('optional-async-a').then(() => {}, () => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(...).then(...).catch(handler) is optional', () => {
+      const ast = astFromCode(`
+        import('optional-async-a')
+          .then(x => x)
+          .then(x => x)
+          .catch(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('await import().catch(handler) is optional', () => {
+      const ast = astFromCode(`
+        async function f() {
+          await import('optional-async-a').catch(() => {});
+        }
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('try { await import() } catch {} is optional', () => {
+      const ast = astFromCode(`
+        async function f() {
+          try {
+            await import('optional-async-a');
+          } catch (e) {}
+        }
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(handler) without onReject is not optional', () => {
+      const ast = astFromCode(`
+        import('not-optional-async-a').then(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().catch() with no handler argument is not optional', () => {
+      const ast = astFromCode(`
+        import('not-optional-async-a').catch();
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(handler, null) is not optional (null/undefined onReject)', () => {
+      const ast = astFromCode(`
+        import('not-optional-async-a').then(() => {}, null);
+        import('not-optional-async-b').then(() => {}, undefined);
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 3);
+    });
+
+    it('import() detached from chain is not optional', () => {
+      const ast = astFromCode(`
+        const p = import('not-optional-async-a');
+        p.catch(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+  });
+
   describe('isESMImport', () => {
     it('distinguishes require calls, static imports and async imports', () => {
       const ast = astFromCode(`
