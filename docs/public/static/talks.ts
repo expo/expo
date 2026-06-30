@@ -8,6 +8,14 @@ export const TALKS = [
     home: true,
   },
   {
+    title: 'Screens & Routers: The Foundation of Navigation in React Native Apps',
+    event: 'App.js Conf 2026',
+    description: 'Kacper Kafara, Kuba Tkacz',
+    videoId: 'WJ3B2aIah6Q',
+    uploadDate: '2026-06-25',
+    home: true,
+  },
+  {
     title: 'Keynote: streamline React Native development',
     event: 'App.js Conf 2025',
     description: 'Charlie Cheever, Jon Samp',
@@ -29,7 +37,6 @@ export const TALKS = [
     description: 'Keith Kurak',
     videoId: 'TLoHua8bzPg',
     uploadDate: '2025-06-19',
-    home: true,
   },
   {
     title: 'Keynote: flexibility & iteration speed',
@@ -285,6 +292,12 @@ export const PODCASTS = [
 ] as Talk[];
 
 export const LIVE_STREAMS = [
+  {
+    title: "What's new in Expo SDK 56? Widgets, Expo UI, Router decoupling from React Navigation",
+    event: 'Expo Live Stream',
+    videoId: 'FOFPOEIyeag',
+    uploadDate: '2026-06-26',
+  },
   {
     title: 'Announcing the 2025 Expo App Award winners!',
     event: 'Expo Live Stream',
