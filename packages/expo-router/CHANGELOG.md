@@ -6,14 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.2 — 2026-06-30
+
+### 🎉 New features
+
 - [android] Support `Stack.Toolbar.Badge` in header left/right placements ([#46537](https://github.com/expo/expo/pull/46537) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Support `Stack.Toolbar.Badge` on `Stack.Toolbar.Menu` icons in header left/right placements ([#47276](https://github.com/expo/expo/pull/47276) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
 - Preserve a system time mocked with `jest.setSystemTime` across `renderRouter` ([#46978](https://github.com/expo/expo/pull/46978) by [@Ubax](https://github.com/Ubax))
-
-### 💡 Others
 
 ## 57.0.1 — 2026-06-27
 

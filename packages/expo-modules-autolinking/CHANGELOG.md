@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [Android] Apply the `android.cmakeVersion` build property to the app and all library subprojects. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.2 — 2026-06-30
+
+### 🎉 New features
+
+- [Android] Apply the `android.cmakeVersion` build property to the app and all library subprojects. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
 
 ## 57.0.1 — 2026-06-27
 

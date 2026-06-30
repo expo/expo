@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 57.0.0 — 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
 ## 57.0.0-preview.1 — 2026-06-27
 
 _This version does not introduce any user-facing changes._

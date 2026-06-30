@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Polyfill `enforceContrast` on Android 8 and 9. ([#47382](https://github.com/expo/expo/pull/47382) by [@zoontek](https://github.com/zoontek))
-
 ### 💡 Others
+
+## 57.0.1 — 2026-06-30
+
+### 🐛 Bug fixes
+
+- Polyfill `enforceContrast` on Android 8 and 9. ([#47382](https://github.com/expo/expo/pull/47382) by [@zoontek](https://github.com/zoontek))
 
 ## 57.0.0 — 2026-06-25
 
