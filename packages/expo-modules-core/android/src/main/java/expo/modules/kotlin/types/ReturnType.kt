@@ -1,6 +1,9 @@
 package expo.modules.kotlin.types
 
 import android.os.Bundle
+import expo.modules.kotlin.jni.ArrayBuffer
+import expo.modules.kotlin.jni.JavaScriptArrayBuffer
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.formatters.FormattedRecord
 import io.github.expo.pika.PIntrospectionData
@@ -37,6 +40,9 @@ fun getDirectConverter(klass: Class<*>): JSTypeConverter<*>? {
     Pair::class.java -> JSTypeConverter.PairConverter
     Long::class.java -> JSTypeConverter.LongConverter
     Duration::class.java -> JSTypeConverter.DurationConverter
+    JavaScriptArrayBuffer::class.java -> JSTypeConverter.JavaScriptArrayBufferConverter
+    ArrayBuffer::class.java -> JSTypeConverter.ArrayBufferConverter
+    NativeArrayBuffer::class.java -> JSTypeConverter.NativeArrayBufferConverter
     Any::class.java -> JSTypeConverter.AnyConverter
     else -> null
   }
