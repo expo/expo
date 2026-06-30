@@ -136,8 +136,8 @@ export function applyEnforceNavigationBarContrast(
         style.item = style.item.filter((item) => !attrs.has(item.$.name));
 
         style.item.push(
-          { $: { name: expoAttr }, _: value },
-          { $: { name: androidAttr, 'tools:targetApi': '29' }, _: value }
+          { $: { name: androidAttr, 'tools:targetApi': '29' }, _: value },
+          { $: { name: expoAttr }, _: value }
         );
       }
 
