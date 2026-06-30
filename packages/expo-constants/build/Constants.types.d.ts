@@ -12,7 +12,7 @@ export declare enum AppOwnership {
  */
 export declare enum ExecutionEnvironment {
     /** A project that includes native project directories that you maintain directly in your
-     * [existing (bare) React Native app](https://docs.expo.dev/bare/overview/).
+     * [existing React Native project](/bare/overview/).
      */
     Bare = "bare",
     /** Production/release build created with or without EAS Build. */
@@ -137,7 +137,7 @@ export type NativeConstants = {
     expoRuntimeVersion: string | null;
     /**
      * The version string of the Expo Go app currently running.
-     * Returns `null` in bare workflow and web.
+     * Returns `null` in existing React Native projects and on web.
      */
     expoVersion: string | null;
     isDetached?: boolean;

@@ -33,11 +33,11 @@ export type FacebookAuthRequestConfig = ProviderAuthRequestConfig & {
    */
   webClientId?: string;
   /**
-   * iOS native client ID for use in development builds and bare workflow.
+   * iOS native client ID for use in development builds and existing React Native projects.
    */
   iosClientId?: string;
   /**
-   * Android native client ID for use in development builds and bare workflow.
+   * Android native client ID for use in development builds and existing React Native projects.
    */
   androidClientId?: string;
 };

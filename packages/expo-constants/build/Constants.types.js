@@ -12,7 +12,7 @@ export var AppOwnership;
 export var ExecutionEnvironment;
 (function (ExecutionEnvironment) {
     /** A project that includes native project directories that you maintain directly in your
-     * [existing (bare) React Native app](https://docs.expo.dev/bare/overview/).
+     * [existing React Native project](/bare/overview/).
      */
     ExecutionEnvironment["Bare"] = "bare";
     /** Production/release build created with or without EAS Build. */

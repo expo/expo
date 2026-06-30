@@ -10,7 +10,7 @@ export declare function hasCustomScheme(): boolean;
  */
 export declare function collectManifestSchemes(): string[];
 /**
- * Ensure the user has linked the expo-constants manifest in bare workflow.
+ * Ensure the user has linked the expo-constants manifest in an existing React Native project.
  */
 export declare function hasConstantsManifest(): boolean;
 export declare function resolveScheme(options: {

@@ -23,11 +23,11 @@ export type GoogleAuthRequestConfig = ProviderAuthRequestConfig & {
      */
     webClientId?: string;
     /**
-     * iOS native client ID for use in standalone, bare workflow, and custom clients.
+     * iOS native client ID for use in production builds, existing React Native projects, and development builds.
      */
     iosClientId?: string;
     /**
-     * Android native client ID for use in standalone, and bare workflow.
+     * Android native client ID for use in production builds and existing React Native projects.
      */
     androidClientId?: string;
     /**
