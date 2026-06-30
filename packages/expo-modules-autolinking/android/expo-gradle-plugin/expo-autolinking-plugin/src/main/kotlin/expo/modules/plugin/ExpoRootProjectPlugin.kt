@@ -1,5 +1,6 @@
 package expo.modules.plugin
 
+import com.android.build.api.dsl.CommonExtension
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
 import org.gradle.api.Plugin
@@ -18,6 +19,82 @@ class ExpoRootProjectPlugin : Plugin<Project> {
 
     with(rootProject) {
       defineDefaultProperties(libs)
+      maybeOverrideCmakeVersion()
+      disableLinkedModulesLintWhenRequested()
+    }
+  }
+}
+
+/**
+ * Maybe override the `android.externalNativeBuild.cmake.version` for all subprojects. Set via
+ * `android.cmakeVersion` in **gradle.properties**.
+ */
+private fun Project.maybeOverrideCmakeVersion() {
+  val cmakeVersion = (findProperty("android.cmakeVersion") as? String)?.takeIf { it.isNotBlank() }
+    ?: return
+
+  logger.quiet(
+    "${"[ExpoRootProject]".withColor(Colors.GREEN)} Overriding CMake version: ${cmakeVersion.withColor(Colors.GREEN)}"
+  )
+
+  val applyCmakeVersion = { subproject: Project ->
+    val android = subproject.extensions.getByType(CommonExtension::class.java)
+    android.externalNativeBuild.cmake.version = cmakeVersion
+  }
+
+  subprojects { subproject ->
+    subproject.plugins.withId("com.android.application") { applyCmakeVersion(subproject) }
+    subproject.plugins.withId("com.android.library") { applyCmakeVersion(subproject) }
+  }
+}
+
+/**
+ * Determines whether autolinked native modules should be linted when building the release version
+ * of the app.
+ */
+internal fun Project.isLinkedModuleLintEnabled(): Boolean {
+  (findProperty("expo.android.enableLint") as? String)?.let { return it.toBoolean() }
+  System.getenv("EXPO_ANDROID_ENABLE_LINT")?.let { return it.toBoolean() }
+  return false
+}
+
+/**
+ * Centrally skips the expensive lint-vital *analysis* for autolinked native modules when
+ * module linting is disabled (see [isLinkedModuleLintEnabled]).
+ *
+ * A module's lint-vital analysis is skipped when either is true:
+ *  - Its sources live under `node_modules` (third-party React Native libraries).
+ *  - It is an Expo module
+ *
+ * The app itself is left untouched - its lint-vital still runs.
+ *
+ * Only `lintVitalAnalyze*` is disabled - that's the task that actually runs the lint
+ * detectors. The cheap `generate*LintVitalModel` task is left enabled on purpose: the
+ * app's `lintVitalReportRelease` requires every dependency's vital model and fails with
+ * "Lint model ... does not exist" if it's missing. Keeping the model while skipping the
+ * analysis lets the app build skip the work without breaking the report.
+ */
+internal fun Project.disableLinkedModulesLintWhenRequested() {
+  if (isLinkedModuleLintEnabled()) {
+    return
+  }
+
+  subprojects { subproject ->
+    // Third-party native modules autolinked from node_modules.
+    if (subproject.projectDir.invariantSeparatorsPath.contains("/node_modules/")) {
+      subproject.disableLintVitalAnalysis()
+    }
+    // Every Expo module, wherever its sources live.
+    subproject.plugins.withId("expo-module-gradle-plugin") {
+      subproject.disableLintVitalAnalysis()
+    }
+  }
+}
+
+private fun Project.disableLintVitalAnalysis() {
+  tasks.configureEach { task ->
+    if (task.name.startsWith("lintVitalAnalyze")) {
+      task.enabled = false
     }
   }
 }

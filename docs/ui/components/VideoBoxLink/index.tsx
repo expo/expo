@@ -65,7 +65,7 @@ export function VideoBoxLink({
             className="absolute top-[calc(50%-22px)] right-[calc(50%-22px)] flex size-11 items-center justify-center rounded-full bg-[#000a]"
             role="presentation"
             aria-hidden="true">
-            <PlaySolidIcon className="ml-0.5 icon-lg text-palette-white" />
+            <PlaySolidIcon aria-hidden="true" className="ml-0.5 icon-lg text-palette-white" />
           </div>
         </div>
         <div className="flex flex-col justify-center gap-1 px-4 py-2">

@@ -2,7 +2,7 @@ import { applyTransform } from 'jscodeshift/dist/testUtils';
 
 import transform from '../sdk-56-expo-router-react-navigation-replace';
 
-let errorSpy: jest.Mock;
+let errorSpy: jest.SpyInstance<void, Parameters<typeof console.error>>;
 beforeEach(() => {
   errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 });
@@ -212,7 +212,7 @@ describe('unsupported import styles', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Unsupported import style');
     expect(message).toContain(
       'this/is/test.tsx:1 - default import from "@react-navigation/native" is not supported.'
@@ -226,7 +226,7 @@ describe('unsupported import styles', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Unsupported import style');
     expect(message).toContain(
       'this/is/test.tsx:1 - namespace import (import * as ...) from "@react-navigation/native" is not supported.'
@@ -240,7 +240,7 @@ describe('unsupported import styles', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Unsupported import style');
     expect(message).toContain(
       'this/is/test.tsx:1 - default import from "@react-navigation/stack" is not supported.'
@@ -254,7 +254,7 @@ describe('unsupported import styles', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Unsupported import style');
     expect(message).toContain(
       'this/is/test.tsx:1 - namespace import (import * as ...) from "@react-navigation/bottom-tabs" is not supported.'
@@ -268,7 +268,7 @@ describe('unsupported import styles', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Unsupported import style');
     expect(message).toContain(
       'this/is/test.tsx:1 - default import from "@react-navigation/material-top-tabs" is not supported.'
@@ -282,7 +282,7 @@ describe('unsupported import styles', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Unsupported import style');
     expect(message).toContain(
       'this/is/test.tsx:1 - default import from "@react-navigation/native" is not supported.'
@@ -299,7 +299,7 @@ describe('unsupported import styles', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Unsupported import style');
     expect(message).toContain(
       'this/is/test.tsx:1 - default import from "@react-navigation/native" is not supported.'
@@ -326,7 +326,7 @@ describe('unsupported packages (no direct equivalent)', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Migration required');
     expect(message).toContain(
       'this/is/test.tsx:1 - import from "@react-navigation/native-stack" cannot be migrated.'
@@ -341,7 +341,7 @@ describe('unsupported packages (no direct equivalent)', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Migration required');
     expect(message).toContain(
       'this/is/test.tsx:1 - import from "@react-navigation/drawer" cannot be migrated.'
@@ -356,7 +356,7 @@ describe('unsupported packages (no direct equivalent)', () => {
     runTS(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Migration required');
     expect(message).toContain(
       'undefined:1 - import from "@react-navigation/native-stack" cannot be migrated.'
@@ -369,7 +369,7 @@ describe('unsupported packages (no direct equivalent)', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('Migration required');
     expect(message).toContain(
       'this/is/test.tsx:1 - import from "@react-navigation/drawer" cannot be migrated.'
@@ -384,7 +384,7 @@ describe('unsupported packages (no direct equivalent)', () => {
     run(input);
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain(
       'this/is/test.tsx:1 - import from "@react-navigation/native-stack" cannot be migrated.'
     );
@@ -402,7 +402,7 @@ describe('unsupported packages (no direct equivalent)', () => {
     // The unsupported package is reported for manual migration...
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock.calls[0]).toHaveLength(1);
-    const message = errorSpy.mock.calls[0][0] as string;
+    const message = errorSpy.mock.calls[0]![0] as string;
     expect(message).toContain('import from "@react-navigation/drawer" cannot be migrated');
     // ...but the supported import is still migrated (rather than silently skipped).
     expect(output).toContain(`import { useNavigation } from "expo-router/react-navigation"`);

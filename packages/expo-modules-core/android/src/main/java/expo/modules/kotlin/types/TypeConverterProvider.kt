@@ -9,6 +9,7 @@ import com.facebook.react.bridge.ReadableMap
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.jni.ArrayBuffer
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptArrayBuffer
@@ -244,6 +245,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       ),
       JavaScriptArrayBuffer::class.java to createTrivialTypeConverter(
         ExpectedType(CppType.JS_ARRAY_BUFFER)
+      ),
+      ArrayBuffer::class.java to createTrivialTypeConverter(
+        ExpectedType(CppType.ARRAY_BUFFER)
       ),
       NativeArrayBuffer::class.java to createTrivialTypeConverter(
         ExpectedType(CppType.NATIVE_ARRAY_BUFFER)

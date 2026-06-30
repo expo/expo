@@ -4,18 +4,18 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { useRouter } from '../hooks';
+import type { Href } from '../types';
+import { getFirstChildOfType } from '../utils/children';
+import { shouldLinkExternally } from '../utils/url';
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
 import { NativeMenuContext } from './NativeMenuContext';
 import { LinkMenu, LinkPreview, LinkTrigger } from './elements';
 import { resolveHref } from './href';
-import type { Href } from '../types';
 import { useLinkPreviewContext } from './preview/LinkPreviewContext';
 import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import type { LinkProps } from './useLinkHooks';
-import { getFirstChildOfType } from '../utils/children';
-import { shouldLinkExternally } from '../utils/url';
 
 const isPad = Platform.OS === 'ios' && Platform.isPad;
 

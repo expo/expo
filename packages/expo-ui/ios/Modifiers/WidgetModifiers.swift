@@ -56,3 +56,15 @@ internal struct WidgetURLModifier: ViewModifier, Record {
 #endif
   }
 }
+
+internal struct ActivityBackgroundTintModifier: ViewModifier, Record {
+  @Field var color: Color?
+
+  func body(content: Content) -> some View {
+#if !os(tvOS) && !os(macOS) && !targetEnvironment(macCatalyst)
+    content.activityBackgroundTint(color)
+#else
+    content
+#endif
+  }
+}

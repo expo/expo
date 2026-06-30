@@ -1,8 +1,8 @@
 'use client';
 import * as React from 'react';
 
-import { deepFreeze } from './deepFreeze';
 import useLatestCallback from '../../utils/useLatestCallback';
+import { deepFreeze } from './deepFreeze';
 
 const createStore = <T,>(getInitialState: () => T) => {
   const listeners: (() => void)[] = [];

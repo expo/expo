@@ -4,57 +4,62 @@ import path from 'path';
 
 import { generateAgentFiles } from '../generateAgentFiles';
 
+function readAgentTemplate(fileName: 'AGENTS.md' | 'CLAUDE.md'): string {
+  return fs.readFileSync(
+    path.join(__dirname, '..', '..', 'template', 'agent-files', fileName),
+    'utf-8'
+  );
+}
+
 describe(generateAgentFiles, () => {
   let tmpDir: string;
+  let homeDir: string;
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'create-expo-test-'));
-    // Write a minimal package.json so the SDK version can be resolved
-    fs.writeFileSync(
-      path.join(tmpDir, 'package.json'),
-      JSON.stringify({ dependencies: { expo: '~55.0.0' } })
-    );
+    homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'create-expo-home-'));
+    jest.spyOn(os, 'homedir').mockReturnValue(homeDir);
   });
 
   afterEach(() => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(homeDir, { recursive: true, force: true });
+    jest.restoreAllMocks();
   });
 
-  it('generates all three files when none exist', () => {
-    generateAgentFiles(tmpDir);
+  it('always generates AGENTS.md', async () => {
+    await generateAgentFiles(tmpDir);
 
     expect(fs.existsSync(path.join(tmpDir, 'AGENTS.md'))).toBe(true);
-    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(true);
-    expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(true);
   });
 
-  it('writes correct content to AGENTS.md with versioned docs URL', () => {
-    generateAgentFiles(tmpDir);
+  it('does not generate Claude files when Claude Code is not installed', async () => {
+    await generateAgentFiles(tmpDir);
+
+    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(false);
+    expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(false);
+  });
+
+  it('copies AGENTS.md from the bundled agent templates', async () => {
+    await generateAgentFiles(tmpDir);
 
     const content = fs.readFileSync(path.join(tmpDir, 'AGENTS.md'), 'utf-8');
-    expect(content).toContain('# Expo');
-    expect(content).toContain('https://docs.expo.dev/versions/v55.0.0/');
+    expect(content).toBe(readAgentTemplate('AGENTS.md'));
   });
 
-  it('falls back to unversioned docs URL when expo version is missing', () => {
-    fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify({ dependencies: {} }));
+  it('copies CLAUDE.md from the bundled agent templates', async () => {
+    fs.writeFileSync(path.join(homeDir, '.claude.json'), '{}');
 
-    generateAgentFiles(tmpDir);
-
-    const content = fs.readFileSync(path.join(tmpDir, 'AGENTS.md'), 'utf-8');
-    expect(content).toContain('https://docs.expo.dev');
-    expect(content).not.toContain('/versions/');
-  });
-
-  it('writes correct content to CLAUDE.md', () => {
-    generateAgentFiles(tmpDir);
+    await generateAgentFiles(tmpDir);
 
     const content = fs.readFileSync(path.join(tmpDir, 'CLAUDE.md'), 'utf-8');
-    expect(content).toBe('@AGENTS.md\n');
+    expect(content).toBe(readAgentTemplate('CLAUDE.md'));
   });
 
-  it('writes correct content to .claude/settings.json', () => {
-    generateAgentFiles(tmpDir);
+  it('writes correct content to .claude/settings.json', async () => {
+    fs.writeFileSync(path.join(homeDir, '.claude.json'), '{}');
+
+    await generateAgentFiles(tmpDir);
 
     const content = JSON.parse(
       fs.readFileSync(path.join(tmpDir, '.claude', 'settings.json'), 'utf-8')
@@ -62,11 +67,12 @@ describe(generateAgentFiles, () => {
     expect(content).toEqual({ enabledPlugins: { 'expo@claude-plugins-official': true } });
   });
 
-  it('skips files that already exist', () => {
+  it('skips files that already exist', async () => {
+    fs.writeFileSync(path.join(homeDir, '.claude.json'), '{}');
     fs.writeFileSync(path.join(tmpDir, 'AGENTS.md'), 'custom content');
     fs.writeFileSync(path.join(tmpDir, 'CLAUDE.md'), 'custom claude');
 
-    generateAgentFiles(tmpDir);
+    await generateAgentFiles(tmpDir);
 
     expect(fs.readFileSync(path.join(tmpDir, 'AGENTS.md'), 'utf-8')).toBe('custom content');
     expect(fs.readFileSync(path.join(tmpDir, 'CLAUDE.md'), 'utf-8')).toBe('custom claude');
@@ -74,12 +80,23 @@ describe(generateAgentFiles, () => {
     expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(true);
   });
 
-  it('creates .claude/ directory when it does not exist', () => {
+  it('creates .claude/ directory for settings when global .claude.json exists', async () => {
+    fs.writeFileSync(path.join(homeDir, '.claude.json'), '{}');
+
     expect(fs.existsSync(path.join(tmpDir, '.claude'))).toBe(false);
 
-    generateAgentFiles(tmpDir);
+    await generateAgentFiles(tmpDir);
 
     expect(fs.existsSync(path.join(tmpDir, '.claude'))).toBe(true);
     expect(fs.statSync(path.join(tmpDir, '.claude')).isDirectory()).toBe(true);
+  });
+
+  it('generates Claude files when global .claude directory exists', async () => {
+    fs.mkdirSync(path.join(homeDir, '.claude'));
+
+    await generateAgentFiles(tmpDir);
+
+    expect(fs.existsSync(path.join(tmpDir, 'CLAUDE.md'))).toBe(true);
+    expect(fs.existsSync(path.join(tmpDir, '.claude', 'settings.json'))).toBe(true);
   });
 });

@@ -69,13 +69,13 @@ on:
 
 Runs your workflow when you push a commit to matching branches and/or tags.
 
-With the `branches` list, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only pushes to the `main` branch will trigger the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
+With the `branches` list, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only pushes to the `main` branch trigger the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
 
-With the `tags` list, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed will trigger the workflow. Supports globs. By using the `!` prefix you can specify tags to ignore (you still need to provide at least one tag pattern without it).
+With the `tags` list, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed triggers the workflow. Supports globs. By using the `!` prefix you can specify tags to ignore (you still need to provide at least one tag pattern without it).
 
-With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory will trigger the workflow. Supports globs. By default, changes to any path will trigger the workflow.
+With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory trigger the workflow. Supports globs. By default, changes to any path trigger the workflow.
 
-When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow will trigger on push events to all branches and will not trigger on tag pushes. If only one of the two lists is provided the other defaults to `[]`.
+When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow triggers on push events to all branches and does not trigger on tag pushes. If only one of the two lists is provided the other defaults to `[]`.
 
 ```yaml
 on:
@@ -101,21 +101,57 @@ on:
 
 ```
 
+### `on.ref_delete`
+
+Runs your workflow when a GitHub branch or tag is deleted. Requires a [linked GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events) on your EAS project.
+
+With the `branches` list, you can trigger the workflow only when those specified branches are deleted. For example, if you use `branches: ['feat/**']`, only deletion of branches matching `feat/**` triggers the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it). See [`on.push`](#onpush) for details on glob and negation pattern matching.
+
+With the `tags` list, you can trigger the workflow only when those specified tags are deleted. Supports globs and `!` negation with the same rules as branches.
+
+When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow triggers when any branch is deleted and does not trigger on tag deletions. If only one of the two lists is provided the other defaults to `[]`.
+
+> **info** Workflow files are read from the default branch HEAD at the time of deletion, not from the deleted ref.
+
+Pair this trigger with the [`branch-delete`](/eas/workflows/pre-packaged-jobs#branch-delete) job to remove EAS Update branches when GitHub branches are deleted. See the [Clean up update branches example](/eas/workflows/examples/branch-cleanup) for a complete workflow.
+
+```yaml
+on:
+  # @info #
+  ref_delete:
+    # @end #
+    branches:
+      - feat/**
+      - !main # other branch names and globs
+
+
+    tags:
+      - v*
+      - !v2-preview** # other tag names and globs
+
+```
+
 ### `on.pull_request`
 
 Runs your workflow when you create or update a pull request that targets one of the matching branches.
 
-With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch will trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow will trigger on pull request events to all branches. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
+With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow triggers on pull request events to all branches. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
 
-With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
+With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) triggers the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
 
 - `opened`
+- `edited`
+- `base_ref_changed`
 - `ready_for_review`
 - `reopened`
 - `synchronize`
 - `labeled`
 
-With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory will trigger the workflow. Supports globs. By default, changes to any path will trigger the workflow.
+The `edited` type follows GitHub's `pull_request.edited` behavior and triggers when the pull request title, body, or base branch changes. To trigger only when the pull request's base branch changes, use `base_ref_changed`.
+
+The `branches` filter matches the pull request's current base branch, so retargeting a pull request to a matching branch can trigger a workflow.
+
+With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory trigger the workflow. Supports globs. By default, changes to any path trigger the workflow.
 
 ```yaml
 on:
@@ -143,7 +179,7 @@ on:
 
 Runs your workflow when a pull request is labeled with a matching label.
 
-With the `labels` list, you can specify which labels, when assigned to your pull request, will trigger the workflow. For example, if you use `labels: ['Test']`, only labeling a pull request with the `Test` label will trigger the workflow. Defaults to `[]` when not provided, which means no labels will trigger the workflow.
+With the `labels` list, you can specify which labels, when assigned to your pull request, trigger the workflow. For example, if you use `labels: ['Test']`, only labeling a pull request with the `Test` label triggers the workflow. Defaults to `[]` when not provided, which means no labels trigger the workflow.
 
 You can also provide a list of matching labels directly to `on.pull_request_labeled` for simpler syntax.
 
@@ -737,6 +773,7 @@ type GitHubContext = {
   repository?: string;
   repository_owner?: string;
   event?: {
+    action?: string;
     label?: {
       name: string;
     };
@@ -754,6 +791,13 @@ type GitHubContext = {
       merged: boolean | null;
       // ... Other fields from the GitHub Pull Request webhook payload
     };
+    changes?: {
+      base?: {
+        ref?: {
+          from: string;
+        };
+      };
+    };
     number?: number;
     schedule?: string;
     inputs?: Record<string, string | number | boolean>;
@@ -761,7 +805,7 @@ type GitHubContext = {
 };
 ```
 
-> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes all fields from GitHub's Pull Request webhook payload. The commonly used fields are shown above, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
+> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 
@@ -824,6 +868,23 @@ type AppStoreConnectContext = {
   build_upload?: {
     id: string;
     state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
+    cf_bundle_version?: string;
+    build?: {
+      id: string;
+    };
+  };
+  app_version?: {
+    id: string;
+    state: string;
+  };
+  external_beta?: {
+    id: string;
+    state: string;
+  };
+  beta_feedback?: {
+    id: string;
+    type: 'crash' | 'screenshot';
+    url: string;
   };
 };
 ```
@@ -848,6 +909,32 @@ jobs:
         Upload complete for App Store Connect app: ${{ app_store_connect.app.id }}
         Upload ID: ${{ app_store_connect.build_upload.id }}
         Upload state: ${{ app_store_connect.build_upload.state }}
+```
+
+Use `build_upload.build.id` as the `asc_build_id` for a `testflight` job:
+
+```yaml .eas/workflows/testflight-after-asc-upload.yml
+name: Distribute to TestFlight after ASC upload
+
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  distribute_to_testflight:
+    name: Distribute to TestFlight
+    type: testflight
+    params:
+      asc_build_id: ${{ app_store_connect.build_upload.build.id }}
+      internal_groups:
+        - QA Team
+      external_groups:
+        - Public Beta
+      changelog: |
+        Build ${{ app_store_connect.build_upload.cf_bundle_version }} is ready for testing.
+      submit_beta_review: true
 ```
 
 #### `env`
@@ -1190,7 +1277,7 @@ This job outputs the following properties:
 
 #### `testflight`
 
-Distributes iOS builds to TestFlight internal and external testing groups. See [TestFlight job documentation](/eas/workflows/pre-packaged-jobs#testflight) for detailed information and examples.
+Distributes iOS builds to TestFlight internal and external testing groups. Provide exactly one of `build_id` (upload a build and submit to TestFlight) or `asc_build_id` (submit an already uploaded build). See [TestFlight job documentation](/eas/workflows/pre-packaged-jobs#testflight) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1199,21 +1286,30 @@ jobs:
     type: testflight
     # @end #
     params:
-      build_id: string # required
-      profile: string # optional, default: production
+      build_id: string # required to upload and submit to TestFlight; mutually exclusive with asc_build_id
+      profile: string # optional, default: production; only when uploading and submitting
+      wait_processing_timeout_seconds: number # optional, default: 1800 (30 minutes); only when uploading and submitting in one job
+      asc_build_id: string # required to submit an already uploaded build; mutually exclusive with build_id
       internal_groups: string[] # optional
       external_groups: string[] # optional
       changelog: string # optional
       submit_beta_review: boolean # optional
-      wait_processing_timeout_seconds: number # optional, default: 1800 (30 minutes)
 ```
 
-This job outputs the following properties:
+When uploading and submitting with `build_id`, this job outputs the following properties:
 
 ```json
 {
   "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
   "ios_bundle_identifier": string | null // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+}
+```
+
+When submitting an already uploaded build with `asc_build_id`, this job outputs the following properties:
+
+```json
+{
+  "asc_build_id": string | null // App Store Connect build ID
 }
 ```
 
@@ -1242,6 +1338,30 @@ This job outputs the following properties:
 {
   "first_update_group_id": string, // ID of the first update group. You can use it to e.g. construct the update URL for a development client deep link.
   "updates_json": string // Stringified JSON array of update groups. Output of `eas update --json`.
+}
+```
+
+#### `branch-delete`
+
+Deletes an EAS Update branch and all of its updates. See [Branch delete job documentation](/eas/workflows/pre-packaged-jobs#branch-delete) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: branch-delete
+    # @end #
+    params:
+      branch_name: string # required
+      fail_on_missing: boolean # optional, default: false
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "branch_id": string | null,
+  "branch_name": string
 }
 ```
 
@@ -1848,15 +1968,15 @@ jobs:
       - uses: eas/send_slack_message
         # @end #
         with:
-          message: 'This is a message to plain input URL'
-          slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
+          message: 'This is a message sent to a Slack channel'
+          slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}
 ```
 
-| Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                                                            |
-| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://docs.slack.dev/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                          |
-| `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use [EAS Environment Variables](/eas/environment-variables/#managing-environment-variables) like `slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` Environment Variable, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
+| Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                  |
+| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://docs.slack.dev/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                |
+| `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. Provide it using [EAS Environment Variables](/eas/environment-variables/manage/#manage-environment-variables) like `slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` Environment Variable, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
 
 <BoxLink
   title="eas/send_slack_message source code"

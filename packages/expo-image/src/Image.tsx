@@ -154,6 +154,40 @@ export class Image extends React.PureComponent<ImageProps> {
   }
 
   /**
+   * Asynchronously writes a local image to the disk cache under the given cache key,
+   * without fetching it over the network. Use this to seed the cache from an image you
+   * already have on the device, for example one returned by `expo-image-picker` or
+   * downloaded with `expo-file-system`. A later image load that uses the same `cacheKey`
+   * in its [`source`](#imagesource) will then be served straight from the cache.
+   * @param source - The image to cache, either a local file URI (`string`) or an [`ImageRef`](#imageref).
+   * > **Note:** Caching an animated image (GIF, APNG, animated WebP) from an `ImageRef` flattens
+   * > it to a single frame, because the reference holds the decoded image rather than the original
+   * > encoded bytes. To seed an animated image losslessly, pass its local file URI instead.
+   * @param cacheKey - The cache key to store the image under. Pass the same value in the
+   * `cacheKey` of the [`source`](#imagesource) when you later render the image.
+   * @platform android
+   * @platform ios
+   * @return A promise that resolves once the image has been written to the disk cache.
+   */
+  static async writeToCacheAsync(source: string | ImageRef, cacheKey: string): Promise<void> {
+    return await ImageModule.writeToCacheAsync(source, cacheKey);
+  }
+
+  /**
+   * Asynchronously reads an image stored in the cache under the given cache key and resolves to
+   * an [`ImageRef`](#imageref) that can be passed straight to the [`source`](#imagesource) of an
+   * image view. Resolves to `null` when no image is cached for the key.
+   * @param cacheKey - The cache key to read the image from. Unless you have set a custom cache key,
+   * this is the source URL of the image.
+   * @platform android
+   * @platform ios
+   * @return A promise resolving to the cached image reference, or `null` if it isn't cached.
+   */
+  static async readFromCacheAsync(cacheKey: string): Promise<ImageRef | null> {
+    return await ImageModule.readFromCacheAsync(cacheKey);
+  }
+
+  /**
    * Configures the image cache. This allows you to manage the cache eviction policy.
    * @param config - The cache configuration.
    * @platform ios

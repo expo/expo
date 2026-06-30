@@ -52,13 +52,13 @@ describe('e2e: Android locales', () => {
       projectRoot
     );
     const mockXML = {
-      writeXMLAsync: ({ path, xml }) => {
+      writeXMLAsync: ({ path, xml }: { path: string; xml: any }) => {
         vol.mkdirSync(nodePath.dirname(path), { recursive: true });
         vol.writeFileSync(path, jest.requireActual('../../utils/XML').format(xml));
       },
     };
     const mockJSONFile = {
-      readAsync: (path) => JSON.parse(vol.readFileSync(path).toString()),
+      readAsync: (path: string) => JSON.parse(vol.readFileSync(path).toString()),
     };
     jest.mock('../../utils/XML', () => mockXML);
     jest.mock('@expo/json-file', () => mockJSONFile);

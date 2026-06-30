@@ -1,0 +1,377 @@
+---
+title: ナビゲーションを追加する
+description: この章では、Expo アプリにナビゲーションを追加する方法を学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { FileTree } from '~/ui/components/FileTree';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、Expo Router の基本を学び、スタックナビゲーションと 2 つのタブを持つボトムタブバーを作成します。
+
+<VideoBoxLink
+  videoId="8336fcFV_T4"
+  title="視聴：ユニバーサル Expo アプリにナビゲーションを追加する"
+  description="Expo Router でファイルベースルーティングをセットアップし、画面間のスタックナビゲーションを作成して、ボトムタブバーを構築します。"
+/>
+
+## Expo Router の基本
+
+Expo Router は React Native と web アプリ向けのファイルベースのルーティングフレームワークです。画面間のナビゲーションを管理し、複数のプラットフォームで同じコンポーネントを使用できます。始めるにあたって、次の規約を理解しておく必要があります。
+
+- **app ディレクトリ：** ルートとそのレイアウトのみを含む特別なディレクトリです。このディレクトリに追加したファイルは、ネイティブアプリでは画面として、web ではページとして扱われます。
+- **ルートレイアウト：** **app/\_layout.tsx** ファイルです。ヘッダーやタブバーなど、複数のルート間で一貫させたい共有 UI 要素を定義します。
+- **ファイル名の規約：** **index.tsx** などの _Index_ ファイル名は、親ディレクトリと一致し、パスセグメントを追加しません。たとえば、**app** ディレクトリ内の **index.tsx** は `/` ルートと一致します。
+- **ルート** ファイルは React コンポーネントをデフォルト値としてエクスポートします。拡張子は `.js`、`.jsx`、`.ts`、`.tsx` のいずれかを使用できます。
+- Android、iOS、web は統一されたナビゲーション構造を共有します。
+
+> 上記のリストで始めるには十分です。すべての機能の一覧については、[Expo Router 紹介](/router/introduction/) を参照してください。
+
+<Step label="1">
+
+## スタックに新しい画面を追加する
+
+**app** ディレクトリ内に **about.tsx** という名前の新しいファイルを作成しましょう。ユーザーが `/about` ルートに移動したときに、画面名を表示します。
+
+```tsx app/about.tsx|collapseHeight=300
+import { Text, View, StyleSheet } from 'react-native';
+
+export default function AboutScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>About screen</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#fff',
+  },
+});
+```
+
+**app/\_layout.tsx** 内で:
+
+1. `<Stack.Screen />` コンポーネントと `options` プロパティを追加して、`/about` ルートのタイトルを更新します。
+2. `options` プロパティを追加して、`/index` ルートのタイトルを `Home` に更新します。
+
+{/* prettier-ignore */}
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    /* @tutinfo `Stack` ナビゲーターの内部に画面をラップします。`/index` ルートに `options` プロパティを追加します。`/about` ルートを追加するため、もう一つの `Stack.Screen` コンポーネントを追加します。 */
+    <Stack>
+      <Stack.Screen name="index" options={{ title: 'Home' }} />
+      <Stack.Screen name="about" options={{ title: 'About' }} />
+    </Stack>
+    /* @end */
+  );
+}
+```
+
+<Collapsible summary={<><CODE>Stack</CODE> とは何ですか？</>}>
+
+スタックナビゲーターは、アプリ内のさまざまな画面間を移動するための基盤です。Android では、スタックされたルートが現在の画面の上にアニメーションで重なります。iOS では、スタックされたルートが右からアニメーションで表示されます。Expo Router は、新しいルートを追加するためのナビゲーションスタックを作成する `Stack` コンポーネントを提供します。
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+## 画面間を移動する
+
+Expo Router の `Link` コンポーネントを使用して、`/index` ルートから `/about` ルートに移動します。これは、指定された `href` プロパティを持つ `<Text>` をレンダリングする React コンポーネントです。
+
+1. **index.tsx** 内で、`expo-router` から `Link` コンポーネントをインポートします。
+2. `<Text>` コンポーネントの後に `Link` コンポーネントを追加し、`href` プロパティに `/about` ルートを渡します。
+3. `Link` コンポーネントに `fontSize`、`textDecorationLine`、`color` のスタイルを追加します。`<Text>` コンポーネントと同じプロパティを受け取ります。
+
+{/* prettier-ignore */}
+```tsx app/index.tsx|collapseHeight=300
+import { Text, View, StyleSheet } from 'react-native';
+/* @tutinfo `expo-router` から `Link` コンポーネントをインポートします。 */ import { Link } from 'expo-router'; /* @end */
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Home screen</Text>
+      /* @tutinfo `Text` コンポーネントの後に `Link` コンポーネントを追加し、`href` プロパティに `/about` ルートを渡します。 */
+      <Link href="/about" style={styles.button}>
+        Go to About screen
+      </Link>
+      /* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: '#fff',
+  },
+  /* @tutinfo `Link` コンポーネントに `fontSize`、`textDecorationLine`、`color` のスタイルを追加します。 */
+  button: {
+    fontSize: 20,
+    textDecorationLine: 'underline',
+    color: '#fff',
+  },
+  /* @end */
+});
+```
+
+アプリの変更を確認しましょう。`Link` をクリックして `/about` ルートに移動します。
+
+<ContentSpotlight file="tutorial/01-navigating-between-screens.mp4" />
+
+</Step>
+
+<Step label="3">
+
+## not-found ルートを追加する
+
+ルートが存在しない場合、`+not-found` ルートを使用してフォールバック画面を表示できます。これは、モバイルで無効なルートに移動した際にアプリをクラッシュさせず、web で _404_ エラーを表示する代わりにカスタム画面を表示したい場合に役立ちます。Expo Router は、このケースを処理するために特別な **+not-found.tsx** ファイルを使用します。
+
+1. app ディレクトリ内に **+not-found.tsx** という名前の新しいファイルを作成し、`NotFoundScreen` コンポーネントを追加します。
+2. `Stack.Screen` の `options` プロパティを追加して、このルートのカスタム画面タイトルを表示します。
+3. `Link` コンポーネントを追加して、フォールバックルートである `/` ルートに移動します。
+
+{/* prettier-ignore */}
+```tsx app/+not-found.tsx
+import { View, StyleSheet } from 'react-native';
+import { Link, Stack } from 'expo-router';
+
+export default function NotFoundScreen() {
+  return (
+    <>
+      /* @tutinfo `+not-found` ルートのタイトルを更新するため、`options` プロパティを持つ `Stack.Screen` コンポーネントを追加します。 */
+      <Stack.Screen options={{ title: 'Oops! Not Found' }} />
+      /* @end */
+      <View style={styles.container}>
+        /* @tutinfo フォールバックルートを追加すると、ユーザーがその画面に遷移できるようになります。ここでは、フォールバックルートは Home 画面です。 */
+        <Link href="/" style={styles.button}>
+          Go back to Home screen!
+        </Link>
+        /* @end */
+      </View>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  button: {
+    fontSize: 20,
+    textDecorationLine: 'underline',
+    color: '#fff',
+  },
+});
+```
+
+これをテストするには、URL パスを変更しやすい web ブラウザで `http:localhost:8081/123` URL に移動します。アプリには `NotFoundScreen` コンポーネントが表示されるはずです。
+
+<ContentSpotlight file="tutorial/02-not-found-route.mp4" />
+
+</Step>
+
+<Step label="4">
+
+## ボトムタブナビゲーターを追加する
+
+この時点で、**app** ディレクトリのファイル構造は次のようになっています。
+
+<FileTree
+  files={[
+    ['app/_layout.tsx', 'ルートレイアウト'],
+    ['app/index.tsx', "ルート '/' に一致"],
+    ['app/about.tsx', "ルート '/about' に一致"],
+    ['app/+not-found.tsx', 'すべての 404 ルートに一致'],
+  ]}
+/>
+
+アプリにボトムタブナビゲーターを追加し、既存の Home と About 画面を再利用してタブレイアウトを作成します (X や BlueSky など、多くのソーシャルメディアアプリで一般的なナビゲーションパターンです)。また、ルートレイアウトでスタックナビゲーターを使用することで、`+not-found` ルートが他のネストされたナビゲーターの上に表示されるようにします。
+
+1. **app** ディレクトリ内に **(tabs)** サブディレクトリを追加します。この特別なディレクトリは、ルートをグループ化してボトムタブバーに表示するために使われます。
+2. ディレクトリ内に **(tabs)/\_layout.tsx** ファイルを作成します。これは、ルートレイアウトとは別のタブレイアウトを定義するために使用されます。
+3. 既存の **index.tsx** と **about.tsx** ファイルを **(tabs)** ディレクトリ内に移動します。**app** ディレクトリの構造は次のようになります。
+
+<FileTree
+  files={[
+    ['app/_layout.tsx', 'ルートレイアウト'],
+    ['app/+not-found.tsx', 'すべての 404 ルートに一致'],
+    ['app/(tabs)/_layout.tsx', 'タブレイアウト'],
+    ['app/(tabs)/index.tsx', "ルート '/' に一致"],
+    ['app/(tabs)/about.tsx', "ルート '/about' に一致"],
+  ]}
+/>
+
+ルートレイアウトファイルを更新して、`(tabs)` ルートを追加します。
+
+{/* prettier-ignore */}
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      /* @tutinfo これは、特に Root レイアウトが親のスタックナビゲーターで構成されている場合に、タブナビゲーターをスタックナビゲーターの内部にネストする方法です。また、タブナビゲーターのヘッダーを非表示にするため、`headerShown` オプションを `false` に設定しています。そうしないと、各画面に 2 つのヘッダーが表示されてしまいます。 */
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      /* @end */
+    </Stack>
+  );
+}
+```
+
+**(tabs)/\_layout.tsx** 内に `Tabs` コンポーネントを追加して、ボトムタブレイアウトを定義します。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/_layout.tsx
+import { Tabs } from 'expo-router';
+
+export default function TabLayout() {
+  return (
+    <Tabs>
+      /* @tutinfo `Tabs.Screen` コンポーネントは `Stack.Screen` コンポーネントと同様に動作し、同じプロパティを受け取ります。唯一の違いは、デバイス上のナビゲーションパターンです。 */
+      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="about" options={{ title: 'About' }} />
+      /* @end */
+    </Tabs>
+  );
+}
+```
+
+新しいボトムタブが表示されたアプリを確認してみましょう。
+
+<ContentSpotlight
+  alt="すべてのプラットフォームで表示されたボトムタブナビゲーター"
+  src="/static/images/tutorial/03-bottom-tab-navigator.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+<Step label="5">
+
+## ボトムタブナビゲーターの外観を更新する
+
+現時点では、ボトムタブナビゲーターはすべてのプラットフォームで同じ見た目ですが、アプリのスタイルとは合っていません。たとえば、タブバーやヘッダーにカスタムアイコンが表示されず、ボトムタブの背景色がアプリの背景色と一致していません。
+
+**(tabs)/\_layout.tsx** ファイルを修正して、タブバーアイコンを追加します。
+
+1. [`@expo/vector-icons`](/guides/icons/#expovector-icons) &mdash; 人気のアイコンセットを含むライブラリ &mdash; から `Ionicons` アイコンセットをインポートします。
+2. `tabBarIcon` を `index` と `about` の両方のルートに追加します。この関数は `focused` と `color` を引数として受け取り、アイコンコンポーネントをレンダリングします。アイコンセットから、カスタムアイコン名を指定できます。
+3. `Tabs` コンポーネントに `screenOptions.tabBarActiveTintColor` を追加し、値を `#ffd33d` に設定します。これにより、アクティブ時のタブバーのアイコンとラベルの色が変わります。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/_layout.tsx
+import { Tabs } from 'expo-router';
+/* @tutinfo `Ionicons` アイコンセットをインポートします。*/
+import Ionicons from '@expo/vector-icons/Ionicons';
+/* @end */
+
+export default function TabLayout() {
+  return (
+    <Tabs
+      /* @tutinfo タブバーをカスタマイズするために使用できる `screenOptions` は多数あります。ここではアクティブなタブの色をカスタム値に変更しており、この値はアプリの後の部分でも使用します。 */
+      screenOptions={{
+        tabBarActiveTintColor: '#ffd33d',
+      }}
+      /* @end */
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, focused }) => (
+            /* @tutinfo `focused` パラメーターを使用すると、タブがアクティブまたは非アクティブのときのアイコンとラベルの動作を変更できます。*/
+            <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
+            /* @end */
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="about"
+        options={{
+          title: 'About',
+          tabBarIcon: ({ color, focused }) => (
+            /* @tutinfo */
+            <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
+            /* @end */
+          ),
+        }}
+      />
+    </Tabs>
+  );
+}
+```
+
+`screenOptions` プロパティを使って、タブバーとヘッダーの背景色も変更しましょう。
+
+```tsx app/(tabs)/_layout.tsx
+<Tabs
+  screenOptions={{
+    tabBarActiveTintColor: '#ffd33d',
+    headerStyle: {
+      backgroundColor: '#25292e',
+    },
+    headerShadowVisible: false,
+    headerTintColor: '#fff',
+    tabBarStyle: {
+      backgroundColor: '#25292e',
+    },
+  }}
+>
+```
+
+上記のコードでは:
+
+- `headerStyle` プロパティを使ってヘッダーの背景を `#25292e` に設定しています。また、`headerShadowVisible` を使ってヘッダーの影を無効化しています。
+- `headerTintColor` でヘッダーラベルに `#fff` を適用しています
+- `tabBarStyle.backgroundColor` でタブバーに `#25292e` を適用しています
+
+これでアプリにカスタムボトムタブナビゲーターが追加されました。
+
+<ContentSpotlight
+  alt="カスタムボトムタブナビゲーター"
+  src="/static/images/tutorial/04-tab-navigator-complete.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterIndex={1}
+  name="GET_STARTED"
+  chapterTitle="第 2 章：ナビゲーションを追加する"
+  summary="アプリにスタックとタブナビゲーターを追加しました。"
+  nextChapterDescription="次の章では、アプリの最初の画面を構築する方法を学びます。"
+  nextChapterTitle="アプリの最初の画面を構築する"
+  nextChapterLink="/ja/tutorial/build-a-screen"
+/>

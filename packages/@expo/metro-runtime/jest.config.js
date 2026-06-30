@@ -1,3 +1,4 @@
+const createJestPreset = require('expo-module-scripts/createJestPreset');
 const {
   getWebPreset,
   //   getNodePreset,
@@ -15,11 +16,15 @@ function withDefaults({ watchPlugins, ...config }) {
 }
 
 module.exports = withWatchPlugins({
+  passWithNoTests: true,
+  ...require('jest-expo/config/maxWorkers'),
   projects: [
     // Create a new project for each platform.
     getWebPreset(),
     // getNodePreset(),
     getIOSPreset(),
     getAndroidPreset(),
-  ].map(withDefaults),
+  ]
+    .map(createJestPreset)
+    .map(withDefaults),
 });

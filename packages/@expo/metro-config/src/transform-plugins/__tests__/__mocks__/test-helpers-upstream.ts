@@ -20,9 +20,9 @@ import {
 import generate from '@babel/generator';
 import assert from 'node:assert';
 
-function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
+function nullthrows<T>(x: T | null | undefined, message?: string): NonNullable<T> {
   assert(x != null, message);
-  return x;
+  return x as NonNullable<T>;
 }
 
 type BabelNodeFile = t.File;
@@ -72,7 +72,7 @@ export function transformToAst<T extends EntryOptions>(
   code: string,
   options: T
 ): BabelNodeFile {
-  const transformResult = transformSync(code, makeTransformOptions(plugins, options));
+  const transformResult = nullthrows(transformSync(code, makeTransformOptions(plugins, options)));
   const ast = nullthrows(transformResult.ast);
   validateOutputAst(ast);
   return ast;
@@ -83,7 +83,7 @@ function transform(
   plugins: readonly PluginEntry[],
   options: EntryOptions | null | undefined
 ) {
-  return generate(transformToAst(plugins, code, options)).code;
+  return generate(transformToAst(plugins, code, options ?? {})).code;
 }
 
 export const compare = (

@@ -2,7 +2,6 @@ import * as ExpoLinking from 'expo-linking';
 import { type RefObject, useEffect, useCallback, useRef } from 'react';
 import { Linking, Platform } from 'react-native';
 
-import { extractExpoPathFromURL } from './extractPathFromURL';
 import {
   type LinkingOptions,
   getActionFromState as getActionFromStateDefault,
@@ -11,6 +10,7 @@ import {
   type ParamListBase,
   useNavigationIndependentTree,
 } from '../react-navigation/native';
+import { extractExpoPathFromURL } from './extractPathFromURL';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 

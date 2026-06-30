@@ -33,7 +33,7 @@ You can also press <kbd>Shift</kbd> + <kbd>I</kbd> in the Expo CLI to interactiv
 
 <ContentSpotlight
   alt="List of iOS Simulators in the Expo CLI UI."
-  src="/static/images/ios-simulator/simulators-list.png"
+  src="/static/images/ios-simulator/simulators-list.webp"
   className="max-w-[480px]"
 />
 
@@ -71,7 +71,7 @@ Sometimes the iOS Simulator doesn't respond to the open command. If it seems stu
 
 <ContentSpotlight
   alt="Opening a simulator manually from the macOS toolbar."
-  src="/static/images/ios-simulator/open-simulator-manually.png"
+  src="/static/images/ios-simulator/open-simulator-manually.webp"
 />
 
 You can use this menu to open any version of the simulator. You can also open multiple simulators at the same time, however, Expo CLI will always target the most recently opened simulator.
@@ -80,40 +80,51 @@ You can use this menu to open any version of the simulator. You can also open mu
 
 The first time you install the app in the simulator, iOS will ask if you'd like to open the Expo Go app. You may need to interact with the simulator (click around, drag something) for this prompt to show up, then press **OK**.
 
-### How do I force an update to the latest version?
+### How do I install a specific version of Expo Go?
 
-Create a project with the desired SDK version and open it in a simulator to install a particular version of Expo Go.
+You can create a project with the desired SDK version and open it in a simulator to install the matching version of Expo Go.
 
 <Terminal
   cmd={{
     npm: [
-      '# Bootstrap an SDK 53 project',
-      '$ npx create-expo-app --template blank@53',
+      '# Bootstrap an SDK 56 project',
+      '$ npx create-expo-app --template blank@56',
       '',
       '# Open the app on a simulator to install the required Expo Go app',
       '$ npx expo start --ios',
     ],
     yarn: [
-      '# Bootstrap an SDK 53 project',
-      '$ yarn create expo-app --template blank@53',
+      '# Bootstrap an SDK 56 project',
+      '$ yarn create expo-app --template blank@56',
       '',
       '# Open the app on a simulator to install the required Expo Go app',
       '$ yarn expo start --ios',
     ],
     pnpm: [
-      '# Bootstrap an SDK 53 project',
-      '$ pnpm create expo-app --template blank@53',
+      '# Bootstrap an SDK 56 project',
+      '$ pnpm create expo-app --template blank@56',
       '',
       '# Open the app on a simulator to install the required Expo Go app',
       '$ pnpm expo start --ios',
     ],
     bun: [
-      '# Bootstrap an SDK 53 project',
-      '$ bun create expo --template blank@53',
+      '# Bootstrap an SDK 56 project',
+      '$ bun create expo --template blank@56',
       '',
       '# Open the app on a simulator to install the required Expo Go app',
       '$ bun expo start --ios',
     ],
+  }}
+/>
+
+Alternatively, you can download a specific version of Expo Go with the [`expo-go` CLI](https://www.npmjs.com/package/expo-go) by passing an SDK version, or use `latest` for the latest SDK version. This command downloads the Expo Go app to the current directory and caches it under **~/.expo**.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-go download ios latest'],
+    yarn: ['$ yarn dlx expo-go download ios latest'],
+    pnpm: ['$ pnpm dlx expo-go download ios latest'],
+    bun: ['$ bunx expo-go download ios latest'],
   }}
 />
 

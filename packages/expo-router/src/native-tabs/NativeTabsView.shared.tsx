@@ -2,9 +2,9 @@ import React, { useCallback, useDeferredValue, useMemo } from 'react';
 import { View } from 'react-native';
 import type { TabsHostProps } from 'react-native-screens';
 
+import { useTheme } from '../react-navigation/native';
 import type { NativeTabOptions, NativeTabsViewProps } from './types';
 import { useAwaitedScreensIcon } from './utils/icon';
-import { useTheme } from '../react-navigation/native';
 
 export function useSelectedScreenKey({
   focusedIndex,
@@ -40,6 +40,26 @@ export function useOnTabSelectedHandler(
       // navigator emits `tabPress` and dispatches `JUMP_TO`.
       const isNativeAction = actionOrigin !== 'programmatic-js';
       onTabChange({ selectedKey: selectedScreenKey, provenance, isNativeAction });
+    },
+    [onTabChange]
+  );
+}
+
+export function useOnTabSelectionPreventedHandler(
+  onTabChange: NativeTabsViewProps['onTabChange']
+): NonNullable<TabsHostProps['onTabSelectionPrevented']> {
+  return useCallback<NonNullable<TabsHostProps['onTabSelectionPrevented']>>(
+    ({ nativeEvent: { preventedScreenKey, provenance } }) => {
+      // Forward the disabled tab the user tapped (`preventedScreenKey`), not the
+      // still-active `selectedScreenKey`. `isNativeAction` is required by the payload
+      // and is always `true` here, since programmatic JS navigation bypasses
+      // `preventNativeSelection` and therefore never reaches this callback.
+      onTabChange({
+        selectedKey: preventedScreenKey,
+        provenance,
+        isNativeAction: true,
+        isPrevented: true,
+      });
     },
     [onTabChange]
   );

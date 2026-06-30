@@ -4,7 +4,6 @@ import { useTheme } from 'ThemeProvider';
 import { isRunningInExpoGo } from 'expo';
 import * as React from 'react';
 
-import { optionalRequire } from './routeBuilder';
 import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import getStackNavWithConfig from '../navigation/StackConfig';
@@ -21,10 +20,18 @@ import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibrarySc
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
 import { WorkletsScreens } from '../screens/Worklets/WorkletsScreen';
 import { type ScreenConfig } from '../types/ScreenConfig';
+import { optionalRequire } from './routeBuilder';
 
 const Stack = createNativeStackNavigator();
 
 export const ScreensList: ScreenConfig[] = [
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/CameraPermissions/CameraPermissionsScreen'));
+    },
+    name: 'CameraPermissions',
+    options: { title: 'Camera Permissions' },
+  },
   {
     getComponent() {
       return optionalRequire(() => require('../screens/ModulesCore/ModulesCoreScreen'));

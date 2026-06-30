@@ -312,7 +312,7 @@ jobs:
 
 Calculates a fingerprint of your project.
 
-> **Note:** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
+> **Note:** This job type only supports [CNG](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
 
 > **Note:** To ensure fingerprints match your builds, use the same `environment` setting as your build profile. For environment variables, we recommend using [EAS environment variables](/eas/environment-variables/) rather than the [`env`](/eas/workflows/syntax/#jobsjob_idenv) field for better consistency.
 
@@ -639,6 +639,33 @@ jobs:
 
 Distribute iOS builds to TestFlight internal and external testing groups. This is an alternative to the iOS submit job for when you need more advanced TestFlight features. If you need to control test groups, changelog, or Beta App Review submission, use the `testflight` job instead of submit.
 
+The job supports two approaches: upload a build and submit it to TestFlight (`build_id`), or submit an already uploaded build (`asc_build_id`). In both cases, you can add the build to groups, set "What to Test" notes, and submit for Beta App Review. Provide exactly one of `build_id` or `asc_build_id`.
+
+<Prerequisites>
+  <Requirement title="TestFlight test information for external distribution">
+    When distributing to external groups or submitting for Beta App Review (`external_groups` and/or
+    `submit_beta_review: true`), the build must have the required TestFlight test information
+    completed in App Store Connect before the job can succeed. See [Provide test
+    information](https://developer.apple.com/help/app-store-connect/test-a-beta-version/provide-test-information/)
+    in Apple's documentation.
+  </Requirement>
+</Prerequisites>
+
+### Shared parameters
+
+Both approaches accept the following parameters in `params`:
+
+| Parameter          | Type     | Description                                                                                                                                                                                                                                                             |
+| ------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| internal_groups    | string[] | Optional. An array of TestFlight internal group names to add the build to. Only include groups without automatic distribution enabled.                                                                                                                                  |
+| external_groups    | string[] | Optional. An array of TestFlight external group names to add the build to.                                                                                                                                                                                              |
+| changelog          | string   | Optional. Test notes ("What to Test") for TestFlight testers.                                                                                                                                                                                                           |
+| submit_beta_review | boolean  | Optional. Whether to submit for Beta App Review. If not specified, defaults to `true` when `external_groups` are provided, `false` otherwise. Set to `false` to update the changelog or groups on an already-submitted build without re-submitting for Beta App Review. |
+
+### Upload build and submit to TestFlight
+
+Upload an EAS iOS build and submit it to TestFlight in a single workflow job.
+
 <Prerequisites>
   <Requirement title="An iOS store build and Apple Developer account">
     TestFlight jobs require an iOS build created with `distribution: store` and an Apple Developer
@@ -647,7 +674,7 @@ Distribute iOS builds to TestFlight internal and external testing groups. This i
   </Requirement>
 </Prerequisites>
 
-### Syntax
+#### Syntax
 
 ```yaml
 jobs:
@@ -668,15 +695,13 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter                       | Type     | Description                                                                                                                                 |
-| ------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| build_id                        | string   | Required. The ID of the iOS build to distribute.                                                                                            |
-| profile                         | string   | Optional. The submit profile to use. Defaults to `production`.                                                                              |
-| internal_groups                 | string[] | Optional. An array of TestFlight internal group names to add the build to. Only include groups without automatic distribution enabled.      |
-| external_groups                 | string[] | Optional. An array of TestFlight external group names to add the build to.                                                                  |
-| changelog                       | string   | Optional. Test notes ("What to Test") for TestFlight testers.                                                                               |
-| submit_beta_review              | boolean  | Optional. Whether to submit for Beta App Review. If not specified, defaults to `true` when external_groups are provided, `false` otherwise. |
-| wait_processing_timeout_seconds | number   | Optional. Timeout in seconds to wait for App Store Connect build processing. Defaults to `1800` (30 minutes).                               |
+| Parameter                       | Type   | Description                                                                                                                                                           |
+| ------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id                        | string | Required. The ID of the iOS EAS Build to distribute.                                                                                                                  |
+| profile                         | string | Optional. The submit profile to use. Defaults to `production`.                                                                                                        |
+| wait_processing_timeout_seconds | number | Optional. Timeout in seconds to wait for App Store Connect build processing. Defaults to `1800` (30 minutes). Only applies when distributing via groups or changelog. |
+
+You can also pass any of the [shared parameters](#shared-parameters).
 
 #### Outputs
 
@@ -687,7 +712,7 @@ You can reference the following outputs in subsequent jobs:
 | apple_app_id          | string | The Apple App ID of the submitted build.          |
 | ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
 
-### Examples
+#### Examples
 
 Here are some practical examples of using the TestFlight job:
 
@@ -737,6 +762,112 @@ jobs:
       build_id: ${{ needs.build_ios.outputs.build_id }}
       changelog: "${{ github.commit_message || 'Bug fixes' }}"
       # github.commit_message only available in push & schedule events.
+```
+
+</Collapsible>
+
+### Submit an already uploaded build
+
+Submit a build that is already in App Store Connect to TestFlight groups, set "What to Test" notes, and submit for Beta App Review. Beta App Review submission is optional. Set `submit_beta_review: false` to update the changelog or groups on an existing build without re-submitting it for review.
+
+<Prerequisites>
+  <Requirement title="App Store Connect integration">
+    Configure your App Store Connect connection in [Project settings > General >
+    Connections](https://expo.dev/accounts/[account]/projects/[project]/settings). The build must
+    already exist in App Store Connect and be ready for submission.
+  </Requirement>
+</Prerequisites>
+
+#### Syntax
+
+```yaml
+jobs:
+  testflight_distribution:
+    type: testflight
+    params:
+      asc_build_id: string # required
+      internal_groups: string[]
+      external_groups: string[]
+      changelog: string
+      submit_beta_review: boolean
+```
+
+#### Parameters
+
+| Parameter    | Type   | Description                                                           |
+| ------------ | ------ | --------------------------------------------------------------------- |
+| asc_build_id | string | Required. The ID of a build that already exists in App Store Connect. |
+
+You can also pass any of the [shared parameters](#shared-parameters).
+
+#### Outputs
+
+| Output       | Type   | Description                     |
+| ------------ | ------ | ------------------------------- |
+| asc_build_id | string | The App Store Connect build ID. |
+
+#### Examples
+
+<Collapsible summary="Auto-distribute to TestFlight after App Store Connect upload">
+
+When a build is uploaded to App Store Connect, this workflow automatically adds the build to TestFlight groups, sets "What to Test" notes, and submits for Beta App Review. Configure your App Store Connect connection before using this trigger. See [Trigger workflows from App Store Connect events](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events).
+
+`${{ app_store_connect.build_upload.build.id }}` is only available when the workflow is triggered by a `build_upload` event and App Store Connect has associated a build with the upload. `build_upload.state: complete` means the upload finished, not that App Store Connect finished processing the build. When using `external_groups`, complete the required TestFlight test information in App Store Connect first.
+
+```yaml .eas/workflows/testflight-after-asc-upload.yml
+name: Distribute to TestFlight after ASC upload
+
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  distribute_to_testflight:
+    name: Distribute to TestFlight
+    type: testflight
+    params:
+      asc_build_id: ${{ app_store_connect.build_upload.build.id }}
+      internal_groups:
+        - QA Team
+      external_groups:
+        - Public Beta
+      changelog: Build from CI
+      submit_beta_review: true
+```
+
+</Collapsible>
+
+<Collapsible summary="Update the changelog without re-submitting for Beta App Review">
+
+For a build that already exists in App Store Connect, you can update the "What to Test" notes or group membership without triggering Beta App Review. Set `submit_beta_review: false` to apply the changes while leaving the build's existing review status untouched.
+
+This workflow takes the build ID and new changelog as [manual inputs](/eas/workflows/syntax/#onworkflow_dispatchinputs), so you can run it on demand with `eas workflow:run`.
+
+```yaml .eas/workflows/testflight-update-changelog.yml
+name: Update TestFlight changelog
+
+on:
+  workflow_dispatch:
+    inputs:
+      asc_build_id:
+        type: string
+        required: true
+        description: The App Store Connect build ID to update.
+      changelog:
+        type: string
+        required: true
+        description: The new "What to Test" notes.
+
+jobs:
+  update_changelog:
+    name: Update changelog
+    type: testflight
+    params:
+      asc_build_id: ${{ inputs.asc_build_id }}
+      changelog: ${{ inputs.changelog }}
+      submit_beta_review: false
 ```
 
 </Collapsible>
@@ -873,6 +1004,43 @@ jobs:
 ```
 
 </Collapsible>
+
+## Branch delete
+
+Delete an [EAS Update](/eas-update/introduction/) branch in the current project. The same as [`eas branch:delete`](/eas-update/eas-cli/#delete-a-branch). Pass the EAS Update branch name in `branch_name`.
+
+### Syntax
+
+```yaml
+jobs:
+  delete_branch:
+    type: branch-delete
+    params:
+      branch_name: string # required
+      fail_on_missing: boolean # optional, default: false
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter       | Type    | Description                                                                                                                                                    |
+| --------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| branch_name     | string  | Required. Name of the EAS Update branch to delete.                                                                                                             |
+| fail_on_missing | boolean | If `false`, the job succeeds when the branch does not exist. If `true`, the job fails with a validation error when the branch is missing. Defaults to `false`. |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output      | Type   | Description                                                                                       |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------- |
+| branch_id   | string | UUID of the deleted branch, or `null` if the branch was missing and `fail_on_missing` is `false`. |
+| branch_name | string | The branch name from `params.branch_name`.                                                        |
+
+### Examples
+
+See [Clean up update branches example](/eas/workflows/examples/branch-cleanup) for a workflow that uses [`on.ref_delete`](/eas/workflows/syntax/#onref_delete) with the `branch-delete` job.
 
 ## Maestro
 
@@ -1267,11 +1435,11 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter   | Type   | Description                                                                                                                                                                |
-| ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| webhook_url | string | Required. The Slack webhook URL to send the message to. Currently only hardcoded strings are supported. Using webhooks stored in `env` are upcoming but not yet supported. |
-| message     | string | Required if payload is not provided. The message to send.                                                                                                                  |
-| payload     | object | Required if message is not provided. The [Slack Block Kit](https://docs.slack.dev/block-kit) payload to send.                                                              |
+| Parameter   | Type   | Description                                                                                                                                                                                 |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| webhook_url | string | Required. The Slack webhook URL to send the message to. Use an [environment variable](/eas/environment-variables/manage/#manage-environment-variables) with `${{ env.SLACK_WEBHOOK_URL }}`. |
+| message     | string | Required if payload is not provided. The message to send.                                                                                                                                   |
+| payload     | object | Required if message is not provided. The [Slack Block Kit](https://docs.slack.dev/block-kit) payload to send.                                                                               |
 
 ### Examples
 
@@ -1279,7 +1447,7 @@ Here are some practical examples of using the Slack job:
 
 <Collapsible summary="Basic build notification">
 
-This workflow builds an iOS app and then sends a notification with the app identifier and version from the build job outputs.
+This workflow builds an iOS app and then sends a notification with the app identifier and version from the build job outputs. The webhook URL is read from a `SLACK_WEBHOOK_URL` [environment variable](/eas/environment-variables/manage/#manage-environment-variables) set in the job's `environment`.
 
 ```yaml .eas/workflows/slack-build-notification.yml
 name: Build Notification
@@ -1296,8 +1464,9 @@ jobs:
     name: Notify Build Status
     needs: [build_ios]
     type: slack
+    environment: production
     params:
-      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       message: 'Build completed for app ${{ needs.build_ios.outputs.app_identifier }} (version ${{ needs.build_ios.outputs.app_version }})'
 ```
 
@@ -1322,8 +1491,9 @@ jobs:
     name: Notify Build Status
     needs: [build_android]
     type: slack
+    environment: production
     params:
-      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       payload:
         blocks:
           - type: header
@@ -1689,8 +1859,9 @@ jobs:
   notify_slack:
     needs: [register_device]
     type: slack
+    environment: production
     params:
-      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       message: 'Registered device ${{ needs.register_device.outputs.identifier }} (${{ needs.register_device.outputs.model }})'
 ```
 
@@ -1923,14 +2094,16 @@ Repack job is not suitable for the following use cases:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter           | Type    | Description                                                                                                                                 |
-| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| build_id            | string  | Required. The source build ID of the build to repack.                                                                                       |
-| profile             | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                  |
-| embed_bundle_assets | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build. |
-| js_bundle_only      | boolean | Optional. Whether to only repack the JavaScript bundle. Defaults to false, which means the entire app metadata will be updated.             |
-| message             | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                               |
-| repack_version      | string  | Optional. The version of the `@expo/repack-app` to use. Defaults to the latest version.                                                     |
+| Parameter                               | Type    | Description                                                                                                                                                                                                     |
+| --------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id                                | string  | Required. The source build ID of the build to repack.                                                                                                                                                           |
+| profile                                 | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                                                                                      |
+| embed_bundle_assets                     | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build.                                                                     |
+| js_bundle_only                          | boolean | Optional. Whether to only repack the JavaScript bundle. Defaults to false, which means the entire app metadata will be updated.                                                                                 |
+| message                                 | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                                                                                                   |
+| repack_version                          | string  | Optional. The version of the `@expo/repack-app` to use. Defaults to the latest version.                                                                                                                         |
+| ios_signing_use_source_app_entitlements | boolean | Optional. Whether to use fastlane resign `use_app_entitlements` behavior: extract app bundle code signing entitlements and combine them with entitlements from the new provisioning profile. Defaults to false. |
+| ios_signing_app_entitlements_path       | string  | Optional. Path to the entitlements file to use, for example, `myApp/MyApp.entitlements`. This is exclusive with `ios_signing_use_source_app_entitlements`                                                       |
 
 ### Examples
 

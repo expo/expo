@@ -5,6 +5,13 @@ import { Drawer } from 'react-native-drawer-layout';
 
 import useLatestCallback from '../../../utils/useLatestCallback';
 import {
+  getHeaderTitle,
+  Header,
+  SafeAreaProviderCompat,
+  Screen,
+  useFrameSize,
+} from '../../elements';
+import {
   DrawerActions,
   type DrawerNavigationState,
   type DrawerStatus,
@@ -21,20 +28,13 @@ import type {
   DrawerNavigationHelpers,
   DrawerNavigationProp,
 } from '../types';
-import { DrawerContent } from './DrawerContent';
-import { DrawerToggleButton } from './DrawerToggleButton';
-import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
-import {
-  getHeaderTitle,
-  Header,
-  SafeAreaProviderCompat,
-  Screen,
-  useFrameSize,
-} from '../../elements';
 import { DrawerPositionContext } from '../utils/DrawerPositionContext';
 import { DrawerStatusContext } from '../utils/DrawerStatusContext';
 import { addCancelListener } from '../utils/addCancelListener';
 import { getDrawerStatusFromState } from '../utils/getDrawerStatusFromState';
+import { DrawerContent } from './DrawerContent';
+import { DrawerToggleButton } from './DrawerToggleButton';
+import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
 
 type Props = DrawerNavigationConfig & {
   defaultStatus: DrawerStatus;

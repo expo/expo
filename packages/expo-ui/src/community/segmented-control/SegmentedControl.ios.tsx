@@ -1,4 +1,3 @@
-import { buildChangeEvent, type SegmentedControlProps } from './types';
 import { Host } from '../../swift-ui/Host';
 import { Picker } from '../../swift-ui/Picker';
 import { Text } from '../../swift-ui/Text';
@@ -7,6 +6,7 @@ import { environment } from '../../swift-ui/modifiers/environment';
 import { pickerStyle } from '../../swift-ui/modifiers/pickerStyle';
 import { tag } from '../../swift-ui/modifiers/tag';
 import type { ModifierConfig } from '../../types';
+import { buildChangeEvent, type SegmentedControlProps } from './types';
 
 export function SegmentedControl(props: SegmentedControlProps) {
   const {

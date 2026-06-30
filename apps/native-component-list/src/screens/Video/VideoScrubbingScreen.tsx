@@ -4,8 +4,8 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { localVideoSource, seekOptimizedSource } from './videoSources';
 import TitledSwitch from '../../components/TitledSwitch';
+import { localVideoSource, seekOptimizedSource } from './videoSources';
 
 export default function VideoScrubbingScreen() {
   const videoViewRef = useRef(null);

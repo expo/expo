@@ -1,11 +1,16 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-06-08T07:41:21.204Z",
-    "cliVersion": "20.1.0"
+    "fetchedAt": "2026-06-30T09:09:28.621Z",
+    "cliVersion": "20.5.0"
   },
-  "totalCommands": 123,
+  "totalCommands": 128,
   "commands": [
+    {
+      "command": "eas account:audit [ACCOUNT_NAME]",
+      "description": "view the audit logs for an account",
+      "usage": "USAGE\n  $ eas account:audit [ACCOUNT_NAME] [--limit <value>] [--after <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  [ACCOUNT_NAME]  Account name to view audit logs for. If not provided, the account will be selected interactively (or\n                  defaults to the only account if there is just one)\n\nFLAGS\n  --after=<value>    Cursor for pagination. Use the endCursor from a previous query to fetch the next page.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  view the audit logs for an account"
+    },
     {
       "command": "eas account:login",
       "description": "log in with your Expo account",
@@ -367,6 +372,21 @@
       "usage": "USAGE\n  $ eas integrations:convex:team:invite [CONVEX_TEAM] [--non-interactive]\n\nARGUMENTS\n  [CONVEX_TEAM]  Slug of the Convex team to invite yourself to\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  send a Convex team invitation to your verified email address"
     },
     {
+      "command": "eas integrations:posthog:connect",
+      "description": "connect PostHog to your Expo project",
+      "usage": "USAGE\n  $ eas integrations:posthog:connect [--json] [--non-interactive] [--region US|EU] [--session-replay] [--error-tracking]\n    [--posthog-cli-api-key <value>] [--overwrite]\n\nFLAGS\n  --[no-]error-tracking          Set up PostHog error tracking / source maps (requires a personal API key)\n  --json                         Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                 --non-interactive.\n  --non-interactive              Run the command in non-interactive mode.\n  --overwrite                    Overwrite existing PostHog environment variables without prompting\n  --posthog-cli-api-key=<value>  PostHog personal API key for error-tracking source-map uploads (enables error tracking\n                                 non-interactively)\n  --region=<option>              PostHog region\n                                 <options: US|EU>\n  --[no-]session-replay          Set up PostHog session replay (default: yes)\n\nDESCRIPTION\n  connect PostHog to your Expo project"
+    },
+    {
+      "command": "eas integrations:posthog:dashboard",
+      "description": "open the PostHog dashboard for the linked PostHog project",
+      "usage": "USAGE\n  $ eas integrations:posthog:dashboard [--json] [--non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  open the PostHog dashboard for the linked PostHog project"
+    },
+    {
+      "command": "eas integrations:posthog:disconnect",
+      "description": "remove the PostHog project link for the current Expo app from EAS servers",
+      "usage": "USAGE\n  $ eas integrations:posthog:disconnect [--json] [--non-interactive] [-y]\n\nFLAGS\n  -y, --yes              Skip confirmation prompt\n      --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  remove the PostHog project link for the current Expo app from EAS servers"
+    },
+    {
       "command": "eas login",
       "description": "log in with your Expo account",
       "usage": "USAGE\n  $ eas login [-s] [-b]\n\nFLAGS\n  -b, --[no-]browser  Log in with your browser (default; use --no-browser for CLI-based login)\n  -s, --sso           Log in with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
@@ -415,6 +435,11 @@
       "command": "eas observe:routes",
       "description": "display app navigation route metrics (Cold TTR, Warm TTR, TTI) grouped by route name",
       "usage": "USAGE\n  $ eas observe:routes [--platform android|ios] [--metric cold_ttr|warm_ttr|nav_tti...] [--stat\n    median|med|p90|count|event_count|eventCount...] [--after <value>] [--limit <value>] [--start <value> | --days\n    <value>] [--end <value> | ] [--app-version <value>] [--update-id <value>] [--build-number <value>] [--route-name\n    <value>...] [--project-id <value>] [--json] [--non-interactive]\n\nFLAGS\n  --after=<value>          Cursor for pagination. Use the endCursor from a previous query to fetch the next page.\n  --app-version=<value>    Filter by app version\n  --build-number=<value>   Filter by app build number\n  --days=<value>           Show results from the last N days (mutually exclusive with --start/--end)\n  --end=<value>            End of time range (ISO date)\n  --json                   Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --limit=<value>          The number of items to fetch each query. Defaults to 50 and is capped at 200.\n  --metric=<option>...     Navigation metric to display (can be specified multiple times). Defaults to all three.\n                           <options: cold_ttr|warm_ttr|nav_tti>\n  --non-interactive        Run the command in non-interactive mode.\n  --platform=<option>      Filter by platform\n                           <options: android|ios>\n  --project-id=<value>     EAS project ID (defaults to the project ID of the current directory)\n  --route-name=<value>...  Filter by route name (can be specified multiple times to include several routes)\n  --start=<value>          Start of time range (ISO date)\n  --stat=<option>...       Statistic to display per metric (can be specified multiple times)\n                           <options: median|med|p90|count|event_count|eventCount>\n  --update-id=<value>      Filter by EAS update ID\n\nDESCRIPTION\n  display app navigation route metrics (Cold TTR, Warm TTR, TTI) grouped by route name"
+    },
+    {
+      "command": "eas observe:session SESSIONID",
+      "description": "display the timeline of metric and log events for a specific session",
+      "usage": "USAGE\n  $ eas observe:session SESSIONID [--project-id <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  SESSIONID  Session ID to inspect\n\nFLAGS\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n  --project-id=<value>  EAS project ID (defaults to the project ID of the current directory)\n\nDESCRIPTION\n  display the timeline of metric and log events for a specific session"
     },
     {
       "command": "eas observe:versions",
@@ -522,14 +547,14 @@
       "usage": "USAGE\n  $ eas update:roll-back-to-embedded [--branch <value>] [--channel <value>] [--runtime-version <value>] [--message <value>] [-p\n    android|ios|all] [--private-key-path <value>] [--json] [--non-interactive]\n\nFLAGS\n  -p, --platform=<option>         [default: all]\n                                  <options: android|ios|all>\n      --branch=<value>            Branch to publish the rollback to embedded update group on\n      --channel=<value>           Channel that the published rollback to embedded update should affect\n      --json                      Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                  --non-interactive.\n      --message=<value>           A short message describing the rollback to embedded update\n      --non-interactive           Run the command in non-interactive mode.\n      --private-key-path=<value>  File containing the PEM-encoded private key corresponding to the certificate in\n                                  expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                                  certificate's directory. Only relevant if you are using code signing:\n                                  https://docs.expo.dev/eas-update/code-signing/\n      --runtime-version=<value>   Runtime version that the rollback to embedded update should target\n\nDESCRIPTION\n  roll back to the embedded update"
     },
     {
-      "command": "eas update:rollback",
-      "description": "Roll back to an embedded update or an existing update. Users wishing to run this command non-interactively should instead execute \"eas update:republish\" or \"eas update:roll-back-to-embedded\".",
-      "usage": "USAGE\n  $ eas update:rollback [--private-key-path <value>]\n\nFLAGS\n  --private-key-path=<value>  File containing the PEM-encoded private key corresponding to the certificate in\n                              expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                              certificate's directory. Only relevant if you are using code signing:\n                              https://docs.expo.dev/eas-update/code-signing/\n\nDESCRIPTION\n  Roll back to an embedded update or an existing update. Users wishing to run this command non-interactively should\n  instead execute \"eas update:republish\" or \"eas update:roll-back-to-embedded\"."
+      "command": "eas update:rollback [GROUPID]",
+      "description": "roll back to an embedded update or an existing update",
+      "usage": "USAGE\n  $ eas update:rollback [GROUPID] [-m <value>] [-p android|ios|all] [--private-key-path <value>] [--json]\n    [--non-interactive]\n\nARGUMENTS\n  [GROUPID]  The ID of the update group to roll back. Must be the latest update for its branch and runtime version. The\n             update group published before it is republished; if there is none, a roll back to the embedded update is\n             published. Required in non-interactive mode.\n\nFLAGS\n  -m, --message=<value>           Short message describing the rollback update\n  -p, --platform=<option>         [default: all]\n                                  <options: android|ios|all>\n      --json                      Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                  --non-interactive.\n      --non-interactive           Run the command in non-interactive mode.\n      --private-key-path=<value>  File containing the PEM-encoded private key corresponding to the certificate in\n                                  expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                                  certificate's directory. Only relevant if you are using code signing:\n                                  https://docs.expo.dev/eas-update/code-signing/\n\nDESCRIPTION\n  roll back to an embedded update or an existing update"
     },
     {
       "command": "eas update:view GROUPID",
       "description": "update group details",
-      "usage": "USAGE\n  $ eas update:view GROUPID [--insights] [--days <value> | --start <value> | --end <value>] [--json]\n\nARGUMENTS\n  GROUPID  The ID of an update group.\n\nFLAGS\n  --days=<value>   Show insights from the last N days (default 7). Only used with --insights.\n  --end=<value>    End of insights time range (ISO date). Only used with --insights.\n  --insights       Also show insights (launches, crash rate, unique users, payload size) for the update group.\n  --json           Enable JSON output, non-JSON messages will be printed to stderr.\n  --start=<value>  Start of insights time range (ISO date). Only used with --insights.\n\nDESCRIPTION\n  update group details"
+      "usage": "USAGE\n  $ eas update:view GROUPID [--insights] [--days <value> | --start <value> | --end <value>] [--json]\n\nARGUMENTS\n  GROUPID  The ID of an update group, or the ID of a platform-specific update.\n\nFLAGS\n  --days=<value>   Show insights from the last N days (default 7). Only used with --insights.\n  --end=<value>    End of insights time range (ISO date). Only used with --insights.\n  --insights       Also show insights (launches, crash rate, unique users, payload size) for the update group.\n  --json           Enable JSON output, non-JSON messages will be printed to stderr.\n  --start=<value>  Start of insights time range (ISO date). Only used with --insights.\n\nDESCRIPTION\n  update group details"
     },
     {
       "command": "eas upload",

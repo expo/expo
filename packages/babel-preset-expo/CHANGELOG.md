@@ -10,6 +10,9 @@
 
 ### 🐛 Bug fixes
 
+- Inline `EXPO_PUBLIC_USE_RN_FETCH` inside `node_modules` so the `expo/fetch` opt-out works in production builds. ([#46986](https://github.com/expo/expo/pull/46986) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Bump `babel-plugin-syntax-hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
 ## 56.0.13 — 2026-05-26

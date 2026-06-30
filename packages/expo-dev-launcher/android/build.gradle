@@ -5,7 +5,6 @@ buildscript {
   dependencies {
     classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
     classpath("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:${kotlinVersion}")
-    classpath("com.apollographql.apollo:apollo-gradle-plugin:4.4.2")
   }
 }
 
@@ -13,7 +12,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
-apply plugin: 'com.apollographql.apollo'
 
 def configureInRelease = findProperty("expo.devlauncher.configureInRelease") == "true"
 if (configureInRelease) {
@@ -66,28 +64,6 @@ android {
   buildFeatures {
     buildConfig true
     viewBinding true
-  }
-}
-
-apollo {
-  service("service") {
-    packageName.set("expo.modules.devlauncher")
-    srcDir("src/debug/graphql")
-
-    introspection {
-      endpointUrl.set("https://api.expo.dev/graphql")
-      schemaFile.set(file("src/debug/graphql/schema.graphqls"))
-    }
-
-    outputDir.set(project.layout.buildDirectory.dir("generated/apollo"))
-    outputDirConnection {
-      connectToKotlinSourceSet("debug")
-      connectToKotlinSourceSet("debugOptimized")
-
-      if (configureInRelease) {
-        connectToKotlinSourceSet("release")
-      }
-    }
   }
 }
 
@@ -155,9 +131,7 @@ dependencies {
 
   debugOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 
-  debugOnly("com.apollographql.apollo:apollo-runtime:4.4.2")
-
-  debugOnly("com.composables:core:1.43.1")
+  debugOnly("com.composables:core:1.49.9")
 
   testImplementation 'androidx.test:core:1.7.0'
   testImplementation 'androidx.test:core-ktx:1.7.0'

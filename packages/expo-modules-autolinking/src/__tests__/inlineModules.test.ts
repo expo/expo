@@ -1,4 +1,4 @@
-import { error } from 'console';
+import { error, warn } from 'console';
 import * as fs from 'fs';
 import { vol } from 'memfs';
 
@@ -10,9 +10,12 @@ import {
 import type { InlineModulesMirror } from '../inlineModules/inlineModules';
 import {
   getMirrorStateObject,
+  hasKotlinModuleDefinition,
+  hasSwiftModuleDefinition,
   getKotlinFileNameWithItsPackage,
   inlineModuleFileNameInformation,
 } from '../inlineModules/inlineModules';
+import { isTargetInInlineModulesTargets } from '../inlineModules/iosInlineModules';
 
 jest.mock('fs', () => require('memfs').fs);
 jest.mock('fs/promises', () => require('memfs').fs.promises);
@@ -70,9 +73,17 @@ describe('inlineModules.ts', () => {
       });
     });
 
-    it('rejects files with extra dots (e.g. .android.kt)', () => {
+    it('accepts files with extra dots because module registration is content-based', () => {
       expect(inlineModuleFileNameInformation('SomeModule.android.kt')).toEqual({
-        valid: false,
+        valid: true,
+        ext: '.kt',
+      });
+      expect(inlineModuleFileNameInformation('Nested.compile.extra.swift')).toEqual({
+        valid: true,
+        ext: '.swift',
+      });
+      expect(inlineModuleFileNameInformation('Helpers.compile.kt')).toEqual({
+        valid: true,
         ext: '.kt',
       });
     });
@@ -82,6 +93,74 @@ describe('inlineModules.ts', () => {
         valid: false,
         ext: '.ts',
       });
+    });
+  });
+
+  describe('hasKotlinModuleDefinition', () => {
+    it('detects an inline module returning ModuleDefinition', async () => {
+      vol.fromJSON({
+        '/example-project/SimpleModule.kt':
+          'class SimpleModule : Module() {\n  override fun definition() = ModuleDefinition { Name("SimpleModule") }\n}',
+      });
+
+      await expect(hasKotlinModuleDefinition('/example-project/SimpleModule.kt')).resolves.toBe(
+        true
+      );
+    });
+
+    it('detects an inline module returning a fully-qualified ModuleDefinition', async () => {
+      vol.fromJSON({
+        '/example-project/SimpleModule.kt':
+          'class SimpleModule : Module() {\n  override fun definition() = expo.modules.kotlin.modules.ModuleDefinition { Name("SimpleModule") }\n}',
+      });
+
+      await expect(hasKotlinModuleDefinition('/example-project/SimpleModule.kt')).resolves.toBe(
+        true
+      );
+    });
+
+    it('does not treat supporting kotlin files as modules', async () => {
+      vol.fromJSON({
+        '/example-project/Helper.compile.kt': 'package some.pkg\nclass Helper',
+      });
+
+      await expect(hasKotlinModuleDefinition('/example-project/Helper.compile.kt')).resolves.toBe(
+        false
+      );
+    });
+  });
+
+  describe('hasSwiftModuleDefinition', () => {
+    it('detects an inline module returning ModuleDefinition', async () => {
+      vol.fromJSON({
+        '/example-project/AppIntentsSetup.swift':
+          'import ExpoModulesCore\nfinal class AppIntentsSetup: Module {\n  func definition() -> ModuleDefinition { Name("AppIntentsSetup") }\n}',
+      });
+
+      await expect(
+        hasSwiftModuleDefinition('/example-project/AppIntentsSetup.swift')
+      ).resolves.toBe(true);
+    });
+
+    it('detects an inline module returning ExpoModulesCore.ModuleDefinition', async () => {
+      vol.fromJSON({
+        '/example-project/AppIntentsSetup.swift':
+          'import ExpoModulesCore\nfinal class AppIntentsSetup: Module {\n  func definition() -> ExpoModulesCore.ModuleDefinition { Name("AppIntentsSetup") }\n}',
+      });
+
+      await expect(
+        hasSwiftModuleDefinition('/example-project/AppIntentsSetup.swift')
+      ).resolves.toBe(true);
+    });
+
+    it('does not treat supporting swift files as modules', async () => {
+      vol.fromJSON({
+        '/example-project/TrailEntity.compile.swift': 'import AppIntents\nstruct TrailEntity {}',
+      });
+
+      await expect(
+        hasSwiftModuleDefinition('/example-project/TrailEntity.compile.swift')
+      ).resolves.toBe(false);
     });
   });
 
@@ -114,14 +193,19 @@ describe('inlineModules.ts', () => {
     it('scans directories and correctly builds the mirror object', async () => {
       vol.fromJSON({
         '/example-project/package.json': '{}',
-        '/example-project/app/ValidAndroid1.kt': 'package app.valid\nclass ValidAndroid1',
-        '/example-project/app/modules/ValidApple1.swift': 'internal import ExpoModulesCore',
+        '/example-project/app/ValidAndroid1.kt':
+          'package app.valid\nclass ValidAndroid1 : Module() {\n  override fun definition() = ModuleDefinition { Name("ValidAndroid1") }\n}',
+        '/example-project/app/modules/ValidApple1.swift':
+          'internal import ExpoModulesCore\nfunc definition() -> ModuleDefinition',
         '/example-project/app/Invalid.android.kt': 'package valid.package',
         '/example-project/src/nested/Invalid2.kt': 'class NoPackage',
         '/example-project/src/nested/Readme.md': '# Hello',
-        '/example-project/src/nested/ValidApple2.swift': 'internal import ExpoModulesCore',
-        '/example-project/other/ValidApple3.swift': 'internal import ExpoModulesCore',
-        '/other-project/src/ValidAndroid2.kt': 'package app.valid\nclass ValidAndroid2',
+        '/example-project/src/nested/ValidApple2.swift':
+          'internal import ExpoModulesCore\nfunc definition() -> ModuleDefinition',
+        '/example-project/other/ValidApple3.swift':
+          'internal import ExpoModulesCore\nfunc definition() -> ModuleDefinition',
+        '/other-project/src/ValidAndroid2.kt':
+          'package app.valid\nclass ValidAndroid2 : Module() {\n  override fun definition() = ModuleDefinition { Name("ValidAndroid2") }\n}',
       });
 
       const result = await getMirrorStateObject(
@@ -132,12 +216,19 @@ describe('inlineModules.ts', () => {
       expect(result.swiftModuleClassNames).toEqual(['ValidApple1', 'ValidApple2']);
       expect(result.kotlinClasses).toEqual(['app.valid.ValidAndroid1', 'app.valid.ValidAndroid2']);
 
-      expect(result.files).toHaveLength(4);
-      const sortingFunction = (o1, o2) => o2.filePath.length - o1.filePath.length;
+      expect(result.files).toHaveLength(6);
+      const sortingFunction = (
+        o1: { filePath: string; watchedDir: string },
+        o2: { filePath: string; watchedDir: string }
+      ) => o2.filePath.length - o1.filePath.length;
       expect(result.files.sort(sortingFunction)).toEqual(
         [
           {
             filePath: '/example-project/app/ValidAndroid1.kt',
+            watchedDir: '/example-project/app',
+          },
+          {
+            filePath: '/example-project/app/Invalid.android.kt',
             watchedDir: '/example-project/app',
           },
           {
@@ -152,8 +243,82 @@ describe('inlineModules.ts', () => {
             filePath: '/example-project/src/nested/ValidApple2.swift',
             watchedDir: '/example-project/src/nested',
           },
+          {
+            filePath: '/example-project/src/nested/Invalid2.kt',
+            watchedDir: '/example-project/src/nested',
+          },
         ].sort(sortingFunction)
       );
+    });
+
+    it('includes native files without module definitions in files but not in class name lists', async () => {
+      vol.fromJSON({
+        '/example-project/package.json': '{}',
+        '/example-project/intents/MyModule.swift':
+          'internal import ExpoModulesCore\nfunc definition() -> ModuleDefinition',
+        '/example-project/intents/AppShortcuts.compile.swift': 'import AppIntents',
+        '/example-project/intents/Helper.compile.kt': 'package some.pkg',
+      });
+
+      const result = await getMirrorStateObject(['intents'], '/example-project');
+
+      expect(result.swiftModuleClassNames).toEqual(['MyModule']);
+      expect(result.kotlinClasses).toEqual([]);
+      expect(result.files.map((f) => f.filePath).sort()).toEqual([
+        '/example-project/intents/AppShortcuts.compile.swift',
+        '/example-project/intents/Helper.compile.kt',
+        '/example-project/intents/MyModule.swift',
+      ]);
+    });
+  });
+
+  describe('module filenames with dots', () => {
+    it('registers a kotlin module definition in a dotted filename', async () => {
+      (warn as jest.Mock).mockClear();
+      vol.fromJSON({
+        '/example-project/package.json': '{}',
+        '/example-project/modules/My.Module.kt':
+          'package some.pkg\nclass MyModule : Module() {\n  override fun definition() = ModuleDefinition { Name("MyModule") }\n}',
+      });
+
+      const result = await getMirrorStateObject(['modules'], '/example-project');
+
+      expect(result.kotlinClasses).toEqual(['some.pkg.My.Module']);
+      expect(result.files.map((file) => file.filePath)).toEqual([
+        '/example-project/modules/My.Module.kt',
+      ]);
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('registers a swift module definition in a dotted filename', async () => {
+      (warn as jest.Mock).mockClear();
+      vol.fromJSON({
+        '/example-project/package.json': '{}',
+        '/example-project/intents/My.Module.swift':
+          'import ExpoModulesCore\nfunc definition() -> ModuleDefinition',
+      });
+
+      const result = await getMirrorStateObject(['intents'], '/example-project');
+
+      expect(result.swiftModuleClassNames).toEqual(['My.Module']);
+      expect(result.files.map((file) => file.filePath)).toEqual([
+        '/example-project/intents/My.Module.swift',
+      ]);
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('does not warn for supporting swift files without module definitions', async () => {
+      (warn as jest.Mock).mockClear();
+      vol.fromJSON({
+        '/example-project/package.json': '{}',
+        '/example-project/intents/MyModule.swift':
+          'internal import ExpoModulesCore\npublic final class MyModule: Module {}',
+      });
+
+      const result = await getMirrorStateObject(['intents'], '/example-project');
+
+      expect(result.swiftModuleClassNames).toEqual([]);
+      expect(warn).not.toHaveBeenCalled();
     });
   });
 });
@@ -254,14 +419,73 @@ describe('androidInlineModules.ts', () => {
 
       await generateInlineModulesListFile(listPath, mockMirror);
 
-      const targetFile = '/build/generated/ExpoInlineModulesList.java';
+      const targetFile = '/build/generated/ExpoInlineModulesList.kt';
 
       expect(fs.existsSync(targetFile)).toBe(true);
 
       const content = await fs.promises.readFile(targetFile, 'utf8');
 
-      expect(content).toContain('some.simple.package.SimpleModule.class, "SimpleModule"');
-      expect(content).toContain('other.package.SimpleView.class, "SimpleView"');
+      expect(content).toContain('some.simple.package.SimpleModule::class.java to "SimpleModule"');
+      expect(content).toContain('other.package.SimpleView::class.java to "SimpleView"');
     });
+  });
+});
+
+describe('isTargetInInlineModulesTargets', () => {
+  it('should return true if mainTarget matches the extracted target from the path', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-AppTarget/ExpoModulesProvider.swift';
+    const inlineModulesTargets = { mainTarget: 'AppTarget', targets: [] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(true);
+  });
+
+  it('should return true if mainTarget is not provided and the extracted target is in the targets array', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-ExpoWidgetsTarget/ExpoModulesProvider.swift';
+    const inlineModulesTargets = {
+      targets: ['SomeOtherTarget', 'ExpoWidgetsTarget'],
+    };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(true);
+  });
+
+  it('should return false if mainTarget is not provided and the extracted target is not in the targets array', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-ExpoWidgetsTarget/ExpoModulesProvider.swift';
+    const inlineModulesTargets = { targets: ['expo56c', 'SomeOtherTarget'] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(false);
+  });
+
+  it('should return false if mainTarget is not provided and the targets array is empty', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-expo56c/ExpoModulesProvider.swift';
+    const inlineModulesTargets = { targets: [] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(false);
+  });
+
+  it('should return false if the path format does not match the expected Pods layout', () => {
+    // Missing the "/Pods-" prefix before the target name
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/MyTarget/ExpoModulesProvider.swift';
+    const inlineModulesTargets = { targets: ['MyTarget'] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(false);
+  });
+
+  it('should return false if the target matches but has a different casing structure', () => {
+    const targetPath =
+      '/Users/user1/Projects/apps/ios/Pods/Target Support Files/Pods-ExpoWidgetsTarget/ExpoModulesProvider.swift';
+    const inlineModulesTargets = { targets: ['expowidgetstarget'] };
+
+    const result = isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets });
+    expect(result).toBe(false);
   });
 });

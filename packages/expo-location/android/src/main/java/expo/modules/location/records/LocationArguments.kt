@@ -43,10 +43,15 @@ internal open class LocationOptions(
   @Field var timeInterval: Long? = null
 ) : Record, Serializable {
   constructor(map: Map<String, Any?>) : this(
-    accuracy = map["accuracy"] as? Int ?: ACCURACY_BALANCED,
-    distanceInterval = map["distanceInterval"] as? Int?,
+    // Numbers in the task options map arrive as Double (RN bridge / TaskManager
+    // persistence). Safe-casts like `as? Long` don't coerce numeric types and
+    // return null, silently dropping the configured intervals and falling back
+    // to the accuracy preset defaults. Coerce via Number instead, matching
+    // LocationTaskConsumer.shouldReportDeferredLocations.
+    accuracy = (map["accuracy"] as? Number)?.toInt() ?: ACCURACY_BALANCED,
+    distanceInterval = (map["distanceInterval"] as? Number)?.toInt(),
     mayShowUserSettingsDialog = map["mayShowUserSettingsDialog"] as? Boolean? ?: true,
-    timeInterval = map["timeInterval"] as? Long
+    timeInterval = (map["timeInterval"] as? Number)?.toLong()
   )
 }
 

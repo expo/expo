@@ -24,4 +24,19 @@ public protocol DevMenuHostDelegate: NSObjectProtocol {
    Defaults to `true` if not implemented.
    */
   @objc optional func devMenuShouldShowReactNativeDevMenu() -> Bool
+
+  /**
+   Optional function to swap the active React component for the one registered
+   under `moduleName` in `AppRegistry`.
+   Returning `true` indicates the swap was handled; returning `false` (or not implementing this)
+   makes the dev menu fall back to its own best-effort swap.
+   */
+  @objc optional func devMenuSwitchToComponent(_ moduleName: String) -> Bool
+
+  /**
+   Optional function returning the `moduleName` of the React component the host
+   is currently rendering. Used by the dev menu to mark the active entry in its
+   Components list.
+   */
+  @objc optional func devMenuCurrentComponentName() -> String?
 }

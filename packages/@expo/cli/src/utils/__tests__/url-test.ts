@@ -1,6 +1,4 @@
-import nock from 'nock';
-
-import { isUrlOk, validateUrl, stripPort, stripExtension } from '../url';
+import { validateUrl, stripPort, stripExtension } from '../url';
 
 describe(validateUrl, () => {
   it(`guards against protocols`, () => {

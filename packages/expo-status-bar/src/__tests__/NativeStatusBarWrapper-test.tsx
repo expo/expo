@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import { mockAppearance, renderedPropValue } from './Helpers';
 import { StatusBar as ExpoStatusBar } from '../NativeStatusBarWrapper';
 

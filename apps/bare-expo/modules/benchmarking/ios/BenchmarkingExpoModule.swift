@@ -20,10 +20,9 @@ final class SharedPoint: SharedObject {
   var y: Double = 0
 }
 
+@ExpoModule
 public final class BenchmarkingExpoModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("BenchmarkingExpoModule")
-
     Function("nothing") {}
     Function("nothingOptimized", nothingOptimized())
 
@@ -64,10 +63,6 @@ public final class BenchmarkingExpoModule: Module {
     }
 
     Function("passthroughRecord") { (point: Point) in
-      return point
-    }
-
-    Function("passthroughSynthesizedRecord") { (point: SynthesizedPoint) in
       return point
     }
 
@@ -171,16 +166,47 @@ public final class BenchmarkingExpoModule: Module {
     }
   }
 
+  @JS
+  private func nothingSynthesized() -> Void {}
+
+  @JS
+  private func nothingAsyncSynthesized() async -> Void {}
+
   @OptimizedFunction
   private func nothingOptimized() -> Void {}
+
+  @JS
+  private func addNumbersSynthesized(a: Double, b: Double) throws -> Double {
+    return a + b
+  }
+
+  @JS
+  private func addNumbersAsyncSynthesized(a: Double, b: Double) async throws -> Double {
+    return a + b
+  }
 
   @OptimizedFunction
   private func addNumbersOptimized(a: Double, b: Double) throws -> Double {
     return a + b
   }
 
+  @JS
+  private func addStringsSynthesized(a: String, b: String) throws -> String {
+    return a + b
+  }
+
   @OptimizedFunction
   private func addStringsOptimized(a: String, b: String) throws -> String {
     return a + b
+  }
+
+  @JS
+  private func foldArraySynthesized(array: [Double]) -> Double {
+    return array.reduce(0.0, +)
+  }
+
+  @JS
+  private func passthroughSynthesizedRecord(point: SynthesizedPoint) -> SynthesizedPoint {
+    return point
   }
 }

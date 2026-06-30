@@ -8,6 +8,7 @@
   "build": {
     "base": {
       "node": "22.17.1",
+      "pnpm": "10.33.0",
       "credentialsSource": "local",
       "android": {
         "image": "ubuntu-24.04-jdk-17-ndk-r27b-sdk-55",

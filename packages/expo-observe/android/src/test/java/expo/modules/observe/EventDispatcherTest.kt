@@ -158,7 +158,7 @@ class EventDispatcherTest {
     }
 
   @Test
-  fun `dispatch includes correct easClientId in payload`() =
+  fun `dispatch includes the easClientId as a resource attribute`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -176,7 +176,16 @@ class EventDispatcherTest {
       val request = mockServer.takeRequest()
       val requestBody = request.body.readUtf8()
       val json = JSONObject(requestBody)
-      assertEquals(testEasClientId.toString(), json.getString("easClientId"))
+      val resource = json.getJSONArray("resourceMetrics").getJSONObject(0).getJSONObject("resource")
+      val attributes = resource.getJSONArray("attributes")
+
+      val clientIdAttribute = (0 until attributes.length())
+        .map { attributes.getJSONObject(it) }
+        .first { it.getString("key") == "expo.eas_client.id" }
+      assertEquals(
+        testEasClientId.toString(),
+        clientIdAttribute.getJSONObject("value").getString("stringValue")
+      )
     }
 
   @Test
@@ -205,20 +214,9 @@ class EventDispatcherTest {
       val request = mockServer.takeRequest()
       val requestBody = request.body.readUtf8()
       val json = JSONObject(requestBody)
-      val eventsArray = json.getJSONArray("events")
+      val resourceMetrics = json.getJSONArray("resourceMetrics")
 
-      assertEquals(3, eventsArray.length())
-
-      val metricNames = mutableListOf<String>()
-      for (i in 0 until eventsArray.length()) {
-        val event = eventsArray.getJSONObject(i)
-        val metrics = event.getJSONArray("metrics")
-        metricNames.add(metrics.getJSONObject(0).getString("name"))
-      }
-
-      assertTrue(metricNames.contains("metric1"))
-      assertTrue(metricNames.contains("metric2"))
-      assertTrue(metricNames.contains("metric3"))
+      assertEquals(3, resourceMetrics.length())
     }
 
   @Test
@@ -238,7 +236,7 @@ class EventDispatcherTest {
 
       // Assert
       val request = mockServer.takeRequest()
-      assertEquals("/$testProjectId", request.path)
+      assertEquals("/$testProjectId/v1/metrics", request.path)
     }
 
   @Test
@@ -260,7 +258,7 @@ class EventDispatcherTest {
     }
 
   @Test
-  fun `dispatch includes all metadata fields in payload`() =
+  fun `dispatch maps metadata to OTel resource attributes`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -288,7 +286,7 @@ class EventDispatcherTest {
 
       val metric = EASMetric(
         sessionId = "session-123",
-        timestamp = "2025-11-26T10:00:00Z",
+        timestamp = "2025-11-26T10:00:00.000Z",
         category = "performance",
         name = "app_start",
         value = 1500.0
@@ -303,22 +301,25 @@ class EventDispatcherTest {
       val request = mockServer.takeRequest()
       val requestBody = request.body.readUtf8()
       val json = JSONObject(requestBody)
-      val eventsArray = json.getJSONArray("events")
-      val event = eventsArray.getJSONObject(0)
-      val metadataJson = event.getJSONObject("metadata")
+      val resource = json.getJSONArray("resourceMetrics").getJSONObject(0).getJSONObject("resource")
+      val attributes = resource.getJSONArray("attributes")
 
-      assertEquals("TestApp", metadataJson.getString("appName"))
-      assertEquals("com.test.app", metadataJson.getString("appIdentifier"))
-      assertEquals("1.0.0", metadataJson.getString("appVersion"))
-      assertEquals("100", metadataJson.getString("appBuildNumber"))
-      assertEquals("en-US", metadataJson.getString("languageTag"))
-      assertEquals("Android", metadataJson.getString("deviceOs"))
-      assertEquals("14", metadataJson.getString("deviceOsVersion"))
-      assertEquals("Pixel 8", metadataJson.getString("deviceModel"))
-      assertEquals("TestDevice", metadataJson.getString("deviceName"))
-      assertEquals("52.0.0", metadataJson.getString("expoSdkVersion"))
-      assertEquals("0.76.0", metadataJson.getString("reactNativeVersion"))
-      assertEquals("1.0.0", metadataJson.getString("clientVersion"))
+      val stringAttributes = (0 until attributes.length())
+        .map { attributes.getJSONObject(it) }
+        .associate { it.getString("key") to it.getJSONObject("value").getString("stringValue") }
+
+      assertEquals("com.test.app", stringAttributes["service.name"])
+      assertEquals("1.0.0", stringAttributes["service.version"])
+      assertEquals("100", stringAttributes["expo.app.build_number"])
+      assertEquals("en-US", stringAttributes["browser.language"])
+      assertEquals("Android", stringAttributes["os.name"])
+      assertEquals("14", stringAttributes["os.version"])
+      assertEquals("Pixel 8", stringAttributes["device.model.identifier"])
+      assertEquals("TestDevice", stringAttributes["device.model.name"])
+      assertEquals("52.0.0", stringAttributes["expo.sdk.version"])
+      assertEquals("0.76.0", stringAttributes["expo.react_native.version"])
+      assertEquals("1.0.0", stringAttributes["telemetry.sdk.version"])
+      assertEquals("TestApp", stringAttributes["expo.app.name"])
     }
 
   @Test
@@ -361,7 +362,7 @@ class EventDispatcherTest {
 
     val metric = EASMetric(
       sessionId = "test-session",
-      timestamp = "2025-11-26T10:00:00Z",
+      timestamp = "2025-11-26T10:00:00.000Z",
       category = "test",
       name = metricName,
       value = 123.45

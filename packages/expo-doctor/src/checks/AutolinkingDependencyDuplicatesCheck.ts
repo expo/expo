@@ -6,13 +6,13 @@ import type {
 import fs from 'fs';
 import path from 'path';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import type { AutolinkingResolutionsCache } from '../utils/autolinkingResolutions';
 import {
   ExpoExportMissingError,
   scanNativeModuleResolutions,
 } from '../utils/autolinkingResolutions';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 const STORE_PATH = /node_modules[\\/]\.(?:bun|pnpm)[\\/]/;
 

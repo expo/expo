@@ -6,9 +6,18 @@
 
 ### 🎉 New features
 
+- [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
+- Add filtering by `isFavorite` to `Query` ([#45769](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
+- Add `Query.exeForMetadata()` for cheap bulk fetch ([#46485](https://github.com/expo/expo/pull/46485) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🐛 Bug fixes
 
+- Add `accessPrivileges` to `PermissionResponse` type ([#47177](https://github.com/expo/expo/pull/47177) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
+
+- [android] Add `getAssetContentUriAsync` for legacy ID migration ([#46854](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
+- Re-organize TS code ([#45953](https://github.com/expo/expo/pull/45953) by [@Wenszel](https://github.com/Wenszel))
 
 ## 56.0.6 — 2026-05-21
 

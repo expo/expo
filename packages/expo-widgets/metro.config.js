@@ -69,6 +69,7 @@ const buildConfig = {
   },
   serializer: {
     ...config.serializer,
+    getModulesRunBeforeMainModule: () => [],
     getPolyfills: () => [],
   },
 };

@@ -420,6 +420,19 @@ export const onSizeChanged = (handler: (size: { width: number; height: number })
     handler(size)
   );
 
+/**
+ * Calls the handler whenever the composable is positioned, with its position and size.
+ * `x` and `y` are relative to the window. All values are in dp.
+ * @param handler - Function called with the new layout.
+ */
+export const onGloballyPositioned = (
+  handler: (layout: { x: number; y: number; width: number; height: number }) => void
+) =>
+  createModifierWithEventListener(
+    'onGloballyPositioned',
+    (layout: { x: number; y: number; width: number; height: number }) => handler(layout)
+  );
+
 // =============================================================================
 // Utility Modifiers
 // =============================================================================

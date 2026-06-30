@@ -122,6 +122,39 @@ export default function DynamicBottomSheetExample() {
 }
 ```
 
+### Scrollable React Native content
+
+The bottom sheet supports a React Native `FlatList` or `ScrollView` (or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list)) as a child for scrollable content. With `nestedScrollEnabled`, the list scrolls its own content first. Once it reaches the top edge, the remaining drag moves the sheet. `BottomSheetFlatList` and `BottomSheetScrollView` are also exported for `@gorhom/bottom-sheet` compatibility, but they are plain re-exports of the React Native components.
+
+```tsx BottomSheetScrollableExample.tsx
+import { useRef } from 'react';
+import { Button, FlatList, Text, View } from 'react-native';
+import BottomSheet from '@expo/ui/community/bottom-sheet';
+
+const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
+
+export default function BottomSheetScrollableExample() {
+  const sheetRef = useRef<BottomSheet>(null);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Button title="Open" onPress={() => sheetRef.current?.snapToIndex(0)} />
+
+      <BottomSheet ref={sheetRef} snapPoints={['50%', '90%']} index={-1} enablePanDownToClose>
+        <FlatList
+          nestedScrollEnabled
+          style={{ flex: 1 }}
+          data={DATA}
+          keyExtractor={item => item}
+          contentContainerStyle={{ padding: 24 }}
+          renderItem={({ item }) => <Text style={{ paddingVertical: 16 }}>{item}</Text>}
+        />
+      </BottomSheet>
+    </View>
+  );
+}
+```
+
 ## Platform behavior
 
 `@gorhom/bottom-sheet` renders inline at the bottom of its parent view. This component uses native modal presentation on Android and iOS, and a drawer overlay on web.
@@ -135,6 +168,8 @@ This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and anim
 | No `snapPoints`        | Fits content                                   | Fits content                      | Fits content                  |
 | Pan down to close      | Also enables back button and scrim tap dismiss | Also enables backdrop tap dismiss | Enables drawer dismiss        |
 | Persistent inline peek | Not supported                                  | Not supported                     | Not supported                 |
+
+> **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
 
 ## Supported exports
 

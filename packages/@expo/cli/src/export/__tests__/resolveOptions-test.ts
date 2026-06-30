@@ -42,14 +42,14 @@ describe(resolveOptionsAsync, () => {
 
   it(`resolves the tvos platform`, async () => {
     jest.mocked(getConfig).mockReturnValueOnce({
-      // @ts-expect-error
+      // `tvos` is an out-of-tree platform not present in the `ExpoConfig` platform union.
       exp: {
         platforms: ['ios', 'android', 'tvos'],
         experiments: {
           outOfTreePlatforms: true,
         },
       },
-    });
+    } as unknown as ReturnType<typeof getConfig>);
     await expect(resolveOptionsAsync('/', { '--platform': ['tvos'] })).resolves.toMatchObject({
       platforms: ['tvos'],
     });

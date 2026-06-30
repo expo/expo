@@ -23,7 +23,7 @@ import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservatio
 import { id, scrollPosition } from './scrollPosition';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
-import { widgetAccentedRenderingMode, widgetURL } from './widgets';
+import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -190,13 +190,17 @@ export const onDisappear = (handler: () => void) =>
   createModifierWithEventListener('onDisappear', handler);
 
 /**
- * Calls the handler whenever the view's geometry changes. Sizes are in points.
- * @param handler - Function called with the new size.
+ * Calls the handler whenever the view's geometry changes, with its position and size.
+ * `x` and `y` are in the global coordinate space (relative to the window); all values are in points.
+ * @param handler - Function called with the new frame.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
  */
-export const onGeometryChange = (handler: (size: { width: number; height: number }) => void) =>
-  createModifierWithEventListener('onGeometryChange', (size: { width: number; height: number }) =>
-    handler(size)
+export const onGeometryChange = (
+  handler: (frame: { x: number; y: number; width: number; height: number }) => void
+) =>
+  createModifierWithEventListener(
+    'onGeometryChange',
+    (frame: { x: number; y: number; width: number; height: number }) => handler(frame)
   );
 
 /**
@@ -462,6 +466,65 @@ export const hidden = (hidden: boolean = true) => createModifier('hidden', { hid
 export const disabled = (disabled: boolean = true) => createModifier('disabled', { disabled });
 
 /**
+ * Adds a redaction reason to this view hierarchy, replacing rendered content
+ * with placeholders. Useful for skeleton loading states. Maps to SwiftUI's
+ * `redacted(reason:)`.
+ *
+ * `placeholder` redacts the whole subtree; `privacy` and `invalidated` redact
+ * only descendants marked `privacySensitive()` or `invalidatableContent()`.
+ * Reasons are additive and can be combined in an array; use `unredacted()` to
+ * exempt a subtree. The `invalidated` reason requires iOS 17+.
+ *
+ * @param reasons - The redaction reason or reasons to apply (an empty array applies none). Defaults to `'placeholder'`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/redacted(reason:)).
+ */
+export const redacted = (
+  reasons:
+    | 'placeholder'
+    | 'privacy'
+    | 'invalidated'
+    | ('placeholder' | 'privacy' | 'invalidated')[] = 'placeholder'
+) =>
+  createModifier('redacted', {
+    reasons: Array.isArray(reasons) ? reasons : [reasons],
+  });
+
+/**
+ * Removes any redaction reason inherited from an ancestor `redacted(...)` for
+ * this subtree. The counterpart to `redacted`; use it to exempt specific content
+ * from a redacted parent. Maps to SwiftUI's `unredacted()`.
+ *
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/unredacted()).
+ */
+export const unredacted = () => createModifier('unredacted', {});
+
+/**
+ * Marks the view as containing sensitive, private data, redacted only when the
+ * `privacy` redaction reason is applied to an ancestor (for example `redacted('privacy')`).
+ * It has no effect on its own and does not auto-redact screenshots. Maps to
+ * SwiftUI's `privacySensitive(_:)`.
+ *
+ * @param sensitive - Whether the view contains sensitive content. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/privacysensitive(_:)).
+ */
+export const privacySensitive = (sensitive: boolean = true) =>
+  createModifier('privacySensitive', { sensitive });
+
+/**
+ * Marks the view's content as invalidatable. It is restyled with the "pending
+ * update" appearance only when the `invalidated` redaction reason is applied to
+ * an ancestor (for example `redacted('invalidated')`). Maps to SwiftUI's
+ * `invalidatableContent(_:)`.
+ *
+ * @param invalidatable - Whether the content can be invalidated. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/invalidatablecontent(_:)).
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ */
+export const invalidatableContent = (invalidatable: boolean = true) =>
+  createModifier('invalidatableContent', { invalidatable });
+
+/**
  * Sets the z-index (display order) of a view.
  * @param index - The z-index value.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/zindex(_:)).
@@ -560,6 +623,14 @@ export const toggleStyle = (style: 'automatic' | 'switch' | 'button') =>
  */
 export const controlSize = (size: 'mini' | 'small' | 'regular' | 'large' | 'extraLarge') =>
   createModifier('controlSize', { size });
+
+/**
+ * Scales SF Symbols within this view relative to the surrounding text, using one of the standard sizes.
+ * @param scale - The relative image scale.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/imagescale(_:)).
+ */
+export const imageScale = (scale: 'small' | 'medium' | 'large') =>
+  createModifier('imageScale', { scale });
 
 /**
  * Sets the style for labels within this view.
@@ -732,6 +803,16 @@ export const accessibilityValue = (value: string) =>
   createModifier('accessibilityValue', { value });
 
 /**
+ * Sets alternative spoken phrases that Voice Control uses to refer to the view.
+ * Each label is read as a `Text` element on iOS. For example, an "End" button
+ * might offer "Hang up" so users can trigger it by saying that phrase.
+ * @param inputLabels - The spoken phrases that select the view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityinputlabels(_:)).
+ */
+export const accessibilityInputLabels = (inputLabels: string[]) =>
+  createModifier('accessibilityInputLabels', { inputLabels });
+
+/**
  * Sets an accessibility identifier for the view.
  *
  * Unlike `accessibilityLabel`, this value is for UI testing and is not visible
@@ -753,6 +834,22 @@ export const accessibilityIdentifier = (identifier: string) =>
  */
 export const accessibilityHidden = (hidden: boolean = true) =>
   createModifier('accessibilityHidden', { hidden });
+
+/**
+ * Controls how a view's child accessibility elements are exposed, mirroring SwiftUI's
+ * `accessibilityElement(children:)`. It creates a new accessibility element (or modifies
+ * the existing one) and applies the chosen behavior to the subtree.
+ *
+ * Complements `accessibilityHidden`, which hides a single leaf, by acting on the whole subtree.
+ *
+ * @param children - How the child accessibility elements are treated:
+ * - `ignore` - hide the children; the new element starts with no properties, so pair it with `accessibilityLabel` (default).
+ * - `combine` - merge the children's accessibility properties into the new element.
+ * - `contain` - keep the children as accessible elements, grouped in the new element as a container (navigated in order).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityelement(children:)).
+ */
+export const accessibilityElement = (children: 'ignore' | 'combine' | 'contain' = 'ignore') =>
+  createModifier('accessibilityElement', { children });
 
 /**
  * Sets layout priority for the view.
@@ -893,6 +990,19 @@ export const truncationMode = (mode: 'head' | 'middle' | 'tail') =>
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/allowstightening(_:)).
  */
 export const allowsTightening = (value: boolean) => createModifier('allowsTightening', { value });
+/**
+ * Sets the minimum amount that text in this view scales down to fit in the available space.
+ *
+ * Use this modifier if the text you place in a view doesn't fit and it's okay if the text shrinks
+ * to accommodate. For example, a label with a minimum scale factor of `0.5` draws its text in a
+ * font size as small as half of the actual font if needed.
+ * @param factor - A fraction between `0` and `1` (including `0` and `1`) that specifies the amount
+ * of text to draw. For example, a value of `0.5` draws the text in a font size as small as half the
+ * actual font if needed.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/minimumscalefactor(_:)).
+ */
+export const minimumScaleFactor = (factor: number) =>
+  createModifier('minimumScaleFactor', { factor });
 /**
  * Sets the spacing, or kerning, between characters for the text in this view.
  * @default 0
@@ -1416,6 +1526,10 @@ export type BuiltInModifier =
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>
+  | ReturnType<typeof redacted>
+  | ReturnType<typeof unredacted>
+  | ReturnType<typeof privacySensitive>
+  | ReturnType<typeof invalidatableContent>
   | ReturnType<typeof zIndex>
   | ReturnType<typeof blur>
   | ReturnType<typeof brightness>
@@ -1428,6 +1542,7 @@ export type BuiltInModifier =
   | ReturnType<typeof buttonBorderShape>
   | ReturnType<typeof toggleStyle>
   | ReturnType<typeof controlSize>
+  | ReturnType<typeof imageScale>
   | ReturnType<typeof labelStyle>
   | ReturnType<typeof labelsHidden>
   | ReturnType<typeof textFieldStyle>
@@ -1435,8 +1550,10 @@ export type BuiltInModifier =
   | ReturnType<typeof accessibilityLabel>
   | ReturnType<typeof accessibilityHint>
   | ReturnType<typeof accessibilityValue>
+  | ReturnType<typeof accessibilityInputLabels>
   | ReturnType<typeof accessibilityIdentifier>
   | ReturnType<typeof accessibilityHidden>
+  | ReturnType<typeof accessibilityElement>
   | ReturnType<typeof layoutPriority>
   | ReturnType<typeof mask>
   | ReturnType<typeof overlay>
@@ -1503,6 +1620,7 @@ export type BuiltInModifier =
   | ReturnType<typeof symbolEffect>
   | ReturnType<typeof widgetAccentedRenderingMode>
   | ReturnType<typeof widgetURL>
+  | ReturnType<typeof activityBackgroundTint>
   | ReturnType<typeof containerBackground>;
 
 /**

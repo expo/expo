@@ -4,15 +4,6 @@ import type { ModPlatform } from '@expo/config-plugins';
 import { updateXcodeProject } from '@expo/inline-modules';
 import chalk from 'chalk';
 
-import {
-  clearNativeFolder,
-  promptToClearMalformedNativeProjectsAsync,
-  maybeBailOnNativeModuleAsync,
-} from './clearNativeFolder';
-import { configureProjectAsync } from './configureProjectAsync';
-import { ensureConfigAsync } from './ensureConfigAsync';
-import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
-import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
@@ -21,6 +12,16 @@ import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { confirmAsync } from '../utils/prompts';
+import {
+  clearNativeFolder,
+  getExistingNativePlatformsAsync,
+  promptToClearMalformedNativeProjectsAsync,
+  maybeBailOnNativeModuleAsync,
+} from './clearNativeFolder';
+import { configureProjectAsync } from './configureProjectAsync';
+import { ensureConfigAsync } from './ensureConfigAsync';
+import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
+import { updateFromTemplateAsync } from './updateFromTemplate';
 
 const debug = require('debug')('expo:prebuild') as typeof console.log;
 
@@ -85,17 +86,22 @@ export async function prebuildAsync(
     }
   }
   if (options.clean) {
-    const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
-    // Clean the project folders...
-    if (await maybeBailOnGitStatusAsync()) {
-      return null;
+    // Only run the destructive-path guards when there are native folders to delete, so a
+    // first-ever prebuild doesn't prompt on git status or native module detection.
+    const existingPlatforms = await getExistingNativePlatformsAsync(projectRoot, options.platforms);
+    if (existingPlatforms.length) {
+      const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
+      // Clean the project folders...
+      if (await maybeBailOnGitStatusAsync()) {
+        return null;
+      }
+      // Check if the target project is actually a native module, which we don't want to erase
+      if (await maybeBailOnNativeModuleAsync(projectRoot)) {
+        return null;
+      }
+      // Clear the native folders before syncing
+      await clearNativeFolder(projectRoot, options.platforms);
     }
-    // Check if the target project is actually a native module, which we don't want to erase
-    if (await maybeBailOnNativeModuleAsync(projectRoot)) {
-      return null;
-    }
-    // Clear the native folders before syncing
-    await clearNativeFolder(projectRoot, options.platforms);
   } else {
     // Check if the existing project folders are malformed.
     await promptToClearMalformedNativeProjectsAsync(projectRoot, options.platforms);
@@ -187,6 +193,8 @@ export async function prebuildAsync(
   if (inlineModules && options.platforms.includes('ios')) {
     await updateXcodeProject(projectRoot, {
       watchedDirectories: inlineModules.watchedDirectories ?? [],
+      xcodeProjectTargets: inlineModules.xcodeProjectTargets,
+      name: exp.name,
     });
   }
 

@@ -12,7 +12,7 @@ import Reanimated, {
 import Colors from '../../constants/Colors';
 
 // TODO: (alan) Moving this import causes `Platform.OS` to be undefined?
-// eslint-disable-next-line import/order
+// oxfmt-ignore
 import { AudioPlayer, useAudioSampleListener } from 'expo-audio';
 
 // for some reason, iOS returns much smaller sample values

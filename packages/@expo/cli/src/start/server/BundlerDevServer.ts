@@ -1,14 +1,6 @@
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
-import { AsyncNgrok } from './AsyncNgrok';
-import { AsyncWsTunnel } from './AsyncWsTunnel';
-import { Bonjour } from './Bonjour';
-import DevToolsPluginManager from './DevToolsPluginManager';
-import { DevelopmentSession } from './DevelopmentSession';
-import type { CreateURLOptions } from './UrlCreator';
-import { UrlCreator } from './UrlCreator';
-import type { PlatformBundlers } from './platformBundlers';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
@@ -17,6 +9,14 @@ import { CommandError } from '../../utils/errors';
 import { isInteractive } from '../../utils/interactive';
 import { openBrowserAsync } from '../../utils/open';
 import type { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
+import { AsyncNgrok } from './AsyncNgrok';
+import { AsyncWsTunnel } from './AsyncWsTunnel';
+import { Bonjour } from './Bonjour';
+import DevToolsPluginManager from './DevToolsPluginManager';
+import { DevelopmentSession } from './DevelopmentSession';
+import type { CreateURLOptions } from './UrlCreator';
+import { UrlCreator } from './UrlCreator';
+import type { PlatformBundlers } from './platformBundlers';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
@@ -256,16 +256,25 @@ export abstract class BundlerDevServer {
     this.notifier.startObserving();
   }
 
-  /** Create ngrok instance and start the tunnel server. Exposed for testing. */
+  /** Create the tunnel instance and start the tunnel server. Exposed for testing. */
   public async _startTunnelAsync(): Promise<AsyncNgrok | AsyncWsTunnel | null> {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
     debug('[tunnel] connect to port: ' + port);
-    this.tunnel = envIsWebcontainer()
-      ? new AsyncWsTunnel(this.projectRoot, port)
-      : new AsyncNgrok(this.projectRoot, port);
+    this.tunnel = this._createTunnel(port);
     await this.tunnel.startAsync();
     return this.tunnel;
+  }
+
+  /** Resolve which tunnel implementation to use, without starting it. */
+  private _createTunnel(port: number): AsyncNgrok | AsyncWsTunnel {
+    const useV2Tunnel = env.EXPO_UNSTABLE_TUNNEL_V2 || envIsWebcontainer();
+    if (useV2Tunnel) {
+      const useExpoAccount = !!env.EXPO_UNSTABLE_TUNNEL_V2;
+      return new AsyncWsTunnel(this.projectRoot, port, { useExpoAccount });
+    }
+
+    return new AsyncNgrok(this.projectRoot, port);
   }
 
   protected async startDevSessionAsync() {

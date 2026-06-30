@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Add missing `publishConfig.executableFiles` ([#46074](https://github.com/expo/expo/pull/46074) by [@kitten](https://github.com/kitten))
+- Fix `prepublishOnly` wiping `build/` for packages that compile with `expo-build`, by rebuilding via the package's own `build` script instead of `tsc`. ([#47344](https://github.com/expo/expo/pull/47344) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
-import { generateCrossLinksSection, toBlockquote } from './shared.js';
+import { generateCrossLinksSection, getMarkdownUrl, toBlockquote } from './shared.js';
 import { EXPO_DESCRIPTION, PAGE_DESCRIPTION_OVERRIDES } from './transforms/descriptions.js';
 import { MISCONCEPTIONS_SECTION } from './transforms/misconceptions.js';
 import { PERFORMANCE_SECTION } from './transforms/performance.js';
@@ -109,7 +109,7 @@ function processPageData(pageHref, pageName) {
   return title || pageName
     ? {
         title: title ?? pageName,
-        url: `https://docs.expo.dev${pageHref}`,
+        url: getMarkdownUrl(pageHref),
         description: finalDescription,
       }
     : null;

@@ -18,7 +18,7 @@ export function PageCliVersion({ cliVersion, className }: Props) {
       <div
         className="flex items-center justify-center gap-1.5 text-sm text-secondary"
         aria-hidden="true">
-        <TerminalSquareDuotoneIcon className="icon-sm text-icon-secondary" />
+        <TerminalSquareDuotoneIcon aria-hidden="true" className="icon-sm text-icon-secondary" />
         CLI version:
         <Tag name={cliVersion} className="select-auto" />
         <span className="sr-only">{`CLI version ${cliVersion}`}</span>

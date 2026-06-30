@@ -28,6 +28,7 @@
     "public",
     "pages/versions/latest",
     "next-env.d.ts",
-    "ui/components/EASCLIReference/data/eas-cli-commands.json"
+    "ui/components/EASCLIReference/data/eas-cli-commands.json",
+    "components/plugins/permissions/data/android.json"
   ]
 }

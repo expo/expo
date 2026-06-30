@@ -2,7 +2,7 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-05-29T10:56:22.852Z"
+    "fetchedAt": "2026-06-27T08:19:06.017Z"
   },
   "totalSkills": 16,
   "skills": [
@@ -38,13 +38,18 @@
     },
     {
       "name": "expo-deployment",
-      "description": "Deploying Expo apps to iOS App Store, Android Play Store, web hosting, and API routes.",
+      "description": "Deploy Expo apps to production with EAS — build and submit to the iOS App Store, Google Play Store, and TestFlight, configure eas.json build and submit profiles, manage app versions and build numbers, publish App Store metadata and ASO, and deploy web bundles and API routes via EAS Hosting. Use whenever the user is preparing a production build, running eas build or eas submit, shipping to TestFlight, releasing or rolling out to the app stores, bumping version or build numbers, or setting up store listing metadata for an Expo app.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-deployment/SKILL.md"
     },
     {
       "name": "expo-dev-client",
       "description": "Build and distribute Expo development clients locally or via TestFlight.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-dev-client/SKILL.md"
+    },
+    {
+      "name": "expo-examples",
+      "description": "Expo's official example projects — the expo/examples repo of ~70 `with-*` integrations (Stripe, Clerk, Supabase, OpenAI, maps, Reanimated, SQLite, Skia, NativeWind, and more). Use when integrating a third-party library or service into an existing Expo app and you want the canonical, version-matched pattern to adapt, or when scaffolding a new project from one with `npx create-expo --example`.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-examples/SKILL.md"
     },
     {
       "name": "expo-module",
@@ -62,14 +67,9 @@
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-tailwind-setup/SKILL.md"
     },
     {
-      "name": "expo-ui-jetpack-compose",
-      "description": "`@expo/ui/jetpack-compose` package lets you use Jetpack Compose Views and modifiers in your app.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui-jetpack-compose/SKILL.md"
-    },
-    {
-      "name": "expo-ui-swift-ui",
-      "description": "`@expo/ui/swift-ui` package lets you use SwiftUI Views and modifiers in your app.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui-swift-ui/SKILL.md"
+      "name": "expo-ui",
+      "description": "Build native UI with the @expo/ui package: real SwiftUI on iOS and Jetpack Compose on Android rendered from React in an Expo or React Native app. Covers universal cross-platform components (Host, Column, Row, Button, Text, List, and more imported from @expo/ui), drop-in replacements for popular React Native community libraries (BottomSheet, DateTimePicker, Slider, Menu, etc.), and platform-specific SwiftUI (@expo/ui/swift-ui, iOS only) and Jetpack Compose (@expo/ui/jetpack-compose, Android only) trees and modifiers. Use when adding or reviewing @expo/ui Host/RNHostView trees, building native-feeling UI where standard React Native components fall short (grouped settings forms with toggles, sections, menus, sheets, pickers, sliders), choosing between universal and platform-specific components, or replacing an RN community UI library with a native @expo/ui equivalent. Not for custom native modules, Expo Router navigation, Reanimated, or data fetching.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui/SKILL.md"
     },
     {
       "name": "native-data-fetching",
