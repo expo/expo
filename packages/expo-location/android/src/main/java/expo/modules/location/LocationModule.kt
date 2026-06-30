@@ -770,7 +770,9 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       suspendCancellableCoroutine { continuation ->
         Geocoder(mContext, Locale.getDefault()).getFromLocationName(address, 1) { addresses ->
-          val results = addresses.mapNotNull { address -> address?.toGeocodeResponse() }
+          val results = addresses
+            .filterNotNull()
+            .mapNotNull { address -> address.toGeocodeResponse() }
           continuation.resume(results)
         }
       }
@@ -778,15 +780,13 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       withContext(Dispatchers.IO) {
         @Suppress("DEPRECATION") // When minSdkVersion is 33, this code will be removed and the above code will be used instead.
         val addresses = Geocoder(mContext, Locale.getDefault()).getFromLocationName(address, 1).orEmpty()
-        addresses.mapNotNull { it.toGeocodeResponse() }
+        addresses.filterNotNull()
+          .mapNotNull { it.toGeocodeResponse() }
       }
     }
   }
 
-  private fun Address?.toGeocodeResponse(): GeocodeResponse? {
-    if (this == null) {
-      return null
-    }
+  private fun Address.toGeocodeResponse(): GeocodeResponse? {
     val newLocation = Location(LocationManager.GPS_PROVIDER)
     newLocation.latitude = latitude
     newLocation.longitude = longitude
