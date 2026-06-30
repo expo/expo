@@ -49,6 +49,9 @@ xcuserdata
 .gradle
 .idea
 
+# Kotlin compiler daemon session files
+.kotlin/
+
 # Eclipse
 .project
 .settings
