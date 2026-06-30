@@ -77,7 +77,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
     menuAction = UIMenu(title: "", image: nil, options: [], children: [])
     super.init(appContext: appContext)
     clipsToBounds = true
-    baseUiAction = UIAction(title: "", handler: { _ in self.onSelected() })
+    baseUiAction = UIAction(title: "", handler: { [weak self] _ in self?.onSelected() })
   }
 
   func updateMenu() {
