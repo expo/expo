@@ -6,13 +6,13 @@ import java.util.*
 object LanguageUtils {
   private val countryISOCodes: Map<String, Locale> by lazy {
     Locale.getISOCountries().associate { country ->
-      val locale = Locale("", country)
+      val locale = Locale.Builder().setRegion(country).build()
       locale.isO3Country.uppercase(locale) to locale
     }
   }
   private val languageISOCodes: Map<String, Locale> by lazy {
     Locale.getISOLanguages().associate { language ->
-      val locale = Locale(language)
+      val locale = Locale.Builder().setLanguage(language).build()
       locale.isO3Language to locale
     }
   }
