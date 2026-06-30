@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [Android] Apply the `android.cmakeVersion` build property to the app and all autolinked native modules. ([#47377](https://github.com/expo/expo/issues/47377) by [@zoontek](https://github.com/zoontek))
 - Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
 - Added support for compile-only inline module files, which are compiled into the target without being registered as Expo modules. ([#46969](https://github.com/expo/expo/pull/46969) by [@behenate](https://github.com/behenate))
 
