@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Add `android.cmakeVersion` to override the CMake version used to build native code. ([#47377](https://github.com/expo/expo/issues/47377) by [@zoontek](https://github.com/zoontek))
+- [Android] Add `android.cmakeVersion` to override the CMake version used to build native code. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes
 
