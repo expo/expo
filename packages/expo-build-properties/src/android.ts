@@ -43,6 +43,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propValueGetter: (config) => config.android?.buildToolsVersion,
     },
     {
+      propName: 'android.cmakeVersion',
+      propValueGetter: (config) => config.android?.cmakeVersion,
+    },
+    {
       propName: 'android.kotlinVersion',
       propValueGetter: (config) => config.android?.kotlinVersion,
     },
