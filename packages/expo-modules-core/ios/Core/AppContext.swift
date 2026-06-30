@@ -670,8 +670,13 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     if moduleRegistry.has(moduleWithName: "ExpoGo") {
       NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
     } else {
-      DispatchQueue.main.async {
-        RCTTriggerReloadCommandListeners(reason)
+      // Must run on the main thread (see #31789), but synchronously when already there — deferring
+      // via `DispatchQueue.main.async` deadlocks the bridgeless reload against TurboModule teardown.
+      let trigger = { RCTTriggerReloadCommandListeners(reason) }
+      if Thread.isMainThread {
+        trigger()
+      } else {
+        DispatchQueue.main.async(execute: trigger)
       }
     }
   }
