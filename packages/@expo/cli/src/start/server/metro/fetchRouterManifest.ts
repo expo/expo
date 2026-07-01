@@ -88,5 +88,11 @@ export function inflateManifest(json: RoutesManifest<string>): RoutesManifest<Re
         namedRegex: new RegExp(value.namedRegex),
       };
     }),
+    pageHeaders: json.pageHeaders?.map((rule) => {
+      return {
+        ...rule,
+        namedRegex: new RegExp(rule.namedRegex),
+      };
+    }),
   };
 }
