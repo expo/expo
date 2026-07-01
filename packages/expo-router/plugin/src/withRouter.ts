@@ -56,6 +56,13 @@ type RewriteConfig = {
   methods?: HttpMethod[];
 };
 
+type PageHeaderConfig = {
+  /** The path to match for the headers to apply */
+  source: string;
+  /** Response headers to apply for paths matching `source` */
+  headers: Record<string, string | string[]>;
+};
+
 export type Props = {
   /** Production origin URL where assets in the public folder are hosted. The fetch function is polyfilled to support relative requests from this origin in production, development origin is inferred using the Expo CLI development server. */
   origin?: string | boolean;
@@ -84,6 +91,8 @@ export type Props = {
   rewrites?: RewriteConfig[];
   /** A list of headers that are set on every route response from the server */
   headers?: Record<string, string | string[]>;
+  /** A list of headers that are set per-path on response from the server */
+  pageHeaders?: PageHeaderConfig[];
   /** Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config. */
   unstable_useServerMiddleware?: boolean;
   /** Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config. */
