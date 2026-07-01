@@ -75,8 +75,6 @@ test.describe('devtools-e2e', () => {
 
     await page.getByRole('button', { name: 'Open WebSocket' }).click();
 
-    // The welcome payload echoes the upgrade request URL. It must be plugin-relative — the
-    // `/_expo/plugins/devtools-e2e` prefix stripped, the `?source=webpage` query preserved.
     await expect(page.locator('#socket-log')).toContainText(
       'message: {"type":"welcome","message":"Connected to the Hello World plugin server.","pathname":"/ws","search":"?source=webpage"}'
     );
