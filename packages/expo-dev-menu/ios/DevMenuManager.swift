@@ -548,14 +548,16 @@ open class DevMenuManager: NSObject {
       lastReloadEventAt = now
       return
     }
+    guard let devToolsDelegate = getDevToolsDelegate() else {
+      return
+    }
     isReloading = true
     lastReloadEventAt = now
     // Clear the guard even if a new app context never registers, for example a failed reload.
     DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
       self?.isReloading = false
     }
-    let devToolsDelegate = getDevToolsDelegate()
-    devToolsDelegate?.reload()
+    devToolsDelegate.reload()
   }
 
   func togglePerformanceMonitor() {
