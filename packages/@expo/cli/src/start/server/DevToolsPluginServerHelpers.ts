@@ -15,15 +15,41 @@ export type DevToolsPluginRequestHandler = (
 
 /**
  * Per-connection WebSocket handler exported by a plugin's `serverEntryPoint`. Receives the
- * connected `ws` socket, the upgrade `request`, and the `WebSocketServer` the connection belongs
- * to (use `server.clients` to broadcast). Mirrors the `ws` `'connection'` event so plugin authors
- * use the familiar `socket.on('message', ...)` / `socket.send(...)` API.
+ * connected `ws` socket, the upgrade `request` as a fetch API `Request` (matching the
+ * `requestHandler` request object), and the `WebSocketServer` the connection belongs to (use
+ * `server.clients` to broadcast). Mirrors the `ws` `'connection'` event so plugin authors use the
+ * familiar `socket.on('message', ...)` / `socket.send(...)` API.
  */
 export type DevToolsPluginWebSocketHandler = (
   socket: WebSocket,
-  request: IncomingMessage,
+  request: Request,
   server: WebSocketServer
 ) => void;
+
+/**
+ * Converts a Node.js WebSocket upgrade request into a fetch API `Request` so plugin WebSocket
+ * handlers receive the same web-style, plugin-relative request object as the fetch
+ * `requestHandler`. The upgrade arrives with the full mount path (`/_expo/plugins/<name>/<route>`),
+ * so we swap the pathname for the plugin-relative `route` (preserving the query string), mirroring
+ * how the HTTP middleware strips the endpoint prefix before invoking the fetch handler. Upgrade
+ * requests are always bodyless `GET`s, so only the URL and headers are carried over.
+ */
+function convertUpgradeRequest(request: IncomingMessage, route: string): Request {
+  const proto = 'encrypted' in request.socket && !!request.socket.encrypted ? 'https' : 'http';
+  const origin = `${proto}://${request.headers.host}`;
+  const { search } = new URL(request.url ?? '/', origin);
+  const url = new URL(`${route}${search}`, origin);
+  const headers = new Headers();
+  const { rawHeaders } = request;
+  for (let index = 0; index < rawHeaders.length; index += 2) {
+    const name = rawHeaders[index];
+    const value = rawHeaders[index + 1];
+    if (name != null && value != null) {
+      headers.append(name, value);
+    }
+  }
+  return new Request(url.href, { method: request.method, headers });
+}
 
 export async function loadRequestHandlerAsync({
   packageName,
@@ -70,10 +96,13 @@ export async function loadWebSocketServerAsync({
             `must be a function (socket, request, server) => void.`
         );
       }
-      const server = new WebSocketServer({ noServer: true });
-      server.on('connection', (socket, request) => handler(socket, request, server));
       // Routes are mounted relative to the plugin endpoint, so they must be absolute.
-      return [route.startsWith('/') ? route : `/${route}`, server];
+      const normalizedRoute = route.startsWith('/') ? route : `/${route}`;
+      const server = new WebSocketServer({ noServer: true });
+      server.on('connection', (socket, request) =>
+        handler(socket, convertUpgradeRequest(request, normalizedRoute), server)
+      );
+      return [normalizedRoute, server];
     })
   );
 }
