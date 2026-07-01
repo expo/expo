@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import {
+  getAppVersion,
   getNativeVersion,
   getRuntimeVersionAsync,
   getSDKVersion,
@@ -149,6 +150,35 @@ describe(getUpdateUrl, () => {
   });
 });
 
+describe(getAppVersion, () => {
+  it('returns the top-level version when no platform is provided', () => {
+    expect(getAppVersion({ version: '2.0.0' })).toBe('2.0.0');
+  });
+  it('returns the platform-specific version when it is set', () => {
+    expect(getAppVersion({ version: '2.0.0', ios: { version: '3.1.0' } }, 'ios')).toBe('3.1.0');
+    expect(
+      getAppVersion({ version: '2.0.0', android: { version: '4.2.0' } }, 'android')
+    ).toBe('4.2.0');
+  });
+  it('falls back to top-level version when the platform-specific override is unset', () => {
+    expect(getAppVersion({ version: '2.0.0' }, 'ios')).toBe('2.0.0');
+    expect(getAppVersion({ version: '2.0.0' }, 'android')).toBe('2.0.0');
+  });
+  it('does not cross platforms — ios override does not affect android and vice versa', () => {
+    expect(getAppVersion({ version: '2.0.0', ios: { version: '3.1.0' } }, 'android')).toBe(
+      '2.0.0'
+    );
+    expect(
+      getAppVersion({ version: '2.0.0', android: { version: '4.2.0' } }, 'ios')
+    ).toBe('2.0.0');
+  });
+  it('falls back to 1.0.0 when nothing is set', () => {
+    expect(getAppVersion({})).toBe('1.0.0');
+    expect(getAppVersion({}, 'ios')).toBe('1.0.0');
+    expect(getAppVersion({}, 'android')).toBe('1.0.0');
+  });
+});
+
 describe(getNativeVersion, () => {
   const version = '2.0.0';
   const versionCode = 42;
@@ -163,6 +193,30 @@ describe(getNativeVersion, () => {
       `${version}(${buildNumber})`
     );
   });
+  it('prefers ios.version over the top-level version on ios', () => {
+    expect(
+      getNativeVersion(
+        { version, ios: { version: '3.1.0', buildNumber } },
+        'ios'
+      )
+    ).toBe(`3.1.0(${buildNumber})`);
+  });
+  it('prefers android.version over the top-level version on android', () => {
+    expect(
+      getNativeVersion(
+        { version, android: { version: '4.2.0', versionCode } },
+        'android'
+      )
+    ).toBe(`4.2.0(${versionCode})`);
+  });
+  it('does not use ios.version when computing the android native version', () => {
+    expect(
+      getNativeVersion(
+        { version, ios: { version: '3.1.0' }, android: { versionCode } },
+        'android'
+      )
+    ).toBe(`${version}(${versionCode})`);
+  });
   it('throws an error if platform is not recognized', () => {
     const fakePlatform = 'doesnotexist';
     expect(() => {
@@ -171,6 +225,7 @@ describe(getNativeVersion, () => {
   });
   it('uses the default version if the version is missing', () => {
     expect(getNativeVersion({}, 'ios')).toBe('1.0.0(1)');
+    expect(getNativeVersion({}, 'android')).toBe('1.0.0(1)');
   });
   it('uses the default buildNumber if the platform is ios and the buildNumber is missing', () => {
     expect(getNativeVersion({ version }, 'ios')).toBe(`${version}(1)`);
@@ -229,6 +284,34 @@ describe(getRuntimeVersionAsync, () => {
         'ios'
       )
     ).toBe(version);
+  });
+
+  it('honors ios.version for the appVersion policy on ios', async () => {
+    expect(
+      await getRuntimeVersionAsync(
+        '',
+        {
+          version: '1.0.0',
+          runtimeVersion: { policy: 'appVersion' },
+          ios: { version: '3.1.0' },
+        },
+        'ios'
+      )
+    ).toBe('3.1.0');
+  });
+
+  it('honors android.version for the appVersion policy on android', async () => {
+    expect(
+      await getRuntimeVersionAsync(
+        '',
+        {
+          version: '1.0.0',
+          runtimeVersion: { policy: 'appVersion' },
+          android: { version: '4.2.0' },
+        },
+        'android'
+      )
+    ).toBe('4.2.0');
   });
 
   it('works if the runtimeVersion is a fingerprint policy', async () => {
