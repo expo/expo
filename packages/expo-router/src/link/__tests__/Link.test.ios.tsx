@@ -634,7 +634,7 @@ describe('prefetch', () => {
     });
   });
 
-  it.each([false, true])('prefetches a protected route when guard is %s', (guard) => {
+  it('prefetches a guarded route with guard false without focusing (so it does not redirect)', () => {
     renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
@@ -642,7 +642,58 @@ describe('prefetch', () => {
       test: () => null,
       _layout: () => (
         <Stack>
-          <Stack.Protected guard={guard}>
+          <Stack.Protected guard={false}>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    // A guarded route is no longer dropped, so it can be prefetched like any other route. Prefetch
+    // does not focus it, so its guard redirect never fires — `test` sits in the state, unfocused.
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      routeNames: ['__root', '+not-found', '_sitemap'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            index: 0,
+            key: expect.any(String),
+            routeNames: ['test', 'index'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
+            ],
+            stale: false,
+          },
+        },
+      ],
+      stale: false,
+    });
+  });
+
+  it('does not throw an exception when prefetching a protected route with guard true', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard>
             <Stack.Screen name="test" />
           </Stack.Protected>
         </Stack>

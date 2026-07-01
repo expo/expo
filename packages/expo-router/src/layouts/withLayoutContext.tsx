@@ -34,6 +34,9 @@ export function useFilterScreenChildren(
     const customChildren: any[] = [];
 
     const screens: (ScreenProps & { name: string })[] = [];
+    const protectedScreens = new Set<string>();
+    // Guarded (guard=false) JS screens stay in `screens`; this maps their name to the redirect
+    // target of the innermost failing `Protected` (or `undefined` to use the navigator's anchor).
     const guardedRedirects = new Map<string, Href | undefined>();
 
     function flattenChild(child: ReactNode, exclude = false, redirectTo?: Href) {
@@ -60,6 +63,8 @@ export function useFilterScreenChildren(
       if (isProtectedReactElement(child)) {
         const guardFails = !child.props.guard;
         const excludeChildren = exclude || guardFails;
+        // The innermost failing guard's `redirectTo` wins; a passing guard keeps the target
+        // inherited from an outer failing guard.
         const childRedirectTo = guardFails ? child.props.redirectTo : redirectTo;
         Children.forEach(child.props.children, (protectedChild) => {
           flattenChild(protectedChild, excludeChildren, childRedirectTo);
@@ -100,6 +105,7 @@ export function useFilterScreenChildren(
     return {
       screens,
       children: customChildren,
+      protectedScreens,
       guardedRedirects,
     };
   }, [children]);
@@ -154,9 +160,12 @@ export function withLayoutContext<
       const contextKey = useContextKey();
       const node = useRouteNode();
 
-      const { screens, guardedRedirects } = useFilterScreenChildren(userDefinedChildren, {
-        contextKey,
-      });
+      const { screens, protectedScreens, guardedRedirects } = useFilterScreenChildren(
+        userDefinedChildren,
+        {
+          contextKey,
+        }
+      );
 
       const processed = processor ? processor(screens ?? []) : screens;
 

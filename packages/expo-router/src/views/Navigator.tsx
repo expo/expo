@@ -54,6 +54,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   const {
     screens,
     children: nonScreenChildren,
+    protectedScreens,
     guardedRedirects,
   } = useFilterScreenChildren(children, {
     isCustomNavigator: true,
@@ -109,7 +110,7 @@ function SlotNavigator(props: NavigatorProps<any>) {
   const node = useRouteNode();
 
   // Allows adding Screen components as children to configure routes.
-  const { screens, guardedRedirects } = useFilterScreenChildren([], {
+  const { screens, protectedScreens, guardedRedirects } = useFilterScreenChildren([], {
     contextKey,
   });
 

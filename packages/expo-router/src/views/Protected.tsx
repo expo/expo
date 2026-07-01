@@ -6,7 +6,10 @@ import type { Href } from '../types';
 
 export type ProtectedProps = {
   guard: boolean;
-  /** Where to redirect when `guard` is false. Defaults to the containing navigator's anchor. */
+  /**
+   * Where to redirect when `guard` is `false`. Same `Href` type as `Link` and `Redirect`.
+   * Defaults to the containing navigator's anchor (its `unstable_settings.anchor`), or `/`.
+   */
   redirectTo?: Href;
   children?: ReactNode;
 };
