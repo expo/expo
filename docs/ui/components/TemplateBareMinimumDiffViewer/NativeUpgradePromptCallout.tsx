@@ -53,11 +53,13 @@ export function NativeUpgradePromptCallout({
         theme="primary"
         size="sm"
         leftSlot={<ClipboardIcon aria-hidden="true" className="icon-sm" />}
-        disabled={copied}
-        className="shrink-0 justify-center border-palette-blue10 bg-palette-blue10 text-palette-blue1 dark:border-palette-blue9 dark:bg-palette-blue9 dark:text-palette-blue2 hocus:bg-palette-blue9 max-sm:w-full"
+        className="shrink-0 justify-center border-palette-blue11 bg-palette-blue11 text-palette-blue1 dark:border-palette-blue9 dark:bg-palette-blue9 dark:text-palette-blue2 dark:hocus:bg-palette-blue9 hocus:bg-palette-blue11 max-sm:w-full"
         onClick={onCopyPrompt}>
         {copied ? 'Copied!' : 'Copy prompt'}
       </Button>
+      <span role="status" aria-live="polite" className="sr-only">
+        {copied ? 'Prompt copied to clipboard' : ''}
+      </span>
     </div>
   );
 }
