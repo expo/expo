@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix native crash when passing a shared image ref (e.g. `expo-video`'s `VideoThumbnail`) to `ImageManipulator.manipulate()`. ([#47432](https://github.com/expo/expo/pull/47432) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26

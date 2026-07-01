@@ -10,7 +10,10 @@ public class ImageManipulatorModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoImageManipulator")
 
-    Function("manipulate") { (source: Either<URL, SharedRef<UIImage>>) -> ImageManipulatorContext in
+    // SharedRef is probed before URL: Either casts branches in declaration order, and probing
+    // a shared object against URL converts it through the asserting getAny(), which fatals on
+    // instances with function-valued properties (e.g. expo-video's VideoThumbnail).
+    Function("manipulate") { (source: Either<SharedRef<UIImage>, URL>) -> ImageManipulatorContext in
       let context = ImageManipulatorContext { [weak appContext] in
         guard let appContext else {
           throw Exceptions.AppContextLost()
