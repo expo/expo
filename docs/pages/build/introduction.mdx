@@ -1,161 +1,414 @@
----
-title: EAS Build
-sidebar_title: Introduction
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+Yash Classes - Student Management App
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+A comprehensive mobile application for managing student attendance, classes, fees, and parent communications for Yash Classes.
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { FAQ } from '~/ui/components/FAQ';
-import { Terminal } from '~/ui/components/Snippet';
 
-**EAS Build** is a hosted Expo Application Services (EAS) service that builds app binaries (also called [standalone apps](/more/glossary-of-terms/#standalone-app)) for your Expo and React Native projects.
+Features Implemented
 
-EAS Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+1. Class Management
 
-EAS Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
 
-## Quick start
+Add Classes: Create new classes with names and descriptions
 
-> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+Delete Classes: Remove classes from the system
 
-To build your app, run the following command:
+View Classes: Display all classes with quick access to student management
 
-<Terminal cmd={['$ eas build --platform all']} />
+Class Navigation: Easy navigation between classes and their students
 
-This command sends your project to EAS Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
 
-## Key features
+2. Student Management
 
-- Cloud builds for Android and iOS with consistent environments
-- Automatically provision and manage app signing credentials or use your own
-- Share [internal distribution](/build/internal-distribution/) builds with a URL
-- Automate builds with [build profiles](/build/eas-json/#build-profiles) in **eas.json** (named sets of build settings) and integrations with [EAS Workflows](/eas/workflows/get-started/) or [CI pipelines](/build/building-on-ci/)
-- Auto-submit successful builds to app stores via [`--auto-submit`](/build/automate-submissions/) and EAS Submit
-- First-class [`expo-updates` integration](/build/updates/) with per-profile channels and [runtime version](/eas-update/runtime-versions/) guidance
-- Reuse [development builds](/develop/development-builds/introduction/) across your team. When two team members run `eas build:dev` and the project fingerprint matches, the existing build is downloaded from EAS instead of creating a new one
-- Faster builds via [dependency caching and custom cache paths](/build-reference/caching/)
-- Install builds and updates on devices with [Expo Orbit](https://expo.dev/orbit)
 
-## When to use EAS Build
+Add Students: Add students to classes with details including:
+Student name
+Mobile number
+Parent name
+Parent mobile number
+Email address
 
-| Scenario                                                                             | Recommendation |
-| ------------------------------------------------------------------------------------ | -------------- |
-| Build production-ready binaries for app stores                                       | <YesIcon />    |
-| Share builds with testers via [internal distribution](/build/internal-distribution/) | <YesIcon />    |
-| Consistent builds across team members without local environment setup                | <YesIcon />    |
-| Automate builds from CI or [EAS Workflows](/eas/workflows/get-started/)              | <YesIcon />    |
-| Managed app signing credentials                                                      | <YesIcon />    |
-| Debugging native code locally                                                        | <NoIcon />     |
+Delete Students: Remove students from classes
 
-## Frequently asked questions
+View Students: Display all students in a class
 
-<FAQ>
+Student Details: Store and manage comprehensive student information
 
-<Collapsible summary="How do I share builds with my team before submitting to app stores?">
 
-Use [internal distribution](/build/internal-distribution/) to share builds with a URL. Set `"distribution": "internal"` in your [build profile](/build/eas-json/#build-profiles) in **eas.json** to generate installable Android Package (APK) files for Android or [ad hoc builds](/build/internal-distribution/) for iOS.
+3. Attendance Tracking
 
-</Collapsible>
 
-<Collapsible summary="Can I use EAS Build with existing React Native projects?">
+Mark Attendance: Mark students as present or absent
 
-Yes. EAS Build works with existing React Native projects created with `npx react-native init` or similar tools. See [Overview of using Expo with existing React Native apps](/bare/overview/) for more information.
+Date Selection: Navigate through dates to mark attendance for any day
 
-</Collapsible>
+Attendance History: View attendance records for all students
 
-<Collapsible summary="Does EAS Build handle app signing credentials?">
+Attendance Statistics: See overall attendance percentages and trends
 
-Yes. EAS Build can generate and manage Android [keystores](/app-signing/app-credentials/#android), iOS [provisioning profiles](/app-signing/app-credentials/#ios) and [distribution certificates](/app-signing/app-credentials/#ios), or use credentials you provide. See [App signing credentials](/app-signing/app-credentials/) for more information.
+Bulk Attendance: Mark attendance for entire classes at once
 
-</Collapsible>
+Filter Options: Filter attendance by status (Present/Absent/All)
 
-<Collapsible summary="Can I run builds locally instead of in the cloud?">
 
-Yes. Use [local builds](/build-reference/local-builds/) with `eas build --local` to run builds on your machine. This is useful for debugging or for security policies that require local builds.
+4. Fee Management
 
-</Collapsible>
 
-<Collapsible summary="Can I use EAS Build with EAS Workflows or CI pipelines?">
+Create Fees: Add fee records for students with:
+Fee amount
+Due date
+Description
+Status (Pending/Paid)
 
-Yes. EAS Build integrates with [EAS Workflows](/eas/workflows/get-started/) using the `build` job type. Add a build job to your workflow configuration, for example:
+Fee Tracking: Monitor pending and paid fees
 
-```yaml
-jobs:
-  build_ios:
-    type: build
-    params:
-      platform: ios
-```
+Mark as Paid: Update fee status when payment is received
 
-The build job supports builds for both platforms or conditional builds based on the branch:
+Fee Statistics: View total pending fees and payment status
 
-```yaml
-jobs:
-  build:
-    type: build
-    params:
-      platform: all
-      profile: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
-```
+Fee History: Track all fee transactions
 
-For more information and other usage examples, see the [EAS Workflows build job](/eas/workflows/pre-packaged-jobs#build).
 
-EAS Build supports [builds from GitHub](/build/building-from-github/) and [building on CI](/build/building-on-ci/) with any provider.
+5. Parent Communication
 
-</Collapsible>
 
-<Collapsible summary="What build server infrastructure does EAS Build use?">
+WhatsApp Messaging: Send bulk WhatsApp messages to all parents in a class
 
-Android builds run on Linux runners hosted in Google Cloud Platform, and iOS builds run on macOS runners hosted in Expo's macOS cloud. See [Build server infrastructure](/build-reference/infrastructure/).
+SMS Notifications: Send SMS messages for important updates
 
-</Collapsible>
+Message Templates: Pre-built templates for:
+Holiday announcements
+Time change notices
+Fee reminders
 
-</FAQ>
+Bulk Messaging: Send messages to all parents with one click
 
-## Get started
+Message History: Track all sent messages with timestamps and recipient count
 
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
 
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
+6. Dashboard & Home Screen
 
-<BoxLink
-  title="Automate submissions"
-  description="Learn how EAS Build can take your successful builds and handle uploading them to app stores automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
 
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
+Statistics Overview: Display key metrics:
+Number of classes
+Total students
+Average attendance percentage
 
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
+Quick Actions: Fast access to:
+Mark attendance
+View history
+Send messages
 
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+Navigation: Easy access to all features via tab navigation
+
+
+Technology Stack
+
+Frontend
+
+
+React Native: Cross-platform mobile development
+
+Expo: Managed React Native platform
+
+TypeScript: Type-safe development
+
+TailwindCSS (NativeWind): Utility-first styling
+
+Expo Router: File-based routing
+
+
+Backend
+
+
+Node.js: Server runtime
+
+tRPC: Type-safe API framework
+
+Drizzle ORM: Database ORM
+
+MySQL/TiDB: Database
+
+
+Authentication
+
+
+Manus OAuth: Secure user authentication
+
+
+Database Schema
+
+Tables Created
+
+
+users: User authentication and profile
+
+classes: Class information
+
+students: Student details with parent contact info
+
+attendance: Attendance records with date and status
+
+fees: Fee records with payment status
+
+messages: Message history for tracking communications
+
+
+Project Structure
+
+yash-student-app/
+├── app/
+│   ├── (tabs)/
+│   │   ├── _layout.tsx          # Tab navigation layout
+│   │   ├── index.tsx            # Home screen
+│   │   ├── classes.tsx          # Classes management
+│   │   ├── students.tsx         # Students management
+│   │   ├── attendance.tsx       # Attendance marking
+│   │   ├── fees.tsx             # Fee management
+│   │   ├── messages.tsx         # Messaging screen
+│   │   └── history.tsx          # Attendance history
+│   ├── _layout.tsx              # Root layout
+│   └── oauth/                   # OAuth callback
+├── server/
+│   ├── db.ts                    # Database queries
+│   ├── routers.ts               # tRPC API endpoints
+│   └── _core/                   # Framework code
+├── drizzle/
+│   ├── schema.ts                # Database schema
+│   └── migrations/              # Database migrations
+└── components/                  # Reusable components
+
+API Endpoints (tRPC)
+
+Classes
+
+
+classes.list - Get all classes
+
+classes.create - Create a new class
+
+classes.update - Update class details
+
+classes.delete - Delete a class
+
+
+Students
+
+
+students.listByClass - Get students in a class
+
+students.create - Add a student
+
+students.update - Update student details
+
+students.delete - Remove a student
+
+
+Attendance
+
+
+attendance.markAttendance - Mark attendance for a student
+
+attendance.getByClassAndDate - Get attendance for a class on a specific date
+
+
+Fees
+
+
+fees.listByStudent - Get fees for a student
+
+fees.listByClass - Get fees for a class
+
+fees.create - Create a fee record
+
+fees.markAsPaid - Mark fee as paid
+
+
+Messages
+
+
+messages.sendBulkMessage - Send message to all parents
+
+messages.getHistory - Get message history
+
+
+Key Features
+
+User-Friendly Interface
+
+
+Clean, modern design with intuitive navigation
+
+Tab-based navigation for easy access to all features
+
+Clear visual feedback for actions
+
+Responsive design for different screen sizes
+
+
+Data Management
+
+
+Secure data storage in MySQL database
+
+Real-time synchronization across devices
+
+Comprehensive audit trail of all actions
+
+Data validation at both frontend and backend
+
+
+Communication
+
+
+One-click bulk messaging to parents
+
+Support for multiple communication channels (WhatsApp, SMS)
+
+Message templates for quick communication
+
+Message history tracking
+
+
+Reporting & Analytics
+
+
+Attendance statistics and trends
+
+Fee payment tracking
+
+Student performance overview
+
+Communication history
+
+
+Getting Started
+
+Prerequisites
+
+
+Node.js 18+
+
+pnpm package manager
+
+Expo CLI
+
+
+Installation
+
+# Install dependencies
+pnpm install
+
+# Set up database
+pnpm db:push
+
+# Start development server
+pnpm run dev
+
+Running on Mobile
+
+# For iOS
+pnpm run ios
+
+# For Android
+pnpm run android
+
+# For Web
+pnpm run web
+
+Usage Guide
+
+Creating a Class
+
+
+Navigate to the "Classes" tab
+
+Click "Add Class"
+
+Enter class name and description
+
+Click "Create"
+
+
+Adding Students
+
+
+Go to Classes tab
+
+Select a class
+
+Click "Students"
+
+Click "Add Student"
+
+Enter student and parent details
+
+Click "Add Student"
+
+
+Marking Attendance
+
+
+Go to "Attendance" tab
+
+Select the date
+
+Choose "Present" or "Absent"
+
+Click "Save Attendance"
+
+
+Managing Fees
+
+
+Go to "Fees" tab
+
+Click "Add Fee" to create new fee record
+
+Enter amount and description
+
+Click "Mark as Paid" when payment is received
+
+
+Sending Messages
+
+
+Go to "Messages" tab
+
+Click "Send Message"
+
+Select message type (WhatsApp/SMS)
+
+Choose template or write custom message
+
+Click "Send to All Parents"
+
+
+Future Enhancements
+
+
+Real-time WhatsApp and SMS integration
+
+Advanced analytics and reporting
+
+Parent mobile app for viewing attendance
+
+Automated fee reminders
+
+Student performance tracking
+
+Class schedule management
+
+Assignment and homework tracking
+
+Parent-teacher communication portal
+
+
+Support
+
+For issues or feature requests, please contact the development team.
+
+
+License
+
+All rights reserved. Yash Classes © 2026
+
