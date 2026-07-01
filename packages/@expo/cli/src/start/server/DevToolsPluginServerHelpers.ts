@@ -28,8 +28,8 @@ export type DevToolsPluginWebSocketHandler = (
 function convertUpgradeRequest(request: IncomingMessage, route: string): Request {
   const proto = 'encrypted' in request.socket && !!request.socket.encrypted ? 'https' : 'http';
   const origin = `${proto}://${request.headers.host}`;
-  const { search } = new URL(request.url ?? '/', origin);
-  const url = new URL(`${route}${search}`, origin);
+  const url = new URL(request.url ?? '/', origin);
+  url.pathname = route;
   const headers = new Headers();
   const { rawHeaders } = request;
   for (let index = 0; index < rawHeaders.length; index += 2) {
