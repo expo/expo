@@ -16,8 +16,8 @@ export type DevToolsPluginRequestHandler = (
 /**
  * Per-connection WebSocket handler exported by a plugin's `serverEntryPoint`. Receives the
  * connected `ws` socket, the upgrade `request`, and the `WebSocketServer` the connection belongs
- * to (use `server.clients` to broadcast). Mirrors the `ws` `'connection'` event so plugin
- * authors use the familiar `socket.on('message', ...)` / `socket.send(...)` API.
+ * to (use `server.clients` to broadcast). Mirrors the `ws` `'connection'` event so plugin authors
+ * use the familiar `socket.on('message', ...)` / `socket.send(...)` API.
  */
 export type DevToolsPluginWebSocketHandler = (
   socket: WebSocket,
