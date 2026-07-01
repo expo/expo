@@ -3,10 +3,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import semver from 'semver';
 
+import { Log } from '../log';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
+import { formatPlatformRouteIssue, getExpoRouterLintIssuesAsync } from './expoRouterRoutes';
 import type { Options } from './resolveOptions';
 
 const debug = require('debug')('expo:lint');
@@ -108,6 +110,24 @@ export const lintAsync = async (
 
   const manager = createForProject(projectRoot, { silent: true });
 
+  // Expo Router structural checks that ESLint's per-file rules can't express reliably. This scans the
+  // whole route tree once, so it sees the real router root and every platform variant of a route.
+  let hasRouterIssues = false;
+  try {
+    const routerLint = await getExpoRouterLintIssuesAsync(projectRoot);
+    if (routerLint?.issues.length) {
+      hasRouterIssues = true;
+      Log.error(
+        `Found ${routerLint.issues.length} Expo Router issue${routerLint.issues.length === 1 ? '' : 's'}:\n` +
+          routerLint.issues
+            .map((issue) => `  ${formatPlatformRouteIssue(issue, routerLint.routerRoot)}`)
+            .join('\n')
+      );
+    }
+  } catch (error: any) {
+    debug('Skipping Expo Router lint checks: %s', error.message);
+  }
+
   try {
     // TODO: Custom logger
     // - Use relative paths
@@ -117,6 +137,10 @@ export const lintAsync = async (
       stdio: 'inherit',
     });
   } catch (error: any) {
-    process.exit(error.status);
+    process.exit(error.status || 1);
+  }
+
+  if (hasRouterIssues) {
+    process.exit(1);
   }
 };
