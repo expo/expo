@@ -560,7 +560,8 @@ async function parseModuleClassStructure(
 async function parseModuleFunctionSubstructure(
   substructure: Structure,
   file: FileType,
-  options: SwiftFileTypeInformationOptions
+  options: SwiftFileTypeInformationOptions,
+  isStatic: boolean
 ): Promise<FunctionDeclaration> {
   const definitionParams = substructure['key.substructure'];
   const nameSubstrucutre = definitionParams[0];
@@ -582,6 +583,7 @@ async function parseModuleFunctionSubstructure(
     parameters: [], // TODO(@HubertBer): Module function is not generic. I think so. Check it
     arguments: types?.parameters?.map(mapSourcekittenParameterToType) ?? [],
     definitionOffset: substructure['key.offset'],
+    isStatic,
   };
 }
 
@@ -780,7 +782,7 @@ async function parseModuleStructure(
       }
       case 'Function': {
         moduleClassDeclaration.functions.push(
-          await parseModuleFunctionSubstructure(structure, file, options)
+          await parseModuleFunctionSubstructure(structure, file, options, false)
         );
         break;
       }
@@ -805,7 +807,17 @@ async function parseModuleStructure(
       }
       case 'AsyncFunction':
         moduleClassDeclaration.asyncFunctions.push(
-          await parseModuleFunctionSubstructure(structure, file, options)
+          await parseModuleFunctionSubstructure(structure, file, options, false)
+        );
+        break;
+      case 'StaticAsyncFunction':
+        moduleClassDeclaration.asyncFunctions.push(
+          await parseModuleFunctionSubstructure(structure, file, options, true)
+        );
+        break;
+      case 'StaticFunction':
+        moduleClassDeclaration.functions.push(
+          await parseModuleFunctionSubstructure(structure, file, options, true)
         );
         break;
       case 'Constructor':

@@ -430,7 +430,7 @@ async function parseModuleClassStructure(structure, file, options) {
         definitionOffset: structure['key.offset'],
     };
 }
-async function parseModuleFunctionSubstructure(substructure, file, options) {
+async function parseModuleFunctionSubstructure(substructure, file, options, isStatic) {
     const definitionParams = substructure['key.substructure'];
     const nameSubstrucutre = definitionParams[0];
     const name = nameSubstrucutre
@@ -451,6 +451,7 @@ async function parseModuleFunctionSubstructure(substructure, file, options) {
         parameters: [], // TODO(@HubertBer): Module function is not generic. I think so. Check it
         arguments: types?.parameters?.map(mapSourcekittenParameterToType) ?? [],
         definitionOffset: substructure['key.offset'],
+        isStatic,
     };
 }
 async function parseModulePropDeclaration(substructure, file, options) {
@@ -588,7 +589,7 @@ async function parseModuleStructure(moduleStructure, file, name, definitionOffse
                 break;
             }
             case 'Function': {
-                moduleClassDeclaration.functions.push(await parseModuleFunctionSubstructure(structure, file, options));
+                moduleClassDeclaration.functions.push(await parseModuleFunctionSubstructure(structure, file, options, false));
                 break;
             }
             case 'Constant': {
@@ -609,7 +610,13 @@ async function parseModuleStructure(moduleStructure, file, name, definitionOffse
                 break;
             }
             case 'AsyncFunction':
-                moduleClassDeclaration.asyncFunctions.push(await parseModuleFunctionSubstructure(structure, file, options));
+                moduleClassDeclaration.asyncFunctions.push(await parseModuleFunctionSubstructure(structure, file, options, false));
+                break;
+            case 'StaticAsyncFunction':
+                moduleClassDeclaration.asyncFunctions.push(await parseModuleFunctionSubstructure(structure, file, options, true));
+                break;
+            case 'StaticFunction':
+                moduleClassDeclaration.functions.push(await parseModuleFunctionSubstructure(structure, file, options, true));
                 break;
             case 'Constructor':
                 moduleClassDeclaration.constructor = await parseModuleConstructorDeclaration(structure, file, options);

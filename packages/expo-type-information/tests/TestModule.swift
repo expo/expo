@@ -105,6 +105,12 @@ public class TestModule: Module {
       AsyncFunction("TestAsyncFunction") { (a: Int) async -> String in 
         "string"
       }
+
+      StaticAsyncFunction("TestStaticAsyncFunction") { (a: String) async -> Void in }
+
+      StaticFunction("TestStaticFunction") { () async -> String in 
+        "string"
+      }
     }
 
     Class(TestEmptyClass.self) {

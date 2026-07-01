@@ -143,6 +143,7 @@ export type FunctionDeclaration = {
     returnType: Type;
     arguments: Argument[];
     parameters: Type[];
+    isStatic: boolean;
 } & DefinitionOffset;
 /**
  * Represents a DSL prop declaration.
