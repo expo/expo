@@ -53,8 +53,8 @@
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "test": "jest",
-    "prepublishOnly": "pnpm clean && turbo run build",
-    "pretest:e2e-cli": "pnpm clean && turbo run build",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "pretest:e2e-cli": "expo-module prepublishOnly",
     "test:e2e-cli": "jest --config e2e-cli/jest.config.js",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"

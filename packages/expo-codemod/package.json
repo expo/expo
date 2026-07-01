@@ -34,7 +34,7 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "test": "jest",
-    "prepublishOnly": "pnpm run clean && turbo run build"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "dependencies": {
     "chalk": "^4.1.2",

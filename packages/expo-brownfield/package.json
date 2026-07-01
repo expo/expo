@@ -49,7 +49,7 @@
     "test:e2e-plugin": "jest --config e2e/plugin/jest.config.js",
     "prepack": "node scripts/resolve-symlinks.js resolve",
     "postpack": "node scripts/resolve-symlinks.js restore",
-    "prepublishOnly": "pnpm clean && turbo run build",
+    "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },

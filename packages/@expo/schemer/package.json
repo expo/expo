@@ -29,7 +29,7 @@
     "test:e2e": "jest --config e2e/jest.config.js",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
-    "prepublishOnly": "pnpm run clean && turbo run build"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "dependencies": {
     "ajv": "^8.1.0",

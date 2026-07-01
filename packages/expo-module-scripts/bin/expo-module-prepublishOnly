@@ -4,15 +4,24 @@ process.env.EXPO_NONINTERACTIVE = 1;
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { commandRunner, packageManagerRunAsync } from '../utils/commandUtils.js';
+import { commandRunner, findTurboWorkspaceRoot, packageManagerExecAsync } from '../utils/commandUtils.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function runAsync() {
   console.log('Preparing module for publishing');
   await commandRunner(path.join(dirname, 'expo-module-clean'));
-  // Run the package's own `build` script so `expo-build` modules still emit output before publishing.
-  await packageManagerRunAsync(['build']);
+
+  // In a Turborepo workspace, build through `turbo run build` so the local and remote build
+  // cache make repeat publishes near-zero cost. `turbo run` is automatically scoped to the
+  // package in the current working directory and runs the package's own `build` script (so
+  // `expo-build` modules still emit their output). Outside a workspace, fall back to the
+  // default module build.
+  if (findTurboWorkspaceRoot()) {
+    await packageManagerExecAsync(['turbo', 'run', 'build']);
+  } else {
+    await commandRunner(path.join(dirname, 'expo-module-build'));
+  }
 }
 
 (async () => {

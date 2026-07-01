@@ -28,9 +28,9 @@
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
-    "prepublishOnly": "pnpm clean && turbo run build",
+    "prepublishOnly": "expo-module prepublishOnly",
     "test": "jest",
-    "pretest:e2e": "pnpm clean && turbo run build",
+    "pretest:e2e": "expo-module prepublishOnly",
     "test:e2e": "jest --config e2e/jest.config.js",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
