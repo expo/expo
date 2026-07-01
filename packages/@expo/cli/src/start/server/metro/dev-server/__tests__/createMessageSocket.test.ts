@@ -230,6 +230,50 @@ describe(createMessagesSocket, () => {
   });
 });
 
+describe(`${createMessagesSocket} trusted proxy sockets`, () => {
+  const untrustedProxy = withMetroServer('/project', {
+    socketRemoteAddress: '172.18.0.8',
+  });
+  const trustedProxy = withMetroServer('/project', {
+    socketRemoteAddress: '172.18.0.8',
+    socketTrustOptions: { trustedProxyCIDRs: ['172.18.0.0/16'] },
+  });
+
+  it('drops client-originated broadcasts from untrusted proxy sockets', async () => {
+    const client1 = untrustedProxy.server.connect('/message');
+    const client2 = untrustedProxy.server.connect('/message');
+
+    await Promise.all([once(client1, 'open'), once(client2, 'open')]);
+
+    const client2Listener = jest.fn();
+    client2.on('message', client2Listener);
+
+    client1.send(serializeMessage({ method: 'reload' }));
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(client2Listener).not.toHaveBeenCalled();
+  });
+
+  it('allows client-originated broadcasts from trusted proxy sockets', async () => {
+    const client1 = trustedProxy.server.connect('/message');
+    const client2 = trustedProxy.server.connect('/message');
+
+    await Promise.all([once(client1, 'open'), once(client2, 'open')]);
+
+    const client2Listener = jest.fn();
+    client2.on('message', client2Listener);
+
+    const message = serializeMessage({ method: 'reload' });
+    client1.send(message);
+
+    await waitForExpect(() => {
+      expect(client2Listener).toHaveBeenCalled();
+      expect(client2Listener.mock.calls[0][0]).toBeInstanceOf(Buffer);
+      expect(client2Listener.mock.calls[0][0].toString()).toBe(message);
+    });
+  });
+});
+
 async function requestClientId(client: WebSocket, testId = 'requestclientid') {
   // Send the `getid` server request
   client.send(serializeMessage({ id: testId, method: 'getid', target: 'server' }));

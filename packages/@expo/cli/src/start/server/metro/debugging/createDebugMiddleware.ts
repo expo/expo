@@ -2,7 +2,11 @@ import type { NextHandleFunction } from 'connect';
 import { WebSocketServer } from 'ws';
 
 import { env, envIsHeadless } from '../../../../utils/env';
-import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
+import {
+  isMatchingOrigin,
+  isTrustedDevServerSocket,
+  type SocketTrustOptions,
+} from '../../../../utils/net';
 import type { TerminalReporter } from '../TerminalReporter';
 import { createHandlersFactory } from './createHandlersFactory';
 import { recordNetworkResponse } from './messageHandlers/NetworkResponse';
@@ -16,12 +20,14 @@ interface DebugMiddleware {
 
 interface DebugMiddlewareParams {
   serverBaseUrl: string;
-  reporter: TerminalReporter;
+  reporter: Pick<TerminalReporter, 'update'>;
+  socketTrustOptions?: SocketTrustOptions;
 }
 
 export function createDebugMiddleware({
   serverBaseUrl,
   reporter,
+  socketTrustOptions,
 }: DebugMiddlewareParams): DebugMiddleware {
   // Load the React Native debugging tools from project
   // TODO: check if this works with isolated modules
@@ -61,7 +67,10 @@ export function createDebugMiddleware({
 
   // Explicitly limit debugger websocket to loopback requests
   debuggerWebsocketEndpoint.on('connection', (socket, request) => {
-    if (!isLocalSocket(request.socket) || !isMatchingOrigin(request, serverBaseUrl)) {
+    if (
+      !isTrustedDevServerSocket(request.socket, socketTrustOptions) ||
+      !isMatchingOrigin(request, serverBaseUrl)
+    ) {
       // NOTE: `socket.close` nicely closes the websocket, which will still allow incoming messages
       // `socket.terminate` instead forcefully closes down the socket
       socket.terminate();
@@ -71,7 +80,7 @@ export function createDebugMiddleware({
   return {
     debugMiddleware(req, res, next) {
       // The debugger middleware is skipped entirely if the connection isn't a loopback request
-      if (isLocalSocket(req.socket)) {
+      if (isTrustedDevServerSocket(req.socket, socketTrustOptions)) {
         return middleware(req, res, next);
       } else {
         return next();
@@ -82,7 +91,7 @@ export function createDebugMiddleware({
 }
 
 function createLogger(
-  reporter: TerminalReporter
+  reporter: Pick<TerminalReporter, 'update'>
 ): Parameters<typeof import('@react-native/dev-middleware').createDevMiddleware>[0]['logger'] {
   return {
     info: makeLogger(reporter, 'info'),
@@ -91,7 +100,7 @@ function createLogger(
   };
 }
 
-function makeLogger(reporter: TerminalReporter, level: 'info' | 'warn' | 'error') {
+function makeLogger(reporter: Pick<TerminalReporter, 'update'>, level: 'info' | 'warn' | 'error') {
   return (...data: any[]) =>
     reporter.update({
       type: 'unstable_server_log',
