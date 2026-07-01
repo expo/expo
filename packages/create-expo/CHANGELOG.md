@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Reuse agent files from `@expo/llm-configs` ([#46968](https://github.com/expo/expo/pull/46968) by [@davidmokos](https://github.com/davidmokos))
 - Improved monorepo support ([#46434](https://github.com/expo/expo/pull/46434) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes

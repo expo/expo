@@ -57,8 +57,14 @@ export const Header = ({
             className={mergeClasses('group px-2 text-secondary', 'max-lg:hidden')}
             leftSlot={
               <>
-                <Star01Icon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                <Star01DuotoneIcon className="hidden icon-sm text-icon-warning group-hover:flex group-focus-visible:flex" />
+                <Star01Icon
+                  aria-hidden="true"
+                  className="icon-sm group-hover:hidden group-focus-visible:hidden"
+                />
+                <Star01DuotoneIcon
+                  aria-hidden="true"
+                  className="hidden icon-sm text-icon-warning group-hover:flex group-focus-visible:flex"
+                />
               </>
             }
             href="https://github.com/expo/expo">
@@ -70,7 +76,7 @@ export const Header = ({
             href="https://github.com/expo/expo"
             aria-label="GitHub"
             className={mergeClasses('hidden px-2', 'max-lg:flex')}>
-            <GithubIcon className="icon-lg" />
+            <GithubIcon aria-hidden="true" className="icon-lg" />
           </Button>
           <div className="max-lg:hidden">
             <ThemeSelector />
@@ -87,7 +93,7 @@ export const Header = ({
               onClick={() => {
                 setMobileMenuVisible(!isMobileMenuVisible);
               }}>
-              <Menu01Icon className="icon-sm" />
+              <Menu01Icon aria-hidden="true" className="icon-sm" />
             </Button>
           </div>
         </div>

@@ -47,8 +47,11 @@ export function RuntimePopup<T extends string>({
       </select>
       {isLoaded && (
         <div className="pointer-events-none absolute inset-x-3 inset-y-0 flex items-center justify-between gap-2 text-icon-secondary select-none">
-          <Icon className={ICON_CLASSES} />
-          <ChevronDownIcon className="pointer-events-none icon-xs text-icon-secondary" />
+          <Icon aria-hidden="true" className={ICON_CLASSES} />
+          <ChevronDownIcon
+            aria-hidden="true"
+            className="pointer-events-none icon-xs text-icon-secondary"
+          />
         </div>
       )}
     </div>

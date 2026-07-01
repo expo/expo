@@ -21,7 +21,7 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
           aria-pressed={isActive}
           aria-label="Ask about this page with AI">
           <div className="flex items-center gap-1.5">
-            <Star06Icon className="icon-sm text-palette-purple11" />
+            <Star06Icon aria-hidden="true" className="icon-sm text-palette-purple11" />
             <FOOTNOTE crawlable={false} className="text-palette-purple11">
               Ask AI
             </FOOTNOTE>
@@ -47,7 +47,7 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
           aria-pressed={isActive}
           aria-label="Ask about this configuration page with AI">
           <div className="flex items-center gap-2">
-            <Star06Icon className="icon-sm text-palette-purple11" />
+            <Star06Icon aria-hidden="true" className="icon-sm text-palette-purple11" />
             <FOOTNOTE crawlable={false} className="text-palette-purple11">
               Ask AI
             </FOOTNOTE>

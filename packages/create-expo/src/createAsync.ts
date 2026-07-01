@@ -148,7 +148,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
   await setupDependenciesAsync(projectRoot, props);
 
   if (props.agentsMd) {
-    generateAgentFiles(projectRoot);
+    await generateAgentFiles(projectRoot);
   }
 
   // for now, we will just init a git repo if they have git installed and the
@@ -242,7 +242,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
   await setupDependenciesAsync(projectRoot, props);
 
   if (props.agentsMd) {
-    generateAgentFiles(projectRoot);
+    await generateAgentFiles(projectRoot);
   }
 
   // for now, we will just init a git repo if they have git installed and the

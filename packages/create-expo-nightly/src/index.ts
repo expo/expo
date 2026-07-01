@@ -15,6 +15,7 @@ import {
   createExpoApp,
   installCocoaPodsAsync,
   prebuildAppAsync,
+  setupGradleForNightlyAsync,
 } from './Project.js';
 import { checkRequiredToolsAsync } from './SanityChecks.js';
 
@@ -88,6 +89,9 @@ async function runAsync(programName: string) {
   );
   console.log(chalk.cyan(`Running prebuild`));
   await prebuildAppAsync(projectRoot, tarballPath);
+
+  console.log(chalk.cyan(`Setting up Gradle for nightly`));
+  await setupGradleForNightlyAsync(projectRoot, expoRepoPath);
 
   if (programOpts.install) {
     if (process.platform === 'darwin') {

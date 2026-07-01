@@ -1725,10 +1725,21 @@ build:
             assets/*.png
 ```
 
-| Input  | Type     | Description                                                                                                                                                                                       |
-| ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `path` | `string` | Required. Path or newline-delimited list of paths to the artifacts to upload to EAS servers. You can use `*` wildcard and other [glob patterns](https://github.com/isaacs/node-glob#glob-primer). |
-| `type` | `string` | The type of artifact that is uploaded to the EAS servers. Allowed values are `application-archive` and `build-artifact`. Defaults to `application-archive`.                                       |
+| Input          | Type      | Description                                                                                                                                                                                                                                                                                                                      |
+| -------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `path`         | `string`  | Required. Path or newline-delimited list of paths to the artifacts to upload to EAS servers. You can use `*` wildcard and other [glob patterns](https://github.com/isaacs/node-glob#glob-primer).                                                                                                                                |
+| `type`         | `string`  | The type of artifact that is uploaded to the EAS servers. Allowed values are `application-archive` and `build-artifact` (build jobs only), and `other` (a generic artifact). Defaults to `application-archive` in build jobs, and to `other` when there is no build (for example, in a workflow custom job). See the note below. |
+| `name`         | `string`  | A name for the artifact. In workflows, it can be used to reference the artifact from [`eas/download_artifact`](/eas/workflows/syntax/#easdownload_artifact).                                                                                                                                                                     |
+| `metadata`     | `json`    | Arbitrary metadata to attach to a generic (`other`) artifact.                                                                                                                                                                                                                                                                    |
+| `ignore_error` | `boolean` | When `true`, an upload failure is logged but does not fail the step. Defaults to `false`.                                                                                                                                                                                                                                        |
+
+This function sets the following output:
+
+| Output        | Type     | Description                      |
+| ------------- | -------- | -------------------------------- |
+| `artifact_id` | `string` | The ID of the uploaded artifact. |
+
+> **info** The `application-archive` and `build-artifact` types require a build to attach to. Using them in a job without a build (such as a custom [workflow](/eas/workflows/get-started/) job) fails with an error like `Uploading application archives outside of builds is not supported`. Use `type: other` to upload a generic artifact in that case.
 
 <BoxLink
   title="eas/upload_artifact source code"

@@ -31,7 +31,7 @@ A lazily-loaded vertical list component that only renders visible items for effi
 ### Basic lazy column
 
 ```tsx BasicLazyColumn.tsx
-import { Host, LazyColumn, ListItem } from '@expo/ui/jetpack-compose';
+import { Host, LazyColumn, ListItem, Text } from '@expo/ui/jetpack-compose';
 
 const items = Array.from({ length: 100 }, (_, i) => `Item ${i + 1}`);
 
@@ -40,7 +40,11 @@ export default function BasicLazyColumn() {
     <Host style={{ height: 400 }}>
       <LazyColumn>
         {items.map(item => (
-          <ListItem key={item} headline={item} />
+          <ListItem key={item}>
+            <ListItem.HeadlineContent>
+              <Text>{item}</Text>
+            </ListItem.HeadlineContent>
+          </ListItem>
         ))}
       </LazyColumn>
     </Host>

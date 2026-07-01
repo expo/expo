@@ -187,7 +187,7 @@ describe('buildNavigationSection', () => {
 
   it('resolves the latest label on the version index page', () => {
     const block = navFor('/versions/latest/') as string;
-    expect(block).toContain('You are here: Reference (v56.0.0)');
+    expect(block).toContain('You are here: Reference (v57.0.0)');
     expect(block).toContain('### Expo SDK');
   });
 

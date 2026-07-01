@@ -9,7 +9,10 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.datasource.DataSource
+import androidx.media3.session.MediaSession
+import expo.modules.audio.service.AudioPlaybackServiceConnection
 import expo.modules.kotlin.AppContext
+import java.lang.ref.WeakReference
 
 private const val PLAYLIST_STATUS_UPDATE = "playlistStatusUpdate"
 private const val TRACK_CHANGED = "trackChanged"
@@ -30,10 +33,19 @@ class AudioPlaylist(
   appContext = appContext,
   updateInterval = updateInterval,
   statusEventName = PLAYLIST_STATUS_UPDATE
-) {
+),
+  LockScreenPlayable {
   private var sources: MutableList<AudioSource> = initialSources.toMutableList()
   private var currentRate = 1f
   private var previousMediaItemIndex = 0
+
+  override var isActiveForLockScreen = false
+  override var metadata: Metadata? = null
+  override var lockScreenOptions: AudioLockScreenOptions? = null
+  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref)
+  override val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
+  override val supportsNextTrack = true
+  override val supportsPreviousTrack = true
 
   val currentTrackIndex get() = ref.currentMediaItemIndex
   val trackCount get() = ref.mediaItemCount
@@ -120,6 +132,14 @@ class AudioPlaylist(
     }
   }
 
+  override fun nextTrack() {
+    next()
+  }
+
+  override fun previousTrack() {
+    previous()
+  }
+
   fun skipTo(index: Int) {
     if (index !in 0..<trackCount) return
     ref.seekToDefaultPosition(index)
@@ -169,6 +189,11 @@ class AudioPlaylist(
     ref.setPlaybackSpeed(boundedRate)
   }
 
+  override fun assignBasicMediaSession() {
+    mediaSession.release()
+    mediaSession = buildBasicMediaSession(appContext?.reactContext ?: return, ref)
+  }
+
   override fun currentStatus(): Map<String, Any?> {
     val isMuted = ref.volume == 0f
     val isLoaded = ref.playbackState == Player.STATE_READY
@@ -201,5 +226,15 @@ class AudioPlaylist(
       )
     )
     sendStatusUpdate()
+  }
+
+  override fun releasePlayer() {
+    serviceConnection.release()
+    mediaSession.release()
+    if (isActiveForLockScreen) {
+      serviceConnection.playbackServiceBinder?.service?.unregisterPlayable()
+    }
+    serviceConnection.unbind()
+    super.releasePlayer()
   }
 }

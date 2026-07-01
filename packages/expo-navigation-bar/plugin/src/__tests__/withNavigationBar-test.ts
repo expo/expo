@@ -152,6 +152,12 @@ describe('applyEnforceNavigationBarContrast', () => {
               "item": [
                 {
                   "$": {
+                    "name": "android:otherSetting",
+                  },
+                  "_": "true",
+                },
+                {
+                  "$": {
                     "name": "android:enforceNavigationBarContrast",
                     "tools:targetApi": "29",
                   },
@@ -159,7 +165,7 @@ describe('applyEnforceNavigationBarContrast', () => {
                 },
                 {
                   "$": {
-                    "name": "android:otherSetting",
+                    "name": "expoEnforceNavigationBarContrast",
                   },
                   "_": "true",
                 },
@@ -217,6 +223,12 @@ describe('applyEnforceNavigationBarContrast', () => {
                   },
                   "_": "true",
                 },
+                {
+                  "$": {
+                    "name": "expoEnforceNavigationBarContrast",
+                  },
+                  "_": "true",
+                },
               ],
             },
           ],
@@ -268,6 +280,12 @@ describe('applyEnforceNavigationBarContrast', () => {
                   "$": {
                     "name": "android:enforceNavigationBarContrast",
                     "tools:targetApi": "29",
+                  },
+                  "_": "false",
+                },
+                {
+                  "$": {
+                    "name": "expoEnforceNavigationBarContrast",
                   },
                   "_": "false",
                 },

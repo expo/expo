@@ -1,6 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "56.0.0",
+  "version": "57.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -23,6 +23,7 @@
     "generate-markdown-pages": "node --experimental-strip-types ./scripts/generate-markdown-pages.ts",
     "generate-ui-component-tables": "node --experimental-strip-types ./scripts/generate-ui-component-tables.ts",
     "check-markdown-pages": "node --experimental-strip-types ./scripts/check-markdown-pages.ts",
+    "ja:stamp": "node --experimental-strip-types checks/ja/stamp.ts",
     "generate-static-resources": "node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
     "append-last-modified-dates": "node --unhandled-rejections=strict ./scripts/append-dates.js",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
@@ -33,7 +34,8 @@
     "expo-skills-sync": "node --experimental-strip-types ./ui/components/ExpoSkillsTable/sync-expo-skills.js",
     "expo-mcp-sync": "node --experimental-strip-types ./ui/components/ExpoMCPToolsTable/sync-expo-mcp-tools.js",
     "install-vale": "node --experimental-strip-types scripts/install-vale.ts",
-    "postinstall": "pnpm copy-latest && pnpm generate-static-resources && pnpm install-vale"
+    "postinstall": "pnpm copy-latest && pnpm generate-static-resources && pnpm install-vale",
+    "upstream-sync": "node --experimental-strip-types ./scripts/upstream-sync.ts"
   },
   "packageManager": "pnpm@10.33.0",
   "engines": {
@@ -54,8 +56,8 @@
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@reach/tabs": "^0.18.0",
     "@sentry/nextjs": "^10.48.0",
     "@sentry/react": "^10.48.0",
     "@xyflow/react": "^12.10.2",

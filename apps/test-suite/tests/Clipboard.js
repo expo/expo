@@ -61,6 +61,31 @@ export function test({ describe, expect, it, afterEach, ...t }) {
         });
         expect(result).toEqual('test');
       });
+
+      if (Platform.OS === 'android') {
+        it('sets a string with isSensitive option', async () => {
+          await Clipboard.setStringAsync('sensitive data', { android: { isSensitive: true } });
+          const result = await Clipboard.getStringAsync();
+          expect(result).toEqual('sensitive data');
+        });
+
+        it('sets a string with isSensitive false', async () => {
+          await Clipboard.setStringAsync('public data', { android: { isSensitive: false } });
+          const result = await Clipboard.getStringAsync();
+          expect(result).toEqual('public data');
+        });
+
+        it('sets HTML string with isSensitive option', async () => {
+          await Clipboard.setStringAsync('<p>sensitive html</p>', {
+            inputFormat: Clipboard.StringFormat.HTML,
+            android: { isSensitive: true },
+          });
+          const result = await Clipboard.getStringAsync({
+            preferredFormat: Clipboard.StringFormat.PLAIN_TEXT,
+          });
+          expect(result.trim()).toEqual('sensitive html');
+        });
+      }
     });
 
     if (Platform.OS === 'ios') {
@@ -112,6 +137,30 @@ export function test({ describe, expect, it, afterEach, ...t }) {
           const hasImage = await Clipboard.hasImageAsync();
           expect(hasImage).toEqual(false);
         });
+
+        if (Platform.OS === 'android') {
+          it('sets an image with isSensitive option', async () => {
+            const imageBase64 =
+              'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+            const expectedResultRegex = 'data:image/png;base64,[A-Za-z0-9+/=]*';
+            await Clipboard.setImageAsync(imageBase64, { android: { isSensitive: true } });
+            const hasImage = await Clipboard.hasImageAsync();
+            expect(hasImage).toEqual(true);
+            const result = await Clipboard.getImageAsync({ format: 'png' });
+            expect(result.data).toMatch(expectedResultRegex);
+          });
+
+          it('sets an image with isSensitive false', async () => {
+            const imageBase64 =
+              'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+            const expectedResultRegex = 'data:image/png;base64,[A-Za-z0-9+/=]*';
+            await Clipboard.setImageAsync(imageBase64, { android: { isSensitive: false } });
+            const hasImage = await Clipboard.hasImageAsync();
+            expect(hasImage).toEqual(true);
+            const result = await Clipboard.getImageAsync({ format: 'png' });
+            expect(result.data).toMatch(expectedResultRegex);
+          });
+        }
       }
     });
   });

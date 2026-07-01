@@ -16,7 +16,28 @@ Native build times can slow down your development workflow. Expo provides precom
 
 <Collapsible summary="Disabling on iOS">
 
-Set `EXPO_USE_PRECOMPILED_MODULES` to `0`. For local builds, export the env var in your shell.
+Set the `ios.usePrecompiledModules` property of the [`expo-build-properties`](/versions/latest/sdk/build-properties/) config plugin to `false` to build every Expo Module from source. This applies to both local builds and EAS Build, and takes effect the next time you run `npx expo prebuild`:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "usePrecompiledModules": false
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+Alternatively, you can control this directly with the `EXPO_USE_PRECOMPILED_MODULES` environment variable, which is read during `pod install`. For local builds, export it in your shell before running `pod install` (or `npx expo run:ios`):
+
+<Terminal cmd={['$ export EXPO_USE_PRECOMPILED_MODULES=0']} />
 
 For EAS Build, create an [EAS environment variable](/eas/environment-variables/manage/):
 

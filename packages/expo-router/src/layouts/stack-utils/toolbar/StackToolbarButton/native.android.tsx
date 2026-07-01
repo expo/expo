@@ -1,9 +1,8 @@
 'use client';
-import { Badge, Box, Icon, IconButton, Text as ComposeText } from '@expo/ui/jetpack-compose';
-import { alpha as alphaModifier } from '@expo/ui/jetpack-compose/modifiers';
+import { Icon, IconButton } from '@expo/ui/jetpack-compose';
 
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
-import { convertFontWeightToComposeFontWeight } from '../../../../utils/font';
+import { getBadgeContentDescription, ToolbarItemBadge } from '../ToolbarItemBadge';
 import { useToolbarColors } from '../context';
 import { DEFAULT_TOOLBAR_TINT_COLOR } from '../defaults';
 import type { NativeToolbarButtonProps } from './types';
@@ -32,54 +31,22 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
       ? null
       : (props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
 
-  const hasBadge = props.badge?.value != null && props.badge?.value !== '';
-
-  const contentDescription = props.accessibilityLabel
-    ? hasBadge
-      ? `${props.accessibilityLabel}, ${props.badge!.value}`
-      : props.accessibilityLabel
-    : undefined;
-
-  const iconElement = (
-    <Icon
-      source={props.source}
-      tint={tintColor}
-      size={24}
-      contentDescription={contentDescription}
-    />
-  );
-
   const button = (
     <IconButton onClick={props.onPress} enabled={!props.disabled}>
-      {iconElement}
+      <Icon
+        source={props.source}
+        tint={tintColor}
+        size={24}
+        contentDescription={getBadgeContentDescription(props.accessibilityLabel, props.badge)}
+      />
     </IconButton>
   );
 
   return (
     <AnimatedItemContainer visible={!props.hidden}>
-      {props.badge ? (
-        <Box contentAlignment="topEnd">
-          {button}
-          <Badge
-            containerColor={props.badge.style?.backgroundColor}
-            contentColor={props.badge.style?.color}
-            modifiers={props.disabled ? [alphaModifier(0.38)] : undefined}>
-            {hasBadge ? (
-              <ComposeText
-                style={{
-                  typography: 'labelSmall',
-                  fontWeight: convertFontWeightToComposeFontWeight(props.badge.style?.fontWeight),
-                  fontSize: props.badge.style?.fontSize,
-                  fontFamily: props.badge.style?.fontFamily,
-                }}>
-                {String(props.badge.value)}
-              </ComposeText>
-            ) : null}
-          </Badge>
-        </Box>
-      ) : (
-        button
-      )}
+      <ToolbarItemBadge badge={props.badge} disabled={props.disabled}>
+        {button}
+      </ToolbarItemBadge>
     </AnimatedItemContainer>
   );
 };

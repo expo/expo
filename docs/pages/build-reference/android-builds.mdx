@@ -32,7 +32,7 @@ Next, this is what happens when EAS Build picks up your request:
 1. Run the `eas-build-pre-install` script from **package.json** if defined.
 1. Run `npm install` in the project root (or `yarn install` if `yarn.lock` exists).
 1. Run `npx expo-doctor` to diagnose potential issues with your project configuration.
-1. Additional step for **managed** projects: Run `npx expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI.
+1. Additional step for projects that use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/): Run `npx expo prebuild` to generate **android** and **ios** directories. This step will use the versioned Expo CLI.
 1. Restore a previously saved cache identified by the `cache.key` value in the [build profile](/build/eas-json).
 1. Run the `eas-build-post-install` script from **package.json** if defined.
 1. Restore the keystore (if it was included in the build request).
@@ -52,7 +52,7 @@ Next, this is what happens when EAS Build picks up your request:
 
 ## Project auto-configuration
 
-Every time you want to build a new Android app binary, we validate that the project is set up correctly so we can seamlessly run the build process on our servers. This mainly applies to bare projects, but similar steps are run when building managed projects.
+Every time you want to build a new Android app binary, we validate that the project is set up correctly so we can seamlessly run the build process on our servers. This mainly applies to [existing React Native projects](/bare/overview/), but similar steps are run when building projects that use Continuous Native Generation (CNG).
 
 ### Android keystore
 

@@ -57,10 +57,10 @@ function tabPanelHeadingDeficit(markdown: string, htmlPath: string): number {
     return 0;
   }
   const html = fs.readFileSync(htmlPath, 'utf-8');
-  if (!html.includes('data-reach-tab')) {
+  if (!html.includes('data-md="tabs"')) {
     return 0;
   }
-  const panels = cheerio.load(html)('[data-reach-tab-panel]').length;
+  const panels = cheerio.load(html)('[role="tabpanel"]').length;
   if (panels === 0) {
     return 0;
   }
