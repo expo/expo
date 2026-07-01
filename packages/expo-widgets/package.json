@@ -32,7 +32,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/widgets/",
   "dependencies": {
     "@expo/plist": "workspace:^0.8.0",
-    "@expo/ui": "workspace:~57.0.1"
+    "@expo/ui": "workspace:~57.0.2"
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.8.0",

@@ -5128,7 +5128,7 @@ importers:
         specifier: workspace:^57.0.0
         version: link:../@expo/schema-utils
       '@expo/ui':
-        specifier: workspace:^57.0.1
+        specifier: workspace:^57.0.2
         version: link:../expo-ui
       '@radix-ui/react-slot':
         specifier: ^1.2.0
@@ -5935,7 +5935,7 @@ importers:
         specifier: workspace:^0.8.0
         version: link:../@expo/plist
       '@expo/ui':
-        specifier: workspace:~57.0.1
+        specifier: workspace:~57.0.2
         version: link:../expo-ui
       react:
         specifier: 19.2.3

@@ -152,7 +152,7 @@
     "@expo/log-box": "workspace:^57.0.0",
     "@expo/metro-runtime": "workspace:^57.0.2",
     "@expo/schema-utils": "workspace:^57.0.0",
-    "@expo/ui": "workspace:^57.0.1",
+    "@expo/ui": "workspace:^57.0.2",
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
     "@react-native-masked-view/masked-view": "^0.3.2",

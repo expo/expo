@@ -698,7 +698,7 @@ PODS:
     - UMAppLoader
   - ExpoTrackingTransparency (57.0.0):
     - ExpoModulesCore
-  - ExpoUI (57.0.1):
+  - ExpoUI (57.0.2):
     - ExpoModulesCore
     - ExpoModulesWorklets
     - React-RCTFabric
@@ -4112,7 +4112,7 @@ SPEC CHECKSUMS:
   ExpoSystemUI: 4f343f83e81951d737b199ac9c0d9db0d577f942
   ExpoTaskManager: 8618ab2b284ca069863825b3b838b817cd286d07
   ExpoTrackingTransparency: 5aa3ccf91f8412660780ea9619ec8af8bf112628
-  ExpoUI: 20a3c2e931431432ce005f0fb93bef34b68a5e21
+  ExpoUI: e54a66fae6955d5e2accde984142a2b9c4dec95f
   ExpoVideo: 11cd8703a21fbeb87980017f6912c1f3145dad52
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: 02cadd596e97af23bccef812dbb9d54b2c235465
