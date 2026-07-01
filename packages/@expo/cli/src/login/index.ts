@@ -42,7 +42,15 @@ export const expoLogin: Command = async (argv) => {
 
   const password = args['--password'] === '-' ? await readWordFromStdin() : args['--password'];
 
-  const browser = args['--no-browser'] ? false : args['--browser'] ? true : undefined;
+  const browser = (() => {
+    if (args['--browser']) {
+      return true;
+    }
+    if (args['--no-browser'] || args['--username'] || password) {
+      return false;
+    }
+    return true;
+  })();
 
   const { showLoginPromptAsync } = await import('../api/user/actions.js');
   return showLoginPromptAsync({

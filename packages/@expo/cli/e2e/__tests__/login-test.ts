@@ -54,13 +54,13 @@ it('throws on invalid project root', async () => {
   ).rejects.toThrow(/^Invalid project root: .*very---invalid$/m);
 });
 
-it('runs `npx expo login` and throws due to CI', async () => {
-  await expect(executeExpoAsync(projectRoot, ['login'], { verbose: false })).rejects.toThrow(
-    /Input is required/
-  );
-  await expect(executeExpoAsync(projectRoot, ['login'], { verbose: false })).rejects.toThrow(
-    /Use the EXPO_TOKEN environment variable to authenticate in CI/
-  );
+it('runs `npx expo login --no-browser` and throws due to CI', async () => {
+  await expect(
+    executeExpoAsync(projectRoot, ['login', '--no-browser'], { verbose: false })
+  ).rejects.toThrow(/Input is required/);
+  await expect(
+    executeExpoAsync(projectRoot, ['login', '--no-browser'], { verbose: false })
+  ).rejects.toThrow(/Use the EXPO_TOKEN environment variable to authenticate in CI/);
 });
 
 it('runs `npx expo login` and throws due to invalid credentials', async () => {
