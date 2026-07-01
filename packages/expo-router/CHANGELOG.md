@@ -10,7 +10,8 @@
 - [android] Support `Stack.Toolbar.Badge` on `Stack.Toolbar.Menu` icons in header left/right placements ([#47276](https://github.com/expo/expo/pull/47276) by [@Ubax](https://github.com/Ubax))
 - Add `standard-navigation` integration ([#46456](https://github.com/expo/expo/pull/46456) by [@Ubax](https://github.com/Ubax))
 - Re-export drawer content components and types (`DrawerContentScrollView`, `DrawerItem`, `DrawerItemList`, `DrawerContentComponentProps`, `DrawerNavigationProp`, and more) from `expo-router/drawer` ([#46635](https://github.com/expo/expo/pull/46635) by [@Ubax](https://github.com/Ubax))
-- [native-tabs] Emit a `tabPress` event with `isPrevented: true` when a `disabled` tab is tapped, without selecting it. ([#46445](https://github.com/expo/expo/pull/46445) by [@Ubax](https://github.com/Ubax))
+- [native-tabs] Emit a `tabPress` event with `isPrevented: true` when a `disabled` tab is tapped, without selecting it ([#46445](https://github.com/expo/expo/pull/46445) by [@Ubax](https://github.com/Ubax))
+- Add `pageHeaders` config plugin option for declaring per-path response headers ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
