@@ -4,20 +4,15 @@ import ExpoModulesCore
 import SwiftUI
 
 final class LazyListProps: UIBaseViewProps {
-  @Field var count: Int = 0
+  @Field var itemKeys: [String] = []
   @Field var estimatedItemSize: Double = 44
   var onItemAppear = EventDispatcher()
+  var onItemAppearSync = EventDispatcher(synchronous: true)
   var onItemDisappear = EventDispatcher()
+  var onSelectItem = EventDispatcher()
+  var onDeleteItems = EventDispatcher()
 }
 
-// A list that mounts its rows on demand instead of all at once. SwiftUI's List only builds the bodies
-// of rows near the viewport (and recycles them, so memory stays bounded); each row reports when it
-// appears and disappears, and JS reacts by mounting (or unmounting) the real child for that index and
-// handing it back through the `slot(index)` lookup.
-//
-// Rows JS has not mounted yet render a fixed-height placeholder. This is essential: an empty row is
-// zero-height, which collapses the whole content so every row lands in the viewport at once and the
-// list stops virtualizing. The placeholder gives it a size to lay out and scroll against.
 struct LazyListView: ExpoSwiftUI.View {
   @ObservedObject var props: LazyListProps
 
@@ -26,27 +21,34 @@ struct LazyListView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    List(0..<max(props.count, 0), id: \.self) { index in
-      LazyListRow(
-        content: props.children?.slot(String(index)),
-        estimatedHeight: props.estimatedItemSize,
-        onAppear: { props.onItemAppear(["index": index]) },
-        onDisappear: { props.onItemDisappear(["index": index]) }
-      )
-      .listRowInsets(EdgeInsets())
-      .listRowSeparator(.hidden)
+    List {
+      ForEach(props.itemKeys, id: \.self) { key in
+        LazyListRow(
+          content: props.children?.slot(key),
+          estimatedHeight: props.estimatedItemSize,
+          onRealize: { dispatchAppear(key) },
+          onDerealize: { props.onItemDisappear(["key": key]) }
+        )
+        .listRowInsets(EdgeInsets())
+        .listRowSeparator(.hidden)
+      }
+      .onDelete { offsets in
+        props.onDeleteItems(["indices": Array(offsets)])
+      }
     }
     .listStyle(.plain)
   }
+
+  private func dispatchAppear(_ key: String) {
+    props.onItemAppearSync(["key": key])
+  }
 }
 
-// The ZStack is the row's stable identity, so `.onAppear`/`.onDisappear` fire once per scroll in/out.
-// The content inside swaps from placeholder to the mounted child (and back) without re-firing them.
 private struct LazyListRow: View {
   let content: SlotView?
   let estimatedHeight: Double
-  let onAppear: () -> Void
-  let onDisappear: () -> Void
+  let onRealize: () -> Void
+  let onDerealize: () -> Void
 
   var body: some View {
     ZStack(alignment: .top) {
@@ -56,7 +58,33 @@ private struct LazyListRow: View {
         Color.clear.frame(height: estimatedHeight)
       }
     }
-    .onAppear(perform: onAppear)
-    .onDisappear(perform: onDisappear)
+    .background(RealizeProbe(onRealize: onRealize, onDerealize: onDerealize).frame(width: 0, height: 0))
+  }
+}
+
+private struct RealizeProbe: UIViewRepresentable {
+  let onRealize: () -> Void
+  let onDerealize: () -> Void
+
+  func makeUIView(context: Context) -> UIView {
+    onRealize()
+    return UIView()
+  }
+
+  func updateUIView(_ uiView: UIView, context: Context) {}
+
+  static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
+    coordinator.onDerealize()
+  }
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(onDerealize: onDerealize)
+  }
+
+  final class Coordinator {
+    let onDerealize: () -> Void
+    init(onDerealize: @escaping () -> Void) {
+      self.onDerealize = onDerealize
+    }
   }
 }

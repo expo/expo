@@ -16,6 +16,14 @@ public final class EventDispatcher {
   internal var customName: String?
 
   /**
+   When `true`, the event is dispatched synchronously with discrete priority: React runs the handler
+   and commits on the calling thread before the dispatch returns. Lets a native view react to the
+   result in the same frame (e.g. mount a row the instant it becomes visible). Blocks the caller
+   while JS renders, so only enable it for lightweight handlers.
+   */
+  internal let synchronous: Bool
+
+  /**
    A function that is invoked to dispatch the event, no-op by default.
    Something that manages the events should override it.
    */
@@ -27,8 +35,9 @@ public final class EventDispatcher {
    Default initializer of the event dispatcher. Provide a custom name if you want the dispatcher
    to refer to an event with different name than the property holding the dispatcher.
    */
-  public init(_ customName: String? = nil) {
+  public init(_ customName: String? = nil, synchronous: Bool = false) {
     self.customName = customName
+    self.synchronous = synchronous
   }
 
   // MARK: - Calling as function

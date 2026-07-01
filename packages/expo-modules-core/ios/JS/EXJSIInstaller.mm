@@ -13,6 +13,12 @@
 
 namespace jsi = facebook::jsi;
 
+// EXPERIMENT: defined in ExpoViewEventEmitter.cpp. Forward-declared here to avoid a cross-directory
+// C++ header include; the linker resolves it. Caches the RuntimeScheduler for synchronous events.
+namespace expo {
+void setSyncEventScheduler(std::shared_ptr<facebook::react::RuntimeScheduler> scheduler);
+}
+
 /**
  Property name used to define the modules host object in the main object of the
  Expo JS runtime.
@@ -28,6 +34,12 @@ static NSString *modulesHostObjectPropertyName = @"modules";
   if (self = [super init]) {
     // Make shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
     _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), reinterpret_cast<jsi::Runtime *>(runtime));
+
+    // EXPERIMENT: cache the RuntimeScheduler so synchronous events (dispatchSync) can run a tick on
+    // the main thread. Done here because we're on the JS thread with a valid runtime.
+    if (auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(*_runtime)) {
+      expo::setSyncEventScheduler(binding->getRuntimeScheduler());
+    }
   }
   return self;
 }

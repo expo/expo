@@ -1,15 +1,25 @@
 import { requireNativeView } from 'expo';
-import { useRef, useState, type ComponentType, type ReactElement, type ReactNode } from 'react';
+import {
+  useMemo,
+  useRef,
+  useState,
+  type ComponentType,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 
 import { Slot } from '../SlotView';
 
-type VisibilityEvent = { nativeEvent: { index: number } };
+type KeyEvent = { nativeEvent: { key: string } };
 
 type NativeLazyListProps = {
-  count: number;
+  itemKeys: string[];
   estimatedItemSize?: number;
-  onItemAppear?: (event: VisibilityEvent) => void;
-  onItemDisappear?: (event: VisibilityEvent) => void;
+  onItemAppear?: (event: KeyEvent) => void;
+  onItemAppearSync?: (event: KeyEvent) => void;
+  onItemDisappear?: (event: KeyEvent) => void;
+  onSelectItem?: (event: KeyEvent) => void;
+  onDeleteItems?: (event: { nativeEvent: { indices: number[] } }) => void;
   children?: ReactNode;
 };
 
@@ -29,12 +39,27 @@ export interface LazyListProps {
    */
   estimatedItemSize?: number;
   /**
-   * Number of extra items to keep mounted on each side of the visible range. Because items mount
-   * through a round trip to the JS thread, mounting a few rows ahead of the scroll hides the blank
-   * flash that would otherwise appear during a fast scroll. Larger values keep more items mounted.
-   * @default 5
+   * Number of extra items to keep mounted on each side of the visible range. A small buffer keeps
+   * the rows just outside the viewport mounted with real content, which avoids layout glitches when
+   * content shifts (for example the row below a deleted item popping in from a placeholder).
+   * @default 4
    */
   overscan?: number;
+  /**
+   * Returns a stable, unique key for the item at `index` — the identity the native list uses to
+   * track each row. Provide keys tied to your data (not the position) so inserts, deletes, and
+   * reorders animate the correct row instead of reshuffling content. Defaults to the index.
+   */
+  keyExtractor?: (index: number) => string;
+  /**
+   * Called when a row is tapped, with its index.
+   */
+  onSelect?: (index: number) => void;
+  /**
+   * Called when rows are deleted via swipe-to-delete, with the deleted indices. Update your data so
+   * `count` reflects the removal.
+   */
+  onDelete?: (indices: number[]) => void;
   /**
    * Renders the item at the given index. Called only for items within the mounted window, not for
    * every item up front.
@@ -45,23 +70,41 @@ export interface LazyListProps {
 /**
  * An experimental `List` that mounts its items lazily as they scroll into view instead of mounting
  * all `count` items up front. It is backed by a native SwiftUI `List`: each row reports when it
- * appears and disappears, and only items within the visible range (padded by `overscan`) are
- * rendered on the JS side.
- *
- * Very fast flings may still briefly show blank rows while items mount, similar to `FlashList`,
- * because mounting an item requires a round trip to the JS thread.
+ * appears and disappears, and only the items within the visible range (padded by `overscan`) are
+ * rendered on the JS side. Rows are identified by `keyExtractor` so edits animate the correct row.
  */
 export function LazyList({
   count,
   estimatedItemSize = 44,
-  overscan = 5,
+  overscan = 4,
+  keyExtractor,
+  onSelect,
+  onDelete,
   renderItem,
 }: LazyListProps) {
-  // Native reports which rows are on screen; we own the mount policy. We mount the visible range
-  // padded by `overscan` on each side, so a row is already mounted before it scrolls into view.
+  const keyOf = keyExtractor ?? ((index: number) => String(index));
+
+  // Stable per-item keys for the whole list — the identity the native ForEach uses, so deletes and
+  // moves animate the correct row. Recomputed only when the count or extractor changes.
+  const itemKeys = useMemo(() => Array.from({ length: count }, (_, i) => keyOf(i)), [count, keyOf]);
+  const indexByKey = useMemo(() => {
+    const map = new Map<string, number>();
+    itemKeys.forEach((key, index) => map.set(key, index));
+    return map;
+  }, [itemKeys]);
+
+  // Windowing stays index-based; native reports keys, which we map back to indices here.
   const visible = useRef<Set<number>>(new Set());
-  const bounds = useRef({ first: 0, last: -1 });
   const [range, setRange] = useState({ start: 0, end: -1 });
+
+  // Cache the rendered element per index so an appear only renders the newly-added row (React bails
+  // on the reused element refs). Cleared when `renderItem` changes, keeping content in sync.
+  const elements = useRef<Map<number, ReactElement>>(new Map());
+  const renderItemRef = useRef(renderItem);
+  if (renderItemRef.current !== renderItem) {
+    renderItemRef.current = renderItem;
+    elements.current.clear();
+  }
 
   const updateWindow = () => {
     if (visible.current.size === 0) {
@@ -74,45 +117,65 @@ export function LazyList({
       last = Math.max(last, index);
     });
 
-    // `onItemAppear` fires only once a row is already at the edge of the screen, so there is no lead
-    // time to mount ahead of a fling. Bias the buffer toward the scroll direction: infer direction
-    // from how the visible range moved, then pad more on the leading side and less on the trailing.
-    const direction =
-      last !== bounds.current.last
-        ? Math.sign(last - bounds.current.last)
-        : Math.sign(first - bounds.current.first);
-    bounds.current = { first, last };
-    const lead = overscan * 3;
-    const start = Math.max(0, first - (direction < 0 ? lead : overscan));
-    const end = Math.min(count - 1, last + (direction > 0 ? lead : overscan));
-
-    // Bail out of the render when the window is unchanged (scrolling within the padded band).
+    const start = Math.max(0, first - overscan);
+    const end = Math.min(count - 1, last + overscan);
     setRange((prev) => (prev.start === start && prev.end === end ? prev : { start, end }));
   };
 
-  console.log('LazyList render', { count, range });
+  const appear = (key: string) => {
+    const index = indexByKey.get(key);
+    if (index !== undefined) {
+      visible.current.add(index);
+      updateWindow();
+    }
+  };
+  const disappear = (key: string) => {
+    const index = indexByKey.get(key);
+    if (index !== undefined) {
+      visible.current.delete(index);
+      updateWindow();
+    }
+  };
+
+  const items: ReactElement[] = [];
+  for (let index = range.start; index <= range.end; index++) {
+    let element = elements.current.get(index);
+    if (!element) {
+      const key = itemKeys[index];
+      if (key === undefined) {
+        continue;
+      }
+      element = (
+        <Slot key={key} name={key}>
+          {renderItem(index)}
+        </Slot>
+      );
+      elements.current.set(index, element);
+    }
+    items.push(element);
+  }
+  // Drop cached rows outside the window so the cache can't grow unbounded.
+  elements.current.forEach((_, index) => {
+    if (index < range.start || index > range.end) {
+      elements.current.delete(index);
+    }
+  });
 
   return (
     <LazyListNativeView
-      count={count}
+      itemKeys={itemKeys}
       estimatedItemSize={estimatedItemSize}
-      onItemAppear={({ nativeEvent: { index } }) => {
-        visible.current.add(index);
-        updateWindow();
+      onItemAppear={({ nativeEvent: { key } }) => appear(key)}
+      onItemAppearSync={({ nativeEvent: { key } }) => appear(key)}
+      onItemDisappear={({ nativeEvent: { key } }) => disappear(key)}
+      onSelectItem={({ nativeEvent: { key } }) => {
+        const index = indexByKey.get(key);
+        if (index !== undefined) {
+          onSelect?.(index);
+        }
       }}
-      onItemDisappear={({ nativeEvent: { index } }) => {
-        visible.current.delete(index);
-        updateWindow();
-      }}>
-      {range.end >= range.start &&
-        Array.from(
-          { length: range.end - range.start + 1 },
-          (_, offset) => range.start + offset
-        ).map((index) => (
-          <Slot key={index} name={String(index)}>
-            {renderItem(index)}
-          </Slot>
-        ))}
+      onDeleteItems={({ nativeEvent: { indices } }) => onDelete?.(indices)}>
+      {items}
     </LazyListNativeView>
   );
 }

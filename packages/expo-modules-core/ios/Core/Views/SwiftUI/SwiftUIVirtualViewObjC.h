@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSString *componentName;
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
+- (void)dispatchEventSync:(nonnull NSString *)eventName payload:(nullable id)payload;
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props NS_SWIFT_UI_ACTOR;
 

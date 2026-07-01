@@ -145,6 +145,18 @@ namespace react = facebook::react;
   });
 }
 
+- (void)dispatchEventSync:(nonnull NSString *)eventName payload:(nullable id)payload
+{
+  if (!_eventEmitter) {
+    return;
+  }
+  const auto &eventEmitter = static_cast<const expo::ExpoViewEventEmitter &>(*_eventEmitter);
+
+  eventEmitter.dispatchSync([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
+    return jsi::Value(runtime, expo::convertObjCObjectToJSIValue(runtime, payload));
+  });
+}
+
 #pragma mark - Methods to override in Swift
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props

@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-port=${2:-8081}
+port=${PORT:-8081}
 CURRENT_ENV=${NODE_ENV:-"development"}
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -34,6 +34,10 @@ if [ "${CURRENT_ENV}" = "test" ]; then
     "${DIR}/start-ios-e2e-test.ts" --test
 else
     echo " ☛  Running the iOS project..."
-    npx expo run:ios --port "${port}"
+    # Forward any extra args to `expo run:ios`
+    if [ "$#" -eq 0 ]; then
+        set -- -d
+    fi
+    npx expo run:ios --port "${port}" "$@"
 fi
 

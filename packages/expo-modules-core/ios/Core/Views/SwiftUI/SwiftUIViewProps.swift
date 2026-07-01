@@ -54,9 +54,9 @@ extension ExpoSwiftUI {
       objectWillChange.send()
     }
 
-    internal func setUpEvents(_ dispatcher: @escaping (_ eventName: String, _ payload: Any) -> Void) {
+    internal func setUpEvents(_ dispatcher: @escaping (_ eventName: String, _ payload: Any, _ synchronous: Bool) -> Void) {
       globalEventDispatcher.handler = { payload in
-        dispatcher(GLOBAL_EVENT_NAME, payload)
+        dispatcher(GLOBAL_EVENT_NAME, payload, false)
       }
 
       let mirror = Mirror(reflecting: self)
@@ -67,8 +67,8 @@ extension ExpoSwiftUI {
         guard let eventName = event.customName ?? convertLabelToKey(label) else {
           fatalError("The event has no name")
         }
-        event.handler = { payload in
-          dispatcher(eventName, payload)
+        event.handler = { [synchronous = event.synchronous] payload in
+          dispatcher(eventName, payload, synchronous)
         }
       }
     }
