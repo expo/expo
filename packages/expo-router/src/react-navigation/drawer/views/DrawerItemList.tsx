@@ -9,8 +9,8 @@ import {
   useLinkBuilder,
 } from '../../native';
 import type { DrawerDescriptorMap, DrawerNavigationHelpers } from '../types';
-import { DrawerItem } from './DrawerItem';
 import { useDrawerActions } from '../utils/useDrawerActions';
+import { DrawerItem } from './DrawerItem';
 
 type Props = {
   state: DrawerNavigationState<ParamListBase>;
@@ -38,7 +38,7 @@ export function DrawerItemList({ state, navigation, descriptors }: Props) {
 
   // `state.routes` is ordered by the navigator's back stack; render the drawer items
   // in stable declaration order and detect focus by key.
-  const orderedRoutes = useStableTabOrder(state);
+  const orderedRoutes = useStableTabOrder(state.routeNames, state.routes);
 
   return orderedRoutes.map((route) => {
     const focused = route.key === focusedRoute.key;

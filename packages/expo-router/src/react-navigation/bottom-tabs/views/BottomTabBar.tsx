@@ -240,7 +240,7 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
 
   // `state.routes` is ordered by the navigator's back stack; render the bar in stable
   // declaration order and detect focus by key.
-  const routes = useStableTabOrder(state);
+  const routes = useStableTabOrder(state.routeNames, state.routes);
 
   const tabBarHeight = useFrameSize((dimensions) =>
     getTabBarHeight({

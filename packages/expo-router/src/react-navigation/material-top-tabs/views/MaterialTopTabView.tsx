@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 
+import { useStableTabOrder } from '../../core/useStableTabOrder';
 import {
   CommonActions,
   type ParamListBase,
@@ -14,7 +15,6 @@ import type {
   MaterialTopTabNavigationConfig,
   MaterialTopTabNavigationHelpers,
 } from '../types';
-import { useStableTabOrder } from '../../core/useStableTabOrder';
 import { TabAnimationContext } from '../utils/TabAnimationContext';
 import { MaterialTopTabBar } from './MaterialTopTabBar';
 
@@ -50,7 +50,7 @@ export function MaterialTopTabView({
 
   // `state.routes` is ordered by the navigator's back stack; render the strip and
   // pager in stable declaration order and detect focus by key.
-  const orderedRoutes = useStableTabOrder(state);
+  const orderedRoutes = useStableTabOrder(state.routeNames, state.routes);
   const focusedKey = state.routes[state.index]!.key;
 
   const focusedIndex = useMemo(() => {
