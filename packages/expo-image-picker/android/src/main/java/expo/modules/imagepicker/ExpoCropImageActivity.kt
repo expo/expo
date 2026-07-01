@@ -334,6 +334,7 @@ class ExpoCropImageActivity :
   override fun onSetImageUriComplete(view: CropImageView, uri: Uri, error: Exception?) {
     if (error != null) {
       setResult(null, error, 1)
+      return
     }
     if (cropImageOptions.initialCropWindowRectangle != null) {
       cropImageView?.cropRect = cropImageOptions.initialCropWindowRectangle
