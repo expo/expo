@@ -1,4 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 export const CLI_PATH = require.resolve('../../bin/cli.js');
 export const CREATE_EXPO_BIN = require.resolve('create-expo/bin/create-expo.js');
@@ -67,10 +70,13 @@ export const executeCreateExpoCLIAsync = async (
   args: string[],
   options: ExecuteCLIOptions = { ignoreErrors: false }
 ) => {
+  // Isolate create-expo's tmpdir template cache because `create-expo --template` doesn't support parallel work
+  const cacheDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'create-expo-cache-'));
   try {
     const { stdout, stderr, status } = await spawnAsync(CREATE_EXPO_BIN, args, {
       cwd,
       stdio: 'pipe',
+      env: { ...process.env, TMPDIR: cacheDir, TMP: cacheDir, TEMP: cacheDir },
     });
 
     return processOutput({ stdout, stderr, status });
@@ -82,6 +88,8 @@ export const executeCreateExpoCLIAsync = async (
 
     const { stdout, stderr, status } = error;
     return processOutput({ stdout, stderr, status });
+  } finally {
+    await fs.promises.rm(cacheDir, { recursive: true, force: true });
   }
 };
 
