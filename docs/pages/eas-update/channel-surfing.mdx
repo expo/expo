@@ -12,7 +12,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 **Channel surfing** lets an installed release build request updates from a different EAS Update channel at runtime.
 
-In the default EAS Update flow, an updates URL and updates channel is fixed at build time. When building on EAS, this channel is set in your **eas.json** build profile. This channel is sent as the `expo-channel-name` request header to the updates URL and determines from which channel your app will receive updates. Channel surfing allows you to override that request header in your JavaScript code, allowing your app to request updates from a different channel.
+In the default EAS Update flow, the updates URL and updates channel are fixed at build time. When building on EAS, this channel is set in your **eas.json** build profile. It is sent as the `expo-channel-name` request header to the updates URL and determines which channel your app receives updates from. Channel surfing allows you to override that request header in your JavaScript code so that your app can request updates from a different channel.
 
 Channel surfing does not change native code or bypass update compatibility rules. The update on the selected channel must still match the installed app's platform and [runtime version](/eas-update/runtime-versions/).
 
