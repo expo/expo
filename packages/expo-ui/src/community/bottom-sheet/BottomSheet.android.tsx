@@ -200,7 +200,9 @@ export function BottomSheet(props: BottomSheetProps) {
               shouldDismissOnClickOutside: enablePanDownToClose,
             }}>
             <RNHostView matchContents={fitToContents}>
-              <View style={fitToContents ? undefined : { flex: 1 }}>
+              {/* flexGrow:1 + height:0 (flex-basis 0) fills RNHostView's measured height without
+                  inheriting the scrollable child's content height, which would block scrolling to the end. */}
+              <View style={fitToContents ? undefined : { flexGrow: 1, height: 0 }}>
                 <SheetScrollContextReset>{children}</SheetScrollContextReset>
               </View>
             </RNHostView>

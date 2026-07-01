@@ -241,13 +241,14 @@ export function BottomSheet(props: BottomSheetProps) {
             <Group modifiers={modifiers}>
               <RNHostView matchContents={fitToContents}>
                 {/* paddingTop compensates for tighter spacing between native drag indicator and content
-                    compared to gorhom's handle. flex:1 fills snap point height; omitted for fitToContents
+                    compared to gorhom's handle. flexGrow:1 + height:0 (flex-basis 0) fills the snap-point
+                    height without inheriting the scrollable child's intrinsic content height. Omitted for fitToContents
                     so RNHostView can measure natural content height. */}
                 <View
                   style={
                     fitToContents
                       ? { paddingTop: handleComponent !== null ? 16 : 0 }
-                      : { flex: 1, paddingTop: handleComponent !== null ? 16 : 0 }
+                      : { flexGrow: 1, height: 0, paddingTop: handleComponent !== null ? 16 : 0 }
                   }>
                   <SheetScrollContextReset>{children}</SheetScrollContextReset>
                 </View>
