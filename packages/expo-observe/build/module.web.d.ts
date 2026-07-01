@@ -1,9 +1,10 @@
 import { NativeModule } from 'expo';
 import { type LogEventOptions, type MetricAttributes } from 'expo-app-metrics';
-import type { ObserveConfig, ObserveModule, ObserveAttributes } from './types';
-declare class ExpoObserveModule extends NativeModule implements ObserveModule {
+import type { ObserveConfig, ObserveIntegrationsConfig, ObserveModule, ObserveModuleEvents, ObserveAttributes } from './types';
+declare class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements ObserveModule {
     dispatchEvents(): Promise<void>;
     configure(config: ObserveConfig): void;
+    getIntegrations(): ObserveIntegrationsConfig;
     logEvent(name: string, options?: LogEventOptions): void;
     markFirstRender(): void;
     markInteractive(attributes?: MetricAttributes): void;

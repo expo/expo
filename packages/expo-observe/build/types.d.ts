@@ -63,7 +63,7 @@ export type ObserveConfig = {
      */
     integrations?: ObserveIntegrationsConfig;
 };
-export type ObserveIntegrationsConfig = {
+export interface ObserveIntegrationsConfig {
     /**
      * Enables the `expo-router` integration, which records navigation metrics
      * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes.
@@ -84,13 +84,30 @@ export type ObserveIntegrationsConfig = {
      * @default false
      */
     'react-navigation'?: boolean;
+}
+/**
+ * Events emitted by the native `ExpoObserve` module.
+ */
+export type ObserveModuleEvents = {
+    /**
+     * Fired on every `configure(...)` call, carrying the resolved `integrations`
+     * config
+     */
+    configure: (payload: {
+        integrations: ObserveIntegrationsConfig;
+    }) => void;
 };
-export declare class ObserveModule extends NativeModule {
+export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
     dispatchEvents(): Promise<void>;
     /**
      * Configures observability settings.
      */
     configure(config: ObserveConfig): void;
+    /**
+     * Returns the `integrations` config from the most recent `configure(...)`
+     * call, or an empty object if `configure` has not run yet.
+     */
+    getIntegrations(): ObserveIntegrationsConfig;
     /**
      * Records a log event against the current main session. The event is
      * persisted locally and dispatched on the next `dispatchEvents()` flush.
