@@ -2012,6 +2012,53 @@ jobs:
   href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
 />
 
+#### `eas/upload_artifact`
+
+Uploads files from the job's workspace as an artifact attached to the workflow run. Uploaded artifacts appear in the run's **Artifacts** section and can be retrieved in a later job with [`eas/download_artifact`](#easdownload_artifact).
+
+> **info** In a custom (non-build) job, set `type: other` to upload a generic artifact. The `application-archive` and `build-artifact` types are reserved for build jobs — using them in a custom job fails with an error like `Uploading application archives outside of builds is not supported`.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - name: Run tests
+        run: ./scripts/run-tests.sh # writes results into ./results
+      # @info Upload whatever the previous step produced. #
+      - uses: eas/upload_artifact
+        # @info `if: always()` uploads results even when a previous step failed. #
+        if: ${{ always() }}
+        with:
+          type: other
+          name: test-results
+          path: |
+            results/**/*
+```
+
+##### Properties
+
+| Property       | Type    | Required    | Description                                                                                                                                                                                                                                                     |
+| -------------- | ------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `path`         | string  | <YesIcon /> | Path or newline-delimited list of paths to upload. Supports `*` and other [glob patterns](https://github.com/isaacs/node-glob#glob-primer).                                                                                                                     |
+| `type`         | string  | <NoIcon />  | Artifact type. In custom jobs use `other` (a generic artifact). Defaults to `other` when the job has no build platform, and to `application-archive` in build jobs. The build-scoped values `application-archive` and `build-artifact` only work in build jobs. |
+| `name`         | string  | <NoIcon />  | Name for the artifact, used to reference it from [`eas/download_artifact`](#easdownload_artifact).                                                                                                                                                              |
+| `metadata`     | json    | <NoIcon />  | Arbitrary metadata to attach to a generic (`other`) artifact.                                                                                                                                                                                                   |
+| `ignore_error` | boolean | <NoIcon />  | When `true`, an upload failure is logged but does not fail the step. Defaults to `false`.                                                                                                                                                                       |
+
+##### Outputs
+
+| Property      | Type   | Description                                                                                         |
+| ------------- | ------ | --------------------------------------------------------------------------------------------------- |
+| `artifact_id` | string | The ID of the uploaded artifact. Can be passed to [`eas/download_artifact`](#easdownload_artifact). |
+
+<BoxLink
+  title="eas/upload_artifact source code"
+  description="View the source code for the eas/upload_artifact function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadArtifact.ts"
+/>
+
 #### `eas/download_artifact`
 
 Downloads an artifact from EAS given an artifact's ID or name. Useful for sending artifacts from previous jobs to other services.
