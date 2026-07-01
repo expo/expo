@@ -4465,6 +4465,42 @@ importers:
         specifier: ^3.2.0
         version: 3.6.0
 
+  packages/expo-feedback:
+    devDependencies:
+      '@expo/config':
+        specifier: workspace:*
+        version: link:../@expo/config
+      '@expo/package-manager':
+        specifier: workspace:*
+        version: link:../@expo/package-manager
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
+      '@types/prompts':
+        specifier: ^2.0.6
+        version: 2.4.9
+      '@vercel/ncc':
+        specifier: ^0.38.3
+        version: 0.38.4
+      agent-cli-detector:
+        specifier: ^0.1.2
+        version: 0.1.2
+      arg:
+        specifier: ^5.0.2
+        version: 5.0.2
+      chalk:
+        specifier: ^4.0.0
+        version: 4.1.2
+      ci-info:
+        specifier: ^3.3.0
+        version: 3.9.0
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+      prompts:
+        specifier: ^2.3.2
+        version: 2.4.2
+
   packages/expo-file-system:
     dependencies:
       expo:
@@ -10047,6 +10083,11 @@ packages:
   agent-base@7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
+
+  agent-cli-detector@0.1.2:
+    resolution: {integrity: sha512-qdZ/9JFORtTKJNhT/IczMeEfEUbUU0K5umYeiIQHX+AjHs+Y9SXVzSgaYlpZeyNMrvuh2HpZiOTpvS57iPfBkQ==}
+    engines: {node: '>=18.18'}
+    hasBin: true
 
   aggregate-error@3.1.0:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
@@ -19099,6 +19140,8 @@ snapshots:
       - supports-color
 
   agent-base@7.1.4: {}
+
+  agent-cli-detector@0.1.2: {}
 
   aggregate-error@3.1.0:
     dependencies:
