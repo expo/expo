@@ -598,6 +598,97 @@ internal struct AccessibilityElementModifier: ViewModifier, Record {
   }
 }
 
+internal enum AccessibilityTraitType: String, Enumerable {
+  case isButton
+  case isHeader
+  case isImage
+  case isSelected
+  case isLink
+  case isModal
+  case isSummaryElement
+  case updatesFrequently
+  case startsMediaSession
+  case allowsDirectInteraction
+  case causesPageTurn
+  case isToggle
+  case playsSound
+  case isStaticText
+  case isSearchField
+  case isKeyboardKey
+  case isTabBar
+
+  func toNative() -> AccessibilityTraits? {
+    switch self {
+    case .isButton:
+      return .isButton
+    case .isHeader:
+      return .isHeader
+    case .isImage:
+      return .isImage
+    case .isSelected:
+      return .isSelected
+    case .isLink:
+      return .isLink
+    case .isModal:
+      return .isModal
+    case .isSummaryElement:
+      return .isSummaryElement
+    case .updatesFrequently:
+      return .updatesFrequently
+    case .startsMediaSession:
+      return .startsMediaSession
+    case .allowsDirectInteraction:
+      return .allowsDirectInteraction
+    case .causesPageTurn:
+      return .causesPageTurn
+    case .isToggle:
+      if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+        return .isToggle
+      }
+      return nil
+    case .playsSound:
+      return .playsSound
+    case .isStaticText:
+      return .isStaticText
+    case .isSearchField:
+      return .isSearchField
+    case .isKeyboardKey:
+      return .isKeyboardKey
+    case .isTabBar:
+      if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+        return .isTabBar
+      }
+      return nil
+    }
+  }
+}
+
+internal func combineAccessibilityTraits(_ traits: [AccessibilityTraitType]) -> AccessibilityTraits {
+  var combined: AccessibilityTraits = []
+  for trait in traits {
+    if let native = trait.toNative() {
+      combined.formUnion(native)
+    }
+  }
+  return combined
+}
+
+internal struct AccessibilityAddTraitsModifier: ViewModifier, Record {
+  @Field var traits: [AccessibilityTraitType] = []
+
+  func body(content: Content) -> some View {
+    content.accessibilityAddTraits(combineAccessibilityTraits(traits))
+  }
+}
+
+internal struct AccessibilityRemoveTraitsModifier: ViewModifier, Record {
+  @Field var traits: [AccessibilityTraitType] = []
+
+  func body(content: Content) -> some View {
+    content.accessibilityRemoveTraits(combineAccessibilityTraits(traits))
+  }
+}
+
 internal struct LayoutPriorityModifier: ViewModifier, Record {
   @Field var priority: Double = 0
 
@@ -1694,6 +1785,14 @@ extension ViewModifierRegistry {
 
     register("accessibilityElement") { params, appContext, _ in
       return try AccessibilityElementModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityAddTraits") { params, appContext, _ in
+      return try AccessibilityAddTraitsModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityRemoveTraits") { params, appContext, _ in
+      return try AccessibilityRemoveTraitsModifier(from: params, appContext: appContext)
     }
 
     register("layoutPriority") { params, appContext, _ in
