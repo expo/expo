@@ -78,7 +78,7 @@ test.describe('devtools-e2e', () => {
     await page.getByRole('button', { name: 'Open WebSocket' }).click();
 
     await expect(page.locator('#socket-log')).toContainText(
-      'message: {"type":"welcome","message":"Connected to the Hello World plugin server."}'
+      'message: {"type":"welcome","message":"Connected to the Hello World plugin server.","pathname":"/ws","search":"?source=webpage"}'
     );
     await expect(page.locator('#socket-log')).toContainText(
       'message: {"type":"echo","message":"Hello from the webpage!"}'

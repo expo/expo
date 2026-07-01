@@ -21,9 +21,26 @@ export type DevToolsPluginRequestHandler = (
  */
 export type DevToolsPluginWebSocketHandler = (
   socket: WebSocket,
-  request: IncomingMessage,
+  request: Request,
   server: WebSocketServer
 ) => void;
+
+function convertUpgradeRequest(request: IncomingMessage, route: string): Request {
+  const proto = 'encrypted' in request.socket && !!request.socket.encrypted ? 'https' : 'http';
+  const origin = `${proto}://${request.headers.host}`;
+  const url = new URL(request.url ?? '/', origin);
+  url.pathname = route;
+  const headers = new Headers();
+  const { rawHeaders } = request;
+  for (let index = 0; index < rawHeaders.length; index += 2) {
+    const name = rawHeaders[index];
+    const value = rawHeaders[index + 1];
+    if (name != null && value != null) {
+      headers.append(name, value);
+    }
+  }
+  return new Request(url.href, { method: request.method, headers });
+}
 
 export async function loadRequestHandlerAsync({
   packageName,
@@ -70,10 +87,13 @@ export async function loadWebSocketServerAsync({
             `must be a function (socket, request, server) => void.`
         );
       }
-      const server = new WebSocketServer({ noServer: true });
-      server.on('connection', (socket, request) => handler(socket, request, server));
       // Routes are mounted relative to the plugin endpoint, so they must be absolute.
-      return [route.startsWith('/') ? route : `/${route}`, server];
+      const normalizedRoute = route.startsWith('/') ? route : `/${route}`;
+      const server = new WebSocketServer({ noServer: true });
+      server.on('connection', (socket, request) =>
+        handler(socket, convertUpgradeRequest(request, normalizedRoute), server)
+      );
+      return [normalizedRoute, server];
     })
   );
 }
