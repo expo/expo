@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import { FetchClient } from './clients/FetchClient';
 import { FetchDetachedClient } from './clients/FetchDetachedClient';
 import { TelemetryClient, TelemetryClientStrategy, TelemetryRecord } from './types';
+import { getAgentTelemetryContext } from './utils/agent';
 import { createContext } from './utils/context';
 import { getAnonymousId } from '../../api/user/UserSettings';
 import { env } from '../env';
@@ -90,6 +91,8 @@ export class Telemetry {
   }
 
   private recordInternal(records: TelemetryRecord[]) {
+    const agent = getAgentTelemetryContext();
+
     return this.client.record(
       records.map((record) => ({
         ...record,
@@ -101,6 +104,7 @@ export class Telemetry {
         context: {
           ...this.context,
           sessionId: this.actor.sessionId,
+          ...(agent ? { agent } : {}),
           client: { mode: this.client.strategy },
         },
       }))
