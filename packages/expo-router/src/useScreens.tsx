@@ -9,6 +9,8 @@ import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import { useGuardRedirect } from './layouts/GuardContext';
+import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { unstable_navigationEvents } from './navigationEvents';
@@ -319,6 +321,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
+    // A guarded route (its `Protected` guard is `false`) stays a real screen but renders a
+    // `<Redirect>` instead of its content. `undefined` when the route isn't guarded.
+    const guardRedirect = useGuardRedirect(value.route);
 
     const ResolvedSuspenseFallback =
       EXPO_ROUTER_IMPORT_MODE === 'lazy'
@@ -329,7 +334,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
 
-    if (isFocused) {
+    if (isFocused && !guardRedirect) {
       const state = navigation.getState();
       const isLeaf = !(state && 'state' in state.routes[state.index]!);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
@@ -365,6 +370,16 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     const isRouteType = value.type === 'route';
     const hasRouteKey = !!route?.key;
+
+    // Guard failed: redirect instead of rendering the route. `Redirect` fires inside
+    // `useFocusEffect`, so a preloaded/unfocused guarded route won't redirect until it's focused.
+    if (guardRedirect != null) {
+      return (
+        <Route node={value} params={route?.params}>
+          <Redirect href={guardRedirect} />
+        </Route>
+      );
+    }
 
     return (
       <Route node={value} params={route?.params}>

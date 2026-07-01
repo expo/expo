@@ -634,7 +634,7 @@ describe('prefetch', () => {
     });
   });
 
-  it('does not throw an exception when prefetching a protected route with guard false', () => {
+  it('prefetches a guarded route with guard false without focusing (so it does not redirect)', () => {
     renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
@@ -649,23 +649,39 @@ describe('prefetch', () => {
       ),
     });
 
-    // There was no state update, because prefetch of protected route didn't make any state changes, so we received the initial state
-    // This is stale state created by router
+    // A guarded route is no longer dropped, so it can be prefetched like any other route. Prefetch
+    // does not focus it, so its guard redirect never fires — `test` sits in the state, unfocused.
     expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
+          key: expect.any(String),
           name: '__root',
+          params: undefined,
           state: {
+            index: 0,
+            key: expect.any(String),
+            routeNames: ['test', 'index'],
             routes: [
               {
+                key: expect.any(String),
                 name: 'index',
                 params: undefined,
                 path: '/',
               },
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
             ],
+            stale: false,
           },
         },
       ],
+      stale: false,
     });
   });
 
