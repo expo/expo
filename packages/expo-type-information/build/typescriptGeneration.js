@@ -386,7 +386,7 @@ function buildRecordTypeAlias(recordType, exported) {
     });
 }
 function buildEnumTypeDeclaration(enumType, exported, declared) {
-    return typescript_1.default.factory.createEnumDeclaration(constructModifiersArray({ exported, declare: declared }), enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase, typescript_1.default.factory.createStringLiteral(enumcase))));
+    return typescript_1.default.factory.createEnumDeclaration(constructModifiersArray({ exported, declare: declared }), enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase, enumType.stringBacked ? typescript_1.default.factory.createStringLiteral(enumcase) : undefined)));
 }
 function buildMissingTypesDeclarations(ctx) {
     if (ctx.missingTypes.size === 0) {

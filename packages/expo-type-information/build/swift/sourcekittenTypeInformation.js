@@ -525,9 +525,11 @@ function parseEnumStructure(enumStructure) {
         .flatMap((sub) => sub['key.substructure'])
         .map((sub) => sub['key.name'].split('(', 1)[0])
         .filter((enumcase) => enumcase !== undefined);
+    const stringBacked = !enumStructure['key.inheritedtypes']?.find((v) => v['key.name'] === 'Int');
     return {
         name: enumStructure['key.name'],
         cases: enumcases,
+        stringBacked,
     };
 }
 function sortModuleClassDeclaration(moduleClassDeclaration) {
