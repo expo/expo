@@ -36,6 +36,9 @@ private fun Project.maybeOverrideCmakeVersion() {
   logger.quiet(
     "${"[ExpoRootProject]".withColor(Colors.GREEN)} Overriding CMake version: ${cmakeVersion.withColor(Colors.GREEN)}"
   )
+  logger.quiet(
+    "TEST"
+  )
 
   val applyCmakeVersion = { subproject: Project ->
     val android = subproject.extensions.getByType(CommonExtension::class.java)
