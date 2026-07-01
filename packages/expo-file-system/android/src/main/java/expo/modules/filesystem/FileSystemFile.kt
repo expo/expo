@@ -2,6 +2,7 @@ package expo.modules.filesystem
 
 import android.net.Uri
 import android.util.Base64
+import expo.modules.filesystem.unifiedfile.ContentProviderFile
 import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.kotlin.exception.Exceptions
@@ -62,13 +63,31 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun openHandle(mode: FileMode?): FileSystemFileHandle {
     val fileImpl = file
-    val resolvedMode = mode ?: if (fileImpl is SAFDocumentFile) FileMode.READ else FileMode.READ_WRITE
+    val resolvedMode = mode ?: when (fileImpl) {
+      is SAFDocumentFile, is ContentProviderFile -> FileMode.READ
+      else -> FileMode.READ_WRITE
+    }
     for (permission in resolvedMode.requiredPermissions()) {
       validatePermission(permission)
     }
     return when (fileImpl) {
       is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, resolvedMode)
       is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
+      is ContentProviderFile -> {
+        if (resolvedMode == FileMode.READ_WRITE) {
+          throw UnsupportedContentUriReadWriteException()
+        }
+        try {
+          FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
+        } catch (e: Exception) {
+          throw Exceptions.IllegalStateException(
+            "Failed to open file handle for content:// URI: ${fileImpl.uri}. " +
+              "The content provider may not support random access. " +
+              "Try reading the file using File.text() or File.bytes() instead.",
+            e
+          )
+        }
+      }
       else -> throw Exceptions.IllegalStateException("File handle is not supported for ${file.uri}")
     }
   }

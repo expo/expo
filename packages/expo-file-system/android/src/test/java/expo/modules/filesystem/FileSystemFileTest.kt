@@ -70,6 +70,30 @@ class FileSystemFileTest {
   }
 
   @Test
+  fun openHandleRejectsReadWriteForSAFContentUriBeforeOpeningProvider() {
+    val file = FileSystemFile(Uri.parse("content://com.android.externalstorage.documents/tree/primary%3ADownload"))
+      .withAppContext(permissionServiceReturning(EnumSet.allOf(FilePermissionService.Permission::class.java)))
+
+    val exception = assertThrows(UnsupportedContentUriReadWriteException::class.java) {
+      file.openHandle(FileMode.READ_WRITE)
+    }
+
+    assertTrue(exception.message?.contains("READ_WRITE mode is not supported for content:// URIs") == true)
+  }
+
+  @Test
+  fun openHandleRejectsReadWriteForGenericContentUriBeforeOpeningProvider() {
+    val file = FileSystemFile(Uri.parse("content://expo-file-system-test-provider/file.txt"))
+      .withAppContext(permissionServiceReturning(EnumSet.allOf(FilePermissionService.Permission::class.java)))
+
+    val exception = assertThrows(UnsupportedContentUriReadWriteException::class.java) {
+      file.openHandle(FileMode.READ_WRITE)
+    }
+
+    assertTrue(exception.message?.contains("READ_WRITE mode is not supported for content:// URIs") == true)
+  }
+
+  @Test
   fun deleteRequiresWritePermissionBeforeDeletingFile() {
     val source = temporaryFolder.newFile("delete-target.txt")
     val file = FileSystemFile(Uri.fromFile(source))
