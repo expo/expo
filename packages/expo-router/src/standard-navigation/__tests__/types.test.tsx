@@ -87,6 +87,65 @@ export const _options: OptionsFn = ({ route, theme }) => {
 };
 
 // ---------------------------------------------------------------------------
+// CreateProps generic: content-only props injected by `createProps` are separate from the
+// navigator-element props, and `createProps` is required once they're declared.
+// ---------------------------------------------------------------------------
+
+type NavProps = { tintColor?: string };
+type Injected = { routeNames: string[]; preload: (name: string) => void };
+
+const SplitNav = unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  Injected
+>(
+  (_args: NavigatorContentProps<Opts, EventMap, NavProps & Injected>) => null,
+  TabRouter,
+  { createProps: () => ({ routeNames: [], preload: () => {} }) }
+);
+
+type SplitElementProps = ComponentProps<typeof SplitNav>;
+
+// NavigatorProps reach the navigator element...
+export type _ElementHasNavProp = Expect<
+  Equal<'tintColor' extends keyof SplitElementProps ? true : false, true>
+>;
+// ...but the createProps-injected props do NOT.
+export type _ElementLacksInjectedRoutes = Expect<
+  Equal<'routeNames' extends keyof SplitElementProps ? true : false, false>
+>;
+export type _ElementLacksInjectedPreload = Expect<
+  Equal<'preload' extends keyof SplitElementProps ? true : false, false>
+>;
+
+// `createProps` is required when `CreateProps` is non-empty: an `options` object without it errors.
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  Injected
+>(
+  (_args: NavigatorContentProps<Opts, EventMap, NavProps & Injected>) => null,
+  TabRouter,
+  // @ts-expect-error `createProps` is required because `Injected` is non-empty.
+  { useOnlyUserDefinedScreens: true }
+);
+
+// `createProps` stays optional when there are no extra `CreateProps` (default generic).
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions
+>((_args: NavigatorContentProps<Opts, EventMap, NavProps>) => null, TabRouter);
+
+// ---------------------------------------------------------------------------
 // The exact example from the "Custom navigators" guide
 // (docs/pages/router/advanced/custom-navigators.mdx) must type-check, so the
 // snippet users copy keeps compiling.

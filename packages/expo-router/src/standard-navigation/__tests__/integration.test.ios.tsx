@@ -376,6 +376,56 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().state.routes[lastArgs().state.index]!.name).toBe('second');
   });
 
+  // `createProps` receives the navigator's `descriptors`, a `describe` function, and a `getKey`
+  // helper. `describe` resolves options for a route NOT yet in `state` (e.g. a lazy tab), and
+  // `getKey` yields the deterministic key the router will assign once it materializes — the basis
+  // for the placeholder descriptors native tabs build up front.
+  it('exposes descriptors, describe, and getKey (incl. for not-yet-present routes) to createProps', () => {
+    const StandardWithDescribe = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      { presentTitles?: string[]; lazyTitle?: string; lazyKey?: string },
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      useOnlyUserDefinedScreens: true,
+      createProps: ({ state, descriptors, describe, getKey }) => {
+        const presentNames = new Set(state.routes.map((r) => r.name));
+        const lazyName = state.routeNames.find((name) => !presentNames.has(name));
+        return {
+          presentTitles: Object.values(descriptors).map((d) => d.options.title ?? ''),
+          // Resolve the lazy route's declared options without it being in `state`, keyed by `getKey`.
+          lazyTitle: lazyName
+            ? describe({ key: getKey(lazyName), name: lazyName }, true).options.title
+            : undefined,
+          lazyKey: lazyName ? getKey(lazyName) : undefined,
+        };
+      },
+    });
+
+    renderRouter({
+      _layout: () => (
+        <StandardWithDescribe>
+          <StandardWithDescribe.Screen name="index" options={{ title: 'Home' }} />
+          <StandardWithDescribe.Screen name="second" options={{ title: 'Settings' }} />
+        </StandardWithDescribe>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    // Only `index` is present; its descriptor is exposed with resolved options.
+    expect(lastArgs().presentTitles).toEqual(['Home']);
+    // `describe(..., true)` resolved the not-yet-present `second`'s declared options.
+    expect(lastArgs().lazyTitle).toBe('Settings');
+
+    // `getKey` returns the key the router actually assigns once `second` materializes — so a
+    // placeholder built with it reconciles onto the real route instead of remounting.
+    const lazyKey = lastArgs().lazyKey as string;
+    act(() => router.navigate('/second'));
+    expect(lastArgs().state.routes.find((r) => r.name === 'second')!.key).toBe(lazyKey);
+  });
+
   // initialRouteName is a router option, not a NavigatorContent prop: it is destructured out of the
   // props spread so it never reaches the content component (the focused route itself is URL-driven).
   it('does not leak initialRouteName to NavigatorContent', () => {
@@ -536,16 +586,17 @@ describe('custom-navigators guide example', () => {
   // Mirrors the "minimal tab navigator" snippet in docs/pages/router/advanced/custom-navigators.mdx.
   // `state.routes` is a subset, so the example preloads every declared screen via `createProps` to
   // render all tabs from the first frame.
-  // Props injected by `createProps` are optional so they aren't required on the `<Tabs>` element
-  // (it's rendered without them); the content still receives them at runtime.
-  type CreateProps = { routeNames?: string[]; preload?: (name: string) => void };
+  // Props injected by `createProps` live in their own `CreateProps` generic (the 6th type arg), so
+  // they reach `NavigatorContent` but are NOT accepted on the `<Tabs>` element. Declaring a non-empty
+  // `CreateProps` makes `createProps` required.
+  type CreateProps = { routeNames: string[]; preload: (name: string) => void };
   type TabsContentProps = NavigatorContentProps<{ title?: string }, Record<string, never>, CreateProps>;
 
   function TabsContent({ state, descriptors, actions, routeNames, preload }: TabsContentProps) {
     const focusedRoute = state.routes[state.index]!;
 
     useEffect(() => {
-      routeNames?.forEach((name) => preload?.(name));
+      routeNames.forEach((name) => preload(name));
     }, [routeNames, preload]);
 
     return (
@@ -572,8 +623,9 @@ describe('custom-navigators guide example', () => {
     { title?: string },
     TabNavigationState<ParamListBase>,
     Record<string, never>,
-    CreateProps,
-    TabRouterOptions
+    object,
+    TabRouterOptions,
+    CreateProps
   >(TabsContent, TabRouter, {
     createProps: ({ state, dispatch }) => ({
       routeNames: state.routeNames,

@@ -486,9 +486,16 @@ describe('Dynamic tab visibility remounting', () => {
         fireEvent.press(screen.getByTestId('toggle'));
       });
 
-      // Verify remount occurred - both screens mount after showing
-      expect(onMount).toHaveBeenCalledTimes(2);
+      // Verify remount occurred - the already-materialized `index` remounts. The newly shown
+      // `second` is a lazy tab, so it does not mount until it is focused.
+      expect(onMount).toHaveBeenCalledTimes(1);
       expect(onMount).toHaveBeenCalledWith('index');
+
+      // Navigating to the shown tab mounts it lazily.
+      onMount.mockClear();
+      act(() => {
+        router.navigate('/second');
+      });
       expect(onMount).toHaveBeenCalledWith('second');
     });
 
@@ -532,10 +539,17 @@ describe('Dynamic tab visibility remounting', () => {
         fireEvent.press(screen.getByTestId('toggle'));
       });
 
-      // Verify remount occurred - all screens remount when adding trigger
-      expect(onMount).toHaveBeenCalledTimes(3);
+      // Verify remount occurred - the already-materialized `index` and `second` remount. The
+      // newly added `third` is a lazy tab, so it does not mount until it is focused.
+      expect(onMount).toHaveBeenCalledTimes(2);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('second');
+
+      // Navigating to the added tab mounts it lazily.
+      onMount.mockClear();
+      act(() => {
+        router.navigate('/third');
+      });
       expect(onMount).toHaveBeenCalledWith('third');
     });
 
@@ -781,8 +795,15 @@ describe('Dynamic tab visibility remounting', () => {
         fireEvent.press(screen.getByTestId('toggle'));
       });
 
-      expect(onMount).toHaveBeenCalledTimes(2);
+      // The already-materialized `index` remounts. The re-shown nested Stack tab is lazy, so it
+      // does not mount until it is focused - and its state has reset back to `stack/index`.
+      expect(onMount).toHaveBeenCalledTimes(1);
       expect(onMount).toHaveBeenCalledWith('index');
+
+      onMount.mockClear();
+      act(() => {
+        router.navigate('/stack');
+      });
       expect(onMount).toHaveBeenCalledWith('stack-index');
     });
   });
