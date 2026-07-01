@@ -171,6 +171,7 @@ export type FunctionDeclaration = {
   returnType: Type;
   arguments: Argument[];
   parameters: Type[];
+  isStatic: boolean;
 } & DefinitionOffset;
 
 /**
