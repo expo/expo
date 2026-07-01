@@ -391,6 +391,128 @@ describe(createRequestHandler, () => {
       expect(new URL(loaderRequest.url).pathname).toBe('/nested/');
     });
   });
+
+  describe('pageHeaders', () => {
+    function createHandler(manifest: Manifest, getLoaderData = jest.fn()) {
+      return createRequestHandler({
+        getRoutesManifest: jest.fn(async () => manifest),
+        getHtml: jest.fn(async () => '<html></html>'),
+        getApiRoute: jest.fn(),
+        getMiddleware: jest.fn(),
+        getLoaderData,
+      });
+    }
+
+    const indexRoute = {
+      file: 'index',
+      page: '/',
+      namedRegex: /^\/$/,
+      routeKeys: {},
+    };
+
+    it('applies matching `pageHeaders` to response', async () => {
+      const handler = createHandler({
+        htmlRoutes: [indexRoute],
+        apiRoutes: [],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+        pageHeaders: [
+          { namedRegex: /^\/$/, routeKeys: {}, headers: { 'X-Frame-Options': 'DENY' } },
+          { namedRegex: /^\/other$/, routeKeys: {}, headers: { 'X-Frame-Options': 'SAMEORIGIN' } },
+        ],
+      });
+
+      const response = await handler(new Request('http://localhost/'));
+
+      expect(response.headers.get('X-Frame-Options')).toBe('DENY');
+    });
+
+    it('leaves response untouched when no rule matches', async () => {
+      const handler = createHandler({
+        htmlRoutes: [indexRoute],
+        apiRoutes: [],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+        pageHeaders: [{ namedRegex: /^\/other$/, routeKeys: {}, headers: { 'X-Test': 'no' } }],
+      });
+
+      const response = await handler(new Request('http://localhost/'));
+
+      expect(response.headers.get('X-Test')).toBeNull();
+    });
+
+    it('overrides scalar headers', async () => {
+      const handler = createHandler({
+        htmlRoutes: [indexRoute],
+        apiRoutes: [],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+        headers: { 'Cache-Control': 'public, max-age=60', 'X-Powered-By': 'expo-server' },
+        pageHeaders: [{ namedRegex: /^\/$/, routeKeys: {}, headers: { 'Cache-Control': 'no-store' } }],
+      });
+
+      const response = await handler(new Request('http://localhost/'));
+
+      expect(response.headers.get('Cache-Control')).toBe('no-store');
+      expect(response.headers.get('X-Powered-By')).toBe('expo-server');
+    });
+
+    it('accumulates array headers', async () => {
+      const handler = createHandler({
+        htmlRoutes: [indexRoute],
+        apiRoutes: [],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+        headers: { 'Set-Cookie': ['session=1'] },
+        pageHeaders: [
+          { namedRegex: /^\/$/, routeKeys: {}, headers: { 'Set-Cookie': ['a=1', 'b=2'] } },
+        ],
+      });
+
+      const response = await handler(new Request('http://localhost/'));
+
+      expect(response.headers.get('Set-Cookie')).toBe('session=1, a=1, b=2');
+    });
+
+    it('matches the requested path, not the rewritten target', async () => {
+      const handler = createHandler({
+        htmlRoutes: [{ file: 'new', page: '/new', namedRegex: /^\/new\/?$/, routeKeys: {} }],
+        apiRoutes: [],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [{ file: '', page: '/new', namedRegex: /^\/old\/?$/, routeKeys: {} }],
+        pageHeaders: [
+          { namedRegex: /^\/old\/?$/, routeKeys: {}, headers: { 'X-Matched': 'old' } },
+          { namedRegex: /^\/new\/?$/, routeKeys: {}, headers: { 'X-Matched': 'new' } },
+        ],
+      });
+
+      const response = await handler(new Request('http://localhost/old'));
+
+      expect(response.headers.get('X-Matched')).toBe('old');
+    });
+
+    it('does not apply `pageHeaders` to redirects', async () => {
+      const handler = createHandler({
+        htmlRoutes: [],
+        apiRoutes: [],
+        notFoundRoutes: [],
+        redirects: [{ file: '', page: '/new', namedRegex: /^\/red\/?$/, routeKeys: {} }],
+        rewrites: [],
+        pageHeaders: [{ namedRegex: /^\/red\/?$/, routeKeys: {}, headers: { 'X-Matched': 'red' } }],
+      });
+
+      const response = await handler(new Request('http://localhost/red'));
+
+      expect(response.status).toBe(302);
+      expect(response.headers.get('Location')).toBe('/new');
+      expect(response.headers.get('X-Matched')).toBeNull();
+    });
+  });
 });
 
 function createHtmlStream(html: string): ReadableStream<Uint8Array> {

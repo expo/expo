@@ -94,6 +94,8 @@ export function createRequestHandler({
 
     let request = incomingRequest;
     let url = new URL(request.url);
+    // `pageHeaders` match the requested path, not the rewritten target, so capture it before rewrites.
+    const requestedPathname = url.pathname;
 
     if (manifest.middleware) {
       const middleware = await getMiddleware(manifest.middleware);
@@ -140,6 +142,16 @@ export function createRequestHandler({
       }
     }
 
+    // Redirects and middleware early-returns above bypass `pageHeaders`, like the global `headers`.
+    const response = await resolveRouteResponse(request, url, manifest);
+    return applyPageHeaders(requestedPathname, response);
+  }
+
+  async function resolveRouteResponse(
+    request: Request,
+    url: URL,
+    manifest: Manifest
+  ): Promise<Response> {
     // First, test static routes and loader data requests
     if (request.method === 'GET' || request.method === 'HEAD') {
       const isLoaderRequest = url.pathname.startsWith(LOADER_PREFIX + '/');
@@ -220,20 +232,8 @@ export function createRequestHandler({
 
     let modifiedResponseInit = responseInit;
 
-    // Apply user-defined headers, if provided
     if (manifest?.headers) {
-      for (const headerName in manifest.headers) {
-        if (Array.isArray(manifest.headers[headerName])) {
-          for (const headerValue of manifest.headers[headerName]) {
-            modifiedResponseInit.headers.append(headerName, headerValue);
-          }
-        } else if (
-          manifest.headers[headerName] != null &&
-          !modifiedResponseInit.headers.has(headerName)
-        ) {
-          modifiedResponseInit.headers.set(headerName, manifest.headers[headerName]);
-        }
-      }
+      mergeHeaders(modifiedResponseInit.headers, manifest.headers, false);
     }
 
     // Callback call order matters, general rule is to call more specific callbacks first.
@@ -266,15 +266,7 @@ export function createRequestHandler({
     route: (Route & { type?: CallbackRouteType }) | null,
     response: Response
   ): Response {
-    const modifiedResponseInit: ResponseInitLike = {
-      headers: new Headers(response.headers),
-      status: response.status,
-      statusText: response.statusText,
-      // NOTE(@kitten): Depending on if workerd types are used this may not be defined
-      cf: (response as Response & { cf?: unknown }).cf,
-      webSocket: (response as Response & { webSocket?: unknown }).webSocket,
-    };
-    return createResponse(routeType, route, response.body, modifiedResponseInit);
+    return createResponse(routeType, route, response.body, responseInitFrom(response));
   }
 
   async function respondNotFoundHTML(
@@ -381,5 +373,49 @@ export function createRequestHandler({
       status,
       headers: { Location: target },
     });
+  }
+
+  // Some responses have immutable headers, so clone the init rather than mutating in place.
+  function responseInitFrom(response: Response): ResponseInitLike {
+    return {
+      headers: new Headers(response.headers),
+      status: response.status,
+      statusText: response.statusText,
+      // NOTE(@kitten): Depending on if workerd types are used this may not be defined
+      cf: (response as Response & { cf?: unknown }).cf,
+      webSocket: (response as Response & { webSocket?: unknown }).webSocket,
+    };
+  }
+
+  // Array values always append; a scalar replaces an existing value only when `override` is set.
+  function mergeHeaders(
+    target: Headers,
+    source: Record<string, string | string[]>,
+    override: boolean
+  ): void {
+    for (const name in source) {
+      const value = source[name];
+      if (Array.isArray(value)) {
+        for (const headerValue of value) {
+          target.append(name, headerValue);
+        }
+      } else if (value != null && (override || !target.has(name))) {
+        target.set(name, value);
+      }
+    }
+  }
+
+  // Matches EAS Hosting's SSG merge so server and static output apply `pageHeaders` the same way.
+  function applyPageHeaders(pathname: string, response: Response): Response {
+    const matching = manifest?.pageHeaders?.filter((rule) => rule.namedRegex.test(pathname)) ?? [];
+    if (!matching.length) {
+      return response;
+    }
+
+    const init = responseInitFrom(response);
+    for (const rule of matching) {
+      mergeHeaders(init.headers, rule.headers, true);
+    }
+    return new Response(response.body, init);
   }
 }
