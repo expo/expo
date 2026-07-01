@@ -64,15 +64,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-client (57.0.3):
+  - expo-dev-client (57.0.4):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (57.0.3):
+  - expo-dev-launcher (57.0.4):
     - EXManifests
-    - expo-dev-launcher/Main (= 57.0.3)
+    - expo-dev-launcher/Main (= 57.0.4)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -101,7 +101,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Main (57.0.3):
+  - expo-dev-launcher/Main (57.0.4):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -132,7 +132,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Tests (57.0.3):
+  - expo-dev-launcher/Tests (57.0.4):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -167,7 +167,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Unsafe (57.0.3):
+  - expo-dev-launcher/Unsafe (57.0.4):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -197,8 +197,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu (57.0.3):
-    - expo-dev-menu/Main (= 57.0.3)
+  - expo-dev-menu (57.0.4):
+    - expo-dev-menu/Main (= 57.0.4)
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -221,7 +221,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - expo-dev-menu-interface (57.0.0)
-  - expo-dev-menu/Main (57.0.3):
+  - expo-dev-menu/Main (57.0.4):
     - EXManifests
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -247,7 +247,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/Tests (57.0.3):
+  - expo-dev-menu/Tests (57.0.4):
     - ExpoModulesTestCore
     - hermes-engine
     - Nimble
@@ -273,7 +273,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/UITests (57.0.3):
+  - expo-dev-menu/UITests (57.0.4):
     - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
@@ -713,7 +713,7 @@ PODS:
     - ExpoModulesCore
   - EXStructuredHeaders (57.0.0)
   - EXStructuredHeaders/Tests (57.0.0)
-  - EXUpdates (57.0.4):
+  - EXUpdates (57.0.5):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -741,7 +741,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - EXUpdates/Tests (57.0.4):
+  - EXUpdates/Tests (57.0.5):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -4041,9 +4041,9 @@ SPEC CHECKSUMS:
   EXJSONUtils: 55eca2b6f8fc320cb36933cf45c4f2200a441589
   EXManifests: 66a0e4af8cdb58c0983d462d886136b6d56eee38
   Expo: 15f5a16e9369278c1781ad3aa17d364245703635
-  expo-dev-client: c75c8b9f0cbea96a0959438102d7ce2b0ad49465
-  expo-dev-launcher: 24fe56ae4a0754d7bffcce0ad5c8b16bf3c02d61
-  expo-dev-menu: d592b33bf68fd8a672d43e857d290800cb6fe9e6
+  expo-dev-client: f4719225c0112b120a71f7a5f3f0899a4b8bb9d5
+  expo-dev-launcher: de8f2f986d2b9d43db447c8da07e57d3458519d5
+  expo-dev-menu: c2bc7829c7c926cc31aec1b9ab64663fc171f050
   expo-dev-menu-interface: 7a59e803916fbfd1b96c75ff91ea8dddac7e722f
   ExpoAgeRange: a7624c5fd5260020f510cbe3cd59ebe19fc96a99
   ExpoAppIntegrity: 22323a9362d902dadb5a8d2a5ae09752754fff77
@@ -4118,10 +4118,10 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 02cadd596e97af23bccef812dbb9d54b2c235465
   ExpoWebBrowser: 32dfd25ad5d384028137a0de71991f28663562e0
   EXStructuredHeaders: 1423c3602a30eb078e03b63b251ef912267dd4c0
-  EXUpdates: 6bfc710fb7d7219ec3da729e72ae003e523f0c17
+  EXUpdates: b9dd8650e01aa0621ade637ebcac5faec7448373
   EXUpdatesInterface: 492cdb30f3889cc35d9e737a4b5fc3aec39d1131
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: e7da7cc9b9a10da60fe10053bf7d63e827469bf9
+  hermes-engine: 4c998771d5218e20701b63d8358199a520a54447
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

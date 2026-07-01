@@ -356,7 +356,7 @@ PODS:
     - ExpoModulesCore
   - EXStructuredHeaders (57.0.0)
   - EXStructuredHeaders/Tests (57.0.0)
-  - EXUpdates (57.0.4):
+  - EXUpdates (57.0.5):
     - boost
     - DoubleConversion
     - EASClient
@@ -390,7 +390,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - EXUpdates/Tests (57.0.4):
+  - EXUpdates/Tests (57.0.5):
     - boost
     - DoubleConversion
     - EASClient
@@ -4794,7 +4794,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 02cadd596e97af23bccef812dbb9d54b2c235465
   ExpoWebBrowser: 32dfd25ad5d384028137a0de71991f28663562e0
   EXStructuredHeaders: 1423c3602a30eb078e03b63b251ef912267dd4c0
-  EXUpdates: 90b1f8ee0fd3c0dc44333c20ea38b13155780ec7
+  EXUpdates: 7767f05e4f369f04c17d4998737f9fdb986b6980
   EXUpdatesInterface: 492cdb30f3889cc35d9e737a4b5fc3aec39d1131
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 688bade2cc6ee3de2ba9a411c85c21fd908af3bc
@@ -4811,7 +4811,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 17bf5ede7a70550a20296df96654d1ff4baab83f
+  hermes-engine: 42f0ed2cf70592b35e2ca49a6b725d31c8ad4136
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
