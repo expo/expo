@@ -1,5 +1,5 @@
 import { Picker } from '@react-native-picker/picker';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 import {
   useVideoPlayer,
   VideoView,

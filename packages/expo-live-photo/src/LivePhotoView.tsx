@@ -1,4 +1,4 @@
-import { requireNativeViewManager, UnavailabilityError } from 'expo-modules-core';
+import { requireNativeView, UnavailabilityError } from 'expo';
 import { useRef, useImperativeHandle } from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 
@@ -16,7 +16,7 @@ type NativeLivePhotoViewProps = LivePhotoViewProps & {
 };
 
 const NativeView: React.ComponentType<NativeLivePhotoViewProps> | null = isAvailable()
-  ? requireNativeViewManager('ExpoLivePhoto')
+  ? requireNativeView('ExpoLivePhoto')
   : null;
 
 function isAvailable() {

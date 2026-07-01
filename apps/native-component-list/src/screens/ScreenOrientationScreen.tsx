@@ -1,4 +1,4 @@
-import { Platform, type EventSubscription } from 'expo-modules-core';
+import { Platform, type EventSubscription } from 'expo';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import { ScrollView, SafeAreaView } from 'react-native';

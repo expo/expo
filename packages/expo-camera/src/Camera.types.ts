@@ -1,5 +1,5 @@
 import { type PermissionResponse } from 'expo';
-import { NativeModule } from 'expo-modules-core';
+import { NativeModule } from 'expo';
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
@@ -585,14 +585,13 @@ export type BarcodeType =
   | 'code128'
   | 'upc_a';
 
-// TODO(@kitten): Remove re-exports from EMC
 export {
+  type EventSubscription as Subscription,
   type PermissionResponse,
   PermissionStatus,
   type PermissionExpiration,
   type PermissionHookOptions,
 } from 'expo';
-export { type EventSubscription as Subscription } from 'expo-modules-core';
 
 export type PhotoResult = {
   /**
