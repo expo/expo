@@ -73,6 +73,7 @@
     "@expo/xcpretty": "^4.4.4",
     "@react-native/dev-middleware": "0.85.3",
     "accepts": "^1.3.8",
+    "agent-cli-detector": "^0.1.2",
     "arg": "^5.0.2",
     "bplist-creator": "0.1.0",
     "bplist-parser": "^0.3.1",
