@@ -72,6 +72,19 @@ export interface RouteInfo<TRegex = RegExp | string> {
   assets?: AssetInfo;
 }
 
+export interface PageHeaderInfo<TRegex = RegExp | string> {
+  /**
+   * Regex for matching an incoming request's path against this rule.
+   * The regex is normalized for named matchers so keys must be looked up against the `routeKeys` object to collect the original route param names.
+   */
+  namedRegex: TRegex;
+  /**
+   * Keys are route param names normalized for the regex named-matcher, values are the original route param names.
+   */
+  routeKeys: Record<string, string>;
+  headers: Record<string, string | string[]>;
+}
+
 export interface RoutesManifest<TRegex = RegExp | string> {
   /**
    * Middleware function that runs before any route matching.
@@ -82,6 +95,10 @@ export interface RoutesManifest<TRegex = RegExp | string> {
    * Headers to be applied to all responses from the server.
    */
   headers?: Record<string, string | string[]>;
+  /**
+   * Headers to be applied per-path to matching responses from the server.
+   */
+  pageHeaders?: PageHeaderInfo<TRegex>[];
   /**
    * Routes that are matched after HTML routes and invoke WinterCG-compliant functions.
    */

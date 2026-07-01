@@ -34,6 +34,7 @@ export type Options = {
   redirects?: RedirectConfig[];
   rewrites?: RewriteConfig[];
   headers?: Record<string, string | string[]>;
+  pageHeaders?: PageHeadersConfig[];
   /* Keep redirects as valid routes within the RouteConfig tree */
   preserveRedirectAndRewrites?: boolean;
 
@@ -67,6 +68,11 @@ export type RewriteConfig = {
   destination: string;
   destinationContextKey: string;
   methods?: string[];
+};
+
+export type PageHeadersConfig = {
+  source: string;
+  headers: Record<string, string | string[]>;
 };
 
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
