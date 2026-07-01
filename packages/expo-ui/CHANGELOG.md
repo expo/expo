@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS][Android] Fix a scrollable child (e.g. `FlatList`, `ScrollView`) inside `@expo/ui/community/bottom-sheet` not scrolling to the end when using fixed snap points. ([#47245](https://github.com/expo/expo/pull/47245) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 57.0.1 — 2026-06-27
