@@ -1,23 +1,75 @@
-import { useTheme } from 'ThemeProvider';
+import { Host, LazyList, RNHostView } from '@expo/ui/swift-ui';
 import { TabBackground } from 'native-component-list/src/components/TabBackground';
 import TabIcon from 'native-component-list/src/components/TabIcon';
-import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
-// Empty scratch screen for isolating reproductions. Replace the contents with your repro code
-// and open it from the Playground tab. Revert your changes before committing unrelated work.
+// Scratch screen for isolating reproductions. Replace the contents with your repro code and open it
+// from the Playground tab. Revert your changes before committing unrelated work.
+
+// Dynamic-height chat list of real RN views hosted per row via RNHostView (matchContents). Message
+// lengths vary widely, so this exercises the pull-based sizeThatFits sizing path.
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
+const WORDS =
+  'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation'.split(
+    ' '
+  );
+
+// Deterministic, per-index message so heights are stable across re-renders but vary widely by row.
+function messageFor(index: number): string {
+  const wordCount = 2 + ((index * 7) % 28);
+  const words: string[] = [];
+  for (let i = 0; i < wordCount; i++) {
+    words.push(WORDS[(index * 3 + i) % WORDS.length]);
+  }
+  return words.join(' ');
+}
+
 export default function Playground() {
-  const { theme } = useTheme();
   return (
-    <View style={[styles.container, { backgroundColor: theme.background.default }]}>
-      <TabIcon name="flask-outline" size={48} />
-      <Text style={[styles.title, { color: theme.text.default }]}>Playground</Text>
-      <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
-        Replace the contents of apps/bare-expo/Playground.tsx with your repro code.
-      </Text>
-    </View>
+    <Host style={{ flex: 1 }} ignoreSafeArea="all">
+      <LazyList
+        count={1000}
+        estimatedItemSize={64}
+        renderItem={(index) => {
+          const mine = index % 3 !== 0;
+          return (
+            <RNHostView matchContents>
+              <View style={[styles.row, mine ? styles.rowMine : styles.rowTheirs]}>
+                <View style={[styles.bubble, mine ? styles.bubbleMine : styles.bubbleTheirs]}>
+                  <Text style={mine ? styles.textMine : styles.textTheirs}>
+                    {`${index + 1}. ${messageFor(index)}`}
+                  </Text>
+                </View>
+              </View>
+            </RNHostView>
+          );
+        }}
+      />
+    </Host>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    width: SCREEN_WIDTH,
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  rowMine: { justifyContent: 'flex-end' },
+  rowTheirs: { justifyContent: 'flex-start' },
+  bubble: {
+    maxWidth: '78%',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 18,
+  },
+  bubbleMine: { backgroundColor: '#2563eb', borderBottomRightRadius: 4 },
+  bubbleTheirs: { backgroundColor: '#e5e7eb', borderBottomLeftRadius: 4 },
+  textMine: { color: 'white', fontSize: 16, lineHeight: 21 },
+  textTheirs: { color: '#111827', fontSize: 16, lineHeight: 21 },
+});
 
 Playground.navigationOptions = {
   title: 'Playground',
@@ -27,21 +79,3 @@ Playground.navigationOptions = {
   },
   tabBarBackground: () => <TabBackground />,
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    padding: 24,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-  },
-  subtitle: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-});

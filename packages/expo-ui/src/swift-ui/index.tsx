@@ -20,6 +20,7 @@ export * from './LabeledContent';
 export * from './HStack';
 export * from './LazyHStack';
 export * from './LazyVStack';
+export * from './List/LazyList';
 export * from './VStack';
 export * from './ZStack';
 export * from './Group';
