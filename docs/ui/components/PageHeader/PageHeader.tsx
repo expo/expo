@@ -107,6 +107,7 @@ export function PageHeader({
             )}>
             <PagePackageVersion
               packageName={packageName}
+              platforms={platforms}
               testRequire={testRequire}
               showMarkdownActions={showPackageMarkdown}
               className="max-md:w-full max-md:justify-between"
@@ -180,6 +181,7 @@ export function PageHeader({
         {packageName && (
           <PagePackageVersion
             packageName={packageName}
+            platforms={platforms}
             testRequire={testRequire}
             showMarkdownActions={showPackageMarkdown}
           />
