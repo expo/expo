@@ -240,6 +240,7 @@ const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescripto
                             }) })) : null, (0, jsx_runtime_1.jsx)(elements_1.HeaderShownContext.Provider, { value: isParentHeaderShown || headerShown !== false, children: (0, jsx_runtime_1.jsx)(elements_1.HeaderBackContext.Provider, { value: headerBack, children: render() }) })] }) }) }) }));
 };
 function NativeStackView({ state, navigation, descriptors, describe }) {
+    const { colors } = (0, native_1.useTheme)();
     const { setNextDismissedKey } = (0, useDismissedRouteError_1.useDismissedRouteError)(state);
     (0, useInvalidPreventRemoveError_1.useInvalidPreventRemoveError)(descriptors);
     const modalRouteKeys = (0, getModalRoutesKeys_1.getModalRouteKeys)(state.routes, descriptors);
@@ -247,7 +248,7 @@ function NativeStackView({ state, navigation, descriptors, describe }) {
         acc[route.key] = acc[route.key] || describe(route, true);
         return acc;
     }, {});
-    return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: (0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStack, { style: styles.container, children: state.routes.concat(state.preloadedRoutes).map((route, index) => {
+    return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: (0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStack, { nativeContainerStyle: { backgroundColor: colors.background }, style: styles.container, children: state.routes.concat(state.preloadedRoutes).map((route, index) => {
                 const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key]);
                 const isFocused = state.index === index;
                 const isBelowFocused = state.index - 1 === index;
