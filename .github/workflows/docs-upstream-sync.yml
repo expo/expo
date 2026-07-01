@@ -19,9 +19,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
           version: 10
       - name: ⬢ Setup Node
@@ -41,7 +41,7 @@ jobs:
           echo "result=$result" >> "$GITHUB_OUTPUT"
       - name: 📝 Create Pull Request
         if: ${{ fromJSON(steps.sync.outputs.result).hasChanged }}
-        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           branch: bot/docs-upstream-sync
