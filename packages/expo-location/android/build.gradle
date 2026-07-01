@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.18'
+version = '56.0.19'
 
 android {
   namespace "expo.modules.location"
   defaultConfig {
     versionCode 29
-    versionName "56.0.18"
+    versionName "56.0.19"
     consumerProguardFiles("proguard-rules.pro")
   }
 }

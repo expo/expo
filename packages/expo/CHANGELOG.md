@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.0.13 — 2026-07-01
+
+### 💡 Others
+
 - Add explicit `react-native/Libraries/Core/InitializeCore` import to native runtime entrypoint ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 
 ## 56.0.12 — 2026-06-15
