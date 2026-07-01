@@ -31,6 +31,7 @@ const exportModifier = () => ts.factory.createModifier(ts.SyntaxKind.ExportKeywo
 const declareModifier = () => ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword);
 const asyncModifier = () => ts.factory.createModifier(ts.SyntaxKind.AsyncKeyword);
 const readonlyModifier = () => ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword);
+const staticModifier = () => ts.factory.createModifier(ts.SyntaxKind.StaticKeyword);
 const constModifier = () => ts.factory.createModifier(ts.SyntaxKind.ConstKeyword);
 const defaultModifier = () => ts.factory.createModifier(ts.SyntaxKind.DefaultKeyword);
 
@@ -108,12 +109,14 @@ function constructModifiersArray(modifiers: {
   declare?: boolean;
   async?: boolean;
   readonly?: boolean;
+  isStatic?: boolean;
 }): ts.Modifier[] {
   const modifiersArray: ts.Modifier[] = [];
   if (modifiers.exported) modifiersArray.push(exportModifier());
   if (modifiers.declare) modifiersArray.push(declareModifier());
   if (modifiers.async) modifiersArray.push(asyncModifier());
   if (modifiers.readonly) modifiersArray.push(readonlyModifier());
+  if (modifiers.isStatic) modifiersArray.push(staticModifier());
   return modifiersArray;
 }
 
@@ -579,7 +582,11 @@ export function buildFunction({
   overrideArgumentDeclarations,
   omitReturnType,
 }: buildFunctionOptions): ts.FunctionDeclaration | ts.MethodDeclaration {
-  const functionModifiers = constructModifiersArray({ exported, async: async && !declaration });
+  const functionModifiers = constructModifiersArray({
+    exported,
+    async: async && !declaration,
+    isStatic: functionDeclaration.isStatic,
+  });
   const customReturn = !!returnStatement;
   const bareReturnTypeNode = mapTypeToTsTypeNode(functionDeclaration.returnType);
 

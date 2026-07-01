@@ -30,6 +30,7 @@ const exportModifier = () => typescript_1.default.factory.createModifier(typescr
 const declareModifier = () => typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.DeclareKeyword);
 const asyncModifier = () => typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.AsyncKeyword);
 const readonlyModifier = () => typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ReadonlyKeyword);
+const staticModifier = () => typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.StaticKeyword);
 const constModifier = () => typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ConstKeyword);
 const defaultModifier = () => typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.DefaultKeyword);
 const unknownKeywordType = () => typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.UnknownKeyword);
@@ -77,6 +78,8 @@ function constructModifiersArray(modifiers) {
         modifiersArray.push(asyncModifier());
     if (modifiers.readonly)
         modifiersArray.push(readonlyModifier());
+    if (modifiers.isStatic)
+        modifiersArray.push(staticModifier());
     return modifiersArray;
 }
 function joinTSNodesWithNewlines(nodes) {
@@ -303,7 +306,11 @@ function buildArgumentDeclaration(arg) {
     return buildArgumentDeclarationAndName(arg).argDeclaration;
 }
 function buildFunction({ functionDeclaration, async, method, exported, declaration, returnStatement, overrideArgumentDeclarations, omitReturnType, }) {
-    const functionModifiers = constructModifiersArray({ exported, async: async && !declaration });
+    const functionModifiers = constructModifiersArray({
+        exported,
+        async: async && !declaration,
+        isStatic: functionDeclaration.isStatic,
+    });
     const customReturn = !!returnStatement;
     const bareReturnTypeNode = mapTypeToTsTypeNode(functionDeclaration.returnType);
     const wrapWithPromiseType = (typeNode) => typescript_1.default.factory.createTypeReferenceNode('Promise', [typeNode]);
