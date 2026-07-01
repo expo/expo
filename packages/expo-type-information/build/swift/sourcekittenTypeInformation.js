@@ -803,29 +803,49 @@ function removeComments(fileContent) {
         return '';
     });
 }
+// The assumption that after return there is an scope closing bracket '}' doesn't hold when switch cases and statements like `#if`, `#else` etc. are present
+// If they are we don't want to perform the substitution
+function stringSubstitutionIsValid(str) {
+    const dangerousSubstrings = ['case ', '#if', '#else', '#endif'];
+    for (const substring of dangerousSubstrings) {
+        if (str.indexOf(substring) !== -1) {
+            return false;
+        }
+    }
+    return true;
+}
 function returnExpressionEnd(fileContent, returnIndex) {
     let inString = false;
     let escaped = false;
-    let parenCount = 0;
     let braceCount = 0;
-    // TODO(@HubertBer): figure out what also changes the typical end of expression
+    // Doing a little cheat here to simplify the logic, we assume that the expression end is right before the scope closing `}`.
+    // While this isn't neccessarily true, in our case we only want to replace:
+    //
+    // return expression
+    //
+    // with:
+    //
+    // let return_expression = expression
+    // return return_expression
+    //
+    // such that return_expression variable has the return type of the expression and the file still parses correctly (This might not even be neccessary,
+    // sourcekitten seems to be quite flexible, it may parse part of malformed files just fine).
     let i = returnIndex;
     while (i < fileContent.length) {
         const char = fileContent[i];
         let escapedNow = false;
+        if (inString && char !== '"') {
+            i += 1;
+            continue;
+        }
         switch (char) {
-            case '(':
-                parenCount += 1;
-                break;
-            case ')':
-                parenCount -= 1;
-                break;
             case '{':
                 braceCount += 1;
                 break;
             case '}':
                 if (braceCount === 0) {
-                    return i;
+                    const ok = stringSubstitutionIsValid(fileContent.substring(returnIndex, i));
+                    return { expressionEnd: i, ok };
                 }
                 braceCount -= 1;
                 break;
@@ -834,28 +854,30 @@ function returnExpressionEnd(fileContent, returnIndex) {
                     inString = !inString;
                 }
                 break;
-            case ';':
-                return i;
-            case '\n':
-            case '\r':
-                if (!inString && parenCount === 0 && braceCount === 0) {
-                    return i;
-                }
-                break;
             case '\\':
                 escapedNow = true;
         }
         escaped = escapedNow;
         i += 1;
     }
-    return i;
+    return { expressionEnd: i, ok: false };
+}
+function getSpaceIndentationCount(fileContent, index) {
+    const lastNewLineIndex = fileContent.lastIndexOf('\n', index - 1);
+    let spaceCount = 0;
+    let i = lastNewLineIndex === -1 ? 0 : 1 + lastNewLineIndex;
+    while (i < index && fileContent[i] === ' ') {
+        spaceCount += 1;
+        i += 1;
+    }
+    return spaceCount;
 }
 // Preprocessing to help sourcekitten functions
 // For now we create a new variable for each return statement,
 // we can find it's type easily with sourcekitten
-// TODO(@HubertBer): This has many problems which need fixing:
+// TODO(@HubertBer): This has many problems which may need fixing:
 // - return can be inside a string
-// - return Expression end parses incorrectly in case of some strings (check how it parses expo-video)
+// - the substitution may break the Swift code
 function preprocessReturnStatements(originalFileContent) {
     const newFileContent = [];
     const fileContent = removeComments(originalFileContent);
@@ -866,17 +888,26 @@ function preprocessReturnStatements(originalFileContent) {
         if (returnIndex < 0 || returnIndex >= fileContent.length) {
             break;
         }
+        const { expressionEnd, ok } = returnExpressionEnd(fileContent, returnIndex);
+        if (!ok) {
+            startPos += 1;
+            continue;
+        }
         returnPositions.push({
             start: returnIndex,
-            end: returnExpressionEnd(fileContent, returnIndex),
+            end: expressionEnd,
+            spacesIndentation: getSpaceIndentationCount(fileContent, returnIndex),
         });
-        startPos = returnIndex + 1;
+        // Going to expressionEnd instead of next index to avoid nested return statements, which in this simple method we cannot handle properly.
+        startPos = expressionEnd + 1;
     }
     let prevEnd = 0;
-    for (const { start, end } of returnPositions) {
+    for (const { start, end, spacesIndentation } of returnPositions) {
         newFileContent.push(fileContent.substring(prevEnd, start));
-        newFileContent.push(`\nlet returnValueDeclaration_${start}_${end} = ${fileContent.substring(start + 6, end)}\n`);
-        newFileContent.push(`return returnValueDeclaration_${start}_${end}\n`);
+        // Make sure the return statement has the same indentation as in original file, to make debugging easier
+        const spaces = ' '.repeat(spacesIndentation);
+        newFileContent.push(`\n${spaces}let returnValueDeclaration_${start}_${end} = ${fileContent.substring(start + 6, end)}`);
+        newFileContent.push(`\n${spaces}return returnValueDeclaration_${start}_${end}\n`);
         prevEnd = end;
     }
     newFileContent.push(fileContent.substring(prevEnd, fileContent.length));
