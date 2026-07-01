@@ -1,5 +1,6 @@
 export { Paths } from './Paths';
 export { File } from './File';
+export { FileSlice } from './FileSlice';
 export { Directory } from './Directory';
 export { UploadTask, DownloadTask } from './NetworkTasks';
 

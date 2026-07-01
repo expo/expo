@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - Add `File.preview()` and `File.canPreview()` methods for opening files with platform-native preview flows. (by [@eliotgevers](https://github.com/eliotgevers))
+- `file.slice()` is now lazy — returns a `FileSlice` that defers I/O until the data is consumed, avoiding eager reads of the entire file into memory. ([#46848](https://github.com/expo/expo/pull/46848) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 

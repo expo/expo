@@ -12,6 +12,7 @@ import {
   type PickSingleFileOptions,
   type PickSingleFileResult,
 } from './File.types';
+import { FileSlice } from './FileSlice';
 import {
   type WatchEvent,
   type WatchOptions,
@@ -226,7 +227,12 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 
   slice(start?: number, end?: number, contentType?: string): Blob {
-    return new Blob([this.bytesSync().slice(start, end)], { type: contentType });
+    const fileSize = this.size ?? 0;
+    const relStart =
+      start == null ? 0 : start < 0 ? Math.max(fileSize + start, 0) : Math.min(start, fileSize);
+    const relEnd =
+      end == null ? fileSize : end < 0 ? Math.max(fileSize + end, 0) : Math.min(end, fileSize);
+    return new FileSlice(this, relStart, Math.max(relStart, relEnd), contentType ?? this.type);
   }
 
   /**
