@@ -1,9 +1,9 @@
 import {
   UnavailabilityError,
   requireNativeModule,
-  requireNativeViewManager,
+  requireNativeView as requireNativeViewManager,
   CodedError,
-} from 'expo-modules-core';
+} from 'expo';
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
 
@@ -22,8 +22,6 @@ import { createWorkletContextManager } from './GLWorkletContextManager';
 export type WebGLObject = {
   id: number;
 };
-
-declare let global: any;
 
 const GLNativeModule = requireNativeModule('ExpoGL');
 const NativeView = requireNativeViewManager('ExpoGL');
