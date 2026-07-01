@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix local bundled builds loading modules from checked projects. ([#47137](https://github.com/expo/expo/pull/47137) by [@entiendonull](https://github.com/entiendonull))
 - Recognize the React Native Directory `new-arch-only` status so New-Architecture-only libraries aren't flagged ([#46755](https://github.com/expo/expo/pull/46755) by [@zoontek](https://github.com/zoontek))
 - Fix SDK 55 Metro config check for missing `metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
 
