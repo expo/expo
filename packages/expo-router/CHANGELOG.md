@@ -11,6 +11,7 @@
 - Add `standard-navigation` integration ([#46456](https://github.com/expo/expo/pull/46456) by [@Ubax](https://github.com/Ubax))
 - Re-export drawer content components and types (`DrawerContentScrollView`, `DrawerItem`, `DrawerItemList`, `DrawerContentComponentProps`, `DrawerNavigationProp`, and more) from `expo-router/drawer` ([#46635](https://github.com/expo/expo/pull/46635) by [@Ubax](https://github.com/Ubax))
 - [native-tabs] Emit a `tabPress` event with `isPrevented: true` when a `disabled` tab is tapped, without selecting it. ([#46445](https://github.com/expo/expo/pull/46445) by [@Ubax](https://github.com/Ubax))
+- [android] Add `disableTopInsetApplication` screen option to `Stack`, forwarding the `react-native-screens` opt-out so headers rendered below a top-positioned element (e.g. a top tab bar) don't apply the status-bar inset twice. ([#47466](https://github.com/expo/expo/pull/47466) by [@idoyana](https://github.com/idoyana))
 
 ### 🐛 Bug fixes
 
