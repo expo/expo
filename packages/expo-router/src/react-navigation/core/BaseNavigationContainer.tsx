@@ -145,7 +145,10 @@ export function BaseNavigationContainer({
   });
 
   const resetRoot = useLatestCallback((state?: PartialState<NavigationState> | NavigationState) => {
-    const target = state?.key ?? keyedListeners.getState.root?.().key;
+    // Always target the live root navigator, ignoring the incoming state's key. Compiled states
+    // (from `getStateFromPath`) carry deterministic keys that never match the live-minted root key,
+    // and `resetRoot` means "reset the root" — so the target is the root, not the state.
+    const target = keyedListeners.getState.root?.().key;
 
     if (target == null) {
       console.error(NOT_INITIALIZED_ERROR);

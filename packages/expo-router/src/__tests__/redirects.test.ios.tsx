@@ -57,19 +57,29 @@ it('deep link to a redirect', () => {
   expect(screen.getByTestId('bar')).toBeTruthy();
 
   expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'bar', 'foo'],
           routes: [
             {
+              key: expect.any(String),
               name: 'bar',
               path: '/bar',
-            },
+            }
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 });
 
@@ -92,25 +102,31 @@ it('deep link to a dynamic redirect', () => {
   );
 
   expect(store.state).toEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
-        params: {
-          slug: 'bar',
-        },
+        params: { slug: 'bar' },
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'deeply/nested/route/[slug]', 'foo/[slug]'],
           routes: [
             {
+              key: expect.any(String),
               name: 'deeply/nested/route/[slug]',
-              params: {
-                slug: 'bar',
-              },
+              params: { slug: 'bar' },
               path: '/deeply/nested/route/bar',
-            },
+            }
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 });
 
@@ -133,19 +149,29 @@ it('keeps extra params as query params', () => {
   );
 
   expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'bar', 'foo/[slug]'],
           routes: [
             {
+              key: expect.any(String),
               name: 'bar',
               path: '/bar',
-            },
+            }
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 });
 
@@ -168,25 +194,31 @@ it('can redirect from single to catch all', () => {
   );
 
   expect(store.state).toEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
-        params: {
-          slug: ['bar'],
-        },
+        params: { slug: ['bar'] },
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'foo/[slug]', 'bar/[...slug]'],
           routes: [
             {
+              key: expect.any(String),
               name: 'bar/[...slug]',
-              params: {
-                slug: ['bar'],
-              },
+              params: { slug: ['bar'] },
               path: '/bar/bar',
-            },
+            }
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 });
 
@@ -204,19 +236,29 @@ it('can push to a redirect', () => {
   });
 
   expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'bar', 'foo'],
           routes: [
             {
+              key: expect.any(String),
               name: 'index',
               path: '/',
-            },
+            }
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 
   act(() => router.push('/foo'));

@@ -368,17 +368,19 @@ it('resolves a direct duplicate-group URL to a guarded route and honors its redi
   // reported topology (the web-only harness can't run `renderRouter`).
   //
   // Duplicate groups `(creator)`/`(guest)` both serve `/detail`; `getStateFromPath` resolves the
-  // shared URL to the higher-sorted `(creator)/detail`. Since guarding no longer drops that route,
-  // the URL resolves and the guard's `redirectTo` is honored (rather than the state being rejected).
+  // shared URL to the higher-sorted `(guest)/detail` (the linking config's key order now mirrors the
+  // rendered navigator's sorted order, and the shorter group name sorts first). Since guarding no
+  // longer drops that route, the URL resolves and the guard's `redirectTo` is honored (rather than
+  // the state being rejected).
   renderRouter(
     {
       _layout: function Layout() {
         return (
           <Stack id={undefined}>
+            <Stack.Screen name="(creator)/detail" />
             <Stack.Protected guard={false} redirectTo="/other">
-              <Stack.Screen name="(creator)/detail" />
+              <Stack.Screen name="(guest)/detail" />
             </Stack.Protected>
-            <Stack.Screen name="(guest)/detail" />
             <Stack.Screen name="other" />
           </Stack>
         );

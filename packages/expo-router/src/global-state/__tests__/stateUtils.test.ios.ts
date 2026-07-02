@@ -1,5 +1,4 @@
-import type { ResultState } from '../../fork/getStateFromPath';
-import type { NavigationState } from '../../react-navigation/native';
+import type { NavigationState, PartialState } from '../../react-navigation/native';
 import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
 
 // React Navigation converts nested action states into a flat `{ screen, params: { screen, params: ... } }`
@@ -124,7 +123,7 @@ describe('findDivergentState', () => {
   // A single route with no child state means we're already at the leaf — divergence is
   // immediate because there's nothing deeper to compare.
   it('returns early when action state has no child state (single route)', () => {
-    const actionState: ResultState = {
+    const actionState: PartialState<NavigationState> = {
       routes: [{ name: 'home' }],
     };
 
@@ -144,7 +143,7 @@ describe('findDivergentState', () => {
   });
 
   it('detects divergence when route names differ', () => {
-    const actionState: ResultState = {
+    const actionState: PartialState<NavigationState> = {
       routes: [
         {
           name: 'root',
@@ -187,7 +186,7 @@ describe('findDivergentState', () => {
   it('returns the full path when routes are the same (no child state divergence)', () => {
     // When action and navigation states have matching route names all the way down,
     // divergence happens at the leaf node where `actionStateRoute` has no child state.
-    const actionState: ResultState = {
+    const actionState: PartialState<NavigationState> = {
       routes: [
         {
           name: 'root',
@@ -228,7 +227,7 @@ describe('findDivergentState', () => {
   });
 
   it('detects divergence on dynamic segments with different param values', () => {
-    const actionState: ResultState = {
+    const actionState: PartialState<NavigationState> = {
       routes: [
         {
           name: '[id]',
@@ -270,7 +269,7 @@ describe('findDivergentState', () => {
   });
 
   it('does not diverge on dynamic segments with the same param values', () => {
-    const actionState: ResultState = {
+    const actionState: PartialState<NavigationState> = {
       routes: [
         {
           name: '[id]',
@@ -312,7 +311,7 @@ describe('findDivergentState', () => {
   });
 
   it('diverges at intermediate route when names differ mid-tree', () => {
-    const actionState: ResultState = {
+    const actionState: PartialState<NavigationState> = {
       routes: [
         {
           name: 'root',
@@ -375,7 +374,7 @@ describe('findDivergentState', () => {
   // Remove when logic is moved to native
   describe('lookThroughAllTabs', () => {
     it('uses current index even when lookThroughAllTabs is true', () => {
-      const actionState: ResultState = {
+      const actionState: PartialState<NavigationState> = {
         routes: [
           {
             name: 'settings',
@@ -418,7 +417,7 @@ describe('findDivergentState', () => {
     });
 
     it('falls back to current index when tab name not found and lookThroughAllTabs is true', () => {
-      const actionState: ResultState = {
+      const actionState: PartialState<NavigationState> = {
         routes: [
           {
             name: 'unknown-tab',
@@ -444,7 +443,7 @@ describe('findDivergentState', () => {
     });
 
     it('uses current index when lookThroughAllTabs is false (default)', () => {
-      const actionState: ResultState = {
+      const actionState: PartialState<NavigationState> = {
         routes: [
           {
             name: 'settings',
@@ -471,7 +470,7 @@ describe('findDivergentState', () => {
     });
 
     it('diverges at current index regardless of lookThroughAllTabs', () => {
-      const actionState: ResultState = {
+      const actionState: PartialState<NavigationState> = {
         routes: [
           {
             name: 'settings',

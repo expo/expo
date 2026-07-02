@@ -22,8 +22,10 @@ describe(useRootNavigationState, () => {
           name: '__root',
           params: undefined,
           state: {
+            index: 0,
             routes: [
               {
+                key: expect.any(String),
                 name: 'index',
                 params: {
                   test: ['1', '2'],
@@ -61,12 +63,16 @@ describe(useRootNavigationState, () => {
           name: '__root',
           params: undefined,
           state: {
+            index: 0,
             routes: [
               {
+                key: expect.any(String),
                 name: '(app)',
                 state: {
+                  index: 0,
                   routes: [
                     {
+                      key: expect.any(String),
                       name: 'index',
                       path: '/',
                     },
@@ -104,8 +110,10 @@ describe(useRootNavigationState, () => {
           name: '__root',
           params: undefined,
           state: {
+            index: 0,
             routes: [
               {
+                key: expect.any(String),
                 name: 'index',
                 path: '/',
               },
@@ -140,12 +148,16 @@ describe(useRootNavigationState, () => {
           name: '__root',
           params: undefined,
           state: {
+            index: 0,
             routes: [
               {
+                key: expect.any(String),
                 name: '(app)',
                 state: {
+                  index: 0,
                   routes: [
                     {
+                      key: expect.any(String),
                       name: 'index',
                       path: '/',
                     },

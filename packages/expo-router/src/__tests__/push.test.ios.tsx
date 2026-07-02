@@ -21,9 +21,25 @@ it('stacks should always push a new route', () => {
     '(group)/post/[id]/index': () => null,
   });
 
-  // Initial stale state
+  // Initial complete state (the compiler now emits keyed, non-stale state).
   expect(store.state).toStrictEqual({
-    routes: [{ name: '__root', state: { routes: [{ name: 'index', path: '/' }] } }],
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', '(group)'],
+          routes: [{ key: expect.any(String), name: 'index', path: '/' }],
+          stale: false,
+        },
+      },
+    ],
+    stale: false,
   });
 
   /**
@@ -537,21 +553,31 @@ it('push should also add anchor routes', () => {
     '(group)/orange': () => null,
   });
 
-  // Initial stale state
+  // Initial complete state (the compiler now emits keyed, non-stale state).
   expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', '(group)'],
           routes: [
             {
+              key: expect.any(String),
               name: 'index',
               path: '/',
             },
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 
   act(() => router.push('/orange', { withAnchor: true }));

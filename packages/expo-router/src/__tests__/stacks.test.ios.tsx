@@ -531,15 +531,23 @@ describe('singular', () => {
     );
 
     expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
+          key: expect.any(String),
           name: '__root',
           params: {
             slug: 'apple',
           },
           state: {
+            index: 0,
+            key: expect.any(String),
+            routeNames: ['[slug]'],
             routes: [
               {
+                key: expect.any(String),
                 name: '[slug]',
                 params: {
                   slug: 'apple',
@@ -547,9 +555,11 @@ describe('singular', () => {
                 path: '/apple',
               },
             ],
+            stale: false,
           },
         },
       ],
+      stale: false,
     });
 
     // Normally pushing would add a new route, but since we have singular set to true

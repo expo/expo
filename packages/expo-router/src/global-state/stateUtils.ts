@@ -1,4 +1,4 @@
-import type { ResultState } from '../fork/getStateFromPath';
+import type { CompleteResultState } from '../fork/getStateFromPath';
 import { matchDynamicName } from '../matchers';
 import type { PartialRoute, NavigationState, PartialState } from '../react-navigation/native';
 
@@ -44,14 +44,19 @@ export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
  * @private
  */
 export function findDivergentState(
-  _actionState: ResultState,
+  // Production passes the compiler's complete state; tests pass hand-built partial states.
+  _actionState: CompleteResultState | PartialState<NavigationState>,
   _navigationState: NavigationState,
   // TODO(@ubax): rework the link preview navigation to check state types on native. `type` was
   // removed from navigation state, so the "look through all tabs" branch (which needed to know a
   // navigator was a tab) is gone — this param is now a no-op kept for caller compatibility.
   _lookThroughAllTabs: boolean = false
 ) {
-  let actionState: PartialState<NavigationState> | undefined = _actionState;
+  // The compiler now yields complete states (`stale: false`); this traversal only reads them, so
+  // view it through the partial shape the loop already expects.
+  let actionState: PartialState<NavigationState> | undefined = _actionState as unknown as
+    | PartialState<NavigationState>
+    | undefined;
   let navigationState: NavigationState | undefined = _navigationState;
   let actionStateRoute: PartialRoute<any> | undefined;
   const navigationRoutes = [];

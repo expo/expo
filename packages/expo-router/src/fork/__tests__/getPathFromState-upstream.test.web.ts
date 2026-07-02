@@ -36,7 +36,7 @@ test('converts state to path string', () => {
   const path = '/foo/bar/baz%20qux?author=jane&valid=true';
 
   expect(getPathFromState<object>(state)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path) as State)).toBe(path);
+  expect(getPathFromState<object>(getStateFromPath<object>(path) as unknown as State)).toBe(path);
 });
 
 test('converts state to path string with config', () => {
@@ -99,7 +99,7 @@ test('converts state to path string with config', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -118,7 +118,7 @@ test('handles route without param', () => {
   };
 
   expect(getPathFromState<object>(state)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path) as State)).toBe(path);
+  expect(getPathFromState<object>(getStateFromPath<object>(path) as unknown as State)).toBe(path);
 });
 
 test("doesn't add query param for empty params", () => {
@@ -133,7 +133,7 @@ test("doesn't add query param for empty params", () => {
   };
 
   expect(getPathFromState<object>(state)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path) as State)).toBe(path);
+  expect(getPathFromState<object>(getStateFromPath<object>(path) as unknown as State)).toBe(path);
 });
 
 test('handles state with config with nested screens', () => {
@@ -208,7 +208,7 @@ test('handles state with config with nested screens', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -286,7 +286,7 @@ test('handles state with config with nested screens and exact', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -349,7 +349,7 @@ test('handles state with config with nested screens and unused configs', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -413,7 +413,7 @@ test('handles state with config with nested screens and unused configs with exac
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -491,7 +491,7 @@ test('handles nested object with stringify in it', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -571,7 +571,7 @@ test('handles nested object with stringify in it with exact', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -614,7 +614,7 @@ test('handles nested object for second route depth', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -660,7 +660,7 @@ test('handles nested object for second route depth with exact', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -710,7 +710,7 @@ test('handles nested object for second route depth and path and stringify in roo
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -765,7 +765,7 @@ test('handles nested object for second route depth and path and stringify in roo
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -796,7 +796,7 @@ test('ignores empty string paths', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -841,7 +841,7 @@ test('keeps query params if path is empty', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toEqual(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toEqual(
     path
   );
 });
@@ -886,7 +886,7 @@ test('does not use Object.prototype properties as parsing functions', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toEqual(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toEqual(
     path
   );
 });
@@ -930,7 +930,7 @@ test('cuts nested configs too', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -975,7 +975,7 @@ test('cuts nested configs too with exact', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -1013,7 +1013,7 @@ test('handles empty path at the end', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -1048,7 +1048,7 @@ test('returns "/" for empty path', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -1078,7 +1078,7 @@ test('parses no path specified', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -1155,7 +1155,7 @@ test('strips undefined query params', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -1233,7 +1233,7 @@ test('strips undefined query params with exact', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -1308,7 +1308,7 @@ test('handles stripping all query params', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -1385,7 +1385,7 @@ test('handles stripping all query params with exact', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -1408,7 +1408,7 @@ test('replaces undefined query params', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -1433,7 +1433,7 @@ test('matches wildcard patterns at root', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe('/404');
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     '/404'
   );
 });
@@ -1475,7 +1475,7 @@ test('matches wildcard patterns at nested level', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe('/bar/42/404');
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     '/bar/42/404'
   );
 });
@@ -1520,7 +1520,7 @@ test('matches wildcard patterns at nested level with exact', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe('/404');
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     '/404'
   );
 });
@@ -1563,7 +1563,7 @@ test('tries to match wildcard patterns at the end', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe(path);
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     path
   );
 });
@@ -1598,7 +1598,7 @@ test('uses nearest parent wildcard match for unmatched paths', () => {
   };
 
   expect(getPathFromState<object>(state, config)).toBe('/404');
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as unknown as State, config)).toBe(
     '/404'
   );
 });

@@ -1,10 +1,22 @@
+// Upstream-parity suite. These literals are React Navigation's own `getStateFromPath` expectations.
+// This fork emits a superset: complete + keyed (stale/index/routeNames/key at every level, nested
+// state down to the leaf). Parity is asserted modulo `stripCompleteness`, and every call additionally
+// passes `expectComplete`, so this file guards both upstream behavior and the completeness contract.
 import { expect, test } from '@jest/globals';
 import { produce } from 'immer';
 
+import { expectComplete, stripCompleteness } from './completeness';
 import type { InitialState } from '../../react-navigation/routers';
 import { findFocusedRoute } from '../findFocusedRoute';
 import { getPathFromState } from '../getPathFromState';
-import { getStateFromPath } from '../getStateFromPath';
+import { getStateFromPath as getStateFromPathRaw } from '../getStateFromPath';
+
+const getStateFromPath: typeof getStateFromPathRaw = (...args) => {
+  const raw = getStateFromPathRaw(...args);
+  // Pass the options' `screens` so completeness can also detect hollow navigator routes.
+  if (raw !== undefined) expectComplete(raw, args[1]?.screens);
+  return stripCompleteness(raw);
+};
 
 const changePath = <T extends InitialState>(state: T, path: string): T =>
   produce(state, (draftState) => {

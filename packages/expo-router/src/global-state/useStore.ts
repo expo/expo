@@ -78,6 +78,9 @@ export function useStore(
       // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
       if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
 
+      // This seed is raw compiled state: its state keys are the deterministic `navigator*` ones,
+      // not the live-minted `stack-<nanoid>` keys, until the first `onStateChange` reconciles it.
+      // Container seeding is reworked in Step 3 of the global-state RFC.
       initialState = linking.getStateFromPath(initialPath, linking.config);
       const initialRouteInfo = getRouteInfoFromState(initialState);
       setCachedRouteInfo(initialState as any, initialRouteInfo);

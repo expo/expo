@@ -1,5 +1,6 @@
 import type { RouteNode } from './Route';
 import { matchDynamicName } from './matchers';
+import { sortRoutesWithInitial } from './sortRoutes';
 
 export type Screen =
   | string
@@ -58,7 +59,7 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
     }
     return path;
   }
-  const screens = getReactNavigationScreensConfig(node.children, metaOnly);
+  const screens = getReactNavigationScreensConfig(node.children, metaOnly, node.initialRouteName);
 
   const screen: Screen = {
     path,
@@ -82,17 +83,25 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
 
 export function getReactNavigationScreensConfig(
   nodes: RouteNode[],
-  metaOnly: boolean
+  metaOnly: boolean,
+  initialRouteName?: string
 ): Record<string, Screen> {
+  // Derive the screens key order from the same sorted source the renderer uses
+  // (`useScreens` → `sortRoutesWithInitial`). The compiled state's per-level `routeNames` come from
+  // this key order, and `useNavigationBuilder` compares them against the live navigator order.
   return Object.fromEntries(
-    nodes.map((node) => [node.route, convertRouteNodeToScreen(node, metaOnly)] as const)
+    [...nodes]
+      .sort(sortRoutesWithInitial(initialRouteName))
+      .map((node) => [node.route, convertRouteNodeToScreen(node, metaOnly)] as const)
   );
 }
 
 export function getReactNavigationConfig(routeTree: RouteNode | null, metaOnly: boolean) {
   const config = {
     initialRouteName: undefined,
-    screens: routeTree ? getReactNavigationScreensConfig(routeTree.children, metaOnly) : {},
+    screens: routeTree
+      ? getReactNavigationScreensConfig(routeTree.children, metaOnly, routeTree.initialRouteName)
+      : {},
   };
 
   if (routeTree?.initialRouteName) {

@@ -40,13 +40,22 @@ export function getNavigationConfig(
         path: '',
         ...config,
       },
-      ...sitemapRoute,
+      // Order must match ExpoRoot's render order (NOT-FOUND before SITEMAP): the compiled root
+      // `routeNames` come from this key order, and `useNavigationBuilder` compares them against the
+      // live navigator's order.
       ...notFoundRoute,
+      ...sitemapRoute,
     },
   };
 }
 
-export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = LinkingOptions<T> & {
+// Override (not intersect) the loose upstream `getStateFromPath`/`getPathFromState` signatures: the
+// fork's `getStateFromPath` returns a complete, keyed state (`CompleteResultState`), not the loose
+// upstream `ResultState`.
+export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = Omit<
+  LinkingOptions<T>,
+  'getPathFromState' | 'getStateFromPath'
+> & {
   getPathFromState: typeof getPathFromState;
   getStateFromPath: typeof getStateFromPath;
 };

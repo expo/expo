@@ -206,19 +206,29 @@ it('navigating to the same route with a hash will only rerender the screen', () 
   });
 
   expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index'],
           routes: [
             {
+              key: expect.any(String),
               name: 'index',
               path: '/',
             },
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 
   act(() => router.navigate('/?#hash1'));

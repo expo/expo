@@ -1,7 +1,17 @@
+import { expectComplete, stripCompleteness } from './completeness';
 import { getMockConfig } from '../../testing-library';
 import { getPathFromState } from '../getPathFromState';
-import { getStateFromPath } from '../getStateFromPath';
+import { getStateFromPath as getStateFromPathRaw } from '../getStateFromPath';
 import { getUrlWithReactNavigationConcessions, stripBaseUrl } from '../getStateFromPath-forks';
+
+// The compiler's raw output is a complete, keyed superset of these legacy literals. Every call is
+// checked for completeness here, then normalized so the pre-existing `toEqual` literals still match.
+const getStateFromPath: typeof getStateFromPathRaw = (...args) => {
+  const raw = getStateFromPathRaw(...args);
+  // Pass the options' `screens` so completeness can also detect hollow navigator routes.
+  if (raw !== undefined) expectComplete(raw, args[1]?.screens);
+  return stripCompleteness(raw);
+};
 
 beforeEach(() => {
   delete process.env.EXPO_BASE_URL;

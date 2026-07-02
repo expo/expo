@@ -3,7 +3,8 @@ import escape from 'escape-string-regexp';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { PathConfigMap } from '../react-navigation/native';
 import { validatePathConfig } from '../react-navigation/native';
-import type { InitialState, NavigationState, PartialState } from '../react-navigation/routers';
+import type { InitialState } from '../react-navigation/routers';
+import { getRouteKey } from '../react-navigation/routers/getRouteKey';
 import { findFocusedRoute } from './findFocusedRoute';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 import * as expo from './getStateFromPath-forks';
@@ -30,9 +31,27 @@ export type InitialRouteConfig = {
   parentScreens: string[];
 };
 
-export type ResultState = PartialState<NavigationState> & {
-  state?: ResultState;
+// The compiler emits a complete, keyed state: `stale: false`, explicit `index`, full sibling
+// `routeNames`, and a `key` on every level and every route — nested down to the leaf. Downstream can
+// render it as-is (no rehydration).
+export type CompleteResultState = {
+  stale: false;
+  key: string;
+  index: number;
+  routeNames: string[];
+  routes: CompleteRoute[];
 };
+
+export type CompleteRoute = {
+  key: string;
+  name: string;
+  path?: string;
+  params?: Record<string, any>;
+  state?: CompleteResultState;
+};
+
+/** @deprecated Superseded by `CompleteResultState`; kept so existing imports keep compiling. */
+export type ResultState = CompleteResultState;
 
 export type ParsedRoute = {
   name: string;
@@ -73,7 +92,7 @@ export function getStateFromPath<ParamList extends object>(
   // START FORK
   segments: string[] = []
   // END FORK
-): ResultState | undefined {
+): CompleteResultState | undefined {
   const { initialRoutes, configs, configWithRegexes } = getConfigResources(
     options,
     // START FORK
@@ -124,7 +143,7 @@ export function getStateFromPath<ParamList extends object>(
       });
 
     if (routes.length) {
-      return createNestedStateObject(expoPath, routes, initialRoutes, [], expoPath.hash);
+      return createNestedStateObject(expoPath, routes, initialRoutes, undefined, [], expoPath.hash);
     }
 
     return undefined;
@@ -150,6 +169,7 @@ export function getStateFromPath<ParamList extends object>(
         expoPath,
         match.routeNames.map((name) => ({ name })),
         initialRoutes,
+        screens,
         configs,
         expoPath.hash
       );
@@ -158,8 +178,8 @@ export function getStateFromPath<ParamList extends object>(
     return undefined;
   }
 
-  let result: PartialState<NavigationState> | undefined;
-  let current: PartialState<NavigationState> | undefined;
+  let result: CompleteResultState | undefined;
+  let current: CompleteResultState | undefined;
 
   // We match the whole path against the regex instead of segments
   // This makes sure matches such as wildcard will catch any unmatched routes, even if nested
@@ -167,7 +187,14 @@ export function getStateFromPath<ParamList extends object>(
 
   if (routes !== undefined) {
     // This will always be empty if full path matched
-    current = createNestedStateObject(expoPath, routes, initialRoutes, configs, expoPath.hash);
+    current = createNestedStateObject(
+      expoPath,
+      routes,
+      initialRoutes,
+      screens,
+      configs,
+      expoPath.hash
+    );
     remaining = remainingPath;
     result = current;
   }
@@ -618,80 +645,164 @@ const findInitialRoute = (
   return undefined;
 };
 
-// returns state object with values depending on whether
-// it is the end of state and if there is initialRoute for this level
-const createStateObject = (
-  initialRoute: string | undefined,
-  route: ParsedRoute,
-  isEmpty: boolean
-): InitialState => {
-  if (isEmpty) {
-    if (initialRoute) {
-      return {
-        index: 1,
-        routes: [{ name: initialRoute, params: route.params }, route],
-      };
-    } else {
-      return {
-        routes: [route],
-      };
-    }
-  } else {
-    if (initialRoute) {
-      return {
-        index: 1,
-        routes: [
-          { name: initialRoute, params: route.params },
-          { ...route, state: { routes: [] } },
-        ],
-      };
-    } else {
-      return {
-        routes: [{ ...route, state: { routes: [] } }],
-      };
+// Nested screens config for a level (values are string patterns or objects with their own
+// `screens`/`initialRouteName`). Typed loosely because the linking config is untyped internally.
+type ScreenConfigMap = Record<string, any>;
+
+// A navigator's key is deterministic and kind-free: its own `pathname` (contextKey) in the route
+// tree. The root container has no pathname; app/_layout's pathname is '' — both get stable
+// sentinels. Live navigators still mint random `stack-`/`tab-` state keys; reconciling compiled and
+// live state keys is a later step. Route keys, by contrast, already match live via `getRouteKey`.
+function getStateKey(pathname: string | undefined): string {
+  return pathname === undefined ? 'navigator' : `navigator${pathname || '/'}`;
+}
+
+// Pathname (contextKey) of the child navigator nested under route `name`. Mirrors `getContextKey`:
+// the container is `undefined`, its immediate child is '', and deeper levels append '/' + the route
+// name. Route names may contain slashes, which reproduces the contextKey exactly.
+function childPathname(pathname: string | undefined, name: string): string {
+  return pathname === undefined ? '' : `${pathname}/${name}`;
+}
+
+function getChildScreens(
+  screens: ScreenConfigMap | undefined,
+  name: string
+): ScreenConfigMap | undefined {
+  const entry = screens?.[name];
+  if (entry && typeof entry === 'object' && entry.screens && Object.keys(entry.screens).length) {
+    return entry.screens;
+  }
+  return undefined;
+}
+
+// Sibling route names for a level, in the config's declared order (which equals the rendered
+// navigator's `routeNames` order). `present` covers routes actually placed here (focused + any
+// inserted anchor); for real app configs the anchor is always a declared sibling, so this only adds
+// names for synthetic configs whose `initialRouteName` has no screen entry.
+function levelRouteNames(screens: ScreenConfigMap | undefined, present: string[]): string[] {
+  const names = screens ? Object.keys(screens) : [];
+  for (const name of present) {
+    if (!names.includes(name)) {
+      names.push(name);
     }
   }
+  return names;
+}
+
+// Pick the focused child of a navigator when materializing a declared anchor's own subtree:
+// its declared `initialRouteName`, else its index / empty-path route, else the first child.
+function pickDefaultChild(screens: ScreenConfigMap, ownInitialRouteName?: string): string {
+  if (ownInitialRouteName && screens[ownInitialRouteName]) {
+    return ownInitialRouteName;
+  }
+  for (const name of Object.keys(screens)) {
+    const cfg = screens[name];
+    const cfgPath = typeof cfg === 'string' ? cfg : cfg?.path;
+    if (cfgPath === '' || name === 'index' || name.endsWith('/index')) {
+      return name;
+    }
+  }
+  return Object.keys(screens)[0]!;
+}
+
+// Build a route entry, and — when it is a navigator — its complete default subtree down to a leaf.
+// Used for declared anchors: back (index--) must never land on a hollow route.
+function buildRouteWithDefaultSubtree(
+  name: string,
+  screens: ScreenConfigMap | undefined,
+  pathname: string | undefined,
+  params: Record<string, any> | undefined
+): CompleteRoute {
+  const route: CompleteRoute = { key: getRouteKey(pathname, name), name };
+  if (params) {
+    route.params = params;
+  }
+
+  const childScreens = getChildScreens(screens, name);
+  if (childScreens) {
+    const ownInitial = screens?.[name]?.initialRouteName as string | undefined;
+    const childName = pickDefaultChild(childScreens, ownInitial);
+    const childPath = childPathname(pathname, name);
+    route.state = {
+      stale: false,
+      key: getStateKey(childPath),
+      index: 0,
+      routeNames: levelRouteNames(childScreens, [childName]),
+      routes: [buildRouteWithDefaultSubtree(childName, childScreens, childPath, params)],
+    };
+  }
+
+  return route;
+}
+
+// Build the complete state for the matched route chain, threading the nested screens config and the
+// navigator pathname down each level. Every level gets `stale: false`, a deterministic key, explicit
+// `index`, full sibling `routeNames`, and declared anchors materialized as complete branches.
+const buildStateForChain = (
+  chain: ParsedRoute[],
+  screens: ScreenConfigMap | undefined,
+  pathname: string | undefined,
+  parentScreens: string[],
+  initialRoutes: InitialRouteConfig[]
+): CompleteResultState => {
+  const focused = chain[0]!;
+
+  const focusedRoute: CompleteRoute = {
+    key: getRouteKey(pathname, focused.name),
+    name: focused.name,
+  };
+  if (focused.params) {
+    focusedRoute.params = focused.params;
+  }
+
+  if (chain.length > 1) {
+    focusedRoute.state = buildStateForChain(
+      chain.slice(1),
+      getChildScreens(screens, focused.name),
+      childPathname(pathname, focused.name),
+      [...parentScreens, focused.name],
+      initialRoutes
+    );
+  }
+
+  const initialRouteName = findInitialRoute(focused.name, parentScreens, initialRoutes);
+
+  let routes: CompleteRoute[];
+  let index: number;
+  if (initialRouteName) {
+    routes = [
+      buildRouteWithDefaultSubtree(initialRouteName, screens, pathname, focused.params),
+      focusedRoute,
+    ];
+    index = 1;
+  } else {
+    routes = [focusedRoute];
+    index = 0;
+  }
+
+  return {
+    stale: false,
+    key: getStateKey(pathname),
+    index,
+    routeNames: levelRouteNames(
+      screens,
+      routes.map((r) => r.name)
+    ),
+    routes,
+  };
 };
 
 const createNestedStateObject = (
   { path, ...expoURL }: ReturnType<typeof expo.getUrlWithReactNavigationConcessions>,
   routes: ParsedRoute[],
   initialRoutes: InitialRouteConfig[],
+  rootScreens: ScreenConfigMap | undefined,
   flatConfig?: RouteConfig[],
   hash?: string
-) => {
-  let route = routes.shift() as ParsedRoute;
-  const parentScreens: string[] = [];
+): CompleteResultState => {
+  const state = buildStateForChain(routes, rootScreens, undefined, [], initialRoutes);
 
-  let initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
-
-  parentScreens.push(route.name);
-
-  const state: InitialState = createStateObject(initialRoute, route, routes.length === 0);
-
-  if (routes.length > 0) {
-    let nestedState = state;
-
-    while ((route = routes.shift() as ParsedRoute)) {
-      initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
-
-      const nestedStateIndex = nestedState.index || nestedState.routes.length - 1;
-
-      nestedState.routes[nestedStateIndex]!.state = createStateObject(
-        initialRoute,
-        route,
-        routes.length === 0
-      );
-
-      if (routes.length > 0) {
-        nestedState = nestedState.routes[nestedStateIndex]!.state as InitialState;
-      }
-
-      parentScreens.push(route.name);
-    }
-  }
-
-  route = findFocusedRoute(state) as ParsedRoute;
+  const route = findFocusedRoute(state as unknown as InitialState) as ParsedRoute;
   // START FORK
   route.path = expoURL.pathWithoutGroups;
   // route.path = path;
