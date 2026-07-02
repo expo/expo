@@ -297,6 +297,19 @@ export type NativeStackNavigationOptions = {
    */
   headerShadowVisible?: boolean;
   /**
+   * Whether to skip applying the status bar top inset to the header.
+   * Set this when the stack is nested below an element that already consumes
+   * the top inset (e.g. a top-positioned tab bar), so the header doesn't add
+   * the status bar height a second time.
+   *
+   * Requires `react-native-screens` >= 4.25.0.
+   *
+   * Only supported on Android.
+   *
+   * @platform android
+   */
+  disableTopInsetApplication?: boolean;
+  /**
    * Boolean indicating whether the navigation bar is translucent.
    * Setting this to `true` makes the header absolutely positioned,
    * and changes the background color to `transparent` unless specified in `headerStyle`.
