@@ -40,7 +40,10 @@ export function sendWorkerResult({
     const resultJson = error != null ? serialize({ error }) : serialize({ result });
     const resultBytes = new TextEncoder().encode(resultJson);
     const length = resultBytes.length;
-    resultArray.set(new Uint32Array([length]), 0);
+    if (length > resultArray.byteLength - 4) {
+      throw new Error(`Sync result too large for shared buffer: ${length} bytes`);
+    }
+    new DataView(resultBuffer).setUint32(0, length, true);
     resultArray.set(resultBytes, 4);
     Atomics.store(lock, 0, RESOLVED);
   } else {
@@ -117,7 +120,6 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
   });
 
   let i = 0;
-  // @ts-expect-error: Remove this when TypeScript supports Atomics.pause
   const useAtomicsPause = typeof Atomics.pause === 'function';
   while (Atomics.load(lock, 0) === PENDING) {
     ++i;
@@ -126,7 +128,6 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
       if (i > 1_000_000) {
         throw new Error('Sync operation timeout');
       }
-      // @ts-expect-error: Remove this when TypeScript supports Atomics.pause
       Atomics.pause();
     } else {
       // NOTE(kudo): Unfortunate for the busy loop,
@@ -137,7 +138,10 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
     }
   }
 
-  const length = new Uint32Array(resultArray.buffer, 0, 1)[0];
+  const length = new DataView(resultBuffer).getUint32(0, true);
+  if (length > resultArray.byteLength - 4) {
+    throw new Error(`Invalid sync result length: ${length}`);
+  }
   const resultCopy = new Uint8Array(length);
   resultCopy.set(new Uint8Array(resultArray.buffer, 4, length));
   const resultJson = new TextDecoder().decode(resultCopy);
