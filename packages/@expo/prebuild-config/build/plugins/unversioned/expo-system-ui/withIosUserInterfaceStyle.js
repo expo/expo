@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getUserInterfaceStyle = getUserInterfaceStyle;
 exports.setUserInterfaceStyle = setUserInterfaceStyle;
 exports.withIosUserInterfaceStyle = void 0;

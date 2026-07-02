@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.UnexpectedError = exports.PluginError = void 0;
 class UnexpectedError extends Error {
   name = 'UnexpectedError';

@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.setRoundIconManifest = setRoundIconManifest;
 exports.withAndroidManifestIcons = void 0;
 function _configPlugins() {

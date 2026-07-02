@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.withFinalizedMod = void 0;
 function _withMod() {
   const data = require("./withMod");

@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.withSortedGlobResult = withSortedGlobResult;
 /**
  * Sort the glob result alphabetically, to ensure results are identical across different devices (Linux/MacOS).

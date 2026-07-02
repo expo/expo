@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.ProjectPrivacy = void 0;
 let ProjectPrivacy = exports.ProjectPrivacy = /*#__PURE__*/function (ProjectPrivacy) {
   ProjectPrivacy["PUBLIC"] = "public";

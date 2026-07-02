@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getDeploymentTarget = getDeploymentTarget;
 exports.setDeploymentTargetForBuildConfiguration = setDeploymentTargetForBuildConfiguration;
 exports.updateDeploymentTargetForPbxproj = updateDeploymentTargetForPbxproj;

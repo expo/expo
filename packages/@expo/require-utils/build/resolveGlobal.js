@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.resolveGlobal = void 0;
 function _nodeChild_process() {
   const data = require("node:child_process");

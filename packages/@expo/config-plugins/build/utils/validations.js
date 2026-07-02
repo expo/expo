@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.assertValidAndroidAssetName = assertValidAndroidAssetName;
 exports.isValidAndroidAssetName = isValidAndroidAssetName;
 // this is an approximation of the android resource name rules

@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.buildResourceGroup = buildResourceGroup;
 exports.buildResourceItem = buildResourceItem;
 exports.ensureDefaultResourceXML = ensureDefaultResourceXML;

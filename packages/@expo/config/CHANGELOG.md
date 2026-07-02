@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix compatibility with ES modules in Node.js ([#47445](https://github.com/expo/expo/pull/47445) by [@kitten](https://github.com/kitten))
+
 ## 57.0.1 — 2026-06-27
 
 ### 🎉 New features

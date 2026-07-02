@@ -19,6 +19,9 @@ module.exports = function (api) {
       [
         '@babel/plugin-transform-modules-commonjs',
         {
+          // WARN(@kitten): We have enabled `lazy` a while ago, but this breaks Node's cjs-module-lexer assumptions
+          // This only succeeds at detecting exports when `loose` is also enabled
+          loose: true,
           lazy: () => true,
         },
       ],

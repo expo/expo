@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.annotateError = annotateError;
 exports.formatDiagnostic = formatDiagnostic;
 function _nodeUrl() {
