@@ -1,6 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 import SwiftUI
+import Combine
 
 internal let GLOBAL_EVENT_NAME = "onGlobalEvent"
 
@@ -22,6 +23,14 @@ extension ExpoSwiftUI {
    It's a record that can be observed by SwiftUI to re-render on its changes.
    */
   open class ViewProps: ObservableObject, Record {
+    // Declared explicitly so Combine uses this publisher directly instead of synthesizing one.
+    // The synthesized `objectWillChange` reflects over every stored property to find `@Published`
+    // wrappers; since `ViewProps` has none, that reflection re-runs on every access and copies the
+    // `children` existential array, which can crash (use-after-free) when a child view is torn down
+    // mid-reflection during Fabric unmounting. An explicit publisher skips reflection entirely.
+    // See https://github.com/expo/expo/issues/46675
+    public let objectWillChange = ObservableObjectPublisher()
+
     public required init() {}
 
     public required init(rawProps: [String: Any], context: AppContext) throws {
