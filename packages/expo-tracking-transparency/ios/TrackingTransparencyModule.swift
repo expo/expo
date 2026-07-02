@@ -14,6 +14,10 @@ public class TrackingTransparencyModule: Module {
       return ASIdentifierManager.shared().advertisingIdentifier.uuidString
     }
 
+    AsyncFunction("getAdvertisingIdAsync") { () -> String in
+      return ASIdentifierManager.shared().advertisingIdentifier.uuidString
+    }
+
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
