@@ -4643,9 +4643,15 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../expo
+      expo-app-metrics:
+        specifier: workspace:*
+        version: link:../expo-app-metrics
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-observe:
+        specifier: workspace:*
+        version: link:../expo-observe
 
   packages/expo-image-loader:
     devDependencies:
