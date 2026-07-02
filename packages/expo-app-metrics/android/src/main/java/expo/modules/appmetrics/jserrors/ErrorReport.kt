@@ -37,6 +37,9 @@ data class ErrorReport(
   /**
    * Snapshots this report for durable on-disk storage, capturing the session it belongs to and the
    * time it happened, both resolved now since by drain time the main session has rotated.
+   *
+   * Only fatal errors are persisted, and those come from the global handler, which has no React
+   * component stack, so `componentStack` isn't carried through this path.
    */
   fun toPendingError(sessionId: String): PendingErrorStore.PendingError =
     PendingErrorStore.PendingError(
@@ -44,7 +47,6 @@ data class ErrorReport(
       type = type,
       message = message,
       stacktrace = stacktrace,
-      componentStack = componentStack,
       sessionId = sessionId,
       timestamp = TimeUtils.getCurrentTimestampInISOFormat()
     )
@@ -67,7 +69,7 @@ fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
     type = type,
     message = message,
     stacktrace = stacktrace,
-    componentStack = componentStack,
+    componentStack = null,
     isFatal = true,
     timestamp = timestamp
   )

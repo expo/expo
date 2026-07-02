@@ -67,7 +67,6 @@ private func makePendingError(
     type: "Error",
     message: message,
     stacktrace: "at f (app.js:1:1)",
-    componentStack: nil,
     sessionId: sessionId,
     timestamp: timestamp
   )

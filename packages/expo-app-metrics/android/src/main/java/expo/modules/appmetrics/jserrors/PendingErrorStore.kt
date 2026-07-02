@@ -32,7 +32,6 @@ object PendingErrorStore {
     val type: String? = null,
     val message: String,
     val stacktrace: String? = null,
-    val componentStack: String? = null,
     val sessionId: String,
     val timestamp: String
   )
