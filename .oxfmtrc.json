@@ -11,7 +11,6 @@
     "**/vendor/**",
     "**/vendored/**",
     "**/__generated__/**",
-    "**/__tests__/**",
     "**/__mocks__/**",
     "**/fixtures/**",
     "**/__fixtures__/**",
