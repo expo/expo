@@ -148,6 +148,31 @@ const buildInitialSubset = (
   return arrangeBackStack(initialRoutes, focusedName, backBehavior, initialRouteName, routeNames);
 };
 
+/**
+ * The back-stack anchor implied by `backBehavior` — the route GO_BACK ultimately lands on.
+ * `getStateFromPath` only materializes anchors declared in the linking config
+ * (`unstable_settings.anchor`), so tab navigators keep this implicit anchor loaded by including it
+ * in the route names they pass to `usePreloadRoutes`; a preloaded anchor is arranged at the front
+ * of the back stack (see PRELOAD below).
+ */
+export function getBackStackAnchorName(
+  routeNames: string[],
+  backBehavior: BackBehavior = 'firstRoute',
+  initialRouteName?: string
+): string | undefined {
+  if (backBehavior === 'firstRoute') {
+    return routeNames[0];
+  }
+  if (
+    backBehavior === 'initialRoute' &&
+    initialRouteName !== undefined &&
+    routeNames.includes(initialRouteName)
+  ) {
+    return initialRouteName;
+  }
+  return undefined;
+}
+
 const focusRoute = (
   routes: Route<string>[],
   focused: Route<string>,

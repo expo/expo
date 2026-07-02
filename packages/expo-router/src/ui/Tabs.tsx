@@ -15,6 +15,7 @@ import type {
   TabRouterOptions,
 } from '../react-navigation/native';
 import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import { getBackStackAnchorName } from '../react-navigation/routers/TabRouter';
 import { usePreloadRoutes } from '../react-navigation/usePreloadRoutes';
 import { useTabPlaceholders } from '../react-navigation/useTabPlaceholders';
 import { shouldLinkExternally } from '../utils/url';
@@ -205,7 +206,20 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
       }),
     [state.routeNames, tabState.routes, tabDescriptors]
   );
-  usePreloadRoutes(state, navigation, nonLazyRouteNames);
+  // Keep the implicit back-stack anchor loaded too (deep links only materialize anchors declared
+  // in the linking config).
+  const routeNamesToPreload = useMemo(() => {
+    const anchorName = getBackStackAnchorName(
+      state.routeNames,
+      rest.backBehavior,
+      initialRouteName
+    );
+    if (anchorName && !nonLazyRouteNames.includes(anchorName)) {
+      return [...nonLazyRouteNames, anchorName];
+    }
+    return nonLazyRouteNames;
+  }, [state.routeNames, nonLazyRouteNames, rest.backBehavior, initialRouteName]);
+  usePreloadRoutes(state, navigation, routeNamesToPreload);
 
   const navigatorContextValue = useMemo<NavigatorContextValue>(
     () =>
