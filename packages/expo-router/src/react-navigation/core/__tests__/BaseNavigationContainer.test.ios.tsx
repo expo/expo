@@ -152,7 +152,6 @@ test('handle dispatching with ref', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
-    type: 'test',
     index: 1,
     key: '0',
     routeNames: ['foo', 'foo2', 'bar', 'baz'],
@@ -247,13 +246,11 @@ test('handle resetting state with ref', () => {
             { key: 'lex2', name: 'lex2' },
           ],
           stale: false,
-          type: 'test',
         },
       },
       { key: 'bar', name: 'bar' },
     ],
     stale: false,
-    type: 'test',
   });
 });
 
@@ -307,13 +304,11 @@ test('handles getRootState', () => {
             { key: 'lex', name: 'lex' },
           ],
           stale: false,
-          type: 'test',
         },
       },
       { key: 'bar', name: 'bar' },
     ],
     stale: false,
-    type: 'test',
   });
 });
 
@@ -424,7 +419,6 @@ test('emits state events when the state changes', () => {
 
   expect(listener).toHaveBeenCalledTimes(1);
   expect(listener.mock.calls[0]![0].data.state).toEqual({
-    type: 'test',
     stale: false,
     index: 1,
     key: '0',
@@ -442,7 +436,6 @@ test('emits state events when the state changes', () => {
 
   expect(listener).toHaveBeenCalledTimes(2);
   expect(listener.mock.calls[1]![0].data.state).toEqual({
-    type: 'test',
     stale: false,
     index: 2,
     key: '0',
@@ -516,7 +509,6 @@ test('emits state events when new navigator mounts', () => {
 
   const resultState = {
     stale: false,
-    type: 'test',
     index: 0,
     key: '0',
     routeNames: ['foo', 'bar'],
@@ -527,7 +519,6 @@ test('emits state events when new navigator mounts', () => {
         name: 'bar',
         state: {
           stale: false,
-          type: 'test',
           index: 0,
           key: '1',
           routeNames: ['baz', 'bax'],
@@ -871,7 +862,6 @@ test('works with state change events in independent nested container', () => {
       { key: 'lex', name: 'lex' },
     ],
     stale: false,
-    type: 'test',
   });
 
   expect(ref.current?.getRootState()).toEqual({
@@ -883,7 +873,6 @@ test('works with state change events in independent nested container', () => {
       { key: 'lex', name: 'lex' },
     ],
     stale: false,
-    type: 'test',
   });
 });
 

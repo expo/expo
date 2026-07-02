@@ -8,14 +8,15 @@ import type {
 } from 'react';
 import { Children, forwardRef, useMemo } from 'react';
 
-import { useContextKey } from '../Route';
+import { useContextKey, useRouteNode } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import type { EventMapBase, NavigationState } from '../react-navigation/native';
-import type { PickPartial } from '../types';
+import type { Href, PickPartial } from '../types';
 import type { ScreenProps } from '../useScreens';
 import { useSortedScreens } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
+import { GuardContextProvider } from './GuardContext';
 import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 
 export function useFilterScreenChildren(
@@ -34,13 +35,15 @@ export function useFilterScreenChildren(
 
     const screens: (ScreenProps & { name: string })[] = [];
     const protectedScreens = new Set<string>();
+    // Guarded (guard=false) JS screens stay in `screens`; this maps their name to the redirect
+    // target of the innermost failing `Protected` (or `undefined` to use the navigator's anchor).
+    const guardedRedirects = new Map<string, Href | undefined>();
 
-    function flattenChild(child: ReactNode, exclude = false) {
+    function flattenChild(child: ReactNode, exclude = false, redirectTo?: Href) {
       if (isScreen(child, contextKey)) {
+        screens.push(child.props);
         if (exclude) {
-          protectedScreens.add(child.props.name);
-        } else {
-          screens.push(child.props);
+          guardedRedirects.set(child.props.name, redirectTo);
         }
         return;
       }
@@ -66,9 +69,13 @@ export function useFilterScreenChildren(
       }
 
       if (isProtectedReactElement(child)) {
-        const excludeChildren = exclude || !child.props.guard;
+        const guardFails = !child.props.guard;
+        const excludeChildren = exclude || guardFails;
+        // The innermost failing guard's `redirectTo` wins; a passing guard keeps the target
+        // inherited from an outer failing guard.
+        const childRedirectTo = guardFails ? child.props.redirectTo : redirectTo;
         Children.forEach(child.props.children, (protectedChild) => {
-          flattenChild(protectedChild, excludeChildren);
+          flattenChild(protectedChild, excludeChildren, childRedirectTo);
         });
         return;
       }
@@ -108,6 +115,7 @@ export function useFilterScreenChildren(
       screens,
       children: customChildren,
       protectedScreens,
+      guardedRedirects,
     };
   }, [children]);
 }
@@ -159,10 +167,14 @@ export function withLayoutContext<
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
+      const node = useRouteNode();
 
-      const { screens, protectedScreens } = useFilterScreenChildren(userDefinedChildren, {
-        contextKey,
-      });
+      const { screens, protectedScreens, guardedRedirects } = useFilterScreenChildren(
+        userDefinedChildren,
+        {
+          contextKey,
+        }
+      );
 
       const processed = processor ? processor(screens ?? []) : screens;
 
@@ -175,7 +187,9 @@ export function withLayoutContext<
 
       return (
         <IsWithinLayoutContext value>
-          <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+          <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+            <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+          </GuardContextProvider>
         </IsWithinLayoutContext>
       );
     }),

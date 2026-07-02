@@ -123,7 +123,6 @@ describe('toHaveRouterState', () => {
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 

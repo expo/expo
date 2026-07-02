@@ -1,9 +1,10 @@
 'use client';
 
-import { type ComponentType, useMemo } from 'react';
+import { type ComponentType, useCallback, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
+import { useOptionalContextKey } from '../Route';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -13,6 +14,7 @@ import {
   type NavigationState,
   type RouterFactory,
 } from '../react-navigation/native';
+import { getNextRouteKeyFromState } from '../react-navigation/routers/getRouteKey';
 import type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
@@ -21,7 +23,6 @@ import type {
   StandardRouterNavigatorProps,
   StandardUseNavigationBuilderOptions,
 } from './types';
-import { useProjectedDescriptors } from './useProjectedDescriptors';
 import { useStandardActions } from './useStandardActions';
 import { useStandardEmitter } from './useStandardEmitter';
 import { useStandardState } from './useStandardState';
@@ -61,22 +62,30 @@ export function unstable_createStandardRouterNavigator<
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
+  CreateProps extends object = object,
 >(
   NavigatorContent: ComponentType<
-    NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps>
+    NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps & CreateProps>
   >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  options?: IntegrateWithRouterOptions<State, NavigatorProps>
+  // `options` (and `createProps` within it) is required once `CreateProps` is non-empty, so a
+  // navigator can't declare content props without supplying the `createProps` that produces them.
+  ...[options]: [keyof CreateProps] extends [never]
+    ? [options?: IntegrateWithRouterOptions<State, NavigatorProps, NavigatorOptions, CreateProps>]
+    : [options: IntegrateWithRouterOptions<State, NavigatorProps, NavigatorOptions, CreateProps>]
 ) {
-  const navigator = createStandardNavigator<NavigatorOptions, EventMap, NavigatorProps>(
-    NavigatorContent
-  );
+  const navigator = createStandardNavigator<
+    NavigatorOptions,
+    EventMap,
+    NavigatorProps & CreateProps
+  >(NavigatorContent);
   return unstable_integrateWithRouter<
     NavigatorOptions,
     State,
     EventMap,
     NavigatorProps,
-    RouterOptions
+    RouterOptions,
+    CreateProps
   >(navigator, router, options);
 }
 
@@ -106,10 +115,11 @@ export function unstable_integrateWithRouter<
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
+  CreateProps extends object = object,
 >(
-  navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps>,
+  navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps & CreateProps>,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  options?: IntegrateWithRouterOptions<State, NavigatorProps>
+  options?: IntegrateWithRouterOptions<State, NavigatorProps, NavigatorOptions, CreateProps>
 ) {
   assertStandardNavigator(navigator);
   const { NavigatorContent } = navigator;
@@ -140,14 +150,24 @@ export function unstable_integrateWithRouter<
 
     const { dispatch } = navigation;
 
-    const derivedProps = useMemo<Partial<NavigatorProps>>(
-      () => options?.createProps?.({ state, dispatch, navigation }) ?? {},
-      [state, dispatch, navigation, options]
+    // The pathname keys are derived from, so `getKey` matches the deterministic key the router
+    // assigns when a route materializes.
+    const pathname = useOptionalContextKey();
+    const getKey = useCallback(
+      (routeName: string) => getNextRouteKeyFromState(pathname, routeName, state),
+      [pathname, state]
+    );
+
+    const derivedProps = useMemo<Partial<CreateProps>>(
+      () =>
+        options?.createProps?.({ state, dispatch, navigation, descriptors, describe, getKey }) ??
+        {},
+      [state, dispatch, navigation, descriptors, describe, getKey, options]
     );
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
       state: useStandardState(state),
-      descriptors: useProjectedDescriptors(state, descriptors, describe),
+      descriptors,
       actions: useStandardActions(navigation, state.key),
       emitter: useStandardEmitter(navigation),
     };
@@ -162,7 +182,9 @@ export function unstable_integrateWithRouter<
           // its type, so the TS contract keeps users from reading router options off `NavigatorContent`
           // in the common case, even though they are physically present on the object.
           {...(extraProps as unknown as NavigatorProps)}
-          {...derivedProps}
+          // `createProps` is guaranteed whenever `CreateProps` is non-empty, so `derivedProps`
+          // carries the full set at runtime even though it's typed `Partial` (empty when absent).
+          {...(derivedProps as CreateProps)}
           {...standardArgs}
         />
       </NavigationContent>

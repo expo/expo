@@ -39,7 +39,6 @@ it('stacks should always push a new route', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -49,7 +48,6 @@ it('stacks should always push a new route', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
@@ -76,7 +74,6 @@ it('stacks should always push a new route', () => {
               state: {
                 index: 3,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['user/[id]', 'post/[id]'],
                 routes: [
                   {
@@ -93,7 +90,6 @@ it('stacks should always push a new route', () => {
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -106,7 +102,6 @@ it('stacks should always push a new route', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                   {
@@ -123,7 +118,6 @@ it('stacks should always push a new route', () => {
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -136,7 +130,6 @@ it('stacks should always push a new route', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                   {
@@ -153,7 +146,6 @@ it('stacks should always push a new route', () => {
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -166,7 +158,6 @@ it('stacks should always push a new route', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                   {
@@ -183,7 +174,6 @@ it('stacks should always push a new route', () => {
                     state: {
                       index: 1,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -204,22 +194,18 @@ it('stacks should always push a new route', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -306,7 +292,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -316,7 +301,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
         state: {
           index: 2,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(tabs)', 'd'],
           routes: [
             {
@@ -334,30 +318,15 @@ it('works in a nested layout Stack->Tab->Stack', () => {
               },
               path: undefined,
               state: {
-                history: [
-                  {
-                    key: expect.any(String),
-                    type: 'route',
-                  },
-                  {
-                    key: expect.any(String),
-                    type: 'route',
-                  },
-                ],
-                index: 2,
+                // firstRoute arranges the back stack as `[first, focused, ...rest]`,
+                // so focusing `c` gives `[a, c, b]` with `c` at index 1.
+                index: 1,
                 key: expect.any(String),
-                preloadedRouteKeys: [],
                 routeNames: ['a', 'b', 'c'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'a',
-                    params: {},
-                    path: undefined,
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'b',
                     params: {},
                     path: undefined,
                   },
@@ -372,7 +341,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                     state: {
                       index: 2,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['one', 'two'],
                       routes: [
                         {
@@ -395,12 +363,16 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'b',
+                    params: {},
+                    path: undefined,
                   },
                 ],
                 stale: false,
-                type: 'tab',
               },
             },
             {
@@ -411,12 +383,10 @@ it('works in a nested layout Stack->Tab->Stack', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -457,7 +427,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -467,7 +436,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
         state: {
           index: 3,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['a', 'b', 'one'],
           routes: [
             {
@@ -493,7 +461,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
               state: {
                 index: 2,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['index', 'two', 'page'],
                 routes: [
                   {
@@ -519,7 +486,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                     state: {
                       index: 1,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index', 'page'],
                       routes: [
                         {
@@ -536,12 +502,10 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
             {
@@ -552,12 +516,10 @@ it('targets the correct Stack when pushing to a nested layout', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -597,7 +559,6 @@ it('push should also add anchor routes', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -607,7 +568,6 @@ it('push should also add anchor routes', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
@@ -630,7 +590,6 @@ it('push should also add anchor routes', () => {
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['apple', 'index', 'orange'],
                 routes: [
                   {
@@ -646,17 +605,14 @@ it('push should also add anchor routes', () => {
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -678,7 +634,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -690,7 +645,6 @@ describe('singular', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -727,12 +681,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Should push /apple and remove all previous instances of /apple
@@ -741,7 +693,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -753,7 +704,6 @@ describe('singular', () => {
           state: {
             index: 1,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -774,12 +724,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 
@@ -801,7 +749,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -813,7 +760,6 @@ describe('singular', () => {
           state: {
             index: 4,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -861,12 +807,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Should push /apple and remove all previous instances of /apple
@@ -877,7 +821,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -889,7 +832,6 @@ describe('singular', () => {
           state: {
             index: 1,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -910,12 +852,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });

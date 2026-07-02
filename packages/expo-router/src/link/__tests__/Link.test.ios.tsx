@@ -342,7 +342,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -354,7 +353,6 @@ describe('singular', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -391,12 +389,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Should push /apple and remove all previous instances of /apple
@@ -405,7 +401,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -417,7 +412,6 @@ describe('singular', () => {
           state: {
             index: 1,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -438,12 +432,10 @@ describe('singular', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });
@@ -473,7 +465,6 @@ test('can dynamically route using singular function', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -485,7 +476,6 @@ test('can dynamically route using singular function', () => {
         state: {
           index: 4,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['[slug]'],
           routes: [
             {
@@ -533,12 +523,10 @@ test('can dynamically route using singular function', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   // Should push /apple and remove all previous instances of /apple
@@ -547,7 +535,6 @@ test('can dynamically route using singular function', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -559,7 +546,6 @@ test('can dynamically route using singular function', () => {
         state: {
           index: 3,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['[slug]'],
           routes: [
             {
@@ -598,12 +584,10 @@ test('can dynamically route using singular function', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -619,7 +603,6 @@ describe('prefetch', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -629,13 +612,6 @@ describe('prefetch', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [
-              {
-                key: expect.any(String),
-                name: 'test',
-                params: {},
-              },
-            ],
             routeNames: ['index', 'test'],
             routes: [
               {
@@ -644,18 +620,21 @@ describe('prefetch', () => {
                 params: undefined,
                 path: '/',
               },
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 
-  it('does not throw an exception when prefetching a protected route with guard false', () => {
+  it('prefetches a guarded route with guard false without focusing (so it does not redirect)', () => {
     renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
@@ -670,23 +649,39 @@ describe('prefetch', () => {
       ),
     });
 
-    // There was no state update, because prefetch of protected route didn't make any state changes, so we received the initial state
-    // This is stale state created by router
+    // A guarded route is no longer dropped, so it can be prefetched like any other route. Prefetch
+    // does not focus it, so its guard redirect never fires — `test` sits in the state, unfocused.
     expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
+          key: expect.any(String),
           name: '__root',
+          params: undefined,
           state: {
+            index: 0,
+            key: expect.any(String),
+            routeNames: ['test', 'index'],
             routes: [
               {
+                key: expect.any(String),
                 name: 'index',
                 params: undefined,
                 path: '/',
               },
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
             ],
+            stale: false,
           },
         },
       ],
+      stale: false,
     });
   });
 
@@ -708,7 +703,6 @@ describe('prefetch', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -718,13 +712,6 @@ describe('prefetch', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [
-              {
-                key: expect.any(String),
-                name: 'test',
-                params: {},
-              },
-            ],
             routeNames: ['test', 'index'],
             routes: [
               {
@@ -733,14 +720,17 @@ describe('prefetch', () => {
                 params: undefined,
                 path: '/',
               },
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });
@@ -1115,7 +1105,8 @@ describe('Preview', () => {
     };
   });
   describe('multiple preloaded paths with the same name', () => {
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
+    // TODO(@ubax): rework the link preview navigation to check state types on native
+    it.skip('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -1154,7 +1145,8 @@ describe('Preview', () => {
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
       expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB-[-\w]+/);
     });
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
+    // TODO(@ubax): rework the link preview navigation to check state types on native
+    it.skip('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {

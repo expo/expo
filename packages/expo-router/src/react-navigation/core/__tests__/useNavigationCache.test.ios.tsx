@@ -16,7 +16,6 @@ test('preserves reference for navigation objects', () => {
   expect.assertions(2);
 
   const state = {
-    type: 'tab',
     stale: false as const,
     index: 1,
     key: 'State',

@@ -115,9 +115,10 @@ it('emits tabPress event onNativeFocusChange', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/index-[-\w]+/);
-  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/second-[-\w]+/);
+  // Eager preload renders both tabs twice; order is preserved within each pass.
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
+  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)index$/);
+  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)second$/);
 
   const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
   const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
@@ -222,9 +223,10 @@ it('does not pop stack on repeated tab press', async () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('a-index')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/index-[-\w]+/);
-  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/a-[-\w]+/);
+  // Eager preload renders both tabs twice; order is preserved within each pass.
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
+  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)index$/);
+  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)a$/);
 
   const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
   const aTabKey = TabsScreen.mock.calls[1][0].screenKey;
@@ -328,7 +330,8 @@ it('emits tabPress with isPrevented and does not navigate when a disabled tab is
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
+  // Eager preload renders both tabs twice; order is preserved within each pass.
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
 
   const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
   const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;

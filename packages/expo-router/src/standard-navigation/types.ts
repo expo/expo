@@ -1,4 +1,8 @@
-import type { createStandardNavigator, NavigatorArgs } from 'standard-navigation';
+import type {
+  createStandardNavigator,
+  NavigatorArgs,
+  NavigatorDescriptor,
+} from 'standard-navigation';
 
 import type {
   DefaultNavigatorOptions,
@@ -7,6 +11,7 @@ import type {
   NavigationHelpers,
   NavigationState,
   ParamListBase,
+  Route,
 } from '../react-navigation/native';
 import type { GoBackAction, NavigateAction } from '../react-navigation/routers/CommonActions';
 
@@ -37,40 +42,67 @@ export type StandardUseNavigationBuilderOptions<
   any
 >;
 
-export interface StandardNavigatorCreatePropsFactoryDeps<State extends NavigationState> {
+export interface StandardNavigatorCreatePropsFactoryDeps<
+  State extends NavigationState,
+  NavigatorOptions extends object = object,
+> {
   state: State;
   dispatch: (action: NavigationAction) => void;
   navigation: NavigationHelpers<ParamListBase>;
+  descriptors: Record<string, NavigatorDescriptor<NavigatorOptions>>;
+  describe: (route: Route<string>, placeholder: boolean) => NavigatorDescriptor<NavigatorOptions>;
+  /**
+   * The deterministic key the router will assign to a route with this name, resolved against the
+   * navigator's current state, so a descriptor built for a not-yet-present route reconciles onto the
+   * real one once it materializes.
+   */
+  getKey: (routeName: string) => string;
 }
 
-export interface IntegrateWithRouterOptions<
+/**
+ * Derives the extra `CreateProps` that `NavigatorContent` receives but the navigator element does
+ * not accept, from the underlying router state.
+ *
+ * Receives the raw Expo Router `state` and `dispatch`. Both are internal and may have small
+ * breaking changes between releases, so prefer the `state` and `actions` passed to
+ * `NavigatorContent` when they suffice.
+ *
+ * @example
+ * ```tsx
+ * createProps: ({ state, dispatch }) => ({
+ *   activeRouteKey: state.routes[state.index].key,
+ *   preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
+ * })
+ * ```
+ */
+type CreatePropsFn<
+  State extends NavigationState,
+  NavigatorOptions extends object,
+  CreateProps extends object,
+> = (deps: StandardNavigatorCreatePropsFactoryDeps<State, NavigatorOptions>) => CreateProps;
+
+// `createProps` is optional when there are no `CreateProps` to produce, and required once a navigator
+// declares them (so its `NavigatorContent` can't be left without props it depends on).
+type CreatePropsOption<
+  State extends NavigationState,
+  NavigatorOptions extends object,
+  CreateProps extends object,
+> = [keyof CreateProps] extends [never]
+  ? { createProps?: CreatePropsFn<State, NavigatorOptions, CreateProps> }
+  : { createProps: CreatePropsFn<State, NavigatorOptions, CreateProps> };
+
+export type IntegrateWithRouterOptions<
   State extends NavigationState = NavigationState,
   NavigatorProps extends object = object,
-> {
+  NavigatorOptions extends object = object,
+  CreateProps extends object = object,
+> = {
   /**
    * When `true`, only screens explicitly declared as `<Navigator.Screen>` children are rendered;
    * routes discovered from the filesystem that were not declared are ignored.
    */
   useOnlyUserDefinedScreens?: boolean;
-
-  /**
-   * Allows router-specific information to be exposed via navigator props alongside the standard
-   * `state` and `actions`.
-   *
-   * Receives the raw Expo Router `state` and `dispatch`. Both are internal and may have small
-   * breaking changes between releases, so prefer the `state` and `actions` passed to
-   * `NavigatorContent` when they suffice.
-   *
-   * @example
-   * ```tsx
-   * createProps: ({ state, dispatch }) => ({
-   *   activeRouteKey: state.routes[state.index].key,
-   *   preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
-   * })
-   * ```
-   */
-  createProps?: (deps: StandardNavigatorCreatePropsFactoryDeps<State>) => Partial<NavigatorProps>;
-}
+} & CreatePropsOption<State, NavigatorOptions, CreateProps>;
 
 export type StandardNavigatorContentProps<
   NavigatorOptions extends object,

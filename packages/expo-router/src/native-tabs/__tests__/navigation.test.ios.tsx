@@ -45,19 +45,19 @@ describe('Native Bottom Tabs Navigation', () => {
   }
 
   function expectIndexTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/(^|-)index$/);
     expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(
-      /^second-[-\w]+/
+      /(^|-)second$/
     );
-    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
+    expect(lastHostSelectedKey()).toMatch(/(^|-)index$/);
   }
 
   function expectSecondTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/(^|-)index$/);
     expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(
-      /^second-[-\w]+/
+      /(^|-)second$/
     );
-    expect(lastHostSelectedKey()).toMatch(/^second-[-\w]+/);
+    expect(lastHostSelectedKey()).toMatch(/(^|-)second$/);
   }
 
   beforeEach(() => {
@@ -88,7 +88,9 @@ describe('Native Bottom Tabs Navigation', () => {
       hidden: () => <View testID="hidden" />,
       notSpecified: () => <View testID="not-specified" />,
     });
-    expectOneRender();
+    // Initial mount is eager: every tab mounts and the preload effect adds one extra render pass,
+    // so the two visible tabs render twice (4 calls) rather than once.
+    expectTwoRenders();
     expectIndexTabFocused();
     TabsScreen.mockClear();
   });

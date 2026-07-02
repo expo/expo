@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 
+import { NavigatorTypeContext } from '../../core/NavigatorTypeContext';
 import {
   createNavigatorFactory,
   type EventArg,
@@ -38,7 +39,7 @@ function StackNavigator({
 }: StackNavigatorProps) {
   const { direction } = useLocale();
 
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -83,16 +84,17 @@ function StackNavigator({
   );
 
   return (
-    <NavigationContent>
-      <StackView
-        {...rest}
-        direction={direction}
-        state={state}
-        describe={describe}
-        descriptors={descriptors}
-        navigation={navigation}
-      />
-    </NavigationContent>
+    <NavigatorTypeContext value="stack">
+      <NavigationContent>
+        <StackView
+          {...rest}
+          direction={direction}
+          state={state}
+          descriptors={descriptors}
+          navigation={navigation}
+        />
+      </NavigationContent>
+    </NavigatorTypeContext>
   );
 }
 

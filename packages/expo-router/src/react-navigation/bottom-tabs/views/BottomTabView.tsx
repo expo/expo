@@ -101,7 +101,9 @@ export function BottomTabView(props: Props) {
     ) {
       const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
-      if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
+      // Best-effort popToTop at the previous tab's nested navigator. POP_TO_TOP is only handled
+      // by stack navigators; it is a no-op for any other (non-stack) target.
+      if (prevRoute?.state?.key) {
         popToTopAction = {
           ...StackActions.popToTop(),
           target: prevRoute.state.key,
@@ -225,17 +227,16 @@ export function BottomTabView(props: Props) {
         {routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const {
-            lazy = true,
             animation = 'none',
             sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation]!.sceneStyleInterpolator,
           } = descriptor.options;
           const isFocused = state.index === index;
-          const isPreloaded = state.preloadedRouteKeys.includes(route.key);
+          // A route present in `state.routes` but never focused in this view is a
+          // preloaded-but-unvisited tab. Presence is the loaded/preloaded signal now.
+          const isPreloaded = !isFocused && !loaded.includes(route.key);
 
-          if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
-            // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
-            return null;
-          }
+          // Every route present in `state.routes` is meant to render (it was either
+          // navigated to or preloaded), so the lazy gate never trips here.
 
           const {
             freezeOnBlur,

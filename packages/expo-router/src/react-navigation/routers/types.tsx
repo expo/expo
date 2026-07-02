@@ -23,19 +23,9 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
    */
   routeNames: Extract<keyof ParamList, string>[];
   /**
-   * Alternative entries for history.
-   */
-  history?: unknown[];
-  /**
    * List of rendered routes.
    */
   routes: NavigationRoute<ParamList, keyof ParamList>[];
-  /**
-   * Custom type for the state, whether it's for tab, stack, drawer etc.
-   * During rehydration, the state will be discarded if type doesn't match with router type.
-   * It can also be used to detect the type of the navigator we're dealing with.
-   */
-  type: string;
   /**
    * Whether the navigation state has been rehydrated.
    */
@@ -132,6 +122,12 @@ export type RouterFactory<
 
 export type RouterConfigOptions = {
   routeNames: string[];
+  /**
+   * The navigator's location in the route tree (its contextKey, e.g. `/(tabs)`). Used to derive
+   * deterministic route keys via `getRouteKey`. `useNavigationBuilder` supplies it to every router;
+   * `undefined` outside a route boundary (keys then fall back to name-only).
+   */
+  pathname: string | undefined;
   routeParamList: ParamListBase;
   routeGetIdList: Record<
     string,
@@ -140,12 +136,6 @@ export type RouterConfigOptions = {
 };
 
 export type Router<State extends NavigationState, Action extends NavigationAction> = {
-  /**
-   * Type of the router. Should match the `type` property in state.
-   * If the type doesn't match, the state will be discarded during rehydration.
-   */
-  type: State['type'];
-
   /**
    * Initialize the navigation state.
    *

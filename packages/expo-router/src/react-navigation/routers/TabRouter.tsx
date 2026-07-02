@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid/non-secure';
 import type { StackActionType } from '../core';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
+import { getNextRouteKeyFromState, getRouteKey } from './getRouteKey';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -20,13 +21,7 @@ export type TabActionType = {
   target?: string;
 };
 
-export type BackBehavior =
-  | 'firstRoute'
-  | 'initialRoute'
-  | 'order'
-  | 'history'
-  | 'fullHistory'
-  | 'none';
+export type BackBehavior = 'firstRoute' | 'initialRoute' | 'order' | 'history' | 'none';
 
 export type TabRouterOptions = DefaultRouterOptions & {
   /**
@@ -34,30 +29,15 @@ export type TabRouterOptions = DefaultRouterOptions & {
    * - `firstRoute` - return to the first defined route
    * - `initialRoute` - return to the route from `initialRouteName`
    * - `order` - return to the route defined before the focused route
-   * - `history` - return to last visited route; if the same route is visited multiple times, the older entries are dropped from the history
-   * - `fullHistory` - return to last visited route; doesn't drop duplicate entries unlike `history` - matches behavior of web pages
+   * - `history` - return to the previously focused route
    * - `none` - do not handle going back
    */
   backBehavior?: BackBehavior;
 };
 
-export type TabNavigationState<ParamList extends ParamListBase> = Omit<
-  NavigationState<ParamList>,
-  'history'
-> & {
-  /**
-   * Type of the router, in this case, it's tab.
-   */
-  type: 'tab';
-  /**
-   * List of previously visited route keys.
-   */
-  history: { type: 'route'; key: string; params?: object | undefined }[];
-  /**
-   * List of routes' key, which are supposed to be preloaded before navigating to.
-   */
-  preloadedRouteKeys: string[];
-};
+// A route's presence in `state.routes` is the loaded/preloaded signal, so `routes` is a subset of
+// `routeNames`. Tab state is therefore just a plain NavigationState — no extra fields.
+export type TabNavigationState<ParamList extends ParamListBase> = NavigationState<ParamList>;
 
 export type TabActionHelpers<ParamList extends ParamListBase> = {
   /**
@@ -75,8 +55,6 @@ export type TabActionHelpers<ParamList extends ParamListBase> = {
   ): void;
 };
 
-const TYPE_ROUTE = 'route' as const;
-
 export const TabActions = {
   jumpTo(name: string, params?: object) {
     return {
@@ -86,100 +64,150 @@ export const TabActions = {
   },
 };
 
-const getRouteHistory = (
+const focusRouteInHistory = (
   routes: Route<string>[],
-  index: number,
-  backBehavior: BackBehavior,
-  initialRouteName: string | undefined
-) => {
-  const history = [
-    {
-      type: TYPE_ROUTE,
-      key: routes[index]!.key,
-    },
-  ];
-
-  let initialRouteIndex;
-
-  switch (backBehavior) {
-    case 'order':
-      for (let i = index; i > 0; i--) {
-        history.unshift({
-          type: TYPE_ROUTE,
-          key: routes[i - 1]!.key,
-        });
-      }
-      break;
-    case 'firstRoute':
-      if (index !== 0) {
-        history.unshift({
-          type: TYPE_ROUTE,
-          key: routes[0]!.key,
-        });
-      }
-      break;
-    case 'initialRoute':
-      initialRouteIndex = routes.findIndex((route) => route.name === initialRouteName);
-      initialRouteIndex = initialRouteIndex === -1 ? 0 : initialRouteIndex;
-
-      if (index !== initialRouteIndex) {
-        history.unshift({
-          type: TYPE_ROUTE,
-          key: routes[initialRouteIndex]!.key,
-        });
-      }
-      break;
-    case 'history':
-    case 'fullHistory':
-      // The history will fill up on navigation
-      break;
-  }
-
-  return history;
+  fromIndex: number,
+  focusedIndex: number,
+  route: Route<string>
+): { routes: Route<string>[]; index: number } => {
+  const next = routes.filter((_, i) => i !== fromIndex);
+  const insertAt = fromIndex <= focusedIndex ? focusedIndex : focusedIndex + 1;
+  next.splice(insertAt, 0, route);
+  return { routes: next, index: insertAt };
 };
 
-const changeIndex = (
-  state: TabNavigationState<ParamListBase>,
-  index: number,
+// Reorders the routes that are PRESENT in `routes` (a subset of `routeNames`). The anchor route is
+// assumed to already be present for the firstRoute/initialRoute behaviors — callers that may be
+// missing it (getInitialState/getRehydratedState) add it first.
+const arrangeBackStack = (
+  routes: Route<string>[],
+  focusedName: string,
   backBehavior: BackBehavior,
-  initialRouteName: string | undefined
-) => {
-  let history = state.history;
+  initialRouteName: string | undefined,
+  routeNames: string[]
+): { routes: Route<string>[]; index: number } => {
+  const byName = (name: string) => routes.find((route) => route.name === name)!;
+  // Present route names ordered by their declaration order.
+  const presentNames = routeNames.filter((name) => routes.some((route) => route.name === name));
 
-  if (backBehavior === 'history' || backBehavior === 'fullHistory') {
-    const currentRoute = state.routes[index]!;
-
-    if (backBehavior === 'history') {
-      // Remove the existing key from the history to de-duplicate it
-      history = history.filter((it) => (it.type === 'route' ? it.key !== currentRoute.key : false));
-    } else if (backBehavior === 'fullHistory') {
-      const lastHistoryRouteItemIndex = history.findLastIndex((item) => item.type === 'route');
-
-      if (currentRoute.key === history[lastHistoryRouteItemIndex]?.key) {
-        // For full-history, only remove if it matches the last route
-        // Useful for drawer, if current route was in history, then drawer state changed
-        // Then we only need to move the route to the front
-        history = [
-          ...history.slice(0, lastHistoryRouteItemIndex),
-          ...history.slice(lastHistoryRouteItemIndex + 1),
-        ];
-      }
-    }
-
-    history = history.concat({
-      type: TYPE_ROUTE,
-      key: currentRoute.key,
-      params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
-    });
-  } else {
-    history = getRouteHistory(state.routes, index, backBehavior, initialRouteName);
+  if (backBehavior === 'order' || backBehavior === 'none') {
+    return { routes: presentNames.map(byName), index: presentNames.indexOf(focusedName) };
   }
 
-  return {
-    ...state,
-    index,
-    history,
-  };
+  const anchorName =
+    backBehavior === 'initialRoute' &&
+    initialRouteName !== undefined &&
+    presentNames.includes(initialRouteName)
+      ? initialRouteName
+      : presentNames[0]!;
+
+  const others = presentNames
+    .filter((name) => name !== anchorName && name !== focusedName)
+    .map(byName);
+
+  if (focusedName === anchorName) {
+    return { routes: [byName(anchorName), ...others], index: 0 };
+  }
+
+  return { routes: [byName(anchorName), byName(focusedName), ...others], index: 1 };
+};
+
+// The fresh-start subset: the focused route (from `initialRouteName`/declaration order) plus the
+// back-stack anchor required by firstRoute/initialRoute. Shared by getInitialState and the
+// empty-fallback paths of getRehydratedState / getStateForRouteNamesChange so all three agree on
+// the focused route and ordering instead of hardcoding `routeNames[0]`.
+const buildInitialSubset = (
+  routeNames: string[],
+  backBehavior: BackBehavior,
+  initialRouteName: string | undefined,
+  buildRoute: (name: string) => Route<string>
+): { routes: Route<string>[]; index: number } => {
+  const initialIndex =
+    initialRouteName !== undefined && routeNames.includes(initialRouteName)
+      ? routeNames.indexOf(initialRouteName)
+      : 0;
+  const focusedName = routeNames[initialIndex]!;
+
+  // For firstRoute/initialRoute the back-stack anchor must exist too, so add it when distinct.
+  const anchorName =
+    backBehavior === 'firstRoute'
+      ? routeNames[0]!
+      : backBehavior === 'initialRoute'
+        ? focusedName
+        : undefined;
+
+  const initialRoutes =
+    anchorName !== undefined && anchorName !== focusedName
+      ? [buildRoute(anchorName), buildRoute(focusedName)]
+      : [buildRoute(focusedName)];
+
+  if (backBehavior === 'history') {
+    return { routes: initialRoutes, index: initialRoutes.findIndex((r) => r.name === focusedName) };
+  }
+
+  return arrangeBackStack(initialRoutes, focusedName, backBehavior, initialRouteName, routeNames);
+};
+
+/**
+ * The back-stack anchor implied by `backBehavior` — the route GO_BACK ultimately lands on.
+ * `getStateFromPath` only materializes anchors declared in the linking config
+ * (`unstable_settings.anchor`), so tab navigators keep this implicit anchor loaded by including it
+ * in the route names they pass to `usePreloadRoutes`; a preloaded anchor is arranged at the front
+ * of the back stack (see PRELOAD below).
+ */
+export function getBackStackAnchorName(
+  routeNames: string[],
+  backBehavior: BackBehavior = 'firstRoute',
+  initialRouteName?: string
+): string | undefined {
+  if (backBehavior === 'firstRoute') {
+    return routeNames[0];
+  }
+  if (
+    backBehavior === 'initialRoute' &&
+    initialRouteName !== undefined &&
+    routeNames.includes(initialRouteName)
+  ) {
+    return initialRouteName;
+  }
+  return undefined;
+}
+
+const focusRoute = (
+  routes: Route<string>[],
+  focused: Route<string>,
+  fromIndex: number,
+  currentIndex: number,
+  backBehavior: BackBehavior,
+  initialRouteName: string | undefined,
+  routeNames: string[]
+): { routes: Route<string>[]; index: number } => {
+  if (backBehavior === 'history') {
+    return focusRouteInHistory(routes, fromIndex, currentIndex, focused);
+  }
+
+  return arrangeBackStack(
+    routes.map((route, i) => (i === fromIndex ? focused : route)),
+    focused.name,
+    backBehavior,
+    initialRouteName,
+    routeNames
+  );
+};
+
+export const pruneReplacedRoute = (
+  state: TabNavigationState<ParamListBase>
+): TabNavigationState<ParamListBase> => {
+  if (state.index <= 0) {
+    return state;
+  }
+
+  const replacedIndex = state.index - 1;
+  const replaced = state.routes[replacedIndex]!;
+  const routes = state.routes.filter((_, i) => i !== replacedIndex);
+  routes.splice(state.index, 0, replaced);
+
+  return { ...state, routes, index: state.index - 1 };
 };
 
 // TODO(@ubax): unify the logic into single router instead of BaseTabRouter and override
@@ -191,50 +219,45 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
   > = {
     ...BaseRouter,
 
-    type: 'tab',
-
-    getInitialState({ routeNames, routeParamList }) {
-      const index =
-        initialRouteName !== undefined && routeNames.includes(initialRouteName)
-          ? routeNames.indexOf(initialRouteName)
-          : 0;
-
-      const routes = routeNames.map((name) => ({
+    getInitialState({ routeNames, pathname, routeParamList }) {
+      const buildRoute = (name: string) => ({
         name,
-        key: `${name}-${nanoid()}`,
+        key: getRouteKey(pathname, name),
         params: routeParamList[name],
-      }));
+      });
 
-      const history = getRouteHistory(routes, index, backBehavior, initialRouteName);
+      // Presence is the loaded signal: materialize only the focused route (plus the firstRoute/
+      // initialRoute anchor).
+      const { routes, index } = buildInitialSubset(
+        routeNames,
+        backBehavior,
+        initialRouteName,
+        buildRoute
+      );
 
       return {
         stale: false,
-        type: 'tab',
         key: `tab-${nanoid()}`,
         index,
         routeNames,
-        history,
         routes,
-        preloadedRouteKeys: [],
       };
     },
 
-    getRehydratedState(partialState, { routeNames, routeParamList }) {
+    getRehydratedState(partialState, { routeNames, pathname, routeParamList }) {
       const state = partialState;
 
       if (state.stale === false) {
         return state;
       }
 
-      const routes = routeNames.map((name) => {
-        const route = (state as PartialState<TabNavigationState<ParamListBase>>).routes.find(
-          (r) => r.name === name
-        );
+      const partialRoutes = (state as PartialState<TabNavigationState<ParamListBase>>).routes;
 
-        return {
+      const buildRoute = (name: string, route: Route<string> | undefined) =>
+        ({
           ...route,
           name,
-          key: route && route.name === name && route.key ? route.key : `${name}-${nanoid()}`,
+          key: route && route.name === name && route.key ? route.key : getRouteKey(pathname, name),
           params:
             routeParamList[name] !== undefined
               ? {
@@ -244,60 +267,106 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
               : route
                 ? route.params
                 : undefined,
-        } as Route<string>;
-      });
+        }) as Route<string>;
 
-      const index = Math.min(
-        Math.max(routeNames.indexOf(state.routes[state?.index ?? 0]?.name as string), 0),
-        routes.length - 1
-      );
+      const seen = new Set<string>();
+      const rebuilt: Route<string>[] = [];
 
-      const routeKeys = routes.map((route) => route.key);
+      // Keep only the persisted subset whose names are still declared — presence is the loaded
+      // signal, so undeclared-yet-absent routes are NOT materialized here.
+      for (const route of partialRoutes) {
+        if (routeNames.includes(route.name) && !seen.has(route.name)) {
+          seen.add(route.name);
+          rebuilt.push(buildRoute(route.name, route as Route<string>));
+        }
+      }
 
-      const history = state.history?.filter((it) => routeKeys.includes(it.key)) ?? [];
-
-      return changeIndex(
-        {
-          stale: false,
-          type: 'tab',
-          key: `tab-${nanoid()}`,
-          index,
+      // Nothing persisted survived: fall back to the fresh-start subset so the focused route and
+      // anchor honor initialRouteName/back behavior (instead of hardcoding the first declared route).
+      if (rebuilt.length === 0 && routeNames.length > 0) {
+        const { routes, index } = buildInitialSubset(
           routeNames,
-          history,
-          routes,
-          preloadedRouteKeys:
-            state.preloadedRouteKeys?.filter((key) => routeKeys.includes(key)) ?? [],
-        },
+          backBehavior,
+          initialRouteName,
+          (name) => buildRoute(name, undefined)
+        );
+        return { stale: false, key: `tab-${nanoid()}`, index, routeNames, routes };
+      }
+
+      const persistedFocusedName = partialRoutes[state?.index ?? 0]?.name;
+      const focusedName =
+        persistedFocusedName !== undefined && seen.has(persistedFocusedName)
+          ? persistedFocusedName
+          : rebuilt[0]!.name;
+
+      // firstRoute/initialRoute need the back-stack anchor present; add it if it wasn't persisted.
+      const anchorName =
+        backBehavior === 'firstRoute'
+          ? routeNames[0]
+          : backBehavior === 'initialRoute' &&
+              initialRouteName !== undefined &&
+              routeNames.includes(initialRouteName)
+            ? initialRouteName
+            : undefined;
+
+      if (anchorName !== undefined && !seen.has(anchorName)) {
+        seen.add(anchorName);
+        rebuilt.push(buildRoute(anchorName, undefined));
+      }
+
+      const { routes, index } =
+        backBehavior === 'history'
+          ? { routes: rebuilt, index: rebuilt.findIndex((route) => route.name === focusedName) }
+          : arrangeBackStack(rebuilt, focusedName, backBehavior, initialRouteName, routeNames);
+
+      return {
+        stale: false,
+        key: `tab-${nanoid()}`,
         index,
-        backBehavior,
-        initialRouteName
-      );
+        routeNames,
+        routes,
+      };
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      const routes = routeNames.map(
-        (name) =>
-          state.routes.find((r) => r.name === name && !routeKeyChanges.includes(r.name)) || {
-            name,
-            key: `${name}-${nanoid()}`,
-            params: routeParamList[name],
-          }
-      );
+    getStateForRouteNamesChange(state, { routeNames, pathname, routeParamList, routeKeyChanges }) {
+      const seen = new Set<string>();
+      const rebuilt: Route<string>[] = [];
 
-      const index = Math.max(0, routeNames.indexOf(state.routes[state.index]!.name));
-
-      let history = state.history.filter(
-        // Type will always be 'route' for tabs, but could be different in a router extending this (e.g. drawer)
-        (it) => it.type !== 'route' || routes.find((r) => r.key === it.key)
-      );
-
-      if (!history.length) {
-        history = getRouteHistory(routes, index, backBehavior, initialRouteName);
+      // Keep only the present routes whose names survived and whose key didn't change — presence is
+      // the loaded signal, so newly-declared routes are NOT materialized here.
+      for (const route of state.routes) {
+        if (
+          routeNames.includes(route.name) &&
+          !routeKeyChanges.includes(route.name) &&
+          !seen.has(route.name)
+        ) {
+          seen.add(route.name);
+          rebuilt.push(route);
+        }
       }
+
+      // Nothing survived: fall back to the fresh-start subset so the focused route and anchor honor
+      // initialRouteName/back behavior (instead of hardcoding the first declared route).
+      if (rebuilt.length === 0 && routeNames.length > 0) {
+        const { routes, index } = buildInitialSubset(
+          routeNames,
+          backBehavior,
+          initialRouteName,
+          (name) => ({ name, key: getRouteKey(pathname, name), params: routeParamList[name] })
+        );
+        return { ...state, routeNames, routes, index };
+      }
+
+      const previousFocusedName = state.routes[state.index]!.name;
+      const focusedName = seen.has(previousFocusedName) ? previousFocusedName : rebuilt[0]!.name;
+
+      const { routes, index } =
+        backBehavior === 'history'
+          ? { routes: rebuilt, index: rebuilt.findIndex((route) => route.name === focusedName) }
+          : arrangeBackStack(rebuilt, focusedName, backBehavior, initialRouteName, routeNames);
 
       return {
         ...state,
-        history,
         routeNames,
         routes,
         index,
@@ -305,160 +374,153 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
     },
 
     getStateForRouteFocus(state, key) {
-      const index = state.routes.findIndex((r) => r.key === key);
+      const fromIndex = state.routes.findIndex((r) => r.key === key);
 
-      if (index === -1 || index === state.index) {
+      if (fromIndex === -1 || fromIndex === state.index) {
         return state;
       }
 
-      return changeIndex(state, index, backBehavior, initialRouteName);
+      const { routes, index } = focusRoute(
+        state.routes,
+        state.routes[fromIndex]!,
+        fromIndex,
+        state.index,
+        backBehavior,
+        initialRouteName,
+        state.routeNames
+      );
+
+      return { ...state, routes, index };
     },
 
-    getStateForAction(state, action, { routeParamList, routeGetIdList }) {
+    getStateForAction(state, action, { routeNames, pathname, routeParamList, routeGetIdList }) {
       switch (action.type) {
         case 'JUMP_TO':
         case 'NAVIGATE':
+        // @ts-expect-error PUSH is not part of tab actions
+        case 'PUSH':
         case 'NAVIGATE_DEPRECATED': {
+          // Only declared routes can be navigated to.
+          if (!routeNames.includes(action.payload.name)) {
+            return null;
+          }
+
           const index = state.routes.findIndex((route) => route.name === action.payload.name);
-
-          if (index === -1) {
-            return null;
-          }
-
-          const updatedState = changeIndex(
-            {
-              ...state,
-              routes: state.routes.map((route) => {
-                if (route.name !== action.payload.name) {
-                  return route;
-                }
-
-                const getId = routeGetIdList[route.name];
-
-                const currentId = getId?.({ params: route.params });
-                const nextId = getId?.({ params: action.payload.params });
-
-                const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
-
-                let params;
-
-                if (
-                  (action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED') &&
-                  action.payload.merge &&
-                  currentId === nextId
-                ) {
-                  params =
-                    action.payload.params !== undefined || routeParamList[route.name] !== undefined
-                      ? {
-                          ...routeParamList[route.name],
-                          ...route.params,
-                          ...action.payload.params,
-                        }
-                      : route.params;
-                } else {
-                  params = createParamsFromAction({ action, routeParamList });
-                }
-
-                const path =
-                  action.type === 'NAVIGATE' && action.payload.path != null
-                    ? action.payload.path
-                    : route.path;
-
-                return params !== route.params || path !== route.path
-                  ? { ...route, key, path, params }
-                  : route;
-              }),
-            },
-            index,
-            backBehavior,
-            initialRouteName
-          );
-
-          return {
-            ...updatedState,
-            preloadedRouteKeys: updatedState.preloadedRouteKeys.filter(
-              (key) => key !== state.routes[updatedState.index]!.key
-            ),
-          };
-        }
-
-        case 'SET_PARAMS':
-        case 'REPLACE_PARAMS': {
-          const nextState = BaseRouter.getStateForAction(state, action);
-
-          if (nextState !== null) {
-            const index = nextState.index;
-
-            if (index != null) {
-              const focusedRoute = nextState.routes[index]!;
-              const historyItemIndex = state.history.findLastIndex(
-                (item) => item.key === focusedRoute.key
-              );
-
-              let updatedHistory = state.history;
-
-              if (historyItemIndex !== -1) {
-                updatedHistory = [...state.history];
-                updatedHistory[historyItemIndex] = {
-                  ...updatedHistory[historyItemIndex]!,
-                  params: focusedRoute.params,
-                };
-              }
-
-              return {
-                ...nextState,
-                history: updatedHistory,
+          // Presence is the loaded signal: an absent route is created on navigate. Append it so it
+          // sits at a known position; the back-stack arrangement below moves it into place.
+          const existed = index !== -1;
+          const route: Route<string> = existed
+            ? state.routes[index]!
+            : {
+                name: action.payload.name,
+                key: getNextRouteKeyFromState(pathname, action.payload.name, state),
+                params: routeParamList[action.payload.name],
               };
-            }
-          }
+          const fromIndex = existed ? index : state.routes.length;
+          const currentRoutes = existed ? state.routes : [...state.routes, route];
 
-          return nextState;
-        }
+          const getId = routeGetIdList[route.name];
 
-        case 'GO_BACK': {
-          if (state.history.length === 1) {
-            return null;
-          }
+          const currentId = getId?.({ params: route.params });
+          const nextId = getId?.({ params: action.payload.params });
 
-          const previousHistoryItem = state.history[state.history.length - 2];
-          const previousKey = previousHistoryItem?.key;
-          const index = state.routes.findLastIndex((route) => route.key === previousKey);
+          // A changed id means a changed identity, so the route gets a fresh key (forcing a
+          // remount) at the next free index past its current key.
+          const key =
+            currentId === nextId
+              ? route.key
+              : getNextRouteKeyFromState(pathname, route.name, state);
 
-          if (index === -1) {
-            return null;
-          }
-
-          let routes = state.routes;
+          let params;
 
           if (
-            backBehavior === 'fullHistory' &&
-            routes[index]!.params !== previousHistoryItem!.params
+            (action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED') &&
+            action.payload.merge &&
+            currentId === nextId
           ) {
-            routes = [...state.routes];
-            routes[index] = {
-              ...routes[index]!,
-              params: previousHistoryItem!.params,
-            };
+            params =
+              action.payload.params !== undefined || routeParamList[route.name] !== undefined
+                ? {
+                    ...routeParamList[route.name],
+                    ...route.params,
+                    ...action.payload.params,
+                  }
+                : route.params;
+          } else {
+            params = createParamsFromAction({ action, routeParamList });
           }
+
+          const path =
+            action.type === 'NAVIGATE' && action.payload.path != null
+              ? action.payload.path
+              : route.path;
+
+          const updatedRoute =
+            params !== route.params || path !== route.path || key !== route.key
+              ? { ...route, key, path, params }
+              : route;
+
+          if (existed && updatedRoute === route && index === state.index) {
+            return state;
+          }
+
+          const { routes, index: newIndex } = focusRoute(
+            currentRoutes,
+            updatedRoute,
+            fromIndex,
+            state.index,
+            backBehavior,
+            initialRouteName,
+            routeNames
+          );
 
           return {
             ...state,
             routes,
-            preloadedRouteKeys: state.preloadedRouteKeys.filter(
-              (key) => key !== state.routes[index]!.key
-            ),
-            history: state.history.slice(0, -1),
-            index,
+            index: newIndex,
+          };
+        }
+
+        case 'SET_PARAMS':
+        case 'REPLACE_PARAMS':
+          return BaseRouter.getStateForAction(state, action);
+
+        case 'GO_BACK': {
+          // Back walks the present routes by position only — never reorders.
+          if (backBehavior === 'none' || state.index <= 0) {
+            return null;
+          }
+
+          return {
+            ...state,
+            index: state.index - 1,
           };
         }
 
         case 'PRELOAD': {
-          const routeIndex = state.routes.findIndex((route) => route.name === action.payload.name);
-
-          if (routeIndex === -1) {
+          // Only declared routes can be preloaded.
+          if (!routeNames.includes(action.payload.name)) {
             return null;
           }
 
+          const routeIndex = state.routes.findIndex((route) => route.name === action.payload.name);
+
+          // Absent route: insert it (presence is the preloaded signal) without changing focus.
+          if (routeIndex === -1) {
+            const params = createParamsFromAction({ action, routeParamList });
+            const newRoute: Route<string> = {
+              name: action.payload.name,
+              key: getNextRouteKeyFromState(pathname, action.payload.name, state),
+              params,
+            };
+
+            return {
+              ...state,
+              routes: [...state.routes, newRoute],
+            };
+          }
+
+          // Already present: refresh its params/key in place, leaving focus untouched.
           const route = state.routes[routeIndex]!;
 
           const getId = routeGetIdList[route.name];
@@ -466,21 +528,23 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           const currentId = getId?.({ params: route.params });
           const nextId = getId?.({ params: action.payload.params });
 
-          const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
+          // A changed id means a changed identity, so the route gets a fresh key (forcing a
+          // remount) at the next free index past its current key.
+          const key =
+            currentId === nextId
+              ? route.key
+              : getNextRouteKeyFromState(pathname, route.name, state);
 
           const params = createParamsFromAction({ action, routeParamList });
           const newRoute = params !== route.params ? { ...route, key, params } : route;
 
+          if (newRoute === route) {
+            return state;
+          }
+
           return {
             ...state,
-            preloadedRouteKeys: state.preloadedRouteKeys
-              .filter((key) => key !== route.key)
-              .concat(newRoute.key),
-            routes: state.routes.map((route, index) => (index === routeIndex ? newRoute : route)),
-            history:
-              key === route.key
-                ? state.history
-                : state.history.filter((record) => record.key !== route.key),
+            routes: state.routes.map((r, index) => (index === routeIndex ? newRoute : r)),
           };
         }
 
@@ -511,8 +575,7 @@ export function TabRouter(
 
       if ((action.type as string) === 'REPLACE') {
         const replaceAction = action as unknown as Extract<StackActionType, { type: 'REPLACE' }>;
-        // Generate the state as if we were using JUMP_TO
-        let nextState = base.getStateForAction(
+        const nextState = base.getStateForAction(
           state,
           {
             ...replaceAction,
@@ -521,27 +584,11 @@ export function TabRouter(
           options
         );
 
-        if (!nextState || nextState.index === undefined || !Array.isArray(nextState.history)) {
+        if (nextState == null) {
           return null;
         }
 
-        // If the state is valid and we didn't JUMP_TO a single history state,
-        // then remove the previous state.
-        if (nextState.index !== 0) {
-          const previousIndex = nextState.index - 1;
-
-          nextState = {
-            ...nextState,
-            key: `${nextState.key}-replace`,
-            // Omit the previous history entry that we are replacing
-            history: [
-              ...nextState.history.slice(0, previousIndex),
-              ...nextState.history.splice(nextState.index),
-            ],
-          };
-        }
-
-        return nextState;
+        return pruneReplacedRoute(nextState as TabNavigationState<ParamListBase>);
       }
 
       return base.getStateForAction(state, action, options);

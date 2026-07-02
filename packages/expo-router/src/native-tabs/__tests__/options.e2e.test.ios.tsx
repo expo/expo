@@ -55,7 +55,8 @@ it('can pass props via unstable_nativeProps', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
+  // Eager preload renders both tabs twice; order is preserved within each pass.
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     ...indexOptions,
   });
@@ -102,7 +103,7 @@ it('when no options are passed, default ones are used', () => {
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     hidden: false,
     specialEffects: {},
-    screenKey: expect.stringMatching(/^index-[-\w]+/),
+    screenKey: expect.stringMatching(/(^|-)index$/),
     children: expect.objectContaining({}),
   } as TabsScreenProps);
 });
@@ -374,7 +375,8 @@ describe('Icons', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       ios: {
         standardAppearance: {
@@ -603,7 +605,8 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('one')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].title).toBe('index');
     expect(TabsScreen.mock.calls[1][0].title).toBe('one');
   });
@@ -702,7 +705,8 @@ describe('Label', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       ios: {
         standardAppearance: {
@@ -772,7 +776,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(TabsScreen).toHaveBeenCalledTimes(2);
+      // Eager preload renders both tabs twice; order is preserved within each pass.
+      expect(TabsScreen).toHaveBeenCalledTimes(4);
       expect(TabsScreen.mock.calls[0][0]).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
@@ -833,7 +838,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(TabsScreen).toHaveBeenCalledTimes(2);
+      // Eager preload renders both tabs twice; order is preserved within each pass.
+      expect(TabsScreen).toHaveBeenCalledTimes(4);
       expect(TabsScreen.mock.calls[0][0]).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
@@ -896,7 +902,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       children: expect.objectContaining({}),
       ios: {
         icon: undefined,
@@ -907,7 +913,7 @@ describe('Dynamic options', () => {
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       children: expect.objectContaining({}),
       ios: {
         icon: undefined,
@@ -939,7 +945,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       ios: {
         icon: undefined,
         selectedIcon: undefined,
@@ -949,7 +955,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       badgeValue: '5',
       ios: {
         icon: {
@@ -1004,13 +1010,13 @@ describe('Dynamic options', () => {
       },
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
     } as TabsScreenProps);
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       badgeValue: '5',
       ios: {
         icon: {
@@ -1055,13 +1061,13 @@ describe('Dynamic options', () => {
         },
       },
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
     } as TabsScreenProps);
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       badgeValue: '5',
       ios: {
         icon: {
@@ -1137,12 +1143,13 @@ describe('Dynamic options', () => {
     // Tab + preview
     expect(screen.getAllByTestId('second')).toHaveLength(2);
     expect(within(screen.getByTestId('index')).getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // Eager preload renders both tabs twice; order is preserved within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)index$/),
       ios: {
         icon: undefined,
         selectedIcon: undefined,
@@ -1152,7 +1159,7 @@ describe('Dynamic options', () => {
       title: 'Second',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^second-[-\w]+/),
+      screenKey: expect.stringMatching(/(^|-)second$/),
       ios: {
         icon: undefined,
         selectedIcon: undefined,

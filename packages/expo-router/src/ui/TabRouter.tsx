@@ -9,6 +9,7 @@ import {
   type NavigationAction,
   TabRouter as RNTabRouter,
 } from '../react-navigation/native';
+import { pruneReplacedRoute } from '../react-navigation/routers/TabRouter';
 import type { TriggerMap } from './common';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
@@ -17,20 +18,22 @@ export type ExpoTabRouterOptions = RNTabRouterOptions & {
 
 type ReplaceAction = Extract<StackActionType, { type: 'REPLACE' }>;
 
+type ExpoTabJumpToAction = {
+  type: 'JUMP_TO';
+  source?: string;
+  target?: string;
+  payload: {
+    name: string;
+    resetOnFocus?: boolean;
+    params?: object;
+  };
+};
+
 export type ExpoTabActionType =
   | RNTabActionType
   | CommonNavigationAction
   | ReplaceAction
-  | {
-      type: 'JUMP_TO';
-      source?: string;
-      target?: string;
-      payload: {
-        name: string;
-        resetOnFocus?: boolean;
-        params?: object;
-      };
-    };
+  | ExpoTabJumpToAction;
 
 export function ExpoTabRouter(options: ExpoTabRouterOptions) {
   const rnTabRouter = RNTabRouter(options);
@@ -41,71 +44,82 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
   > = {
     ...rnTabRouter,
     getStateForAction(state, action, options) {
-      if (isReplaceAction(action)) {
-        action = {
+      const isReplace = isReplaceAction(action);
+
+      // Only JUMP_TO is handled here; a REPLACE is normalized into a JUMP_TO first, and anything
+      // else is delegated to the base tab router unchanged. We keep the normalized action in its
+      // own variable so reassigning it doesn't break narrowing of `action`.
+      let jumpToAction: ExpoTabJumpToAction;
+      if (isReplace) {
+        jumpToAction = {
           ...action,
           type: 'JUMP_TO',
         };
         // Generate the state as if we were using JUMP_TO
-        const nextState = rnTabRouter.getStateForAction(state, action, options);
+        const nextState = rnTabRouter.getStateForAction(state, jumpToAction, options);
 
-        if (!nextState || nextState.index === undefined || !Array.isArray(nextState.history)) {
+        if (!nextState || nextState.index === undefined) {
           return null;
         }
 
-        // We can assert that nextState is TabNavigationState here, because we checked for index and history above
+        // TODO(@ubax): Remove the casting once there is only a single state shape
+        // We can assert that nextState is TabNavigationState here, because we checked for index above
         state = nextState as TabNavigationState<ParamListBase>;
-
-        // If the state is valid and we didn't JUMP_TO a single history state,
-        // then remove the previous state.
-        if (state.index !== 0) {
-          const previousIndex = state.index - 1;
-
-          state = {
-            ...state,
-            key: `${state.key}-replace`,
-            // Omit the previous history entry that we are replacing
-            history: [
-              ...state.history.slice(0, previousIndex),
-              ...state.history.splice(state.index),
-            ],
-          };
-        }
-      } else if (action.type !== 'JUMP_TO') {
+      } else if (action.type === 'JUMP_TO') {
+        jumpToAction = action;
+      } else {
         return rnTabRouter.getStateForAction(state, action, options);
       }
 
-      const route = state.routes.find((route) => route.name === action.payload.name);
-
-      if (!route || !state) {
+      if (!state || !state.routeNames.includes(jumpToAction.payload.name)) {
         // This shouldn't occur, but lets just hand it off to the next navigator in case.
         return null;
       }
 
-      // We should reset if this is the first time visiting the route
-      let shouldReset = !state.history?.some((item) => item.key === route?.key) && !route.state;
+      const route = state.routes.find((route) => route.name === jumpToAction.payload.name);
 
-      if (!shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
+      // A declared route that's absent from `state.routes` is a lazy tab that hasn't loaded yet
+      // (presence is the loaded signal). The base router creates it on focus, so this is a first
+      // visit: reset, with no prior route key/state to clear.
+      let shouldReset = !route || !route.state;
+
+      if (
+        route &&
+        !shouldReset &&
+        'resetOnFocus' in jumpToAction.payload &&
+        jumpToAction.payload.resetOnFocus
+      ) {
         shouldReset = state.routes[state.index ?? 0]!.key !== route.key;
       }
 
+      let nextState: ReturnType<typeof rnTabRouter.getStateForAction>;
+
       if (shouldReset) {
-        options.routeParamList[route.name] = {
-          ...options.routeParamList[route.name],
-        };
-        state = {
-          ...state,
-          routes: state.routes.map((r) => {
-            if (r.key !== route.key) {
-              return r;
-            }
-            return { ...r, state: undefined };
-          }),
-        };
-        return rnTabRouter.getStateForAction(state, action, options);
+        if (route) {
+          options.routeParamList[route.name] = {
+            ...options.routeParamList[route.name],
+          };
+          state = {
+            ...state,
+            routes: state.routes.map((r) => {
+              if (r.key !== route.key) {
+                return r;
+              }
+              return { ...r, state: undefined };
+            }),
+          };
+        }
+        nextState = rnTabRouter.getStateForAction(state, jumpToAction, options);
       } else {
-        return rnTabRouter.getStateForRouteFocus(state, route.key);
+        nextState = rnTabRouter.getStateForRouteFocus(state, route!.key);
       }
+
+      // A REPLACE drops the route it replaced from the back stack.
+      if (isReplace && nextState) {
+        return pruneReplacedRoute(nextState as TabNavigationState<ParamListBase>);
+      }
+
+      return nextState;
     },
   };
 

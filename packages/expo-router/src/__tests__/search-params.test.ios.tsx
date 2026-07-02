@@ -28,7 +28,6 @@ describe('push', () => {
     expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -38,7 +37,6 @@ describe('push', () => {
           state: {
             index: 5,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['page'],
             routes: [
               {
@@ -85,12 +83,10 @@ describe('push', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     testRouter.back();
@@ -102,7 +98,6 @@ describe('push', () => {
     expect(store.state).toEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -112,7 +107,6 @@ describe('push', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['page'],
             routes: [
               {
@@ -123,12 +117,10 @@ describe('push', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     expect(testRouter.canGoBack()).toBe(false);
@@ -159,7 +151,6 @@ describe('navigate', () => {
     expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -169,7 +160,6 @@ describe('navigate', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['page'],
             routes: [
               {
@@ -182,12 +172,10 @@ describe('navigate', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // There is nothing to go back, as we only re-rerendered the same route.
@@ -208,7 +196,6 @@ describe('navigate', () => {
     expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -218,7 +205,6 @@ describe('navigate', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['index', '[page]'],
             routes: [
               {
@@ -253,12 +239,10 @@ describe('navigate', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     testRouter.dismissAll();
@@ -266,7 +250,6 @@ describe('navigate', () => {
     expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -276,7 +259,6 @@ describe('navigate', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['index', '[page]'],
             routes: [
               {
@@ -287,12 +269,10 @@ describe('navigate', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     expect(testRouter.canGoBack()).toBe(false);
@@ -318,7 +298,6 @@ describe('replace', () => {
     expect(store.state).toStrictEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -328,7 +307,6 @@ describe('replace', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['page'],
             routes: [
               {
@@ -362,12 +340,10 @@ describe('replace', () => {
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     testRouter.back('/page?a=true');

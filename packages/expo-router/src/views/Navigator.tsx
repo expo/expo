@@ -4,13 +4,17 @@
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useContextKey } from '../Route';
+import { useContextKey, useRouteNode } from '../Route';
+import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
+import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
 import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
 import { useSortedScreens } from '../useScreens';
 import { Screen } from './Screen';
+
+const stackNavigatorType = 'stack';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
   contextKey: string;
@@ -47,12 +51,14 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   routerOptions,
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
+  const node = useRouteNode();
 
   // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
   const {
     screens,
     children: nonScreenChildren,
     protectedScreens,
+    guardedRedirects,
   } = useFilterScreenChildren(children, {
     isCustomNavigator: true,
     contextKey,
@@ -84,7 +90,13 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {nonScreenChildren}
+      {/* A custom `router` has an unknown kind, so only the default stack is announced. */}
+      <NavigatorTypeContext
+        value={(router as unknown) === StackRouter ? stackNavigatorType : undefined}>
+        <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+          {nonScreenChildren}
+        </GuardContextProvider>
+      </NavigatorTypeContext>
     </NavigatorContext.Provider>
   );
 }
@@ -102,9 +114,10 @@ export function useNavigatorContext() {
 
 function SlotNavigator(props: NavigatorProps<any>) {
   const contextKey = useContextKey();
+  const node = useRouteNode();
 
   // Allows adding Screen components as children to configure routes.
-  const { screens, protectedScreens } = useFilterScreenChildren([], {
+  const { screens, protectedScreens, guardedRedirects } = useFilterScreenChildren([], {
     contextKey,
   });
 
@@ -115,7 +128,13 @@ function SlotNavigator(props: NavigatorProps<any>) {
   });
 
   return (
-    <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    <NavigatorTypeContext value={stackNavigatorType}>
+      <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+        <NavigationContent>
+          {descriptors[state.routes[state.index]!.key]!.render()}
+        </NavigationContent>
+      </GuardContextProvider>
+    </NavigatorTypeContext>
   );
 }
 

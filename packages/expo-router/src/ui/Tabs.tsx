@@ -6,6 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { useRouteNode, useContextKey } from '../Route';
 import { useRouteInfo } from '../hooks';
 import { resolveHref } from '../link/href';
+import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
 import type {
   DefaultNavigatorOptions,
   ParamListBase,
@@ -14,6 +15,9 @@ import type {
   TabRouterOptions,
 } from '../react-navigation/native';
 import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import { getBackStackAnchorName } from '../react-navigation/routers/TabRouter';
+import { usePreloadRoutes } from '../react-navigation/usePreloadRoutes';
+import { useTabPlaceholders } from '../react-navigation/useTabPlaceholders';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
 import { NavigatorContext } from '../views/Navigator';
@@ -185,24 +189,69 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
 
+  // Headless tabs follow the bottom-tabs policy: show every declared tab from the first frame via
+  // placeholders. Tabs default to `lazy`, so only routes that opt out with `lazy={false}` preload.
+  const [tabState, tabDescriptors] = useTabPlaceholders(
+    state,
+    descriptors,
+    describe,
+    contextKey,
+    state.routeNames
+  );
+  const nonLazyRouteNames = useMemo(
+    () =>
+      state.routeNames.filter((name) => {
+        const placeholder = tabState.routes.find((route) => route.name === name);
+        return placeholder ? tabDescriptors[placeholder.key]?.options.lazy === false : false;
+      }),
+    [state.routeNames, tabState.routes, tabDescriptors]
+  );
+  // Keep the implicit back-stack anchor loaded too (deep links only materialize anchors declared
+  // in the linking config).
+  const routeNamesToPreload = useMemo(() => {
+    const anchorName = getBackStackAnchorName(
+      state.routeNames,
+      rest.backBehavior,
+      initialRouteName
+    );
+    if (anchorName && !nonLazyRouteNames.includes(anchorName)) {
+      return [...nonLazyRouteNames, anchorName];
+    }
+    return nonLazyRouteNames;
+  }, [state.routeNames, nonLazyRouteNames, rest.backBehavior, initialRouteName]);
+  usePreloadRoutes(state, navigation, routeNamesToPreload);
+
   const navigatorContextValue = useMemo<NavigatorContextValue>(
-    () => ({
-      ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
-      contextKey,
-      router: ExpoTabRouter,
-    }),
-    [navigatorContext, contextKey, ExpoTabRouter]
+    () =>
+      ({
+        ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
+        // Expose the placeholder-augmented state/descriptors so consumers (TabSlot, TabTrigger) see
+        // every declared tab from the first frame, matching the cast used for the spread above.
+        state: tabState,
+        descriptors: tabDescriptors,
+        contextKey,
+        router: ExpoTabRouter,
+      }) as unknown as NavigatorContextValue,
+    [navigatorContext, tabState, tabDescriptors, contextKey, ExpoTabRouter]
   );
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
-    <TabTriggerMapContext.Provider value={triggerMap}>
-      <NavigatorContext.Provider value={navigatorContextValue}>
-        <RNNavigationContent>{children}</RNNavigationContent>
-      </NavigatorContext.Provider>
-    </TabTriggerMapContext.Provider>
+    <NavigatorTypeContext value="tab">
+      <TabTriggerMapContext.Provider value={triggerMap}>
+        <NavigatorContext.Provider value={navigatorContextValue}>
+          <RNNavigationContent>{children}</RNNavigationContent>
+        </NavigatorContext.Provider>
+      </TabTriggerMapContext.Provider>
+    </NavigatorTypeContext>
   )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent, describe };
+  return {
+    state: tabState,
+    descriptors: tabDescriptors,
+    navigation,
+    NavigationContent,
+    describe,
+  };
 }
 
 function parseTriggersFromChildren(

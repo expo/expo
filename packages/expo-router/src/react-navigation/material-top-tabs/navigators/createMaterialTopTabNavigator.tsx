@@ -1,3 +1,5 @@
+import { useOptionalContextKey } from '../../../Route';
+import { NavigatorTypeContext } from '../../core/NavigatorTypeContext';
 import {
   createNavigatorFactory,
   type NavigatorTypeBagBase,
@@ -10,6 +12,8 @@ import {
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../native';
+import { usePreloadRoutes } from '../../usePreloadRoutes';
+import { useTabPlaceholders } from '../../useTabPlaceholders';
 import type {
   MaterialTopTabNavigationEventMap,
   MaterialTopTabNavigationOptions,
@@ -31,7 +35,7 @@ function MaterialTopTabNavigator({
   UNSTABLE_router,
   ...rest
 }: MaterialTopTabNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, describe, NavigationContent } = useNavigationBuilder<
     TabNavigationState<ParamListBase>,
     TabRouterOptions,
     TabActionHelpers<ParamListBase>,
@@ -50,15 +54,31 @@ function MaterialTopTabNavigator({
     UNSTABLE_router,
   });
 
+  // Material top tabs stay fully eager: preload every declared route.
+  usePreloadRoutes(state, navigation, state.routeNames);
+
+  // Key placeholders with the same pathname the router keys real routes with, so the real route
+  // reconciles onto its placeholder instead of remounting.
+  const pathname = useOptionalContextKey();
+  const [tabState, tabDescriptors] = useTabPlaceholders(
+    state,
+    descriptors,
+    describe,
+    pathname,
+    state.routeNames
+  );
+
   return (
-    <NavigationContent>
-      <MaterialTopTabView
-        {...rest}
-        state={state}
-        navigation={navigation}
-        descriptors={descriptors}
-      />
-    </NavigationContent>
+    <NavigatorTypeContext value="tab">
+      <NavigationContent>
+        <MaterialTopTabView
+          {...rest}
+          state={tabState}
+          navigation={navigation}
+          descriptors={tabDescriptors}
+        />
+      </NavigationContent>
+    </NavigatorTypeContext>
   );
 }
 

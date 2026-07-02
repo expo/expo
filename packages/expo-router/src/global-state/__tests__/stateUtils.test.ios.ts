@@ -132,7 +132,6 @@ describe('findDivergentState', () => {
       routes: [{ key: 'home-key', name: 'home' }],
       index: 0,
       key: 'nav-0',
-      type: 'stack',
       routeNames: ['home'],
       stale: false,
     };
@@ -165,7 +164,6 @@ describe('findDivergentState', () => {
             routes: [{ key: 'home-key', name: 'home' }],
             index: 0,
             key: 'nav-1',
-            type: 'stack',
             routeNames: ['home'],
             stale: false,
           },
@@ -173,7 +171,6 @@ describe('findDivergentState', () => {
       ],
       index: 0,
       key: 'nav-0',
-      type: 'stack',
       routeNames: ['root'],
       stale: false,
     };
@@ -210,7 +207,6 @@ describe('findDivergentState', () => {
             routes: [{ key: 'home-key', name: 'home' }],
             index: 0,
             key: 'nav-inner',
-            type: 'stack',
             routeNames: ['home'],
             stale: false,
           },
@@ -218,7 +214,6 @@ describe('findDivergentState', () => {
       ],
       index: 0,
       key: 'nav-root',
-      type: 'stack',
       routeNames: ['root'],
       stale: false,
     };
@@ -255,7 +250,6 @@ describe('findDivergentState', () => {
             routes: [{ key: 'details-key', name: 'details' }],
             index: 0,
             key: 'nav-inner',
-            type: 'stack',
             routeNames: ['details'],
             stale: false,
           },
@@ -263,7 +257,6 @@ describe('findDivergentState', () => {
       ],
       index: 0,
       key: 'nav-root',
-      type: 'stack',
       routeNames: ['[id]'],
       stale: false,
     };
@@ -299,7 +292,6 @@ describe('findDivergentState', () => {
             routes: [{ key: 'details-key', name: 'details' }],
             index: 0,
             key: 'nav-inner',
-            type: 'stack',
             routeNames: ['details'],
             stale: false,
           },
@@ -307,7 +299,6 @@ describe('findDivergentState', () => {
       ],
       index: 0,
       key: 'nav-root',
-      type: 'stack',
       routeNames: ['[id]'],
       stale: false,
     };
@@ -353,7 +344,6 @@ describe('findDivergentState', () => {
                   routes: [{ key: 'leaf-key', name: 'leaf' }],
                   index: 0,
                   key: 'nav-leaf',
-                  type: 'stack',
                   routeNames: ['leaf'],
                   stale: false,
                 },
@@ -361,7 +351,6 @@ describe('findDivergentState', () => {
             ],
             index: 0,
             key: 'nav-branch',
-            type: 'stack',
             routeNames: ['branch-b'],
             stale: false,
           },
@@ -369,7 +358,6 @@ describe('findDivergentState', () => {
       ],
       index: 0,
       key: 'nav-root',
-      type: 'stack',
       routeNames: ['root'],
       stale: false,
     };
@@ -383,8 +371,10 @@ describe('findDivergentState', () => {
     expect(result.navigationRoutes[0]!.name).toBe('root');
   });
 
+  // TODO(@ubax): rework the link preview navigation to check state types on native
+  // Remove when logic is moved to native
   describe('lookThroughAllTabs', () => {
-    it('finds matching tab route when lookThroughAllTabs is true', () => {
+    it('uses current index even when lookThroughAllTabs is true', () => {
       const actionState: ResultState = {
         routes: [
           {
@@ -409,7 +399,6 @@ describe('findDivergentState', () => {
               routes: [{ key: 'page-key', name: 'page' }],
               index: 0,
               key: 'nav-settings',
-              type: 'stack',
               routeNames: ['page'],
               stale: false,
             },
@@ -417,17 +406,15 @@ describe('findDivergentState', () => {
         ],
         index: 0, // Currently on 'home' tab
         key: 'nav-tabs',
-        type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
       };
 
       const result = findDivergentState(actionState, navState, true);
 
-      // Should find 'settings' tab even though current index points to 'home'
-      expect(result.actionStateRoute?.name).toBe('page');
-      expect(result.navigationRoutes).toHaveLength(1);
-      expect(result.navigationRoutes[0]!.name).toBe('settings');
+      // Current index is 'home', so the 'settings' action route diverges there.
+      expect(result.actionStateRoute?.name).toBe('settings');
+      expect(result.navigationRoutes).toHaveLength(0);
     });
 
     it('falls back to current index when tab name not found and lookThroughAllTabs is true', () => {
@@ -446,7 +433,6 @@ describe('findDivergentState', () => {
         ],
         index: 0,
         key: 'nav-tabs',
-        type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
       };
@@ -473,7 +459,6 @@ describe('findDivergentState', () => {
         ],
         index: 0, // Currently on 'home'
         key: 'nav-tabs',
-        type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
       };
@@ -485,7 +470,7 @@ describe('findDivergentState', () => {
       expect(result.navigationRoutes).toHaveLength(0);
     });
 
-    it('adds tab route to navigationRoutes when diverging at tab level with lookThroughAllTabs', () => {
+    it('diverges at current index regardless of lookThroughAllTabs', () => {
       const actionState: ResultState = {
         routes: [
           {
@@ -501,18 +486,16 @@ describe('findDivergentState', () => {
         ],
         index: 0,
         key: 'nav-tabs',
-        type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
       };
 
       const result = findDivergentState(actionState, navState, true);
 
-      // With lookThroughAllTabs, it finds 'settings' tab. Since action has no child state, it diverges.
-      // The tab route should be added to navigationRoutes.
+      // No-op: uses current index ('home'), so 'settings' diverges there and
+      // no tab route is added to navigationRoutes.
       expect(result.actionStateRoute?.name).toBe('settings');
-      expect(result.navigationRoutes).toHaveLength(1);
-      expect(result.navigationRoutes[0]!.name).toBe('settings');
+      expect(result.navigationRoutes).toHaveLength(0);
     });
   });
 });

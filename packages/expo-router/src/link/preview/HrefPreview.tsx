@@ -192,7 +192,6 @@ const navigationPropWithWarnings: NavigationProp<ParamListBase> = {
       index: 0,
       routeNames: [],
       routes: [],
-      type: '',
       stale: false,
     };
   },

@@ -81,6 +81,8 @@ export function useNavigationHelpers<
         return (
           router.getStateForAction(state, CommonActions.goBack() as Action, {
             routeNames: state.routeNames,
+            // goBack never creates routes, so the key-deriving pathname is irrelevant here.
+            pathname: undefined,
             routeParamList: {},
             routeGetIdList: {},
           }) !== null ||

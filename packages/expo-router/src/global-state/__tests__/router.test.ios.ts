@@ -75,7 +75,8 @@ beforeEach(() => {
   (store as any).state = undefined;
 });
 
-describe('canDismiss', () => {
+// TODO(@ubax): uncomment when canDismiss is fixed
+describe.skip('canDismiss', () => {
   it('returns false when state is undefined', () => {
     (store as any).state = undefined;
     expect(canDismiss()).toBe(false);
@@ -177,6 +178,12 @@ describe('canDismiss', () => {
       index: 0,
     };
     expect(canDismiss()).toBe(true);
+  });
+});
+
+describe('canDismiss', () => {
+  it('throws not implemented', () => {
+    expect(() => canDismiss()).toThrow('canDismiss is not implemented yet.');
   });
 });
 

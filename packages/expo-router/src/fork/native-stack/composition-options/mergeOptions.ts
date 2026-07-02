@@ -29,7 +29,7 @@ export function mergeOptions(
     }
 
     // Check if route is preloaded and not focused → skip composition
-    const isPreloaded = state.preloadedRoutes?.some((r) => r.key === key) ?? false;
+    const isPreloaded = state.routes.findIndex((r) => r.key === key) > state.index;
     if (isPreloaded && key !== focusedKey) {
       result[key] = descriptor;
       continue;

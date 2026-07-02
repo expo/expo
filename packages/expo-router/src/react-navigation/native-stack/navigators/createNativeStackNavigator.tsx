@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { NavigatorTypeContext } from '../../core/NavigatorTypeContext';
 import {
   createNavigatorFactory,
   type EventArg,
@@ -37,7 +38,7 @@ function NativeStackNavigator({
   UNSTABLE_router,
   ...rest
 }: NativeStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -84,15 +85,16 @@ function NativeStackNavigator({
   }, [meta, navigation, state.index, state.key]);
 
   return (
-    <NavigationContent>
-      <NativeStackView
-        {...rest}
-        state={state}
-        navigation={navigation}
-        descriptors={descriptors}
-        describe={describe}
-      />
-    </NavigationContent>
+    <NavigatorTypeContext value="stack">
+      <NavigationContent>
+        <NativeStackView
+          {...rest}
+          state={state}
+          navigation={navigation}
+          descriptors={descriptors}
+        />
+      </NavigationContent>
+    </NavigatorTypeContext>
   );
 }
 
