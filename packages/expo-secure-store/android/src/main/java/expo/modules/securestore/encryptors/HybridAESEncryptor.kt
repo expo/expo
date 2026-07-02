@@ -40,18 +40,17 @@ import javax.crypto.spec.SecretKeySpec
  */
 class HybridAESEncryptor(private var mContext: Context, private val mAESEncryptor: AESEncryptor) : KeyBasedEncryptor<KeyStore.PrivateKeyEntry> {
   private val mSecureRandom: SecureRandom = SecureRandom()
-  override fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean): String {
-    val suffix = if (requireAuthentication) {
-      SecureStoreModule.AUTHENTICATED_KEYSTORE_SUFFIX
-    } else {
-      SecureStoreModule.UNAUTHENTICATED_KEYSTORE_SUFFIX
+  override fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, isDeviceCredentialsRequired: Boolean): String {
+    val suffix = when {
+      !requireAuthentication -> SecureStoreModule.UNAUTHENTICATED_KEYSTORE_SUFFIX
+      isDeviceCredentialsRequired -> SecureStoreModule.DEVICE_CREDENTIALS_KEYSTORE_SUFFIX
+      else -> SecureStoreModule.AUTHENTICATED_KEYSTORE_SUFFIX
     }
     return "${getKeyStoreAlias(options)}:$suffix"
   }
 
   override fun getKeyStoreAlias(options: SecureStoreOptions): String {
-    val baseAlias = options.keychainService
-    return "$RSA_CIPHER:$baseAlias"
+    return "$RSA_CIPHER:${options.keychainService}"
   }
 
   @Throws(GeneralSecurityException::class)
@@ -69,7 +68,8 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
     keyStoreEntry: KeyStore.PrivateKeyEntry,
     requireAuthentication: Boolean,
     authenticationPrompt: String,
-    authenticationHelper: AuthenticationHelper
+    authenticationHelper: AuthenticationHelper,
+    isDeviceCredentialsRequired: Boolean
   ): JSONObject {
     // This should never be called after we dropped Android SDK 22 support.
     throw EncryptException(
