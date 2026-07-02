@@ -3,6 +3,7 @@ import * as nodeModule from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import url from 'node:url';
+import vm from 'node:vm';
 import type * as ts from 'typescript';
 
 import { annotateError, formatDiagnostic } from './codeframe';
@@ -261,6 +262,20 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
   }
 }
 
+function containsModuleSyntax(code: string): boolean {
+  // Fast-path: We can assume that if there's no ESM keyword, we don't need to check at all
+  if (!/\b(?:import|export|await)\b/.test(code)) {
+    return false;
+  }
+  try {
+    const CJS_WRAP_PARAMS = ['exports', 'require', 'module', '__filename', '__dirname'];
+    vm.compileFunction(code, CJS_WRAP_PARAMS);
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 const hasStripTypeScriptTypes = typeof nodeModule.stripTypeScriptTypes === 'function';
 
 function evalModule(
@@ -331,6 +346,18 @@ function evalModule(
     }
   } else if (format.mode === 'commonjs') {
     inputCode = toCommonJS(filename, code);
+  }
+
+  // NOTE(@kitten): If we've transpiling to CommonJS ourselves above, we should check if
+  // the output contains module syntax, which prevents us from loading this file as CommonJS.
+  // If it does, we run the non-legacy ESM code path instead
+  if (
+    format.legacy &&
+    (format.mode === 'commonjs' || format.mode === 'commonjs-typescript') &&
+    containsModuleSyntax(inputCode)
+  ) {
+    format = toFormat(filename, false);
+    return evalModule(code, filename, opts, format);
   }
 
   try {
