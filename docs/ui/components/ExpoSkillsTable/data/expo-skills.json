@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-07-01T09:11:00.236Z"
+    "fetchedAt": "2026-07-02T09:06:38.095Z"
   },
-  "totalSkills": 16,
+  "totalSkills": 18,
   "skills": [
     {
       "name": "add-app-clip",
@@ -15,6 +15,11 @@
       "name": "building-native-ui",
       "description": "Complete guide for building beautiful apps with Expo Router. Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/building-native-ui/SKILL.md"
+    },
+    {
+      "name": "eas-simulator",
+      "description": "Run and control a user's app on a remote iOS/Android simulator hosted on EAS cloud. Always read before executing any `eas simulator:*` commands — it has the current syntax for this experimental API. Use whenever the user needs a simulator they can't run locally — 'run my app on a cloud simulator', 'use eas simulator to run/install/screenshot my app', 'I'm on Linux/Cursor and need an iOS device', 'no sim on this box / headless CI', 'let an agent click through my app and screenshot it', 'test my dev build on a remote sim with live reload', 'stream a sim's screen to my browser' — even when they don't say 'EAS Simulator' or 'cloud'. On a host WITHOUT a local simulator (Linux, CI, cloud sandbox) it's the default — just use it; on macOS, do NOT auto-trigger for a plain 'run on the simulator' — use it only for a cloud/remote/shareable sim, an iOS version they lack, or an agent-driven session. NOT for local sims (expo run:ios, Xcode, Android Studio), EAS Build/Update, web preview, or physical devices.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-simulator/SKILL.md"
     },
     {
       "name": "eas-update-insights",
@@ -85,6 +90,11 @@
       "name": "use-dom",
       "description": "Use Expo DOM components to run web code in a webview on native and as-is on web. Migrate web code to native incrementally.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/use-dom/SKILL.md"
+    },
+    {
+      "name": "web-to-native",
+      "description": "Migrate an existing web React app to a native iOS/Android app with Expo. Use when the user wants to turn a website into a mobile app, port a Next.js/Vite/CRA React codebase to React Native, reuse web code on native incrementally, or asks how web idioms (the DOM, CSS, React Router, localStorage, window) map to native. This is the end-to-end migration guide; use the `use-dom` skill for the DOM-component mechanism itself.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/web-to-native/SKILL.md"
     }
   ]
 }
