@@ -76,4 +76,49 @@ describe('evalModule', () => {
       default: 'test',
     });
   });
+
+  it('evaluates .js using import.meta as ESM instead of CommonJS', () => {
+    const mod = evalModule(
+      `
+      export const dir = import.meta.dirname;
+      export default dir;
+    `,
+      path.join(basepath, 'eval.js')
+    );
+
+    expect(mod.dir).toBe(basepath);
+    expect(mod.default).toBe(basepath);
+  });
+
+  it('evaluates .ts using import.meta as ESM instead of CommonJS', () => {
+    const mod = evalModule(
+      `
+      const dir: string = import.meta.dirname;
+      export default dir;
+    `,
+      path.join(basepath, 'eval.ts')
+    );
+
+    expect(mod.default).toBe(basepath);
+  });
+
+  it('does not treat import.meta inside a string literal as ESM', () => {
+    const mod = evalModule(
+      `module.exports = 'import.meta.dirname';`,
+      path.join(basepath, 'eval.js')
+    );
+
+    expect(mod).toBe('import.meta.dirname');
+  });
+
+  it('rethrows a non-Error thrown value without crashing the annotator', () => {
+    let caught: any;
+    try {
+      evalModule(`throw { code: 'CUSTOM_THROW' };`, path.join(basepath, 'eval.js'));
+    } catch (error) {
+      caught = error;
+    }
+
+    expect(caught).toEqual({ code: 'CUSTOM_THROW' });
+  });
 });
