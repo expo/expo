@@ -25,6 +25,7 @@ async function runAsync() {
   const templatesDir = path.join(dirname, '..', 'templates');
   const templateDirents = await glob('**/*', {
     cwd: templatesDir,
+    dot: true,
     withFileTypes: true,
   });
   const templateFiles = templateDirents

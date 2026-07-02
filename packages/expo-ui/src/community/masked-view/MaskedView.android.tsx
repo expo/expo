@@ -19,16 +19,19 @@ const MaskNativeView: React.ComponentType<{
  */
 export function MaskedView(props: MaskedViewProps) {
   const { maskElement, children, style, ...viewProps } = props;
+  // `style` is applied only to the outer container. Re-applying it inside the
+  // Host/MaskView wrappers used to double offsets (`translateX`, `marginLeft`, …)
+  // and transforms because the inner views inherit layout from `absoluteFill`.
   return (
     <View {...viewProps} style={style}>
       <Host style={StyleSheet.absoluteFill}>
         <MaskNativeView alignment="topStart" modifiers={[fillMaxSize()]}>
           <RNHostView modifiers={[fillMaxSize()]}>
-            <View style={[StyleSheet.absoluteFill, style]}>{children}</View>
+            <View style={StyleSheet.absoluteFill}>{children}</View>
           </RNHostView>
           <Slot slotName="content">
             <RNHostView modifiers={[fillMaxSize()]}>
-              <View style={[StyleSheet.absoluteFill, style]}>{maskElement}</View>
+              <View style={StyleSheet.absoluteFill}>{maskElement}</View>
             </RNHostView>
           </Slot>
         </MaskNativeView>

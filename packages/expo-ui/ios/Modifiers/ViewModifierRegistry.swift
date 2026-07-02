@@ -373,6 +373,48 @@ internal struct ClipShapeModifier: ViewModifier, Record {
   }
 }
 
+internal struct StrokeBorderModifier: ViewModifier, Record {
+  @Field var color: Color?
+  @Field var style: StrokeStyleConfig?
+  @Field var antialiased: Bool = true
+  @Field var shape: ShapeType = .rectangle
+  @Field var cornerRadius: CGFloat = 8
+  @Field var roundedCornerStyle: RoundedCornerStyle?
+  @Field var cornerSize: CornerSize?
+
+  func body(content: Content) -> some View {
+    content.overlay(strokeBorderView())
+  }
+
+  @ViewBuilder
+  private func strokeBorderView() -> some View {
+    let strokeStyle = (style ?? StrokeStyleConfig()).toStrokeStyle()
+    switch shape {
+    case .capsule:
+      applyStrokeBorder(makeCapsule(style: roundedCornerStyle), strokeStyle)
+    case .circle:
+      applyStrokeBorder(Circle(), strokeStyle)
+    case .containerRelativeShape:
+      applyStrokeBorder(ContainerRelativeShape(), strokeStyle)
+    case .ellipse:
+      applyStrokeBorder(Ellipse(), strokeStyle)
+    case .rectangle:
+      applyStrokeBorder(Rectangle(), strokeStyle)
+    case .roundedRectangle:
+      applyStrokeBorder(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle), strokeStyle)
+    }
+  }
+
+  @ViewBuilder
+  private func applyStrokeBorder<S: InsettableShape>(_ shape: S, _ strokeStyle: StrokeStyle) -> some View {
+    if let color {
+      shape.strokeBorder(color, style: strokeStyle, antialiased: antialiased)
+    } else {
+      shape.strokeBorder(style: strokeStyle, antialiased: antialiased)
+    }
+  }
+}
+
 internal struct OnTapGestureModifier: ViewModifier, Record {
   var eventDispatcher: EventDispatcher?
 
@@ -1725,6 +1767,9 @@ extension ViewModifierRegistry {
 
     register("border") { params, appContext, _ in
       return try BorderModifier(from: params, appContext: appContext)
+    }
+    register("strokeBorder") { params, appContext, _ in
+      return try StrokeBorderModifier(from: params, appContext: appContext)
     }
 
     register("clipShape") { params, appContext, _ in

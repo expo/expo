@@ -33,6 +33,7 @@ import {
   listRowSeparator,
   listRowSpacing,
   border,
+  strokeBorder,
   onTapGesture,
   onLongPressGesture,
   onAppear,
@@ -416,6 +417,52 @@ export default function ModifiersScreen() {
                 </Text>
               </VStack>
             </HStack>
+
+            <VStack spacing={15}>
+              <Text modifiers={[font({ size: 16 })]}>Stroke borders</Text>
+              <HStack spacing={12}>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({ color: '#45B7B8', style: { lineWidth: 2 } }),
+                  ]}>
+                  solid
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({ color: '#3498DB', style: { lineWidth: 2, dash: [6, 3] } }),
+                  ]}>
+                  dash
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({
+                      color: '#16A085',
+                      style: { lineWidth: 2, dash: [0.5, 4], lineCap: 'round' },
+                    }),
+                  ]}>
+                  dot
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({
+                      color: '#9B59B6',
+                      style: { lineWidth: 2, dash: [6, 3] },
+                      shape: 'roundedRectangle',
+                      cornerRadius: 10,
+                    }),
+                  ]}>
+                  rounded
+                </Text>
+              </HStack>
+            </VStack>
 
             <VStack spacing={15}>
               <Picker

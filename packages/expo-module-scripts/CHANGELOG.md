@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Added `CLAUDE.md` and `CONTRIBUTING.md` to `.npmignore` template. ([#47451](https://github.com/expo/expo/pull/47451) by [@kudo](https://github.com/kudo))
+
 ## 56.0.2 — 2026-05-06
 
 _This version does not introduce any user-facing changes._
