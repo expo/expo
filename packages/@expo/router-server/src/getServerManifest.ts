@@ -1,6 +1,11 @@
-import { getContextKey, sortRoutes, type RouteNode } from 'expo-router/internal/routing';
+import {
+  getContextKey,
+  sortRoutes,
+  type PageHeadersConfig,
+  type RouteNode,
+} from 'expo-router/internal/routing';
 import { shouldLinkExternally } from 'expo-router/internal/utils';
-import type { RouteInfo, RoutesManifest } from 'expo-server/private';
+import type { PageHeaderInfo, RouteInfo, RoutesManifest } from 'expo-server/private';
 
 import { getNamedParametrizedRoute } from './getNamedParametrizedRoute';
 
@@ -42,6 +47,7 @@ type FlatNode = {
 
 type GetServerManifestOptions = {
   headers?: Record<string, string | string[]>;
+  pageHeaders?: PageHeadersConfig[];
 };
 
 // Given a nested route tree, return a flattened array of all routes that can be matched.
@@ -150,7 +156,31 @@ export function getServerManifest(
     manifest.headers = options.headers;
   }
 
+  if (options?.pageHeaders?.length) {
+    manifest.pageHeaders = getMatchableManifestForPageHeaders(options.pageHeaders);
+  }
+
   return manifest;
+}
+
+function getMatchableManifestForPageHeaders(
+  pageHeaders: PageHeadersConfig[]
+): PageHeaderInfo<string>[] {
+  type NormalizedSource = `/${string}`;
+
+  function isNormalizedSource(source: string): source is NormalizedSource {
+    return source.startsWith('/');
+  }
+
+  return pageHeaders.map(({ source, headers }) => {
+    const normalizedSource: NormalizedSource = isNormalizedSource(source) ? source : `/${source}`;
+    const { namedParameterizedRoute, routeKeys } = getNamedParametrizedRoute(normalizedSource);
+    return {
+      namedRegex: `^${namedParameterizedRoute}(?:/)?$`,
+      routeKeys,
+      headers,
+    };
+  });
 }
 
 function getMatchableManifestForPaths(paths: FlatNode[]): RouteInfo<string>[] {

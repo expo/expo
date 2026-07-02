@@ -606,3 +606,43 @@ describe('headers', () => {
     });
   });
 });
+
+describe('pageHeaders', () => {
+  it('applies custom `pageHeaders` to manifest', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']), {
+      pageHeaders: [
+        { source: '/blog', headers: { 'Cache-Control': 'public, max-age=3600' } },
+        { source: '/blog/[slug]', headers: { 'X-Test': 'a' } },
+        { source: '/admin/[...rest]', headers: { 'X-Frame-Options': 'DENY' } },
+        { source: '/array-header', headers: { 'Set-Cookie': ['a=1', 'b=2'] } }
+      ],
+    });
+    expect(manifest.pageHeaders).toEqual([
+      {
+        namedRegex: '^/blog(?:/)?$',
+        routeKeys: {},
+        headers: { 'Cache-Control': 'public, max-age=3600' },
+      },
+      {
+        namedRegex: '^/blog/(?<slug>[^/]+?)(?:/)?$',
+        routeKeys: { slug: 'slug' },
+        headers: { 'X-Test': 'a' },
+      },
+      {
+        namedRegex: '^/admin(?:/(?<rest>.+?))?(?:/)?$',
+        routeKeys: { rest: 'rest' },
+        headers: { 'X-Frame-Options': 'DENY' },
+      },
+      {
+        namedRegex: '^/array\\-header(?:/)?$',
+        routeKeys: {},
+        headers: { 'Set-Cookie': ['a=1', 'b=2'] },
+      }
+    ]);
+  });
+
+  it('omits `pageHeaders` from the manifest when none are configured', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']));
+    expect(manifest.pageHeaders).toBeUndefined();
+  });
+});
