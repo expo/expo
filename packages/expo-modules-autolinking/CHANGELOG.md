@@ -9,6 +9,7 @@
 - [Android] Apply the `android.cmakeVersion` build property to the app and all library subprojects. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
 - Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
 - Added support for compile-only inline module files, which are compiled into the target without being registered as Expo modules. ([#46969](https://github.com/expo/expo/pull/46969) by [@behenate](https://github.com/behenate))
+- [iOS] Enable `react-native-screens`' gamma architecture (`RNS_GAMMA_ENABLED`) in its precompiled XCFramework by building the gamma sources and adding a Swift target for the split-view controllers. ([#47240](https://github.com/expo/expo/pull/47240) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 

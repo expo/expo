@@ -93,7 +93,7 @@
                     "path": "ios",
                     "pattern": "**/*.{m,mm}",
                     "headerPattern": "**/*.h",
-                    "exclude": [ "gamma/**", "RNScreens.xcodeproj/**" ],
+                    "exclude": [ "stubs/**", "RNScreens.xcodeproj/**" ],
                     "dependencies": [
                         "Hermes",
                         "React",
@@ -105,7 +105,20 @@
                     ],
                     "includeDirectories": [ ".", "../.build/codegen/build/generated/ios/ReactCodegen", "../cpp", "../.build/generated/RNScreens/RNScreens_common_cpp/include/rnscreens" ],
                     "linkedFrameworks": [ "Foundation", "UIKit", "QuartzCore", "CoreGraphics" ],
-                    "compilerFlags": [ "-include", "UIKit/UIKit.h" ]
+                    "compilerFlags": [ "-include", "UIKit/UIKit.h", "-DRNS_GAMMA_ENABLED=1" ]
+                },
+                {
+                    "type": "swift",
+                    "name": "RNScreens_gamma_swift",
+                    "path": "ios",
+                    "pattern": "**/*.swift",
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNScreens"
+                    ],
+                    "linkedFrameworks": [ "Foundation", "UIKit" ]
                 }
             ]
         }
