@@ -157,6 +157,12 @@ export class SQLiteDatabase {
    *
    * > **Note:** This function is not supported on web.
    *
+   * > **Note:** This method opens a **new, separate database connection** internally for the transaction.
+   * Any per-connection state — such as PRAGMAs set on your original database instance (for example,
+   * `PRAGMA foreign_keys = ON`) — will **not** carry over to the transaction connection. If you rely on
+   * connection-specific PRAGMAs, you must re-execute them on the `txn` object at the beginning of your
+   * task callback.
+   *
    * @param task An async function to execute within a transaction. Any queries inside the transaction must be executed on the `txn` object.
    * The `txn` object has the same interfaces as the [`SQLiteDatabase`](#sqlitedatabase) object. You can use `txn` like a [`SQLiteDatabase`](#sqlitedatabase) object.
    *
@@ -168,6 +174,8 @@ export class SQLiteDatabase {
    * @example
    * ```ts
    * db.withExclusiveTransactionAsync(async (txn) => {
+   *   // Re-apply any PRAGMAs needed for the transaction connection
+   *   await txn.execAsync('PRAGMA foreign_keys = ON');
    *   await txn.execAsync('UPDATE test SET name = "aaa"');
    * });
    * ```
