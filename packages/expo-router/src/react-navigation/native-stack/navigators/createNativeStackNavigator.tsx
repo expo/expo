@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { NavigatorTypeContext } from '../../core/NavigatorTypeContext';
 import {
   createNavigatorFactory,
   type EventArg,
@@ -84,9 +85,16 @@ function NativeStackNavigator({
   }, [meta, navigation, state.index, state.key]);
 
   return (
-    <NavigationContent>
-      <NativeStackView {...rest} state={state} navigation={navigation} descriptors={descriptors} />
-    </NavigationContent>
+    <NavigatorTypeContext value="stack">
+      <NavigationContent>
+        <NativeStackView
+          {...rest}
+          state={state}
+          navigation={navigation}
+          descriptors={descriptors}
+        />
+      </NavigationContent>
+    </NavigatorTypeContext>
   );
 }
 

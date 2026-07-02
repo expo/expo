@@ -2,6 +2,7 @@
 import * as React from 'react';
 
 import { useOptionalContextKey } from '../../../Route';
+import { NavigatorTypeContext } from '../../core/NavigatorTypeContext';
 import {
   createNavigatorFactory,
   type DrawerActionHelpers,
@@ -83,15 +84,17 @@ function DrawerNavigator({
   usePreloadRoutes(state, navigation, nonLazyRouteNames);
 
   return (
-    <NavigationContent>
-      <DrawerView
-        {...rest}
-        defaultStatus={defaultStatus}
-        state={tabState}
-        descriptors={tabDescriptors}
-        navigation={navigation}
-      />
-    </NavigationContent>
+    <NavigatorTypeContext value="drawer">
+      <NavigationContent>
+        <DrawerView
+          {...rest}
+          defaultStatus={defaultStatus}
+          state={tabState}
+          descriptors={tabDescriptors}
+          navigation={navigation}
+        />
+      </NavigationContent>
+    </NavigatorTypeContext>
   );
 }
 

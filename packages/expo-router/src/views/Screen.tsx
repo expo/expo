@@ -1,7 +1,8 @@
 'use client';
 import type { ReactElement, ReactNode } from 'react';
-import { isValidElement } from 'react';
+import { isValidElement, use } from 'react';
 
+import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
 import { useRoute } from '../react-navigation/native';
 import { useNavigation } from '../useNavigation';
 import { isRoutePreloadedInStack } from '../utils/stack';
@@ -30,7 +31,8 @@ export function Screen<TOptions extends object = object>({ name, options }: Scre
   const route = useRoute();
   const navigation = useNavigation();
   const isFocused = navigation.isFocused();
-  const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route);
+  const navigatorType = use(NavigatorTypeContext);
+  const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route, navigatorType);
 
   useSafeLayoutEffect(() => {
     if (options && Object.keys(options).length) {

@@ -1,4 +1,5 @@
 import { useOptionalContextKey } from '../../../Route';
+import { NavigatorTypeContext } from '../../core/NavigatorTypeContext';
 import {
   createNavigatorFactory,
   type NavigatorTypeBagBase,
@@ -68,14 +69,16 @@ function MaterialTopTabNavigator({
   );
 
   return (
-    <NavigationContent>
-      <MaterialTopTabView
-        {...rest}
-        state={tabState}
-        navigation={navigation}
-        descriptors={tabDescriptors}
-      />
-    </NavigationContent>
+    <NavigatorTypeContext value="tab">
+      <NavigationContent>
+        <MaterialTopTabView
+          {...rest}
+          state={tabState}
+          navigation={navigation}
+          descriptors={tabDescriptors}
+        />
+      </NavigationContent>
+    </NavigatorTypeContext>
   );
 }
 

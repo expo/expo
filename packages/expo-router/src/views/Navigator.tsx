@@ -8,10 +8,13 @@ import { useContextKey, useRouteNode } from '../Route';
 import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
+import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
 import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
 import { useSortedScreens } from '../useScreens';
 import { Screen } from './Screen';
+
+const stackNavigatorType = 'stack';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
   contextKey: string;
@@ -87,9 +90,13 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-        {nonScreenChildren}
-      </GuardContextProvider>
+      {/* A custom `router` has an unknown kind, so only the default stack is announced. */}
+      <NavigatorTypeContext
+        value={(router as unknown) === StackRouter ? stackNavigatorType : undefined}>
+        <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+          {nonScreenChildren}
+        </GuardContextProvider>
+      </NavigatorTypeContext>
     </NavigatorContext.Provider>
   );
 }
@@ -121,9 +128,13 @@ function SlotNavigator(props: NavigatorProps<any>) {
   });
 
   return (
-    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
-    </GuardContextProvider>
+    <NavigatorTypeContext value={stackNavigatorType}>
+      <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+        <NavigationContent>
+          {descriptors[state.routes[state.index]!.key]!.render()}
+        </NavigationContent>
+      </GuardContextProvider>
+    </NavigatorTypeContext>
   );
 }
 
