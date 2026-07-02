@@ -18,6 +18,5 @@ __rsc_tests__
 /android/src/test/
 /ios/Tests
 
-# Internal files
 CLAUDE.md
 CONTRIBUTING.md
