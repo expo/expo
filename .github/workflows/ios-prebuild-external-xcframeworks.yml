@@ -215,7 +215,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: xcframeworks-${{ matrix.flavor }}
-          path: packages/precompile/.build/*/output/**/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.gz
+          path: packages/precompile/.build/*/output/**/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.xz
           if-no-files-found: warn
           retention-days: 14
           include-hidden-files: true
@@ -247,7 +247,7 @@ jobs:
             --verbose \
             --prune-empty-dirs \
             --include='*/' \
-            --include='*/xcframeworks/*.tar.gz' \
+            --include='*/xcframeworks/*.tar.xz' \
             --exclude='*' \
             packages/precompile/.build/ \
             "$SYNC_ROOT/"
@@ -258,7 +258,7 @@ jobs:
           fi
 
           # Sync each top-level package directory separately so objects still land under:
-          #   gs://eas-build-precompiled-modules/<pkg>/output/.../xcframeworks/*.tar.gz
+          #   gs://eas-build-precompiled-modules/<pkg>/output/.../xcframeworks/*.tar.xz
           # without requiring bucket-level metadata access for a root rsync target.
           shopt -s nullglob
           for package_dir in "$SYNC_ROOT"/*; do

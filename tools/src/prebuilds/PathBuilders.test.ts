@@ -126,23 +126,23 @@ describe('Frameworks path functions', () => {
   });
 
   describe('getTarballPath', () => {
-    it('returns .tar.gz path for Debug', () => {
+    it('returns .tar.xz path for Debug', () => {
       const result = Frameworks.getTarballPath(buildPath, 'ExpoFoo', 'Debug');
       assert.equal(
         result,
-        path.join(buildPath, 'output', 'debug', 'xcframeworks', 'ExpoFoo.tar.gz')
+        path.join(buildPath, 'output', 'debug', 'xcframeworks', 'ExpoFoo.tar.xz')
       );
     });
 
-    it('returns .tar.gz path for Release', () => {
+    it('returns .tar.xz path for Release', () => {
       const result = Frameworks.getTarballPath(buildPath, 'ExpoFoo', 'Release');
       assert.equal(
         result,
-        path.join(buildPath, 'output', 'release', 'xcframeworks', 'ExpoFoo.tar.gz')
+        path.join(buildPath, 'output', 'release', 'xcframeworks', 'ExpoFoo.tar.xz')
       );
     });
 
-    it('returns versioned .tar.gz path when version prefix provided', () => {
+    it('returns versioned .tar.xz path when version prefix provided', () => {
       const versionPrefix = path.join('3.16.7', '0.83.0', '1.0.0');
       const result = Frameworks.getTarballPath(buildPath, 'ExpoFoo', 'Debug', versionPrefix);
       assert.equal(
@@ -155,7 +155,7 @@ describe('Frameworks path functions', () => {
           '1.0.0',
           'debug',
           'xcframeworks',
-          'ExpoFoo.tar.gz'
+          'ExpoFoo.tar.xz'
         )
       );
     });

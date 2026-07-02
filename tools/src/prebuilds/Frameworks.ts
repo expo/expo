@@ -1,7 +1,9 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
+import { spawn, type ChildProcess } from 'child_process';
 import fs from 'fs-extra';
 import { glob } from 'glob';
+import { pipeline } from 'node:stream/promises';
 import path from 'path';
 
 import { getPrecompileDir } from '../Directories';
@@ -232,7 +234,7 @@ export const Frameworks = {
   ): string => {
     return path.join(
       Frameworks.getFrameworksOutputPath(buildPath, buildType, versionPrefix),
-      `${productName}.tar.gz`
+      `${productName}.tar.xz`
     );
   },
 
@@ -632,6 +634,105 @@ const copySPMDependencyXCFrameworksAsync = async (
 };
 
 /**
+ * Streams `tar -cf - | xz -9 -T0` to produce a `.tar.xz` at xz preset 9, which roughly halves
+ * the archive compared to the default preset 6 (and is ~60% smaller than gzip). `-T0` spreads
+ * the work across all cores. The standalone `xz` binary is needed only here at build time
+ * (present on CI/dev machines); consumers extract with libarchive's `tar -xf` and need no `xz`.
+ *
+ * The data path is wired with `stream.pipeline`, which propagates stream errors as rejections
+ * and tears down every stream on failure — so an EPIPE from xz dying mid-write can't escape as
+ * an uncaught exception. Output goes to a temp file that's renamed into place only after both
+ * processes exit 0, so a truncated `.tar.xz` can never appear at the final path (even on a
+ * crash) and be mistaken for a complete cache hit. A spawn failure / non-zero exit is the
+ * authoritative error; the inter-process pipe's symptom errors (EPIPE / premature close, tar
+ * killed by SIGPIPE) are suppressed so the actionable cause surfaces instead.
+ */
+const createXzTarballAsync = async (
+  tarballPath: string,
+  cwd: string,
+  entries: string[]
+): Promise<void> => {
+  const base = path.basename(tarballPath);
+  // Write to a temp file and rename on success so a partial/corrupt archive can never appear at
+  // `tarballPath` (reads here go through `tar -xf` with no integrity check, so a leftover
+  // truncated file would otherwise look like a valid cache hit).
+  const tmpPath = `${tarballPath}.${process.pid}.tmp`;
+
+  // `--` stops tar from treating an entry that begins with `-` as a flag. (spawn array args are
+  // already shell-safe — each entry is its own argv, with no word-splitting or injection.)
+  const tar = spawn('tar', ['-cf', '-', '-C', cwd, '--', ...entries], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  const xz = spawn('xz', ['-9', '-T0', '-c'], { stdio: ['pipe', 'pipe', 'pipe'] });
+
+  let tarErr = '';
+  let xzErr = '';
+  tar.stderr.on('data', (d) => (tarErr += d));
+  xz.stderr.on('data', (d) => (xzErr += d));
+
+  // A spawn failure or non-zero exit is the authoritative cause of a failed run; report it with
+  // an actionable message.
+  const childExited = (
+    child: ChildProcess,
+    label: 'tar' | 'xz',
+    describe: (reason: string) => string
+  ): Promise<void> =>
+    new Promise((resolve, reject) => {
+      child.once('error', (e: Error) => reject(new Error(describe(e.message))));
+      child.once('close', (code, signal) => {
+        if (code === 0) {
+          resolve();
+        } else if (label === 'tar' && signal === 'SIGPIPE') {
+          // tar was killed writing into xz's closed stdin — xz died first and its watcher
+          // reports the real cause, so don't mask it with a generic tar failure.
+          resolve();
+        } else {
+          reject(
+            new Error(
+              describe(code != null ? `exited with code ${code}` : `was terminated by ${signal}`)
+            )
+          );
+        }
+      });
+    });
+
+  // Stream errors on the inter-process pipe (EPIPE / premature close) are downstream symptoms of
+  // a child dying; the cause is reported by childExited(). Real sink errors (e.g. ENOSPC) rethrow.
+  const suppressPipeSymptom = (e: NodeJS.ErrnoException) => {
+    if (e?.code === 'EPIPE' || e?.code === 'ERR_STREAM_PREMATURE_CLOSE') {
+      return;
+    }
+    throw e;
+  };
+
+  try {
+    await Promise.all([
+      pipeline(tar.stdout, xz.stdin).catch(suppressPipeSymptom),
+      pipeline(xz.stdout, fs.createWriteStream(tmpPath)).catch(suppressPipeSymptom),
+      childExited(
+        tar,
+        'tar',
+        (r) => `tar ${r} while archiving ${base}${tarErr ? `:\n${tarErr}` : ''}`
+      ),
+      childExited(
+        xz,
+        'xz',
+        (r) =>
+          `xz ${r} while compressing ${base}. The xz binary is required to build precompiled ` +
+          `XCFrameworks; install it (e.g. \`brew install xz\`) and retry.${xzErr ? `\n${xzErr}` : ''}`
+      ),
+    ]);
+    // Publish atomically — only a fully-written archive ever reaches the final path.
+    await fs.promises.rename(tmpPath, tarballPath);
+  } catch (error) {
+    tar.kill();
+    xz.kill();
+    await fs.promises.rm(tmpPath, { force: true }).catch(() => {});
+    throw error instanceof Error ? error : new Error(String(error));
+  }
+};
+
+/**
  * Creates a tarball containing the product xcframework and any SPM dependency xcframeworks.
  * The tarball is the source of truth for build-time switching between debug/release flavors.
  *
@@ -680,10 +781,7 @@ const createProductTarballAsync = async (
     `📦 Creating tarball for ${chalk.green(product.name)} (${buildType}): ${xcframeworkEntries.join(', ')}`
   );
 
-  // Create tarball: tar -czf <Product>.tar.gz -C <outputDir> <entries...>
-  await spawnAsync('tar', ['-czf', tarballPath, '-C', outputDir, ...xcframeworkEntries], {
-    stdio: 'pipe',
-  });
+  await createXzTarballAsync(tarballPath, outputDir, xcframeworkEntries);
 
   logger.info(
     `✅ Created ${path.basename(tarballPath)} (${xcframeworkEntries.length} framework(s))`
