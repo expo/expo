@@ -1,34 +1,36 @@
 import React, { useEffect } from 'react';
 
-import { AppMetricsErrorBoundary } from './AppMetricsErrorBoundary';
+import {
+  AppMetricsErrorBoundary,
+  type AppMetricsErrorBoundaryProps,
+} from './AppMetricsErrorBoundary';
 import AppMetrics from './module';
 
-/**
- * A root component that automatically marks the first render.
- * Wrap your app's root component with this to measure time to first render
- * without manually calling `AppMetrics.markFirstRender()`.
- *
- * Pass `errorBoundaryFallback` to also wrap the app in an `AppMetricsErrorBoundary` that records
- * React render-phase errors and renders the fallback in place of the crashed app. Without it no
- * boundary is mounted, so render errors keep React Native's default behavior unchanged (an existing
- * app that renders `AppMetricsRoot` with no props is unaffected). Those errors are still recorded by
- * the global `ErrorUtils` handler; only the boundary-only React component stack is unavailable.
- *
- * To render an error boundary deeper in the tree instead of at the root, use `AppMetricsErrorBoundary`
- * directly.
- */
-export function AppMetricsRoot({
-  children,
-  errorBoundaryFallback,
-}: {
+export type AppMetricsRootProps = {
   children: React.ReactNode;
-  errorBoundaryFallback?: React.ReactElement | null;
-}) {
+  /**
+   * When set, the app is wrapped in an `AppMetricsErrorBoundary` with this `fallback`, capturing
+   * React render-phase errors at the root. Omit it and no boundary is mounted, so render errors keep
+   * React Native's default behavior (they're still recorded by the global `ErrorUtils` handler, just
+   * without the component stack). Pass `null` to capture but render nothing.
+   *
+   * To place a boundary deeper in the tree, use `AppMetricsErrorBoundary` directly.
+   */
+  errorBoundaryFallback?: AppMetricsErrorBoundaryProps['fallback'];
+};
+
+/**
+ * A root component that automatically marks the first render, so you can measure time to first
+ * render without calling `AppMetrics.markFirstRender()` yourself.
+ */
+export function AppMetricsRoot({ children, errorBoundaryFallback }: AppMetricsRootProps) {
   useEffect(() => {
     AppMetrics.markFirstRender();
   }, []);
 
-  if (errorBoundaryFallback != null) {
+  // An explicit `errorBoundaryFallback` (including `null`) mounts the boundary; only omitting it
+  // leaves the tree unwrapped so render errors keep React Native's default behavior.
+  if (errorBoundaryFallback !== undefined) {
     return (
       <AppMetricsErrorBoundary fallback={errorBoundaryFallback}>{children}</AppMetricsErrorBoundary>
     );

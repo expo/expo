@@ -19,6 +19,7 @@ function Boom(): never {
 beforeEach(() => {
   jest.clearAllMocks();
   jest.spyOn(console, 'error').mockImplementation(() => {});
+  jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -45,6 +46,19 @@ describe(AppMetricsRoot, () => {
     );
 
     expect(screen.getByTestId('fallback')).toBeVisible();
+    expect(reportError).toHaveBeenCalledTimes(1);
+  });
+
+  it('mounts a capture-only boundary when errorBoundaryFallback is explicitly null', () => {
+    // Explicit `null` still mounts a boundary (rendering nothing), so the error is captured rather
+    // than propagating; only omitting the prop leaves the tree unwrapped.
+    expect(() =>
+      render(
+        <AppMetricsRoot errorBoundaryFallback={null}>
+          <Boom />
+        </AppMetricsRoot>
+      )
+    ).not.toThrow();
     expect(reportError).toHaveBeenCalledTimes(1);
   });
 
