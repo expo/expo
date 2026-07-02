@@ -1,5 +1,6 @@
 package expo.modules.plugin
 
+import com.android.build.api.dsl.CommonExtension
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
 import org.gradle.api.Plugin
@@ -18,8 +19,32 @@ class ExpoRootProjectPlugin : Plugin<Project> {
 
     with(rootProject) {
       defineDefaultProperties(libs)
+      maybeOverrideCmakeVersion()
       disableLinkedModulesLintWhenRequested()
     }
+  }
+}
+
+/**
+ * Maybe override the `android.externalNativeBuild.cmake.version` for all subprojects. Set via
+ * `android.cmakeVersion` in **gradle.properties**.
+ */
+private fun Project.maybeOverrideCmakeVersion() {
+  val cmakeVersion = (findProperty("android.cmakeVersion") as? String)?.takeIf { it.isNotBlank() }
+    ?: return
+
+  logger.quiet(
+    "${"[ExpoRootProject]".withColor(Colors.GREEN)} Overriding CMake version: ${cmakeVersion.withColor(Colors.GREEN)}"
+  )
+
+  val applyCmakeVersion = { subproject: Project ->
+    val android = subproject.extensions.getByType(CommonExtension::class.java)
+    android.externalNativeBuild.cmake.version = cmakeVersion
+  }
+
+  subprojects { subproject ->
+    subproject.plugins.withId("com.android.application") { applyCmakeVersion(subproject) }
+    subproject.plugins.withId("com.android.library") { applyCmakeVersion(subproject) }
   }
 }
 

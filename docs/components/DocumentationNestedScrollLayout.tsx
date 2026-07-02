@@ -111,9 +111,9 @@ export default function DocumentationNestedScrollLayout({
                     aria-pressed={!isSidebarCollapsed}
                     onClick={onSidebarToggle}>
                     {isSidebarCollapsed ? (
-                      <ChevronRightIcon className="icon-sm" />
+                      <ChevronRightIcon aria-hidden="true" className="icon-sm" />
                     ) : (
-                      <ChevronLeftIcon className="icon-sm" />
+                      <ChevronLeftIcon aria-hidden="true" className="icon-sm" />
                     )}
                     <span className="sr-only">
                       {isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
@@ -151,10 +151,7 @@ export default function DocumentationNestedScrollLayout({
             'max-lg:overflow-auto',
             isMobileMenuVisible && 'hidden'
           )}>
-          <ScrollContainer
-            ref={contentRef}
-            scrollHandler={scrollHandler}
-            className="[scrollbar-gutter:stable]">
+          <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
             <div
               className={mergeClasses(
                 'mx-auto max-w-screen-xl transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',

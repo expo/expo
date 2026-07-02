@@ -4,11 +4,11 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "android": "export NODE_ENV=\"development\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 && ./scripts/start-emulator.sh",
+    "android": "NODE_ENV=\"development\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 ./scripts/start-emulator.sh",
     "android:clean": "pushd android; rm -rf ./.gradle && ./gradlew --configure-on-demand; popd",
-    "ios": "export NODE_ENV=\"development\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 && ./scripts/start-simulator.sh",
-    "test:ios": "export NODE_ENV=\"test\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 && ./scripts/start-simulator.sh",
-    "test:android": "export NODE_ENV=\"test\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 && ./scripts/start-emulator.sh",
+    "ios": "NODE_ENV=\"development\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 ./scripts/start-simulator.sh",
+    "test:ios": "NODE_ENV=\"test\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 ./scripts/start-simulator.sh",
+    "test:android": "NODE_ENV=\"test\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 ./scripts/start-emulator.sh",
     "edit:android": "open -a /Applications/Android\\ Studio.app ./android",
     "edit:ios": "xed ./ios/BareExpo.xcworkspace",
     "start": "EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 expo start --reset-cache",
@@ -17,26 +17,6 @@
     "open": "./scripts/deep-link.sh test-suite",
     "nuke": "rm -rf ios/Pods/ && rm -rf ios/build/ && rm -rf android/.gradle",
     "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/"
-  },
-  "expo": {
-    "autolinking": {
-      "legacy_shallowReactNativeLinking": true,
-      "exclude": [
-        "expo-ads-facebook",
-        "expo-ads-admob",
-        "expo-module-template"
-      ],
-      "ios": {
-        "flags": {
-          "inhibit_warnings": false
-        }
-      },
-      "android": {
-        "buildFromSource": [
-          ".*"
-        ]
-      }
-    }
   },
   "dependencies": {
     "@babel/runtime": "^7.20.0",
@@ -88,7 +68,7 @@
     "react-native-pager-view": "8.0.2",
     "react-native-reanimated": "4.5.0",
     "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.25.2",
+    "react-native-screens": "4.26.0-nightly-20260625-9b9b39fa5",
     "react-native-svg": "15.15.4",
     "react-native-view-shot": "4.0.3",
     "react-native-webview": "13.16.1",
@@ -108,5 +88,25 @@
     "name": "LocalModules",
     "type": "all",
     "jsSrcsDir": "./modules"
+  },
+  "expo": {
+    "autolinking": {
+      "legacy_shallowReactNativeLinking": true,
+      "exclude": [
+        "expo-ads-facebook",
+        "expo-ads-admob",
+        "expo-module-template"
+      ],
+      "ios": {
+        "flags": {
+          "inhibit_warnings": false
+        }
+      },
+      "android": {
+        "buildFromSource": [
+          ".*"
+        ]
+      }
+    }
   }
 }

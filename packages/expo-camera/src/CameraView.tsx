@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError, type EventSubscription } from 'expo-modules-core';
+import { Platform, UnavailabilityError, type EventSubscription } from 'expo';
 import { Component, createRef } from 'react';
 
 import type {

@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-06-19T11:22:00.287Z",
-    "cliVersion": "20.3.0"
+    "fetchedAt": "2026-06-30T09:09:28.621Z",
+    "cliVersion": "20.5.0"
   },
-  "totalCommands": 127,
+  "totalCommands": 128,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -435,6 +435,11 @@
       "command": "eas observe:routes",
       "description": "display app navigation route metrics (Cold TTR, Warm TTR, TTI) grouped by route name",
       "usage": "USAGE\n  $ eas observe:routes [--platform android|ios] [--metric cold_ttr|warm_ttr|nav_tti...] [--stat\n    median|med|p90|count|event_count|eventCount...] [--after <value>] [--limit <value>] [--start <value> | --days\n    <value>] [--end <value> | ] [--app-version <value>] [--update-id <value>] [--build-number <value>] [--route-name\n    <value>...] [--project-id <value>] [--json] [--non-interactive]\n\nFLAGS\n  --after=<value>          Cursor for pagination. Use the endCursor from a previous query to fetch the next page.\n  --app-version=<value>    Filter by app version\n  --build-number=<value>   Filter by app build number\n  --days=<value>           Show results from the last N days (mutually exclusive with --start/--end)\n  --end=<value>            End of time range (ISO date)\n  --json                   Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --limit=<value>          The number of items to fetch each query. Defaults to 50 and is capped at 200.\n  --metric=<option>...     Navigation metric to display (can be specified multiple times). Defaults to all three.\n                           <options: cold_ttr|warm_ttr|nav_tti>\n  --non-interactive        Run the command in non-interactive mode.\n  --platform=<option>      Filter by platform\n                           <options: android|ios>\n  --project-id=<value>     EAS project ID (defaults to the project ID of the current directory)\n  --route-name=<value>...  Filter by route name (can be specified multiple times to include several routes)\n  --start=<value>          Start of time range (ISO date)\n  --stat=<option>...       Statistic to display per metric (can be specified multiple times)\n                           <options: median|med|p90|count|event_count|eventCount>\n  --update-id=<value>      Filter by EAS update ID\n\nDESCRIPTION\n  display app navigation route metrics (Cold TTR, Warm TTR, TTI) grouped by route name"
+    },
+    {
+      "command": "eas observe:session SESSIONID",
+      "description": "display the timeline of metric and log events for a specific session",
+      "usage": "USAGE\n  $ eas observe:session SESSIONID [--project-id <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  SESSIONID  Session ID to inspect\n\nFLAGS\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n  --project-id=<value>  EAS project ID (defaults to the project ID of the current directory)\n\nDESCRIPTION\n  display the timeline of metric and log events for a specific session"
     },
     {
       "command": "eas observe:versions",

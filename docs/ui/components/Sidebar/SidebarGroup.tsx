@@ -127,12 +127,18 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
                 {child.sidebarTitle ?? child.name}
                 {child.hasVideoLink &&
                   (!isSelected ? (
-                    <PlaySquareIcon className="ml-1 inline icon-xs text-icon-secondary" />
+                    <PlaySquareIcon
+                      aria-hidden="true"
+                      className="ml-1 inline icon-xs text-icon-secondary"
+                    />
                   ) : (
-                    <PlaySquareDuotoneIcon className="ml-1 inline icon-xs text-palette-blue11" />
+                    <PlaySquareDuotoneIcon
+                      aria-hidden="true"
+                      className="ml-1 inline icon-xs text-palette-blue11"
+                    />
                   ))}
               </span>
-              {completed && <CheckIcon className="ml-auto icon-sm" />}
+              {completed && <CheckIcon aria-hidden="true" className="ml-auto icon-sm" />}
             </SidebarLink>
           );
         })}

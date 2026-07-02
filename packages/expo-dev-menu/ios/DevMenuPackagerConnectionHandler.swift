@@ -92,7 +92,7 @@ class DevMenuPackagerConnectionHandler {
 
     switch command {
     case "reload":
-      devDelegate.reload()
+      manager.reload()
     case "toggleDevMenu":
       self.manager?.toggleMenu()
     case "toggleElementInspector":

@@ -44,7 +44,7 @@
         const append = (line) => {
           socketLog.textContent += `${line}\n`;
         };
-        socket = new WebSocket(`${pluginPathname}/ws`);
+        socket = new WebSocket(`${pluginPathname}/ws?source=webpage`);
         socket.addEventListener('open', () => {
           append('open');
           socketButton.textContent = 'Close WebSocket';

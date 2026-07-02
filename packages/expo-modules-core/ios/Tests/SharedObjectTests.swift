@@ -303,7 +303,7 @@ struct SharedObjectTests {
   }
 
   @Test
-  func `emits NativeArrayBuffer`() throws {
+  func `emits ArrayBuffer`() throws {
     let jsObject = try runtime
       .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
       .asObject()
@@ -315,7 +315,7 @@ struct SharedObjectTests {
 
     let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
 
-    let nativeBuffer = NativeArrayBuffer.allocate(size: 16, initializeToZero: false)
+    let nativeBuffer = ArrayBuffer(size: 16, initializeToZero: false)
     nativeBuffer.withUnsafeBytes { raw in
       let mutable = UnsafeMutableRawPointer(mutating: raw.baseAddress!)
       for index in 0..<16 {

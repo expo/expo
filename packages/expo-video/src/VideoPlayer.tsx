@@ -1,4 +1,4 @@
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { useReleasingSharedObject } from 'expo';
 
 import NativeVideoModule from './NativeVideoModule';
 import type { VideoSource, VideoPlayer, PlayerBuilderOptions } from './VideoPlayer.types';

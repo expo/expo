@@ -1,5 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
-import { TabList, TabPanelProps, TabPanels, Tabs as ReachTabs, TabsProps } from '@reach/tabs';
+import * as TabsPrimitive from '@radix-ui/react-tabs';
 import {
   Children,
   Fragment,
@@ -15,15 +15,15 @@ import {
 } from 'react';
 
 import { InsideTabsContext } from './InsideTabsContext';
-import { Tab } from './Tab';
+import { Tab, TabPanelProps } from './Tab';
 import { TabButton } from './TabButton';
 import { SharedTabsContext } from './TabsGroup';
 
-type Props = PropsWithChildren<TabsProps> & {
+type Props = PropsWithChildren<{
   tabs?: string[];
-};
+}>;
 
-type TabChild = ReactElement<TabPanelProps & { label?: string; hidden?: boolean }>;
+type TabChild = ReactElement<TabPanelProps>;
 
 const collectTabPanels = (nodes: ReactNode): TabChild[] => {
   const panels: TabChild[] = [];
@@ -72,17 +72,26 @@ const InnerTabs = ({
   const layoutId = useId();
 
   return (
-    <ReachTabs
-      index={tabIndex}
-      onChange={setIndex}
+    <TabsPrimitive.Root
+      data-md="tabs"
+      value={String(tabIndex)}
+      onValueChange={value => {
+        setIndex(Number(value));
+      }}
       className="my-4 rounded-md border border-default shadow-xs">
-      <TabList className="flex flex-wrap gap-1 border-b border-secondary px-4 py-3">
+      <TabsPrimitive.List className="flex flex-wrap gap-1 border-b border-secondary px-4 py-3">
         {tabTitles.map((title, index) => (
-          <TabButton key={index} active={index === tabIndex} label={title} layoutId={layoutId} />
+          <TabButton
+            key={index}
+            value={String(index)}
+            active={index === tabIndex}
+            label={title}
+            layoutId={layoutId}
+          />
         ))}
-      </TabList>
+      </TabsPrimitive.List>
       <InsideTabsContext.Provider value>
-        <TabPanels
+        <div
           className={mergeClasses(
             'px-5 py-4',
             '[&_ul]:mb-3',
@@ -90,10 +99,10 @@ const InnerTabs = ({
             '[&>div>*:last-child]:mb-0!'
           )}>
           {tabPanels.map((panel, index) =>
-            cloneElement(panel, { key: index, index, hidden: index !== tabIndex })
+            cloneElement(panel, { key: index, value: String(index), hidden: index !== tabIndex })
           )}
-        </TabPanels>
+        </div>
       </InsideTabsContext.Provider>
-    </ReachTabs>
+    </TabsPrimitive.Root>
   );
 };

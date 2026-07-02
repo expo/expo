@@ -1,4 +1,4 @@
-import { NativeModule, registerWebModule } from 'expo-modules-core';
+import { NativeModule, registerWebModule } from 'expo';
 
 import type { NetworkEvents, NetworkState } from './Network.types';
 import { NetworkStateType } from './Network.types';

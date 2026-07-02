@@ -1,5 +1,5 @@
 import type { PermissionResponse } from 'expo';
-import { NativeModule, SharedObject } from 'expo-modules-core';
+import { NativeModule, SharedObject } from 'expo';
 
 import type {
   AudioMetadata,

@@ -152,7 +152,10 @@ export function AskPageAIChatMessages({
                     onClick={() => {
                       onSearchAcrossDocs(displayQuestion);
                     }}>
-                    <FileSearch02Icon className="mr-2 icon-xs text-icon-secondary" />
+                    <FileSearch02Icon
+                      aria-hidden="true"
+                      className="mr-2 icon-xs text-icon-secondary"
+                    />
                     {hasTriggeredGlobalSearch || isPendingGlobal
                       ? 'Searching Expo docs…'
                       : 'Search Expo docs'}
@@ -183,6 +186,7 @@ export function AskPageAIChatMessages({
                         onFeedback(qa.id, qa.reaction ?? null, 'upvote');
                       }}>
                       <ThumbsUpIcon
+                        aria-hidden="true"
                         className={mergeClasses(
                           'icon-xs',
                           isUpvoted ? 'text-icon-success' : 'text-icon-default'
@@ -204,6 +208,7 @@ export function AskPageAIChatMessages({
                         onFeedback(qa.id, qa.reaction ?? null, 'downvote');
                       }}>
                       <ThumbsDownIcon
+                        aria-hidden="true"
                         className={mergeClasses(
                           'icon-xs',
                           isDownvoted ? 'text-icon-danger' : 'text-icon-default'

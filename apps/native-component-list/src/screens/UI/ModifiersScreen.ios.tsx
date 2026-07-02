@@ -43,6 +43,8 @@ import {
   accessibilityHidden,
   accessibilityInputLabels,
   accessibilityElement,
+  accessibilityAddTraits,
+  accessibilityRemoveTraits,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -781,6 +783,29 @@ export default function ModifiersScreen() {
             <HStack spacing={6} modifiers={[accessibilityElement('combine')]}>
               <Image systemName="star.fill" size={17} />
               <Text>4.8 out of 5 stars</Text>
+            </HStack>
+
+            {/* accessibilityAddTraits: VoiceOver announces this as both a button and a heading */}
+            <HStack spacing={6}>
+              <Text
+                modifiers={[
+                  background('#9B59B6'),
+                  cornerRadius(8),
+                  padding({ all: 8 }),
+                  accessibilityAddTraits(['isButton', 'isHeader']),
+                ]}>
+                Filters
+              </Text>
+            </HStack>
+
+            {/* accessibilityRemoveTraits: drop the redundant "image" trait from a labeled icon */}
+            <HStack spacing={6}>
+              <Image
+                systemName="checkmark.seal.fill"
+                size={17}
+                modifiers={[accessibilityRemoveTraits(['isImage'])]}
+              />
+              <Text>Verified</Text>
             </HStack>
 
             <Text

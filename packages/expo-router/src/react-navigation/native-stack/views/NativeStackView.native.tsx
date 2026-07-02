@@ -457,6 +457,7 @@ type Props = {
 };
 
 export function NativeStackView({ state, navigation, descriptors, describe }: Props) {
+  const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state);
 
   useInvalidPreventRemoveError(descriptors);
@@ -473,7 +474,9 @@ export function NativeStackView({ state, navigation, descriptors, describe }: Pr
 
   return (
     <SafeAreaProviderCompat>
-      <ScreenStack style={styles.container}>
+      <ScreenStack
+        nativeContainerStyle={{ backgroundColor: colors.background }}
+        style={styles.container}>
         {state.routes.concat(state.preloadedRoutes).map((route, index) => {
           const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
           const isFocused = state.index === index;
