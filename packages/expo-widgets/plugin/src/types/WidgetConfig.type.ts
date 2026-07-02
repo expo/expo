@@ -1,29 +1,29 @@
 import { WidgetFamily } from './WidgetFamily.type';
 
-export type WidgetConfig = {
+type WidgetConfiguration = {
+  title: string;
+  description?: string;
+  parameters: Record<string, WidgetParameter>;
+};
+
+type WidgetIosConfig = {
+  supportedFamilies?: WidgetFamily[];
+  contentMarginsDisabled?: boolean;
+  initialLayout?: string;
+  configuration?: WidgetConfiguration;
+};
+
+type WidgetConfigBase = {
   name: string;
   displayName: string;
   description: string;
   // @deprecated: use `ios.supportedFamilies` instead.
-  supportedFamilies: WidgetFamily[];
+  supportedFamilies?: WidgetFamily[];
   // @deprecated: use `ios.contentMarginsDisabled` instead.
-  contentMarginsDisabled: boolean;
+  contentMarginsDisabled?: boolean;
   // @deprecated: use `ios.configuration` instead.
-  configuration?: {
-    title: string;
-    description?: string;
-    parameters: Record<string, WidgetParameter>;
-  };
-  ios?: {
-    supportedFamilies: WidgetFamily[];
-    contentMarginsDisabled?: boolean;
-    initialLayout?: string;
-    configuration?: {
-      title: string;
-      description?: string;
-      parameters: Record<string, WidgetParameter>;
-    };
-  } | null;
+  configuration?: WidgetConfiguration;
+  ios?: WidgetIosConfig | null;
   android?: {
     minWidth?: number;
     minHeight?: number;
@@ -33,6 +33,14 @@ export type WidgetConfig = {
     initialLayout?: string;
   } | null;
 };
+
+export type WidgetConfig =
+  | (WidgetConfigBase & {
+      ios: WidgetIosConfig & { supportedFamilies: WidgetFamily[] };
+    })
+  | (WidgetConfigBase & {
+      supportedFamilies: WidgetFamily[];
+    });
 
 export type WidgetParameterString = {
   title: string;
