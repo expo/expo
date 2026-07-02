@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth
-import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -22,13 +22,13 @@ internal class DevLauncherUpdatesHelperTest {
   private val runtimeVersion = "1.0.0"
   private val configuration = createUpdatesConfigurationWithUrl(url, url, runtimeVersion, null)
   private val mockManifest = JSONObject("{\"icon\":\"./assets/icon.png\",\"name\":\"sdk42updates\",\"slug\":\"sdk42updates\",\"splash\":{\"image\":\"./assets/splash.png\",\"imageUrl\":\"https://classic-assets.eascdn.net/~assets/201a91bd1740bb1d6a1dbad049310724\",\"resizeMode\":\"contain\",\"backgroundColor\":\"#ffffff\"},\"iconUrl\":\"https://classic-assets.eascdn.net/~assets/4e3f888fc8475f69fd5fa32f1ad5216a\",\"version\":\"1.0.0\",\"sdkVersion\":\"42.0.0\",\"orientation\":\"portrait\",\"currentFullName\":\"@esamelson/sdk42updates\",\"originalFullName\":\"@esamelson/sdk42updates\",\"id\":\"@esamelson/sdk42updates\",\"projectId\":\"04e1e9f2-b297-44da-a11c-90a6a27859bc\",\"scopeKey\":\"@esamelson/sdk42updates\",\"releaseId\":\"a2b0a544-40f0-4fd6-9972-19f094380681\",\"publishedTime\":\"2021-07-13T22:29:24.170Z\",\"commitTime\":\"2021-07-13T22:29:24.209Z\",\"bundleUrl\":\"https://classic-assets.eascdn.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F8c3e605420e77ba9fe35a0a7ef8459a9-42.0.0-ios.js\",\"bundleKey\":\"8c3e605420e77ba9fe35a0a7ef8459a9\",\"releaseChannel\":\"default\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}")
-  private val mockUpdate = object : UpdatesInterface.Update {
+  private val mockUpdate = object : UpdatesDevLauncherInterface.Update {
     override val manifest: JSONObject = mockManifest
     override val launchAssetPath: String = ""
   }
 
   @Test
-  fun `passes true shouldContinue value through to UpdatesInterface`() = runBlocking<Unit> {
+  fun `passes true shouldContinue value through to UpdatesInterface`() = runBlocking {
     val updatesInterface = mockUpdatesInterface {
       Truth.assertThat(it).isTrue()
     }
@@ -44,9 +44,9 @@ internal class DevLauncherUpdatesHelperTest {
     updatesInterface.loadUpdate(configuration, context) { false }
   }
 
-  private fun mockUpdatesInterface(verifyOnManifestLoadedCallback: (Boolean) -> Unit): UpdatesInterface {
-    val updatesInterface = mockk<UpdatesInterface>()
-    val slot = slot<UpdatesInterface.UpdateCallback>()
+  private fun mockUpdatesInterface(verifyOnManifestLoadedCallback: (Boolean) -> Unit): UpdatesDevLauncherInterface {
+    val updatesInterface = mockk<UpdatesDevLauncherInterface>()
+    val slot = slot<UpdatesDevLauncherInterface.UpdateCallback>()
     every {
       updatesInterface.isValidUpdatesConfiguration(any())
     } answers {

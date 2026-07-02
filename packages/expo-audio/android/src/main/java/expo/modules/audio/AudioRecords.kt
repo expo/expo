@@ -41,8 +41,14 @@ data class RecordingOptions(
   @Field val audioEncoder: AndroidAudioEncoder?,
   @Field val maxFileSize: Int?,
   @Field val isMeteringEnabled: Boolean = false,
-  @Field val audioSource: RecordingSource?
+  @Field val audioSource: RecordingSource?,
+  @Field val directory: RecordingDirectory?
 ) : Record
+
+enum class RecordingDirectory(val value: String) : Enumerable {
+  CACHE("cache"),
+  DOCUMENT("document")
+}
 
 @OptimizedRecord
 class Metadata(
@@ -104,6 +110,8 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
 class AudioLockScreenOptions(
   @Field val showSeekForward: Boolean,
   @Field val showSeekBackward: Boolean,
+  @Field val showNextTrack: Boolean = false,
+  @Field val showPreviousTrack: Boolean = false,
   @Field val isLiveStream: Boolean? = null
 ) : Record
 

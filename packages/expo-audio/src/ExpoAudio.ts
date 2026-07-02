@@ -1,5 +1,4 @@
-import { useEvent, type PermissionResponse } from 'expo';
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { useEvent, useReleasingSharedObject, type PermissionResponse } from 'expo';
 import { useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 

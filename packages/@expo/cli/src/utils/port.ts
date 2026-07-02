@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 
+import * as Log from '../log';
 import { env } from './env';
 import { CommandError } from './errors';
 import { testPortAsync, freePortAsync } from './freeport';
-import * as Log from '../log';
 
 /** Get a free port or assert a CLI command error. */
 export async function getFreePortAsync(rangeStart: number): Promise<number> {

@@ -8,7 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test": "jest --watchAll",
+    "test": "jest",
     "lint": "expo lint",
     "prebuild:android": "./scripts/prebuild-android.sh",
     "prebuild:ios": "./scripts/prebuild-ios.sh",
@@ -38,13 +38,13 @@
     "native-component-list": "workspace:*",
     "test-suite": "workspace:*",
     "expo-task-manager": "workspace:*",
-    "react-native-gesture-handler": "~2.31.2",
+    "react-native-gesture-handler": "~2.32.0",
     "react": "19.2.3",
-    "react-native": "0.86.0-rc.3",
-    "react-native-reanimated": "4.3.0",
+    "react-native": "0.86.0",
+    "react-native-reanimated": "4.5.0",
     "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.25.2",
-    "react-native-worklets": "0.8.3"
+    "react-native-screens": "4.26.0-nightly-20260625-9b9b39fa5",
+    "react-native-worklets": "0.10.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

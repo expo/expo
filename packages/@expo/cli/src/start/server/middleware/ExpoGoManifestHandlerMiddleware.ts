@@ -7,17 +7,17 @@ import { iterableToStream, streamMultipart, multipartContentType, MultipartPart 
 import type { Dictionary } from 'structured-headers';
 import { serializeDictionary } from 'structured-headers';
 
-import type { ManifestRequestInfo } from './ManifestMiddleware';
-import { ManifestMiddleware } from './ManifestMiddleware';
-import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
-import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
-import type { ServerRequest } from './server.types';
 import { getAnonymousIdAsync } from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
 import type { CodeSigningInfo } from '../../../utils/codesigning';
 import { getCodeSigningInfoAsync, signManifestString } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
 import { stripPort } from '../../../utils/url';
+import type { ManifestRequestInfo } from './ManifestMiddleware';
+import { ManifestMiddleware } from './ManifestMiddleware';
+import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
+import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
+import type { ServerRequest } from './server.types';
 
 const MULTIPART_TYPE = 'multipart/form-data';
 

@@ -1,5 +1,21 @@
 export const TALKS = [
   {
+    title: 'Expo keynote',
+    event: 'App.js Conf 2026',
+    description: 'Charlie Cheever',
+    videoId: '605Id2fhmXE',
+    uploadDate: '2026-06-12',
+    home: true,
+  },
+  {
+    title: 'Screens & Routers: The Foundation of Navigation in React Native Apps',
+    event: 'App.js Conf 2026',
+    description: 'Kacper Kafara, Kuba Tkacz',
+    videoId: 'WJ3B2aIah6Q',
+    uploadDate: '2026-06-25',
+    home: true,
+  },
+  {
     title: 'Keynote: streamline React Native development',
     event: 'App.js Conf 2025',
     description: 'Charlie Cheever, Jon Samp',
@@ -21,7 +37,6 @@ export const TALKS = [
     description: 'Keith Kurak',
     videoId: 'TLoHua8bzPg',
     uploadDate: '2025-06-19',
-    home: true,
   },
   {
     title: 'Keynote: flexibility & iteration speed',
@@ -50,7 +65,6 @@ export const TALKS = [
     description: 'Gabriel Donadel',
     videoId: 'K7yC3JKfWYU',
     uploadDate: '2024-06-11',
-    home: true,
   },
   {
     title: 'Keynote: community & workflows',
@@ -279,6 +293,12 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: "What's new in Expo SDK 56? Widgets, Expo UI, Router decoupling from React Navigation",
+    event: 'Expo Live Stream',
+    videoId: 'FOFPOEIyeag',
+    uploadDate: '2026-06-26',
+  },
+  {
     title: 'Announcing the 2025 Expo App Award winners!',
     event: 'Expo Live Stream',
     videoId: 'KnZ3LWkXzSk',
@@ -437,6 +457,24 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'Introducing "Observe": Performance monitoring for React Native apps',
+    event: 'Expo Tutorials',
+    videoId: '5JqK9JLD140',
+    uploadDate: '2026-06-16',
+  },
+  {
+    title: "Highlights from the largest Expo conference of the year: App.js '26",
+    event: 'Expo Tutorials',
+    videoId: 'EEbdiZFXayg',
+    uploadDate: '2026-06-04',
+  },
+  {
+    title: 'Where is Expo Go?',
+    event: 'Expo Tutorials',
+    videoId: 'bu8X9mCL0Ek',
+    uploadDate: '2026-05-27',
+  },
   {
     title: "What's New in Expo SDK 56: Expo UI, Inline Swift/Kotlin Modules, and Faster Builds",
     event: 'Expo Tutorials',

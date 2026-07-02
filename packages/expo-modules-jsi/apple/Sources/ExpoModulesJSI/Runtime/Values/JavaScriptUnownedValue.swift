@@ -20,24 +20,34 @@ internal import jsi
 /// > class refs, there is no trap on use-after-free. The contract is "valid only within the synchronous
 /// > decode call, while the owner is alive" — which the buffer-driven decode path honors because it
 /// > reads the value inline on the JS thread before the buffer is torn down. Do not store, capture, or
-/// > escape it; call ``copied()`` to materialize an owning value when escape is needed.
+/// > escape it; call ``copied(in:)`` to materialize an owning value when escape is needed.
 public struct JavaScriptUnownedValue: ~Copyable {
   // Borrows the `jsi::Value` at this address; it does not own it and must not outlive the owner.
   internal let pointer: UnsafePointer<facebook.jsi.Value>
 
-  // Non-optional `unowned`, matching `JavaScriptValuesBuffer.runtime`: it is strictly call-scoped and
-  // cannot outlive the runtime executing the call, so we skip both the ARC traffic and the optional unwrap
-  // that the owning `JavaScriptValue` pays.
-  internal unowned let runtime: JavaScriptRuntime
+  // The JSI runtime, stored as the raw `facebook.jsi.IRuntime` rather than the `JavaScriptRuntime`
+  // wrapper. `IRuntime` is imported as an immortal reference (see `jsi.apinotes`), so storing and
+  // copying it emits no ARC, unlike a `JavaScriptRuntime` field whose every per-call access pays an
+  // unowned retain/release. Only `getString` reads it; the type checks and numeric accessors touch
+  // only `pointer`.
+  internal let runtime: facebook.jsi.IRuntime
 
-  internal init(_ runtime: JavaScriptRuntime, _ pointer: UnsafePointer<facebook.jsi.Value>) {
+  internal init(_ runtime: facebook.jsi.IRuntime, _ pointer: UnsafePointer<facebook.jsi.Value>) {
     self.runtime = runtime
     self.pointer = pointer
   }
 
   /// Materializes an owning ``JavaScriptValue`` by copying the borrowed `jsi::Value`. Use it when the
-  /// value must outlive the decode call (stored, captured, handed to a `Promise`).
-  public func copied() -> JavaScriptValue {
+  /// value must outlive the decode call (stored, captured, handed to a `Promise`). Takes the
+  /// `JavaScriptRuntime` wrapper since the owning value needs it; the caller has it in scope.
+  ///
+  /// `runtime` must be the runtime that owns the borrowed value. Copying a reference value (string,
+  /// object, function, array, bigint) clones its `PointerValue` against `runtime`, so passing a
+  /// different runtime would clone a handle from another heap and corrupt it; the assert guards that.
+  public func copied(in runtime: JavaScriptRuntime) -> JavaScriptValue {
+    assert(
+      Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
+      "`copied(in:)` must be passed the runtime that owns the borrowed value")
     return JavaScriptValue(runtime, pointer.pointee)
   }
 
@@ -98,7 +108,24 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// Returns the value as a string, or asserts if not a string.
   public func getString() -> String {
     assert(isString(), "Value is not a string")
-    return String(pointer.pointee.getString(runtime.pointee).utf8(runtime.pointee))
+    return String(pointer.pointee.getString(runtime).utf8(runtime))
+  }
+
+  /// Returns the value as a ``JavaScriptObject`` *without* materializing an owning ``JavaScriptValue``
+  /// first, or asserts if not an object. Mirrors ``JavaScriptValue/getObject()``: `jsi::Value::getObject`
+  /// borrows the value and hands back a `jsi::Object` (a ref-count bump on the object pointer), so this
+  /// skips the per-call owning-value allocation and `PointerValue` clone that ``copied(in:)`` pays.
+  ///
+  /// The returned object owns its `jsi::Object` and so may outlive this borrowed value; only the
+  /// borrowed `jsi::Value` must not. Takes the ``JavaScriptRuntime`` wrapper because the object needs
+  /// it (the unowned value stores only the raw `IRuntime` to avoid per-call ARC); `runtime` must be
+  /// the runtime that owns the borrowed value, same contract as ``copied(in:)``.
+  public func getObject(in runtime: JavaScriptRuntime) -> JavaScriptObject {
+    assert(isObject(), "Value is not an object")
+    assert(
+      Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
+      "`getObject(in:)` must be passed the runtime that owns the borrowed value")
+    return JavaScriptObject(runtime, pointer.pointee.getObject(self.runtime))
   }
 
   // MARK: - Throwing conversions ("as functions")
@@ -133,5 +160,14 @@ public struct JavaScriptUnownedValue: ~Copyable {
       throw JavaScriptValue.TypeError(type: String.self)
     }
     return getString()
+  }
+
+  /// Returns the value as a ``JavaScriptObject``, or throws `TypeError` if it is not an object. The
+  /// zero-copy counterpart of ``JavaScriptValue/asObject()``; see ``getObject(in:)``.
+  public func asObject(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptObject {
+    guard isObject() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptObject.self)
+    }
+    return getObject(in: runtime)
   }
 }

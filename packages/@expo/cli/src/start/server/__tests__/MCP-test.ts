@@ -1,43 +1,65 @@
-// @ts-expect-error
+import { loadModule } from '@expo/require-utils';
 import resolveFrom from 'resolve-from';
 
 import { Log } from '../../../log';
 import * as ExitHooks from '../../../utils/exit';
 import { maybeCreateMCPServerAsync } from '../MCP';
 
-jest.mock('@expo/mcp-tunnel', () => ({
-  __esModule: true,
-  default: {},
+const mockAddMcpCapabilities = jest.fn();
+const mockTunnelMcpServerProxy = jest.fn().mockImplementation((mcpServerUrl: string) => ({
+  // Adding a mock property that allows checking the server URL
+  mockServerUrl: mcpServerUrl,
+  start: jest.fn(),
+  close: jest.fn(),
 }));
-jest.mock('@expo/cli/add-module', () =>
-  jest.fn().mockReturnValue({
-    TunnelMcpServerProxy: jest.fn().mockImplementation((mcpServerUrl: string) => ({
-      // Adding a mock property that allows checking the server URL
-      mockServerUrl: mcpServerUrl,
-      start: jest.fn(),
-      close: jest.fn(),
-    })),
-    addMcpCapabilities: jest.fn(),
-  })
-);
+
+jest.mock('@expo/require-utils', () => ({
+  ...jest.requireActual('@expo/require-utils'),
+  loadModule: jest.fn(),
+}));
 jest.mock('resolve-from');
 jest.mock('../../../log');
 jest.mock('../../../utils/exit');
 
 describe(maybeCreateMCPServerAsync, () => {
+  const mockLoadModule = loadModule as jest.MockedFunction<typeof loadModule>;
   const mockResolveFromSilent = resolveFrom.silent as jest.MockedFunction<
     typeof resolveFrom.silent
   >;
+
+  const mcpPackagePath = '/app/node_modules/expo-mcp/dist/index.js';
+  const mcpTunnelPackagePath =
+    '/app/node_modules/expo-mcp/node_modules/@expo/mcp-tunnel/dist/index.js';
 
   const originalEnv = process.env;
   beforeEach(() => {
     delete process.env.EXPO_STAGING;
     delete process.env.EXPO_UNSTABLE_MCP_SERVER;
-    mockResolveFromSilent.mockReturnValue('/app/node_modules/expo-mcp');
+    mockResolveFromSilent.mockImplementation((fromDir, moduleName) => {
+      if (moduleName === 'expo-mcp') {
+        return mcpPackagePath;
+      }
+      if (moduleName === '@expo/mcp-tunnel') {
+        return mcpTunnelPackagePath;
+      }
+      return undefined;
+    });
+    mockLoadModule.mockImplementation(async (modulePath) => {
+      if (modulePath === mcpPackagePath) {
+        return { addMcpCapabilities: mockAddMcpCapabilities };
+      }
+      if (modulePath === mcpTunnelPackagePath) {
+        return { TunnelMcpServerProxy: mockTunnelMcpServerProxy };
+      }
+      throw new Error(`Unexpected module path: ${modulePath}`);
+    });
   });
 
   afterEach(() => {
     mockResolveFromSilent.mockReset();
+    mockLoadModule.mockReset();
+    mockAddMcpCapabilities.mockReset();
+    mockTunnelMcpServerProxy.mockClear();
   });
 
   afterAll(() => {
@@ -59,6 +81,8 @@ describe(maybeCreateMCPServerAsync, () => {
       devServerUrl: 'http://localhost:8081',
     });
     expect(server).not.toBeNull();
+    expect(mockLoadModule).toHaveBeenCalledWith(mcpPackagePath);
+    expect(mockLoadModule).toHaveBeenCalledWith(mcpTunnelPackagePath);
   });
 
   it('should return null and log an error if the MCP server is enabled but the expo-mcp package is not installed', async () => {
@@ -125,7 +149,7 @@ describe(maybeCreateMCPServerAsync, () => {
       projectRoot: '/app',
       devServerUrl: 'http://localhost:8081',
     });
-    await server.closeAsync();
+    await server!.closeAsync();
     expect(mockRemoveExitHook).toHaveBeenCalledTimes(1);
   });
 });

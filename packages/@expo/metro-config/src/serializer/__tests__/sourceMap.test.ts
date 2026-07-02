@@ -25,10 +25,18 @@ function buildMap(opts: {
 }): ComposableSourceMap {
   const gen = new GenMapping({ file: opts.file });
   for (const s of opts.segments) {
-    addMapping(gen, {
-      generated: s.generated,
-      ...(s.source && s.original ? { source: s.source, original: s.original, name: s.name } : {}),
-    });
+    if (s.source && s.original && s.name != null) {
+      addMapping(gen, {
+        generated: s.generated,
+        source: s.source,
+        original: s.original,
+        name: s.name,
+      });
+    } else if (s.source && s.original) {
+      addMapping(gen, { generated: s.generated, source: s.source, original: s.original });
+    } else {
+      addMapping(gen, { generated: s.generated });
+    }
   }
   const encoded = toEncodedMap(gen);
   return {

@@ -1,13 +1,13 @@
 import AppMetrics, { type MetricAttributes } from 'expo-app-metrics';
 import { use, useCallback, useEffect, useRef } from 'react';
 
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 import { ObserveReactNavigationIntegrationContext } from './context';
 import { emitTTI } from './emitTTI';
 import { getPathname } from './getPathname';
 import { isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
 import type { NavigationStateLike } from './types';
-import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
 type MarkInteractive = (typeof AppMetrics)['markInteractive'];
 
@@ -112,16 +112,13 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
       }
 
       const interactiveTimeSeconds = (now - currentScreenData.dispatchTime) / 1000;
-      const mainSessionId = (await AppMetrics.getMainSession())?.id;
-      if (mainSessionId) {
-        await emitTTI({
-          sessionId: mainSessionId,
-          timestamp,
-          routeName: pathname,
-          value: interactiveTimeSeconds,
-          routeParams,
-        });
-      }
+      await emitTTI({
+        session: AppMetrics.getMainSession(),
+        timestamp,
+        routeName: pathname,
+        value: interactiveTimeSeconds,
+        routeParams,
+      });
     },
     [screenId, navigation, route, contextValue, stateForPath]
   );

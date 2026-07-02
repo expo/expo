@@ -5,11 +5,13 @@ description: Learn how to use various types of icons in your Expo app, including
 
 import { SnackInline } from '~/ui/components/Snippet';
 
-Not every app needs to use emojis for icons. You can use a popular icon set through an icon font such as FontAwesome, Glyphicons, or Ionicons, or choose PNGs from [The Noun Project](https://thenounproject.com/). This guide explains various ways to use icons in your Expo app.
+You can use popular icon sets through icon fonts such as FontAwesome, Glyphicons, or Ionicons, or choose PNGs from [The Noun Project](https://thenounproject.com/). This guide explains various ways to use icons in your Expo app.
 
 ## `@expo/vector-icons`
 
-The `@expo/vector-icons` library is installed by default on the template project using `npx create-expo-app` and is part of the `expo` package. It is built on top of [`react-native-vector-icons`](https://github.com/oblador/react-native-vector-icons) and uses a similar API. It includes popular icon sets you can browse at [icons.expo.fyi](https://icons.expo.fyi).
+> **warning** `@expo/vector-icons` will be deprecated and is not recommended. [Learn more about migrating to `@react-native-vector-icons`](https://expo.dev/blog/moving-away-from-expo-vector-icons).
+
+The `@expo/vector-icons` library is built on top of [`react-native-vector-icons`](https://github.com/oblador/react-native-vector-icons) and uses a similar API. It includes popular icon sets you can browse at [icons.expo.fyi](https://icons.expo.fyi).
 
 The component loads the `Ionicons` font and renders a checkmark icon in the following example:
 
@@ -129,7 +131,7 @@ const styles = StyleSheet.create({
 
 ### `createIconSetFromFontello`
 
-The `createIconSetFromFontello` method is used to create a custom font based on a [Fontello](http://fontello.com/) config file. You have to save the **config.json** and **.ttf** somewhere convenient in your project, preferably in the **assets** directory, and then load the font using either `useFonts` hook or `Font.loadAsync` method from `expo-font`.
+The `createIconSetFromFontello` method is used to create a custom font based on a [Fontello](https://fontello.com/) config file. You have to save the **config.json** and **.ttf** somewhere convenient in your project, preferably in the **assets** directory, and then load the font using either `useFonts` hook or `Font.loadAsync` method from `expo-font`.
 
 It follows a similar configuration as `createIconSetFromIcoMoon` as shown in the example:
 
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
 
 ### Properties
 
-Any [`Text`](http://reactnative.dev/docs/text), [`TouchableHighlight`](http://reactnative.dev/docs/touchablehighlight), or [`TouchableWithoutFeedback`](http://reactnative.dev/docs/touchablewithoutfeedback) property in addition to these:
+Any [`Text`](https://reactnative.dev/docs/text), [`TouchableHighlight`](https://reactnative.dev/docs/touchablehighlight), or [`TouchableWithoutFeedback`](https://reactnative.dev/docs/touchablewithoutfeedback) property in addition to these:
 
 | Prop              | Description                                                                                                                                      | Default             |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------- |

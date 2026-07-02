@@ -176,13 +176,27 @@ struct MetricsDatabaseTests {
   }
 
   @Test
-  func `getAllSessions returns rows ordered by start timestamp descending`() throws {
+  func `getInactiveSessions returns inactive rows ordered by start timestamp descending`() throws {
     try withTemporaryDatabase { database in
       try database.insert(session: makeSessionRow(id: "older", startTimestamp: "2026-05-01T00:00:00Z"))
       try database.insert(session: makeSessionRow(id: "newer", startTimestamp: "2026-05-07T00:00:00Z"))
+      try database.updateSessionActiveStatus(id: "older", isActive: false, endTimestamp: nil)
+      try database.updateSessionActiveStatus(id: "newer", isActive: false, endTimestamp: nil)
 
-      let rows = try database.getAllSessions()
+      let rows = try database.getInactiveSessions()
       #expect(rows.map(\.id) == ["newer", "older"])
+    }
+  }
+
+  @Test
+  func `getInactiveSessions excludes active sessions`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "active"))
+      try database.insert(session: makeSessionRow(id: "ended"))
+      try database.updateSessionActiveStatus(id: "ended", isActive: false, endTimestamp: nil)
+
+      let rows = try database.getInactiveSessions()
+      #expect(rows.map(\.id) == ["ended"])
     }
   }
 
@@ -214,8 +228,8 @@ struct MetricsDatabaseTests {
       try database.insert(session: makeSessionRow(id: "a"))
       try database.insert(session: makeSessionRow(id: "b"))
       try database.deleteAllSessions()
-      let remaining = try database.getAllSessions()
-      #expect(remaining.isEmpty)
+      #expect(try database.getSession(id: "a") == nil)
+      #expect(try database.getSession(id: "b") == nil)
     }
   }
 
@@ -252,10 +266,11 @@ struct MetricsDatabaseTests {
       }
 
       let database = try MetricsDatabase(directoryUrl: directoryUrl)
-      let remaining = try await AppMetricsActor.isolated {
-        return try database.getAllSessions().map(\.id)
+      let (expired, fresh) = try await AppMetricsActor.isolated {
+        return (try database.getSession(id: "expired"), try database.getSession(id: "fresh"))
       }
-      #expect(remaining == ["fresh"])
+      #expect(expired == nil)
+      #expect(fresh != nil)
     }
   }
 
@@ -273,8 +288,10 @@ struct MetricsDatabaseTests {
 
       try database.cleanupSessions(olderThan: "2026-05-05T00:00:00Z")
 
-      let remaining = try database.getAllSessions().map(\.id).sorted()
-      #expect(remaining == ["new-active", "new-inactive"])
+      #expect(try database.getSession(id: "old-inactive") == nil)
+      #expect(try database.getSession(id: "old-active") == nil)
+      #expect(try database.getSession(id: "new-active") != nil)
+      #expect(try database.getSession(id: "new-inactive") != nil)
     }
   }
 
@@ -298,7 +315,7 @@ struct MetricsDatabaseTests {
       try database.insertAll(metrics: [
         makeMetricRow(sessionId: "s", name: "a"),
         makeMetricRow(sessionId: "s", name: "b"),
-        makeMetricRow(sessionId: "s", name: "c")
+        makeMetricRow(sessionId: "s", name: "c"),
       ])
 
       let rows = try database.getMetrics(sessionId: "s")
@@ -320,16 +337,17 @@ struct MetricsDatabaseTests {
   func `getMetrics returns rows in insertion order with full payload`() throws {
     try withTemporaryDatabase { database in
       try database.insert(session: makeSessionRow(id: "s"))
-      try database.insert(metric: makeMetricRow(
-        sessionId: "s",
-        timestamp: "2026-05-07T12:00:00Z",
-        category: "frameRate",
-        name: "slowFrames",
-        value: 1.5,
-        routeName: "/home",
-        updateId: "update-1",
-        params: "{\"k\":1}"
-      ))
+      try database.insert(
+        metric: makeMetricRow(
+          sessionId: "s",
+          timestamp: "2026-05-07T12:00:00Z",
+          category: "frameRate",
+          name: "slowFrames",
+          value: 1.5,
+          routeName: "/home",
+          updateId: "update-1",
+          params: "{\"k\":1}"
+        ))
 
       let row = try #require(try database.getMetrics(sessionId: "s").first)
       #expect(row.id != nil)
@@ -353,7 +371,7 @@ struct MetricsDatabaseTests {
         try database.insertAll(metrics: [
           makeMetricRow(sessionId: "real", name: "first"),
           makeMetricRow(sessionId: "missing-session", name: "orphan"),
-          makeMetricRow(sessionId: "real", name: "third")
+          makeMetricRow(sessionId: "real", name: "third"),
         ])
       }
 
@@ -394,7 +412,7 @@ struct MetricsDatabaseTests {
       try database.insert(session: makeSessionRow(id: "s"))
       try database.insertAll(logs: [
         makeLogRow(sessionId: "s", name: "a"),
-        makeLogRow(sessionId: "s", name: "b")
+        makeLogRow(sessionId: "s", name: "b"),
       ])
 
       let rows = try database.getLogs(sessionId: "s")
@@ -406,15 +424,16 @@ struct MetricsDatabaseTests {
   func `getLogs returns rows with full payload`() throws {
     try withTemporaryDatabase { database in
       try database.insert(session: makeSessionRow(id: "s"))
-      try database.insert(log: makeLogRow(
-        sessionId: "s",
-        timestamp: "2026-05-07T12:00:00Z",
-        severity: "error",
-        name: "boom",
-        body: "something exploded",
-        attributes: "{\"key\":\"value\"}",
-        droppedAttributesCount: 3
-      ))
+      try database.insert(
+        log: makeLogRow(
+          sessionId: "s",
+          timestamp: "2026-05-07T12:00:00Z",
+          severity: "error",
+          name: "boom",
+          body: "something exploded",
+          attributes: "{\"key\":\"value\"}",
+          droppedAttributesCount: 3
+        ))
 
       let row = try #require(try database.getLogs(sessionId: "s").first)
       #expect(row.id != nil)
@@ -437,7 +456,7 @@ struct MetricsDatabaseTests {
         try database.insertAll(logs: [
           makeLogRow(sessionId: "real", name: "first"),
           makeLogRow(sessionId: "missing-session", name: "orphan"),
-          makeLogRow(sessionId: "real", name: "third")
+          makeLogRow(sessionId: "real", name: "third"),
         ])
       }
 
@@ -546,11 +565,9 @@ struct MetricsDatabaseTests {
 
 // MARK: - Test fixtures and temporary-directory helpers
 
-/**
- Runs `body` against a fresh `MetricsDatabase` backed by a unique temporary directory that is
- removed once the closure returns. Keeps tests isolated and prevents the user's documents directory
- from accumulating leftover `.db` files across test runs.
- */
+/// Runs `body` against a fresh `MetricsDatabase` backed by a unique temporary directory that is
+/// removed once the closure returns. Keeps tests isolated and prevents the user's documents directory
+/// from accumulating leftover `.db` files across test runs.
 @AppMetricsActor
 private func withTemporaryDatabase(_ body: (MetricsDatabase) throws -> Void) throws {
   try withTemporaryDirectory { directoryUrl in

@@ -5,11 +5,31 @@ import withUpdates from '../withUpdates';
 
 jest.mock('expo/config');
 
+jest.mock('expo/config-plugins', () => {
+  const actual = jest.requireActual('expo/config-plugins');
+  return {
+    ...actual,
+    AndroidConfig: {
+      ...actual.AndroidConfig,
+      Updates: {
+        ...actual.AndroidConfig.Updates,
+        withUpdates: jest.fn((config) => config),
+      },
+    },
+    IOSConfig: {
+      ...actual.IOSConfig,
+      Updates: {
+        ...actual.IOSConfig.Updates,
+        withUpdates: jest.fn((config) => config),
+      },
+    },
+  };
+});
+
 describe('Updates plugin', () => {
   beforeAll(() => {
-    const config = getConfig();
-    jest.spyOn(AndroidConfig.Updates, 'withUpdates').mockReturnValue(config);
-    jest.spyOn(IOSConfig.Updates, 'withUpdates').mockReturnValue(config);
+    jest.mocked(AndroidConfig.Updates.withUpdates).mockReturnValue(getConfig());
+    jest.mocked(IOSConfig.Updates.withUpdates).mockReturnValue(getConfig());
   });
 
   afterAll(() => {

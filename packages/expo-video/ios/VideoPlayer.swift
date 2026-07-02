@@ -15,7 +15,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   private var tracksLoadingTask: Task<(), Never>?
 
   var loop = false
-  var audioMixingMode: AudioMixingMode = .doNotMix {
+  var audioMixingMode: AudioMixingMode = .auto {
     didSet {
       if oldValue != audioMixingMode {
         VideoManager.shared.setAppropriateAudioSessionOrWarn()
@@ -267,6 +267,47 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       self.ref.replaceCurrentItem(with: playerItem)
       dangerousPropertiesStore.ownerIsReplacing = false
       dangerousPropertiesStore.applyProperties(to: self)
+    }
+  }
+
+  /**
+   * Reloads the current source on the existing `AVPlayer`, preserving the playhead and play state.
+   */
+  func reloadCurrentSource() {
+    guard let videoSource = (ref.currentItem as? VideoPlayerItem)?.videoSource else {
+      return
+    }
+
+    let resumeTime = currentTime
+    let wasPlaying = isPlaying
+
+    Task { [weak self] in
+      guard let self else {
+        return
+      }
+
+      if resumeTime > 0 {
+        self.dangerousPropertiesStore.currentTime = resumeTime
+      }
+
+      do {
+        try await self.replaceCurrentItem(with: videoSource)
+      } catch {
+        log.warn("[expo-video] Failed to reload the video source while recovering a failed player: \(error.localizedDescription)")
+        return
+      }
+
+      if wasPlaying {
+        await MainActor.run {
+          self.ref.play()
+        }
+      }
+    }
+  }
+
+  func reloadIfFailed() {
+    if ref.status == .failed || ref.currentItem?.status == .failed {
+      reloadCurrentSource()
     }
   }
 

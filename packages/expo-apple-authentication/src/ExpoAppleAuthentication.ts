@@ -1,4 +1,4 @@
-import { requireOptionalNativeModule } from 'expo-modules-core';
+import { requireOptionalNativeModule } from 'expo';
 
 // If the real native module doesn't exist, make a pretend one, instead of
 // `null`, so we can offer an `isAvailableAsync` (that will always give

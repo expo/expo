@@ -30,16 +30,16 @@
     "expo-web-browser": "workspace:*",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.86.0-rc.3",
-    "react-native-gesture-handler": "~2.31.2",
-    "react-native-worklets": "0.8.3",
-    "react-native-reanimated": "~4.3.1",
-    "react-native-safe-area-context": "~5.6.2",
-    "react-native-screens": "~4.25.2",
+    "react-native": "0.86.0",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-worklets": "0.10.0",
+    "react-native-reanimated": "4.5.0",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "4.26.0-nightly-20260625-9b9b39fa5",
     "react-native-web": "~0.21.0"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
-    "typescript": "~5.9.2"
+    "typescript": "~6.0.3"
   }
 }

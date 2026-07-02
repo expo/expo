@@ -33,13 +33,19 @@ import {
   listRowSeparator,
   listRowSpacing,
   border,
+  strokeBorder,
   onTapGesture,
   onLongPressGesture,
   onAppear,
   onDisappear,
+  onGeometryChange,
   accessibilityLabel,
   accessibilityIdentifier,
   accessibilityHidden,
+  accessibilityInputLabels,
+  accessibilityElement,
+  accessibilityAddTraits,
+  accessibilityRemoveTraits,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -68,11 +74,15 @@ import {
   tag,
   font,
   dynamicTypeSize,
+  imageScale,
   lineLimit,
   contentShape,
   shapes,
   resizable,
   tint,
+  redacted,
+  unredacted,
+  privacySensitive,
 } from '@expo/ui/swift-ui/modifiers';
 import { useAssets } from 'expo-asset';
 import { useState } from 'react';
@@ -104,6 +114,8 @@ export default function ModifiersScreen() {
   const [allowTightening, setAllowsTightening] = useState(false);
 
   const [kerningValue, setKerning] = useState(0);
+  const [redactLoading, setRedactLoading] = useState(true);
+  const [redactPrivacy, setRedactPrivacy] = useState(true);
 
   const multilineTextAlignmentOptions = ['center', 'leading', 'trailing'];
   const [multilineTextAlignmentIndex, setMultilineTextAlignment] = useState(0);
@@ -407,6 +419,52 @@ export default function ModifiersScreen() {
             </HStack>
 
             <VStack spacing={15}>
+              <Text modifiers={[font({ size: 16 })]}>Stroke borders</Text>
+              <HStack spacing={12}>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({ color: '#45B7B8', style: { lineWidth: 2 } }),
+                  ]}>
+                  solid
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({ color: '#3498DB', style: { lineWidth: 2, dash: [6, 3] } }),
+                  ]}>
+                  dash
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({
+                      color: '#16A085',
+                      style: { lineWidth: 2, dash: [0.5, 4], lineCap: 'round' },
+                    }),
+                  ]}>
+                  dot
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({
+                      color: '#9B59B6',
+                      style: { lineWidth: 2, dash: [6, 3] },
+                      shape: 'roundedRectangle',
+                      cornerRadius: 10,
+                    }),
+                  ]}>
+                  rounded
+                </Text>
+              </HStack>
+            </VStack>
+
+            <VStack spacing={15}>
               <Picker
                 label="Select alignment"
                 modifiers={[pickerStyle('menu')]}
@@ -470,6 +528,94 @@ export default function ModifiersScreen() {
               </VStack>
             </HStack>
             <Slider min={0} max={20} onValueChange={setLineSpaceingValue} />
+          </Section>
+          {/* Image modifiers */}
+          <Section title="Image modifier">
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>
+                font text style on a symbol scales with Dynamic Type
+              </Text>
+              <HStack alignment="center" spacing={16}>
+                <Image systemName="bell.fill" />
+                <Image systemName="bell.fill" modifiers={[font({ textStyle: 'largeTitle' })]} />
+                <Image systemName="bell.fill" modifiers={[font({ textStyle: 'caption' })]} />
+              </HStack>
+            </VStack>
+            <VStack alignment="leading" spacing={8}>
+              <Text modifiers={[font({ size: 12 })]}>resizable symbol scales to its frame</Text>
+              <HStack alignment="center" spacing={16}>
+                <Image systemName="star.fill" size={24} />
+                <Image
+                  systemName="star.fill"
+                  modifiers={[resizable(), frame({ width: 64, height: 64 })]}
+                />
+              </HStack>
+            </VStack>
+          </Section>
+          {/* Image scale */}
+          <Section title="Image scale">
+            <VStack alignment="leading" spacing={8}>
+              <HStack alignment="center" spacing={8} modifiers={[imageScale('small')]}>
+                <Image systemName="star.fill" />
+                <Text modifiers={[font({ textStyle: 'body' })]}>small</Text>
+              </HStack>
+              <HStack alignment="center" spacing={8} modifiers={[imageScale('medium')]}>
+                <Image systemName="star.fill" />
+                <Text modifiers={[font({ textStyle: 'body' })]}>medium</Text>
+              </HStack>
+              <HStack alignment="center" spacing={8} modifiers={[imageScale('large')]}>
+                <Image systemName="star.fill" />
+                <Text modifiers={[font({ textStyle: 'body' })]}>large</Text>
+              </HStack>
+            </VStack>
+          </Section>
+          <Section title="Redacted">
+            <VStack alignment="leading" spacing={12}>
+              <Toggle
+                label="Simulate loading"
+                isOn={redactLoading}
+                onIsOnChange={setRedactLoading}
+              />
+              <VStack
+                alignment="leading"
+                spacing={6}
+                modifiers={redactLoading ? [redacted('placeholder')] : undefined}>
+                <Text modifiers={[font({ textStyle: 'headline' })]}>Jane Appleseed</Text>
+                <Text modifiers={[font({ textStyle: 'subheadline' })]}>
+                  Product Designer · San Francisco
+                </Text>
+                <Text modifiers={[font({ textStyle: 'body' })]}>
+                  Building delightful native experiences.
+                </Text>
+              </VStack>
+              <VStack
+                alignment="leading"
+                spacing={6}
+                modifiers={redactLoading ? [redacted('placeholder')] : undefined}>
+                <Text modifiers={[font({ textStyle: 'body' })]}>Profile details</Text>
+                <Text modifiers={[font({ textStyle: 'footnote' }), unredacted()]}>
+                  Loading… (unredacted, stays visible)
+                </Text>
+              </VStack>
+
+              <Toggle
+                label="Hide sensitive info"
+                isOn={redactPrivacy}
+                onIsOnChange={setRedactPrivacy}
+              />
+              <VStack
+                alignment="leading"
+                spacing={6}
+                modifiers={redactPrivacy ? [redacted('privacy')] : undefined}>
+                <Text modifiers={[font({ textStyle: 'subheadline' })]}>Account balance</Text>
+                <Text modifiers={[font({ textStyle: 'title' }), privacySensitive()]}>
+                  $12,480.55
+                </Text>
+                <Text modifiers={[font({ textStyle: 'footnote' })]}>
+                  Only the balance is privacySensitive; the labels stay visible
+                </Text>
+              </VStack>
+            </VStack>
           </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
           <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>
@@ -667,6 +813,48 @@ export default function ModifiersScreen() {
               <Text>Something went wrong</Text>
             </HStack>
 
+            {/* accessibilityInputLabels: Voice Control can target this by spoken phrase */}
+            <HStack spacing={6}>
+              <Text
+                modifiers={[
+                  background('#1ABC9C'),
+                  cornerRadius(8),
+                  padding({ all: 8 }),
+                  accessibilityInputLabels(['Hang up', 'End call']),
+                ]}>
+                End
+              </Text>
+            </HStack>
+
+            {/* accessibilityElement: combine children into one VoiceOver element */}
+            <HStack spacing={6} modifiers={[accessibilityElement('combine')]}>
+              <Image systemName="star.fill" size={17} />
+              <Text>4.8 out of 5 stars</Text>
+            </HStack>
+
+            {/* accessibilityAddTraits: VoiceOver announces this as both a button and a heading */}
+            <HStack spacing={6}>
+              <Text
+                modifiers={[
+                  background('#9B59B6'),
+                  cornerRadius(8),
+                  padding({ all: 8 }),
+                  accessibilityAddTraits(['isButton', 'isHeader']),
+                ]}>
+                Filters
+              </Text>
+            </HStack>
+
+            {/* accessibilityRemoveTraits: drop the redundant "image" trait from a labeled icon */}
+            <HStack spacing={6}>
+              <Image
+                systemName="checkmark.seal.fill"
+                size={17}
+                modifiers={[accessibilityRemoveTraits(['isImage'])]}
+              />
+              <Text>Verified</Text>
+            </HStack>
+
             <Text
               modifiers={[
                 background('#E67E22'),
@@ -795,6 +983,8 @@ export default function ModifiersScreen() {
           </Section>
 
           <AppearSection />
+
+          <GeometrySection />
 
           {/* Container Shape Modifier */}
           <Section title="Content Shape Modifier">
@@ -954,6 +1144,29 @@ function AppearSection() {
           ]}
         />
       </DisclosureGroup>
+    </Section>
+  );
+}
+
+function GeometrySection() {
+  const [frame, setFrame] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  return (
+    <Section title="onGeometryChange (position + size)">
+      <Text
+        modifiers={[
+          background('#5856D6'),
+          cornerRadius(12),
+          padding({ all: 16 }),
+          foregroundStyle({ type: 'color', color: '#FFFFFF' }),
+          onGeometryChange(setFrame),
+        ]}>
+        Track my frame
+      </Text>
+      <Text modifiers={[font({ size: 13 }), monospacedDigit()]}>
+        {`global x: ${frame.x.toFixed(0)}  y: ${frame.y.toFixed(0)}  •  size ${frame.width.toFixed(
+          0
+        )} × ${frame.height.toFixed(0)} (pt)`}
+      </Text>
     </Section>
   );
 }

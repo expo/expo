@@ -769,6 +769,15 @@ function isOptionalDependency(name: string, path: NodePath<any>, state: State): 
     return false;
   }
 
+  // Treat dynamic imports as optional when a rejection handler is attached
+  // close to the import call, e.g.
+  //   import('x').catch(handler)
+  //   import('x').then(handler, onReject)
+  //   import('x').then(...).catch(handler)
+  if (isInPromiseChainWithRejectionHandler(path)) {
+    return true;
+  }
+
   // Valid statement stack for single-level try-block: expressionStatement -> blockStatement -> tryStatement
   let sCount = 0;
   let p: NodePath<any> | NodePath<t.Node> | null = path;
@@ -785,6 +794,55 @@ function isOptionalDependency(name: string, path: NodePath<any>, state: State): 
   }
 
   return false;
+}
+
+// Walk up a chain of `.then(...)` / `.catch(...)` member calls starting from
+// `path` (typically an `import()` CallExpression) and return true if any
+// chained call provides a rejection handler — either `.catch(handler)` or
+// `.then(_, handler)`. The chain must be unbroken: as soon as the parent is
+// not a member call applied to the previous expression, we stop. This keeps
+// the heuristic local to the import, matching the behaviour of the
+// try/catch heuristic above.
+function isInPromiseChainWithRejectionHandler(path: NodePath<any>): boolean {
+  let current: NodePath<any> = path;
+  while (current.parentPath != null) {
+    const member = current.parentPath;
+    if (
+      member.node.type !== 'MemberExpression' ||
+      member.node.object !== current.node ||
+      member.node.computed ||
+      member.node.property.type !== 'Identifier' ||
+      member.parentPath == null
+    ) {
+      return false;
+    }
+    const call = member.parentPath;
+    if (call.node.type !== 'CallExpression' || call.node.callee !== member.node) {
+      return false;
+    }
+    const propertyName = member.node.property.name;
+    const args = call.node.arguments;
+    if (propertyName === 'catch' && args.length >= 1 && isNonNullishCallbackArg(args[0])) {
+      return true;
+    }
+    if (propertyName === 'then' && args.length >= 2 && isNonNullishCallbackArg(args[1])) {
+      return true;
+    }
+    current = call;
+  }
+  return false;
+}
+
+function isNonNullishCallbackArg(arg: t.CallExpression['arguments'][number] | undefined): boolean {
+  if (arg == null) {
+    return false;
+  } else if (arg.type === 'NullLiteral') {
+    return false;
+  } else if (arg.type === 'Identifier' && arg.name === 'undefined') {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 function getModuleNameFromCallArgs(path: NodePath<t.CallExpression>): string | null {

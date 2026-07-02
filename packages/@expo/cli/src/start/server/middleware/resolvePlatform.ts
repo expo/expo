@@ -1,8 +1,8 @@
 import type { NativePlatform } from '@expo/config';
 import { parse } from 'url';
 
-import type { ServerRequest } from './server.types';
 import { CommandError } from '../../../utils/errors';
+import type { ServerRequest } from './server.types';
 
 const debug = require('debug')(
   'expo:start:server:middleware:resolvePlatform'

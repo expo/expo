@@ -20,7 +20,14 @@ Using Expo with Next.js means you can share some of your existing components and
 
 To quickly get started, create a new project using [with-nextjs](https://github.com/expo/examples/tree/master/with-nextjs) template:
 
-<Terminal cmd={['$ npx create-expo-app -e with-nextjs']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app -e with-nextjs'],
+    yarn: ['$ yarn create expo-app -e with-nextjs'],
+    pnpm: ['$ pnpm create expo-app -e with-nextjs'],
+    bun: ['$ bun create expo -e with-nextjs'],
+  }}
+/>
 
 - **Native**: `npx expo start` — start the Expo project
 - **Web**: `npx next dev` — start the Next.js project
@@ -31,7 +38,14 @@ To quickly get started, create a new project using [with-nextjs](https://github.
 
 Ensure you have `expo`, `next`, `@expo/next-adapter` installed in your project:
 
-<Terminal cmd={['$ yarn add expo next @expo/next-adapter']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install expo next @expo/next-adapter'],
+    yarn: ['$ yarn add expo next @expo/next-adapter'],
+    pnpm: ['$ pnpm add expo next @expo/next-adapter'],
+    bun: ['$ bun add expo next @expo/next-adapter'],
+  }}
+/>
 
 ### Transpilation
 
@@ -250,7 +264,14 @@ Add a `build` script to your **package.json**:
 
 Install the Vercel CLI:
 
-<Terminal cmd={['$ npm i -g vercel']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global vercel'],
+    yarn: ['$ yarn global add vercel'],
+    pnpm: ['$ pnpm add --global vercel'],
+    bun: ['$ bun add --global vercel'],
+  }}
+/>
 
 </Step>
 

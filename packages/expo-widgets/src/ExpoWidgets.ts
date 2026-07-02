@@ -1,4 +1,4 @@
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 
 import type {
   ExpoTimelineEntry,
@@ -12,8 +12,9 @@ const noopSubscription: EventSubscription = { remove() {} };
 
 class WidgetStub {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor(_name: string, _layout: string) {}
+  constructor(_name: string, _layout: string, _initialProps?: Record<string, any>) {}
   reload(): void {}
+  updateSnapshot(_props: Record<string, any>): void {}
   updateTimeline(_entries: ExpoTimelineEntry[]): void {}
   async getTimeline(): Promise<ExpoTimelineEntry[]> {
     return [];

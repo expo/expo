@@ -1,13 +1,13 @@
 import Debug from 'debug';
 
-import type { BaseModOptions } from './withMod';
-import { withBaseMod } from './withMod';
 import type {
   ConfigPlugin,
   ExportedConfig,
   ExportedConfigWithProps,
   ModPlatform,
 } from '../Plugin.types';
+import type { BaseModOptions } from './withMod';
+import { withBaseMod } from './withMod';
 
 const debug = Debug('expo:config-plugins:base-mods');
 

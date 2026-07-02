@@ -74,8 +74,8 @@ import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
@@ -272,7 +272,7 @@ class ExpoCameraView(
     addView(previewView, 0)
   }
 
-  fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File, runtimeContext: RuntimeContext) {
+  fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File, runtime: Runtime) {
     val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
     val hasShutterSound = options.shutterSound
@@ -306,7 +306,7 @@ class ExpoCameraView(
           cacheDirectory.let {
             scope.launch {
               val shouldMirror = mirror && lensFacing == CameraType.FRONT
-              ResolveTakenPicture(data, promise, options, shouldMirror, runtimeContext, it) { response: Bundle ->
+              ResolveTakenPicture(data, promise, options, shouldMirror, runtime, it) { response: Bundle ->
                 if (!options.pictureRef) {
                   onPictureSaved(response)
                 }
@@ -494,7 +494,10 @@ class ExpoCameraView(
 
     imageCaptureUseCase = imageCaptureBuilder.build()
 
-    val videoCapture = createVideoCapture()
+    val selectedCameraInfo = cameraSelector
+      .filter(cameraProvider.availableCameraInfos)
+      .firstOrNull()
+    val videoCapture = createVideoCapture(selectedCameraInfo)
     imageAnalysisUseCase = createImageAnalyzer()
 
     val useCases = UseCaseGroup.Builder().apply {
@@ -590,7 +593,7 @@ class ExpoCameraView(
     }
   }
 
-  private fun createVideoCapture(): VideoCapture<Recorder> {
+  private fun createVideoCapture(cameraInfo: CameraInfo?): VideoCapture<Recorder> {
     val preferredQuality = videoQuality.mapToQuality()
     val fallbackStrategy = FallbackStrategy.higherQualityOrLowerThan(preferredQuality)
     val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
@@ -611,8 +614,16 @@ class ExpoCameraView(
       if (mirror) {
         setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
       }
-      setVideoStabilizationEnabled(videoStabilizationMode.isEnabled())
+      setVideoStabilizationEnabled(isVideoStabilizationEnabled(cameraInfo))
     }.build()
+  }
+
+  private fun isVideoStabilizationEnabled(cameraInfo: CameraInfo?): Boolean {
+    val isStabilizationSupported = cameraInfo?.let {
+      Recorder.getVideoCapabilities(it).isStabilizationSupported
+    } ?: false
+
+    return isStabilizationSupported && videoStabilizationMode.isEnabled()
   }
 
   private fun startFocusMetering() {

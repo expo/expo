@@ -2,32 +2,33 @@
   "name": "expo-blob",
   "version": "56.0.3",
   "description": "Provides a Blob implementation for handling binary data across platforms, with web API compatibility for creating, reading, and manipulating binary objects.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
   "keywords": [
-    "react-native",
     "expo",
-    "expo-blob"
+    "expo-blob",
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/blob/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-blob"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/blob/",
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.2.0",

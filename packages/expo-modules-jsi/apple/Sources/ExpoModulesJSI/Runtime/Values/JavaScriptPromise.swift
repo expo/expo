@@ -75,15 +75,16 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     guard let runtime else {
       return
     }
-    guard !resolveFunction.isEmpty else {
-      preconditionFailure("Cannot settle a promise more than once")
-    }
 
     // `resolve` is not isolated, so make sure to jump to JS thread.
     runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
+      // If the promise is already settled, do nothing.
+      guard let resolver = resolveFunction.take() else {
+        return
+      }
       // Call the actual resolver given in the Promise setup.
       // This will also call `deferredPromise.resolve` in the `then` handler.
-      _ = try! resolveFunction.take().getFunction().call(arguments: value)
+      _ = try! resolver.getFunction().call(arguments: value)
 
       // Release the rejecter, we cannot call it anymore.
       rejectFunction.release()
@@ -94,19 +95,22 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     guard let runtime else {
       return
     }
-    guard !rejectFunction.isEmpty else {
-      preconditionFailure("Cannot settle a promise more than once")
-    }
 
     // `reject` is not isolated, so make sure to jump to JS thread.
     runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
-      // Create a JS error from any (native) error.
-      let errorMessage = String(describing: error)
-      let errorValue = JavaScriptError(runtime, message: errorMessage).asValue()
+      // If the promise is already settled, do nothing.
+      guard let rejecter = rejectFunction.take() else {
+        return
+      }
+      // Convert the error to its JavaScript representation. This preserves an existing
+      // `JavaScriptError`'s wrapped value and a `JavaScriptThrowable`'s structured `code`
+      // (mirroring the synchronous throw path in `forwardingSwiftErrorsToJS`), so the `code`
+      // is not lost on async rejection. See `JavaScriptError.from(_:in:)`.
+      let errorValue = JavaScriptError.from(error, in: runtime).toValue()
 
       // Call the actual rejecter given in the Promise setup.
       // This will also call `deferredPromise.reject` in the `then` handler.
-      _ = try! rejectFunction.take().getFunction().call(arguments: errorValue)
+      _ = try! rejecter.getFunction().call(arguments: errorValue)
 
       // Release the resolver, we cannot call it anymore.
       resolveFunction.release()
@@ -128,7 +132,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     }
     let onRejected = runtime.createFunction { [weak deferredPromise] this, arguments in
       guard let deferredPromise else { return .undefined }
-      let error = arguments[0]
+      // Wrap the rejection value into a `JavaScriptError` here, on the JavaScript thread, rather
+      // than inside the off-thread actor, since building the error touches the runtime.
+      let error = JavaScriptError(runtime, value: arguments[0])
       Task.immediate_polyfill {
         await deferredPromise.reject(error)
       }

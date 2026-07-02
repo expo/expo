@@ -1,5 +1,6 @@
 import { Command } from '@expo/commander';
 
+import { prunePrebuildBuildFilesAsync } from '../prebuilds/Prune';
 import {
   createRequest,
   createContext,
@@ -24,6 +25,18 @@ export async function runPrebuildPackagesAsync(
 }
 
 async function main(packageNames: string[], options: PrebuildCliOptions) {
+  // `et prebuild prune [all | <packageNames...>]` removes the intermediate build files
+  // (Xcode DerivedData) while keeping the composed xcframeworks. It's keyed off the first
+  // positional rather than a real subcommand because the CLI dispatches on the command name.
+  if (packageNames[0] === 'prune') {
+    const { exitCode } = await prunePrebuildBuildFilesAsync(packageNames.slice(1), {
+      includeExternal: options.includeExternal,
+      externalOnly: options.externalOnly,
+      dryRun: options.dryRun,
+    });
+    process.exit(exitCode);
+  }
+
   const result = await runPrebuildPackagesAsync(packageNames, options);
   process.exit(result.exitCode);
 }
@@ -32,7 +45,8 @@ export default (program: Command) => {
   program
     .command('prebuild-packages [packageNames...]')
     .description(
-      'Generates `.xcframework` artifacts for iOS packages. If no package names are provided, discovers all packages with spm.config.json.'
+      'Generates `.xcframework` artifacts for iOS packages. If no package names are provided, builds the default distributed set; pass --all-packages to build every package with an spm.config.json.\n' +
+        'Run `et prebuild prune [packageNames...]` to delete the intermediate build files (Xcode DerivedData, ~2GB/package) while keeping the composed xcframeworks. With no names (or `all`) it cleans every build cache found on disk; pass package names to prune only those. Add --dry-run to preview what would be removed.'
     )
     .alias('prebuild')
     .option(
@@ -71,6 +85,11 @@ export default (program: Command) => {
       'Clears the entire dependency cache, forcing a fresh download of all artifacts.',
       false
     )
+    .option(
+      '--dry-run',
+      'Only applies to `prebuild prune`: list the build files that would be removed (with sizes) without deleting anything.',
+      false
+    )
     .option('--skip-generate', 'Skip the generate step.', false)
     .option('--skip-artifacts', 'Skip downloading build artifacts.', false)
     .option('--skip-build', 'Skip the build step.', false)
@@ -92,6 +111,11 @@ export default (program: Command) => {
     .option(
       '--external-only',
       'Build only external (third-party) packages. Implies --include-external.',
+      false
+    )
+    .option(
+      '--all-packages',
+      'When no package names are given, build every Expo package with an spm.config.json instead of only the default distributed set.',
       false
     )
     .option(

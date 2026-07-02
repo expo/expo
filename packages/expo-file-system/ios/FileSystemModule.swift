@@ -1,11 +1,16 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+#if os(iOS)
+import QuickLook
+#endif
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemModule: Module {
   #if os(iOS)
   private lazy var filePickingHandler = FilePickingHandler(module: self)
+  private var previewSession: FileSystemPreviewSession?
+  private var isPresentingPreview = false
   #endif
 
   private let downloadStore = DownloadTaskStore()
@@ -36,7 +41,7 @@ public final class FileSystemModule: Module {
 
   private func writeToFile(
     _ file: FileSystemFile,
-    content: Either<String, TypedArray>,
+    content: Either<String, NativeArrayBuffer>,
     options: WriteOptions?
   ) throws {
     let append = options?.append ?? false
@@ -49,7 +54,7 @@ public final class FileSystemModule: Module {
       } else {
         try file.write(content, append: append)
       }
-    } else if let content: TypedArray = content.get() {
+    } else if let content: NativeArrayBuffer = content.get() {
       try file.write(content, append: append)
     }
   }
@@ -190,15 +195,70 @@ public final class FileSystemModule: Module {
         return try FileSystemFileHandle(file: file, mode: mode)
       }
 
+      AsyncFunction("canPreview") { (file: FileSystemFile, _: FilePreviewOptions?) -> Bool in
+        #if os(iOS)
+        return try file.withCorrectTypeAndScopedAccess(permission: .read) {
+          guard file.exists else {
+            return false
+          }
+          return QLPreviewController.canPreview(FileSystemPreviewItem(url: file.url, title: nil))
+        }
+        #else
+        throw FeatureNotAvailableOnPlatformException()
+        #endif
+      }
+      .runOnQueue(.main)
+
+      AsyncFunction("preview") { (file: FileSystemFile, options: FilePreviewOptions?, promise: Promise) in
+        #if os(iOS)
+        do {
+          guard !isPresentingPreview else {
+            throw FilePreviewInProgressException()
+          }
+          guard let currentViewController = appContext?.utilities?.currentViewController() else {
+            throw FilePreviewMissingViewControllerException()
+          }
+
+          let scopedAccess = try makeScopedAccess(for: file, permission: .read)
+          guard file.exists else {
+            throw FilePreviewFileNotFoundException(file.url)
+          }
+          let item = FileSystemPreviewItem(url: file.url, title: options?.title)
+          guard QLPreviewController.canPreview(item) else {
+            throw FilePreviewUnsupportedException(file.url)
+          }
+
+          let previewController = QLPreviewController()
+          let session = FileSystemPreviewSession(item: item, scopedAccess: scopedAccess) { [weak self] in
+            self?.previewSession = nil
+            self?.isPresentingPreview = false
+          }
+          previewSession = session
+          isPresentingPreview = true
+          previewController.dataSource = session
+          previewController.delegate = session
+
+          currentViewController.present(previewController, animated: true) {
+            promise.resolve()
+          }
+        } catch {
+          promise.reject(error)
+        }
+        #else
+        promise.reject(FeatureNotAvailableOnPlatformException())
+        #endif
+      }
+      .runOnQueue(.main)
+
       Function("info") { (file: FileSystemFile, options: InfoOptions?) in
         return try file.info(options: options ?? InfoOptions())
       }
 
-      AsyncFunction("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
+      AsyncFunction("write") { (file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions?) in
         try writeToFile(file, content: content, options: options)
       }
 
-      Function("writeSync") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
+      Function("writeSync") { (file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions?) in
         try writeToFile(file, content: content, options: options)
       }
 

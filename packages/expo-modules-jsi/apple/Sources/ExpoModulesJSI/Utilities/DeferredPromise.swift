@@ -1,13 +1,13 @@
 internal actor DeferredPromise {
   internal enum State {
-    case pending(CheckedContinuation<JavaScriptValue, Never>?)
+    case pending(CheckedContinuation<JavaScriptValue, any Error>?)
     case fulfilled(JavaScriptValue)
-    case rejected(JavaScriptValue)
+    case rejected(JavaScriptError)
   }
 
   internal var state: State = .pending(nil)
 
-  public func getValue() async throws(JavaScriptValue) -> sending JavaScriptValue {
+  public func getValue() async throws(JavaScriptError) -> sending JavaScriptValue {
     switch state {
     case .fulfilled(let value):
       return value
@@ -16,8 +16,15 @@ internal actor DeferredPromise {
       throw error
 
     case .pending(nil):
-      return await withCheckedContinuation { continuation in
-        state = .pending(continuation)
+      do {
+        return try await withCheckedThrowingContinuation { continuation in
+          state = .pending(continuation)
+        }
+      } catch let error as JavaScriptError {
+        throw error
+      } catch {
+        // The continuation is only ever resumed with a `JavaScriptError` (see `reject`).
+        preconditionFailure("Promise continuation resumed with an unexpected error: \(error)")
       }
 
     case .pending(.some):
@@ -39,10 +46,10 @@ internal actor DeferredPromise {
     }
   }
 
-  internal func reject(_ error: sending JavaScriptValue) {
+  internal func reject(_ error: sending JavaScriptError) {
     switch state {
     case .pending(let continuation?):
-      continuation.resume(returning: error)
+      continuation.resume(throwing: error)
       state = .rejected(error)
 
     case .pending(nil):

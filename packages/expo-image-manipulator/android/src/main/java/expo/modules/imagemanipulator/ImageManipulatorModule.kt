@@ -50,12 +50,12 @@ class ImageManipulatorModule : Module() {
     }
 
     val task = ManipulatorTask(appContext.backgroundCoroutineScope, loader)
-    return ImageManipulatorContext(runtimeContext, task)
+    return ImageManipulatorContext(runtime, task)
   }
 
   private fun createManipulatorContext(bitmap: Bitmap): ImageManipulatorContext {
     val task = ManipulatorTask(appContext.backgroundCoroutineScope) { bitmap }
-    return ImageManipulatorContext(runtimeContext, task)
+    return ImageManipulatorContext(runtime, task)
   }
 
   override fun definition() = ModuleDefinition {
@@ -102,7 +102,7 @@ class ImageManipulatorModule : Module() {
 
       AsyncFunction("renderAsync") Coroutine { context: ImageManipulatorContext ->
         val image = context.render()
-        ImageRef(image, runtimeContext)
+        ImageRef(image, runtime)
       }
     }
 

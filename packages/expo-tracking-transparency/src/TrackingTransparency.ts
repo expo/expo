@@ -4,8 +4,8 @@ import {
   PermissionStatus,
   type PermissionExpiration,
   type PermissionHookOptions,
+  UnavailabilityError,
 } from 'expo';
-import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
@@ -151,7 +151,6 @@ export function isAvailable(): boolean {
   return Boolean(ExpoTrackingTransparency);
 }
 
-// TODO(@kitten): Remove re-exports from EMC
 export {
   type PermissionResponse,
   PermissionStatus,

@@ -194,7 +194,7 @@ type TextSpanRecord = TextSpanStyleBase & {
   children?: TextSpanRecord[];
 };
 
-export type TextProps = {
+export interface TextProps {
   /**
    * The text content to display. Can be a string, number, or nested `Text` components
    * for inline styled spans.
@@ -238,7 +238,7 @@ export type TextProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 type NativeTextProps = Omit<TextProps, 'children' | 'style'> &
   TextSpanStyleBase & {

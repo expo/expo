@@ -30,13 +30,15 @@ export function addPbxGroup(
   const { uuid: sharedGroupUuid } = xcodeProject.addPbxGroup(sharedFiles, 'shared', 'shared');
 
   if (mainGroupUuid && sharedGroupUuid) {
+    // @ts-expect-error: TODO(@kitten): This used to be untyped, and is failing now
     xcodeProject.addToPbxGroup(sharedGroupUuid, mainGroupUuid);
   }
 
   const groups = xcodeProject.hash.project.objects['PBXGroup'];
   if (mainGroupUuid) {
     Object.keys(groups).forEach((key) => {
-      if (!groups[key].name && !groups[key].path) {
+      if (!groups[key]!.name && !groups[key]!.path) {
+        // @ts-expect-error: TODO(@kitten): This used to be untyped, and is failing now
         xcodeProject.addToPbxGroup(mainGroupUuid, key);
       }
     });

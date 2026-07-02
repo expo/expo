@@ -1,6 +1,6 @@
+import { importMetaRegistry } from '../utils/importMetaRegistry';
 import { errorToResponse } from './error';
 import { type ScopeDefinition, type RequestAPI, scopeRef, UpdateResponseHeaders } from './scope';
-import { importMetaRegistry } from '../utils/importMetaRegistry';
 
 export interface RequestAPISetup extends RequestAPI {
   origin?: string | null;

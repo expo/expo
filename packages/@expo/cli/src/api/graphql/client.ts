@@ -30,7 +30,7 @@ export interface QueryOptions {
   headers?: Record<string, string>;
 }
 
-export const query = (() => {
+export const { query, mutate } = (() => {
   const url = getExpoApiBaseUrl() + '/graphql';
 
   let _fetch: FetchLike | undefined;
@@ -79,10 +79,12 @@ export const query = (() => {
     cache = {};
   }
 
-  return async function query<Result extends JSONObject, Variables extends JSONObject>(
+  async function request<Result extends JSONObject, Variables extends JSONObject>(
     query: StaticDocumentNode<Result, Variables>,
     variables: Variables,
-    options?: QueryOptions
+    options: QueryOptions | undefined,
+    // Mutations must never be served from (or written to) the in-memory cache.
+    useCache: boolean
   ): Promise<Result> {
     let isTransient = false;
     let response: Response | undefined;
@@ -94,12 +96,13 @@ export const query = (() => {
     const headersKey = stringifySorted(headers);
     if (!cacheKey || cacheKey !== headersKey) {
       resetCache();
+      cacheKey = headersKey;
     }
 
     // Retrieve a cached result, if we have any via a `query => variables => Result` cache key
     const variablesKey = stringifySorted(variables);
     const queryCache = cache[query] || (cache[query] = new Map());
-    if (queryCache.has(variablesKey)) {
+    if (useCache && queryCache.has(variablesKey)) {
       data = queryCache.get(variablesKey) as Result;
     }
 
@@ -150,9 +153,11 @@ export const query = (() => {
 
     // Store the data in the cache, and only return a result if we have any values
     if (data) {
-      queryCache.set(variablesKey, data);
+      if (useCache) {
+        queryCache.set(variablesKey, data);
+      }
       const keys = Object.keys(data);
-      if (keys.length > 0 && keys.some((key) => data[key as keyof typeof data] != null)) {
+      if (keys.some((key) => data[key as keyof typeof data] != null)) {
         return data;
       }
     }
@@ -170,5 +175,24 @@ export const query = (() => {
     } else {
       throw new UnexpectedServerData('Unexpected server error: No returned query result');
     }
+  }
+
+  return {
+    /** Run a GraphQL query, served from the in-memory cache when possible. */
+    query<Result extends JSONObject, Variables extends JSONObject>(
+      document: StaticDocumentNode<Result, Variables>,
+      variables: Variables,
+      options?: QueryOptions
+    ): Promise<Result> {
+      return request(document, variables, options, /* useCache */ true);
+    },
+    /** Run a GraphQL mutation, always hitting the network and never touching the cache. */
+    mutate<Result extends JSONObject, Variables extends JSONObject>(
+      document: StaticDocumentNode<Result, Variables>,
+      variables: Variables,
+      options?: QueryOptions
+    ): Promise<Result> {
+      return request(document, variables, options, /* useCache */ false);
+    },
   };
 })();

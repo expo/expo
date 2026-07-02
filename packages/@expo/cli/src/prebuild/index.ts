@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 
-import type { Command } from '../../bin/cli';
+import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 
 export const expoPrebuild: Command = async (argv) => {
@@ -10,6 +10,7 @@ export const expoPrebuild: Command = async (argv) => {
       // Types
       '--help': Boolean,
       '--clean': Boolean,
+      '--no-clean': Boolean,
       '--npm': Boolean,
       '--pnpm': Boolean,
       '--yarn': Boolean,
@@ -33,7 +34,7 @@ export const expoPrebuild: Command = async (argv) => {
       [
         chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
         `--no-install                             Skip installing npm packages and CocoaPods`,
-        `--clean                                  Delete the native folders and regenerate them before applying changes`,
+        `--no-clean                               Apply changes to the existing native folders instead of recreating them`,
         chalk`--npm                                    Use npm to install dependencies. {dim Default when package-lock.json exists}`,
         chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
         chalk`--bun                                    Use bun to install dependencies. {dim Default when bun.lock or bun.lockb exists}`,
@@ -63,7 +64,7 @@ export const expoPrebuild: Command = async (argv) => {
   return (() => {
     return prebuildAsync(getProjectRoot(args), {
       // Parsed options
-      clean: args['--clean'],
+      clean: !args['--no-clean'],
 
       packageManager: resolvePackageManagerOptions(args),
       install: !args['--no-install'],

@@ -1,4 +1,4 @@
-import { MetadataTag } from './types';
+import type { MetadataTag } from './types';
 
 export function pushName(tags: MetadataTag[], key: string, value: string | undefined) {
   pushMetaContent(tags, 'name', key, value);

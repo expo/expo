@@ -11,7 +11,6 @@ import {
 } from 'react';
 import { Platform } from 'react-native';
 
-import { wrapNativeEvent, type PagerViewProps } from './types';
 import { useNativeState, worklets } from '../../State';
 import { Group } from '../../swift-ui/Group';
 import { Host } from '../../swift-ui/Host';
@@ -30,6 +29,7 @@ import {
 } from '../../swift-ui/modifiers';
 import { Animation } from '../../swift-ui/modifiers/animation';
 import { withAnimation } from '../../swift-ui/withAnimation';
+import { wrapNativeEvent, type PagerViewProps } from './types';
 
 function phaseToPageState(phase: ScrollPhase): 'idle' | 'dragging' | 'settling' {
   switch (phase) {
@@ -213,7 +213,7 @@ export function PagerView(props: PagerViewProps) {
   ];
 
   return (
-    <Host style={style ?? { flex: 1 }} {...passthrough}>
+    <Host style={style ?? { flex: 1 }} ignoreSafeArea="all" {...passthrough}>
       <ScrollView axes="horizontal" showsIndicators={false} modifiers={modifiers}>
         <LazyHStack spacing={0} modifiers={[scrollTargetLayout()]}>
           {pages}

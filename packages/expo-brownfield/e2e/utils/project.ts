@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import { glob } from 'glob';
 import fs from 'node:fs';
-import path from 'node:path';
 import os from 'node:os';
+import path from 'node:path';
 
 import {
   executeCommandAsync,
@@ -138,11 +138,11 @@ const listWorkspaces = async (): Promise<Record<string, string>> => {
   const { stdout } = await spawnAsync('pnpm', ['list', '--depth=-1', '-r', '--json'], {
     cwd: path.join(__dirname, '../../'),
   });
-  const workspaces: { name: string; path: string; }[] = JSON.parse(stdout);
-  return workspaces.reduce((acc, entry) => {
+  const workspaces: { name: string; path: string }[] = JSON.parse(stdout);
+  return workspaces.reduce<Record<string, string>>((acc, entry) => {
     acc[entry.name] = entry.path;
     return acc;
-  }, {} as Record<string, string>);
+  }, {});
 };
 
 /**

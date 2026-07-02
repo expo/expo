@@ -166,8 +166,8 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     animator: UIContextMenuInteractionAnimating?
   ) {
     onPreviewWillClose()
-    animator?.addCompletion {
-      self.onPreviewDidClose()
+    animator?.addCompletion { [weak self] in
+      self?.onPreviewDidClose()
     }
   }
 

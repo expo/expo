@@ -1,11 +1,11 @@
 import type commander from 'commander';
 import fs from 'fs';
 
-import type { AutolinkingCommonArguments } from './autolinkingOptions';
-import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 import { findModulesAsync } from '../autolinking/findModules';
 import { generateModulesProviderAsync } from '../autolinking/generatePackageList';
 import { resolveModulesAsync } from '../autolinking/resolveModules';
+import type { AutolinkingCommonArguments } from './autolinkingOptions';
+import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 
 interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   target: string;
@@ -17,6 +17,7 @@ interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
 
 type PartialPodfileProperties = {
   'expo.inlineModules.watchedDirectories'?: string;
+  'expo.inlineModules.xcodeProjectTargets'?: string;
 };
 
 /** Generates a source file listing all packages to link in the runtime */
@@ -68,11 +69,16 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
           podfileProperties['expo.inlineModules.watchedDirectories'] ?? '[]'
         );
 
+        const inlineModulesTargets = JSON.parse(
+          podfileProperties['expo.inlineModules.xcodeProjectTargets'] ?? '{"targets":[]}'
+        );
+
         await generateModulesProviderAsync(filteredModules, {
           platform,
           targetPath: commandArguments.target,
           entitlementPath: commandArguments.entitlement ?? null,
           watchedDirectories,
+          inlineModulesTargets,
           appRoot,
         });
       }

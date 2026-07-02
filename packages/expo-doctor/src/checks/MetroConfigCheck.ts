@@ -2,9 +2,9 @@ import path from 'path';
 import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 import semver from 'semver';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { loadMetroUserConfigAsync, getDefaultMetroConfig } from '../utils/metroConfigLoader';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 const isSubsetOf = (
   defaultValues: readonly string[] | undefined,

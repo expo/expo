@@ -39,6 +39,7 @@ enum PitchCorrectionQuality: String, Enumerable {
 }
 
 struct RecordingOptions: Record {
+  @Field var directory: RecordingDirectory?
   @Field var `extension`: String
   @Field var sampleRate: Double
   @Field var numberOfChannels: Double
@@ -53,6 +54,11 @@ struct RecordingOptions: Record {
   @Field var isMeteringEnabled: Bool = false
 }
 
+enum RecordingDirectory: String, Enumerable {
+  case cache
+  case document
+}
+
 struct Metadata: Record {
   @Field var title: String?
   @Field var artist: String?
@@ -63,6 +69,8 @@ struct Metadata: Record {
 struct LockScreenOptions: Record {
   @Field var showSeekForward: Bool = false
   @Field var showSeekBackward: Bool = false
+  @Field var showNextTrack: Bool = false
+  @Field var showPreviousTrack: Bool = false
   @Field var isLiveStream: Bool? = false
 }
 

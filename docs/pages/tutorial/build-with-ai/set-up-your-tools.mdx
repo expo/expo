@@ -1,0 +1,260 @@
+---
+title: Set up your tools
+description: In this chapter, install an AI coding agent, Node.js, and Expo Go, and teach your agent about Expo.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+In this chapter, you'll install everything you need, starting from zero. This is the longest chapter. Once your tools are set up, the fun starts and the rest of the tutorial moves quickly.
+
+<Prerequisites>
+  <Requirement title="A computer">A computer running macOS, Windows, or Linux.</Requirement>
+  <Requirement title="A phone">
+    An Android or iOS phone, connected to the same Wi-Fi network as your computer.
+  </Requirement>
+  <Requirement title="An AI agent and its account">
+    An AI coding agent and an account with the service you choose.
+  </Requirement>
+  <Requirement title="About 20 minutes">That's all the setup should take.</Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+## Open a terminal
+
+The terminal is the app where you'll talk to your AI agent.
+
+- On macOS, open the built-in **Terminal** app. You can find it by opening Spotlight Search (<kbd>Cmd ⌘</kbd> + <kbd>Space</kbd>) and typing "Terminal".
+- On Windows, open **PowerShell** from the Start menu. You'll type a handful of commands into it during this chapter. Each one is provided for you to copy and paste.
+
+<ContentSpotlight
+  alt="An empty terminal window on macOS."
+  caption="Your terminal may look different depending on your operating system and settings, but it will work the same."
+  src="/static/images/tutorial/terminal.webp"
+  className="max-w-[640px]"
+/>
+
+> If you plan to use **Cursor**, you'll work inside its visual editor instead of a terminal for most of this tutorial, but keep a terminal handy since you'll still use it to run your app.
+
+</Step>
+
+<Step label="2">
+
+## Install an AI agent
+
+If you already use an AI coding agent, skip to the next step. Otherwise, pick one below. This tutorial works the same with any of them.
+
+<Tabs>
+
+<Tab label="Claude Code">
+
+Run the following command in your terminal window to install [Claude Code](https://claude.com/claude-code):
+
+<Terminal cmd={['$ curl -fsSL https://claude.ai/install.sh | bash']} />
+
+> **On Windows:** Run `irm https://claude.ai/install.ps1 | iex` if you're using PowerShell to install Claude Code.
+
+Then run `claude` in your terminal and follow the instructions to sign in. See the [Claude Code setup guide](https://code.claude.com/docs/en/setup) if you run into trouble.
+
+</Tab>
+
+<Tab label="Codex">
+
+Run the following command in your terminal window to install [Codex](https://developers.openai.com/codex/cli):
+
+<Terminal cmd={['$ curl -fsSL https://chatgpt.com/codex/install.sh | sh']} />
+
+Then run `codex` in your terminal and follow the instructions to sign in with your ChatGPT account. See the [Codex CLI documentation](https://developers.openai.com/codex/cli) if you run into trouble.
+
+</Tab>
+
+<Tab label="Cursor">
+
+Download [Cursor](https://cursor.com) and install it like any other app. Cursor is a visual code editor with a built-in AI agent where you'll type prompts into its agent panel instead of a terminal.
+
+</Tab>
+
+</Tabs>
+
+Other agents work too. As long as your agent can edit files and run commands on your computer, you can follow along.
+
+</Step>
+
+<Step label="3">
+
+## Install Node.js
+
+Let's run your first prompt and install Node.js.
+
+Node.js is the runtime that powers Expo's developer tools. Run the following prompt that will instruct your agent to download the **Long-Term Support (LTS)** version from [nodejs.org](https://nodejs.org/en).
+
+```text Prompt|wrap
+I'm following the Expo "Build with AI" tutorial on a brand-new setup and I have no programming experience. Please install the latest LTS version of Node.js on my computer.
+
+- First, tell me in one or two plain sentences what you're about to do.
+- Detect my operating system and use the most reliable method for it.
+- When you're done, verify it worked by showing me the output of `node --version` and `npm --version`, and tell me if I need to reopen anything for it to take effect.
+```
+
+To confirm it worked, run the following command by opening a new terminal window. It should print Node.js version number currently installed:
+
+<Terminal cmd={['$ node --version']} />
+
+</Step>
+
+<Step label="4">
+
+## Install Expo Go and create an Expo account
+
+Expo Go is a free app that lets you test your project on your phone while you build it, with no app store publishing required. Every time your agent changes the code, the app on your phone updates within seconds.
+
+1. Install [Expo Go](https://expo.dev/go) from the Google Play Store or Apple App Store on your phone.
+2. Create a free account at [expo.dev/signup](https://expo.dev/signup) on your computer.
+3. Open Expo Go on your phone and sign in with the same account.
+
+</Step>
+
+<Step label="5">
+
+## Teach your agent about Expo
+
+Expo Skills are instruction files that teach AI agents how to build Expo apps well: which libraries to use, how to structure screens, and how to avoid common mistakes. Installing them is the single biggest thing you can do to get good results from your agent.
+
+<Tabs>
+
+<Tab label="Claude Code">
+
+Start `claude`, then run the following command inside it:
+
+<Terminal cmd={['$ /plugin install expo@claude-plugins-official']} />
+
+</Tab>
+
+<Tab label="Codex">
+
+Run the following command in your terminal:
+
+<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+
+</Tab>
+
+<Tab label="Cursor">
+
+Run the following command in your terminal:
+
+<Terminal cmd={['$ npx skills add expo/skills']} />
+
+{/* vale off */}
+
+Then reopen Cursor and verify the skills appear under **Settings** > **Rules, Skills, Subagents** > **Skills**.
+
+{/* vale on */}
+
+</Tab>
+
+</Tabs>
+
+<BoxLink
+  title="Expo Skills"
+  Icon={BookOpen02Icon}
+  description="Full installation instructions for every agent, and a list of all available skills."
+  href="/skills/"
+/>
+
+</Step>
+
+<Step label="6">
+
+## Connect the Expo MCP server
+
+The Expo MCP server gives your agent direct access to Expo's tools: it can read the latest Expo documentation, install the right packages, and inspect your project.
+
+<Tabs>
+
+<Tab label="Claude Code">
+
+Run the following command in your terminal:
+
+<Terminal cmd={['$ claude mcp add --transport http expo https://mcp.expo.dev/mcp']} />
+
+Then start `claude` and run `/mcp` inside it to sign in with the Expo account you created in the previous step.
+
+</Tab>
+
+<Tab label="Codex">
+
+Run the following command in your terminal, and sign in with the Expo account you created in the previous step when prompted:
+
+<Terminal cmd={['$ codex mcp add expo --url https://mcp.expo.dev/mcp']} />
+
+</Tab>
+
+<Tab label="Cursor">
+
+Click the following link to install the MCP server for Cursor, then sign in with the Expo account you created in the previous step:
+
+<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=expo&config=eyJ1cmwiOiJodHRwczovL21jcC5leHBvLmRldi9tY3AifQ%3D%3D">
+  <img
+    src="https://cursor.com/deeplink/mcp-install-light.svg"
+    alt="Install MCP Server"
+    className="hidden max-w-48 dark:block"
+  />
+  <img
+    src="https://cursor.com/deeplink/mcp-install-dark.svg"
+    alt="Install MCP Server"
+    className="block max-w-48 dark:hidden"
+  />
+</a>
+
+</Tab>
+
+</Tabs>
+
+<Collapsible summary="Optional: let your agent see and tap your app">
+
+The MCP server also offers local capabilities: with extra setup, a multimodal agent can take screenshots of your app running in a simulator, tap buttons, and verify its own work. This requires a simulator on your computer (macOS only for iOS), so it's beyond this tutorial. In the chapters ahead, **you** are the one verifying the app on your phone. If you want to explore it later, see [Set up local capabilities](/eas/ai/mcp/#set-up-local-capabilities-recommended).
+
+</Collapsible>
+
+<BoxLink
+  title="Expo MCP server"
+  Icon={BookOpen02Icon}
+  description="Full installation instructions, available tools, and data privacy details."
+  href="/eas/ai/mcp/"
+/>
+
+</Step>
+
+<Step label="7">
+
+## Test your setup
+
+Let's confirm everything is wired up. Paste the following prompt into your agent:
+
+```text Prompt|wrap
+Use the Expo MCP server to search the Expo documentation for "expo-image-picker" and tell me in one sentence what it does.
+```
+
+**What you should see**: The agent calls an Expo documentation tool and replies with a sentence about picking images from the device's photo library. If it reports a connection or authentication error instead, repeat the sign-in part of the previous step.
+
+</Step>
+
+## Summary
+
+<ProgressTracker
+  currentChapterIndex={0}
+  name="BUILD_WITH_AI"
+  summary="Your toolkit is complete: an AI agent that knows how to build Expo apps, Node.js to power the tooling, and Expo Go on your phone to see the results."
+  nextChapterDescription="In the next chapter, your agent creates a new app and you see it running on your phone."
+  nextChapterTitle="Create your first app"
+  nextChapterLink="/tutorial/build-with-ai/create-your-first-app/"
+/>

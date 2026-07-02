@@ -6,6 +6,8 @@ import path from 'node:path';
 import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
 
+import { rewriteDocsLinksToMarkdown } from './markdown-link-utils.ts';
+
 /**
  * Find the MDX source file corresponding to an output HTML path.
  * Returns the absolute path to the .mdx file, or null if not found.
@@ -303,22 +305,62 @@ export function convertMdxInstructionToMarkdown(
  * normalize terminal blocks, and strip decorative artifacts.
  */
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
-  // Remove interactive/decorative elements
-  main.find('button').remove();
-  main.find('style').remove();
-
-  // Keep only the first tab panel in each tab group (typically the npm variant).
-  // @reach/tabs renders all panels in SSR HTML; we want only the first (default) one
-  // to avoid duplicating install commands for npm/yarn/bun.
-  main.find('[data-reach-tab-panels]').each((_, el) => {
-    $(el)
-      .find('[data-reach-tab-panel]')
+  // Keep every tab panel, each prefixed with its label as an h4 (ENG-21907).
+  // Must run before the button removal below, since labels live in the buttons.
+  main.find('[data-md="tabs"]').each((_, tabsEl) => {
+    const $tabs = $(tabsEl);
+    const ownLabels = $tabs
+      .children('[role="tablist"]')
+      .find('[role="tab"]')
+      .map((_, btn) => $(btn).text().replace(/\s+/g, ' ').trim())
+      .get();
+    $tabs
+      .find('[role="tabpanel"]')
+      .filter((_, panel) => $(panel).closest('[data-md="tabs"]').is($tabs))
       .each((i, panel) => {
-        if (i > 0) {
-          $(panel).remove();
+        const label = ownLabels[i];
+        if (label) {
+          $(panel).prepend(`<h4>${label}</h4>`);
         }
       });
   });
+
+  main.find('[data-md="collapsible"]').each((_, el) => {
+    const $details = $(el);
+    const $summary = $details.children('summary').first();
+    const $label = $summary.find('[data-text="true"]').first();
+    const summaryText = ($label.length ? $label : $summary).text().replace(/\s+/g, ' ').trim();
+    if (summaryText) {
+      $summary.replaceWith(`<h4>${summaryText}</h4>`);
+    } else {
+      $summary.remove();
+    }
+    $details.replaceWith($details.contents());
+  });
+
+  main.find('[data-md="prerequisites"]').each((_, el) => {
+    const $details = $(el);
+    const $summary = $details.children('summary').first();
+    $summary.find('[data-md="skip"]').remove();
+    const headingText = $summary.text().replace(/\s+/g, ' ').trim();
+    if (headingText) {
+      $summary.replaceWith(`<h4>${headingText}</h4>`);
+    } else {
+      $summary.remove();
+    }
+    $details.find('[data-md="requirement-title"]').each((_, title) => {
+      const $title = $(title);
+      const titleText = $title.text().replace(/\s+/g, ' ').trim();
+      if (titleText) {
+        $title.replaceWith(`<h5>${titleText}</h5>`);
+      }
+    });
+    $details.replaceWith($details.contents());
+  });
+
+  // Remove interactive/decorative elements
+  main.find('button').remove();
+  main.find('style').remove();
 
   // Preserve semantic SVG icons as text before blanket SVG removal.
   // YesIcon (text-icon-success) → ✓, NoIcon (text-icon-danger) → ✗
@@ -976,7 +1018,11 @@ export function convertHtmlToMarkdown(html: string): string {
     const match = refreshMeta.match(/url=(\S+)/i);
     if (match) {
       const target = match[1];
-      return `This page redirects to [${target}](https://docs.expo.dev${target}).\n`;
+      return (
+        rewriteDocsLinksToMarkdown(
+          `This page redirects to [${target}](https://docs.expo.dev${target}).`
+        ) + '\n'
+      );
     }
   }
 
@@ -994,6 +1040,7 @@ export function convertHtmlToMarkdown(html: string): string {
 
   let markdown = turndown.turndown(mainHtml);
   markdown = cleanMarkdown(markdown);
+  markdown = rewriteDocsLinksToMarkdown(markdown);
 
   return markdown ? markdown + '\n' : NO_CONTENT_FALLBACK;
 }

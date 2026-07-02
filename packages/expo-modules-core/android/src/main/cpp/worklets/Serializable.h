@@ -1,9 +1,6 @@
 #pragma once
 
 #include "../ExpoHeader.pch"
-
-#if WORKLETS_ENABLED
-
 #include "../JSIContext.h"
 #include "../JNIDeallocator.h"
 
@@ -42,5 +39,3 @@ private:
 };
 
 } // namespace expo
-
-#endif

@@ -4,18 +4,6 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
-import type {
-  IntegrateWithRouterOptions,
-  StandardNavigator,
-  StandardNavigatorContentProps,
-  StandardNavigatorEventMapBase,
-  StandardRouterNavigatorProps,
-  StandardUseNavigationBuilderOptions,
-} from './types';
-import { useProjectedDescriptors } from './useProjectedDescriptors';
-import { useStandardActions } from './useStandardActions';
-import { useStandardEmitter } from './useStandardEmitter';
-import { useStandardState } from './useStandardState';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -25,8 +13,25 @@ import {
   type NavigationState,
   type RouterFactory,
 } from '../react-navigation/native';
+import type {
+  IntegrateWithRouterOptions,
+  NavigatorContentProps,
+  StandardNavigator,
+  StandardNavigatorEventMapBase,
+  StandardRouterNavigatorProps,
+  StandardUseNavigationBuilderOptions,
+} from './types';
+import { useProjectedDescriptors } from './useProjectedDescriptors';
+import { useStandardActions } from './useStandardActions';
+import { useStandardEmitter } from './useStandardEmitter';
+import { useStandardState } from './useStandardState';
 
-export type { IntegrateWithRouterOptions, StandardUseNavigationBuilderOptions } from './types';
+export type {
+  IntegrateWithRouterOptions,
+  NavigatorContentProps,
+  StandardNavigatorEventMapBase,
+  StandardUseNavigationBuilderOptions,
+} from './types';
 
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
@@ -58,7 +63,7 @@ export function unstable_createStandardRouterNavigator<
   RouterOptions extends DefaultRouterOptions,
 >(
   NavigatorContent: ComponentType<
-    StandardNavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps>
+    NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps>
   >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
   options?: IntegrateWithRouterOptions<State, NavigatorProps>

@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import * as React from 'react';
 
 import { Article, Aside, Footer, Header, Main, Nav, Section } from '../Layout';
 

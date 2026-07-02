@@ -1,6 +1,7 @@
 import { addGlobalDomEventListener } from 'expo/dom/global';
 import React from 'react';
 
+import { dismiss, dismissAll, goBack, linkTo, setParams } from '../global-state/routing';
 import {
   ROUTER_LINK_TYPE,
   ROUTER_DISMISS_ALL_TYPE,
@@ -8,7 +9,6 @@ import {
   ROUTER_BACK_TYPE,
   ROUTER_SET_PARAMS_TYPE,
 } from './events';
-import { dismiss, dismissAll, goBack, linkTo, setParams } from '../global-state/routing';
 
 export function useDomComponentNavigation() {
   React.useEffect(() => {

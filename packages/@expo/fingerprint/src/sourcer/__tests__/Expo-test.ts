@@ -1,5 +1,5 @@
+import { getConfig, type ExpoConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
-import { getConfig, type ExpoConfig } from 'expo/config';
 import fs from 'fs';
 import { vol, fs as volFS } from 'memfs';
 import path from 'path';
@@ -538,8 +538,8 @@ describe(`getExpoConfigSourcesAsync - sourceSkips`, () => {
       vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
       mockConfigFile('/app/app.config.js', () => ({
         default: ({ config }: any) => {
-          config.android = { versionCode: 1 };
-          config.ios = { buildNumber: '1' };
+          config.android = { versionCode: 1, version: '1.2.3' };
+          config.ios = { buildNumber: '1', version: '4.5.6' };
           return config;
         },
       }));
@@ -557,7 +557,9 @@ describe(`getExpoConfigSourcesAsync - sourceSkips`, () => {
       expect(expoConfig).not.toBeNull();
       expect(expoConfig.version).toBeUndefined();
       expect(expoConfig.android.versionCode).toBeUndefined();
+      expect(expoConfig.android.version).toBeUndefined();
       expect(expoConfig.ios.buildNumber).toBeUndefined();
+      expect(expoConfig.ios.version).toBeUndefined();
     });
   });
 

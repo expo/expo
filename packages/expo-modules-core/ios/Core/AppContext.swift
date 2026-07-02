@@ -466,6 +466,11 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     // Install `global.expo`.
     let coreObject = installer.installCoreObject()
 
+    // Attach the native state that ties this app context's lifetime to the runtime and lets
+    // it be recovered from the runtime via `AppContext.from(runtime:)`. This is the main
+    // runtime, so its teardown owns the app context's `destroy()`.
+    installer.installAppContextNativeState(on: coreObject, ownsLifecycle: true)
+
     if let appIdentifier {
       coreObject.defineProperty("__expo_app_identifier__", value: appIdentifier)
     }
@@ -499,7 +504,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       let installer = ExpoRuntimeInstaller(appContext: self, runtime: try uiRuntime)
 
       // Install `global.expo`.
-      installer.installCoreObject()
+      let coreObject = installer.installCoreObject()
+
+      // Attach the native state that ties this app context's lifetime to the UI runtime and
+      // lets it be recovered from the runtime via `AppContext.from(runtime:)`. The UI runtime
+      // is subordinate, so its teardown must not destroy the app context.
+      installer.installAppContextNativeState(on: coreObject, ownsLifecycle: false)
 
       // Install `global.expo.EventEmitter`.
       installer.installEventEmitterClass()
@@ -529,7 +539,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   @JavaScriptActor
   private func installModuleClasses(in runtime: JavaScriptRuntime) throws {
-    let coreObject = try runtime.global().getPropertyAsObject(EXGlobalCoreObjectPropertyName)
+    let coreObject = try runtime.global().getPropertyAsObject(globalCoreObjectPropertyName)
     let sharedObjectClass = try coreObject.getPropertyAsObject("SharedObject")
     let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype")
 
@@ -602,6 +612,74 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     }
   }
 
+  // MARK: - Recovery
+
+  /// Returns the app context that prepared the given runtime, or `nil` if no app context did
+  /// (its `global.expo` object carries no `NativeState`). Lets code that only has a runtime
+  /// recover the app context without capturing a reference to it, e.g. a `JavaScriptCodable`
+  /// witness that has the runtime but not the context.
+  @JavaScriptActor
+  public static func from(runtime: borrowing JavaScriptRuntime) -> AppContext? {
+    // Recovery may happen on every conversion, so look the core object up through a cached
+    // prop name id to avoid re-interning the "expo" string into JSI on each call.
+    // TODO: drop the `copy` once `JavaScriptPropNameID.cached` borrows its runtime instead of
+    // taking it owned — it only reads the runtime, so the owned convention forces a needless retain.
+    let coreObjectPropName = JavaScriptPropNameID.cached(copy runtime, globalCoreObjectPropertyName)
+    guard let coreObject = try? runtime.global().getPropertyAsObject(coreObjectPropName) else {
+      return nil
+    }
+    return coreObject.getNativeState(as: NativeState.self)?.appContext
+  }
+
+  /// Native state attached to the `global.expo` object that holds a strong reference to the
+  /// app context. It serves two purposes:
+  ///
+  /// - Lifetime: because the native state lives on the runtime's heap and is torn down only
+  ///   when the runtime finalizes, holding the app context strongly ties its lifetime to the
+  ///   runtime. This defers the app context's release (and its `destroy()` cleanup of cached
+  ///   JSI objects) to runtime finalization, avoiding a teardown-ordering crash during reloads
+  ///   where the context could otherwise deallocate while the runtime is still tearing down on
+  ///   another thread.
+  /// - Recovery: any code holding the runtime can recover the app context via
+  ///   `AppContext.from(runtime:)` (which reads this native state off `global.expo`) instead of
+  ///   capturing a reference to it.
+  ///
+  /// A single app context can prepare several runtimes (e.g. the main and the UI runtime),
+  /// each getting its own native state. Only the one whose runtime owns the app context's
+  /// lifecycle (the main runtime) runs `destroy()` when it dies, so a subordinate runtime
+  /// tearing down doesn't destroy an app context still backing the others.
+  ///
+  /// This forms a strong reference cycle that routes through the runtime heap
+  /// (`AppContext` -> runtime -> `global.expo` -> `NativeState` -> `AppContext`). That is
+  /// intentional: the cycle is broken only when the runtime is torn down (which frees the
+  /// native state and fires its deallocator), which is exactly what defers the app context's
+  /// release until the runtime is gone. The app context never holds the native state directly.
+  internal final class NativeState: JavaScriptNativeState {
+    internal let appContext: AppContext
+
+    /// Whether releasing this native state should tear the app context down. Set only for the
+    /// main runtime; subordinate runtimes pin the app context and enable recovery without
+    /// destroying it.
+    internal let ownsLifecycle: Bool
+
+    internal init(appContext: AppContext, ownsLifecycle: Bool) {
+      self.appContext = appContext
+      self.ownsLifecycle = ownsLifecycle
+      super.init()
+      setDeallocator { nativeState in
+        guard let nativeState = nativeState as? NativeState, nativeState.ownsLifecycle else {
+          return
+        }
+        // `destroy()` asserts it runs on the JS thread (`JavaScriptActor.assumeIsolated`). That
+        // holds for the intended path, where the native state dies as the runtime finalizes on
+        // its own thread. A future cross-runtime sharing path that could drop this state's last
+        // JSI slot from another thread (see `JavaScriptNativeState.acquireShared`) would need to
+        // hop back to the JS thread here first.
+        nativeState.appContext.destroy()
+      }
+    }
+  }
+
   // MARK: - Deallocation
 
   @objc
@@ -644,9 +722,18 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public static func modulesProvider(withName providerName: String = "ExpoModulesProvider") -> ModulesProvider {
     // [0] When ExpoModulesCore is built as separated framework/module,
     // we should explicitly load main bundle's `ExpoModulesProvider` class.
-    if let bundleName = Bundle.main.infoDictionary?["CFBundleName"],
-       let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
-      return providerClass.init()
+    // CFBundleExecutable is tried first: it equals $(PRODUCT_NAME:c99extidentifier) and
+    // directly matches the Swift module name. CFBundleName is kept as a fallback for the
+    // uncommon case where both values are identical valid identifiers.
+    let mainBundleNames = [
+      Bundle.main.infoDictionary?["CFBundleExecutable"],
+      Bundle.main.infoDictionary?["CFBundleName"]
+    ].compactMap { $0 as? String }
+
+    for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: mainBundleNames) {
+      if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+        return providerClass.init()
+      }
     }
 
     // [1] Fallback to `ExpoModulesProvider` class from the current module.
@@ -656,9 +743,15 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
     // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
-      guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
-      if let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
-        return providerClass.init()
+      let frameworkBundleNames = [
+        bundle.infoDictionary?["CFBundleExecutable"],
+        bundle.infoDictionary?["CFBundleName"]
+      ].compactMap { $0 as? String }
+
+      for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: frameworkBundleNames) {
+        if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+          return providerClass.init()
+        }
       }
     }
 
@@ -666,12 +759,25 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     return ModulesProvider()
   }
 
+  internal static func moduleProviderClassNames(withName providerName: String, bundleNames: [String]) -> [String] {
+    var seen = Set<String>()
+    return bundleNames.compactMap { bundleName in
+      let candidate = "\(bundleName).\(providerName)"
+      return seen.insert(candidate).inserted ? candidate : nil
+    }
+  }
+
   public func reloadAppAsync(_ reason: String = "Reload from appContext") {
     if moduleRegistry.has(moduleWithName: "ExpoGo") {
       NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
     } else {
-      DispatchQueue.main.async {
-        RCTTriggerReloadCommandListeners(reason)
+      // Must run on the main thread (see #31789), but synchronously when already there — deferring
+      // via `DispatchQueue.main.async` deadlocks the bridgeless reload against TurboModule teardown.
+      let trigger = { RCTTriggerReloadCommandListeners(reason) }
+      if Thread.isMainThread {
+        trigger()
+      } else {
+        DispatchQueue.main.async(execute: trigger)
       }
     }
   }
