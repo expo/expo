@@ -110,4 +110,15 @@ describe('evalModule', () => {
 
     expect(mod).toBe('import.meta.dirname');
   });
+
+  it('rethrows a non-Error thrown value without crashing the annotator', () => {
+    let caught: any;
+    try {
+      evalModule(`throw { code: 'CUSTOM_THROW' };`, path.join(basepath, 'eval.js'));
+    } catch (error) {
+      caught = error;
+    }
+
+    expect(caught).toEqual({ code: 'CUSTOM_THROW' });
+  });
 });
