@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `ExpoBlurTargetView.indexOfChild()` returning `-1` for its own child, which made gesture handlers (e.g. `react-native-gesture-handler`) treat views under a `BlurTargetView` as detached and cancel their gestures. ([#47402](https://github.com/expo/expo/issues/47402) by [@efstathiosntonas](https://github.com/efstathiosntonas))
+
 ### 💡 Others
 
 ## 56.0.3 — 2026-05-06
