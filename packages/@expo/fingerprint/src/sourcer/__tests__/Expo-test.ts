@@ -5,7 +5,6 @@ import { vol, fs as volFS } from 'memfs';
 import path from 'path';
 import requireString from 'require-from-string';
 
-import { copyDirSync } from './vol-utils';
 import { getExpoConfigAsync } from '../../ExpoConfig';
 import type { HashSource, HashSourceContents } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
@@ -20,6 +19,7 @@ import {
   getExpoCNGPatchSourcesAsync,
   sortExpoAutolinkingAndroidConfig,
 } from '../Expo';
+import { copyDirSync } from './vol-utils';
 
 jest.mock('@expo/spawn-async');
 jest.mock('fs/promises');
@@ -549,7 +549,11 @@ describe(getExpoConfigSourcesAsync, () => {
     const configResult = JSON.stringify({
       config,
       loadedModules: [
-        { type: 'contents', id: 'plugins/virtual-plugin.js', contents: 'module.exports = () => {};' },
+        {
+          type: 'contents',
+          id: 'plugins/virtual-plugin.js',
+          contents: 'module.exports = () => {};',
+        },
       ],
     });
     mockSpawnWithIpcAsync.mockResolvedValueOnce({
@@ -597,7 +601,10 @@ describe(getExpoConfigSourcesAsync, () => {
       })
     );
     expect(sources).not.toContainEqual(
-      expect.objectContaining({ type: 'file', filePath: 'node_modules/some-plugin/build/withPlugin.js' })
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'node_modules/some-plugin/build/withPlugin.js',
+      })
     );
   });
 

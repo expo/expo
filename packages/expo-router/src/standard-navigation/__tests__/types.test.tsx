@@ -233,9 +233,7 @@ const broadlyAnnotatedFactoryOptions: IntegrateWithRouterOptions = {
 unstable_createStandardRouterNavigator(PublicContent, TabRouter, broadlyAnnotatedFactoryOptions);
 
 type CarrierCreateProps = { x: string };
-function CarrierContent(
-  _props: NavigatorContentProps<Opts, EventMap, object, CarrierCreateProps>
-) {
+function CarrierContent(_props: NavigatorContentProps<Opts, EventMap, object, CarrierCreateProps>) {
   return null;
 }
 

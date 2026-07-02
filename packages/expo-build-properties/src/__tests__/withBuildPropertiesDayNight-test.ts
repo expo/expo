@@ -1,9 +1,9 @@
 import type { AndroidConfig } from 'expo/config-plugins';
 import { withAndroidStyles } from 'expo/config-plugins';
 
-import { compileMockModWithResultsAsync } from './mockMods';
 import type { PluginConfigType } from '../pluginConfig';
 import { withBuildProperties } from '../withBuildProperties';
+import { compileMockModWithResultsAsync } from './mockMods';
 
 jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins/build/plugins/android-plugins');

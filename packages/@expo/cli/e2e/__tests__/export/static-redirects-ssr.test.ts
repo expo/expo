@@ -1,9 +1,9 @@
 /* eslint-env jest */
 import type { RedirectConfig } from 'expo-router';
 
-import { runExportSideEffects } from './export-side-effects';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 

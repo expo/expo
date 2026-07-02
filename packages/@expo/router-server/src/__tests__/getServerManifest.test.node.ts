@@ -614,7 +614,7 @@ describe('pageHeaders', () => {
         { source: '/blog', headers: { 'Cache-Control': 'public, max-age=3600' } },
         { source: '/blog/[slug]', headers: { 'X-Test': 'a' } },
         { source: '/admin/[...rest]', headers: { 'X-Frame-Options': 'DENY' } },
-        { source: '/array-header', headers: { 'Set-Cookie': ['a=1', 'b=2'] } }
+        { source: '/array-header', headers: { 'Set-Cookie': ['a=1', 'b=2'] } },
       ],
     });
     expect(manifest.pageHeaders).toEqual([
@@ -633,7 +633,7 @@ describe('pageHeaders', () => {
       {
         namedRegex: '^/array\\-header(?:/)?$',
         headers: { 'Set-Cookie': ['a=1', 'b=2'] },
-      }
+      },
     ]);
   });
 

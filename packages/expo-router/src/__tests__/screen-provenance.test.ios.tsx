@@ -1,5 +1,5 @@
-import type { NavigatorArgs } from 'standard-navigation';
 import { Text } from 'react-native';
+import type { NavigatorArgs } from 'standard-navigation';
 
 import { NativeTabs } from '../native-tabs/NativeTabs';
 import {
@@ -27,9 +27,7 @@ const Probe = unstable_createStandardRouterNavigator<
   TabRouterOptions
 >(probeContent, TabRouter);
 
-function descriptorByRouteName(
-  name: string
-): StandardNavigatorDescriptor<object> | undefined {
+function descriptorByRouteName(name: string): StandardNavigatorDescriptor<object> | undefined {
   const { state, descriptors } = probeContent.mock.calls.at(-1)![0];
   const route = state.routes.find((route) => route.name === name);
   return route ? (descriptors[route.key] as StandardNavigatorDescriptor<object>) : undefined;

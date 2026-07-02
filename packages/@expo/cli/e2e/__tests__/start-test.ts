@@ -2,13 +2,13 @@
 import fs from 'fs';
 import path from 'path';
 
+import { createExpoStart, executeExpoAsync } from '../utils/expo';
 import {
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   getRouterE2ERoot,
 } from './utils';
-import { createExpoStart, executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
