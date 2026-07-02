@@ -1,8 +1,9 @@
 import { ExpoConfig } from '@expo/config-types';
 import path from 'path';
 
-import { AndroidConfig, withDangerousMod } from '..';
-import { ConfigPlugin } from '../Plugin.types';
+import { getResourceFolderAsync } from './Paths';
+import type { ConfigPlugin } from '../Plugin.types';
+import { withDangerousMod } from '../plugins/withDangerousMod';
 import { writeXMLAsync } from '../utils/XML';
 import { getResolvedLocalesAsync, LocaleJson } from '../utils/locales';
 
@@ -35,7 +36,7 @@ export async function setLocalesAsync(
   const localesMap = await getResolvedLocalesAsync(projectRoot, locales, 'android');
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
     const stringsFilePath = path.join(
-      await AndroidConfig.Paths.getResourceFolderAsync(projectRoot),
+      await getResourceFolderAsync(projectRoot),
       `values-b+${lang.replaceAll('-', '+')}`,
       'strings.xml'
     );

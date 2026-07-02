@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.setProvisioningProfileForPbxproj = setProvisioningProfileForPbxproj;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));

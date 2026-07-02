@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.withInternal = exports.EXPO_DEBUG = void 0;
 function _getenv() {
   const data = require("getenv");

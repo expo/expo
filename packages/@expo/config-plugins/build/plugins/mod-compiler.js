@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.compileModsAsync = compileModsAsync;
 exports.evalModsAsync = evalModsAsync;
 exports.sortMods = sortMods;

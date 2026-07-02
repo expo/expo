@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.SCREEN_ORIENTATION_ATTRIBUTE = void 0;
 exports.getOrientation = getOrientation;
 exports.setAndroidOrientation = setAndroidOrientation;

@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getGoogleMobileAdsAppId = getGoogleMobileAdsAppId;
 exports.setGoogleMobileAdsAppId = setGoogleMobileAdsAppId;
 exports.withIosAdMob = void 0;

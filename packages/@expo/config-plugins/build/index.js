@@ -1,17 +1,7 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 var _exportNames = {
-  BaseMods: true,
-  AndroidConfig: true,
-  IOSConfig: true,
-  XML: true,
-  CodeGenerator: true,
-  History: true,
-  WarningAggregator: true,
-  Updates: true,
   withPlugins: true,
   withRunOnce: true,
   createRunOncePlugin: true,
@@ -43,202 +33,17 @@ var _exportNames = {
   compileModsAsync: true,
   withDefaultBaseMods: true,
   evalModsAsync: true,
-  PluginError: true
+  PluginError: true,
+  BaseMods: true,
+  AndroidConfig: true,
+  IOSConfig: true,
+  XML: true,
+  CodeGenerator: true,
+  History: true,
+  WarningAggregator: true,
+  Updates: true
 };
-exports.IOSConfig = exports.History = exports.CodeGenerator = exports.BaseMods = exports.AndroidConfig = void 0;
-Object.defineProperty(exports, "PluginError", {
-  enumerable: true,
-  get: function () {
-    return _errors().PluginError;
-  }
-});
-exports.XML = exports.WarningAggregator = exports.Updates = void 0;
-Object.defineProperty(exports, "assertValidAndroidAssetName", {
-  enumerable: true,
-  get: function () {
-    return _validations().assertValidAndroidAssetName;
-  }
-});
-Object.defineProperty(exports, "compileModsAsync", {
-  enumerable: true,
-  get: function () {
-    return _modCompiler().compileModsAsync;
-  }
-});
-Object.defineProperty(exports, "createRunOncePlugin", {
-  enumerable: true,
-  get: function () {
-    return _withRunOnce().createRunOncePlugin;
-  }
-});
-Object.defineProperty(exports, "evalModsAsync", {
-  enumerable: true,
-  get: function () {
-    return _modCompiler().evalModsAsync;
-  }
-});
-Object.defineProperty(exports, "isValidAndroidAssetName", {
-  enumerable: true,
-  get: function () {
-    return _validations().isValidAndroidAssetName;
-  }
-});
-Object.defineProperty(exports, "withAndroidColors", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withAndroidColors;
-  }
-});
-Object.defineProperty(exports, "withAndroidColorsNight", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withAndroidColorsNight;
-  }
-});
-Object.defineProperty(exports, "withAndroidManifest", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withAndroidManifest;
-  }
-});
-Object.defineProperty(exports, "withAndroidStyles", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withAndroidStyles;
-  }
-});
-Object.defineProperty(exports, "withAppBuildGradle", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withAppBuildGradle;
-  }
-});
-Object.defineProperty(exports, "withAppDelegate", {
-  enumerable: true,
-  get: function () {
-    return _iosPlugins().withAppDelegate;
-  }
-});
-Object.defineProperty(exports, "withBaseMod", {
-  enumerable: true,
-  get: function () {
-    return _withMod().withBaseMod;
-  }
-});
-Object.defineProperty(exports, "withDangerousMod", {
-  enumerable: true,
-  get: function () {
-    return _withDangerousMod().withDangerousMod;
-  }
-});
-Object.defineProperty(exports, "withDefaultBaseMods", {
-  enumerable: true,
-  get: function () {
-    return _modCompiler().withDefaultBaseMods;
-  }
-});
-Object.defineProperty(exports, "withEntitlementsPlist", {
-  enumerable: true,
-  get: function () {
-    return _iosPlugins().withEntitlementsPlist;
-  }
-});
-Object.defineProperty(exports, "withExpoPlist", {
-  enumerable: true,
-  get: function () {
-    return _iosPlugins().withExpoPlist;
-  }
-});
-Object.defineProperty(exports, "withFinalizedMod", {
-  enumerable: true,
-  get: function () {
-    return _withFinalizedMod().withFinalizedMod;
-  }
-});
-Object.defineProperty(exports, "withGradleProperties", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withGradleProperties;
-  }
-});
-Object.defineProperty(exports, "withInfoPlist", {
-  enumerable: true,
-  get: function () {
-    return _iosPlugins().withInfoPlist;
-  }
-});
-Object.defineProperty(exports, "withMainActivity", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withMainActivity;
-  }
-});
-Object.defineProperty(exports, "withMainApplication", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withMainApplication;
-  }
-});
-Object.defineProperty(exports, "withMod", {
-  enumerable: true,
-  get: function () {
-    return _withMod().withMod;
-  }
-});
-Object.defineProperty(exports, "withPlugins", {
-  enumerable: true,
-  get: function () {
-    return _withPlugins().withPlugins;
-  }
-});
-Object.defineProperty(exports, "withPodfile", {
-  enumerable: true,
-  get: function () {
-    return _iosPlugins().withPodfile;
-  }
-});
-Object.defineProperty(exports, "withPodfileProperties", {
-  enumerable: true,
-  get: function () {
-    return _iosPlugins().withPodfileProperties;
-  }
-});
-Object.defineProperty(exports, "withProjectBuildGradle", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withProjectBuildGradle;
-  }
-});
-Object.defineProperty(exports, "withRunOnce", {
-  enumerable: true,
-  get: function () {
-    return _withRunOnce().withRunOnce;
-  }
-});
-Object.defineProperty(exports, "withSettingsGradle", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withSettingsGradle;
-  }
-});
-Object.defineProperty(exports, "withStaticPlugin", {
-  enumerable: true,
-  get: function () {
-    return _withStaticPlugin().withStaticPlugin;
-  }
-});
-Object.defineProperty(exports, "withStringsXml", {
-  enumerable: true,
-  get: function () {
-    return _androidPlugins().withStringsXml;
-  }
-});
-Object.defineProperty(exports, "withXcodeProject", {
-  enumerable: true,
-  get: function () {
-    return _iosPlugins().withXcodeProject;
-  }
-});
+exports.withXcodeProject = exports.withStringsXml = exports.withStaticPlugin = exports.withSettingsGradle = exports.withRunOnce = exports.withProjectBuildGradle = exports.withPodfileProperties = exports.withPodfile = exports.withPlugins = exports.withMod = exports.withMainApplication = exports.withMainActivity = exports.withInfoPlist = exports.withGradleProperties = exports.withFinalizedMod = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withDefaultBaseMods = exports.withDangerousMod = exports.withBaseMod = exports.withAppDelegate = exports.withAppBuildGradle = exports.withAndroidStyles = exports.withAndroidManifest = exports.withAndroidColorsNight = exports.withAndroidColors = exports.isValidAndroidAssetName = exports.evalModsAsync = exports.createRunOncePlugin = exports.compileModsAsync = exports.assertValidAndroidAssetName = exports.XML = exports.WarningAggregator = exports.Updates = exports.PluginError = exports.IOSConfig = exports.History = exports.CodeGenerator = exports.BaseMods = exports.AndroidConfig = void 0;
 function AndroidConfig() {
   const data = _interopRequireWildcard(require("./android"));
   AndroidConfig = function () {
@@ -356,12 +161,7 @@ Object.keys(_Plugin).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
   if (key in exports && exports[key] === _Plugin[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _Plugin[key];
-    }
-  });
+  exports[key] = _Plugin[key];
 });
 function _withPlugins() {
   const data = require("./plugins/withPlugins");
@@ -370,6 +170,7 @@ function _withPlugins() {
   };
   return data;
 }
+exports.withPlugins = _withPlugins().withPlugins;
 function _withRunOnce() {
   const data = require("./plugins/withRunOnce");
   _withRunOnce = function () {
@@ -377,6 +178,8 @@ function _withRunOnce() {
   };
   return data;
 }
+exports.withRunOnce = _withRunOnce().withRunOnce;
+exports.createRunOncePlugin = _withRunOnce().createRunOncePlugin;
 function _withDangerousMod() {
   const data = require("./plugins/withDangerousMod");
   _withDangerousMod = function () {
@@ -384,6 +187,7 @@ function _withDangerousMod() {
   };
   return data;
 }
+exports.withDangerousMod = _withDangerousMod().withDangerousMod;
 function _withFinalizedMod() {
   const data = require("./plugins/withFinalizedMod");
   _withFinalizedMod = function () {
@@ -391,6 +195,7 @@ function _withFinalizedMod() {
   };
   return data;
 }
+exports.withFinalizedMod = _withFinalizedMod().withFinalizedMod;
 function _withMod() {
   const data = require("./plugins/withMod");
   _withMod = function () {
@@ -398,6 +203,8 @@ function _withMod() {
   };
   return data;
 }
+exports.withMod = _withMod().withMod;
+exports.withBaseMod = _withMod().withBaseMod;
 function _iosPlugins() {
   const data = require("./plugins/ios-plugins");
   _iosPlugins = function () {
@@ -405,6 +212,13 @@ function _iosPlugins() {
   };
   return data;
 }
+exports.withAppDelegate = _iosPlugins().withAppDelegate;
+exports.withInfoPlist = _iosPlugins().withInfoPlist;
+exports.withEntitlementsPlist = _iosPlugins().withEntitlementsPlist;
+exports.withExpoPlist = _iosPlugins().withExpoPlist;
+exports.withXcodeProject = _iosPlugins().withXcodeProject;
+exports.withPodfile = _iosPlugins().withPodfile;
+exports.withPodfileProperties = _iosPlugins().withPodfileProperties;
 function _androidPlugins() {
   const data = require("./plugins/android-plugins");
   _androidPlugins = function () {
@@ -412,6 +226,17 @@ function _androidPlugins() {
   };
   return data;
 }
+exports.withAndroidManifest = _androidPlugins().withAndroidManifest;
+exports.withStringsXml = _androidPlugins().withStringsXml;
+exports.withAndroidColors = _androidPlugins().withAndroidColors;
+exports.withAndroidColorsNight = _androidPlugins().withAndroidColorsNight;
+exports.withAndroidStyles = _androidPlugins().withAndroidStyles;
+exports.withMainActivity = _androidPlugins().withMainActivity;
+exports.withMainApplication = _androidPlugins().withMainApplication;
+exports.withProjectBuildGradle = _androidPlugins().withProjectBuildGradle;
+exports.withAppBuildGradle = _androidPlugins().withAppBuildGradle;
+exports.withSettingsGradle = _androidPlugins().withSettingsGradle;
+exports.withGradleProperties = _androidPlugins().withGradleProperties;
 function _validations() {
   const data = require("./utils/validations");
   _validations = function () {
@@ -419,6 +244,8 @@ function _validations() {
   };
   return data;
 }
+exports.isValidAndroidAssetName = _validations().isValidAndroidAssetName;
+exports.assertValidAndroidAssetName = _validations().assertValidAndroidAssetName;
 function _withStaticPlugin() {
   const data = require("./plugins/withStaticPlugin");
   _withStaticPlugin = function () {
@@ -426,6 +253,7 @@ function _withStaticPlugin() {
   };
   return data;
 }
+exports.withStaticPlugin = _withStaticPlugin().withStaticPlugin;
 function _modCompiler() {
   const data = require("./plugins/mod-compiler");
   _modCompiler = function () {
@@ -433,6 +261,9 @@ function _modCompiler() {
   };
   return data;
 }
+exports.compileModsAsync = _modCompiler().compileModsAsync;
+exports.withDefaultBaseMods = _modCompiler().withDefaultBaseMods;
+exports.evalModsAsync = _modCompiler().evalModsAsync;
 function _errors() {
   const data = require("./utils/errors");
   _errors = function () {
@@ -440,6 +271,7 @@ function _errors() {
   };
   return data;
 }
+exports.PluginError = _errors().PluginError;
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 /**

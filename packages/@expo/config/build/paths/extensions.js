@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getBareExtensions = getBareExtensions;
 exports.getExtensions = getExtensions;
 exports.getLanguageExtensionsInOrder = getLanguageExtensionsInOrder;

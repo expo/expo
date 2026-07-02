@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getGoogleMapsApiKey = getGoogleMapsApiKey;
 exports.setGoogleMapsApiKey = setGoogleMapsApiKey;
 exports.withGoogleMapsApiKey = void 0;

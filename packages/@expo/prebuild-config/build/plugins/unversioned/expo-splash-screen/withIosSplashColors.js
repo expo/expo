@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.withIosSplashColors = exports.SPLASHSCREEN_COLORSET_PATH = void 0;
 function _configPlugins() {
   const data = require("@expo/config-plugins");

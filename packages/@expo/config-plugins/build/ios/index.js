@@ -1,23 +1,7 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Entitlements = exports.DeviceFamily = exports.DevelopmentTeam = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
-Object.defineProperty(exports, "ExpoPlist", {
-  enumerable: true,
-  get: function () {
-    return _IosConfig().ExpoPlist;
-  }
-});
-exports.Google = void 0;
-Object.defineProperty(exports, "InfoPlist", {
-  enumerable: true,
-  get: function () {
-    return _IosConfig().InfoPlist;
-  }
-});
-exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.PrivacyInfo = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = void 0;
+exports.__esModule = true;
+exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.PrivacyInfo = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = exports.Google = exports.Entitlements = exports.DeviceFamily = exports.DevelopmentTeam = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
 function Bitcode() {
   const data = _interopRequireWildcard(require("./Bitcode"));
   Bitcode = function () {
@@ -129,6 +113,8 @@ function _IosConfig() {
   };
   return data;
 }
+exports.ExpoPlist = _IosConfig().ExpoPlist;
+exports.InfoPlist = _IosConfig().InfoPlist;
 function Locales() {
   const data = _interopRequireWildcard(require("./Locales"));
   Locales = function () {

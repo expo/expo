@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.ConfigError = void 0;
 /**
  * Based on `JsonFileError` from `@expo/json-file`

@@ -1,32 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-Object.defineProperty(exports, "AndroidManifest", {
-  enumerable: true,
-  get: function () {
-    return _Manifest().AndroidManifest;
-  }
-});
-Object.defineProperty(exports, "ExpoPlist", {
-  enumerable: true,
-  get: function () {
-    return _IosConfig().ExpoPlist;
-  }
-});
-Object.defineProperty(exports, "InfoPlist", {
-  enumerable: true,
-  get: function () {
-    return _IosConfig().InfoPlist;
-  }
-});
-Object.defineProperty(exports, "XcodeProject", {
-  enumerable: true,
-  get: function () {
-    return _xcode().XcodeProject;
-  }
-});
+exports.__esModule = true;
 function _xcode() {
   const data = require("xcode");
   _xcode = function () {
@@ -34,6 +8,7 @@ function _xcode() {
   };
   return data;
 }
+exports.XcodeProject = _xcode().XcodeProject;
 function _Manifest() {
   const data = require("./android/Manifest");
   _Manifest = function () {
@@ -41,6 +16,7 @@ function _Manifest() {
   };
   return data;
 }
+exports.AndroidManifest = _Manifest().AndroidManifest;
 function _IosConfig() {
   const data = require("./ios/IosConfig.types");
   _IosConfig = function () {
@@ -48,4 +24,6 @@ function _IosConfig() {
   };
   return data;
 }
+exports.ExpoPlist = _IosConfig().ExpoPlist;
+exports.InfoPlist = _IosConfig().InfoPlist;
 //# sourceMappingURL=Plugin.types.js.map

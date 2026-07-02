@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.validateSchema = void 0;
 const getValueType = value => {
   const typeOf = typeof value;

@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.configureEdgeToEdgeEnforcement = configureEdgeToEdgeEnforcement;
 exports.withConfigureEdgeToEdgeEnforcement = void 0;
 function _configPlugins() {

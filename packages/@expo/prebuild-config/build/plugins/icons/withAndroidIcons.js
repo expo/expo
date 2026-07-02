@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.ANDROID_RES_PATH = void 0;
 exports.configureAdaptiveIconAsync = configureAdaptiveIconAsync;
 exports.dpiValues = exports.createAdaptiveIconXmlString = void 0;
