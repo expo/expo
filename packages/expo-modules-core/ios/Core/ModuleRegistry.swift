@@ -10,6 +10,10 @@ public final class ModuleRegistry: Sequence {
     self.appContext = appContext
   }
 
+  internal func clear() {
+    registry.removeAll()
+  }
+  
   /**
    Registers an instance of module holder.
    */

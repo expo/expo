@@ -16,6 +16,7 @@ import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
 import { ContactsNextScreens } from '../screens/Contacts@Next/ContactsNextScreen';
 import { CryptoScreens } from '../screens/Crypto/CryptoScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
+import { LocationNextScreens } from '../screens/Location/next/LocationScreen';
 import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibraryScreens';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
 import { WorkletsScreens } from '../screens/Worklets/WorkletsScreen';
@@ -507,6 +508,12 @@ export const ScreensList: ScreenConfig[] = [
     },
     name: 'ViewShot',
   },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/Location/next/LocationScreen.tsx'));
+    },
+    name: 'Location@Next',
+  },
 ];
 
 export const Screens: ScreenConfig[] = [
@@ -521,6 +528,7 @@ export const Screens: ScreenConfig[] = [
   ...CalendarNextScreens,
   ...CryptoScreens,
   ...WorkletsScreens,
+  ...LocationNextScreens,
 ];
 
 export const screenApiItems = apiScreensToListElements(ScreensList);

@@ -1,0 +1,1 @@
+{"version":3,"file":"Geofencing.js","sourceRoot":"","sources":["../src/Geofencing.ts"],"names":[],"mappings":"AAAA,MAAM,OAAO,UAAU;CAAG","sourcesContent":["export class Geofencing {}\n"]}

@@ -5,6 +5,7 @@ import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import React, { useEffect, useMemo, useState } from 'react';
 import { NativeSyntheticEvent, Platform, StyleSheet, Text, View } from 'react-native';
+// import MapView from 'react-native-maps';
 
 import Button from '../../components/Button';
 
@@ -50,6 +51,39 @@ function GeofencingAppleScreen() {
   const [coordinates, setCoordinates] = useState<Coordinates>(initialState.coordinates);
   const [isGeofencing, setIsGeofencing] = useState<boolean>(false);
   const [geofencingRegions, setGeofencingRegions] = useState<GeofencingRegion[]>([]);
+function reducer(
+  state: State,
+  action:
+    | { type: 'toggle' }
+    | { type: 'clearRegions' }
+    | ({ type: 'update' } & State)
+    | ({ type: 'updateRegions' } & Pick<State, 'geofencingRegions'>)
+): State {
+  switch (action.type) {
+    case 'update':
+      return {
+        isGeofencing: action.isGeofencing,
+        geofencingRegions: action.geofencingRegions,
+        initialRegion: action.initialRegion,
+      };
+    case 'updateRegions':
+      return {
+        ...state,
+        geofencingRegions: action.geofencingRegions,
+      };
+    case 'clearRegions':
+      return { ...state, geofencingRegions: [] };
+    case 'toggle':
+      return { ...state, isGeofencing: !state.isGeofencing };
+  }
+}
+
+export default function GeofencingScreen() {
+  const mapViewRef = React.useRef<any>(null);
+  const [state, dispatch] = React.useReducer(reducer, initialState);
+
+  const onFocus = React.useCallback(() => {
+    let isActive = true;
 
   useEffect(() => {
     (async () => {
@@ -75,6 +109,55 @@ function GeofencingAppleScreen() {
     } else {
       await Location.startGeofencingAsync(GEOFENCING_TASK, geofencingRegions);
     }
+    dispatch({ type: 'toggle' });
+  }, [state.isGeofencing, state.geofencingRegions]);
+
+  const centerMap = React.useCallback(async () => {
+    const { coords } = await Location.getCurrentPositionAsync();
+    const mapView = mapViewRef.current;
+
+    if (mapView) {
+      mapView.animateToRegion({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.002,
+      });
+    }
+  }, []);
+
+  const onMapPress = async ({ nativeEvent: { coordinate } }: MapEvent) => {
+    const next = [...state.geofencingRegions];
+    next.push({
+      identifier: `${coordinate.latitude},${coordinate.longitude}`,
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude,
+      radius: 50,
+    });
+    dispatch({ type: 'updateRegions', geofencingRegions: next });
+
+    if (await Location.hasStartedGeofencingAsync(GEOFENCING_TASK)) {
+      // update existing geofencing task
+      await Location.startGeofencingAsync(GEOFENCING_TASK, next);
+    }
+  };
+
+  const renderRegions = React.useCallback(() => {
+    return state.geofencingRegions.map((region) => {
+      return null;
+      // @ts-ignore
+      // <MapView.Circle
+      //   key={region.identifier}
+      //   center={region}
+      //   radius={region.radius}
+      //   strokeColor="rgba(78,155,222,0.8)"
+      //   fillColor="rgba(78,155,222,0.2)"
+      // />
+    });
+  }, [state.geofencingRegions]);
+
+  if (!state.initialRegion) {
+    return null;
   }
 
   async function centerMap() {
@@ -138,6 +221,14 @@ function GeofencingAppleScreen() {
           isMyLocationEnabled: true,
         }}
       />
+      {/* <MapView
+        ref={mapViewRef}
+        style={styles.mapView}
+        initialRegion={state.initialRegion}
+        onPress={onMapPress}
+        showsUserLocation>
+        {renderRegions()}
+      </MapView> */}
       <View style={styles.buttons}>
         <View style={styles.leftButtons}>
           <Button

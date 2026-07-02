@@ -677,6 +677,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
         // hop back to the JS thread here first.
         nativeState.appContext.destroy()
       }
+    if isModuleRegistryInitialized {
+      moduleRegistry.clear()
     }
   }
 
