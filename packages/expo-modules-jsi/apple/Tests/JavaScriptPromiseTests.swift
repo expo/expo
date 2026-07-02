@@ -1,4 +1,5 @@
 import ExpoModulesJSI
+import Foundation
 import Testing
 
 @Suite
@@ -369,5 +370,22 @@ struct JavaScriptPromiseTests {
     let promise = try runtime.eval("Promise.resolve(42)").getPromise()
 
     #expect(promise.isDeferred == false)
+  }
+
+  @Test
+  func `promise dropped off JS thread after resolve does not crash`() async throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+
+    // Simulate the real crash scenario: resolve and drop the promise from a background queue.
+    // Before the fix, dropping JavaScriptPromise off the JS thread would destroy the inline
+    // jsi::Object there, calling ptr_->invalidate() back into the runtime — a crash.
+    await withCheckedContinuation { continuation in
+      DispatchQueue.global().async {
+        promise.resolve(42)
+        // promise is dropped here, off the JS thread — this must not crash
+        continuation.resume()
+      }
+    }
   }
 }
