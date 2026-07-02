@@ -371,6 +371,13 @@ export default function DocumentationPage({
           )}
         />
         <main className={mergeClasses('mx-auto px-14 pt-10', 'max-lg:px-4 max-lg:pt-5')}>
+          <p className="sr-only">
+            This documentation is available as Markdown for AI agents and LLMs. See the{' '}
+            <A openInNewTab href="/llms.txt">
+              full Markdown index
+            </A>{' '}
+            or append .md to any documentation URL.
+          </p>
           {version && version === 'unversioned' && (
             <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
               This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
