@@ -171,7 +171,11 @@ struct ExpoCameraUtils {
     guard image.imageOrientation != .up else {
       return image
     }
-    let renderer = UIGraphicsImageRenderer(size: image.size)
+    // Render at the image's own scale — the default format uses the screen scale (2x/3x),
+    // which would upscale the photo to 4-9x its native pixel count
+    let format = UIGraphicsImageRendererFormat()
+    format.scale = image.scale
+    let renderer = UIGraphicsImageRenderer(size: image.size, format: format)
     return renderer.image { _ in
       image.draw(in: CGRect(origin: .zero, size: image.size))
     }
@@ -188,38 +192,21 @@ struct ExpoCameraUtils {
   }
 
   static func data(from image: UIImage, with metadata: [String: Any], quality: Float) -> Data? {
-    guard let sourceCGImageRef = image.cgImage,
-    let sourceData = image.jpegData(compressionQuality: 1.0) as CFData?,
-    let sourceCGImageSourceRef = CGImageSourceCreateWithData(sourceData, nil),
-    let sourceMetadata = CGImageSourceCopyPropertiesAtIndex(sourceCGImageSourceRef, 0, nil) else {
+    guard let sourceCGImageRef = image.cgImage else {
       return nil
     }
 
-    let updatedMetadata = NSMutableDictionary(dictionary: sourceMetadata)
-
-    for (key, value) in metadata {
-      updatedMetadata[key] = value
-    }
-
+    let updatedMetadata = NSMutableDictionary(dictionary: metadata)
     updatedMetadata.setObject(NSNumber(value: quality), forKey: kCGImageDestinationLossyCompressionQuality as NSString)
     let processedImageData = NSMutableData()
 
-    guard let sourceType = CGImageSourceGetType(sourceCGImageSourceRef) else {
-      return nil
-    }
-
     guard let destinationCGImageRef =
-      CGImageDestinationCreateWithData(processedImageData, sourceType, 1, nil) else {
+      CGImageDestinationCreateWithData(processedImageData, "public.jpeg" as CFString, 1, nil) else {
       return nil
     }
 
     CGImageDestinationAddImage(destinationCGImageRef, sourceCGImageRef, updatedMetadata)
 
-    if CGImageDestinationFinalize(destinationCGImageRef) {
-      return processedImageData as Data
-    }
-
-    CGImageDestinationAddImage(destinationCGImageRef, sourceCGImageRef, updatedMetadata as CFDictionary)
     return CGImageDestinationFinalize(destinationCGImageRef) ? processedImageData as Data : nil
   }
 
