@@ -8,6 +8,7 @@
 
 - [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Allow `launchCameraAsync` to be invoked on the simulator. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Add an event that notifies when the user has finished selecting media and the selector sheet closes. ([#46708](https://github.com/expo/expo/pull/46837) by [@AbeUribe831](https://github.com/AbeUribe831))
 
 ### 🐛 Bug fixes
 
