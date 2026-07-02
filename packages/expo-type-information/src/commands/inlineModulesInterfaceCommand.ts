@@ -35,6 +35,7 @@ async function getResolvedWatchedDirectoriesFromAppJson(
 type GenerateInlineModulesTSFilesOptions = {
   filePath: string;
   dirPath: string;
+  compileOnlyModules: Set<string>;
   typeInference: TypeInferenceOption;
   mapUnicodeCharacters: boolean;
 };
@@ -44,9 +45,10 @@ async function generateInlineModuleTSFiles({
   dirPath,
   typeInference,
   mapUnicodeCharacters,
+  compileOnlyModules,
 }: GenerateInlineModulesTSFilesOptions) {
   return await generateConciseTsFiles({
-    realInputPaths: [filePath],
+    realInputPaths: [filePath, ...compileOnlyModules],
     realOutputPath: dirPath,
     typeInference,
     watcher: false,
@@ -58,12 +60,29 @@ type InlineModulesWatcherOptions = {
   appJsonPath: string;
   typeInference: TypeInferenceOption;
   mapUnicodeCharacters: boolean;
+  compileOnlyModules: Set<string>;
 };
+
+const swiftModuleDefinitionRegex = /\bfunc\s+definition\s*\(\s*\)\s*->\s*[\w.]*ModuleDefinition\b/;
+async function hasSwiftModuleDefinition(absoluteFilePath: string): Promise<boolean> {
+  try {
+    const contents = await fs.promises.readFile(absoluteFilePath, 'utf8');
+    return swiftModuleDefinitionRegex.test(contents);
+  } catch {
+    console.warn(`Swift inline module '${absoluteFilePath}' could not be opened.`);
+    return false;
+  }
+}
+
+async function fileHasModuleDeclaration(filePath: string): Promise<boolean> {
+  return hasSwiftModuleDefinition(filePath);
+}
 
 async function inlineModulesWatcher({
   appJsonPath,
   typeInference,
   mapUnicodeCharacters,
+  compileOnlyModules,
 }: InlineModulesWatcherOptions) {
   const debouncedInlineModulesTsGeneration = debounce(generateInlineModuleTSFiles);
   const watchedDirectoriesWatchers: Map<string, fs.FSWatcher> = new Map<string, fs.FSWatcher>();
@@ -93,15 +112,22 @@ async function inlineModulesWatcher({
         if (!fileName || !fileName.endsWith('.swift')) {
           return;
         }
-
         const resolvedFilePath = path.resolve(dir, fileName);
         if (fs.existsSync(resolvedFilePath)) {
+          if (!(await fileHasModuleDeclaration(fileName))) {
+            compileOnlyModules.add(fileName);
+            return;
+          }
+
           debouncedInlineModulesTsGeneration({
             filePath: resolvedFilePath,
             dirPath: path.dirname(resolvedFilePath),
             typeInference,
             mapUnicodeCharacters,
+            compileOnlyModules: compileOnlyModules,
           });
+        } else {
+          compileOnlyModules.delete(fileName);
         }
       });
     };
@@ -165,25 +191,34 @@ export async function inlineModulesInterfaceCommand(cli: commander.Command) {
         return;
       }
 
-      const dirents = [];
+      const inlineModulesDirents = [];
+      const compileOnlyModules = new Set<string>([]);
       for (const dir of watchedDirectories) {
         for await (const dirent of scanFilesRecursively(dir)) {
           if (!dirent.name.endsWith('.swift')) {
             continue;
           }
-
-          dirents.push(dirent);
+          const resolvedFilePath = path.resolve(dir, dirent.name);
+          if (
+            fs.existsSync(resolvedFilePath) &&
+            !(await fileHasModuleDeclaration(resolvedFilePath))
+          ) {
+            compileOnlyModules.add(resolvedFilePath);
+          } else {
+            inlineModulesDirents.push(dirent);
+          }
         }
       }
 
       await taskAll(
-        dirents,
+        inlineModulesDirents,
         async (dirent) =>
           await generateInlineModuleTSFiles({
             filePath: dirent.path,
             dirPath: dirent.parentPath,
             typeInference: parsedArgs.typeInference,
             mapUnicodeCharacters,
+            compileOnlyModules,
           })
       );
 
@@ -192,6 +227,7 @@ export async function inlineModulesInterfaceCommand(cli: commander.Command) {
           appJsonPath,
           typeInference: parsedArgs.typeInference,
           mapUnicodeCharacters,
+          compileOnlyModules,
         });
       }
     });
