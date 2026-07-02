@@ -1,4 +1,5 @@
 internal import ExpoModulesJSI_Cxx
+import Foundation
 internal import jsi
 
 /// A Swift representation of a JavaScript Promise.
@@ -11,20 +12,20 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private typealias PromiseContinuation = CheckedContinuation<JavaScriptValue.Ref, any Error>
 
   private weak let runtime: JavaScriptRuntime?
-  private var object: JavaScriptObject
-  private let deferredPromise = DeferredPromise()
 
-  // Create refs for resolve and reject functions.
-  // They will be set in the Promise setup function.
-  private let resolveFunction = JavaScriptValue.Ref()
-  private let rejectFunction = JavaScriptValue.Ref()
+  // All JSI-owning members live behind `state`, whose deinit releases them on the JS thread.
+  // Promises get captured by arbitrary native closures (URLSession completion handlers, dispatch
+  // queues) whose last release can happen on any thread — and, after `reloadAsync()`, after the
+  // runtime is gone. Destroying `jsi::Object`s there crashes in `jsi::Pointer::~Pointer`.
+  private let state: State
 
   /// Initializes a promise from the existing object. The promise may already be settled.
   /// It cannot be resolved/rejected from the outside, i.e. `resolve` and `reject` functions are no-op.
   @JavaScriptActor
   public init(_ runtime: JavaScriptRuntime, _ object: consuming JavaScriptObject) throws {
     self.runtime = runtime
-    self.object = object
+    self.state = State(runtime: runtime)
+    state.object.reset(object)
     try setUpCallbacks()
   }
 
@@ -32,24 +33,23 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   @JavaScriptActor
   public init(_ runtime: JavaScriptRuntime) throws {
     self.runtime = runtime
-    // Initialize the non-copyable field before any throwing work. Swift requires a
-    // consistently initialized value on every throwing initializer path.
-    self.object = runtime.createObject()
+    self.state = State(runtime: runtime)
 
     // Create function that is the promise setup. It is called immediately on `callAsConstructor`.
-    let setup = runtime.createFunction { [weak resolveFunction, weak rejectFunction] this, arguments in
-      resolveFunction?.reset(arguments[0])
-      rejectFunction?.reset(arguments[1])
+    let setup = runtime.createFunction { [weak state] this, arguments in
+      state?.resolveFunction.reset(arguments[0])
+      state?.rejectFunction.reset(arguments[1])
       return .undefined
     }
 
-    self.object =
+    let object =
       try runtime
       .global()
       .getPropertyAsFunction(.cached(runtime, "Promise"))
       .callAsConstructor(setup.asValue())
       .getObject()
 
+    state.object.reset(object)
     try setUpCallbacks()
   }
 
@@ -59,16 +59,28 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   }
 
   public var isDeferred: Bool {
-    return !resolveFunction.isEmpty && !rejectFunction.isEmpty
+    return !state.resolveFunction.isEmpty && !state.rejectFunction.isEmpty
   }
 
   @JavaScriptActor
   public func `await`() async throws -> JavaScriptValue {
-    return try await deferredPromise.getValue()
+    return try await state.deferredPromise.getValue()
   }
 
   public func asValue() -> JavaScriptValue {
-    return object.asValue()
+    let value = state.object.withValue { object -> JavaScriptValue? in
+      switch object {
+      case .none:
+        return nil
+      case .some(let object):
+        return object.asValue()
+      }
+    }
+    guard let value else {
+      // Both initializers populate the object ref for the promise's lifetime.
+      preconditionFailure("JavaScriptPromise's object reference is unexpectedly empty")
+    }
+    return value
   }
 
   public func resolve<V: JavaScriptRepresentable>(_ value: V) {
@@ -77,9 +89,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     }
 
     // `resolve` is not isolated, so make sure to jump to JS thread.
-    runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
+    runtime.schedule(priority: .immediate) { [state] in
       // If the promise is already settled, do nothing.
-      guard let resolver = resolveFunction.take() else {
+      guard let resolver = state.resolveFunction.take() else {
         return
       }
       // Call the actual resolver given in the Promise setup.
@@ -87,7 +99,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       _ = try! resolver.getFunction().call(arguments: value)
 
       // Release the rejecter, we cannot call it anymore.
-      rejectFunction.release()
+      state.rejectFunction.release()
     }
   }
 
@@ -97,9 +109,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     }
 
     // `reject` is not isolated, so make sure to jump to JS thread.
-    runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
+    runtime.schedule(priority: .immediate) { [state] in
       // If the promise is already settled, do nothing.
-      guard let rejecter = rejectFunction.take() else {
+      guard let rejecter = state.rejectFunction.take() else {
         return
       }
       // Convert the error to its JavaScript representation. This preserves an existing
@@ -113,7 +125,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       _ = try! rejecter.getFunction().call(arguments: errorValue)
 
       // Release the resolver, we cannot call it anymore.
-      resolveFunction.release()
+      state.resolveFunction.release()
     }
   }
 
@@ -122,6 +134,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     guard let runtime else {
       return
     }
+    let deferredPromise = state.deferredPromise
     let onFulfilled = runtime.createFunction { [weak deferredPromise] this, arguments in
       guard let deferredPromise else { return .undefined }
       let value = arguments[0]
@@ -140,6 +153,106 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       }
       return .undefined
     }
-    try object.callFunction(.cached(runtime, "then"), arguments: onFulfilled.asValue(), onRejected.asValue())
+    let attached = try state.object.withValue { object -> Bool? in
+      switch object {
+      case .none:
+        return nil
+      case .some(let object):
+        _ = try object.callFunction(.cached(runtime, "then"), arguments: onFulfilled.asValue(), onRejected.asValue())
+        return true
+      }
+    }
+    guard attached != nil else {
+      // Both initializers populate the object ref before setting up callbacks.
+      preconditionFailure("JavaScriptPromise's object reference is unexpectedly empty")
+    }
+  }
+}
+
+extension JavaScriptPromise {
+  /// Reference-counted home for the promise's JSI-owning members. Its deinit is the
+  /// single place that decides on which thread they get destroyed.
+  private final class State: @unchecked Sendable {
+    private weak var runtime: JavaScriptRuntime?
+    let object = JavaScriptRef<JavaScriptObject>()
+    let resolveFunction = JavaScriptValue.Ref()
+    let rejectFunction = JavaScriptValue.Ref()
+    // Kept here (not on the struct) because a settled promise stores its JSI
+    // result value inside the actor — it needs the same safe release.
+    let deferredPromise = DeferredPromise()
+
+    init(runtime: JavaScriptRuntime?) {
+      self.runtime = runtime
+    }
+
+    deinit {
+      guard let runtime else {
+        // The runtime is gone — the heap behind these wrappers is freed or being
+        // freed, so destroying them would crash. Park them forever instead.
+        JSIReleasePool.park(runtime: nil) { [object, resolveFunction, rejectFunction, deferredPromise] in
+          _ = (object, resolveFunction, rejectFunction, deferredPromise)
+        }
+        return
+      }
+      if runtime.isOnJavaScriptThread() || !runtime.supportsAsyncScheduling {
+        // Members release inline right after this deinit — safe on the JS thread.
+        // Without async scheduling, `schedule` would run inline here anyway.
+        return
+      }
+      // Off the JS thread with a live runtime: park everything and let the JS
+      // thread run the release. The scheduled block itself captures no JSI
+      // values, so the scheduler dropping it un-run at teardown is harmless —
+      // the entries just stay parked.
+      JSIReleasePool.park(runtime: runtime) { [object, resolveFunction, rejectFunction, deferredPromise] in
+        object.release()
+        resolveFunction.release()
+        rejectFunction.release()
+        _ = deferredPromise
+      }
+      runtime.schedule { [weak runtime] in
+        guard let runtime else { return }
+        JSIReleasePool.drain(on: runtime)
+      }
+    }
+  }
+}
+
+/// Parking lot for release work that must run on a runtime's JS thread.
+/// Entries whose runtime dies before a drain stay parked for the rest of the
+/// process — running or discarding them would touch freed runtime memory.
+/// Costs a few hundred bytes per abandoned promise, on the teardown path only.
+internal enum JSIReleasePool {
+  private struct Entry {
+    weak var runtime: JavaScriptRuntime?
+    let release: () -> Void
+  }
+
+  private static let lock = NSLock()
+  nonisolated(unsafe) private static var parked: [Entry] = []
+
+  /// Parks `release` until `drain(on:)` runs it on the runtime's JS thread.
+  /// Pass a `nil` runtime when it is already gone — the entry then stays parked forever.
+  internal static func park(runtime: JavaScriptRuntime?, _ release: @escaping () -> Void) {
+    lock.lock()
+    defer { lock.unlock() }
+    parked.append(Entry(runtime: runtime, release: release))
+  }
+
+  /// Runs the pending releases that belong to `runtime`. Must be called on its JS thread.
+  /// Matching by weak identity (never by address) makes runtime address reuse harmless.
+  internal static func drain(on runtime: JavaScriptRuntime) {
+    lock.lock()
+    var releases: [() -> Void] = []
+    parked.removeAll { entry in
+      guard let entryRuntime = entry.runtime, entryRuntime === runtime else {
+        return false
+      }
+      releases.append(entry.release)
+      return true
+    }
+    lock.unlock()
+    for release in releases {
+      release()
+    }
   }
 }

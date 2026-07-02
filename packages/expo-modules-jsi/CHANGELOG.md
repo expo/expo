@@ -17,6 +17,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `EXC_BAD_ACCESS` in `jsi::Pointer::~Pointer` when the last reference to a `JavaScriptPromise` is dropped off the JS thread (URLSession completion handlers, dispatch queues) or after `reloadAsync()` destroyed the runtime. The promise's JSI-owning members now live behind a reference-counted state whose deinit releases them on the JS thread, or parks them when the runtime is already gone. ([#47454](https://github.com/expo/expo/issues/47454)) ([#47450](https://github.com/expo/expo/pull/47450) by [@jmalmo](https://github.com/jmalmo))
+
 - [iOS] Fixed `Build ExpoModulesJSI xcframework` build phase failing on Xcode 26 because the nested SwiftPM build ignored `-derivedDataPath` and wrote products outside the expected location. ([#46326](https://github.com/expo/expo/issues/46326) by [@Kurogoma4D](https://github.com/Kurogoma4D))
 - [iOS] Fixed the xcframework build failing with a `sed` error when building in an environment that uses GNU `sed` instead of BSD `sed` (e.g. a Nix shell). ([#46389](https://github.com/expo/expo/pull/46389) by [@niteshbalusu11](https://github.com/niteshbalusu11))
 - [iOS] Propagate `JavaScriptPromise` setup failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong))
