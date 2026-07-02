@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- Removed `CLAUDE.md` and `CONTRIBUTING.md` from publishing and fixed side effects. ([#47451](https://github.com/expo/expo/pull/47451) by [@kudo](https://github.com/kudo))
+
 ## 57.0.2 — 2026-07-01
 
 ### 🐛 Bug fixes

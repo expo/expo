@@ -3,7 +3,8 @@
   "version": "57.0.2",
   "description": "A collection of UI components",
   "sideEffects": [
-    "*.fx.js"
+    "*.fx.js",
+    "*.fx.ts"
   ],
   "exports": {
     "./package.json": "./package.json",
