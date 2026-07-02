@@ -11,9 +11,16 @@ function _path() {
   };
   return data;
 }
-function _() {
-  const data = require("..");
-  _ = function () {
+function _Paths() {
+  const data = require("./Paths");
+  _Paths = function () {
+    return data;
+  };
+  return data;
+}
+function _withDangerousMod() {
+  const data = require("../plugins/withDangerousMod");
+  _withDangerousMod = function () {
     return data;
   };
   return data;
@@ -34,7 +41,7 @@ function _locales() {
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const withLocales = config => {
-  return (0, _().withDangerousMod)(config, ['android', async config => {
+  return (0, _withDangerousMod().withDangerousMod)(config, ['android', async config => {
     config.modResults = await setLocalesAsync(config, {
       projectRoot: config.modRequest.projectRoot
     });
@@ -56,7 +63,7 @@ async function setLocalesAsync(config, {
     localesMap
   } = await (0, _locales().getResolvedLocalesAsync)(projectRoot, locales, 'android');
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
-    const stringsFilePath = _path().default.join(await _().AndroidConfig.Paths.getResourceFolderAsync(projectRoot), `values-b+${lang.replaceAll('-', '+')}`, 'strings.xml');
+    const stringsFilePath = _path().default.join(await (0, _Paths().getResourceFolderAsync)(projectRoot), `values-b+${lang.replaceAll('-', '+')}`, 'strings.xml');
     (0, _XML().writeXMLAsync)({
       path: stringsFilePath,
       xml: {
