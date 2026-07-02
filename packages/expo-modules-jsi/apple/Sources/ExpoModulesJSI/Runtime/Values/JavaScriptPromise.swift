@@ -102,9 +102,13 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       guard let rejecter = rejectFunction.take() else {
         return
       }
-      // Create a JS error from any (native) error.
-      let errorMessage = String(describing: error)
-      let errorValue = JavaScriptError(runtime, message: errorMessage).asValue()
+
+      let errorValue: JavaScriptValue
+      if let throwable = error as? JavaScriptThrowable {
+        errorValue = JavaScriptError(runtime, from: throwable).asValue()
+      } else {
+        errorValue = JavaScriptError(runtime, message: String(describing: error)).asValue()
+      }
 
       // Call the actual rejecter given in the Promise setup.
       // This will also call `deferredPromise.reject` in the `then` handler.
