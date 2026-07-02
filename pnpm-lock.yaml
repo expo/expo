@@ -3042,15 +3042,9 @@ importers:
 
   packages/@expo/schemer:
     dependencies:
-      ajv:
-        specifier: ^8.1.0
-        version: 8.18.0
-      ajv-formats:
-        specifier: ^2.0.2
-        version: 2.1.1(ajv@8.18.0)
-      json-schema-traverse:
-        specifier: ^1.0.0
-        version: 1.0.0
+      '@expo/schema-utils':
+        specifier: workspace:*
+        version: link:../schema-utils
       probe-image-size:
         specifier: ^7.1.0
         version: 7.2.3
