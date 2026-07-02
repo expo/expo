@@ -1,6 +1,18 @@
-import groovy.json.JsonSlurper
 import expo.modules.plugin.gradle.ExpoModuleExtension
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.tukaani.xz.LZMA2Options
+import org.tukaani.xz.XZInputStream
+import org.tukaani.xz.XZOutputStream
+
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.time.Instant
+import java.util.regex.Matcher
 
 buildscript {
   // List of features that are required by linked modules
@@ -16,6 +28,8 @@ buildscript {
       classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
     }
 
+    classpath "org.tukaani:xz:1.12"
+    classpath "org.apache.commons:commons-compress:1.28.0"
   }
 }
 
@@ -78,6 +92,36 @@ if (workletsProject != null) {
 
 def reactNativeWorkletsRootDir = workletsProject?.projectDir?.parentFile
 
+def reactNativeVersionString = expoModuleExtension.reactNativeVersion.toString()
+
+def prebuiltNativeLibsDir = project.file("prebuilt")
+def prebuiltNativeLibsArchive = project.file("prebuilt/native-libs.tar.xz")
+def prebuiltMetadataFile = project.file("prebuilt/metadata.json")
+
+def decompressedNativeLibsDir = layout.buildDirectory.dir("expo-prebuilt-natives").get().asFile
+
+def prebuiltVariants = ["debug", "release"]
+
+def isPrebuiltCachingRun = gradle.startParameter.taskNames.any { it.contains("cachePrebuiltNativeLibs") }
+
+def isPrebuiltUsable = {
+  if (!prebuiltMetadataFile.exists() || !prebuiltNativeLibsArchive.exists()) {
+    return false
+  }
+  def metadata = new JsonSlurper().parseText(prebuiltMetadataFile.text)
+  if (metadata.libraryVersion != version) {
+    logger.warn("[expo-modules-core] Ignoring prebuilt libs: built for v${metadata.libraryVersion}, package is v${version} - building from source")
+    return false
+  }
+  if (metadata.reactNativeVersion != reactNativeVersionString) {
+    logger.warn("[expo-modules-core] Ignoring prebuilt libs: built for RN ${metadata.reactNativeVersion}, installed RN ${reactNativeVersionString} - building from source")
+    return false
+  }
+  return true
+}
+
+def usePrebuiltNativeLibs = !isPrebuiltCachingRun && !isTests && isPrebuiltUsable()
+
 expoModule {
   canBePublished false
 }
@@ -113,6 +157,10 @@ android {
 
         if (reactNativeWorkletsRootDir != null) {
           cppArguments += "-DREACT_NATIVE_WORKLETS_DIR=${reactNativeWorkletsRootDir.absolutePath}"
+        }
+
+        if (usePrebuiltNativeLibs) {
+          cppArguments += "-DEXPO_PREBUILT_NATIVE_LIBS_DIR=${decompressedNativeLibsDir.absolutePath}"
         }
 
         abiFilters(*reactNativeArchitectures())
@@ -186,6 +234,14 @@ android {
         } else {
           srcDirs += 'src/withoutCompose'
         }
+      }
+    }
+
+    // Package the decompressed prebuilt .so into each variant. The layout `<variant>/<abi>/lib*.so`
+    // matches what AGP expects from a jniLibs source set.
+    if (usePrebuiltNativeLibs) {
+      prebuiltVariants.each { variant ->
+        getByName(variant).jniLibs.srcDir(new File(decompressedNativeLibsDir, variant))
       }
     }
   }
@@ -294,10 +350,10 @@ def generateStubPCHTask = tasks.register("generateStubPCH") {
           def stubHeaderPath = stubHeader.absolutePath.replace('\\', '/')
 
           def cmd = entry.command
-            // Replace the forced-include path: `-Xclang -include -Xclang <path>/cmake_pch.hxx`
-            .replaceAll(/-Xclang -include -Xclang [^\s]+cmake_pch\.hxx(?=\s)/, java.util.regex.Matcher.quoteReplacement("-Xclang -include -Xclang ${stubHeaderPath}"))
-            // Replace the source file operand: `<path>/cmake_pch.hxx.cxx`
-            .replaceAll(/[^\s]+cmake_pch\.hxx\.cxx/, java.util.regex.Matcher.quoteReplacement(stubHeaderPath))
+          // Replace the forced-include path: `-Xclang -include -Xclang <path>/cmake_pch.hxx`
+            .replaceAll(/-Xclang -include -Xclang [^\s]+cmake_pch\.hxx(?=\s)/, Matcher.quoteReplacement("-Xclang -include -Xclang ${stubHeaderPath}"))
+          // Replace the source file operand: `<path>/cmake_pch.hxx.cxx`
+            .replaceAll(/[^\s]+cmake_pch\.hxx\.cxx/, Matcher.quoteReplacement(stubHeaderPath))
 
           def process = new ProcessBuilder(cmd.split(" ").toList())
             .directory(new File(entry.directory))
@@ -317,4 +373,207 @@ def generateStubPCHTask = tasks.register("generateStubPCH") {
 
 tasks.register("prepareKotlinBuildScriptModel") {
   dependsOn(generateStubPCHTask)
+}
+
+def prebuiltNativeLibNames = ["libexpo-modules-core.so", "libexpo-modules-jsi.so"]
+
+// Helpers for the cachePrebuiltNativeLibs task. They are `static` so the task action can call them
+// without capturing the build script, which keeps the task configuration-cache compatible.
+class PrebuiltNativeLibs {
+  /**
+   * Returns host tag based on the OS name.
+   */
+  private static String hostTag() {
+    def osName = System.getProperty("os.name").toLowerCase()
+    if (osName.contains("mac")) {
+      return "darwin-x86_64"
+    }
+
+    if (osName.contains("win")) {
+      return "windows-x86_64"
+    }
+
+    return "linux-x86_64"
+  }
+
+  private static void strippedLib(File stripBinary, File source, File dest) {
+    def proc = new ProcessBuilder(
+      stripBinary.absolutePath,
+      "--strip-all",
+      source.absolutePath,
+      "-o",
+      dest.absolutePath
+    )
+      .redirectErrorStream(true)
+      .start()
+
+    if (proc.waitFor() != 0) {
+      throw new GradleException("[expo-modules-core] llvm-strip failed for ${source}: ${proc.inputStream.text}")
+    }
+  }
+
+  /**
+   * Locate the NDK's `llvm-strip`, or null when the NDK/binary can't be found.
+   */
+  static File findLlvmStrip(File ndkDir) {
+    if (ndkDir == null || !ndkDir.exists()) {
+      return null
+    }
+    def hostTag = hostTag()
+    def strip = new File(ndkDir, "toolchains/llvm/prebuilt/${hostTag}/bin/llvm-strip")
+    return strip.exists() ? strip : null
+  }
+
+  /**
+   * Copy each of `soNames` from `objDir/<abi>/` into `stagingVariantDir/<abi>/`, stripping debug
+   * symbols. Returns the set of ABIs that were staged.
+   */
+  static Set<String> stageStrippedLibs(File objDir, List<String> soNames, File stagingVariantDir, File stripBinary) {
+    def abis = new TreeSet<String>()
+    objDir
+      .listFiles({ it.isDirectory() } as FileFilter)
+      ?.each { abiDir ->
+        soNames.each { soName ->
+          def source = new File(abiDir, soName)
+          if (!source.exists()) {
+            return
+          }
+
+          def dest = new File(stagingVariantDir, "${abiDir.name}/${soName}")
+          dest.parentFile.mkdirs()
+
+          if (stripBinary != null) {
+            strippedLib(stripBinary, source, dest)
+          } else {
+            Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING)
+          }
+
+          abis << abiDir.name
+        }
+      }
+    return abis
+  }
+
+  /**
+   * Bundle every file under `stagingDir` into a single solid tar.xz
+   */
+  static void bundleToTarXz(File stagingDir, File archive) {
+    archive.parentFile.mkdirs()
+    def stagingPath = stagingDir.toPath()
+
+    def files = []
+    stagingDir.eachFileRecurse {
+      if (it.isFile()) {
+        files << it
+      }
+    }
+    files.sort { it.absolutePath }
+
+    new TarArchiveOutputStream(
+      new XZOutputStream(archive.newOutputStream(), new LZMA2Options(9))
+    ).withCloseable { tar ->
+      files.each { file ->
+        def archiveEntry = new TarArchiveEntry(file, stagingPath.relativize(file.toPath()).toString())
+        tar.putArchiveEntry(archiveEntry)
+        Files.copy(file.toPath(), tar)
+        tar.closeArchiveEntry()
+      }
+    }
+  }
+}
+
+def stripBinary = PrebuiltNativeLibs.findLlvmStrip(android.ndkDirectory)
+def libraryVersion = version.toString()
+def cacheStagingDir = layout.buildDirectory.dir("tmp/cache-prebuilt-natives").get().asFile
+def variantDescriptors = prebuiltVariants.collect { variant ->
+  def variantCap = variant.capitalize()
+  def libsDir = layout.buildDirectory.dir("intermediates/merged_native_libs/${variant}/merge${variantCap}NativeLibs/out/lib").get().asFile
+  def outDir = layout.buildDirectory.dir("tmp/cache-prebuilt-natives/${variant}").get().asFile
+  [
+    name     : variant,
+    mergeTask: "merge${variantCap}NativeLibs",
+    libsDir  : libsDir,
+    outDir   : outDir,
+  ]
+}
+
+tasks.register("cachePrebuiltNativeLibs") {
+  group = "prebuilt natives"
+  description = "Build expo-modules-core from source (debug + release), strip and cache the shippable .so files into prebuilt/"
+  dependsOn(variantDescriptors.collect { it.mergeTask })
+
+  doLast {
+    if (stripBinary == null) {
+      logger.warn("[expo-modules-core] NDK llvm-strip not found - .so files will be cached unstripped")
+    }
+
+    if (prebuiltNativeLibsDir.exists()) {
+      prebuiltNativeLibsDir.deleteDir()
+    }
+
+    if (cacheStagingDir.exists()) {
+      cacheStagingDir.deleteDir()
+    }
+
+    def allAbis = new TreeSet<String>()
+    variantDescriptors.each { vd ->
+      logger.lifecycle("[expo-modules-core] Caching ${vd.name} from ${vd.libsDir}")
+      allAbis.addAll(PrebuiltNativeLibs.stageStrippedLibs(vd.libsDir, prebuiltNativeLibNames, vd.outDir, stripBinary))
+    }
+    if (allAbis.isEmpty()) {
+      throw new GradleException("[expo-modules-core] No ${prebuiltNativeLibNames} were cached")
+    }
+
+    PrebuiltNativeLibs.bundleToTarXz(cacheStagingDir, prebuiltNativeLibsArchive)
+    cacheStagingDir.deleteDir()
+
+    prebuiltMetadataFile.text = JsonOutput.prettyPrint(JsonOutput.toJson([
+      libraryVersion    : libraryVersion,
+      reactNativeVersion: reactNativeVersionString,
+      variants          : variantDescriptors.collect { it.name },
+      abis              : allAbis as List,
+      soFiles           : prebuiltNativeLibNames as List,
+      stripped          : stripBinary != null,
+      createdAt          : Instant.now().toString(),
+    ])) + "\n"
+
+    def archiveSizeMb = prebuiltNativeLibsArchive.length() / (1024 * 1024)
+    logger.lifecycle(
+      "[expo-modules-core] Create ${prebuiltNativeLibNames.join(", ")} for ${allAbis.size()} ABIs " +
+        "(${allAbis.join(", ")}) x ${variantDescriptors.size()} variants into " +
+        "${prebuiltNativeLibsArchive.name} (~${archiveSizeMb}MB, stripped, solid tar.xz)"
+    )
+  }
+}
+
+// Unpacks the shipped solid `prebuilt/native-libs.tar.xz` into the build dir so CMake can import the
+// libs and AGP can package them via the jniLibs source sets
+if (usePrebuiltNativeLibs) {
+  def archiveFile = prebuiltNativeLibsArchive
+  def outputDir = decompressedNativeLibsDir
+  def decompressPrebuiltNativeLibs = tasks.register("decompressPrebuiltNativeLibs") {
+    description = "Unpack the shipped native-libs.tar.xz into the build dir for CMake import and packaging"
+    inputs.file(archiveFile)
+    outputs.dir(outputDir)
+
+    doLast {
+      outputDir.deleteDir()
+      new TarArchiveInputStream(
+        new XZInputStream(archiveFile.newInputStream())
+      ).withCloseable { tar ->
+        def entry
+        while ((entry = tar.nextEntry) != null) {
+          if (entry.isDirectory()) {
+            continue
+          }
+          // entries are `<variant>/<abi>/lib*.so`
+          def dest = new File(outputDir, entry.name)
+          dest.parentFile.mkdirs()
+          dest.withOutputStream { out -> tar.transferTo(out) }
+        }
+      }
+    }
+  }
+
+  tasks.named("preBuild").configure { dependsOn(decompressPrebuiltNativeLibs) }
 }
