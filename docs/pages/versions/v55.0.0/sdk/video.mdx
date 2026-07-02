@@ -37,7 +37,11 @@ You can configure `expo-video` using its built-in [config plugin](/config-plugin
         "expo-video",
         {
           "supportsBackgroundPlayback": true,
-          "supportsPictureInPicture": true
+          "supportsPictureInPicture": true,
+          "icons": [
+            "./local/assets/heart.png",
+            "./local/assets/like.png"
+          ]
         }
       ]
     ],
@@ -58,6 +62,12 @@ You can configure `expo-video` using its built-in [config plugin](/config-plugin
       name: 'supportsPictureInPicture',
       description:
         'A boolean value to enable Picture-in-Picture on Android and iOS. If `true`, enables the `android:supportsPictureInPicture` property on Android and adds the `audio` key to the `UIBackgroundModes` array in the **Info.plist** file on iOS. If `false`, the key is removed. When `undefined`, the configuration is not modified.',
+      default: 'undefined',
+    },
+    {
+      name: 'icons',
+      description:
+        'Array of local paths to images files that can be used as custom icons for `pictureInPictureActions` and `nowPlayingActions` on Android. 96x96 all-white png with transparency.',
       default: 'undefined',
     },
   ]}

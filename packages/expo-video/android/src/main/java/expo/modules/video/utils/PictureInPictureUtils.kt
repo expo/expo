@@ -2,6 +2,7 @@ package expo.modules.video.utils
 
 import android.app.Activity
 import android.app.PictureInPictureParams
+import android.app.RemoteAction
 import android.graphics.Rect
 import android.os.Build
 import android.util.Log
@@ -89,6 +90,17 @@ internal fun applyPiPParams(activity: Activity, autoEnterPiP: Boolean, aspectRat
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       paramsBuilder.setAutoEnterEnabled(autoEnterPiP)
     }
+    runWithPiPMisconfigurationSoftHandling {
+      activity.setPictureInPictureParams(paramsBuilder.build())
+    }
+  }
+}
+
+internal fun applyPiPActions(activity: Activity, actions: List<RemoteAction>) {
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    val paramsBuilder = PictureInPictureParams.Builder()
+    paramsBuilder.setActions(actions)
+
     runWithPiPMisconfigurationSoftHandling {
       activity.setPictureInPictureParams(paramsBuilder.build())
     }
