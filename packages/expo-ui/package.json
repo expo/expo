@@ -21,7 +21,10 @@
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-ui"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "*.fx.js",
+    "*.fx.ts"
+  ],
   "exports": {
     ".": {
       "types": {
