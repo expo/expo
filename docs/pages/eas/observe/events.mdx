@@ -25,6 +25,19 @@ function handleOnboardingComplete() {
 
 The first argument is the event name. Use a stable, dot-separated identifier. The dashboard groups events by exact name.
 
+## Display name
+
+Use `displayName` to provide a human-friendly label for the event in the dashboard:
+
+```tsx
+Observe.logEvent('onboarding.completed', {
+  displayName: 'Onboarding completed',
+});
+```
+
+The event name remains the stable identifier used for grouping. The SDK trims the display name and
+truncates it to 128 characters.
+
 ## Attach attributes
 
 Pass an `attributes` map to record context with the event:
