@@ -120,6 +120,7 @@
 /router/advance/stack /router/advanced/stack 301
 /router/advance/tabs /router/advanced/tabs 301
 /router/advance/drawer /router/advanced/drawer 301
+/router/advanced/redirects /router/reference/redirects 301
 /router/advance/nesting-navigators /router/advanced/nesting-navigators 301
 /router/advance/modal /router/advanced/modals 301
 /router/advance/platform-specific-modules /router/advanced/platform-specific-modules 301

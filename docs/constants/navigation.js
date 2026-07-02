@@ -212,6 +212,8 @@ export const general = [
         makePage('workflow/web.mdx'),
         makePage('guides/publishing-websites.mdx'),
         makePage('guides/dom-components.mdx'),
+        makePage('guides/server-components.mdx'),
+        makePage('guides/testing-rsc.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
         makePage('guides/tailwind.mdx'),
         makePage('guides/local-https-development.mdx'),
