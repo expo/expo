@@ -39,6 +39,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix tapping outside a SwiftUI `Menu`/`ContextMenu` to dismiss it passing the touch through to the React Native view behind it. ([#47413](https://github.com/expo/expo/pull/47413) by [@damselem](https://github.com/damselem))
 - [iOS][android] Fix `community/masked-view` doubling offsets and transforms by re-applying the user-supplied `style` to the inner mask/content `View` wrappers. ([#47067](https://github.com/expo/expo/issues/47067) by [@tsushanth](https://github.com/tsushanth))
 - [iOS] Fix the SwiftUI `TextField` crashing with "String index is out of bounds" on iOS 18 when JS writes new text into a focused field that holds an active text selection. ([#47447](https://github.com/expo/expo/pull/47447) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS][Android] Fix a scrollable child (e.g. `FlatList`, `ScrollView`) inside `@expo/ui/community/bottom-sheet` not scrolling to the end when using fixed snap points. ([#47245](https://github.com/expo/expo/pull/47245) by [@nishan](https://github.com/intergalacticspacehighway))
