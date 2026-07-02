@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `requestReview` crashing when no `Activity` is available. ([#47436](https://github.com/expo/expo/pull/47436) by [@gursheyss](https://github.com/gursheyss))
+
 ### 💡 Others
 
 ## 56.0.3 — 2026-05-06
