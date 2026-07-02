@@ -33,13 +33,15 @@ struct ErrorReport {
 
   /// Snapshots this report for durable on-disk storage, capturing the session it belongs to and the
   /// time it happened (both resolved now, since by drain time the main session has rotated).
+  ///
+  /// Only fatal errors are persisted, and those come from the global handler, which has no React
+  /// component stack, so `componentStack` isn't carried through this path.
   func toPendingError(sessionId: String) -> PendingErrorStore.PendingError {
     return PendingErrorStore.PendingError(
       source: source.rawValue,
       type: type,
       message: message,
       stacktrace: stacktrace,
-      componentStack: componentStack,
       sessionId: sessionId,
       timestamp: Date.now.ISO8601Format()
     )
@@ -55,7 +57,7 @@ extension PendingErrorStore.PendingError {
       type: type,
       message: message,
       stacktrace: stacktrace,
-      componentStack: componentStack,
+      componentStack: nil,
       isFatal: true,
       timestamp: timestamp
     )
