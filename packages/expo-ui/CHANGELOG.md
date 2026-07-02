@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the SwiftUI `TextField` crashing with "String index is out of bounds" on iOS 18 when JS writes new text into a focused field that holds an active text selection. ([#47447](https://github.com/expo/expo/pull/47447) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 57.0.2 — 2026-07-01

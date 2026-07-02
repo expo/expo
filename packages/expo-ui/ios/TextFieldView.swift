@@ -219,11 +219,39 @@ private struct StatefulSelectableTextField: View {
     )
   }
 
+  private var selectionBinding: Binding<SwiftUI.TextSelection?> {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+      return $localSelection
+    }
+    return clampedSelectionBinding
+  }
+
+  // iOS 18 SwiftUI can throw an out-of-bounds exception when selection becomes invalid after text is changed programmatically.
+  // Resetting to nil avoids passing SwiftUI the stale selection.
+  // https://github.com/expo/expo/issues/47434
+  // https://github.com/swiftlang/swift/issues/82359#issuecomment-3038538035
+  private var clampedSelectionBinding: Binding<SwiftUI.TextSelection?> {
+    Binding(
+      get: {
+        guard let selection = localSelection,
+              case let .selection(range) = selection.indices else {
+          return localSelection
+        }
+        let text = (state.value as? String) ?? ""
+        if range.lowerBound > text.endIndex || range.upperBound > text.endIndex {
+          return nil
+        }
+        return localSelection
+      },
+      set: { localSelection = $0 }
+    )
+  }
+
   var body: some View {
     TextField(
       promptText == nil ? props.placeholder : "",
       text: textBinding,
-      selection: $localSelection,
+      selection: selectionBinding,
       prompt: promptText,
       axis: swiftUIAxis
     )
