@@ -200,12 +200,7 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, expoModule
 
   logger.quiet("Updating 'expo-module.config.json' in ${expoModuleConfig.parent}")
 
-  expoModuleConfig.writeText(newJsonString)
-  providers.exec { env ->
-    env.workingDir(layout.projectDirectory.file(".."))
-    // TODO(@lukmccall): support other package managers
-    env.commandLine("pnpm", "prettier", "--write", "expo-module.config.json")
-  }.result.get()
+  expoModuleConfig.writeText(newJsonString + "\n")
 }
 
 private fun Project.validateProjectConfiguration(expoModulesExtension: ExpoModuleExtension) {
