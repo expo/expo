@@ -14,9 +14,8 @@ function _nodeUrl() {
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function errorToLoc(filename, error) {
-  if (error.name === 'ReferenceError' || error.name === 'SyntaxError') {
-    let stack = `${error.stack || ''}`;
-    stack = stack.slice(error.name.length + 2 /* '${name}: ' prefix */);
+  if (typeof error.name === 'string' && typeof error.stack === 'string') {
+    let stack = error.stack.slice(error.name.length + 2 /* '${name}: ' prefix */);
     stack = stack.slice(error.message.length);
     const trace = stack.match(/at ([^\n]+):(\d+):(\d+)/m);
     if (_nodeUrl().default.pathToFileURL(filename).href === trace?.[1]) {
