@@ -389,6 +389,10 @@ public final class SQLiteModule: Module {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
 
+    if isNoopStatement(statement) {
+      return makeNoopRunResult()
+    }
+
     // The statement with parameter bindings is stateful,
     // we have to guard with a critical section for thread safety.
     statement.lock.wait()
@@ -428,6 +432,9 @@ public final class SQLiteModule: Module {
   private func step(statement: NativeStatement, database: NativeDatabase) throws -> SQLiteColumnValues? {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+    if isNoopStatement(statement) {
+      return nil
+    }
     let ret = exsqlite3_step(statement.pointer)
     if ret == SQLITE_ROW {
       return try getColumnValues(statement: statement)
@@ -441,6 +448,9 @@ public final class SQLiteModule: Module {
   private func getAll(statement: NativeStatement, database: NativeDatabase) throws -> [SQLiteColumnValues] {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+    if isNoopStatement(statement) {
+      return []
+    }
     var columnValuesList: [SQLiteColumnValues] = []
     while true {
       let ret = exsqlite3_step(statement.pointer)
@@ -459,6 +469,9 @@ public final class SQLiteModule: Module {
   private func reset(statement: NativeStatement, database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+    if isNoopStatement(statement) {
+      return
+    }
     if exsqlite3_reset(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
@@ -467,7 +480,7 @@ public final class SQLiteModule: Module {
   private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
-    if exsqlite3_finalize(statement.pointer) != SQLITE_OK {
+    if !isNoopStatement(statement) && exsqlite3_finalize(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     statement.isFinalized = true
@@ -580,6 +593,9 @@ public final class SQLiteModule: Module {
 
   private func getColumnNames(statement: NativeStatement) throws -> SQLiteColumnNames {
     try maybeThrowForFinalizedStatement(statement)
+    if isNoopStatement(statement) {
+      return []
+    }
     let columnCount = Int(exsqlite3_column_count(statement.pointer))
     var columnNames: SQLiteColumnNames = Array(repeating: "", count: columnCount)
     for i in 0..<columnCount {
@@ -660,6 +676,18 @@ public final class SQLiteModule: Module {
     if statement.isFinalized {
       throw AccessClosedResourceException()
     }
+  }
+
+  private func isNoopStatement(_ statement: NativeStatement) -> Bool {
+    return statement.pointer == nil && !statement.isFinalized
+  }
+
+  private func makeNoopRunResult() -> [String: Any] {
+    return [
+      "lastInsertRowId": 0,
+      "changes": 0,
+      "firstRowValues": []
+    ]
   }
 
   @inline(__always)
