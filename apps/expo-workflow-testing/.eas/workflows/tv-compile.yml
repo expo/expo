@@ -107,7 +107,7 @@ jobs:
         id: prepare
         working_directory: ../../../updates-e2e
         run: |
-          pnpm run ios:pod-install
+          pnpm run tvos:pod-install
       - name: Compile TV project
         id: build
         working_directory: ../../../updates-e2e
