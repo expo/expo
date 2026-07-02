@@ -74,7 +74,7 @@ describe(PageHeader, () => {
     expect(linkElement).toBe(undefined);
   });
 
-  test('displays bundled version when packageName provided', async () => {
+  test('displays recommended version when packageName provided', async () => {
     renderWithHeadings(
       <PageHeader
         title="test-title"
@@ -83,7 +83,42 @@ describe(PageHeader, () => {
         testRequire={require}
       />
     );
-    await screen.findByText(/bundled version:/i);
+    await screen.findByText(/recommended version:/i);
+  });
+
+  test('explains the recommended version through an accessible tooltip', async () => {
+    renderWithHeadings(
+      <PageHeader title="test-title" packageName="expo-audio" testRequire={require} />
+    );
+    const infoButton = await screen.findByRole('button', {
+      name: /more information about recommended version/i,
+    });
+
+    fireEvent.focus(infoButton);
+    const tooltip = await screen.findByRole('tooltip', {}, { timeout: 1000 });
+    expect(tooltip).toBeInTheDocument();
+    expect(tooltip).toHaveTextContent(/compatible with the expo sdk version/i);
+    expect(tooltip).not.toHaveTextContent(/included in expo go/i);
+    expect(infoButton).toHaveAttribute('aria-describedby', tooltip.id);
+  });
+
+  test('notes the Expo Go library version in the tooltip when included in Expo Go', async () => {
+    renderWithHeadings(
+      <PageHeader
+        title="test-title"
+        packageName="expo-audio"
+        platforms={['ios', 'android', 'expo-go']}
+        testRequire={require}
+      />
+    );
+    const infoButton = await screen.findByRole('button', {
+      name: /more information about recommended version/i,
+    });
+
+    fireEvent.focus(infoButton);
+    const tooltip = await screen.findByRole('tooltip', {}, { timeout: 1000 });
+    expect(tooltip).toHaveTextContent(/compatible with the expo sdk version/i);
+    expect(tooltip).toHaveTextContent(/library version included in expo go/i);
   });
 
   test('displays edit page link for non-API docs', () => {

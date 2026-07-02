@@ -9,7 +9,7 @@ export function normalizePath(path?: string) {
     return '';
   }
 
-  const [cleanPath] = path.split('?');
+  const [cleanPath] = path.split(/[#?]/);
   return cleanPath.replace(/\/+$/, '') || '/';
 }
 

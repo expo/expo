@@ -10,6 +10,22 @@ import java.util.TimeZone
 object TimeUtils {
   fun getCurrentTimeInMillis(): Long = SystemClock.uptimeMillis()
 
+  /**
+   * Wall-clock time in milliseconds since the Unix epoch. Use this when comparing against
+   * another wall-clock timestamp — HTTP `Retry-After` deadlines, server-supplied dates, file
+   * modification times. For measuring elapsed intervals within the process, prefer
+   * [getCurrentTimeInMillis], which is monotonic and immune to wall-clock adjustments.
+   */
+  fun getWallClockMillis(): Long = System.currentTimeMillis()
+
+  /**
+   * Wall-clock delta in milliseconds from `from` to `to` (positive if `to` is in the future
+   * relative to `from`, negative if it's in the past). Defaults `from` to now. Used by
+   * `expo-observe`'s `Retry-After` parser to compute how long the server wants us to wait.
+   * Centralized here so tests can stub the time read via `mockkObject(TimeUtils)`.
+   */
+  fun millisUntil(to: Date, from: Date = Date()): Long = to.time - from.time
+
   fun getProcessStartTimeInMillis(): Long = Process.getStartUptimeMillis()
 
   fun getProcessStartTimestamp(): String {

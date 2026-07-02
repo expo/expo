@@ -47,7 +47,9 @@
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-app-metrics": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "expo-observe": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
