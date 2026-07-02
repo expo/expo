@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Preserve the `code` on the JavaScript error when an async function rejects with a `JavaScriptThrowable` (e.g. an `Exception`), instead of stringifying it and dropping the `code` — mirroring the synchronous throw path. ([#47453](https://github.com/expo/expo/pull/47453) by [@HubertBer](https://github.com/HubertBer))
+
 ### 💡 Others
 
 ## 56.0.10 — 2026-06-15
