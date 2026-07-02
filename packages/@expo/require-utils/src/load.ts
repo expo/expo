@@ -63,26 +63,42 @@ function maybeReadFileSync(filename: string) {
   }
 }
 
-type Format = 'commonjs' | 'module' | 'module-typescript' | 'commonjs-typescript' | 'typescript';
+interface Format {
+  mode:
+    | 'commonjs'
+    | 'module'
+    | 'module-typescript'
+    | 'commonjs-typescript'
+    | 'typescript'
+    | undefined;
+  legacy: boolean;
+}
 
-function toFormat(filename: string, isLegacy: true): Format;
-function toFormat(filename: string, isLegacy: false): Format | null;
-function toFormat(filename: string, isLegacy: boolean): Format | null {
+function toFormat(filename: string, isLegacy: boolean): Format {
+  let mode:
+    | 'commonjs'
+    | 'module'
+    | 'module-typescript'
+    | 'commonjs-typescript'
+    | 'typescript'
+    | undefined;
+  let legacy = false;
   if (filename.endsWith('.cjs')) {
-    return 'commonjs';
+    mode = 'commonjs';
   } else if (filename.endsWith('.mjs')) {
-    return 'module';
+    mode = 'module';
   } else if (filename.endsWith('.js')) {
-    return isLegacy ? 'commonjs' : null;
+    legacy = isLegacy;
+    mode = isLegacy ? 'commonjs' : undefined;
   } else if (filename.endsWith('.mts')) {
-    return 'module-typescript';
+    mode = 'module-typescript';
   } else if (filename.endsWith('.cts')) {
-    return 'commonjs-typescript';
+    mode = 'commonjs-typescript';
   } else if (filename.endsWith('.ts')) {
-    return isLegacy ? 'commonjs-typescript' : 'typescript';
-  } else {
-    return null;
+    legacy = isLegacy;
+    mode = isLegacy ? 'commonjs-typescript' : 'typescript';
   }
+  return { mode, legacy };
 }
 
 export interface ModuleOptions {
@@ -214,7 +230,7 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
   }
 
   try {
-    mod._compile(inputCode, compileFilename, format != null ? format : undefined);
+    mod._compile(inputCode, compileFilename, format.mode);
     mod.loaded = true;
     if (shouldCache) {
       require.cache[compileFilename] = mod;
@@ -259,17 +275,17 @@ function evalModule(
   let inputFilename = filename;
   let diagnostic: ts.Diagnostic | undefined;
   if (
-    format === 'typescript' ||
-    format === 'module-typescript' ||
-    format === 'commonjs-typescript'
+    format.mode === 'typescript' ||
+    format.mode === 'module-typescript' ||
+    format.mode === 'commonjs-typescript'
   ) {
     const ts = loadTypescript();
 
     if (ts) {
       let module: ts.ModuleKind;
-      if (format === 'commonjs-typescript') {
+      if (format.mode === 'commonjs-typescript') {
         module = ts.ModuleKind.CommonJS;
-      } else if (format === 'module-typescript') {
+      } else if (format.mode === 'module-typescript') {
         module = ts.ModuleKind.ESNext;
       } else {
         // NOTE(@kitten): We can "preserve" the output, meaning, it can either be ESM or CJS
@@ -313,7 +329,7 @@ function evalModule(
         inputFilename = path.join(path.dirname(filename), path.basename(filename, ext) + inputExt);
       }
     }
-  } else if (format === 'commonjs') {
+  } else if (format.mode === 'commonjs') {
     inputCode = toCommonJS(filename, code);
   }
 
@@ -363,15 +379,17 @@ async function loadModule(filename: string) {
 function loadModuleSync(filename: string) {
   const format = toFormat(filename, true);
   const isTypeScript =
-    format === 'module-typescript' || format === 'commonjs-typescript' || format === 'typescript';
+    format.mode === 'module-typescript' ||
+    format.mode === 'commonjs-typescript' ||
+    format.mode === 'typescript';
   try {
-    if (format !== 'module' && !isTypeScript) {
+    if (format.mode !== 'module' && !isTypeScript) {
       return require(filename);
     }
   } catch (error: any) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw error;
-    } else if (format == null) {
+    } else if (format.mode == null) {
       const code = maybeReadFileSync(filename);
       throw annotateError(code, filename, error) || error;
     }
