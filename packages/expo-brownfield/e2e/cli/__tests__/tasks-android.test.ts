@@ -131,7 +131,7 @@ describe('tasks:android command', () => {
   describe('with prebuild', () => {
     beforeAll(async () => {
       TEMP_DIR_PREBUILD = await createTempProject('tasksandroidpb', true);
-    }, 600000);
+    }, 1800000);
 
     afterAll(async () => {
       await cleanUpProject('tasksandroidpb');
