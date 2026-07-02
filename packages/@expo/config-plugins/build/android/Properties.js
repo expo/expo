@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.parsePropertiesFile = parsePropertiesFile;
 exports.propertiesListToString = propertiesListToString;
 function parsePropertiesFile(contents) {

@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.FINGERPRINT_RUNTIME_VERSION_SENTINEL = void 0;
 exports.getAppVersion = getAppVersion;
 exports.getDisableAntiBrickingMeasures = getDisableAntiBrickingMeasures;

@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.restoreDefaultTheme = restoreDefaultTheme;
 exports.withRestoreDefaultTheme = void 0;
 function _configPlugins() {

@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getVersionCode = getVersionCode;
 exports.getVersionName = getVersionName;
 exports.setMinBuildScriptExtVersion = setMinBuildScriptExtVersion;

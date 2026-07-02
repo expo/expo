@@ -1,14 +1,7 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-Object.defineProperty(exports, "XcodeProject", {
-  enumerable: true,
-  get: function () {
-    return _xcode().XcodeProject;
-  }
-});
+exports.__esModule = true;
+exports.XcodeProject = void 0;
 function _xcode() {
   const data = require("xcode");
   _xcode = function () {
@@ -16,4 +9,5 @@ function _xcode() {
   };
   return data;
 }
+exports.XcodeProject = _xcode().XcodeProject;
 //# sourceMappingURL=Plugin.types.js.map
