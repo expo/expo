@@ -17,8 +17,11 @@ object ReactNativeViewFactory {
       rootComponent: String,
       launchOptions: Bundle? = null,
   ): FrameLayout {
-    val reactHost = ReactNativeHostManager.shared.getReactHost()
-    val reactDelegate = ReactDelegate(activity, reactHost!!, rootComponent, launchOptions)
+    ReactNativeHostManager.shared.initialize(activity.application)
+    val reactHost =
+        ReactNativeHostManager.shared.getReactHost()
+            ?: error("ReactNativeHostManager.initialize did not produce a ReactHost")
+    val reactDelegate = ReactDelegate(activity, reactHost, rootComponent, launchOptions)
 
     activity.lifecycle.addObserver(
         object : DefaultLifecycleObserver {

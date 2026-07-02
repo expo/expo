@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Initialize React host before creating RN view ([#44120](https://github.com/expo/expo/issues/44120)) ([#44312](https://github.com/expo/expo/pull/44312) by [@vj2303](https://github.com/vj2303))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26
