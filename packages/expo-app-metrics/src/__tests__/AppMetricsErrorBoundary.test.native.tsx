@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
+import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { AppMetricsErrorBoundary } from '../AppMetricsErrorBoundary';
@@ -35,8 +36,10 @@ function ThrowNull(): never {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  // React logs caught render errors to console.error; silence it so the test output stays clean.
+  // React logs caught render errors to console.error, and the boundary warns via console.warn in
+  // dev; silence both so the test output stays clean.
   jest.spyOn(console, 'error').mockImplementation(() => {});
+  jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -107,6 +110,56 @@ describe(AppMetricsErrorBoundary, () => {
     );
   });
 
+  it('reports the same way when a fallback element is provided', () => {
+    render(
+      <AppMetricsErrorBoundary fallback={<Text testID="fallback">something broke</Text>}>
+        <Boom />
+      </AppMetricsErrorBoundary>
+    );
+
+    expect(screen.getByTestId('fallback')).toBeVisible();
+    expect(reportError).toHaveBeenCalledTimes(1);
+    expect(reportError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        source: 'errorBoundary',
+        type: 'Error',
+        message: 'render exploded',
+        isFatal: false,
+      })
+    );
+  });
+
+  it('renders a fallback render function with the error and resets on retry', () => {
+    function App() {
+      const [showError, setShowError] = useState(true);
+      return (
+        <AppMetricsErrorBoundary
+          fallback={({ error, resetError }) => (
+            <Text
+              testID="fallback"
+              onPress={() => {
+                setShowError(false);
+                resetError();
+              }}>
+              caught: {(error as Error).message}
+            </Text>
+          )}>
+          {showError ? <Boom /> : <Text testID="recovered">recovered</Text>}
+        </AppMetricsErrorBoundary>
+      );
+    }
+
+    render(<App />);
+
+    // The render function receives the caught error.
+    expect(screen.getByTestId('fallback')).toHaveTextContent('caught: render exploded');
+
+    // resetError clears the error and re-renders the (now healthy) children.
+    fireEvent.press(screen.getByTestId('fallback'));
+    expect(screen.getByTestId('recovered')).toBeVisible();
+    expect(screen.queryByTestId('fallback')).toBeNull();
+  });
+
   it('reports the React component stack of the subtree that threw', () => {
     render(
       <AppMetricsErrorBoundary fallback={null}>
@@ -133,15 +186,5 @@ describe(AppMetricsErrorBoundary, () => {
       )
     ).not.toThrow();
     expect(screen.getByTestId('fallback')).toBeVisible();
-  });
-
-  it('reports a caught error only once despite React dev-mode double rendering', () => {
-    render(
-      <AppMetricsErrorBoundary fallback={<Text>fallback</Text>}>
-        <Boom />
-      </AppMetricsErrorBoundary>
-    );
-
-    expect(reportError).toHaveBeenCalledTimes(1);
   });
 });

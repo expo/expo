@@ -2,48 +2,59 @@ import React from 'react';
 
 import AppMetrics from './module';
 
+/**
+ * Arguments passed to a `fallback` render function.
+ */
+export type AppMetricsErrorBoundaryFallbackProps = {
+  /**
+   * The value the subtree threw. Usually an `Error`, but any value can be thrown.
+   */
+  error: unknown;
+  /**
+   * Clears the caught error and re-renders the children. Use it to offer a "try again" action;
+   * the children re-mount, so they run from a clean state.
+   */
+  resetError: () => void;
+};
+
 export type AppMetricsErrorBoundaryProps = {
   children: React.ReactNode;
   /**
-   * What to render in place of the failed subtree after an error is caught. Pass an element to
-   * render it instead of the broken children, keeping the app usable.
+   * Rendered in place of the subtree after an error is caught. Provide one of:
    *
-   * Required, but explicitly pass `null` to opt out and render nothing in place of the subtree. The
-   * boundary always renders something (the element or nothing), so a render error never propagates
-   * past it; React boundaries can't re-throw to reproduce the original crash, so capture-only
-   * boundaries aren't supported. Render-phase errors that no boundary catches are still recorded by
-   * the global `ErrorUtils` handler `expo-app-metrics` installs on import.
+   * - a React element to render as-is,
+   * - a function receiving the `error` and a `resetError` callback (to show details and offer retry),
+   * - `null` to render nothing.
+   *
+   * A boundary can't re-throw to reproduce React Native's default crash, so it always renders one of
+   * the above; there's no capture-only mode. Errors no boundary catches are still recorded by the
+   * global `ErrorUtils` handler.
    */
-  fallback: React.ReactElement | null;
+  fallback:
+    | React.ReactElement
+    | null
+    | ((props: AppMetricsErrorBoundaryFallbackProps) => React.ReactNode);
 };
 
 type State = {
   /**
-   * Whether an error has been caught. Tracked separately from the value because a thrown value can
-   * itself be falsy (e.g. `throw null`); keying "caught" off the value would make such a throw look
-   * like a healthy state and re-render the children into an infinite loop.
+   * Whether an error has been caught. Tracked separately from `error` because the thrown value can
+   * itself be falsy (e.g. `throw null`), which would otherwise look like the healthy state.
    */
   hasError: boolean;
   /**
-   * The caught value. Whatever was thrown, which is not necessarily an `Error` (code can throw a
-   * string, `null`, or any value); only meaningful when `hasError` is `true`.
+   * The value the subtree threw; only meaningful when `hasError` is `true`.
    */
   error: unknown;
 };
 
 /**
- * Error boundary that records React render-phase errors as `exception` log events (following
- * OpenTelemetry's exception conventions, same as the global `ErrorUtils` handler) and renders a
- * `fallback` in place of the subtree that threw.
+ * A React error boundary that records render-phase errors as non-fatal `exception` log events (with
+ * the React component stack) and renders a `fallback` in place of the subtree that threw.
  *
- * Render-phase errors don't reach `global.ErrorUtils` — React routes them through error boundaries —
- * so a boundary is the only way to observe them with the React component stack attached. Place one
- * around any subtree you want to keep capturing and recoverable; `AppMetricsRoot` mounts one
- * automatically when given an `errorBoundaryFallback`.
- *
- * The error is reported as non-fatal: the boundary renders the fallback and the app keeps running,
- * so it's a handled error, not a crash. Reporting runs in a `try/catch` so a failure inside
- * `reportError` can never become a new app-facing error.
+ * Render-phase errors don't reach `global.ErrorUtils`, so a boundary is the only way to capture them
+ * with the component stack. Place one around any subtree, or let `AppMetricsRoot` mount one via its
+ * `errorBoundaryFallback` prop.
  */
 export class AppMetricsErrorBoundary extends React.Component<AppMetricsErrorBoundaryProps, State> {
   state: State = { hasError: false, error: null };
@@ -53,12 +64,15 @@ export class AppMetricsErrorBoundary extends React.Component<AppMetricsErrorBoun
   }
 
   componentDidCatch(error: unknown, errorInfo: React.ErrorInfo): void {
-    // The thrown value may not be an `Error` (code can throw anything), so read its fields
-    // defensively and fall back to `String(error)` for the message.
+    if (__DEV__) {
+      console.warn('[expo-app-metrics] AppMetricsErrorBoundary caught a render error:', error);
+    }
+
+    // The thrown value may not be an `Error`, so read its fields defensively.
     const caught = error instanceof Error ? error : undefined;
-    // React's component stack has a leading newline and indentation on each frame; trim the
-    // surrounding whitespace so it reads cleanly.
-    const componentStack = errorInfo?.componentStack?.trim();
+    // React's component stack is newline-led and indented per frame; trim it, and treat an empty
+    // result as absent so the native side omits the attribute.
+    const componentStack = errorInfo.componentStack?.trim() || undefined;
 
     try {
       AppMetrics.reportError({
@@ -72,8 +86,8 @@ export class AppMetricsErrorBoundary extends React.Component<AppMetricsErrorBoun
         isFatal: false,
       });
     } catch {
-      // Never let a reporting failure (e.g. a native module error) escape the boundary and become a
-      // new app-facing error. Losing one report is strictly better than crashing.
+      // An observability boundary must never become the source of a new error, so swallow a failure
+      // inside `reportError`. Losing one report is better than crashing.
     }
   }
 
@@ -81,6 +95,15 @@ export class AppMetricsErrorBoundary extends React.Component<AppMetricsErrorBoun
     if (!this.state.hasError) {
       return this.props.children;
     }
-    return this.props.fallback;
+
+    const { fallback } = this.props;
+    if (typeof fallback === 'function') {
+      return fallback({ error: this.state.error, resetError: this.resetError });
+    }
+    return fallback;
   }
+
+  private resetError = () => {
+    this.setState({ hasError: false, error: null });
+  };
 }

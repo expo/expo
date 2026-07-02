@@ -12,8 +12,7 @@
 - Add android crash reports ([#46869](https://github.com/expo/expo/pull/46869) by [@Ubax](https://github.com/Ubax))
 - Record an `expo.memory.warning` log event on iOS when the system delivers a low-memory warning, carrying the memory usage snapshot (`expo.memory.*`) taken at warning time. ([#47108](https://github.com/expo/expo/pull/47108) by [@tsapeta](https://github.com/tsapeta))
 - Add an optional `displayName` to `logEvent` ([#47289](https://github.com/expo/expo/pull/47289) by [@Ubax](https://github.com/Ubax))
-||||||| parent of 63fe4cf1fa5 ([app-metrics][observe] Capture React render-phase errors via an error boundary)
-- Capture React render-phase errors via the new `AppMetricsErrorBoundary`, recorded as non-fatal `exception` log events with the React component stack (`expo.error.component_stack`). Place it around any subtree with a `fallback`, or pass `errorBoundaryFallback` to `AppMetricsRoot` to mount one at the root. ([#47038](https://github.com/expo/expo/pull/47038) by [@tsapeta](https://github.com/tsapeta))
+- Capture React render-phase errors via the new `AppMetricsErrorBoundary`, recorded as non-fatal `exception` log events with the React component stack (`expo.error.component_stack`). Place it around any subtree with a `fallback`, or pass `errorBoundaryFallback` to `AppMetricsRoot` to mount one at the root. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
