@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix incorrect peer dependency range on `@react-native/jest-preset` ([#47440](https://github.com/expo/expo/pull/47440) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 57.0.0 — 2026-06-25
