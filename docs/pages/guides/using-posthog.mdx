@@ -44,7 +44,7 @@ Run the following command in your project directory:
 This command:
 
 - Prompts for a PostHog **region** (US or EU). The region sets your data residency and can't be changed after connecting.
-- Creates a PostHog organization and project for you, or reuses the existing one if you've already connected. (New PostHog accounts only; see [Troubleshooting](#troubleshooting).)
+- Creates a PostHog organization and project for you, or reuses the existing one if you've already connected. If your email already has a PostHog account, `connect` opens your browser to approve linking it, then continues.
 - Asks which features to set up: a multiselect of **Analytics**, **Session replay**, and **Error tracking**, all enabled by default.
 - If you enable **error tracking**, prompts you to paste a PostHog **personal API key**. Create one in PostHog under **Settings → Personal API keys** with the "Source map upload" preset. (Non-interactively, pass it with `--posthog-cli-api-key`.)
 - Installs the PostHog SDK and required Expo modules (plus the session-replay package if you keep that feature).
@@ -267,7 +267,7 @@ Confirm your **metro.config.js** is wrapped with `getPostHogExpoConfig` (see [So
 
 <Collapsible summary="'You already have a PostHog account'">
 
-The integration connects new PostHog accounts. If your email already has a PostHog account, set it up using the [manual steps](#manual-setup) instead.
+If your email already has a PostHog account, `connect` opens your browser to approve linking it to Expo, then continues. Approve the request in the browser tab it opens. If you declined or closed the tab, re-run `connect`.
 
 </Collapsible>
 
