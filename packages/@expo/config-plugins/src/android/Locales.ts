@@ -2,8 +2,8 @@ import type { ExpoConfig } from '@expo/config-types';
 import path from 'path';
 
 import { getResourceFolderAsync } from './Paths';
-import { withDangerousMod } from '../plugins/withDangerousMod';
 import type { ConfigPlugin } from '../Plugin.types';
+import { withDangerousMod } from '../plugins/withDangerousMod';
 import { writeXMLAsync } from '../utils/XML';
 import type { LocaleJson } from '../utils/locales';
 import { getResolvedLocalesAsync } from '../utils/locales';
