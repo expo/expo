@@ -14,19 +14,33 @@ internal func ensureFileDirectoryExists(_ fileUrl: URL) throws {
 }
 
 internal func readFileAsBase64(path: String, options: ReadingOptions) throws -> String {
+  return try readFileData(path: path, options: options).base64EncodedString(options: .endLineWithLineFeed)
+}
+
+internal func readFileAsString(path: String, encoding: String.Encoding, options: ReadingOptions) throws -> String {
+  guard let string = String(data: try readFileData(path: path, options: options), encoding: encoding) else {
+    throw FileNotReadableException(path)
+  }
+  return string
+}
+
+private func readFileData(path: String, options: ReadingOptions) throws -> Data {
   let file = FileHandle(forReadingAtPath: path)
 
   guard let file else {
     throw FileNotExistsException(path)
+  }
+  defer {
+    try? file.close()
   }
   if let position = options.position, position != 0 {
     // TODO: Handle these errors?
     try? file.seek(toOffset: UInt64(position))
   }
   if let length = options.length {
-    return file.readData(ofLength: length).base64EncodedString(options: .endLineWithLineFeed)
+    return file.readData(ofLength: length)
   }
-  return file.readDataToEndOfFile().base64EncodedString(options: .endLineWithLineFeed)
+  return file.readDataToEndOfFile()
 }
 
 internal func writeFileAsBase64(path: String, string: String) throws {
