@@ -65,9 +65,12 @@ class PlaceholderDownsampleStrategy(
 
 class ContentFitDownsampleStrategy(
   private val target: ImageViewWrapperTarget,
-  private val contentFit: ContentFit
+  private val contentFit: ContentFit,
+  private val decodeFormat: DecodeFormat
 ) : CustomDownsampleStrategy() {
   private var wasTriggered = false
+  private val safeStrategy = SafeDownsampleStrategy(decodeFormat)
+
   override fun getScaleFactor(
     sourceWidth: Int,
     sourceHeight: Int,
@@ -83,9 +86,12 @@ class ContentFitDownsampleStrategy(
       wasTriggered = true
     }
 
-    // The size of the container is unknown, we don't know what to do, so we just run the default scale.
+    // Always check the hardware bitmap size limit to prevent Canvas crashes on large images
+    val safeScale = safeStrategy.getScaleFactor(sourceWidth, sourceHeight, requestedWidth, requestedHeight)
+
+    // The size of the container is unknown, we need to use the safe scale factor to avoid Canvas crashes
     if (requestedWidth == Target.SIZE_ORIGINAL || requestedHeight == Target.SIZE_ORIGINAL) {
-      return 1f
+      return min(1f, safeScale)
     }
 
     val aspectRation = calculateScaleFactor(
@@ -95,8 +101,8 @@ class ContentFitDownsampleStrategy(
       requestedHeight.toFloat()
     )
 
-    // We don't want to upscale the image
-    return min(1f, aspectRation)
+    // We don't want to upscale the image or Canvas crashes on large images
+    return min(min(1f, aspectRation), safeScale)
   }
 
   private fun calculateScaleFactor(
