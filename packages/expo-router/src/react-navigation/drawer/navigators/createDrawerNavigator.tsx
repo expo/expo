@@ -15,6 +15,7 @@ import {
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../native';
+import { getBackStackAnchorName } from '../../routers/TabRouter';
 import { usePreloadRoutes } from '../../usePreloadRoutes';
 import { useTabPlaceholders } from '../../useTabPlaceholders';
 import type {
@@ -81,7 +82,16 @@ function DrawerNavigator({
       }),
     [state.routeNames, tabState.routes, tabDescriptors]
   );
-  usePreloadRoutes(state, navigation, nonLazyRouteNames);
+  // Keep the implicit back-stack anchor loaded too (deep links only materialize anchors declared
+  // in the linking config).
+  const routeNamesToPreload = React.useMemo(() => {
+    const anchorName = getBackStackAnchorName(state.routeNames, backBehavior, initialRouteName);
+    if (anchorName && !nonLazyRouteNames.includes(anchorName)) {
+      return [...nonLazyRouteNames, anchorName];
+    }
+    return nonLazyRouteNames;
+  }, [state.routeNames, nonLazyRouteNames, backBehavior, initialRouteName]);
+  usePreloadRoutes(state, navigation, routeNamesToPreload);
 
   return (
     <NavigatorTypeContext value="drawer">
