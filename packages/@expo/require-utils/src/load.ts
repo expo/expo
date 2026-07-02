@@ -76,13 +76,7 @@ interface Format {
 }
 
 function toFormat(filename: string, isLegacy: boolean): Format {
-  let mode:
-    | 'commonjs'
-    | 'module'
-    | 'module-typescript'
-    | 'commonjs-typescript'
-    | 'typescript'
-    | undefined;
+  let mode: Format['mode'];
   let legacy = false;
   if (filename.endsWith('.cjs')) {
     mode = 'commonjs';
