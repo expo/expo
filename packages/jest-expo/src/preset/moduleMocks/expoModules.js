@@ -7,7 +7,7 @@ module.exports = {
         CalendarNext: [
           { name: 'createCalendar', argumentsCount: 1, key: 'createCalendar' },
           { name: 'getCalendarById', argumentsCount: 1, key: 'getCalendarById' },
-          { name: 'getCalendarPermissions', argumentsCount: 0, key: 'getCalendarPermissions' },
+          { name: 'getCalendarPermissions', argumentsCount: 1, key: 'getCalendarPermissions' },
           { name: 'getCalendars', argumentsCount: 1, key: 'getCalendars' },
           { name: 'getDefaultCalendarSync', argumentsCount: 0, key: 'getDefaultCalendarSync' },
           { name: 'getEventById', argumentsCount: 1, key: 'getEventById' },
@@ -18,7 +18,7 @@ module.exports = {
           { name: 'presentPicker', argumentsCount: 0, key: 'presentPicker' },
           {
             name: 'requestCalendarPermissions',
-            argumentsCount: 0,
+            argumentsCount: 1,
             key: 'requestCalendarPermissions',
           },
           {
@@ -338,6 +338,8 @@ module.exports = {
           { name: 'getCachePathAsync', argumentsCount: 1, key: 'getCachePathAsync' },
           { name: 'loadAsync', argumentsCount: 2, key: 'loadAsync' },
           { name: 'prefetch', argumentsCount: 3, key: 'prefetch' },
+          { name: 'readFromCacheAsync', argumentsCount: 1, key: 'readFromCacheAsync' },
+          { name: 'writeToCacheAsync', argumentsCount: 2, key: 'writeToCacheAsync' },
         ],
         ExpoImageManipulator: [{ name: 'manipulate', argumentsCount: 1, key: 'manipulate' }],
         ExpoKeepAwake: [
@@ -376,6 +378,11 @@ module.exports = {
             argumentsCount: 1,
             key: 'getLastKnownPositionAsync',
           },
+          {
+            name: 'getMotionActivityPermissionsAsync',
+            argumentsCount: 0,
+            key: 'getMotionActivityPermissionsAsync',
+          },
           { name: 'getPermissionsAsync', argumentsCount: 0, key: 'getPermissionsAsync' },
           { name: 'getProviderStatusAsync', argumentsCount: 0, key: 'getProviderStatusAsync' },
           { name: 'hasServicesEnabledAsync', argumentsCount: 0, key: 'hasServicesEnabledAsync' },
@@ -400,6 +407,11 @@ module.exports = {
             argumentsCount: 0,
             key: 'requestForegroundPermissionsAsync',
           },
+          {
+            name: 'requestMotionActivityPermissionsAsync',
+            argumentsCount: 0,
+            key: 'requestMotionActivityPermissionsAsync',
+          },
           { name: 'requestPermissionsAsync', argumentsCount: 0, key: 'requestPermissionsAsync' },
           { name: 'reverseGeocodeAsync', argumentsCount: 1, key: 'reverseGeocodeAsync' },
           { name: 'startGeofencingAsync', argumentsCount: 2, key: 'startGeofencingAsync' },
@@ -411,6 +423,11 @@ module.exports = {
           { name: 'stopGeofencingAsync', argumentsCount: 1, key: 'stopGeofencingAsync' },
           { name: 'stopLocationUpdatesAsync', argumentsCount: 1, key: 'stopLocationUpdatesAsync' },
           { name: 'watchDeviceHeading', argumentsCount: 1, key: 'watchDeviceHeading' },
+          {
+            name: 'watchMotionActivityImplAsync',
+            argumentsCount: 1,
+            key: 'watchMotionActivityImplAsync',
+          },
           { name: 'watchPositionImplAsync', argumentsCount: 2, key: 'watchPositionImplAsync' },
         ],
         ExpoMailComposer: [
@@ -1111,7 +1128,9 @@ module.exports = {
           getCachePathAsync: { type: 'function' },
           loadAsync: { type: 'function' },
           prefetch: { type: 'function' },
+          readFromCacheAsync: { type: 'function' },
           removeListeners: { type: 'function' },
+          writeToCacheAsync: { type: 'function' },
         },
         ExpoImageManipulator: {
           addListener: { type: 'function' },
@@ -1146,6 +1165,7 @@ module.exports = {
           getCurrentPositionAsync: { type: 'function' },
           getForegroundPermissionsAsync: { type: 'function' },
           getLastKnownPositionAsync: { type: 'function' },
+          getMotionActivityPermissionsAsync: { type: 'function' },
           getPermissionsAsync: { type: 'function' },
           getProviderStatusAsync: { type: 'function' },
           hasServicesEnabledAsync: { type: 'function' },
@@ -1155,6 +1175,7 @@ module.exports = {
           removeWatchAsync: { type: 'function' },
           requestBackgroundPermissionsAsync: { type: 'function' },
           requestForegroundPermissionsAsync: { type: 'function' },
+          requestMotionActivityPermissionsAsync: { type: 'function' },
           requestPermissionsAsync: { type: 'function' },
           reverseGeocodeAsync: { type: 'function' },
           startGeofencingAsync: { type: 'function' },
@@ -1162,6 +1183,7 @@ module.exports = {
           stopGeofencingAsync: { type: 'function' },
           stopLocationUpdatesAsync: { type: 'function' },
           watchDeviceHeading: { type: 'function' },
+          watchMotionActivityImplAsync: { type: 'function' },
           watchPositionImplAsync: { type: 'function' },
         },
         ExpoMailComposer: {
@@ -1479,6 +1501,7 @@ module.exports = {
           addListener: { type: 'function' },
           completeRefresh: { type: 'function' },
           removeListeners: { type: 'function' },
+          withAnimation: { type: 'function' },
         },
         ExpoUpdates: {
           addListener: { type: 'function' },
@@ -1594,6 +1617,7 @@ module.exports = {
             'contentInsetAdjustmentBehavior',
             'decelerationRate',
             'directionalLockEnabled',
+            'hideKeyboardAccessoryView',
             'injectedJavaScript',
             'injectedJavaScriptBeforeContentLoaded',
             'injectedJavaScriptObject',
