@@ -9,7 +9,7 @@ import path from 'node:path';
 import { Log } from '../../../../log';
 import { isPathInside } from '../../../../utils/dir';
 import { openInEditorAsync } from '../../../../utils/editor';
-import { shouldThrottleRemoteDevCall } from '../../../../utils/net';
+import { shouldThrottleRemoteDevCall, type SocketTrustOptions } from '../../../../utils/net';
 import { compression } from './compression';
 import { createEventsSocket } from './createEventSocket';
 import { createMessagesSocket } from './createMessageSocket';
@@ -17,6 +17,7 @@ import { createMessagesSocket } from './createMessageSocket';
 interface MetroMiddlewareOptions {
   getMetroBundler(): MetroBundler;
   serverBaseUrl: string;
+  socketTrustOptions?: SocketTrustOptions;
 }
 
 interface StackFrame {
@@ -28,7 +29,11 @@ export function createMetroMiddleware(
   metroConfig: Pick<MetroConfig, 'projectRoot'>,
   options: MetroMiddlewareOptions
 ) {
-  const messages = createMessagesSocket({ logger: Log, serverBaseUrl: options.serverBaseUrl });
+  const messages = createMessagesSocket({
+    logger: Log,
+    serverBaseUrl: options.serverBaseUrl,
+    socketTrustOptions: options.socketTrustOptions,
+  });
   const events = createEventsSocket(messages);
 
   const middleware = connect()

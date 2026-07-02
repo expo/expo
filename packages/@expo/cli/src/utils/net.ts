@@ -1,7 +1,13 @@
 import type { IncomingHttpHeaders } from 'node:http';
-import type { Socket } from 'node:net';
+import { BlockList, isIP, type Socket } from 'node:net';
 
 const ipv6To4Prefix = '::ffff:';
+
+export type SocketRemoteFamily = 'IPv4' | 'IPv6';
+
+export interface SocketTrustOptions {
+  trustedProxyCIDRs?: readonly string[];
+}
 
 export const isLocalSocket = (socket: Socket): boolean => {
   let { localAddress, remoteAddress, remoteFamily } = socket;
@@ -19,6 +25,61 @@ export const isLocalSocket = (socket: Socket): boolean => {
 
   return remoteAddress === '::1' || remoteAddress.startsWith('127.');
 };
+
+export const isTrustedDevServerSocket = (
+  socket: Socket,
+  options: SocketTrustOptions = {}
+): boolean => {
+  return isLocalSocket(socket) || isTrustedProxySocket(socket, options);
+};
+
+function isTrustedProxySocket(socket: Socket, options: SocketTrustOptions): boolean {
+  if (!socket.remoteAddress || !options.trustedProxyCIDRs?.length) {
+    return false;
+  }
+
+  const blockList = createTrustedProxyBlockList(options.trustedProxyCIDRs);
+  if (!blockList) {
+    return false;
+  }
+
+  const ipVersion = isIP(socket.remoteAddress);
+  if (ipVersion === 0) {
+    return false;
+  }
+
+  try {
+    return blockList.check(socket.remoteAddress, ipVersion === 4 ? 'ipv4' : 'ipv6');
+  } catch {
+    return false;
+  }
+}
+
+function createTrustedProxyBlockList(cidrs: readonly string[]): BlockList | null {
+  const blockList = new BlockList();
+  let hasValidCIDR = false;
+
+  for (const cidr of cidrs) {
+    const [address, prefixLengthString] = cidr.trim().split('/');
+    const prefixLength = Number(prefixLengthString);
+    const ipVersion = isIP(address ?? '');
+
+    if (
+      !address ||
+      !Number.isInteger(prefixLength) ||
+      ipVersion === 0 ||
+      prefixLength < 0 ||
+      prefixLength > (ipVersion === 4 ? 32 : 128)
+    ) {
+      continue;
+    }
+
+    blockList.addSubnet(address, prefixLength, ipVersion === 4 ? 'ipv4' : 'ipv6');
+    hasValidCIDR = true;
+  }
+
+  return hasValidCIDR ? blockList : null;
+}
 
 interface AbstractIncomingMessage {
   headers: IncomingHttpHeaders | Record<string, string | string[]>;

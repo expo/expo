@@ -381,11 +381,15 @@ export async function instantiateMetroAsync(
   const serverBaseUrl = metroBundler
     .getUrlCreator()
     .constructUrl({ scheme: 'http', hostType: 'localhost' });
+  const trustedProxyCIDRs = env.EXPO_UNSTABLE_DEV_SERVER_TRUSTED_PROXY_CIDRS.split(',')
+    .map((cidr) => cidr.trim())
+    .filter(Boolean);
+  const socketTrustOptions = trustedProxyCIDRs.length > 0 ? { trustedProxyCIDRs } : undefined;
 
   // Create the core middleware stack for Metro, including websocket listeners
   const { middleware, messagesSocket, eventsSocket, websocketEndpoints } = createMetroMiddleware(
     metroConfig,
-    { getMetroBundler, serverBaseUrl }
+    { getMetroBundler, serverBaseUrl, socketTrustOptions }
   );
 
   if (!isExporting) {
@@ -396,6 +400,7 @@ export async function instantiateMetroAsync(
     const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware({
       serverBaseUrl,
       reporter,
+      socketTrustOptions,
     });
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
