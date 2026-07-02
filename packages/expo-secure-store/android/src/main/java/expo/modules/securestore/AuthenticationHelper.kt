@@ -22,7 +22,7 @@ class AuthenticationHelper(
 
   suspend fun authenticateCipher(cipher: Cipher, requiresAuthentication: String?, title: String): Cipher {
     if (requiresAuthentication != null) {
-      val isDeviceCredentialsRequired = requiresAuthentication == "deviceCredentials"
+      val isDeviceCredentialsRequired = requiresAuthentication == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
       return openAuthenticationPrompt(cipher, title, isDeviceCredentialsRequired).cryptoObject?.cipher
         ?: throw AuthenticationException("Couldn't get cipher from authentication result")
     }

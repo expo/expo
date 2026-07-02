@@ -140,7 +140,9 @@ open class SecureStoreModule : Module() {
 
     val scheme = encryptedItem.optString(SCHEME_PROPERTY).takeIf { it.isNotEmpty() }
       ?: throw DecryptException("Could not find the encryption scheme used for key: $key", key, options.keychainService)
-    val requireAuthentication = encryptedItem.optString(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, null)
+    val requireAuthentication = normalizeAuthenticationRequirement(
+      encryptedItem.opt(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY)
+    )
     val usesKeystoreSuffix = encryptedItem.optBoolean(USES_KEYSTORE_SUFFIX_PROPERTY, false)
 
     try {
@@ -216,7 +218,7 @@ open class SecureStoreModule : Module() {
       val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.isAuthenticationRequired, options.isDeviceCredentialsRequired)
       val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.isAuthenticationRequired, options.authenticationPrompt, authenticationHelper, options.isDeviceCredentialsRequired)
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
-      saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
+      saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.authenticationRequirement, options.keychainService)
 
       // If a legacy value exists under this key we remove it to avoid unexpected errors in the future
       if (prefs.contains(key)) {
@@ -295,7 +297,9 @@ open class SecureStoreModule : Module() {
       }
 
       val entryKeychainService = jsonEntry.optString(KEYSTORE_ALIAS_PROPERTY) ?: continue
-      val requireAuthentication = jsonEntry.optString(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, null)
+      val requireAuthentication = normalizeAuthenticationRequirement(
+        jsonEntry.opt(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY)
+      )
 
       // Entries which don't require authentication use separate keychains which can't be invalidated,
       // so we shouldn't delete them.
@@ -376,13 +380,14 @@ open class SecureStoreModule : Module() {
     usesKeystoreSuffix: Boolean
   ): E? {
     return if (usesKeystoreSuffix) {
-      val (requireAuthBool, isDeviceCredentialsRequired) = when (requireAuthentication) {
-        null, "", "false" -> false to false
-        "biometry", "true" -> true to false
-        "deviceCredentials" -> true to true
-        else -> throw InvalidAuthenticationOptionException(requireAuthentication)
-      }
-      getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthBool, isDeviceCredentialsRequired)
+      val authenticationRequirement = normalizeAuthenticationRequirement(requireAuthentication)
+      getKeyEntry(
+        keyStoreEntryClass,
+        encryptor,
+        options,
+        authenticationRequirement != null,
+        authenticationRequirement == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
+      )
     } else {
       getLegacyKeyEntry(keyStoreEntryClass, encryptor, options)
     }

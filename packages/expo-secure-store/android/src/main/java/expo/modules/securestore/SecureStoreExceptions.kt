@@ -24,7 +24,7 @@ internal class KeyStoreException(message: String?) :
   CodedException("An error occurred when accessing the keystore: ${message ?: "unknown"}")
 
 internal class InvalidAuthenticationOptionException(value: String?) :
-  CodedException("Invalid value for requireAuthentication: \"$value\". Expected \"biometry\", \"deviceCredentials\", or null.")
+  CodedException("Invalid value for requireAuthentication: \"$value\". Expected true, false, \"biometry\", \"deviceCredentials\", or null.")
 
 internal class UnsupportedDeviceCredentialsException :
   CodedException("requireAuthentication: 'deviceCredentials' (device credential fallback) requires Android API 30 or higher")

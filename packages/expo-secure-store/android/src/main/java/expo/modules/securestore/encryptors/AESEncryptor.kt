@@ -5,10 +5,13 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import expo.modules.securestore.AuthenticationHelper
+import expo.modules.securestore.AUTHENTICATION_METHOD_BIOMETRY
+import expo.modules.securestore.AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
 import expo.modules.securestore.DecryptException
 import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
 import expo.modules.securestore.UnsupportedDeviceCredentialsException
+import expo.modules.securestore.normalizeAuthenticationRequirement
 import org.json.JSONException
 import org.json.JSONObject
 import java.nio.charset.StandardCharsets
@@ -105,7 +108,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
 
     val gcmSpec = cipher.parameters.getParameterSpec(GCMParameterSpec::class.java)
     val requireAuthenticationString = if (requireAuthentication) {
-      if (isDeviceCredentialsRequired) "deviceCredentials" else "biometry"
+      if (isDeviceCredentialsRequired) AUTHENTICATION_METHOD_DEVICE_CREDENTIALS else AUTHENTICATION_METHOD_BIOMETRY
     } else {
       null
     }
@@ -146,7 +149,9 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     val ivBytes = Base64.decode(ivString, Base64.DEFAULT)
     val gcmSpec = GCMParameterSpec(authenticationTagLength, ivBytes)
     val cipher = Cipher.getInstance(AES_CIPHER)
-    val requiresAuthentication = encryptedItem.optString(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, null)
+    val requiresAuthentication = normalizeAuthenticationRequirement(
+      encryptedItem.opt(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY)
+    )
 
     if (authenticationTagLength < MIN_GCM_AUTHENTICATION_TAG_LENGTH) {
       throw DecryptException("Authentication tag length must be at least $MIN_GCM_AUTHENTICATION_TAG_LENGTH bits long", key, options.keychainService)
