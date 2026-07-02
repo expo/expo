@@ -6,6 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { useRouteNode, useContextKey } from '../Route';
 import { useRouteInfo } from '../hooks';
 import { resolveHref } from '../link/href';
+import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
 import type {
   DefaultNavigatorOptions,
   ParamListBase,
@@ -221,11 +222,13 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   );
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
-    <TabTriggerMapContext.Provider value={triggerMap}>
-      <NavigatorContext.Provider value={navigatorContextValue}>
-        <RNNavigationContent>{children}</RNNavigationContent>
-      </NavigatorContext.Provider>
-    </TabTriggerMapContext.Provider>
+    <NavigatorTypeContext value="tab">
+      <TabTriggerMapContext.Provider value={triggerMap}>
+        <NavigatorContext.Provider value={navigatorContextValue}>
+          <RNNavigationContent>{children}</RNNavigationContent>
+        </NavigatorContext.Provider>
+      </TabTriggerMapContext.Provider>
+    </NavigatorTypeContext>
   )) as TabsContextValue['NavigationContent'];
 
   return {

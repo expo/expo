@@ -3,6 +3,7 @@
 import React, { use, useCallback, useMemo, useRef } from 'react';
 import type { NavigatorArgs, NavigatorDescriptor, NavigatorRoute } from 'standard-navigation';
 
+import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
 import { useStableTabOrder } from '../react-navigation/core/useStableTabOrder';
 import type {
   ParamListBase,
@@ -173,18 +174,20 @@ function NativeTabsContent({
     Record<Exclude<keyof typeof rest, keyof NativeTabsViewProps>, never> = rest;
 
   return (
-    <NativeTabsContext value>
-      <NativeTabsView
-        {...nativeTabsViewProps}
-        focusedIndex={focusedIndex}
-        // Provenance should only be sent with updates, and updates
-        // on JS side are only triggered by rerender, so passing ref
-        // here is ok.
-        provenance={provenanceRef.current}
-        tabs={visibleTabs}
-        onTabChange={onTabChange}
-      />
-    </NativeTabsContext>
+    <NavigatorTypeContext value="tab">
+      <NativeTabsContext value>
+        <NativeTabsView
+          {...nativeTabsViewProps}
+          focusedIndex={focusedIndex}
+          // Provenance should only be sent with updates, and updates
+          // on JS side are only triggered by rerender, so passing ref
+          // here is ok.
+          provenance={provenanceRef.current}
+          tabs={visibleTabs}
+          onTabChange={onTabChange}
+        />
+      </NativeTabsContext>
+    </NavigatorTypeContext>
   );
 }
 
