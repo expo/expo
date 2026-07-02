@@ -22,6 +22,56 @@ internal struct CornerSize: Record {
   @Field var height: Int = 0
 }
 
+// MARK: - Stroke Style
+
+internal enum StrokeLineCap: String, Enumerable {
+  case butt
+  case round
+  case square
+
+  func toCGLineCap() -> CGLineCap {
+    switch self {
+    case .butt: return .butt
+    case .round: return .round
+    case .square: return .square
+    }
+  }
+}
+
+internal enum StrokeLineJoin: String, Enumerable {
+  case miter
+  case round
+  case bevel
+
+  func toCGLineJoin() -> CGLineJoin {
+    switch self {
+    case .miter: return .miter
+    case .round: return .round
+    case .bevel: return .bevel
+    }
+  }
+}
+
+internal struct StrokeStyleConfig: Record {
+  @Field var lineWidth: CGFloat = 1
+  @Field var lineCap: StrokeLineCap = .butt
+  @Field var lineJoin: StrokeLineJoin = .miter
+  @Field var miterLimit: CGFloat = 10
+  @Field var dash: [CGFloat] = []
+  @Field var dashPhase: CGFloat = 0
+
+  func toStrokeStyle() -> StrokeStyle {
+    return StrokeStyle(
+      lineWidth: lineWidth,
+      lineCap: lineCap.toCGLineCap(),
+      lineJoin: lineJoin.toCGLineJoin(),
+      miterLimit: miterLimit,
+      dash: dash,
+      dashPhase: dashPhase
+    )
+  }
+}
+
 // MARK: - Shape Helper Functions
 
 internal func makeCapsule(style: RoundedCornerStyle?) -> Capsule {
