@@ -1,11 +1,12 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
 import { MagicWand01Icon } from '@expo/styleguide-icons/outline/MagicWand01Icon';
+import { useMemo } from 'react';
 
+import { useCopy } from '~/common/useCopy';
 import { CALLOUT, FOOTNOTE } from '~/ui/components/Text';
 
 import { buildNativeUpgradePrompt } from './buildUpgradePrompt';
-import { useCopyToClipboard } from './useCopyToClipboard';
 
 type NativeUpgradePromptCalloutProps = {
   fromVersion: string;
@@ -18,20 +19,19 @@ export function NativeUpgradePromptCallout({
   toVersion,
   diff,
 }: NativeUpgradePromptCalloutProps) {
-  const { copied, copy } = useCopyToClipboard();
+  const url =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}${window.location.pathname}?fromSdk=${fromVersion}&toSdk=${toVersion}`
+      : undefined;
+  const prompt = useMemo(
+    () => (diff ? buildNativeUpgradePrompt({ from: fromVersion, to: toVersion, diff, url }) : ''),
+    [fromVersion, toVersion, diff, url]
+  );
+  const { copiedIsVisible, onCopyAsync } = useCopy(prompt);
 
   if (!diff) {
     return null;
   }
-
-  const onCopyPrompt = () => {
-    const url =
-      typeof window !== 'undefined'
-        ? `${window.location.origin}${window.location.pathname}?fromSdk=${fromVersion}&toSdk=${toVersion}`
-        : undefined;
-
-    copy(buildNativeUpgradePrompt({ from: fromVersion, to: toVersion, diff, url }));
-  };
 
   return (
     <div
@@ -55,11 +55,11 @@ export function NativeUpgradePromptCallout({
         size="sm"
         leftSlot={<ClipboardIcon aria-hidden="true" className="icon-sm" />}
         className="shrink-0 justify-center border-palette-blue11 bg-palette-blue11 text-palette-blue1 dark:border-palette-blue9 dark:bg-palette-blue9 dark:text-palette-blue2 dark:hocus:bg-palette-blue9 hocus:bg-palette-blue11 max-sm:w-full"
-        onClick={onCopyPrompt}>
-        {copied ? 'Copied!' : 'Copy prompt'}
+        onClick={() => void onCopyAsync()}>
+        {copiedIsVisible ? 'Copied!' : 'Copy prompt'}
       </Button>
       <span role="status" aria-live="polite" className="sr-only">
-        {copied ? 'Prompt copied to clipboard' : ''}
+        {copiedIsVisible ? 'Prompt copied to clipboard' : ''}
       </span>
     </div>
   );

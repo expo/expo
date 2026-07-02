@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { NativeUpgradePromptCallout } from './NativeUpgradePromptCallout';
 
@@ -41,27 +41,29 @@ describe('NativeUpgradePromptCallout', () => {
     expect(screen.getByText(/ai agent/i)).toBeInTheDocument();
   });
 
-  it('copies an agent-runnable prompt with instructions, the diff, and a version-pinned URL', () => {
+  it('copies an agent-runnable prompt with instructions, the diff, and a version-pinned URL', async () => {
     const writeText = setupClipboard();
 
     render(<NativeUpgradePromptCallout fromVersion="52" toVersion="53" diff={DIFF} />);
 
     fireEvent.click(screen.getByRole('button', { name: /copy prompt/i }));
 
-    expect(writeText).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(writeText).toHaveBeenCalledTimes(1);
+    });
     const copied = writeText.mock.calls[0][0] as string;
     expect(copied).toContain('from SDK 52 to SDK 53');
     expect(copied).toContain(DIFF);
     expect(copied).toContain('fromSdk=52&toSdk=53');
   });
 
-  it('shows copied feedback after copying the prompt', () => {
+  it('shows copied feedback after copying the prompt', async () => {
     setupClipboard();
 
     render(<NativeUpgradePromptCallout fromVersion="52" toVersion="53" diff={DIFF} />);
 
     fireEvent.click(screen.getByRole('button', { name: /copy prompt/i }));
 
-    expect(screen.getByText('Copied!')).toBeInTheDocument();
+    expect(await screen.findByText('Copied!')).toBeInTheDocument();
   });
 });
