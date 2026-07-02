@@ -1,14 +1,16 @@
-import { updateBuildGradleForPCH, withAndroidPrecompiledHeaders } from '../android';
+import { withAppBuildGradle } from '@expo/config-plugins/build/plugins/android-plugins';
 
-const mockWithAppBuildGradle = jest.fn().mockImplementation((config) => config);
+import { updateBuildGradleForPCH, withAndroidPrecompiledHeaders } from '../android';
 
 jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins/build/plugins/android-plugins');
   return {
     ...plugins,
-    withAppBuildGradle: mockWithAppBuildGradle,
+    withAppBuildGradle: jest.fn().mockImplementation((config) => config),
   };
 });
+
+const mockWithAppBuildGradle = withAppBuildGradle as jest.Mock;
 
 jest.mock('@expo/config-plugins/build/plugins/withDangerousMod', () => {
   const mod = jest.requireActual('@expo/config-plugins/build/plugins/withDangerousMod');

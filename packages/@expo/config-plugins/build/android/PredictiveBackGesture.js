@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getPredictiveBackGestureValue = getPredictiveBackGestureValue;
 exports.setPredictiveBackGesture = setPredictiveBackGesture;
 exports.withPredictiveBackGesture = void 0;

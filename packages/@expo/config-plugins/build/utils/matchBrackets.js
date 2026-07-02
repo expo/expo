@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.findMatchingBracketPosition = findMatchingBracketPosition;
 function findMatchingBracketPosition(contents, bracket, offset = 0) {
   // search first occurrence of `bracket`

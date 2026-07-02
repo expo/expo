@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getPrebuildConfigAsync = getPrebuildConfigAsync;
 function _config() {
   const data = require("@expo/config");

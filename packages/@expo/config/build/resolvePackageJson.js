@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getRootPackageJsonPath = getRootPackageJsonPath;
 function _fs() {
   const data = require("fs");

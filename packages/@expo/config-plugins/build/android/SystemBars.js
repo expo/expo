@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.withSystemBars = exports.setSystemBarsStyles = void 0;
 function _Styles() {
   const data = require("./Styles");

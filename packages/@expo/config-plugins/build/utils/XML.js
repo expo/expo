@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports._processAndroidXML = _processAndroidXML;
 exports.escapeAndroidString = escapeAndroidString;
 exports.format = format;

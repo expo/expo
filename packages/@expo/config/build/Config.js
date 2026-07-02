@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 var _exportNames = {
   getPlatformsFromConfig: true,
   getConfig: true,
@@ -114,12 +112,7 @@ Object.keys(_Config).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
   if (key in exports && exports[key] === _Config[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _Config[key];
-    }
-  });
+  exports[key] = _Config[key];
 });
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 let hasWarnedAboutRootConfig = false;

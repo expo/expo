@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.PORTRAIT_ORIENTATIONS = exports.LANDSCAPE_ORIENTATIONS = void 0;
 exports.getOrientation = getOrientation;
 exports.setOrientation = setOrientation;

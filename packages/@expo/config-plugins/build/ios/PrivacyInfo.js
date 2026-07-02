@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.mergePrivacyInfo = mergePrivacyInfo;
 exports.setPrivacyInfo = setPrivacyInfo;
 exports.withPrivacyInfo = withPrivacyInfo;
