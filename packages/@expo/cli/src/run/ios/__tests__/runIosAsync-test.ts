@@ -36,6 +36,9 @@ jest.mock('../../../utils/env', () => ({
 jest.mock('../../startBundler', () => ({
   startBundlerAsync: jest.fn(() => ({
     startAsync: jest.fn(),
+    getDefaultDevServer: jest.fn(() => ({
+      getDevServerUrl: jest.fn(() => null),
+    })),
   })),
 }));
 
