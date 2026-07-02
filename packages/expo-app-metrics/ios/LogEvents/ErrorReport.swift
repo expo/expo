@@ -10,11 +10,13 @@ struct ErrorReport {
   var type: String?
   var message: String = ""
   var stacktrace: String?
+  var componentStack: String?
   var isFatal: Bool = false
 
   /// How the error was captured. A closed set so the `expo.error.source` attribute stays consistent.
   enum Source: String, Enumerable {
     case global
+    case errorBoundary
   }
 
   /// Builds the `exception` log event for the live path.
@@ -24,12 +26,16 @@ struct ErrorReport {
       type: type,
       message: message,
       stacktrace: stacktrace,
+      componentStack: componentStack,
       isFatal: isFatal
     )
   }
 
   /// Snapshots this report for durable on-disk storage, capturing the session it belongs to and the
   /// time it happened (both resolved now, since by drain time the main session has rotated).
+  ///
+  /// Only fatal errors are persisted, and those come from the global handler, which has no React
+  /// component stack, so `componentStack` isn't carried through this path.
   func toPendingError(sessionId: String) -> PendingErrorStore.PendingError {
     return PendingErrorStore.PendingError(
       source: source.rawValue,
@@ -51,6 +57,7 @@ extension PendingErrorStore.PendingError {
       type: type,
       message: message,
       stacktrace: stacktrace,
+      componentStack: nil,
       isFatal: true,
       timestamp: timestamp
     )
@@ -64,22 +71,28 @@ extension PendingErrorStore.PendingError {
 /// `error`. Shared by the live and ingested-fatal paths so both events keep the same shape.
 ///
 /// Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted (the boxed optionals
-/// encode as JSON `null`), so every `exception` event carries the same attribute keys.
+/// encode as JSON `null`), so every `exception` event carries the same attribute keys. The React
+/// component stack only exists for error-boundary captures, so `expo.error.component_stack` is
+/// omitted entirely when absent rather than logged as `null` on every event.
 private func makeExceptionLogRecord(
   source: String,
   type: String?,
   message: String,
   stacktrace: String?,
+  componentStack: String?,
   isFatal: Bool,
   timestamp: String = Date.now.ISO8601Format()
 ) -> LogRecord {
-  let attributes: [String: Any] = [
+  var attributes: [String: Any] = [
     "expo.error.source": source,
     "expo.error.is_fatal": isFatal,
     "exception.type": type as Any,
     "exception.message": message,
     "exception.stacktrace": stacktrace as Any,
   ]
+  if let componentStack {
+    attributes["expo.error.component_stack"] = componentStack
+  }
   return LogRecord(
     name: "exception",
     attributes: attributes,
