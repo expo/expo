@@ -5,9 +5,9 @@ import { sync as globSync } from 'glob';
 import crypto from 'node:crypto';
 import path from 'path';
 
-import { projectRoot, setupTestProjectWithOptionsAsync, findProjectFiles } from './utils';
 import { toPosixPath } from '../../src/utils/filePath';
 import { executeExpoAsync } from '../utils/expo';
+import { projectRoot, setupTestProjectWithOptionsAsync, findProjectFiles } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -179,9 +179,7 @@ describe('Export DOM Components', () => {
     expect(outputFilesWithoutMap).toEqual(
       expect.arrayContaining([
         expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc$/),
-        expect.stringMatching(
-          /_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/
-        ),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/),
         'assetmap.json',
 
         // icon png

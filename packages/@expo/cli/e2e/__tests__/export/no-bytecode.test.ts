@@ -4,9 +4,9 @@ import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 

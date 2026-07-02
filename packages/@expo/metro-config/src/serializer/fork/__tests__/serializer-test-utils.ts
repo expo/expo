@@ -3,7 +3,6 @@ import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import countLines from '@expo/metro/metro/lib/countLines';
 import assert from 'assert';
 
-import { microBundle, projectRoot } from './mini-metro';
 import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
 import { treeShakeSerializer } from '../../treeShakeSerializerPlugin';
 import type {
@@ -12,6 +11,7 @@ import type {
   SerializerPlugin,
 } from '../../withExpoSerializers';
 import { createSerializerFromSerialProcessors } from '../../withExpoSerializers';
+import { microBundle, projectRoot } from './mini-metro';
 
 // General helper to reduce boilerplate
 export async function serializeToWithGraph(

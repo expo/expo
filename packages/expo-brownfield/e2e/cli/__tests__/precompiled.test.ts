@@ -197,7 +197,13 @@ describe('enumerateSpmDepsXcframeworks', () => {
   });
 
   const seedSpmDep = (root: string, name: string, flavor: string) => {
-    const xcfDir = path.join(root, 'packages/precompile/.build/.spm-deps', name, flavor, `${name}.xcframework`);
+    const xcfDir = path.join(
+      root,
+      'packages/precompile/.build/.spm-deps',
+      name,
+      flavor,
+      `${name}.xcframework`
+    );
     fs.mkdirSync(xcfDir, { recursive: true });
   };
 
@@ -503,10 +509,7 @@ describe('enumerateAllPrebuildModules', () => {
     fs.mkdirSync(podDir, { recursive: true });
     fs.mkdirSync(path.join(podDir, 'ExpoImage.xcframework'));
     fs.mkdirSync(path.join(podDir, 'artifacts'));
-    fs.writeFileSync(
-      path.join(podDir, 'artifacts', 'ExpoImage-release.tar.gz'),
-      ''
-    );
+    fs.writeFileSync(path.join(podDir, 'artifacts', 'ExpoImage-release.tar.gz'), '');
     seedExpoImageNpm(tmpDir);
 
     // Without host-provided, the missing SDWebImage would trigger CLIError.handle (which calls
