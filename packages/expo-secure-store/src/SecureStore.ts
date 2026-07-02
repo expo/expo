@@ -280,17 +280,32 @@ function isValidValue(value: string) {
   return typeof value === 'string';
 }
 
-function normalizeOptions(options: SecureStoreOptions): SecureStoreOptions {
-  // For backward compatibility, passing `true` is equivalent to `'biometry'`.
-  if (options.requireAuthentication === true) {
-    return {
-      ...options,
-      requireAuthentication: 'biometry',
-    };
+function normalizeAuthenticationRequirement(
+  value: unknown
+): SecureStoreOptions['requireAuthentication'] {
+  switch (value) {
+    case undefined:
+    case null:
+    case false:
+    case '':
+    case 'false':
+      return undefined;
+    case true:
+    case 'true':
+    case 'biometry':
+      return 'biometry';
+    case 'deviceCredentials':
+      return 'deviceCredentials';
+    default:
+      throw new Error(
+        `Invalid value for requireAuthentication: ${JSON.stringify(value)}. Expected true, false, "biometry", "deviceCredentials", or null.`
+      );
   }
+}
 
+function normalizeOptions(options: SecureStoreOptions): SecureStoreOptions {
   return {
     ...options,
-    requireAuthentication: options.requireAuthentication || undefined,
+    requireAuthentication: normalizeAuthenticationRequirement(options.requireAuthentication),
   };
 }

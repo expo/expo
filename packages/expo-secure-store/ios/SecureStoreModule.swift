@@ -41,6 +41,7 @@ public final class SecureStoreModule: Module {
     }
 
     AsyncFunction("deleteValueWithKeyAsync") { (key: String, options: SecureStoreOptions) in
+      _ = try options.resolvedAuthenticationRequirement()
       SecItemDelete(query(with: key, options: options) as CFDictionary)
       for suffix in ["no-auth", "auth", "auth-deviceCredentials"] {
         SecItemDelete(query(with: key, options: options, serviceSuffix: suffix) as CFDictionary)
@@ -77,6 +78,8 @@ public final class SecureStoreModule: Module {
       throw InvalidKeyException()
     }
 
+    _ = try options.resolvedAuthenticationRequirement()
+
     for suffix in ["no-auth", "auth", "auth-deviceCredentials"] {
       if let item = try searchKeyChain(with: key, options: options, serviceSuffix: suffix) {
         return String(data: item, encoding: .utf8)
@@ -91,7 +94,8 @@ public final class SecureStoreModule: Module {
   }
 
   private func set(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
-    let currentSuffix = options.serviceSuffix
+    let authenticationRequirement = try options.resolvedAuthenticationRequirement()
+    let currentSuffix = options.serviceSuffix(for: authenticationRequirement)
     var setItemQuery = query(with: key, options: options, serviceSuffix: currentSuffix)
 
     let valueData = value.data(using: .utf8)
@@ -99,17 +103,18 @@ public final class SecureStoreModule: Module {
 
     let accessibility = attributeWith(options: options)
 
-    if !options.isAuthenticationRequired {
+    if authenticationRequirement == nil {
       setItemQuery[kSecAttrAccessible as String] = accessibility
     } else {
-      if !options.isDeviceCredentialsRequired {
+      let isDeviceCredentialsRequired = authenticationRequirement == "deviceCredentials"
+      if !isDeviceCredentialsRequired {
         guard let _ = Bundle.main.infoDictionary?["NSFaceIDUsageDescription"] as? String else {
           throw MissingPlistKeyException()
         }
       }
 
       var error: Unmanaged<CFError>? = nil
-      let accessControlFlag: SecAccessControlCreateFlags = options.isDeviceCredentialsRequired ? .userPresence : .biometryCurrentSet
+      let accessControlFlag: SecAccessControlCreateFlags = isDeviceCredentialsRequired ? .userPresence : .biometryCurrentSet
 
       guard let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, accessControlFlag, &error) else {
         let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
@@ -135,7 +140,8 @@ public final class SecureStoreModule: Module {
   }
 
   private func update(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
-    var query = query(with: key, options: options, serviceSuffix: options.serviceSuffix)
+    let authenticationRequirement = try options.resolvedAuthenticationRequirement()
+    var query = query(with: key, options: options, serviceSuffix: options.serviceSuffix(for: authenticationRequirement))
 
     let valueData = value.data(using: .utf8)
     let updateDictionary = [kSecValueData as String: valueData]
