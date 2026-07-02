@@ -8,7 +8,10 @@ declare global {
         }
     }
 }
-type Format = 'commonjs' | 'module' | 'module-typescript' | 'commonjs-typescript' | 'typescript';
+interface Format {
+    mode: 'commonjs' | 'module' | 'module-typescript' | 'commonjs-typescript' | 'typescript' | undefined;
+    legacy: boolean;
+}
 export interface ModuleOptions {
     paths?: string[];
 }

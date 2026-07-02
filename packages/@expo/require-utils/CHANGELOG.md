@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Automatically switch to ESM mode when evaluated module contains non-qualifying module syntax, like `import.meta` or top-level await ([#47441](https://github.com/expo/expo/pull/47441) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Annotate more top-level errors when evaluating modules ([#47441](https://github.com/expo/expo/pull/47441) by [@kitten](https://github.com/kitten))
 
 ## 55.0.5 — 2026-05-05
 
