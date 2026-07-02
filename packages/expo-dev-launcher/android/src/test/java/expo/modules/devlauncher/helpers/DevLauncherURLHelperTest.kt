@@ -44,4 +44,24 @@ internal class DevLauncherURLHelperTest {
       )
     ).isFalse()
   }
+
+  @Test
+  fun `tests DevLauncherUrl reads initialUrl query param`() {
+    val devLauncherUrl = DevLauncherUrl(
+      Uri.parse("scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081&initialUrl=myapp%3A%2F%2Ffoo%2Fbar%3Fbaz%3D1")
+    )
+
+    Truth.assertThat(devLauncherUrl.url).isEqualTo(Uri.parse("http://localhost:8081"))
+    Truth.assertThat(devLauncherUrl.initialUrl).isEqualTo(Uri.parse("myapp://foo/bar?baz=1"))
+  }
+
+  @Test
+  fun `tests DevLauncherUrl reads initialURL query param alias`() {
+    val devLauncherUrl = DevLauncherUrl(
+      Uri.parse("scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081&initialURL=myapp%3A%2F%2Ffoo%2Fbar")
+    )
+
+    Truth.assertThat(devLauncherUrl.url).isEqualTo(Uri.parse("http://localhost:8081"))
+    Truth.assertThat(devLauncherUrl.initialUrl).isEqualTo(Uri.parse("myapp://foo/bar"))
+  }
 }

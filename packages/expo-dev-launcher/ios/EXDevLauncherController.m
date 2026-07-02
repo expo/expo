@@ -320,6 +320,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return true;
   }
 
+  EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
+  if (devLauncherUrl.initialUrl) {
+    self.pendingDeepLinkRegistry.pendingDeepLink = devLauncherUrl.initialUrl;
+  }
+
   [self loadApp:url onSuccess:nil onError:^(NSError *error) {
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
