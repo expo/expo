@@ -1,3 +1,8 @@
+
+// Top-level async to ensure esm modules are loaded correctly
+// require of esm in modern Node works(*)
+await undefined;
+
 export default async function handler(request) {
   const url = new URL(request.url);
 
@@ -16,9 +21,15 @@ export default async function handler(request) {
 };
 
 export const webSocketHandlers = {
-  '/ws': (socket) => {
+  '/ws': (socket, request) => {
+    const url = new URL(request.url);
     socket.send(
-      JSON.stringify({ type: 'welcome', message: 'Connected to the Hello World plugin server.' })
+      JSON.stringify({
+        type: 'welcome',
+        message: 'Connected to the Hello World plugin server.',
+        pathname: url.pathname,
+        search: url.search,
+      })
     );
     socket.on('message', (data) => {
       socket.send(JSON.stringify({ type: 'echo', message: data.toString() }));

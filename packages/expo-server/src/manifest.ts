@@ -7,9 +7,21 @@ import type { ReactNode } from 'react';
  */
 export interface AssetInfo {
   css: string[];
+  /**
+   * External stylesheets (`@import url(https://...)`) extracted from the bundled CSS. Rendered
+   * verbatim as `<link rel="stylesheet">` so attributes like `media` are preserved in the SSR HTML.
+   */
+  externalCss?: ExternalCssInfo[];
   js: string[];
   /** Public href of a favicon generated from `web.favicon` in the app config. */
   favicon?: string;
+}
+
+/** A single external stylesheet `<link>` (e.g. from `@import url(https://...)`). */
+export interface ExternalCssInfo {
+  href: string;
+  /** Media query baked into the `<link>` tag, when present. */
+  media?: string;
 }
 
 /**

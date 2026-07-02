@@ -95,7 +95,9 @@ async function fetchBundleAsync(server: BackgroundServer, url: string, init?: Re
       throw new Error(`Bundle fetch failed, received ${stripVTControlCharacters(error.message)}`);
     }
 
-    throw new Error(`Bundle fetch failed, received ${response.statusText} (${response.status})\n\n${text}`);
+    throw new Error(
+      `Bundle fetch failed, received ${response.statusText} (${response.status})\n\n${text}`
+    );
   }
 
   return response;

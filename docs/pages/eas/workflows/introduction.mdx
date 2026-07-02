@@ -40,7 +40,7 @@ Workflows are defined as YAML files in the **.eas/workflows/** directory at the 
 - **Pre-packaged for React Native/Expo**: Comes with ready-to-use job types (`build`, `submit`, `update`, `maestro`, `deploy`, and more) that abstract away implementation complexity
 - **No infrastructure to manage**: Runs on EAS with macOS and Linux workers, so you don't need to maintain CI servers or configure Android Studio/Xcode
 - **Unified artifact management**: All build artifacts, updates, and logs appear on EAS dashboard
-- **GitHub integration**: Trigger workflows automatically on push, pull request, or label events with branch and path filtering
+- **GitHub integration**: Trigger workflows automatically on push, pull request, label, or ref deletion events with branch and path filtering
 - **Faster iteration**: Combine Fingerprint, Get Build, and Update jobs to avoid redundant native builds and publish OTA (over-the-air) updates when possible
 - **E2E testing built-in**: Run Maestro tests on Android emulators and iOS simulators directly in workflows
 - **Slack notifications**: Send notifications to Slack channels when workflows run successfully or fail
@@ -51,6 +51,12 @@ Workflows are defined as YAML files in the **.eas/workflows/** directory at the 
 ### Push workflows
 
 Run when commits are pushed to matching branches or tags. Supports branch, tag, and path filtering with glob patterns.
+
+### Ref delete workflows
+
+Run when GitHub branches or tags are deleted. Supports branch and tag filtering with glob patterns. Useful for cleaning up EAS Update branches that share names with Git branches.
+
+See [`on.ref_delete` syntax reference](/eas/workflows/syntax/#onref_delete).
 
 ### Pull request workflows
 
@@ -189,5 +195,12 @@ Share the following slide in your next team meeting to discuss what EAS Workflow
   title="Example workflows"
   description="See common workflows for development builds, preview updates, and production deployments."
   href="/eas/workflows/examples/introduction"
+  Icon={Dataflow03Icon}
+/>
+
+<BoxLink
+  title="Workflows insights"
+  description="Track run counts, success rates, and trends for your workflows over time."
+  href="/eas-insights/workflows/"
   Icon={Dataflow03Icon}
 />

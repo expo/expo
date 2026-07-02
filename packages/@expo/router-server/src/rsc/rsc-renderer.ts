@@ -12,7 +12,6 @@
 
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
 import '@expo/metro-runtime/rsc/runtime';
-
 import { decodeActionId } from 'expo-router/internal/rsc';
 import type { ReactNode } from 'react';
 import { renderToReadableStream, decodeReply } from 'react-server-dom-webpack/server';

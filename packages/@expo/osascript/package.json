@@ -2,39 +2,40 @@
   "name": "@expo/osascript",
   "version": "2.6.0",
   "description": "Tools for running an osascripts in Node",
-  "license": "MIT",
   "keywords": [
-    "osascript",
+    "exec",
     "mac",
+    "osascript",
     "osx",
-    "spawn",
-    "exec"
+    "spawn"
   ],
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/osascript#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/@expo/osascript"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
   "files": [
     "build"
   ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "test": "jest",
     "prepublishOnly": "pnpm run clean && pnpm run build"
-  },
-  "engines": {
-    "node": ">=12"
   },
   "dependencies": {
     "@expo/spawn-async": "^1.8.0"
@@ -43,7 +44,7 @@
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
-  "publishConfig": {
-    "access": "public"
+  "engines": {
+    "node": ">=12"
   }
 }

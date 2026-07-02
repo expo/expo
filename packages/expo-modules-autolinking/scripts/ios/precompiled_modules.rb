@@ -973,8 +973,12 @@ module Expo
       # ──────────────────────────────────────────────────────────────────────
 
       # Returns true when the prebuilt React.xcframework is in use.
+      #
+      # Must mirror React Native's default (`!= '0'`): `use_react_native!` defaults
+      # `RCT_USE_PREBUILT_RNCORE` to "1" but runs after `use_expo_modules!`, so reading
+      # `== '1'` here would see the value before React Native sets it.
       def prebuilt_react_active?
-        ENV['RCT_USE_PREBUILT_RNCORE'] == '1'
+        ENV['RCT_USE_PREBUILT_RNCORE'] != '0'
       end
 
       # Builds a `file://` URI for a local filesystem path, percent-encoding

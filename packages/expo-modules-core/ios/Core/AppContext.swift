@@ -616,12 +616,15 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   /// Returns the app context that prepared the given runtime, or `nil` if no app context did
   /// (its `global.expo` object carries no `NativeState`). Lets code that only has a runtime
-  /// recover the app context without capturing a reference to it.
+  /// recover the app context without capturing a reference to it, e.g. a `JavaScriptCodable`
+  /// witness that has the runtime but not the context.
   @JavaScriptActor
-  internal static func from(runtime: JavaScriptRuntime) -> AppContext? {
+  public static func from(runtime: borrowing JavaScriptRuntime) -> AppContext? {
     // Recovery may happen on every conversion, so look the core object up through a cached
     // prop name id to avoid re-interning the "expo" string into JSI on each call.
-    let coreObjectPropName = JavaScriptPropNameID.cached(runtime, globalCoreObjectPropertyName)
+    // TODO: drop the `copy` once `JavaScriptPropNameID.cached` borrows its runtime instead of
+    // taking it owned — it only reads the runtime, so the owned convention forces a needless retain.
+    let coreObjectPropName = JavaScriptPropNameID.cached(copy runtime, globalCoreObjectPropertyName)
     guard let coreObject = try? runtime.global().getPropertyAsObject(coreObjectPropName) else {
       return nil
     }
@@ -719,9 +722,18 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public static func modulesProvider(withName providerName: String = "ExpoModulesProvider") -> ModulesProvider {
     // [0] When ExpoModulesCore is built as separated framework/module,
     // we should explicitly load main bundle's `ExpoModulesProvider` class.
-    if let bundleName = Bundle.main.infoDictionary?["CFBundleName"],
-       let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
-      return providerClass.init()
+    // CFBundleExecutable is tried first: it equals $(PRODUCT_NAME:c99extidentifier) and
+    // directly matches the Swift module name. CFBundleName is kept as a fallback for the
+    // uncommon case where both values are identical valid identifiers.
+    let mainBundleNames = [
+      Bundle.main.infoDictionary?["CFBundleExecutable"],
+      Bundle.main.infoDictionary?["CFBundleName"]
+    ].compactMap { $0 as? String }
+
+    for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: mainBundleNames) {
+      if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+        return providerClass.init()
+      }
     }
 
     // [1] Fallback to `ExpoModulesProvider` class from the current module.
@@ -731,9 +743,15 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
     // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
-      guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
-      if let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
-        return providerClass.init()
+      let frameworkBundleNames = [
+        bundle.infoDictionary?["CFBundleExecutable"],
+        bundle.infoDictionary?["CFBundleName"]
+      ].compactMap { $0 as? String }
+
+      for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: frameworkBundleNames) {
+        if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+          return providerClass.init()
+        }
       }
     }
 
@@ -741,12 +759,25 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     return ModulesProvider()
   }
 
+  internal static func moduleProviderClassNames(withName providerName: String, bundleNames: [String]) -> [String] {
+    var seen = Set<String>()
+    return bundleNames.compactMap { bundleName in
+      let candidate = "\(bundleName).\(providerName)"
+      return seen.insert(candidate).inserted ? candidate : nil
+    }
+  }
+
   public func reloadAppAsync(_ reason: String = "Reload from appContext") {
     if moduleRegistry.has(moduleWithName: "ExpoGo") {
       NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
     } else {
-      DispatchQueue.main.async {
-        RCTTriggerReloadCommandListeners(reason)
+      // Must run on the main thread (see #31789), but synchronously when already there — deferring
+      // via `DispatchQueue.main.async` deadlocks the bridgeless reload against TurboModule teardown.
+      let trigger = { RCTTriggerReloadCommandListeners(reason) }
+      if Thread.isMainThread {
+        trigger()
+      } else {
+        DispatchQueue.main.async(execute: trigger)
       }
     }
   }

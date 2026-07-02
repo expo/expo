@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "expo-router/entry",
   "scripts": {
-    "prebuild": "TEMPLATE_DIR=\"../../templates/expo-template-bare-minimum\" && cd \"$TEMPLATE_DIR\" && PACKED_FILE=$(npm pack) && mv \"$PACKED_FILE\" pack.tgz && cd - && npx expo prebuild --clean --template \"$TEMPLATE_DIR/pack.tgz\"",
+    "prebuild": "TEMPLATE_DIR=\"../../templates/expo-template-bare-minimum\" && (cd \"$TEMPLATE_DIR\" && PACKED_FILE=$(npm pack) && mv \"$PACKED_FILE\" pack.tgz) && npx expo prebuild --clean --template \"$TEMPLATE_DIR/pack.tgz\"",
     "start:01-rsc": "E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_STATIC=server E2E_ROUTER_SRC=01-rsc expo start",
     "export:01-rsc": "E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_STATIC=server E2E_ROUTER_SRC=01-rsc expo export",
     "start:02-server-actions": "E2E_SERVER_FUNCTIONS=1 E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_STATIC=server E2E_ROUTER_SRC=02-server-actions expo start",
@@ -81,7 +81,7 @@
     "react-native-gesture-handler": "~2.32.0",
     "react-native-pager-view": "^8.0.2",
     "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.25.2",
+    "react-native-screens": "4.26.0-nightly-20260625-9b9b39fa5",
     "react-native-tab-view": "^4.3.0",
     "react-native-web": "^0.21.0",
     "react-native-webview": "13.16.1"

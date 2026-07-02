@@ -1,13 +1,13 @@
 import commander from 'commander';
 import fs from 'fs';
 
+import { withPreparedSingleFile } from '../typeInformation';
 import {
   addCommonOptions,
   parseCommandArguments,
   runCommandOnWatch,
   TypeInformationCommandCommonAllArguments,
 } from './commandUtils';
-import { withPreparedSingleFile } from '../typeInformation';
 
 export function preprocessFileCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('preprocess-file'))

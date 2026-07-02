@@ -16,6 +16,19 @@
             ],
             "targets": [
                 {
+                    "type": "cpp",
+                    "name": "RNReanimated_codegen_components",
+                    "moduleName": "rnreanimated",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/rnreanimated",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ "../../../.." ]
+                },
+                {
                     "type": "objc",
                     "name": "RNReanimated_codegen_modules",
                     "moduleName": "rnreanimated",
@@ -39,7 +52,8 @@
                         "React",
                         "ReactNativeDependencies",
                         "Hermes",
-                        "RNWorklets"
+                        "RNWorklets",
+                        "RNReanimated_codegen_components"
                     ],
                     "includeDirectories": [
                         ".",
@@ -99,6 +113,26 @@
                     ]
                 },
                 {
+                    "type": "cpp",
+                    "name": "RNReanimated_view",
+                    "moduleName": "Common",
+                    "path": "Common/NativeView",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNReanimated_codegen_components"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "../../.build/codegen/build/generated/ios/ReactCodegen"
+                    ],
+                    "fileMapping": [
+                        { "from": "react/renderer/components/rnreanimated/*.h", "to": "Common/NativeView/react/renderer/components/rnreanimated/{filename}", "type": "header" }
+                    ]
+                },
+                {
                     "type": "objc",
                     "name": "RNReanimated",
                     "moduleName": "reanimated",
@@ -110,11 +144,14 @@
                         "React",
                         "ReactNativeDependencies",
                         "RNWorklets",
+                        "RNReanimated_codegen_components",
                         "RNReanimated_codegen_modules",
-                        "RNReanimated_cpp"
+                        "RNReanimated_cpp",
+                        "RNReanimated_view"
                     ],
                     "includeDirectories": [
                         ".",
+                        "../../..",
                         "../../../Common/cpp",
                         "../../../.build/codegen/build/generated/ios/ReactCodegen"
                     ],
@@ -133,7 +170,8 @@
                         { "from": "keyboardObserver/*.h", "to": "reanimated/apple/keyboardObserver/{filename}", "type": "header" },
                         { "from": "native/*.h", "to": "reanimated/apple/native/{filename}", "type": "header" },
                         { "from": "pseudoSelectors/*.h", "to": "reanimated/apple/pseudoSelectors/{filename}", "type": "header" },
-                        { "from": "sensor/*.h", "to": "reanimated/apple/sensor/{filename}", "type": "header" }
+                        { "from": "sensor/*.h", "to": "reanimated/apple/sensor/{filename}", "type": "header" },
+                        { "from": "view/*.h", "to": "reanimated/apple/view/{filename}", "type": "header" }
                     ]
                 }
             ]

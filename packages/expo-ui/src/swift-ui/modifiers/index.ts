@@ -253,6 +253,44 @@ export const border = (params: { color: Color; width?: number }) =>
   createModifier('border', params);
 
 /**
+ * The characteristics of a stroke that traces a path.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/strokestyle).
+ */
+export type StrokeStyle = {
+  /** The width of the stroked line. @default 1 */
+  lineWidth?: number;
+  /** The endpoint style of a line segment. @default 'butt' */
+  lineCap?: 'butt' | 'round' | 'square';
+  /** The join type where line segments meet. @default 'miter' */
+  lineJoin?: 'miter' | 'round' | 'bevel';
+  /** The limit past which a miter join is replaced by a bevel. @default 10 */
+  miterLimit?: number;
+  /** The lengths of alternating painted and unpainted segments. An empty array draws a solid line. @default [] */
+  dash?: number[];
+  /** How far into the dash pattern the line starts. @default 0 */
+  dashPhase?: number;
+};
+
+/**
+ * Strokes an inset border along the view's shape.
+ * @param params - The stroke parameters. Color (omit for the foreground style), style, antialiased, shape and cornerRadius.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/insettableshape/strokeborder(_:style:antialiased:)).
+ */
+export const strokeBorder = (params: {
+  color?: Color;
+  style?: StrokeStyle;
+  antialiased?: boolean;
+  shape?:
+    | 'rectangle'
+    | 'circle'
+    | 'capsule'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape';
+  cornerRadius?: number;
+}) => createModifier('strokeBorder', params);
+
+/**
  * Applies scaling transformation.
  * @param scale - Uniform scale factor (1.0 = normal size), or an object with separate `x` and `y` scale factors.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scaleeffect(_:anchor:)).
@@ -464,6 +502,65 @@ export const hidden = (hidden: boolean = true) => createModifier('hidden', { hid
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/disabled(_:)).
  */
 export const disabled = (disabled: boolean = true) => createModifier('disabled', { disabled });
+
+/**
+ * Adds a redaction reason to this view hierarchy, replacing rendered content
+ * with placeholders. Useful for skeleton loading states. Maps to SwiftUI's
+ * `redacted(reason:)`.
+ *
+ * `placeholder` redacts the whole subtree; `privacy` and `invalidated` redact
+ * only descendants marked `privacySensitive()` or `invalidatableContent()`.
+ * Reasons are additive and can be combined in an array; use `unredacted()` to
+ * exempt a subtree. The `invalidated` reason requires iOS 17+.
+ *
+ * @param reasons - The redaction reason or reasons to apply (an empty array applies none). Defaults to `'placeholder'`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/redacted(reason:)).
+ */
+export const redacted = (
+  reasons:
+    | 'placeholder'
+    | 'privacy'
+    | 'invalidated'
+    | ('placeholder' | 'privacy' | 'invalidated')[] = 'placeholder'
+) =>
+  createModifier('redacted', {
+    reasons: Array.isArray(reasons) ? reasons : [reasons],
+  });
+
+/**
+ * Removes any redaction reason inherited from an ancestor `redacted(...)` for
+ * this subtree. The counterpart to `redacted`; use it to exempt specific content
+ * from a redacted parent. Maps to SwiftUI's `unredacted()`.
+ *
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/unredacted()).
+ */
+export const unredacted = () => createModifier('unredacted', {});
+
+/**
+ * Marks the view as containing sensitive, private data, redacted only when the
+ * `privacy` redaction reason is applied to an ancestor (for example `redacted('privacy')`).
+ * It has no effect on its own and does not auto-redact screenshots. Maps to
+ * SwiftUI's `privacySensitive(_:)`.
+ *
+ * @param sensitive - Whether the view contains sensitive content. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/privacysensitive(_:)).
+ */
+export const privacySensitive = (sensitive: boolean = true) =>
+  createModifier('privacySensitive', { sensitive });
+
+/**
+ * Marks the view's content as invalidatable. It is restyled with the "pending
+ * update" appearance only when the `invalidated` redaction reason is applied to
+ * an ancestor (for example `redacted('invalidated')`). Maps to SwiftUI's
+ * `invalidatableContent(_:)`.
+ *
+ * @param invalidatable - Whether the content can be invalidated. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/invalidatablecontent(_:)).
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ */
+export const invalidatableContent = (invalidatable: boolean = true) =>
+  createModifier('invalidatableContent', { invalidatable });
 
 /**
  * Sets the z-index (display order) of a view.
@@ -775,6 +872,62 @@ export const accessibilityIdentifier = (identifier: string) =>
  */
 export const accessibilityHidden = (hidden: boolean = true) =>
   createModifier('accessibilityHidden', { hidden });
+
+/**
+ * Controls how a view's child accessibility elements are exposed, mirroring SwiftUI's
+ * `accessibilityElement(children:)`. It creates a new accessibility element (or modifies
+ * the existing one) and applies the chosen behavior to the subtree.
+ *
+ * Complements `accessibilityHidden`, which hides a single leaf, by acting on the whole subtree.
+ *
+ * @param children - How the child accessibility elements are treated:
+ * - `ignore` - hide the children; the new element starts with no properties, so pair it with `accessibilityLabel` (default).
+ * - `combine` - merge the children's accessibility properties into the new element.
+ * - `contain` - keep the children as accessible elements, grouped in the new element as a container (navigated in order).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityelement(children:)).
+ */
+export const accessibilityElement = (children: 'ignore' | 'combine' | 'contain' = 'ignore') =>
+  createModifier('accessibilityElement', { children });
+
+/**
+ * The set of accessibility traits that can be added to or removed from a view
+ * with `accessibilityAddTraits` and `accessibilityRemoveTraits`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/accessibilitytraits).
+ */
+export type AccessibilityTrait =
+  | 'isButton'
+  | 'isHeader'
+  | 'isImage'
+  | 'isSelected'
+  | 'isLink'
+  | 'isModal'
+  | 'isSummaryElement'
+  | 'updatesFrequently'
+  | 'startsMediaSession'
+  | 'allowsDirectInteraction'
+  | 'causesPageTurn'
+  | 'isToggle'
+  | 'playsSound'
+  | 'isStaticText'
+  | 'isSearchField'
+  | 'isKeyboardKey'
+  | 'isTabBar';
+
+/**
+ * Adds the given accessibility traits to the view.
+ * @param traits - The accessibility traits to add. `isToggle` and `isTabBar` require iOS 17+ and are ignored on older systems.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityaddtraits(_:)).
+ */
+export const accessibilityAddTraits = (traits: AccessibilityTrait[]) =>
+  createModifier('accessibilityAddTraits', { traits });
+
+/**
+ * Removes the given accessibility traits from the view.
+ * @param traits - The accessibility traits to remove. `isToggle` and `isTabBar` require iOS 17+ and are ignored on older systems.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/accessibilityremovetraits(_:)).
+ */
+export const accessibilityRemoveTraits = (traits: AccessibilityTrait[]) =>
+  createModifier('accessibilityRemoveTraits', { traits });
 
 /**
  * Sets layout priority for the view.
@@ -1439,6 +1592,7 @@ export type BuiltInModifier =
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>
+  | ReturnType<typeof strokeBorder>
   | ReturnType<typeof scaleEffect>
   | ReturnType<typeof rotationEffect>
   | ReturnType<typeof rotation3DEffect>
@@ -1451,6 +1605,10 @@ export type BuiltInModifier =
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>
+  | ReturnType<typeof redacted>
+  | ReturnType<typeof unredacted>
+  | ReturnType<typeof privacySensitive>
+  | ReturnType<typeof invalidatableContent>
   | ReturnType<typeof zIndex>
   | ReturnType<typeof blur>
   | ReturnType<typeof brightness>
@@ -1474,6 +1632,9 @@ export type BuiltInModifier =
   | ReturnType<typeof accessibilityInputLabels>
   | ReturnType<typeof accessibilityIdentifier>
   | ReturnType<typeof accessibilityHidden>
+  | ReturnType<typeof accessibilityElement>
+  | ReturnType<typeof accessibilityAddTraits>
+  | ReturnType<typeof accessibilityRemoveTraits>
   | ReturnType<typeof layoutPriority>
   | ReturnType<typeof mask>
   | ReturnType<typeof overlay>

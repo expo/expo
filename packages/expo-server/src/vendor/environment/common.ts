@@ -235,6 +235,7 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
 function mergeAssets(topLevel?: AssetInfo, routeLevel?: AssetInfo): AssetInfo {
   return {
     css: [...(topLevel?.css ?? []), ...(routeLevel?.css ?? [])],
+    externalCss: [...(topLevel?.externalCss ?? []), ...(routeLevel?.externalCss ?? [])],
     js: [...(topLevel?.js ?? []), ...(routeLevel?.js ?? [])],
     favicon: topLevel?.favicon,
   };

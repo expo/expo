@@ -86,7 +86,7 @@ function getNativeAppIdScheme(): string | null {
 
 // @needsAudit
 /**
- * Ensure the user has linked the expo-constants manifest in bare workflow.
+ * Ensure the user has linked the expo-constants manifest in an existing React Native project.
  */
 export function hasConstantsManifest(): boolean {
   return !!Object.keys(Constants.expoConfig ?? {}).length;

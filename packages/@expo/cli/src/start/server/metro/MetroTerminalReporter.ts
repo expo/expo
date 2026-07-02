@@ -3,6 +3,16 @@ import chalk from 'chalk';
 import path from 'path';
 import { format as utilFormat, stripVTControlCharacters } from 'util';
 
+import { events, shouldReduceLogs } from '../../../events';
+import { stripAnsi } from '../../../utils/ansi';
+import { env } from '../../../utils/env';
+import { isInteractive } from '../../../utils/interactive';
+import { learnMore } from '../../../utils/link';
+import {
+  logLikeMetro,
+  maybeSymbolicateAndFormatJSErrorStackLogAsync,
+  parseErrorStringToObject,
+} from '../serverLogLikeMetro';
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import type {
   BuildPhase,
@@ -12,17 +22,7 @@ import type {
   TerminalReportableEvent,
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
-import { env } from '../../../utils/env';
-import { learnMore } from '../../../utils/link';
-import {
-  logLikeMetro,
-  maybeSymbolicateAndFormatJSErrorStackLogAsync,
-  parseErrorStringToObject,
-} from '../serverLogLikeMetro';
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
-import { events, shouldReduceLogs } from '../../../events';
-import { stripAnsi } from '../../../utils/ansi';
-import { isInteractive } from '../../../utils/interactive';
 
 type ClientLogLevel =
   | 'trace'

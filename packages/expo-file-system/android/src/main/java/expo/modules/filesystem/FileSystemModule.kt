@@ -1,6 +1,9 @@
 package expo.modules.filesystem
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.util.Base64
@@ -49,6 +52,27 @@ class FileSystemModule : Module() {
       content.get(NativeArrayBuffer::class).let {
         file.write(it, append)
       }
+    }
+  }
+
+  private fun resolvePreviewMimeType(file: FileSystemFile, mimeType: String?): String? {
+    return mimeType ?: file.type
+  }
+
+  private fun createPreviewIntent(uri: Uri, mimeType: String): Intent {
+    return Intent(Intent.ACTION_VIEW).apply {
+      setDataAndTypeAndNormalize(uri, mimeType)
+      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+  }
+
+  private fun canHandle(intent: Intent): Boolean {
+    return context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isNotEmpty()
+  }
+
+  private fun grantReadPermissions(intent: Intent, uri: Uri) {
+    context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).forEach {
+      context.grantUriPermission(it.activityInfo.packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
   }
 
@@ -275,6 +299,41 @@ class FileSystemModule : Module() {
 
       Function("open") { file: FileSystemFile, mode: FileMode? ->
         file.openHandle(mode)
+      }
+
+      AsyncFunction("canPreview") { file: FileSystemFile, options: FilePreviewOptions? ->
+        file.validateType()
+        if (!file.exists) {
+          return@AsyncFunction false
+        }
+
+        val contentUri = file.asContentUri()
+        val mimeType = resolvePreviewMimeType(file, options?.mimeType) ?: return@AsyncFunction false
+        canHandle(createPreviewIntent(contentUri, mimeType))
+      }
+
+      AsyncFunction("preview") { file: FileSystemFile, options: FilePreviewOptions? ->
+        file.validateType()
+        if (!file.exists) {
+          throw FilePreviewFileNotFoundException(file.uri)
+        }
+
+        val contentUri = file.asContentUri()
+        val mimeType = resolvePreviewMimeType(file, options?.mimeType)
+          ?: throw FilePreviewUnsupportedException(null)
+        val previewIntent = createPreviewIntent(contentUri, mimeType)
+
+        if (!canHandle(previewIntent)) {
+          throw FilePreviewUnsupportedException(mimeType)
+        }
+
+        grantReadPermissions(previewIntent, contentUri)
+
+        try {
+          appContext.throwingActivity.startActivity(previewIntent)
+        } catch (exception: ActivityNotFoundException) {
+          throw FilePreviewUnsupportedException(mimeType, exception)
+        }
       }
     }
 

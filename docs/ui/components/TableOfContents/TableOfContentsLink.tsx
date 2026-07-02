@@ -60,7 +60,10 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
               {displayTitle}
               {hasOverloads && (
                 <>
-                  <BracketsEllipsesDuotoneIcon className="ml-1 inline icon-xs text-icon-secondary" />
+                  <BracketsEllipsesDuotoneIcon
+                    aria-hidden="true"
+                    className="ml-1 inline icon-xs text-icon-secondary"
+                  />
                   <span className="sr-only">Has overloads</span>
                 </>
               )}

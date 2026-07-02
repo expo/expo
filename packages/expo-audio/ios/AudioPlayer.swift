@@ -6,12 +6,13 @@ private enum AudioConstants {
   static let audioSample = "audioSampleUpdate"
 }
 
-public class AudioPlayer: SharedRef<AVPlayer>, Playable {
+public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   let id = UUID().uuidString
   var shouldCorrectPitch = true
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .timeDomain
   var isActiveForLockScreen = false
   var metadata: Metadata?
+  var lockScreenOptions: LockScreenOptions?
   var currentRate: Float = 1.0 {
     didSet {
       currentRate = max(0, currentRate)
@@ -66,6 +67,10 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
 
   var isLive: Bool {
     ref.currentItem?.duration.isIndefinite ?? false
+  }
+
+  var lockScreenPlayer: AVPlayer {
+    ref
   }
 
   var currentOffsetFromLive: Double? {
@@ -157,10 +162,11 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
   func setActiveForLockScreen(_ active: Bool = true, metadata: Metadata? = nil, options: LockScreenOptions?) {
     self.metadata = metadata
     self.isActiveForLockScreen = active
+    self.lockScreenOptions = active ? options : nil
     if active {
-      MediaController.shared.setActivePlayer(self, options: options)
+      MediaController.shared.setActivePlayable(self, options: options)
     } else {
-      MediaController.shared.setActivePlayer(nil)
+      MediaController.shared.setActivePlayable(nil)
     }
   }
 
@@ -508,7 +514,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
     owningRegistry?.remove(self)
 
     if isActiveForLockScreen {
-      MediaController.shared.setActivePlayer(nil)
+      MediaController.shared.setActivePlayable(nil)
     }
 
     teardownPlayer()

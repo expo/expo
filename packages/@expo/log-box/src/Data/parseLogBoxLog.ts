@@ -14,8 +14,8 @@ import {
 } from '@expo/log-box-utils';
 import React from 'react';
 
-import type { Category, LogBoxLogData, Message, MetroStackFrame } from './Types';
 import { parseErrorStack } from '../utils/parseErrorStack';
+import type { Category, LogBoxLogData, Message, MetroStackFrame } from './Types';
 
 type ExceptionData = {
   message: string;

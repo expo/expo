@@ -2,6 +2,8 @@ import commander from 'commander';
 import fs from 'fs';
 import path from 'path';
 
+import { TypeInferenceOption } from '../typeInformation';
+import { scanFilesRecursively, taskAll } from '../utils';
 import {
   debounce,
   generateConciseTsFiles,
@@ -9,8 +11,6 @@ import {
   parseCommandArguments,
   TypeInformationCommandCommonAllArguments,
 } from './commandUtils';
-import { TypeInferenceOption } from '../typeInformation';
-import { scanFilesRecursively, taskAll } from '../utils';
 
 async function getResolvedWatchedDirectoriesFromAppJson(
   appJsonPath: string

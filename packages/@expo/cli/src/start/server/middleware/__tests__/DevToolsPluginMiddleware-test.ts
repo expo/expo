@@ -310,6 +310,30 @@ describe(DevToolsPluginMiddleware, () => {
       expect(response.statusCode).toBe(500);
       expect(response.body()).toContain('boom');
     });
+
+    it('should not write a 500 when the response has already started', async () => {
+      const middleware = createMiddleware(
+        createPluginManager({
+          packageName: 'hello-plugin',
+          packageRoot: '/root/packages/hello-plugin',
+          serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
+          getRequestHandlerAsync: async () =>
+            jest.fn(async () => {
+              throw new Error('stream aborted');
+            }),
+        })
+      );
+
+      const response = Object.assign(createMockResponse(), { headersSent: true });
+      await middleware.handleRequestAsync(
+        createServerRequest('http://localhost:8081/_expo/plugins/hello-plugin/api/hello'),
+        response
+      );
+
+      expect(response.statusCode).toBe(200);
+      expect(response.setHeader).not.toHaveBeenCalled();
+      expect(response.end).not.toHaveBeenCalled();
+    });
   });
 
   it('handleRequestAsync should throw from invalid request', async () => {

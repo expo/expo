@@ -13,7 +13,7 @@ public protocol AnyArrayBuffer: AnyArgument, ContiguousBytes {
   /**
    Creates a copy of this buffer with its own allocated memory.
    */
-  func copy() -> NativeArrayBuffer
+  func copy() -> ArrayBuffer
 
   /**
    Wraps this buffer in a `Data` instance without performing a copy.

@@ -6,7 +6,7 @@ import { MarkdownActionsDropdown } from '~/ui/components/MarkdownActions/Markdow
 import { hasDynamicData, shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/paths';
 import { H1, P } from '~/ui/components/Text';
 
-import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI';
+import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI/AskPageAITrigger';
 import { PageCliVersion } from './PageCliVersion';
 import { PagePackageVersion } from './PagePackageVersion';
 import { PagePlatformTags } from './PagePlatformTags';
@@ -107,6 +107,7 @@ export function PageHeader({
             )}>
             <PagePackageVersion
               packageName={packageName}
+              platforms={platforms}
               testRequire={testRequire}
               showMarkdownActions={showPackageMarkdown}
               className="max-md:w-full max-md:justify-between"
@@ -180,6 +181,7 @@ export function PageHeader({
         {packageName && (
           <PagePackageVersion
             packageName={packageName}
+            platforms={platforms}
             testRequire={testRequire}
             showMarkdownActions={showPackageMarkdown}
           />

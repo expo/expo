@@ -3,15 +3,15 @@ import path from 'path';
 import type ProgressBar from 'progress';
 import { gt } from 'semver';
 
+import type { SDKVersion } from '../api/getVersions';
+import { getVersionsAsync } from '../api/getVersions';
+import { getExpoHomeDirectory } from '../api/user/UserSettings';
+import { Log } from '../log';
 import { downloadAppAsync } from './downloadAppAsync';
 import { CommandError } from './errors';
 import { ora } from './ora';
 import { profile } from './profile';
 import { createProgressBar } from './progress';
-import type { SDKVersion } from '../api/getVersions';
-import { getVersionsAsync } from '../api/getVersions';
-import { getExpoHomeDirectory } from '../api/user/UserSettings';
-import { Log } from '../log';
 
 const debug = require('debug')('expo:utils:downloadExpoGo') as typeof console.log;
 

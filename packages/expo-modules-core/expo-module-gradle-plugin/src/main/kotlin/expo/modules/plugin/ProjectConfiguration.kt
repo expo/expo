@@ -14,7 +14,7 @@ import expo.modules.plugin.android.createExpoPublishTask
 import expo.modules.plugin.android.createExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createReleasePublication
 import expo.modules.plugin.gradle.ExpoModuleExtension
-import io.github.lukmccall.pika.PikaGradleExtension
+import io.github.expo.pika.PikaGradleExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.internal.extensions.core.extra
@@ -33,7 +33,7 @@ internal fun Project.applyDefaultPlugins() {
 }
 
 internal fun Project.applyPikaPlugin() {
-  applyPluginIfNeeded("io.github.lukmccall.pika")
+  applyPluginIfNeeded("io.github.expo.pika")
   
   val pika = extensions.getByType(PikaGradleExtension::class.java)
   pika.introspectableAnnotation("expo.modules.kotlin.types.OptimizedRecord")

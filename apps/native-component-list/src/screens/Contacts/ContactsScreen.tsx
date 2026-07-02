@@ -1,13 +1,11 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Platform } from 'expo';
 import * as Contacts from 'expo-contacts/legacy';
 import { Directory, File, Paths } from 'expo-file-system';
-import { Platform } from 'expo-modules-core';
 import React from 'react';
 import { RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import * as ContactUtils from './ContactUtils';
-import ContactsList from './ContactsList';
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
@@ -17,6 +15,8 @@ import { Colors } from '../../constants';
 import { optionalRequire } from '../../navigation/routeBuilder';
 import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
+import * as ContactUtils from './ContactUtils';
+import ContactsList from './ContactsList';
 
 export const ContactsScreens = [
   {

@@ -180,3 +180,27 @@ internal final class WatcherUnsupportedPathException: GenericException<String> {
     "Cannot watch path '\(param)'. Only local file:// paths are supported."
   }
 }
+
+internal final class FilePreviewInProgressException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "File preview is already in progress"
+  }
+}
+
+internal final class FilePreviewMissingViewControllerException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "No view controller available for presenting file preview"
+  }
+}
+
+internal final class FilePreviewUnsupportedException: GenericException<URL>, @unchecked Sendable {
+  override var reason: String {
+    "The file cannot be previewed: \(param.absoluteString)"
+  }
+}
+
+internal final class FilePreviewFileNotFoundException: GenericException<URL>, @unchecked Sendable {
+  override var reason: String {
+    "File does not exist: \(param.absoluteString)"
+  }
+}
