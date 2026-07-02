@@ -59,7 +59,6 @@
     "lint-staged": "^17.0.8",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.70.0",
-    "prettier": "~3.8.3",
     "ts-node": "^10.9.2",
     "turbo": "2.10.0",
     "typescript": "^6.0.2"
