@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { UNPUBLISHED_VERSION_NAME } from '../../Changelogs';
@@ -13,8 +13,6 @@ import { Parcel, TaskArgs } from '../types';
 // https://github.com/expo/expo/pulls?q=label:published
 const PUBLISHED_LABEL_NAME = 'published';
 
-const { green, blue, magenta, bold } = chalk;
-
 /**
  * Adds "published" label to pull requests mentioned in changelog entries.
  */
@@ -27,7 +25,7 @@ export const addPublishedLabelToPullRequests = new Task<TaskArgs>(
     if (!process.env.GITHUB_TOKEN) {
       logger.error(
         'Environment variable `%s` must be set to add labels to pull requests',
-        magenta('GITHUB_TOKEN')
+        styleText('magenta', 'GITHUB_TOKEN')
       );
       return;
     }
@@ -98,16 +96,16 @@ export const addPublishedLabelToPullRequests = new Task<TaskArgs>(
 );
 
 function linkToPullRequest(pr: GitHub.PullRequest): string {
-  return link(blue('#' + pr.number), pr.html_url);
+  return link(styleText('blue', '#' + pr.number), pr.html_url);
 }
 
 function linkToAuthor(pr: GitHub.PullRequest): string {
   const { user } = pr;
-  return user ? link(green('@' + user.login), user.html_url) : 'anonymous';
+  return user ? link(styleText('green', '@' + user.login), user.html_url) : 'anonymous';
 }
 
 function formatPullRequest(pr: GitHub.PullRequest): string {
-  return `${linkToPullRequest(pr)}: ${bold(pr.title)} (by ${linkToAuthor(pr)})`;
+  return `${linkToPullRequest(pr)}: ${styleText('bold', pr.title)} (by ${linkToAuthor(pr)})`;
 }
 
 /**

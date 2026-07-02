@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { loadRequestedParcels } from './loadRequestedParcels';
 import logger from '../../Logger';
@@ -6,8 +6,6 @@ import * as Npm from '../../Npm';
 import { withOtpRetry } from '../../NpmOtp';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { green } = chalk;
 
 /**
  * Grants package access to the whole team. Applies only when the package
@@ -34,7 +32,7 @@ export const grantTeamAccessToPackages = new Task<TaskArgs>(
 
     logger.info(
       `\n🎖  ${options.dry ? 'Team access would be granted to' : 'Granting team access to'}`,
-      packagesToGrantAccess.map((name) => green(name)).join(' ')
+      packagesToGrantAccess.map((name) => styleText('green', name)).join(' ')
     );
 
     if (!options.dry) {
@@ -45,7 +43,7 @@ export const grantTeamAccessToPackages = new Task<TaskArgs>(
           );
         } catch (e) {
           logger.debug(e.stderr || e.stdout);
-          logger.error(`🎖  Granting access to ${green(packageName)} failed`);
+          logger.error(`🎖  Granting access to ${styleText('green', packageName)} failed`);
         }
       }
     }

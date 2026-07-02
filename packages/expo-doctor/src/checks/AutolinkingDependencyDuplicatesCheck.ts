@@ -1,9 +1,9 @@
-import chalk from 'chalk';
 import type {
   BaseDependencyResolution,
   DependencyResolution,
 } from 'expo-modules-autolinking/exports';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { learnMore } from '../utils/TerminalLink';
@@ -114,7 +114,7 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
               ? `linked to: ${path.relative(projectRoot, dependency.path)}`
               : 'linked to a different installation';
             const prefix = idx !== versions.length - 1 ? '│' : ' ';
-            line.push(`  ${prefix}  ` + chalk.grey(`└─ ${linkedOutput}`));
+            line.push(`  ${prefix}  ` + styleText('grey', `└─ ${linkedOutput}`));
           }
         }
         issues.push(line.join('\n'));

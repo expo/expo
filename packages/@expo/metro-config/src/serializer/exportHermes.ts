@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import os from 'os';
 import path from 'path';
 import process from 'process';
@@ -131,7 +131,7 @@ async function directlyBuildHermesBundleAsync({
       sourcemap,
     };
   } catch (error: any) {
-    console.error(chalk.red(`\nFailed to generate Hermes bytecode for: ${filename}`));
+    console.error(styleText('red', `\nFailed to generate Hermes bytecode for: ${filename}`));
     if ('status' in error) {
       console.error(error.output.join('\n'));
     }

@@ -1,6 +1,6 @@
 import { getConfig } from '@expo/config';
 import assert from 'assert';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Log } from '../../log';
 import { CommandError, UnimplementedError } from '../../utils/errors';
@@ -72,9 +72,9 @@ export class PlatformManager<
         applicationId = await this._getAppIdResolver().getAppIdAsync();
       } catch {
         Log.warn(
-          chalk`\u203A Launching in Expo Go. If you want to use a ` +
+          `\u203A Launching in Expo Go. If you want to use a ` +
             `development build, you need to create and install one first, or, if you already ` +
-            chalk`have a build, add {bold ios.bundleIdentifier} and {bold android.package} to ` +
+            `have a build, add ${styleText('bold', `ios.bundleIdentifier`)} and ${styleText('bold', `android.package`)} to ` +
             `this project's app config.\n${learnMore('https://docs.expo.dev/development/build/')}`
         );
       }
@@ -90,8 +90,8 @@ export class PlatformManager<
           // Log a warning if no development build is available on the device, but the
           // interstitial page would otherwise be opened.
           Log.warn(
-            chalk`\u203A The {bold expo-dev-client} package is installed, but a development build is not ` +
-              chalk`installed on {bold ${deviceManager.name}}.\nLaunching in Expo Go. If you want to use a ` +
+            `\u203A The ${styleText('bold', `expo-dev-client`)} package is installed, but a development build is not ` +
+              `installed on ${styleText('bold', deviceManager.name)}.\nLaunching in Expo Go. If you want to use a ` +
               `development build, you need to create and install one first.\n${learnMore(
                 'https://docs.expo.dev/development/build/'
               )}`

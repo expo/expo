@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import Git from '../../Git';
@@ -21,8 +21,6 @@ import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
-
-const { cyan } = chalk;
 
 /**
  * Prepare packages to be published as canaries.
@@ -171,7 +169,7 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
     const count = parcels.length;
 
     logger.success(
-      `\n✅ Successfully published ${cyan.bold(count + '')} package${count > 1 ? 's' : ''}.\n`
+      `\n✅ Successfully published ${styleText(['cyan', 'bold'], count + '')} package${count > 1 ? 's' : ''}.\n`
     );
   }
 );

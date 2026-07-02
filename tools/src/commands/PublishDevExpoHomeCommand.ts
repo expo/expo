@@ -1,8 +1,8 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
 import { hashElement } from 'folder-hash';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import os from 'os';
 import path from 'path';
 import process from 'process';
@@ -53,7 +53,7 @@ async function maybeUpdateHomeSdkVersionAsync(
   const targetSdkVersion = explicitSdkVersion ?? (await findTargetSdkVersionAsync());
 
   if (appJson.expo.sdkVersion !== targetSdkVersion) {
-    console.log(`Updating home's sdkVersion to ${chalk.cyan(targetSdkVersion)}...`);
+    console.log(`Updating home's sdkVersion to ${styleText('cyan', targetSdkVersion)}...`);
 
     // When publishing the sdkVersion needs to be set to the target sdkVersion. The Expo client will
     // load it as UNVERSIONED, but the server uses this field to know which clients to serve the
@@ -94,7 +94,7 @@ async function publishAppOnDevelopmentBranchAsync({
   slug: string;
   message: string;
 }): Promise<{ createdUpdateGroupId: string }> {
-  console.log(`Publishing ${chalk.green(slug)}...`);
+  console.log(`Publishing ${styleText('green', slug)}...`);
 
   const result = await EASUpdate.setAuthAndPublishProjectWithEasCliAsync(EXPO_HOME_PATH, {
     userpass: {
@@ -106,9 +106,7 @@ async function publishAppOnDevelopmentBranchAsync({
   });
 
   console.log(
-    `Done publishing ${chalk.green(slug)}. Update Group ID is: ${chalk.blue(
-      result.createdUpdateGroupId
-    )}`
+    `Done publishing ${styleText('green', slug)}. Update Group ID is: ${styleText('blue', result.createdUpdateGroupId)}`
   );
 
   return result;
@@ -125,7 +123,7 @@ async function updateDevHomeConfigAsync(url: string): Promise<void> {
   );
   const devManifestsFile = new JsonFile(devHomeConfigPath);
 
-  console.log(`Updating dev home config at ${chalk.magenta(devHomeConfigFilename)}...`);
+  console.log(`Updating dev home config at ${styleText('magenta', devHomeConfigFilename)}...`);
   await devManifestsFile.writeAsync({ url });
 }
 
@@ -155,7 +153,7 @@ async function action(options: ActionOptions): Promise<void> {
     throw new Error('No configured EAS project ID in app.json');
   }
 
-  console.log(`Creating backup of ${chalk.magenta('app.json')} file...`);
+  console.log(`Creating backup of ${styleText('magenta', 'app.json')} file...`);
   const appJsonBackup = deepCloneObject<AppConfig>(appJson);
 
   console.log('Getting expo-cli state of the current session...');
@@ -163,7 +161,7 @@ async function action(options: ActionOptions): Promise<void> {
 
   await maybeUpdateHomeSdkVersionAsync(appJson, options.sdkVersion);
 
-  console.log(`Modifying home's slug to ${chalk.green(slug)}...`);
+  console.log(`Modifying home's slug to ${styleText('green', slug)}...`);
   appJson.expo.slug = slug;
 
   // Save the modified `appJson` to the file so it'll be used as a manifest.
@@ -172,7 +170,7 @@ async function action(options: ActionOptions): Promise<void> {
   const cliUsername = cliStateBackup?.auth?.username;
 
   if (cliUsername) {
-    console.log(`Logging out from ${chalk.green(cliUsername)} account...`);
+    console.log(`Logging out from ${styleText('green', cliUsername)} account...`);
     await ExpoCLI.runExpoCliAsync('logout', [], {
       stdio: 'ignore',
     });
@@ -182,28 +180,32 @@ async function action(options: ActionOptions): Promise<void> {
     await publishAppOnDevelopmentBranchAsync({ slug, message: expoHomeHashNode.hash })
   ).createdUpdateGroupId;
 
-  console.log(`Restoring home's slug to ${chalk.green(appJsonBackup.expo.slug)}...`);
+  console.log(`Restoring home's slug to ${styleText('green', appJsonBackup.expo.slug)}...`);
   appJson.expo.slug = appJsonBackup.expo.slug;
 
   if (cliUsername) {
-    console.log(`Restoring ${chalk.green(cliUsername)} session in expo-cli...`);
+    console.log(`Restoring ${styleText('green', cliUsername)} session in expo-cli...`);
     await setExpoCliStateAsync(cliStateBackup);
   } else {
-    console.log(`Logging out from ${chalk.green(EXPO_HOME_DEV_ACCOUNT_USERNAME)} account...`);
+    console.log(
+      `Logging out from ${styleText('green', EXPO_HOME_DEV_ACCOUNT_USERNAME)} account...`
+    );
     await fs.remove(getExpoCliStatePath());
   }
 
-  console.log(`Updating ${chalk.magenta('app.json')} file...`);
+  console.log(`Updating ${styleText('magenta', 'app.json')} file...`);
   await appJsonFile.writeAsync(appJson);
 
   const url = `exps://u.expo.dev/${projectId}/group/${createdUpdateGroupId}`;
   await updateDevHomeConfigAsync(url);
 
   console.log(
-    chalk.yellow(
-      `Finished publishing. Remember to commit changes of ${chalk.magenta(
+    styleText(
+      'yellow',
+      `Finished publishing. Remember to commit changes of ${styleText(
+        'magenta',
         'apps/expo-go/app.json'
-      )} and ${chalk.magenta('dev-home-config.json')}.`
+      )} and ${styleText('magenta', 'dev-home-config.json')}.`
     )
   );
 }
@@ -213,9 +215,7 @@ export default (program: Command) => {
     .command('publish-dev-home')
     .alias('pdh')
     .description(
-      `Automatically logs in your eas-cli to ${chalk.magenta(
-        EXPO_HOME_DEV_ACCOUNT_USERNAME!
-      )} account, publishes home app for development on EAS Update and logs back to your account.`
+      `Automatically logs in your eas-cli to ${styleText('magenta', EXPO_HOME_DEV_ACCOUNT_USERNAME!)} account, publishes home app for development on EAS Update and logs back to your account.`
     )
     .option(
       '-s, --sdkVersion [string]',

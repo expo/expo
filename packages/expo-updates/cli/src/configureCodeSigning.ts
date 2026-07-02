@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Command } from './cli';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
@@ -21,12 +21,12 @@ export const configureCodeSigning: Command = async (argv) => {
 
   if (args['--help']) {
     Log.exit(
-      chalk`
-{bold Description}
+      `
+${styleText('bold', 'Description')}
 Configure expo-updates code signing for this project and verify setup
 
-{bold Usage}
-  {dim $} npx expo-updates codesigning:configure --certificate-input-directory <dir> --key-input-directory <dir>
+${styleText('bold', 'Usage')}
+  ${styleText('dim', '$')} npx expo-updates codesigning:configure --certificate-input-directory <dir> --key-input-directory <dir>
 
   Options
   --certificate-input-directory <string>     Directory containing code signing certificate

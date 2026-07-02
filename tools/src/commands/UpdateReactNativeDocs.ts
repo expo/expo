@@ -1,6 +1,6 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer, { QuestionCollection } from 'inquirer';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { GitDirectory } from '../Git';
@@ -118,11 +118,9 @@ async function validateGitStatusAsync() {
     return true;
   }
 
-  logger.warn(`⚠️  Your git working tree is`, chalk.underline('dirty'));
+  logger.warn(`⚠️  Your git working tree is`, styleText('underline', 'dirty'));
   logger.info(
-    `It's recommended to ${chalk.bold(
-      'commit all your changes before proceeding'
-    )}, so you can revert the changes made by this command if necessary.`
+    `It's recommended to ${styleText('bold', 'commit all your changes before proceeding')}, so you can revert the changes made by this command if necessary.`
   );
 
   const { useDirtyGit } = await inquirer.prompt({
@@ -138,7 +136,7 @@ async function validateGitStatusAsync() {
 }
 
 async function updateDocsAsync(options: Options) {
-  logger.info(`📚 Updating ${chalk.cyan('react-native-website')} submodule...`);
+  logger.info(`📚 Updating ${styleText('cyan', 'react-native-website')} submodule...`);
 
   await rnRepo.runAsync(['checkout', 'main']);
   await rnRepo.pullAsync({});
@@ -153,7 +151,7 @@ async function updateDocsAsync(options: Options) {
 }
 
 async function getLocalFilesAsync(options: Options) {
-  logger.info('🔎 Resolving local docs from', chalk.underline(options.sdk), 'folder...');
+  logger.info('🔎 Resolving local docs from', styleText('underline', options.sdk), 'folder...');
 
   const versionedDocsPath = path.join(SDK_DOCS_DIR, options.sdk, 'react-native');
   const files = await fs.promises.readdir(versionedDocsPath);
@@ -171,7 +169,7 @@ async function getLocalFilesAsync(options: Options) {
 async function getUpstreamFilesAsync(options: Options) {
   logger.info(
     '🔎 Resolving upstream docs from',
-    chalk.underline('react-native-website'),
+    styleText('underline', 'react-native-website'),
     'submodule...'
   );
 
@@ -190,7 +188,7 @@ async function getUpstreamFilesAsync(options: Options) {
     logger.info(
       'Please double-check the sidebar and update the "relevantNestedDocs" in this script.'
     );
-    logger.info(chalk.dim(`./${path.relative(process.cwd(), sidebarPath)}\n`));
+    logger.info(styleText('dim', `./${path.relative(process.cwd(), sidebarPath)}\n`));
     throw error;
   }
 
@@ -230,7 +228,7 @@ function getDocsSummary(localFiles: string[], upstreamFiles: string[]): DocsSumm
 
 async function applyRemovedFilesAsync(options: Options, summary: DocsSummary) {
   if (!summary.removed.length) {
-    return logger.info('🤷‍ Upstream did not', chalk.red('remove'), 'any files');
+    return logger.info('🤷‍ Upstream did not', styleText('red', 'remove'), 'any files');
   }
 
   for (const entry of summary.removed) {
@@ -248,14 +246,14 @@ async function applyRemovedFilesAsync(options: Options, summary: DocsSummary) {
 
   logger.info(
     '➖ Upstream',
-    chalk.underline(`removed ${summary.removed.length} files`),
+    styleText('underline', `removed ${summary.removed.length} files`),
     `see "${PREFIX_REMOVED}*.md" files.`
   );
 }
 
 async function applyAddedFilesAsync(options: Options, summary: DocsSummary) {
   if (!summary.added.length) {
-    return logger.info('🤷‍ Upstream did not', chalk.green('add'), 'any files');
+    return logger.info('🤷‍ Upstream did not', styleText('green', 'add'), 'any files');
   }
 
   for (const entry of summary.added) {
@@ -270,15 +268,13 @@ async function applyAddedFilesAsync(options: Options, summary: DocsSummary) {
   }
 
   logger.info(
-    `➕ Upstream ${chalk.underline(
-      `added ${summary.added.length} files`
-    )}, see "${PREFIX_ADDED}*.md" files.`
+    `➕ Upstream ${styleText('underline', `added ${summary.added.length} files`)}, see "${PREFIX_ADDED}*.md" files.`
   );
 }
 
 async function applyChangedFilesAsync(options: Options, summary: DocsSummary) {
   if (!summary.changed.length) {
-    return logger.info('🤷‍ Upstream did not', chalk.yellow('change'), 'any files');
+    return logger.info('🤷‍ Upstream did not', styleText('yellow', 'change'), 'any files');
   }
 
   for (const entry of summary.changed) {
@@ -302,7 +298,7 @@ async function applyChangedFilesAsync(options: Options, summary: DocsSummary) {
 
   logger.info(
     '➗ Upstream',
-    chalk.underline(`changed ${summary.changed.length} files`),
+    styleText('underline', `changed ${summary.changed.length} files`),
     `see "*${SUFFIX_CHANGED}" files.`
   );
 }
@@ -315,7 +311,7 @@ function logCompleted(options: Options): void {
   logger.info(
     'To revert the changes, use `git clean -xdf .` and `git checkout .` in the versioned folder:'
   );
-  logger.info(chalk.dim(`./${path.relative(process.cwd(), versionedDir)}\n`));
+  logger.info(styleText('dim', `./${path.relative(process.cwd(), versionedDir)}\n`));
 }
 
 export default (program) => {

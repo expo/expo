@@ -1,9 +1,9 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import ora from 'ora';
 import path from 'path';
 
@@ -37,7 +37,9 @@ async function main(options: { version?: string }) {
     throw new Error('Please provide a version using --version <version>');
   }
 
-  logger.info(`Bumping react-native version to ${chalk.bold(newVersion)} across the monorepo...\n`);
+  logger.info(
+    `Bumping react-native version to ${styleText('bold', newVersion)} across the monorepo...\n`
+  );
 
   const packageJsonPaths = await findAllPackageJsonPaths();
   let totalUpdated = 0;
@@ -138,7 +140,7 @@ async function updatePackageJson(packageJsonPath: string, newVersion: string): P
   if (modified) {
     await JsonFile.writeAsync(packageJsonPath, json);
     const relativePath = path.relative(EXPO_DIR, packageJsonPath);
-    logger.log(`  Updated ${chalk.cyan(relativePath)}`);
+    logger.log(`  Updated ${styleText('cyan', relativePath)}`);
   }
 
   return modified;
@@ -171,7 +173,7 @@ async function updateRootResolutions(newVersion: string): Promise<boolean> {
 
   if (modified) {
     await JsonFile.writeAsync(ROOT_PACKAGE_JSON_PATH, json);
-    logger.log(`  Updated ${chalk.cyan('package.json')} (resolutions)`);
+    logger.log(`  Updated ${styleText('cyan', 'package.json')} (resolutions)`);
   }
 
   return modified;
@@ -187,7 +189,7 @@ async function updateBundledNativeModules(newVersion: string): Promise<void> {
   if (currentVersion && currentVersion !== newVersion) {
     json[REACT_NATIVE_PACKAGE] = newVersion;
     await JsonFile.writeAsync(BUNDLED_NATIVE_MODULES_PATH, json);
-    logger.log(`  Updated ${chalk.cyan('packages/expo/bundledNativeModules.json')}`);
+    logger.log(`  Updated ${styleText('cyan', 'packages/expo/bundledNativeModules.json')}`);
   }
 }
 
@@ -244,12 +246,12 @@ async function installPodsInApps(): Promise<void> {
     appDirs.map(async (appDir) => {
       const relativePath = path.relative(EXPO_DIR, appDir);
       const spinner = ora({
-        text: `Installing pods in ${chalk.cyan(relativePath)}`,
+        text: `Installing pods in ${styleText('cyan', relativePath)}`,
         indent: 2,
       }).start();
       try {
         await podInstallAsync(path.join(appDir, 'ios'));
-        spinner.succeed(`Installed pods in ${chalk.cyan(relativePath)}`);
+        spinner.succeed(`Installed pods in ${styleText('cyan', relativePath)}`);
       } catch (error: any) {
         spinner.fail(`Failed to install pods in ${relativePath}: ${error.message}`);
       }

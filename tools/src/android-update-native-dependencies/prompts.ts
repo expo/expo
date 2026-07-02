@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import type { ReleaseType } from 'semver';
 import stripAnsi from 'strip-ansi';
 
@@ -17,10 +17,10 @@ function generateAndroidProjectsSelectionChoice({
   gradleReport: { outdated, exceeded, unresolved },
 }: AndroidProjectReport) {
   const deprecationMarking =
-    outdated.length > 0 ? ` ${chalk.yellow(`(${outdated.length} ⚠️ )`)}` : '';
+    outdated.length > 0 ? ` ${styleText('yellow', `(${outdated.length} ⚠️ )`)}` : '';
   const hasUnresolvedOrExceedeedMarking =
     exceeded.length > 0 || unresolved.length > 0
-      ? ` ${chalk.red(`(${exceeded.length + unresolved.length} ❗️)`)}`
+      ? ` ${styleText('red', `(${exceeded.length + unresolved.length} ❗️)`)}`
       : '';
   const name = `${projectName}${deprecationMarking}${hasUnresolvedOrExceedeedMarking}`;
   return {
@@ -37,11 +37,7 @@ export async function promptForAndroidProjectsSelection(
     {
       type: 'checkbox',
       name: 'selectedProjects',
-      message: `Choose which projects need updates. ${chalk.yellow(
-        '(<number> ⚠️ )'
-      )} shows how many dependencies are outdated. ${chalk.red(
-        '(<number> ❗️)'
-      )} shows other problems with respective project's dependencies.`,
+      message: `Choose which projects need updates. ${styleText('yellow', '(<number> ⚠️ )')} shows how many dependencies are outdated. ${styleText('red', '(<number> ❗️)')} shows other problems with respective project's dependencies.`,
       choices: reports.map(generateAndroidProjectsSelectionChoice),
       pageSize: Math.min(reports.length, (process.stdout.rows || 100) - 2),
     },
@@ -57,7 +53,7 @@ async function promptForDependenciesVersions(
   const sortedDependencies = dependencies.sort((a, b) => a.fullName.localeCompare(b.fullName));
   for (const dependency of sortedDependencies) {
     logger.log(
-      `  ▶︎ ${chalk.blueBright(dependency.fullName)} ${getChangelogLink(
+      `  ▶︎ ${styleText('blueBright', dependency.fullName)} ${getChangelogLink(
         dependency.fullName,
         dependency.projectUrl
       )}`
@@ -106,7 +102,7 @@ async function promptForDependencyVersion(
           },
         ],
         default: 0,
-        prefix: `  ${chalk.green('?')}`,
+        prefix: `  ${styleText('green', '?')}`,
       },
     ])
   ).version;
@@ -118,7 +114,7 @@ async function promptForDependencyVersion(
           name: 'version',
           message: `${dependency.fullName}:${dependency.currentVersion} ➡️ `,
           default: addColorBasedOnSemverDiff(dependency.availableVersion, semverDiff),
-          prefix: `  ${chalk.green('?')}`,
+          prefix: `  ${styleText('green', '?')}`,
         },
       ])
     ).version;
@@ -131,15 +127,15 @@ async function promptForDependenciesUpdatesSelection(
 ): Promise<GradleDependencyUpdate[]> {
   const result: GradleDependencyUpdate[] = [];
 
-  logger.log(`\n● project: ${chalk.blue(report.projectName)}`);
+  logger.log(`\n● project: ${styleText('blue', report.projectName)}`);
   result.push(...(await promptForDependenciesVersions(report.gradleReport.outdated)));
 
   if (report.gradleReport.exceeded.length > 0) {
-    logger.log(`🧐 these dependencies ${chalk.yellow('exceed')} available version:`);
+    logger.log(`🧐 these dependencies ${styleText('yellow', 'exceed')} available version:`);
     result.push(...(await promptForDependenciesVersions(report.gradleReport.exceeded)));
   }
   if (report.gradleReport.unresolved.length > 0) {
-    logger.log(`💥 ${chalk.red('Failed to resolve')} these dependencies:`);
+    logger.log(`💥 ${styleText('red', 'Failed to resolve')} these dependencies:`);
     result.push(...(await promptForDependenciesVersions(report.gradleReport.unresolved)));
   }
 
@@ -151,7 +147,8 @@ export async function promptForNativeDependenciesUpdates(
 ): Promise<AndroidProjectDependenciesUpdates[]> {
   const selectedDependenciesUpdates: AndroidProjectDependenciesUpdates[] = [];
   logger.log(
-    chalk.white.bold(
+    styleText(
+      ['white', 'bold'],
       '\nProvide new native dependencies versions for each project. Check their changes in respective CHANGELOGs. To skip dependency provide no value.'
     )
   );

@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 
 import { Task } from './Task';
 import { findFiles } from '../utils';
@@ -27,7 +27,7 @@ export class RemoveFiles extends Task {
     const workDirectory = this.getWorkingDirectory();
 
     this.logSubStep(
-      `🚮 Remove ${chalk.green(this.overrideWorkingDirectory())}/${chalk.yellow(this.filePattern)}`
+      `🚮 Remove ${styleText('green', this.overrideWorkingDirectory())}/${styleText('yellow', this.filePattern)}`
     );
 
     const files = await findFiles(workDirectory, this.filePattern);

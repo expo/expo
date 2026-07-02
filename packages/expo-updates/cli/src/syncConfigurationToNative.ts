@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Command } from './cli';
 import { syncConfigurationToNativeAsync } from './syncConfigurationToNativeAsync';
@@ -22,13 +22,13 @@ export const syncConfigurationToNative: Command = async (argv) => {
 
   if (args['--help']) {
     Log.exit(
-      chalk`
-{bold Description}
+      `
+${styleText('bold', 'Description')}
 Sync configuration from Expo config to native project files if applicable. Note that this really
 only needs to be used by the EAS CLI for generic projects that do't use continuous native generation.
 
-{bold Usage}
-  {dim $} npx expo-updates configuration:syncnative --platform <platform>
+${styleText('bold', 'Usage')}
+  ${styleText('dim', '$')} npx expo-updates configuration:syncnative --platform <platform>
 
   Options
   --platform <string>                  Platform to sync

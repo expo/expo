@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { loadRequestedParcels } from './loadRequestedParcels';
 import logger from '../../Logger';
@@ -21,7 +21,7 @@ export const packPackageToTarball = new Task<TaskArgs>(
       async (step) => {
         try {
           for (const { pkg, state } of parcels) {
-            step.start(`Packing ${chalk.green(pkg.packageName)} to tarball`);
+            step.start(`Packing ${styleText('green', pkg.packageName)} to tarball`);
 
             const packResult = await packToTarballAsync(pkg.path);
 

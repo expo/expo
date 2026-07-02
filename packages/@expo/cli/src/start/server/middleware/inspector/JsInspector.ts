@@ -1,5 +1,5 @@
 import type { CustomMessageHandlerConnection } from '@react-native/dev-middleware';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { selectAsync } from '../../../../utils/prompts';
 import { pageIsSupported } from '../../metro/debugging/pageIsSupported';
@@ -108,13 +108,13 @@ export async function promptInspectorAppAsync(apps: MetroInspectorProxyApp[]) {
   const choices = apps.map((app) => {
     const name = app.deviceName ?? 'Unknown device';
     return {
-      title: hasDuplicateNames ? chalk`${name}{dim  - ${app.id}}` : name,
+      title: hasDuplicateNames ? `${name}${styleText('dim', ` - ${app.id}`)}` : name,
       value: app.id,
       app,
     };
   });
 
-  const value = await selectAsync(chalk`Debug target {dim (Hermes only)}`, choices);
+  const value = await selectAsync(`Debug target ${styleText('dim', `(Hermes only)`)}`, choices);
 
   return choices.find((item) => item.value === value)?.app;
 }

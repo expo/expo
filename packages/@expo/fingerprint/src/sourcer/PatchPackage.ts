@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { isIgnoredPathWithMatchObjects } from '../utils/Path';
@@ -11,12 +11,12 @@ export async function getPatchPackageSourcesAsync(
   options: NormalizedOptions
 ): Promise<HashSource[]> {
   if (isIgnoredPathWithMatchObjects('patches', options.ignoreDirMatchObjects)) {
-    debug(`Skipping dir - ${chalk.dim('patches')} (ignored by ignoreDirMatchObjects)`);
+    debug(`Skipping dir - ${styleText('dim', 'patches')} (ignored by ignoreDirMatchObjects)`);
     return [];
   }
   const result = await getFileBasedHashSourceAsync(projectRoot, 'patches', 'patchPackage');
   if (result != null) {
-    debug(`Adding dir - ${chalk.dim('patches')}`);
+    debug(`Adding dir - ${styleText('dim', 'patches')}`);
     return [result];
   }
   return [];

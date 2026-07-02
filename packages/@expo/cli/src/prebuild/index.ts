@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+
+import { styleText } from 'node:util';
 
 import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
@@ -30,17 +31,17 @@ export const expoPrebuild: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Create native iOS and Android project files for building natively`,
-      chalk`npx expo prebuild {dim <dir>}`,
+      `npx expo prebuild ${styleText('dim', `<dir>`)}`,
       [
-        chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
+        `<dir>                                    Directory of the Expo project. ${styleText('dim', `Default: Current working directory`)}`,
         `--no-install                             Skip installing npm packages and CocoaPods`,
         `--no-clean                               Apply changes to the existing native folders instead of recreating them`,
-        chalk`--npm                                    Use npm to install dependencies. {dim Default when package-lock.json exists}`,
-        chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
-        chalk`--bun                                    Use bun to install dependencies. {dim Default when bun.lock or bun.lockb exists}`,
-        chalk`--pnpm                                   Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
+        `--npm                                    Use npm to install dependencies. ${styleText('dim', `Default when package-lock.json exists`)}`,
+        `--yarn                                   Use Yarn to install dependencies. ${styleText('dim', `Default when yarn.lock exists`)}`,
+        `--bun                                    Use bun to install dependencies. ${styleText('dim', `Default when bun.lock or bun.lockb exists`)}`,
+        `--pnpm                                   Use pnpm to install dependencies. ${styleText('dim', `Default when pnpm-lock.yaml exists`)}`,
         `--template <template>                    Project template to clone from. File path pointing to a local tar file, npm package or a github repo`,
-        chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,
+        `-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. ${styleText('dim', `Default: all`)}`,
         `--skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)`,
         `-h, --help                               Usage info`,
       ].join('\n')

@@ -1,5 +1,5 @@
 import { getConfig, modifyConfigAsync } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from "node:util";
 
 import * as Security from './Security';
 import { getLastDeveloperCodeSigningIdAsync, setLastDeveloperCodeSigningIdAsync } from './settings';
@@ -34,9 +34,7 @@ export async function sortDefaultIdToBeginningAsync(
 function assertCodeSigningSetup(): never {
   // TODO: We can probably do this too automatically.
   Log.log(
-    `\u203A Your computer requires some additional setup before you can build onto physical iOS devices.\n  ${chalk.bold(
-      learnMore('https://expo.fyi/setup-xcode-signing')
-    )}`
+    `\u203A Your computer requires some additional setup before you can build onto physical iOS devices.\n  ${styleText("bold", learnMore('https://expo.fyi/setup-xcode-signing'))}`
   );
 
   throw new CommandError('No code signing certificates are available to use.');
@@ -108,7 +106,7 @@ export async function selectDevelopmentTeamAsync(
     'Development team for signing the app',
     identities.map((value, i) => {
       const format =
-        value.signingCertificateId === preferredId ? chalk.bold : (message: string) => message;
+        value.signingCertificateId === preferredId ? (message: string) => styleText('bold', message) : (message: string) => message;
       return {
         // Formatted like: `650 Industries, Inc. (A1BCDEF234) - Apple Development: Evan Bacon (AA00AABB0A)`
         title: format(

@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import { vol } from 'memfs';
 
 import * as Log from '../../log';
@@ -269,11 +269,11 @@ describe(updatePkgDependencies, () => {
       expo: 'version-from-project',
     });
     expect(Log.warn).toHaveBeenCalledWith(
-      expect.stringContaining(`instead of recommended ${chalk.bold('expo@version-from-template')}`)
+      expect.stringContaining(`instead of recommended ${styleText("bold", 'expo@version-from-template')}`)
     );
     expect(Log.warn).toHaveBeenCalledWith(
       expect.stringContaining(
-        `instead of recommended ${chalk.bold('react-native@version-from-template-required-1')}`
+        `instead of recommended ${styleText("bold", 'react-native@version-from-template-required-1')}`
       )
     );
   });

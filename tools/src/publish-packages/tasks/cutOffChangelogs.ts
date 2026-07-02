@@ -1,11 +1,9 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { Parcel, TaskArgs } from '../types';
-
-const { green, gray } = chalk;
 
 /**
  * Cuts off changelogs - renames unpublished section header
@@ -34,7 +32,7 @@ export const cutOffChangelogs = new Task<TaskArgs>(
           // This prevents unnecessary cut-offs when that version was already cutted off.
           // Maybe we should move "unpublished" entries to this version? It's probably too rare to worry about it.
           if (!versions.includes(state.releaseVersion)) {
-            logger.log('  ', green(pkg.packageName) + '...');
+            logger.log('  ', styleText('green', pkg.packageName) + '...');
             await changelog.cutOffAsync(state.releaseVersion);
             await changelog.saveAsync();
             return;
@@ -43,7 +41,11 @@ export const cutOffChangelogs = new Task<TaskArgs>(
         } else {
           skipReason = 'no changelog file';
         }
-        logger.log('  ', green(pkg.packageName), gray(`- skipped, ${skipReason}`));
+        logger.log(
+          '  ',
+          styleText('green', pkg.packageName),
+          styleText('gray', `- skipped, ${skipReason}`)
+        );
       })
     );
   }

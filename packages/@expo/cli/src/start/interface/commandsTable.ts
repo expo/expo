@@ -1,5 +1,5 @@
 import type { ExpoConfig } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import wrapAnsi from 'wrap-ansi';
 
 import * as Log from '../../log';
@@ -33,7 +33,7 @@ export const getTerminalColumns = () => process.stdout.columns || 80;
 export const printItem = (text: string, opts?: { dim: boolean }): string => {
   let output = `${BLT} ` + wrapAnsi(text, getTerminalColumns()).trimStart();
   if (opts?.dim) {
-    output = chalk`{dim ${output}}`;
+    output = `${styleText('dim', output)}`;
   }
   return output;
 };
@@ -55,9 +55,9 @@ export function printUsage(
 
   const printPrefix = ({ short }: { short: boolean }) => {
     Log.log();
-    let message = chalk`Using {cyan ${target}}`;
+    let message = `Using ${styleText('cyan', target)}`;
     if (!short) {
-      message += chalk` {dim (Press {bold s} to ${switchMsg})}`;
+      message += ` ${styleText('dim', `(Press ${styleText('bold', `s`)} to ${switchMsg})`)}`;
     }
     Log.log(printItem(message));
   };
@@ -117,13 +117,13 @@ function logCommandsTable(
       if (!key) return '';
       let view = `${BLT} `;
       if (key.length === 1) view += 'Press ';
-      view += chalk`{bold ${key}} {dim │} `;
+      view += `${styleText('bold', key)} ${styleText('dim', `│`)} `;
       view += msg;
       if (status) {
-        view += ` ${chalk.dim(`(${chalk.italic(status)})`)}`;
+        view += ` ${styleText('dim', `(${styleText('italic', status)})`)}`;
       }
       if (disabled) {
-        view = chalk.dim(view);
+        view = styleText('dim', view);
       }
       return view;
     });

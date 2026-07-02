@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs/promises';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -8,7 +8,6 @@ import { getPackageByName, Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
-const { cyan, green } = chalk;
 const MODULE_TEMPLATE_PKG_NAME = 'expo-module-template';
 const TEMPLATE_PACKAGE_JSON_FILENAME = '$package.json';
 const PACKAGES_TO_UPDATE = ['expo-modules-core', 'expo-module-scripts', 'expo'];
@@ -38,7 +37,7 @@ export const updateModuleTemplate = new Task<TaskArgs>(
 
     if (!moduleTemplatePkg) {
       logger.error(
-        `❗️ Unable to find the module template package: ${green(MODULE_TEMPLATE_PKG_NAME)}`
+        `❗️ Unable to find the module template package: ${styleText('green', MODULE_TEMPLATE_PKG_NAME)}`
       );
       return;
     }
@@ -82,8 +81,8 @@ async function updateTemplatePackageJsonAsync(
     }
 
     logger.log(
-      `   Updating dev dependency on ${green(pkg.packageName)}:`,
-      `${cyan.bold(oldVersion)} -> ${cyan.bold(newVersionRange)}`
+      `   Updating dev dependency on ${styleText('green', pkg.packageName)}:`,
+      `${styleText(['cyan', 'bold'], oldVersion)} -> ${styleText(['cyan', 'bold'], newVersionRange)}`
     );
 
     updatedBody = updatedBody.replace(

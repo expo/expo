@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 import { glob } from 'tinyglobby';
 
@@ -9,9 +9,12 @@ import { parseArgsOrExit, printHelp } from '../utils/args';
 import { runTransformAsync } from '../utils/runner';
 
 const transformsBlock = (transforms: string[]): string =>
-  ['', `  ${chalk.bold('Transforms available')}`, ...transforms.map((t) => `    ${t}`), ''].join(
-    '\n'
-  );
+  [
+    '',
+    `  ${styleText('bold', 'Transforms available')}`,
+    ...transforms.map((t) => `    ${t}`),
+    '',
+  ].join('\n');
 
 export type ParsedCommand = {
   transform: string;
@@ -118,10 +121,10 @@ export async function resolveAndDispatch(command: ParsedCommand): Promise<void> 
 
   Log.log('');
   Log.log('Results:');
-  Log.log(chalk.red(`  ${combinedStats.error} errors`));
+  Log.log(styleText('red', `  ${combinedStats.error} errors`));
   // Log.log(chalk.yellow(`  ${combinedStats.nochange} unmodified`));
-  Log.log(chalk.yellow(`  ${combinedStats.skip} skipped`));
-  Log.log(chalk.green(`  ${combinedStats.ok} ok`));
+  Log.log(styleText('yellow', `  ${combinedStats.skip} skipped`));
+  Log.log(styleText('green', `  ${combinedStats.ok} ok`));
   Log.log(`  Time elapsed: ${combinedStats.timeElapsed.toFixed(2)}s`);
 }
 

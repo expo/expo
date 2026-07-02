@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import prompts from 'prompts';
 
 import { env } from './utils/env';
@@ -48,7 +48,9 @@ export async function promptTemplateAsync() {
 
   if (!answer) {
     console.log();
-    console.log(chalk`Specify the template name, example: {cyan --template expo-template-blank}`);
+    console.log(
+      `Specify the template name, example: ${styleText('cyan', `--template expo-template-blank`)}`
+    );
     console.log();
     process.exit(1);
   }

@@ -1,5 +1,5 @@
 import type { ExpoConfig } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import type { Ora } from 'ora';
 import semver from 'semver';
 
@@ -165,15 +165,15 @@ async function resolveAndDownloadRepoTemplateAsync(
     }
   }
   if (!repoUrl) {
-    oraInstance.fail(`Invalid URL: ${chalk.red(`"${template}"`)}. Try again with a valid URL.`);
+    oraInstance.fail(
+      `Invalid URL: ${styleText('red', `"${template}"`)}. Try again with a valid URL.`
+    );
     throw new AbortCommandError();
   }
 
   if (repoUrl.origin !== 'https://github.com') {
     oraInstance.fail(
-      `Invalid URL: ${chalk.red(
-        `"${template}"`
-      )}. Only GitHub repositories are supported. Try again with a valid GitHub URL.`
+      `Invalid URL: ${styleText('red', `"${template}"`)}. Only GitHub repositories are supported. Try again with a valid GitHub URL.`
     );
     throw new AbortCommandError();
   }
@@ -182,7 +182,7 @@ async function resolveAndDownloadRepoTemplateAsync(
 
   if (!repoInfo) {
     oraInstance.fail(
-      `Found invalid GitHub URL: ${chalk.red(`"${template}"`)}. Fix the URL and try again.`
+      `Found invalid GitHub URL: ${styleText('red', `"${template}"`)}. Fix the URL and try again.`
     );
     throw new AbortCommandError();
   }
@@ -191,15 +191,14 @@ async function resolveAndDownloadRepoTemplateAsync(
 
   if (!found) {
     oraInstance.fail(
-      `Could not locate the repository for ${chalk.red(
-        `"${template}"`
-      )}. Check that the repository exists and try again.`
+      `Could not locate the repository for ${styleText('red', `"${template}"`)}. Check that the repository exists and try again.`
     );
     throw new AbortCommandError();
   }
 
-  oraInstance.text = chalk.bold(
-    `Downloading files from repo ${chalk.cyan(template)}. This might take a moment.`
+  oraInstance.text = styleText(
+    'bold',
+    `Downloading files from repo ${styleText('cyan', template)}. This might take a moment.`
   );
 
   return await downloadAndExtractRepoAsync(repoInfo, templateDirectory, { expName });

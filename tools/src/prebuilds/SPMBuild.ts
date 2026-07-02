@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import type { SPMPackageSource } from './ExternalPackage';
@@ -37,7 +37,7 @@ export const SPMBuild = {
     hermesIncludeDirs?: string[]
   ): Promise<void> => {
     logger.verbose(
-      `🏗  Build Package.swift for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)} [${buildType.toLowerCase()}]`
+      `🏗  Build Package.swift for ${styleText('green', pkg.packageName)}/${styleText('green', product.name)} [${buildType.toLowerCase()}]`
     );
 
     // Verify that we have a Package.swift file in the package directory
@@ -87,7 +87,7 @@ export const SPMBuild = {
   ): Promise<void> => {
     const buildFolderToClean = SPMBuild.getPackageBuildPath(pkg, product, buildType);
     logger.verbose(
-      `🧹 Cleaning build folder ${chalk.green(path.relative(pkg.buildPath, buildFolderToClean))}...`
+      `🧹 Cleaning build folder ${styleText('green', path.relative(pkg.buildPath, buildFolderToClean))}...`
     );
     await fs.remove(buildFolderToClean);
   },
@@ -310,7 +310,7 @@ const buildForPlatformAsync = async (
   const { code, error: buildError } = await spawnXcodeBuildWithSpinner(
     args,
     path.dirname(packageSwiftPath),
-    `Building ${chalk.green(pkg.packageName)}/${chalk.green(product.name)} for ${chalk.green(buildPlatform)}/${chalk.green(buildType.toLowerCase())}`
+    `Building ${styleText('green', pkg.packageName)}/${styleText('green', product.name)} for ${styleText('green', buildPlatform)}/${styleText('green', buildType.toLowerCase())}`
   );
 
   if (code !== 0) {
@@ -864,12 +864,14 @@ export async function buildSharedSPMDependencyAsync(
 
   // Check if already built
   if (Frameworks.hasSharedSPMDepFramework(productName, buildType)) {
-    logger.info(`⏭️  Shared SPM dep ${chalk.cyan(productName)} already exists for ${buildType}`);
+    logger.info(
+      `⏭️  Shared SPM dep ${styleText('cyan', productName)} already exists for ${buildType}`
+    );
     return;
   }
 
   logger.verbose(
-    `🔨 Building shared SPM dependency ${chalk.cyan(productName)} [${buildType.toLowerCase()}]...`
+    `🔨 Building shared SPM dependency ${styleText('cyan', productName)} [${buildType.toLowerCase()}]...`
   );
 
   // Set up build directory under .spm-deps/<productName>/
@@ -942,7 +944,7 @@ export async function buildSharedSPMDependencyAsync(
         await fs.remove(destPath);
         await spawnAsync('rsync', ['-a', `${xcframeworkPath}/`, `${destPath}/`], { stdio: 'pipe' });
         logger.info(
-          `✅ Copied binary SPM dep ${chalk.cyan(productName)} → ${path.relative(process.cwd(), destPath)}`
+          `✅ Copied binary SPM dep ${styleText('cyan', productName)} → ${path.relative(process.cwd(), destPath)}`
         );
         // Keep buildDir for caching — resolved artifacts persist for reuse
         return;
@@ -990,14 +992,14 @@ export async function buildSharedSPMDependencyAsync(
 
     if (externalInterDeps.length > 0) {
       logger.verbose(
-        `   🔗 ${productName} depends on shared deps: ${externalInterDeps.map((d) => chalk.cyan(d)).join(', ')}`
+        `   🔗 ${productName} depends on shared deps: ${externalInterDeps.map((d) => styleText('cyan', d)).join(', ')}`
       );
 
       // Recursively build any inter-deps that haven't been built yet
       for (const interDepName of externalInterDeps) {
         const interDep = allSharedDeps.get(interDepName);
         if (interDep && !Frameworks.hasSharedSPMDepFramework(interDepName, buildType)) {
-          logger.verbose(`   ↳ Building dependency ${chalk.cyan(interDepName)} first...`);
+          logger.verbose(`   ↳ Building dependency ${styleText('cyan', interDepName)} first...`);
           await buildSharedSPMDependencyAsync(interDep, buildType, allSharedDeps, platforms);
         }
       }
@@ -1039,7 +1041,7 @@ export async function buildSharedSPMDependencyAsync(
     const { code, error: buildError } = await spawnXcodeBuildWithSpinner(
       args,
       cleanBuildDir,
-      `Building ${chalk.cyan(productName)} for ${chalk.green(platform)}/${chalk.green(buildType.toLowerCase())}`
+      `Building ${styleText('cyan', productName)} for ${styleText('green', platform)}/${styleText('green', buildType.toLowerCase())}`
     );
 
     if (code !== 0) {
@@ -1106,7 +1108,9 @@ export async function buildSharedSPMDependencyAsync(
         await spawnAsync('rsync', ['-a', `${artifactXCFrameworkPath}/`, `${destPath}/`], {
           stdio: 'pipe',
         });
-        logger.info(`✅ Copied binary SPM dep ${chalk.cyan(productName)} to shared location`);
+        logger.info(
+          `✅ Copied binary SPM dep ${styleText('cyan', productName)} to shared location`
+        );
 
         // Clean up build directory
         await fs.remove(buildDir);
@@ -1129,7 +1133,7 @@ export async function buildSharedSPMDependencyAsync(
   const { code, error: composeError } = await spawnXcodeBuildWithSpinner(
     frameworkArgs,
     buildDir,
-    `Composing ${chalk.cyan(productName)}.xcframework`
+    `Composing ${styleText('cyan', productName)}.xcframework`
   );
 
   if (code !== 0) {
@@ -1142,6 +1146,6 @@ export async function buildSharedSPMDependencyAsync(
   await fs.remove(derivedDataPath);
 
   logger.info(
-    `✅ Built shared SPM dep ${chalk.cyan(productName)} → ${path.relative(process.cwd(), destPath)}`
+    `✅ Built shared SPM dep ${styleText('cyan', productName)} → ${path.relative(process.cwd(), destPath)}`
   );
 }

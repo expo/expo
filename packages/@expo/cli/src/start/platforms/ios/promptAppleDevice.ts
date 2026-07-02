@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from "node:util";
 
 import { getBestSimulatorAsync } from './getBestSimulator';
 import type { Device } from './simctl';
@@ -46,9 +46,9 @@ async function promptAppleDeviceInternalAsync(devices: Device[]): Promise<string
     message: 'Select a simulator',
     choices: devices.map((item) => {
       const isActive = item.state === 'Booted';
-      const format = isActive ? chalk.bold : (text: string) => text;
+      const format = isActive ? (text: string) => styleText('bold', text) : (text: string) => text;
       return {
-        title: `${format(item.name)} ${chalk.dim(`(${item.osVersion})`)}`,
+        title: `${format(item.name)} ${styleText("dim", `(${item.osVersion})`)}`,
         value: item.udid,
       };
     }),

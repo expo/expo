@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
@@ -126,7 +126,7 @@ export async function startInterfaceAsync(
 
       if (server.isTargetingNative() && !platforms.includes(settings.key)) {
         Log.warn(
-          chalk`${settings.name} is disabled, enable it by adding {bold ${settings.key}} to the platforms array in your app.json or app.config.js`
+          `${settings.name} is disabled, enable it by adding ${styleText('bold', settings.key)} to the platforms array in your app.json or app.config.js`
         );
       } else {
         try {

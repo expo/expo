@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { diffLines } from 'diff';
+import { styleText } from 'node:util';
 
 const CONTEXT_SIZE = 5;
 
@@ -11,9 +11,9 @@ export function printDiff(before: string, after: string): void {
       index < diff.length - 1 && (diff[index + 1].added || diff[index + 1].removed);
     let result = '';
     if (part.added) {
-      result = chalk.green(part.value);
+      result = styleText('green', part.value);
     } else if (part.removed) {
-      result = chalk.red(part.value);
+      result = styleText('red', part.value);
     } else if (isContextEnd && isContextStart) {
       const split = part.value.split('\n');
       if (split.length - 1 > 2 * CONTEXT_SIZE) {

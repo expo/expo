@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -153,7 +153,7 @@ function createChoices(
     return {
       title: destination,
       value: index,
-      description: exists ? chalk.red('This will overwrite the existing file') : undefined,
+      description: exists ? styleText('red', 'This will overwrite the existing file') : undefined,
     };
   });
 }

@@ -1,6 +1,6 @@
-// mostly copied from https://github.com/expo/expo/blob/main/packages/%40expo/cli/src/log.ts
-import chalk from 'chalk';
 import Debug from 'debug';
+// mostly copied from https://github.com/expo/expo/blob/main/packages/%40expo/cli/src/log.ts
+import { styleText } from 'node:util';
 
 import { env } from './env';
 
@@ -20,11 +20,13 @@ export function error(...message: string[]): void {
 
 /** Print an error and provide additional info (the stack trace) in debug mode. */
 export function exception(e: Error): void {
-  error(chalk.red(e.toString()) + (env.EXPO_DEBUG ? '\n' + chalk.gray(e.stack) : ''));
+  error(
+    styleText('red', e.toString()) + (env.EXPO_DEBUG ? '\n' + styleText('gray', e.stack!) : '')
+  );
 }
 
 export function warn(...message: string[]): void {
-  console.warn(...message.map((value) => chalk.yellow(value)));
+  console.warn(...message.map((value) => styleText('yellow', value)));
 }
 
 export function log(...message: string[]): void {

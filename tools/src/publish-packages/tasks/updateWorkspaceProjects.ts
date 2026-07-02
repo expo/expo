@@ -1,5 +1,5 @@
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { EXPO_DIR } from '../../Constants';
@@ -9,8 +9,6 @@ import { getAvailableProjectTemplatesAsync } from '../../ProjectTemplates';
 import { Task } from '../../TasksRunner';
 import * as Workspace from '../../Workspace';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { green, yellow, cyan } = chalk;
 
 /**
  * Updates versions of packages to be published in other workspace projects depending on them.
@@ -78,7 +76,7 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
         const projectPackageJson = await JsonFile.readAsync(projectPackageJsonPath);
         const batch = logger.batch();
 
-        batch.log('  ', green(projectName));
+        batch.log('  ', styleText('green', projectName));
 
         // Iterate through different dependencies types.
         for (const dependenciesKey of dependenciesKeys) {
@@ -118,8 +116,8 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
 
             batch.log(
               '    ',
-              `Updating ${yellow(`${dependenciesKey}.${pkg.packageName}`)}`,
-              `from ${cyan(currentVersionRange)} to ${cyan(newVersionRange)}`
+              `Updating ${styleText('yellow', `${dependenciesKey}.${pkg.packageName}`)}`,
+              `from ${styleText('cyan', currentVersionRange)} to ${styleText('cyan', newVersionRange)}`
             );
           }
         }

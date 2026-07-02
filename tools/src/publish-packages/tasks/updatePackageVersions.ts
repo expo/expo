@@ -1,13 +1,11 @@
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { Parcel, TaskArgs } from '../types';
-
-const { magenta, cyan, green } = chalk;
 
 /**
  * Updates versions in packages selected to be published.
@@ -19,7 +17,7 @@ export const updatePackageVersions = new Task<TaskArgs>(
     filesToStage: ['packages/**/package.json', 'templates/**/package.json'],
   },
   async (parcels: Parcel[]) => {
-    logger.info(`\n🆙 Updating versions in ${magenta.bold('package.json')}s...`);
+    logger.info(`\n🆙 Updating versions in ${styleText(['magenta', 'bold'], 'package.json')}s...`);
 
     await Promise.all(
       parcels.map(async ({ pkg, state }) => {
@@ -30,8 +28,8 @@ export const updatePackageVersions = new Task<TaskArgs>(
         );
         logger.log(
           '  ',
-          `${green(pkg.packageName)}:`,
-          `${cyan.bold(pkg.packageVersion)} -> ${cyan.bold(state.releaseVersion!)}`
+          `${styleText('green', pkg.packageName)}:`,
+          `${styleText(['cyan', 'bold'], pkg.packageVersion)} -> ${styleText(['cyan', 'bold'], state.releaseVersion!)}`
         );
       })
     );

@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../../log';
 import { env } from '../../utils/env';
@@ -51,7 +51,7 @@ export async function printDevToolsPluginCliBannersAsync(
     );
 
     for (const { title, url } of bannerItems) {
-      Log.log(printItem(chalk`${title}: {underline ${url}}`));
+      Log.log(printItem(`${title}: ${styleText('underline', url)}`));
     }
 
     return bannerItems.length;
@@ -99,9 +99,9 @@ export class DevServerManagerActions {
 
           let qrMessage = '';
           if (!options.devClient) {
-            qrMessage = `Scan the QR code above to open in ${chalk`{bold Expo Go}`}.`;
+            qrMessage = `Scan the QR code above to open in ${styleText('bold', `Expo Go`)}.`;
           } else {
-            qrMessage = chalk`Scan the QR code above to open in a {bold development build}.`;
+            qrMessage = `Scan the QR code above to open in a ${styleText('bold', `development build`)}.`;
             qrMessage += ` (${learnMore('https://expo.fyi/start')})`;
           }
           rows--;
@@ -112,13 +112,13 @@ export class DevServerManagerActions {
           rows--;
           Log.log(
             printItem(
-              chalk`Choose an app to open your project at {underline ${interstitialPageUrl}}`
+              `Choose an app to open your project at ${styleText('underline', interstitialPageUrl)}`
             )
           );
         }
 
         rows--;
-        Log.log(printItem(chalk`Metro: {underline ${nativeRuntimeUrl}}`));
+        Log.log(printItem(`Metro: ${styleText('underline', nativeRuntimeUrl)}`));
       } catch (error) {
         console.log('err', error);
         // @ts-ignore: If there is no development build scheme, then skip the QR code.
@@ -126,7 +126,7 @@ export class DevServerManagerActions {
           throw error;
         } else {
           const serverUrl = devServer.getDevServerUrl();
-          Log.log(printItem(chalk`Metro: {underline ${serverUrl}}`));
+          Log.log(printItem(`Metro: ${styleText('underline', serverUrl!)}`));
           rows--;
           Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));
           rows--;
@@ -138,7 +138,7 @@ export class DevServerManagerActions {
       const webDevServer = this.devServerManager.getWebDevServer();
       const webUrl = webDevServer?.getDevServerUrl({ hostType: 'localhost' });
       if (webUrl) {
-        Log.log(printItem(chalk`Web: {underline ${webUrl}}`));
+        Log.log(printItem(`Web: ${styleText('underline', webUrl)}`));
         rows--;
       }
     }
@@ -163,7 +163,7 @@ export class DevServerManagerActions {
       const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
       if (!apps.length) {
         return Log.warn(
-          chalk`{bold Debug:} No compatible apps connected, React Native DevTools can only be used with Hermes. ${learnMore(
+          `${styleText('bold', `Debug:`)} No compatible apps connected, React Native DevTools can only be used with Hermes. ${learnMore(
             'https://docs.expo.dev/guides/using-hermes/'
           )}`
         );
@@ -171,12 +171,12 @@ export class DevServerManagerActions {
 
       const app = await promptInspectorAppAsync(apps);
       if (!app) {
-        return Log.error(chalk`{bold Debug:} No inspectable device selected`);
+        return Log.error(`${styleText('bold', `Debug:`)} No inspectable device selected`);
       }
 
       if (!(await openJsInspector(metroServerOrigin, app))) {
         Log.warn(
-          chalk`{bold Debug:} Failed to open the React Native DevTools, see debug logs for more info.`
+          `${styleText('bold', `Debug:`)} Failed to open the React Native DevTools, see debug logs for more info.`
         );
       }
     } catch (error: any) {
@@ -218,7 +218,7 @@ export class DevServerManagerActions {
         ...createDevToolsMenuItems(plugins, defaultServerUrl, metroServerOrigin),
       ];
 
-      const value = await selectAsync(chalk`Dev tools {dim (native only)}`, menuItems);
+      const value = await selectAsync(`Dev tools ${styleText('dim', `(native only)`)}`, menuItems);
       const menuItem = menuItems.find((item) => item.value === value);
       if (menuItem?.action) {
         menuItem.action();

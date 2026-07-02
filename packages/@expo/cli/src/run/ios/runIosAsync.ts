@@ -1,5 +1,4 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
@@ -22,6 +21,7 @@ import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
+import { styleText } from 'node:util';
 
 const debug = require('debug')('expo:run:ios');
 
@@ -151,8 +151,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   // Generic build (--device generic) - skip install/launch, just output the binary path.
   if (!props.device) {
-    Log.log(chalk`\n{green ✓} Build complete`);
-    Log.log(chalk`{bold Binary:} ${binaryPath}`);
+    Log.log(`\n${styleText('green', `✓`)} Build complete`);
+    Log.log(`${styleText('bold', `Binary:`)} ${binaryPath}`);
 
     if (shouldUpdateBuildCache && props.buildCacheProvider) {
       await uploadBuildCache({
@@ -231,7 +231,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 function assertPlatform() {
   if (process.platform !== 'darwin') {
     Log.exit(
-      chalk`iOS apps can only be built on macOS devices. Use {cyan eas build -p ios} to build in the cloud.`
+      `iOS apps can only be built on macOS devices. Use ${styleText('cyan', `eas build -p ios`)} to build in the cloud.`
     );
   }
 }
@@ -250,7 +250,7 @@ async function copyBinaryToOutputAsync(binaryPath: string, outputDir: string): P
   // Copy the .app bundle to the output directory.
   await fs.promises.cp(binaryPath, outputPath, { recursive: true });
 
-  Log.log(chalk`{dim Copied to} ${outputPath}`);
+  Log.log(`${styleText('dim', `Copied to`)} ${outputPath}`);
 
   return outputPath;
 }

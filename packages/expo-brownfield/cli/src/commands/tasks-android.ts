@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import type { Command } from 'commander';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import {
   processRepositories,
@@ -32,14 +32,14 @@ const tasksAndroid = async (command: Command) => {
     return;
   }
 
-  console.log(chalk.bold('Publishing tasks'));
+  console.log(styleText('bold', 'Publishing tasks'));
   const tasks = processTasks(stdout);
   tasks.forEach((task) => {
-    console.log(` - ${chalk.blue(task)}`);
+    console.log(` - ${styleText('blue', task)}`);
   });
-  console.log(chalk.bold('Repositories'));
+  console.log(styleText('bold', 'Repositories'));
   processRepositories(tasks).forEach((repository) => {
-    console.log(` - ${chalk.blue(repository)}`);
+    console.log(` - ${styleText('blue', repository)}`);
   });
 };
 

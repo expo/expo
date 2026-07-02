@@ -1,9 +1,9 @@
 import { getConfig } from '@expo/config';
 import * as tunnel from '@expo/ws-tunnel';
-import chalk from 'chalk';
 import * as fs from 'node:fs';
 import { tmpdir, hostname } from 'node:os';
 import * as path from 'node:path';
+import { styleText } from 'node:util';
 
 import { TunnelMutation } from '../../api/graphql/mutations/TunnelMutation';
 import { AppQuery } from '../../api/graphql/queries/AppQuery';
@@ -38,9 +38,14 @@ export class AsyncWsTunnel {
       onStatusChange(status) {
         if (status === 'disconnected') {
           Log.error(
-            chalk.red(
+            styleText(
+              'red',
               'Tunnel connection has been closed. This is often related to intermittent connection problems with the ws proxy servers. Restart the dev server to try connecting again.'
-            ) + chalk.gray('\nCheck the Expo status page for outages: https://status.expo.dev/')
+            ) +
+              styleText(
+                'gray',
+                '\nCheck the Expo status page for outages: https://status.expo.dev/'
+              )
           );
         }
       },

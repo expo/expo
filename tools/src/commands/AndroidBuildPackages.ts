@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import path from 'path';
 import readline from 'readline';
 
@@ -254,8 +254,8 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
         readline.clearLine(process.stdout, 0);
         readline.cursorTo(process.stdout, 0);
         process.stdout.write(` ❌  Failed to build ${pkg.name}:\n`);
-        console.error(chalk.red(e.message));
-        console.error(chalk.red(e.stderr));
+        console.error(styleText('red', e.message));
+        console.error(styleText('red', e.stderr));
       }
     }
   }

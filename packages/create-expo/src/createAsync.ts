@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import type { ExamplesMetadata } from './Examples';
@@ -138,7 +138,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
       });
     },
     {
-      pending: chalk.bold('Locating project files.'),
+      pending: styleText('bold', 'Locating project files.'),
       success: 'Downloaded and extracted project files.',
       error: (error) =>
         `Something went wrong in downloading and extracting the project files: ${error.message}`,
@@ -194,7 +194,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
 
     if (destination != null) {
       console.log(
-        chalk`{gray The {cyan ${resolvedExample}} example has been renamed to {cyan ${destination}}.}`
+        `${styleText('gray', `The ${styleText('cyan', resolvedExample)} example has been renamed to ${styleText('cyan', destination)}.`)}`
       );
 
       resolvedExample = destination;
@@ -202,7 +202,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
 
     // Optional message to show when an example is aliased, in case additional context is required
     if (typeof alias === 'object' && alias.message) {
-      console.log(chalk`{gray ${alias.message}}`);
+      console.log(`${styleText('gray', alias.message)}`);
     }
   } else if (metadata && metadata.deprecated[resolvedExample]) {
     throw new Error(getDeprecatedExampleErrorMessage(resolvedExample, metadata));
@@ -213,7 +213,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
   console.log(
-    chalk`Creating {cyan ${path.basename(projectRoot)}} using the {cyan ${resolvedExample}} example.\n`
+    `Creating ${styleText('cyan', path.basename(projectRoot))} using the ${styleText('cyan', resolvedExample)} example.\n`
   );
   await fs.promises.mkdir(projectRoot, { recursive: true });
 
@@ -232,7 +232,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
       await downloadAndExtractExampleAsync(projectRoot, resolvedExample);
     },
     {
-      pending: chalk.bold('Locating example files...'),
+      pending: styleText('bold', 'Locating example files...'),
       success: 'Downloaded and extracted example files.',
       error: (error) =>
         `Something went wrong in downloading and extracting the example files: ${error.message}`,

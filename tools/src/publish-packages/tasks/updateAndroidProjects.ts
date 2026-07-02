@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -8,8 +8,6 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { transformFileAsync } from '../../Transforms';
 import { Parcel, TaskArgs } from '../types';
-
-const { yellow, magenta } = chalk;
 
 /**
  * Updates version props in packages containing Android's native code.
@@ -38,7 +36,10 @@ export const updateAndroidProjects = new Task<TaskArgs>(
 
       const relativeGradlePath = path.relative(EXPO_DIR, gradlePath);
 
-      logger.log('  ', `Updating ${yellow('version')} in ${magenta(relativeGradlePath)}`);
+      logger.log(
+        '  ',
+        `Updating ${styleText('yellow', 'version')} in ${styleText('magenta', relativeGradlePath)}`
+      );
 
       await transformFileAsync(gradlePath, [
         {

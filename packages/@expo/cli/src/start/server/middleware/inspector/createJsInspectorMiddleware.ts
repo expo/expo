@@ -1,6 +1,6 @@
-import chalk from 'chalk';
 import type { NextHandleFunction } from 'connect';
 import type { IncomingMessage, ServerResponse } from 'http';
+import { styleText } from 'node:util';
 import { URL } from 'url';
 
 import { isMatchingOrigin, shouldThrottleRemoteDevCall } from '../../../../utils/net';
@@ -35,7 +35,8 @@ export function createJsInspectorMiddleware({
     if (!app) {
       res.writeHead(404).end('Unable to find inspector target from @react-native/dev-middleware');
       console.warn(
-        chalk.yellow(
+        styleText(
+          'yellow',
           'No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine.'
         )
       );
@@ -62,7 +63,10 @@ export function createJsInspectorMiddleware({
         // 15:50: execution error: Google Chrome got an error: Application isn’t running. (-600)
 
         console.error(
-          chalk.red('Error launching JS inspector: ' + (error?.message ?? 'Unknown error occurred'))
+          styleText(
+            'red',
+            'Error launching JS inspector: ' + (error?.message ?? 'Unknown error occurred')
+          )
         );
         res.writeHead(500);
         res.end();

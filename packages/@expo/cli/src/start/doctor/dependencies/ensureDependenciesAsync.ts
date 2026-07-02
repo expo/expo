@@ -1,6 +1,6 @@
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import wrapAnsi from 'wrap-ansi';
 
 import { installAsync } from '../../../install/installAsync';
@@ -60,11 +60,11 @@ export async function ensureDependenciesAsync(
     let confirm = skipPrompt;
     if (skipPrompt) {
       // Automatically install packages without prompting.
-      Log.log(wrapForTerminal(title + ` Installing ${chalk.cyan(readableMissingPackages)}`));
+      Log.log(wrapForTerminal(title + ` Installing ${styleText('cyan', readableMissingPackages)}`));
     } else {
       confirm = await confirmAsync({
         message: wrapForTerminal(
-          title + ` Would you like to install ${chalk.cyan(readableMissingPackages)}?`
+          title + ` Would you like to install ${styleText('cyan', readableMissingPackages)}?`
         ),
         initial: true,
       });
@@ -113,9 +113,7 @@ export async function ensureDependenciesAsync(
 
   const disableMessage = warningMessage;
 
-  const solution = `Install ${chalk.bold(
-    readableMissingPackages
-  )} by running:\n\n  ${chalk.reset.bold(installCommand)}\n\n`;
+  const solution = `Install ${styleText('bold', readableMissingPackages)} by running:\n\n  ${styleText(['reset', 'bold'], installCommand)}\n\n`;
 
   // This prevents users from starting a misconfigured JS or TS project by default.
   throw new CommandError(wrapForTerminal(title + solution + disableMessage + '\n'));
@@ -144,7 +142,7 @@ async function installPackagesAsync(
   projectRoot: string,
   { packages, dev }: { packages: string[]; dev?: boolean }
 ) {
-  const packagesStr = chalk.bold(packages.join(', '));
+  const packagesStr = styleText('bold', packages.join(', '));
   Log.log();
   const installingPackageStep = logNewSection(`Installing ${packagesStr}`);
   try {

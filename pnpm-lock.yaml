@@ -1910,9 +1910,6 @@ importers:
       bplist-parser:
         specifier: ^0.3.1
         version: 0.3.2
-      chalk:
-        specifier: ^4.0.0
-        version: 4.1.2
       ci-info:
         specifier: ^3.3.0
         version: 3.9.0
@@ -2218,9 +2215,6 @@ importers:
       '@expo/sdk-runtime-versions':
         specifier: ^1.0.0
         version: 1.0.0
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       debug:
         specifier: ^4.3.5
         version: 4.4.3
@@ -2267,9 +2261,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -2288,9 +2279,6 @@ importers:
 
   packages/@expo/devtools:
     dependencies:
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       react:
         specifier: '*'
         version: 19.2.3
@@ -2338,9 +2326,6 @@ importers:
 
   packages/@expo/env:
     dependencies:
-      chalk:
-        specifier: ^4.0.0
-        version: 4.1.2
       debug:
         specifier: ^4.3.4
         version: 4.4.3
@@ -2372,9 +2357,6 @@ importers:
       arg:
         specifier: ^5.0.2
         version: 5.0.2
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       debug:
         specifier: ^4.3.4
         version: 4.4.3
@@ -2442,9 +2424,6 @@ importers:
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
-      chalk:
-        specifier: ^4.0.0
-        version: 4.1.2
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
@@ -2523,9 +2502,6 @@ importers:
       '@expo/config':
         specifier: workspace:~56.0.9
         version: link:../config
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
     devDependencies:
       '@types/node':
         specifier: ^22.14.0
@@ -2645,9 +2621,6 @@ importers:
       browserslist:
         specifier: ^4.25.0
         version: 4.28.2
-      chalk:
-        specifier: ^4.1.0
-        version: 4.1.2
       debug:
         specifier: ^4.3.2
         version: 4.4.3
@@ -2820,9 +2793,6 @@ importers:
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
-      chalk:
-        specifier: ^4.0.0
-        version: 4.1.2
       npm-package-arg:
         specifier: ^11.0.0
         version: 11.0.3
@@ -3287,9 +3257,6 @@ importers:
       arg:
         specifier: ^5.0.2
         version: 5.0.2
-      chalk:
-        specifier: ^4.0.0
-        version: 4.1.2
       debug:
         specifier: ^4.3.4
         version: 4.4.3
@@ -3365,9 +3332,6 @@ importers:
       '@vercel/ncc':
         specifier: ^0.38.4
         version: 0.38.4
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       commander:
         specifier: ^8.3.0
         version: 8.3.0
@@ -3964,9 +3928,6 @@ importers:
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       commander:
         specifier: ^14.0.3
         version: 14.0.3
@@ -4162,9 +4123,6 @@ importers:
 
   packages/expo-codemod:
     dependencies:
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       jscodeshift:
         specifier: ^17.1.2
         version: 17.3.0(@babel/preset-env@7.29.2(@babel/core@7.29.0))
@@ -4388,9 +4346,6 @@ importers:
       '@vercel/ncc':
         specifier: ^0.38.3
         version: 0.38.4
-      chalk:
-        specifier: ^4.0.0
-        version: 4.1.2
       debug:
         specifier: ^4.3.4
         version: 4.4.3
@@ -5044,9 +4999,6 @@ importers:
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
-      chalk:
-        specifier: ^4.1.0
-        version: 4.1.2
       commander:
         specifier: ^7.2.0
         version: 7.2.0
@@ -5801,9 +5753,6 @@ importers:
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       commander:
         specifier: ^7.2.0
         version: 7.2.0
@@ -5851,9 +5800,6 @@ importers:
 
   packages/expo-type-information:
     dependencies:
-      chalk:
-        specifier: ^4.1.0
-        version: 4.1.2
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -5946,9 +5892,6 @@ importers:
       arg:
         specifier: ^4.1.0
         version: 4.1.3
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       debug:
         specifier: ^4.3.4
         version: 4.4.3
@@ -6191,9 +6134,6 @@ importers:
       '@types/semver':
         specifier: ^7.0.0
         version: 7.7.1
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -6294,9 +6234,6 @@ importers:
       arg:
         specifier: 5.0.2
         version: 5.0.2
-      chalk:
-        specifier: ^4.0.0
-        version: 4.1.2
       debug:
         specifier: ^4.3.1
         version: 4.4.3
@@ -6334,9 +6271,6 @@ importers:
       '@expo/package-manager':
         specifier: workspace:*
         version: link:../@expo/package-manager
-      chalk:
-        specifier: ^4.0.0
-        version: 4.1.2
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -6370,9 +6304,6 @@ importers:
       '@types/prompts':
         specifier: ^2.0.6
         version: 2.4.9
-      chalk:
-        specifier: ^4.0.0
-        version: 4.1.2
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -6421,9 +6352,6 @@ importers:
       '@octokit/rest':
         specifier: ^19.0.7
         version: 19.0.13(encoding@0.1.13)
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
       cli-table3:
         specifier: ^0.6.5
         version: 0.6.5

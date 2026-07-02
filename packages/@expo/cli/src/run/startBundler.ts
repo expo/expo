@@ -1,5 +1,5 @@
 import { getConfig } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { getWellKnownTemporaryLogFile, installEventLogger } from '../events';
 import * as Log from '../log';
@@ -58,7 +58,7 @@ export async function startBundlerAsync(
         // Print the URL to stdout for tests
         console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url })}`);
       }
-      Log.log(chalk`Waiting on {underline ${url}}`);
+      Log.log(`Waiting on ${styleText('underline', url)}`);
     }
   }
 

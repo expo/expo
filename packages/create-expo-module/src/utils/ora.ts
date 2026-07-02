@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import ora from 'ora';
 
 export type StepOptions = ora.Options;
@@ -10,7 +10,7 @@ export async function newStep<Result>(
 ): Promise<Result> {
   const disabled = process.env.CI || process.env.EXPO_DEBUG;
   const step = ora({
-    text: chalk.bold(title),
+    text: styleText('bold', title),
     isEnabled: !disabled,
     stream: disabled ? process.stdout : process.stderr,
     ...options,

@@ -1,5 +1,5 @@
 import assert from 'assert';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../../log';
 import { env } from '../../utils/env';
@@ -123,9 +123,7 @@ export async function tryGetUserAsync(): Promise<Actor | null> {
   ];
 
   const value = await selectAsync(
-    chalk`\n\nIt is recommended to log in with your Expo account before proceeding. \n{dim ${learnMore(
-      'https://expo.fyi/unverified-app-expo-go'
-    )}}\n`,
+    `\n\nIt is recommended to log in with your Expo account before proceeding. \n${styleText('dim', learnMore('https://expo.fyi/unverified-app-expo-go'))}\n`,
     choices,
     {
       nonInteractiveHelp: `Use the EXPO_TOKEN environment variable to authenticate in CI (${learnMore(

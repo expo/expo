@@ -3,8 +3,8 @@
 import { getConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
 import { compileModsAsync } from '@expo/config-plugins';
-import chalk from 'chalk';
 import { Command } from 'commander';
+import { styleText } from 'node:util';
 import prompts from 'prompts';
 
 import {
@@ -35,7 +35,7 @@ const packageJSON = require('../package.json');
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
   .arguments('[project-directory]')
-  .usage(`${chalk.green('[project-directory]')} [options]`)
+  .usage(`${styleText('green', '[project-directory]')} [options]`)
   .description('Install expo-modules into your project')
   .option('-s, --sdk-version <version>', 'Install specified expo-modules sdk version')
   .option('--non-interactive', 'Disable interactive prompts')
@@ -65,7 +65,7 @@ async function promptUpgradeAgpVersionAsync(projectRoot: string, agpVersion: str
 
   const deploymentTargetMessage = `The minimum Android Gradle Plugin version for Expo modules is ${agpVersion}. This tool will change your AGP version to ${agpVersion}.`;
   if (program.opts().nonInteractive) {
-    console.log(chalk.yellow(`⚠️  ${deploymentTargetMessage}`));
+    console.log(styleText('yellow', `⚠️  ${deploymentTargetMessage}`));
     return true;
   } else {
     const { value } = await prompts({
@@ -90,7 +90,7 @@ async function promptUpgradeIosDeployTargetAsync(projectRoot: string, iosDeploym
 
   const deploymentTargetMessage = `Expo modules minimum iOS requirement is ${iosDeploymentTarget}. This tool will change your iOS deployment target to ${iosDeploymentTarget}.`;
   if (program.opts().nonInteractive) {
-    console.log(chalk.yellow(`⚠️  ${deploymentTargetMessage}`));
+    console.log(styleText('yellow', `⚠️  ${deploymentTargetMessage}`));
     return true;
   } else {
     const { value } = await prompts({
@@ -201,7 +201,7 @@ async function runAsync() {
     await installPodsAsync(projectRoot);
   }
 
-  console.log(chalk.bold('\u203A Installation completed!'));
+  console.log(styleText('bold', '\u203A Installation completed!'));
 }
 
 (async () => {

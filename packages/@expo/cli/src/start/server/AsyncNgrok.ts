@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import crypto from 'crypto';
+import { styleText } from 'node:util';
 import * as path from 'path';
 import slugify from 'slugify';
 
@@ -170,9 +170,14 @@ export class AsyncNgrok {
         onStatusChange(status) {
           if (status === 'closed') {
             Log.error(
-              chalk.red(
+              styleText(
+                'red',
                 'Tunnel connection has been closed. This is often related to intermittent connection issues between the dev server and ngrok. Restart the dev server to try connecting to ngrok again.'
-              ) + chalk.gray('\nCheck the Ngrok status page for outages: https://status.ngrok.com/')
+              ) +
+                styleText(
+                  'gray',
+                  '\nCheck the Ngrok status page for outages: https://status.ngrok.com/'
+                )
             );
           } else if (status === 'connected') {
             Log.log('Tunnel connected.');
@@ -189,7 +194,10 @@ export class AsyncNgrok {
             [
               error.body.msg,
               error.body.details?.err,
-              chalk.gray('Check the Ngrok status page for outages: https://status.ngrok.com/'),
+              styleText(
+                'gray',
+                'Check the Ngrok status page for outages: https://status.ngrok.com/'
+              ),
             ]
               .filter(Boolean)
               .join('\n\n')
@@ -198,7 +206,10 @@ export class AsyncNgrok {
         throw new CommandError(
           'NGROK_CONNECT',
           error.toString() +
-            chalk.gray('\nCheck the Ngrok status page for outages: https://status.ngrok.com/')
+            styleText(
+              'gray',
+              '\nCheck the Ngrok status page for outages: https://status.ngrok.com/'
+            )
         );
       };
 

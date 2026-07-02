@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { parseArgs, type ParseArgsConfig } from 'util';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 
@@ -24,14 +24,14 @@ export function parseArgsOrExit<T extends ParseArgsConfig>(
 
 export function printHelp(info: string, usage: string, options: string, extra: string = ''): never {
   Log.exit(
-    chalk`
-  {bold Info}
+    `
+  ${styleText('bold', 'Info')}
     ${info}
 
-  {bold Usage}
-    {dim $} ${usage}
+  ${styleText('bold', 'Usage')}
+    ${styleText('dim', '$')} ${usage}
 
-  {bold Options}
+  ${styleText('bold', 'Options')}
     ${options.split('\n').join('\n    ')}
 ` + extra,
     0

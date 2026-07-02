@@ -36,7 +36,6 @@
   },
   "devDependencies": {
     "@expo/package-manager": "workspace:*",
-    "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",
     "terminal-link": "^2.1.1",

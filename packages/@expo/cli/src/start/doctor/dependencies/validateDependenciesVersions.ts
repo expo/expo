@@ -1,6 +1,6 @@
 import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import assert from 'assert';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import npmPackageArg from 'npm-package-arg';
 import semver from 'semver';
 import semverRangeSubset from 'semver/ranges/subset';
@@ -61,7 +61,7 @@ function logInvalidDependency({
   actualVersion,
 }: IncorrectDependency) {
   Log.warn(
-    chalk`  {bold ${packageName}}{cyan @}{red ${actualVersion}} - expected version: {green ${expectedVersionOrRange}}`
+    `  ${styleText('bold', packageName)}${styleText('cyan', `@`)}${styleText('red', actualVersion)} - expected version: ${styleText('green', expectedVersionOrRange)}`
   );
 }
 
@@ -71,7 +71,7 @@ export function logIncorrectDependencies(incorrectDeps: IncorrectDependency[]) {
   }
 
   Log.warn(
-    chalk`The following packages should be updated for best compatibility with the installed {bold expo} version:`
+    `The following packages should be updated for best compatibility with the installed ${styleText('bold', `expo`)} version:`
   );
   incorrectDeps.forEach((dep) => logInvalidDependency(dep));
 

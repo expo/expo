@@ -1,7 +1,7 @@
 import type { ExpoConfig } from '@expo/config';
-import chalk from 'chalk';
 import type { MiddlewareMatcher } from 'expo-server';
 import { sync as globSync } from 'glob';
+import { styleText } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -65,7 +65,7 @@ let hasWarnedAboutSrcDir = false;
 const logSrcDir = () => {
   if (hasWarnedAboutSrcDir) return;
   hasWarnedAboutSrcDir = true;
-  Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'));
+  Log.log(styleText('gray', 'Using src/app as the root directory for Expo Router.'));
 };
 
 export function getRouterDirectory(projectRoot: string): string {
@@ -143,9 +143,12 @@ export function hasWarnedAboutMiddleware() {
 export function warnInvalidWebOutput() {
   if (!hasWarnedAboutApiRouteOutput) {
     Log.warn(
-      chalk.yellow`Using API routes requires the {bold web.output} to be set to {bold "server"} in the project {bold app.json}. ${learnMore(
-        'https://docs.expo.dev/router/reference/api-routes/'
-      )}`
+      styleText(
+        'yellow',
+        `Using API routes requires the ${styleText('bold', `web.output`)} to be set to ${styleText('bold', `"server"`)} in the project ${styleText('bold', `app.json`)}. ${learnMore(
+          'https://docs.expo.dev/router/reference/api-routes/'
+        )}`
+      )
     );
   }
 
@@ -155,9 +158,12 @@ export function warnInvalidWebOutput() {
 export function warnInvalidMiddlewareOutput() {
   if (!hasWarnedAboutMiddlewareOutput) {
     Log.warn(
-      chalk.yellow`Using middleware requires the {bold web.output} to be set to {bold "server"} in the project {bold app.json}. ${learnMore(
-        'https://docs.expo.dev/router/reference/api-routes/'
-      )}`
+      styleText(
+        'yellow',
+        `Using middleware requires the ${styleText('bold', `web.output`)} to be set to ${styleText('bold', `"server"`)} in the project ${styleText('bold', `app.json`)}. ${learnMore(
+          'https://docs.expo.dev/router/reference/api-routes/'
+        )}`
+      )
     );
   }
 
@@ -171,13 +177,19 @@ export function warnInvalidMiddlewareMatcherSettings(matcher: MiddlewareMatcher)
   if (matcher.methods) {
     if (!Array.isArray(matcher.methods)) {
       Log.error(
-        chalk.red`Middleware matcher methods must be an array of valid HTTP methods. Supported methods are: ${validMethods.join(', ')}`
+        styleText(
+          'red',
+          `Middleware matcher methods must be an array of valid HTTP methods. Supported methods are: ${validMethods.join(', ')}`
+        )
       );
     } else {
       for (const method of matcher.methods) {
         if (!validMethods.includes(method)) {
           Log.error(
-            chalk.red`Invalid middleware HTTP method: ${method}. Supported methods are: ${validMethods.join(', ')}`
+            styleText(
+              'red',
+              `Invalid middleware HTTP method: ${method}. Supported methods are: ${validMethods.join(', ')}`
+            )
           );
         }
       }
@@ -190,15 +202,21 @@ export function warnInvalidMiddlewareMatcherSettings(matcher: MiddlewareMatcher)
     for (const pattern of patterns) {
       if (typeof pattern !== 'string' && !(pattern instanceof RegExp)) {
         Log.error(
-          chalk.red`Middleware matcher patterns must be strings or regular expressions. Received: ${String(
-            pattern
-          )}`
+          styleText(
+            'red',
+            `Middleware matcher patterns must be strings or regular expressions. Received: ${String(
+              pattern
+            )}`
+          )
         );
       }
 
       if (typeof pattern === 'string' && !pattern.startsWith('/')) {
         Log.error(
-          chalk.red`String patterns in middleware matcher must start with '/'. Received: ${pattern}`
+          styleText(
+            'red',
+            `String patterns in middleware matcher must start with '/'. Received: ${pattern}`
+          )
         );
       }
     }

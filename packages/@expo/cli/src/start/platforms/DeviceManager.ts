@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../../log';
 
@@ -11,7 +11,7 @@ export abstract class DeviceManager<IDevice> {
   abstract get identifier(): string;
 
   logOpeningUrl(url: string) {
-    Log.log(chalk`\u203A Opening {underline ${url}} on {bold ${this.name}}`);
+    Log.log(`\u203A Opening ${styleText('underline', url)} on ${styleText('bold', this.name)}`);
   }
 
   abstract startAsync(): Promise<IDevice>;

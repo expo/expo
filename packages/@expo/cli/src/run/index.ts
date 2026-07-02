@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+
+import { styleText } from 'node:util';
 
 import type { Command } from '../index';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
@@ -37,7 +38,7 @@ export const expoRun: Command = async (argv) => {
       printHelp(
         'Run the native app locally',
         `npx expo run <android|ios>`,
-        chalk`{dim $} npx expo run <android|ios> --help  Output usage information`
+        `${styleText('dim', `$`)} npx expo run <android|ios> --help  Output usage information`
       );
     }
 

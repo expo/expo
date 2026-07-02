@@ -2,7 +2,7 @@
 // These functions should be used by every command.
 import type { Spec } from 'arg';
 import arg from 'arg';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import { replaceValue } from './array';
@@ -32,14 +32,14 @@ export function assertWithOptionsArgs(
 
 export function printHelp(info: string, usage: string, options: string, extra: string = ''): never {
   Log.exit(
-    chalk`
-  {bold Info}
+    `
+  ${styleText('bold', `Info`)}
     ${info}
 
-  {bold Usage}
-    {dim $} ${usage}
+  ${styleText('bold', `Usage`)}
+    ${styleText('dim', `$`)} ${usage}
 
-  {bold Options}
+  ${styleText('bold', `Options`)}
     ${options.split('\n').join('\n    ')}
 ` + extra,
     0

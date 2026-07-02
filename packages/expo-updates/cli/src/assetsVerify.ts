@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import arg from 'arg';
-import chalk from 'chalk';
 import path from 'path';
+import { styleText } from 'node:util';
 
 import { getMissingAssetsAsync } from './assetsVerifyAsync';
 import {
@@ -38,12 +38,12 @@ export const expoAssetsVerify: Command = async (argv) => {
 
   if (args['--help']) {
     Log.exit(
-      chalk`
-{bold Description}
+      `
+${styleText('bold', 'Description')}
 Verify that all static files in an exported bundle are in either the export or an embedded bundle
 
-{bold Usage}
-  {dim $} npx expo-updates assets:verify {dim <dir>}
+${styleText('bold', 'Usage')}
+  ${styleText('dim', '$')} npx expo-updates assets:verify ${styleText('dim', '<dir>')}
 
   Options
   <dir>                                  Directory of the Expo project. Default: Current working directory

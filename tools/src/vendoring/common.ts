@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import logger from '../Logger';
 import { CopyFileOptions, FileTransform, copyFileWithTransformsAsync } from '../Transforms';
@@ -20,13 +20,17 @@ export async function copyVendoredFilesAsync(
     transformsUsed.forEach((transform) => unusedTransforms.delete(transform));
 
     if (sourceFile !== targetFile) {
-      logger.log('📂 Renamed %s to %s', chalk.magenta(sourceFile), chalk.magenta(targetFile));
+      logger.log(
+        '📂 Renamed %s to %s',
+        styleText('magenta', sourceFile),
+        styleText('magenta', targetFile)
+      );
     }
   }
   for (const unusedTransform of unusedTransforms) {
     logger.warn(
       '⚠️ A transform was never applied to vendored code.\nThis can indicate outdated transforms or bugs in the vendored package.\nPath(s): %s',
-      chalk.magenta(String(unusedTransform.paths ?? ''))
+      styleText('magenta', String(unusedTransform.paths ?? ''))
     );
   }
 }

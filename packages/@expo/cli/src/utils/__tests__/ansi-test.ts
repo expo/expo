@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { stripAnsi } from '../ansi';
 
@@ -6,6 +6,8 @@ describe(stripAnsi, () => {
   it(`strips ansi`, () => {
     expect(stripAnsi()).toEqual(undefined);
     expect(stripAnsi(`\u001B[0m`)).toEqual('');
-    expect(stripAnsi(chalk`{bold hey} {underline you}`)).toEqual('hey you');
+    expect(stripAnsi(`${styleText('bold', 'hey')} ${styleText('underline', 'you')}`)).toEqual(
+      'hey you'
+    );
   });
 });

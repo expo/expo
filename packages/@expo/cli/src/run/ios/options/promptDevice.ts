@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from "node:util";
 
 import type { OSType, Device } from '../../../start/platforms/ios/simctl';
 import prompt from '../../../utils/prompts';
@@ -32,10 +32,10 @@ export function formatDeviceChoice(item: AnyDevice): { title: string; value: str
           ? '🌐 '
           : '🔌 '
         : '';
-  const format = isActive ? chalk.bold : (text: string) => text;
+  const format = isActive ? (text: string) => styleText('bold', text) : (text: string) => text;
   return {
     title: `${symbol}${format(item.name)}${
-      item.osVersion ? chalk.dim(` (${item.osVersion})`) : ''
+      item.osVersion ? styleText("dim", ` (${item.osVersion})`) : ''
     }`,
     value: item.udid,
   };

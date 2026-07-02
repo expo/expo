@@ -1,12 +1,10 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runTurboTasksAsync } from '../../Turbo';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { cyan } = chalk;
 
 const PUBLISH_CHECK_TASKS = ['build', 'typecheck', 'depscheck', 'test', 'lint'];
 
@@ -29,7 +27,7 @@ export const checkPackagesWithTurbo = new Task<TaskArgs>(
     }
 
     logger.info(
-      `\n🧐 Checking ${cyan(packageNames.length)} package${packageNames.length === 1 ? '' : 's'} with Turbo...`
+      `\n🧐 Checking ${styleText('cyan', `${packageNames.length}`)} package${packageNames.length === 1 ? '' : 's'} with Turbo...`
     );
 
     await runTurboTasksAsync(PUBLISH_CHECK_TASKS, {

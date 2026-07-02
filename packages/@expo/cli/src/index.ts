@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import arg from 'arg';
-import chalk from 'chalk';
 import Debug from 'debug';
 import { boolish } from 'getenv';
+import { styleText } from 'node:util';
 
 import { installEventLogger } from '../src/events';
 
@@ -20,9 +20,12 @@ if (
   (nodeVersion[0] === NODE_MIN[0] && nodeVersion[1]! < NODE_MIN[1])
 ) {
   console.error(
-    chalk.red`{bold Node.js (${process.version}) is outdated and unsupported.}` +
-      chalk.red` Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n` +
-      chalk.red`Go to: https://nodejs.org/en/download\n`
+    styleText(['bold', 'red'], `Node.js (${process.version}) is outdated and unsupported.`) +
+      styleText(
+        'red',
+        ` Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n`
+      ) +
+      styleText('red', `Go to: https://nodejs.org/en/download\n`)
   );
 }
 
@@ -90,7 +93,12 @@ if (args['--version']) {
 }
 
 if (args['--non-interactive']) {
-  console.warn(chalk.yellow`  {bold --non-interactive} is not supported, use {bold $CI=1} instead`);
+  console.warn(
+    styleText(
+      'yellow',
+      `  ${styleText('bold', `--non-interactive`)} is not supported, use ${styleText('bold', `$CI=1`)} instead`
+    )
+  );
 }
 
 // Check if we are running `npx expo <subcommand>` or `npx expo`
@@ -127,22 +135,22 @@ if (!isSubcommand && args['--help']) {
     ...others
   } = commands;
 
-  console.log(chalk`
-  {bold Usage}
-    {dim $} npx expo <command>
+  console.log(`
+  ${styleText('bold', `Usage`)}
+    ${styleText('dim', `$`)} npx expo <command>
 
-  {bold Commands}
+  ${styleText('bold', `Commands`)}
     ${Object.keys({ start, export: _export, ...others }).join(', ')}
     ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
     ${Object.keys({ install, customize, config, serve }).join(', ')}
-    {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
+    ${styleText('dim', Object.keys({ login, logout, whoami, register }).join(', '))}
 
-  {bold Options}
+  ${styleText('bold', `Options`)}
     --version, -v   Version number
     --help, -h      Usage info
 
-  For more info run a command with the {bold --help} flag
-    {dim $} npx expo start --help
+  For more info run a command with the ${styleText('bold', `--help`)} flag
+    ${styleText('dim', `$`)} npx expo start --help
 `);
 
   process.exit(0);
@@ -200,7 +208,10 @@ if (!isSubcommand) {
     console.log();
     const instruction = subcommand === 'upgrade' ? 'follow this guide' : 'use';
     console.log(
-      chalk.yellow`  {gray $} {bold expo ${subcommand}} is not supported in the local CLI, please ${instruction} {bold ${replacement}} instead`
+      styleText(
+        'yellow',
+        `  ${styleText('gray', `$`)} ${styleText('bold', `expo ${subcommand}`)} is not supported in the local CLI, please ${instruction} ${styleText('bold', replacement!)} instead`
+      )
     );
     console.log();
     process.exit(1);
@@ -208,7 +219,12 @@ if (!isSubcommand) {
   const deprecated = ['send', 'client:ios'];
   if (subcommand && deprecated.includes(subcommand)) {
     console.log();
-    console.log(chalk.yellow`  {gray $} {bold expo ${subcommand}} is deprecated`);
+    console.log(
+      styleText(
+        'yellow',
+        `  ${styleText('gray', `$`)} ${styleText('bold', `expo ${subcommand}`)} is deprecated`
+      )
+    );
     console.log();
     process.exit(1);
   }

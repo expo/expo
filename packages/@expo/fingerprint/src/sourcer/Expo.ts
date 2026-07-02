@@ -1,8 +1,8 @@
 import type { ExpoConfig, ProjectConfig } from '@expo/config';
 import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import type { Props as SplashProps } from 'expo-splash-screen/plugin';
+import { styleText } from 'node:util';
 import path from 'path';
 import semver from 'semver';
 
@@ -246,7 +246,7 @@ export async function createHashSourceExternalFileAsync({
 }): Promise<HashSource | null> {
   const hashSource = await getFileBasedHashSourceAsync(projectRoot, file, reason);
   if (hashSource) {
-    debug(`Adding config external file - ${chalk.dim(file)}`);
+    debug(`Adding config external file - ${styleText('dim', file)}`);
     if (hashSource.type === 'file' || hashSource.type === 'dir') {
       // We include the expo config contents in the fingerprint,
       // the `filePath` hashing for the external files is not necessary.
@@ -266,7 +266,7 @@ export async function getEasBuildSourcesAsync(projectRoot: string, options: Norm
       files.map(async (file) => {
         const result = await getFileBasedHashSourceAsync(projectRoot, file, 'easBuild');
         if (result != null) {
-          debug(`Adding eas file - ${chalk.dim(file)}`);
+          debug(`Adding eas file - ${styleText('dim', file)}`);
         }
         return result;
       })
@@ -298,7 +298,7 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
       for (const project of module.projects) {
         const filePath = toPosixPath(path.relative(realProjectRoot, project.sourceDir));
         project.sourceDir = filePath; // use relative path for the dir
-        debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
+        debug(`Adding expo-modules-autolinking android dir - ${styleText('dim', filePath)}`);
         results.push({ type: 'dir', filePath, reasons });
         // `aarProjects` is present in project starting from SDK 53+.
         if (project.aarProjects) {
@@ -323,7 +323,7 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
         for (const plugin of module.plugins) {
           const filePath = toPosixPath(path.relative(realProjectRoot, plugin.sourceDir));
           plugin.sourceDir = filePath; // use relative path for the dir
-          debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
+          debug(`Adding expo-modules-autolinking android dir - ${styleText('dim', filePath)}`);
           results.push({ type: 'dir', filePath, reasons });
         }
       }
@@ -361,7 +361,7 @@ export async function getExpoCNGPatchSourcesAsync(
 ): Promise<HashSource[]> {
   const result = await getFileBasedHashSourceAsync(projectRoot, 'cng-patches', 'expoCNGPatches');
   if (result != null) {
-    debug(`Adding dir - ${chalk.dim('cng-patches')}`);
+    debug(`Adding dir - ${styleText('dim', 'cng-patches')}`);
     return [result];
   }
   return [];
@@ -392,7 +392,7 @@ export async function getExpoAutolinkingIosSourcesAsync(
       for (const pod of module.pods) {
         const filePath = toPosixPath(path.relative(realProjectRoot, pod.podspecDir));
         pod.podspecDir = filePath; // use relative path for the dir
-        debug(`Adding expo-modules-autolinking ios dir - ${chalk.dim(filePath)}`);
+        debug(`Adding expo-modules-autolinking ios dir - ${styleText('dim', filePath)}`);
         results.push({ type: 'dir', filePath, reasons });
       }
     }

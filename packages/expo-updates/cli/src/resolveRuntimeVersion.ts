@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Command } from './cli';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
@@ -23,12 +23,12 @@ export const resolveRuntimeVersion: Command = async (argv) => {
 
   if (args['--help']) {
     Log.exit(
-      chalk`
-{bold Description}
+      `
+${styleText('bold', 'Description')}
 Resolve expo-updates runtime version
 
-{bold Usage}
-  {dim $} npx expo-updates runtimeversion:resolve --platform <platform>
+${styleText('bold', 'Usage')}
+  ${styleText('dim', '$')} npx expo-updates runtimeversion:resolve --platform <platform>
 
   Options
   --platform <string>                  Platform to resolve runtime version for

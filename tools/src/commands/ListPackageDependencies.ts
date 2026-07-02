@@ -1,5 +1,5 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import logger from '../Logger';
 import { DependencyKind, getListOfPackagesAsync } from '../Packages';
@@ -8,8 +8,6 @@ import {
   scanDependenciesAsync,
   type ScannedDependency,
 } from '../check-packages/scanDependenciesAsync';
-
-const { green, yellow, red, cyan, gray, bold } = chalk;
 
 type ActionOptions = {
   json: boolean;
@@ -47,7 +45,7 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
   const found = new Set(packages.map((p) => p.packageName));
   for (const name of packageNames) {
     if (!found.has(name)) {
-      logger.warn(`Package ${yellow(name)} not found in monorepo.`);
+      logger.warn(`Package ${styleText('yellow', name)} not found in monorepo.`);
     }
   }
 
@@ -94,7 +92,7 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
           files: d.files.map((f) => ({ path: f.relativePath, line: f.line })),
         }));
       } else {
-        logger.log(`\n${green.bold(label)}`);
+        logger.log(`\n${styleText(['green', 'bold'], label)}`);
         printTable(filtered, monorepoPackageNames);
       }
     }
@@ -133,13 +131,17 @@ function printTable(deps: ScannedDependency[], monorepoPackageNames: Set<string>
   // Header
   logger.log(
     indent +
-      bold('Dependency'.padEnd(depW) + 'Kind'.padEnd(kindW) + 'Hints'.padEnd(hintsW) + 'References')
+      styleText(
+        'bold',
+        'Dependency'.padEnd(depW) + 'Kind'.padEnd(kindW) + 'Hints'.padEnd(hintsW) + 'References'
+      )
   );
 
   // Separator
   logger.log(
     indent +
-      gray(
+      styleText(
+        'gray',
         '─'.repeat(depW - GAP).padEnd(depW) +
           '─'.repeat(kindW - GAP).padEnd(kindW) +
           '─'.repeat(hintsW - GAP).padEnd(hintsW) +
@@ -156,11 +158,11 @@ function printTable(deps: ScannedDependency[], monorepoPackageNames: Set<string>
         depCell(row.dep, row.isInternal, depW) +
         coloredCell(row.kind, kindW) +
         hintCell(row.hints, hintsW) +
-        gray(firstRef)
+        styleText('gray', firstRef)
     );
 
     for (let i = 1; i < row.refs.length; i++) {
-      logger.log(emptyPrefix + gray(row.refs[i]));
+      logger.log(emptyPrefix + styleText('gray', row.refs[i]));
     }
   }
 }
@@ -192,7 +194,7 @@ function kindLabel(kind: DependencyKind | undefined): string {
 }
 
 function depCell(text: string, isInternal: boolean, width: number): string {
-  const colored = isInternal ? green(text) : text;
+  const colored = isInternal ? styleText('green', text) : text;
   return colored + ' '.repeat(Math.max(0, width - text.length));
 }
 
@@ -206,11 +208,11 @@ function kindColorFn(kind: string): (s: string) => string {
   switch (kind) {
     case 'dependency':
     case 'peerDependency':
-      return cyan;
+      return (s: string) => styleText('cyan', s);
     case 'devDependency':
-      return yellow;
+      return (s: string) => styleText('yellow', s);
     case 'undeclared':
-      return red;
+      return (s: string) => styleText('red', s);
     default:
       return (s: string) => s;
   }
@@ -220,5 +222,5 @@ function hintCell(text: string, width: number): string {
   if (!text) {
     return ' '.repeat(width);
   }
-  return yellow(text) + ' '.repeat(Math.max(0, width - text.length));
+  return styleText('yellow', text) + ' '.repeat(Math.max(0, width - text.length));
 }

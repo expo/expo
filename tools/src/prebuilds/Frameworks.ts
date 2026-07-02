@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import { glob } from 'glob';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { getPrecompileDir } from '../Directories';
@@ -76,7 +76,7 @@ export const Frameworks = {
     const spmConfig = pkg.getSwiftPMConfiguration();
 
     logger.verbose(
-      `🧩 Composing XCFramework for ${chalk.green(pkg.packageName) + '/' + chalk.green(product.name)}...`
+      `🧩 Composing XCFramework for ${styleText('green', pkg.packageName) + '/' + styleText('green', product.name)}...`
     );
 
     // Get output path for the XCFramework
@@ -449,7 +449,7 @@ const copyResourceBundlesIntoXCFrameworkAsync = async (
       await fs.copy(buildOutputPath, destBundlePath, { overwrite: true });
 
       spinner.info(
-        `Copied resource bundle ${chalk.cyan(bundleName)} → ${chalk.cyan(slice + '/' + bundleName)}`
+        `Copied resource bundle ${styleText('cyan', bundleName)} → ${styleText('cyan', slice + '/' + bundleName)}`
       );
     }
   }
@@ -501,7 +501,7 @@ const copySPMDependencyXCFrameworksAsync = async (
     if (Frameworks.hasSharedSPMDepFramework(productName, buildType)) {
       if (!bundleSharedDeps) {
         logger.info(
-          `⏭️  Skipping shared SPM dep ${chalk.cyan(productName)} (already at shared location)`
+          `⏭️  Skipping shared SPM dep ${styleText('cyan', productName)} (already at shared location)`
         );
         continue;
       }
@@ -509,7 +509,7 @@ const copySPMDependencyXCFrameworksAsync = async (
       const sharedPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
       const destPath = path.join(outputDir, `${productName}.xcframework`);
       logger.verbose(
-        `📦 Copying shared SPM dep ${chalk.cyan(productName)} from shared location → ${path.relative(pkg.path, destPath)}`
+        `📦 Copying shared SPM dep ${styleText('cyan', productName)} from shared location → ${path.relative(pkg.path, destPath)}`
       );
       await fs.remove(destPath);
       await spawnAsync('rsync', ['-a', '--delete', `${sharedPath}/`, `${destPath}/`], {
@@ -579,7 +579,7 @@ const copySPMDependencyXCFrameworksAsync = async (
 
       if (await fs.pathExists(sourceXCFrameworkPath)) {
         logger.verbose(
-          `📦 Copying SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
+          `📦 Copying SPM dependency ${styleText('cyan', xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
         );
         await fs.remove(destXCFrameworkPath);
         await spawnAsync(
@@ -590,7 +590,7 @@ const copySPMDependencyXCFrameworksAsync = async (
         logger.info(`✅ Copied ${xcframeworkName} alongside ${product.name}.xcframework`);
       } else {
         logger.warn(
-          `⚠️  SPM dependency ${chalk.cyan(productName)} not found in Build/Products/ or SourcePackages/artifacts/`
+          `⚠️  SPM dependency ${styleText('cyan', productName)} not found in Build/Products/ or SourcePackages/artifacts/`
         );
       }
       continue;
@@ -598,7 +598,7 @@ const copySPMDependencyXCFrameworksAsync = async (
 
     // Compose the dependency xcframework with only the relevant slices
     logger.verbose(
-      `📦 Composing SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
+      `📦 Composing SPM dependency ${styleText('cyan', xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
     );
     await fs.remove(destXCFrameworkPath);
 
@@ -677,7 +677,7 @@ const createProductTarballAsync = async (
   }
 
   logger.verbose(
-    `📦 Creating tarball for ${chalk.green(product.name)} (${buildType}): ${xcframeworkEntries.join(', ')}`
+    `📦 Creating tarball for ${styleText('green', product.name)} (${buildType}): ${xcframeworkEntries.join(', ')}`
   );
 
   // Create tarball: tar -czf <Product>.tar.gz -C <outputDir> <entries...>

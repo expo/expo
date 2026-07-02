@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import prompts from 'prompts';
 
 import { ALIASES } from './legacyTemplates';
@@ -130,8 +130,8 @@ export async function applySdkVersionToTemplateAsync(
 }
 
 function logCreatingProject(template: string, projectName: string | undefined): void {
-  const subject = projectName ? chalk.cyan(projectName) : 'a project';
-  console.log(chalk`Creating ${subject} using the {cyan ${template}} template.\n`);
+  const subject = projectName ? styleText('cyan', projectName) : 'a project';
+  console.log(`Creating ${subject} using the ${styleText('cyan', template)} template.\n`);
 }
 
 function isKnownExpoTemplate(name: string): boolean {
@@ -177,7 +177,9 @@ async function promptSdkVersionAsync(
 
   if (answer == null) {
     Log.log();
-    Log.log(chalk`Specify the SDK version, example: {cyan --template default@${latest}}`);
+    Log.log(
+      `Specify the SDK version, example: ${styleText('cyan', `--template default@${latest}`)}`
+    );
     process.exit(1);
   }
 
@@ -197,24 +199,26 @@ async function promptSdkVersionAsync(
 
     if (sdkAnswer == null) {
       Log.log();
-      Log.log(chalk`Specify the SDK version, example: {cyan --template default@${latest}}`);
+      Log.log(
+        `Specify the SDK version, example: ${styleText('cyan', `--template default@${latest}`)}`
+      );
       process.exit(1);
     }
     resolved = sdkAnswer as number;
   }
 
   const friendly = templateName.replace(/^expo-template-/, '');
-  const subject = projectName ? chalk.cyan(projectName) : 'a project';
-  console.log(chalk`Creating ${subject} using the {cyan ${friendly}} template.`);
+  const subject = projectName ? styleText('cyan', projectName) : 'a project';
+  console.log(`Creating ${subject} using the ${styleText('cyan', friendly)} template.`);
   if (showAlternatives) {
     const cmd = formatSelfCommand();
     console.log();
-    console.log(chalk.gray('Tip:'));
+    console.log(styleText('gray', 'Tip:'));
     console.log(
-      `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--template')}  ${chalk.gray('to pick from other templates')}`
+      `  ${styleText('gray', '•')} ${styleText('gray', cmd)} ${styleText('cyan', '--template')}  ${styleText('gray', 'to pick from other templates')}`
     );
     console.log(
-      `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--example')}   ${chalk.gray('to explore')} ${chalk.gray.underline('https://github.com/expo/examples')}`
+      `  ${styleText('gray', '•')} ${styleText('gray', cmd)} ${styleText('cyan', '--example')}   ${styleText('gray', 'to explore')} ${styleText(['gray', 'underline'], 'https://github.com/expo/examples')}`
     );
   }
   console.log();

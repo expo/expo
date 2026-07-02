@@ -61,7 +61,6 @@
   "dependencies": {
     "@expo/require-utils": "workspace:^56.1.3",
     "@expo/spawn-async": "^1.8.0",
-    "chalk": "^4.1.0",
     "commander": "^7.2.0"
   },
   "devDependencies": {

@@ -4,7 +4,7 @@
  * Each step wraps existing module calls without changing their internals.
  */
 
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import logger from '../../Logger';
@@ -88,9 +88,9 @@ export const generateStep: Step<PrebuildContext> = {
     if (Codegen.hasCodegen(pkg)) {
       const generated = await Codegen.ensureCodegenAsync(pkg, (msg) => logger.info(msg));
       if (generated) {
-        logger.info(`🔧 Generated codegen for ${chalk.green(pkg.packageName)}`);
+        logger.info(`🔧 Generated codegen for ${styleText('green', pkg.packageName)}`);
       } else if (Codegen.isCodegenGenerated(pkg)) {
-        logger.info(`🔧 Codegen already exists for ${chalk.green(pkg.packageName)}`);
+        logger.info(`🔧 Codegen already exists for ${styleText('green', pkg.packageName)}`);
       }
     }
 

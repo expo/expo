@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { loadRequestedParcels } from './loadRequestedParcels';
@@ -41,7 +41,7 @@ export const checkPackageAccess = new Task<TaskArgs>(
 
         if (packagesWithoutAccess.length > 0) {
           const formattedPackageNames = packagesWithoutAccess
-            .map((pkgName) => chalk.green(pkgName))
+            .map((pkgName) => styleText('green', pkgName))
             .join(', ');
 
           step.fail();

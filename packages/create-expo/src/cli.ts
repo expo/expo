@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import type { Spec } from 'arg';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { CLI_NAME } from './cmd';
 import { ExitError } from './error';
@@ -37,33 +37,33 @@ async function run() {
     const nameWithoutCreate = CLI_NAME.replace('create-', '');
     printHelp(
       `Creates a new Expo project`,
-      chalk`npx ${CLI_NAME} {cyan <path>} [options]`,
+      `npx ${CLI_NAME} ${styleText('cyan', `<path>`)} [options]`,
       [
         `-y, --yes             Use the default options for creating a project`,
         `    --no-install      Skip installing npm packages or CocoaPods`,
         `    --no-agents-md    Skip generating AGENTS.md, CLAUDE.md, and .claude/settings.json`,
-        chalk`-t, --template {gray [pkg]}  NPM template to use: default, blank, blank-typescript, tabs, bare-minimum. Default: default`,
-        chalk`-e, --example {gray [name]}  Example name from {underline https://github.com/expo/examples}.`,
+        `-t, --template ${styleText('gray', `[pkg]`)}  NPM template to use: default, blank, blank-typescript, tabs, bare-minimum. Default: default`,
+        `-e, --example ${styleText('gray', `[name]`)}  Example name from ${styleText('underline', `https://github.com/expo/examples`)}.`,
         `-v, --version         Version number`,
         `-h, --help            Usage info`,
       ].join('\n'),
-      chalk`
-    {gray To choose a template pass in the {bold --template} arg:}
+      `
+    ${styleText('gray', `To choose a template pass in the ${styleText('bold', `--template`)} arg:`)}
 
-    {gray $} ${formatSelfCommand()} {cyan --template}
+    ${styleText('gray', `$`)} ${formatSelfCommand()} ${styleText('cyan', `--template`)}
 
-    {gray To choose an Expo example pass in the {bold --example} arg:}
+    ${styleText('gray', `To choose an Expo example pass in the ${styleText('bold', `--example`)} arg:`)}
 
-    {gray $} ${formatSelfCommand()} {cyan --example}
-    {gray $} ${formatSelfCommand()} {cyan --example with-router}
+    ${styleText('gray', `$`)} ${formatSelfCommand()} ${styleText('cyan', `--example`)}
+    ${styleText('gray', `$`)} ${formatSelfCommand()} ${styleText('cyan', `--example with-router`)}
 
-    {gray The package manager used for installing}
-    {gray node modules is based on how you invoke the CLI:}
+    ${styleText('gray', `The package manager used for installing`)}
+    ${styleText('gray', `node modules is based on how you invoke the CLI:`)}
 
-    {bold  npm:} {cyan npx ${CLI_NAME}}
-    {bold yarn:} {cyan yarn create ${nameWithoutCreate}}
-    {bold pnpm:} {cyan pnpm create ${nameWithoutCreate}}
-    {bold  bun:} {cyan bun create ${nameWithoutCreate}}
+    ${styleText('bold', ` npm:`)} ${styleText('cyan', `npx ${CLI_NAME}`)}
+    ${styleText('bold', `yarn:`)} ${styleText('cyan', `yarn create ${nameWithoutCreate}`)}
+    ${styleText('bold', `pnpm:`)} ${styleText('cyan', `pnpm create ${nameWithoutCreate}`)}
+    ${styleText('bold', ` bun:`)} ${styleText('cyan', `bun create ${nameWithoutCreate}`)}
     `
     );
   }

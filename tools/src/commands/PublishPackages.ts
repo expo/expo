@@ -1,6 +1,6 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
 import * as jsondiffpatch from 'jsondiffpatch';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { EXPO_DIR } from '../Constants';
@@ -126,7 +126,7 @@ export default (program: Command) => {
 updating other workspace projects, committing and pushing changes to remote repo.
 
 As it's prone to errors due to its complexity and the fact it sometimes may take some time, we made it stateful.
-It's been splitted into a few tasks after each a backup is saved under ${chalk.magenta.bold(path.relative(EXPO_DIR, BACKUP_PATH))} file
+It's been splitted into a few tasks after each a backup is saved under ${styleText(["magenta", "bold"], path.relative(EXPO_DIR, BACKUP_PATH))} file
 and all file changes they made are added to Git's index as part of the backup. Due to its stateful nature,
 your local repo must be clear (without unstaged changes) and you shouldn't make any changes in the repo while the command is running.
 
@@ -137,13 +137,13 @@ but remember to leave staged changes as they were because they're also part of t
       `
 
 To list packages with unpublished changes:
-${chalk.gray('>')} ${chalk.italic.cyan('et publish -l')}
+${styleText('gray', '>')} ${styleText(['italic', 'cyan'], 'et publish -l')}
 
 To publish all packages with unpublished changes:
-${chalk.gray('>')} ${chalk.italic.cyan('et publish')}
+${styleText('gray', '>')} ${styleText(['italic', 'cyan'], 'et publish')}
 
 To publish just specific packages and their dependencies:
-${chalk.gray('>')} ${chalk.italic.cyan('et publish expo-gl expo-auth-session')}`
+${styleText('gray', '>')} ${styleText(['italic', 'cyan'], 'et publish expo-gl expo-auth-session')}`
     )
     .asyncAction(main);
 };
@@ -217,7 +217,7 @@ async function main(packageNames: string[], options: CommandOptions): Promise<vo
     ): Promise<void> {
       const dateString = new Date(backup.timestamp).toLocaleString();
 
-      logger.info(`♻️  Restoring from backup saved on ${chalk.magenta(dateString)}...`);
+      logger.info(`♻️  Restoring from backup saved on ${styleText('magenta', dateString)}...`);
 
       const allPackages = await getListOfPackagesAsync();
       const graph = new PackagesGraph(allPackages);

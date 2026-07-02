@@ -1,5 +1,5 @@
 import { getConfig } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Log } from '../../log';
 import { WebSupportProjectPrerequisite } from '../../start/doctor/web/WebSupportProjectPrerequisite';
@@ -24,7 +24,7 @@ export async function exportWebAsync(projectRoot: string, options: Options) {
   // If the user set `web.bundler: 'metro'` then they should use `expo export` instead.
   if (!bundler.isTargetingWeb()) {
     throw new CommandError(
-      chalk`{bold expo export:web} can only be used with Webpack. Use {bold expo export} for other bundlers.`
+      `${styleText('bold', `expo export:web`)} can only be used with Webpack. Use ${styleText('bold', `expo export`)} for other bundlers.`
     );
   }
 

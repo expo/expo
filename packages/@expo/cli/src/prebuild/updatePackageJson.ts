@@ -1,8 +1,8 @@
 import type { PackageJSONConfig } from '@expo/config';
 import { getPackageJson } from '@expo/config';
-import chalk from 'chalk';
 import crypto from 'crypto';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 import type { Range as SemverRange } from 'semver';
 import { intersects as semverIntersects } from 'semver';
@@ -54,7 +54,7 @@ export async function updatePackageJSONAsync(
   }
 
   updatingPackageJsonStep.succeed(
-    'Updated package.json' + (hasChanges ? '' : chalk.dim(` | no changes`))
+    'Updated package.json' + (hasChanges ? '' : styleText('dim', ` | no changes`))
   );
 
   return results;
@@ -185,7 +185,7 @@ export function updatePkgDependencies(
   if (symlinkedPackages.length) {
     symlinkedPackages.forEach(([current, recommended]) => {
       Log.log(
-        `\u203A Using symlinked ${chalk.bold(current)} instead of recommended ${chalk.bold(recommended)}.`
+        `\u203A Using symlinked ${styleText('bold', current)} instead of recommended ${styleText('bold', recommended)}.`
       );
     });
   }
@@ -193,7 +193,7 @@ export function updatePkgDependencies(
   if (nonRecommendedPackages.length) {
     nonRecommendedPackages.forEach(([current, recommended]) => {
       Log.warn(
-        `\u203A Using ${chalk.bold(current)} instead of recommended ${chalk.bold(recommended)}.`
+        `\u203A Using ${styleText('bold', current)} instead of recommended ${styleText('bold', recommended)}.`
       );
     });
   }

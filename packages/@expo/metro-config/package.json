@@ -84,7 +84,6 @@
     "@jridgewell/remapping": "^2.3.5",
     "@jridgewell/sourcemap-codec": "^1.5.5",
     "browserslist": "^4.25.0",
-    "chalk": "^4.1.0",
     "debug": "^4.3.2",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",

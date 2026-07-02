@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { getActorDisplayName, getUserAsync } from '../api/user/user';
 import * as Log from '../log';
@@ -6,7 +6,7 @@ import * as Log from '../log';
 export async function whoamiAsync() {
   const user = await getUserAsync();
   if (user) {
-    Log.exit(chalk.green(getActorDisplayName(user)), 0);
+    Log.exit(styleText('green', getActorDisplayName(user)), 0);
   } else {
     Log.exit('Not logged in');
   }

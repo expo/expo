@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { Command } from './cli';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
@@ -22,12 +22,12 @@ export const generateCodeSigning: Command = async (argv) => {
 
   if (args['--help']) {
     Log.exit(
-      chalk`
-{bold Description}
+      `
+${styleText('bold', 'Description')}
 Generate expo-updates private key, public key, and code signing certificate using that public key (self-signed by the private key)
 
-{bold Usage}
-  {dim $} npx expo-updates codesigning:generate --key-output-directory <dir> --certificate-output-directory <dir> --certificate-validity-duration-years <num years> --certificate-common-name <name>
+${styleText('bold', 'Usage')}
+  ${styleText('dim', '$')} npx expo-updates codesigning:generate --key-output-directory <dir> --certificate-output-directory <dir> --certificate-validity-duration-years <num years> --certificate-common-name <name>
 
   Options
   --key-output-directory <string>                  Directory in which to put the generated private and public keys

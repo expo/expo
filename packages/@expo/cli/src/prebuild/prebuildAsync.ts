@@ -2,7 +2,7 @@ import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
 import { updateXcodeProject } from '@expo/inline-modules';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
@@ -81,7 +81,7 @@ export async function prebuildAsync(
     } else {
       const requestedPlatforms = options.platforms.join(', ');
       Log.warn(
-        chalk`⚠️  Requested prebuild for "${requestedPlatforms}", but only "${platforms.join(', ')}" is present in app config ("expo.platforms" entry). Continuing with "${requestedPlatforms}".`
+        `⚠️  Requested prebuild for "${requestedPlatforms}", but only "${platforms.join(', ')}" is present in app config ("expo.platforms" entry). Continuing with "${requestedPlatforms}".`
       );
     }
   }
@@ -132,8 +132,10 @@ export async function prebuildAsync(
         await clearNodeModulesAsync(projectRoot);
       }
 
-      Log.log(chalk.gray(chalk`Dependencies in the {bold package.json} changed:`));
-      Log.log(chalk.gray('  ' + changedDependencies.join(', ')));
+      Log.log(
+        styleText('gray', `Dependencies in the ${styleText('bold', `package.json`)} changed:`)
+      );
+      Log.log(styleText('gray', '  ' + changedDependencies.join(', ')));
 
       // Installing dependencies is a legacy feature from the unversioned
       // command. We know opt to not change dependencies unless a template

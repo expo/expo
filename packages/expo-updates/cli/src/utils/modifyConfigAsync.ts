@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { ExpoConfig, modifyConfigAsync } from 'expo/config';
+import { styleText } from 'node:util';
 
 import * as Log from './log';
 
@@ -23,7 +23,7 @@ function warnAboutConfigAndThrow(type: string, message: string, edits: Partial<E
   Log.log();
   if (type === 'warn') {
     // The project is using a dynamic config, give the user a helpful log and bail out.
-    Log.log(chalk.yellow(message));
+    Log.log(styleText('yellow', message));
   }
 
   notifyAboutManualConfigEdits(edits);
@@ -31,7 +31,7 @@ function warnAboutConfigAndThrow(type: string, message: string, edits: Partial<E
 }
 
 function notifyAboutManualConfigEdits(edits: Partial<ExpoConfig>) {
-  Log.log(chalk.cyan(`Add the following to your Expo config`));
+  Log.log(styleText('cyan', `Add the following to your Expo config`));
   Log.log();
   Log.log(JSON.stringify(edits, null, 2));
   Log.log();

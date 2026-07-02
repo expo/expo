@@ -1,8 +1,8 @@
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import os from 'os';
 import path from 'path';
 
@@ -118,7 +118,7 @@ async function action(options: ActionOptions) {
     // Clean cloned repo
     await fs.remove(downloadSourceDir);
   }
-  logger.success('💪 Successfully updated %s\n', chalk.bold(moduleName));
+  logger.success('💪 Successfully updated %s\n', styleText('bold', moduleName));
 }
 
 /**
@@ -132,7 +132,11 @@ async function downloadSourceAsync(
 ) {
   if (moduleConfig.sourceType === 'npm') {
     const version = options.commit ?? 'latest';
-    logger.log('📥 Downloading %s@%s from npm', chalk.green(moduleName), chalk.cyan(version));
+    logger.log(
+      '📥 Downloading %s@%s from npm',
+      styleText('green', moduleName),
+      styleText('cyan', version)
+    );
 
     const tarball = await downloadPackageTarballAsync(
       sourceDirectory,
@@ -147,9 +151,9 @@ async function downloadSourceAsync(
   // Clone repository from the source
   logger.log(
     '📥 Cloning %s#%s from %s',
-    chalk.green(moduleName),
-    chalk.cyan(options.commit),
-    chalk.magenta(moduleConfig.source)
+    styleText('green', moduleName),
+    styleText('cyan', options.commit),
+    styleText('magenta', moduleConfig.source)
   );
 
   await GitDirectory.shallowCloneAsync(

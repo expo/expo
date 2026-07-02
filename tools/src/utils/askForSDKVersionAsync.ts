@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import { Platform, getSDKVersionsAsync } from '../ProjectVersions';
@@ -13,14 +13,12 @@ export default async function askForSDKVersionAsync(
   if (process.env.CI) {
     if (defaultSdkVersion) {
       console.log(
-        `${chalk.red('`--sdkVersion`')} not provided - defaulting to ${chalk.cyan(
-          defaultSdkVersion
-        )}.`
+        `${styleText('red', '`--sdkVersion`')} not provided - defaulting to ${styleText('cyan', defaultSdkVersion)}.`
       );
       return defaultSdkVersion;
     }
     throw new Error(
-      `${chalk.red('`--sdkVersion`')} not provided and unable to obtain default value.`
+      `${styleText('red', '`--sdkVersion`')} not provided and unable to obtain default value.`
     );
   }
 
@@ -37,7 +35,7 @@ export default async function askForSDKVersionAsync(
       choices: sdkVersions,
       validate(value) {
         if (!semver.valid(value)) {
-          return `Invalid version: ${chalk.cyan(value)}`;
+          return `Invalid version: ${styleText('cyan', value)}`;
         }
         return true;
       },

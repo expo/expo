@@ -32,7 +32,6 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "chalk": "^4.0.0",
     "debug": "^4.3.4",
     "getenv": "^2.0.0"
   },

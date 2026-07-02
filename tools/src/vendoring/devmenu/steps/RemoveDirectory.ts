@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 
 import { Task } from './Task';
 
@@ -26,7 +26,7 @@ export class RemoveDirectory extends Task {
   async execute() {
     const workDirectory = this.getWorkingDirectory();
 
-    this.logSubStep(`🧹 remove ${chalk.yellow(this.overrideWorkingDirectory())}`);
+    this.logSubStep(`🧹 remove ${styleText('yellow', this.overrideWorkingDirectory())}`);
     return await fs.remove(workDirectory);
   }
 }

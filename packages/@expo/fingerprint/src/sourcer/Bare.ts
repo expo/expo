@@ -1,8 +1,8 @@
 import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
-import chalk from 'chalk';
 import process from 'node:process';
+import { styleText } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -21,7 +21,7 @@ export async function getBareAndroidSourcesAsync(
   if (options.platforms.includes('android')) {
     const result = await getFileBasedHashSourceAsync(projectRoot, 'android', 'bareNativeDir');
     if (result != null) {
-      debug(`Adding bare native dir - ${chalk.dim('android')}`);
+      debug(`Adding bare native dir - ${styleText('dim', 'android')}`);
       return [result];
     }
   }
@@ -35,7 +35,7 @@ export async function getBareIosSourcesAsync(
   if (options.platforms.includes('ios')) {
     const result = await getFileBasedHashSourceAsync(projectRoot, 'ios', 'bareNativeDir');
     if (result != null) {
-      debug(`Adding bare native dir - ${chalk.dim('ios')}`);
+      debug(`Adding bare native dir - ${styleText('dim', 'ios')}`);
       return [result];
     }
   }
@@ -58,7 +58,7 @@ export async function getPackageJsonScriptSourcesAsync(
   }
   const results: HashSource[] = [];
   if (packageJson.scripts) {
-    debug(`Adding package.json contents - ${chalk.dim('scripts')}`);
+    debug(`Adding package.json contents - ${styleText('dim', 'scripts')}`);
     const id = 'packageJson:scripts';
     results.push({
       type: 'contents',
@@ -76,7 +76,7 @@ export async function getGitIgnoreSourcesAsync(projectRoot: string, options: Nor
   }
   const result = await getFileBasedHashSourceAsync(projectRoot, '.gitignore', 'bareGitIgnore');
   if (result != null) {
-    debug(`Adding file - ${chalk.dim('.gitignore')}`);
+    debug(`Adding file - ${styleText('dim', '.gitignore')}`);
     return [result];
   }
   return [];
@@ -103,7 +103,7 @@ export async function getCoreAutolinkingSourcesFromRncCliAsync(
     });
     return results;
   } catch (e) {
-    debug(chalk.red(`Error adding react-native core autolinking sources.\n${e}`));
+    debug(styleText('red', `Error adding react-native core autolinking sources.\n${e}`));
     return [];
   }
 }
@@ -137,7 +137,9 @@ export async function getCoreAutolinkingSourcesFromExpoAndroid(
     });
     return results;
   } catch (e) {
-    debug(chalk.red(`Error adding react-native core autolinking sources for android.\n${e}`));
+    debug(
+      styleText('red', `Error adding react-native core autolinking sources for android.\n${e}`)
+    );
     return [];
   }
 }
@@ -171,7 +173,7 @@ export async function getCoreAutolinkingSourcesFromExpoIos(
     });
     return results;
   } catch (e) {
-    debug(chalk.red(`Error adding react-native core autolinking sources for ios.\n${e}`));
+    debug(styleText('red', `Error adding react-native core autolinking sources for ios.\n${e}`));
     return [];
   }
 }
@@ -197,12 +199,12 @@ async function parseCoreAutolinkingSourcesAsync({
     try {
       stripRncoreAutolinkingAbsolutePaths(depData, root);
       const filePath = toPosixPath(depData.root);
-      debug(`Adding ${logTag} - ${chalk.dim(filePath)}`);
+      debug(`Adding ${logTag} - ${styleText('dim', filePath)}`);
       results.push({ type: 'dir', filePath, reasons });
 
       autolinkingConfig[depName] = depData;
     } catch (e) {
-      debug(chalk.red(`Error adding ${logTag} - ${depName}.\n${e}`));
+      debug(styleText('red', `Error adding ${logTag} - ${depName}.\n${e}`));
     }
   }
 

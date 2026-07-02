@@ -1,9 +1,9 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
 import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
+import { styleText } from 'node:util';
 import recursiveOmitBy from 'recursive-omit-by';
 import type { TypeDocOptions } from 'typedoc';
 
@@ -441,7 +441,10 @@ async function action({ packageName, sdk }: ActionOptions) {
       if (packagesEntries.length) {
         await Promise.all(packagesEntries);
         logger.log(
-          chalk.green(`\n🎉 Successful extraction of docs API data for the selected package!`)
+          styleText(
+            'green',
+            `\n🎉 Successful extraction of docs API data for the selected package!`
+          )
         );
       } else {
         logger.warn(
@@ -456,7 +459,10 @@ async function action({ packageName, sdk }: ActionOptions) {
       );
       await Promise.all(packagesEntries);
       logger.log(
-        chalk.green(`\n🎉 Successful extraction of docs API data for all available packages!`)
+        styleText(
+          'green',
+          `\n🎉 Successful extraction of docs API data for all available packages!`
+        )
       );
     }
   } catch (error) {

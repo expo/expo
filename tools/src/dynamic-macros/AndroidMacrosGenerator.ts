@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import * as Directories from '../Directories';
@@ -60,7 +60,7 @@ export async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
     macros.BUILD_MACHINE_KERNEL_MANIFEST = macros.DEV_PUBLISHED_KERNEL_MANIFEST;
     versionUsed = 'published dev';
   }
-  console.log(`Using ${chalk.yellow(versionUsed)} version of Expo Home.`);
+  console.log(`Using ${styleText('yellow', versionUsed)} version of Expo Home.`);
 
   delete macros['DEV_PUBLISHED_KERNEL_MANIFEST'];
 
@@ -105,7 +105,7 @@ ${source.trim()}
 async function updateBuildConstants(buildConstantsPath, macros) {
   console.log(
     'Generating build config %s ...',
-    chalk.cyan(path.relative(EXPO_DIR, buildConstantsPath))
+    styleText('cyan', path.relative(EXPO_DIR, buildConstantsPath))
   );
 
   const [source, existingSource] = await Promise.all([

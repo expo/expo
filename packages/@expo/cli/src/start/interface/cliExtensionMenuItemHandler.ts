@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import type { Ora } from 'ora';
 
 import * as Log from '../../log';
@@ -31,7 +31,7 @@ export const cliExtensionMenuItemHandler = async (
   }
 
   if (plugin.executor == null) {
-    Log.warn(chalk`{bold ${plugin.packageName}} does not support CLI commands.`);
+    Log.warn(`${styleText('bold', plugin.packageName)} does not support CLI commands.`);
     return;
   }
 
@@ -44,8 +44,8 @@ export const cliExtensionMenuItemHandler = async (
           name: param.name,
           type: param.type,
           message:
-            `${param.name}${param.description ? chalk` {dim ${param.description}}` : ''}` +
-            chalk` {dim (${param.type})}`,
+            `${param.name}${param.description ? ` ${styleText('dim', param.description)}` : ''}` +
+            ` ${styleText('dim', `(param.type)`)}`,
         });
         if (result[param.name] == null) {
           throw new Error('Input cancelled');
@@ -58,7 +58,7 @@ export const cliExtensionMenuItemHandler = async (
 
   // Confirm execution
   const { value } = await promptAsync({
-    message: chalk`{dim Execute command "${command.title}":} "${plugin.executor.getCommandString({ command: command.name, args })}"`,
+    message: `${styleText('dim', `Execute command "${command.title}":`)} "${plugin.executor.getCommandString({ command: command.name, args })}"`,
     initial: false,
     name: 'value',
     type: 'confirm',
@@ -92,9 +92,9 @@ export const cliExtensionMenuItemHandler = async (
 function normalizeText(text: string, level: 'info' | 'warning' | 'error') {
   const trimText = text.trim();
   if (level === 'error') {
-    return chalk.red(trimText);
+    return styleText('red', trimText);
   } else if (level === 'warning') {
-    return chalk.yellow(trimText);
+    return styleText('yellow', trimText);
   } else {
     return trimText;
   }

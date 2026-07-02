@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -46,7 +46,7 @@ export const commentOnIssuesTask = new Task<TaskArgs>(
     if (!process.env.GITHUB_TOKEN) {
       logger.error(
         'Environment variable `%s` must be set to dispatch a commentator workflow',
-        chalk.magenta('GITHUB_TOKEN')
+        styleText('magenta', 'GITHUB_TOKEN')
       );
       logManualFallback(payload);
       return;
@@ -151,7 +151,9 @@ function logManualFallback(payload: CommentatorPayload): void {
  */
 function linksToClosedIssues(issues: number[]): string {
   return issues
-    .map((issue) => link(chalk.blue('#' + issue), `https://github.com/expo/expo/issues/${issue}`))
+    .map((issue) =>
+      link(styleText('blue', '#' + issue), `https://github.com/expo/expo/issues/${issue}`)
+    )
     .join(', ');
 }
 

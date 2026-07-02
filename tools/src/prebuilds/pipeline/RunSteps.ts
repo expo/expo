@@ -7,10 +7,10 @@
  *  - resolveFlavorTemplatedPath
  *  - CACHE_DEPS
  */
-import chalk from 'chalk';
 import fs from 'fs';
 import fsExtra from 'fs-extra';
 import { glob } from 'glob';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { PACKAGES_DIR } from '../../Constants';
@@ -221,7 +221,9 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
     const unsortedPackages = [...packageMap.keys()].filter((name) => !sortedNames.has(name));
 
     logger.warn(`⚠️  Circular dependency detected in packages, building in original order`);
-    logger.warn(`   Packages involved in cycle: ${chalk.yellow(unsortedPackages.join(', '))}`);
+    logger.warn(
+      `   Packages involved in cycle: ${styleText('yellow', unsortedPackages.join(', '))}`
+    );
 
     for (const pkgName of unsortedPackages) {
       const deps = dependsOn.get(pkgName);
@@ -229,7 +231,7 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
         const cycleDeps = [...deps].filter((d) => unsortedPackages.includes(d));
         if (cycleDeps.length > 0) {
           logger.warn(
-            `   ${chalk.cyan(pkgName)} depends on: ${chalk.yellow(cycleDeps.join(', '))}`
+            `   ${styleText('cyan', pkgName)} depends on: ${styleText('yellow', cycleDeps.join(', '))}`
           );
         }
       }
@@ -242,7 +244,7 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
   const originalOrder = [...packageMap.keys()].join(', ');
   const sortedOrder = sorted.map((p) => p.packageName).join(', ');
   if (originalOrder !== sortedOrder) {
-    logger.info(`📋 Build order (sorted by dependencies):\n${chalk.cyan(sortedOrder)}`);
+    logger.info(`📋 Build order (sorted by dependencies):\n${styleText('cyan', sortedOrder)}`);
   }
 
   return { sorted, dependsOn };
@@ -452,7 +454,7 @@ export function expandWithUnbuiltDependencies(
           }
 
           logger.info(
-            `📎 Auto-adding ${chalk.cyan(depPackageName)} (required by ${chalk.green(pkg.packageName)}, ${reason})`
+            `📎 Auto-adding ${styleText('cyan', depPackageName)} (required by ${styleText('green', pkg.packageName)}, ${reason})`
           );
           added.set(depPackageName, depPkg);
           changed = true;
@@ -494,7 +496,9 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     }
 
     if (request.packageNames.length > 0) {
-      logger.info(`📦 Prebuilding packages: ${chalk.green(request.packageNames.join(', '))}`);
+      logger.info(
+        `📦 Prebuilding packages: ${styleText('green', request.packageNames.join(', '))}`
+      );
     } else if (request.externalOnly) {
       logger.info(`📦 Discovering external packages with spm.config.json...`);
     } else {
@@ -541,9 +545,7 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     // values are visible in the build output.
     if (externalPackages.length > 0) {
       logger.info(
-        `📦 External packages to build:\n${chalk.blue(
-          externalPackages.map((p) => `${p.packageName}@${p.packageVersion}`).join(', ')
-        )}`
+        `📦 External packages to build:\n${styleText('blue', externalPackages.map((p) => `${p.packageName}@${p.packageVersion}`).join(', '))}`
       );
     }
 
@@ -665,7 +667,7 @@ export const prepareSharedSPMDepsStep: Step<PrebuildContext> = {
       `📦 Found ${shared.length} shared SPM ${shared.length === 1 ? 'dependency' : 'dependencies'}:`
     );
     for (const { dep, usedBy } of shared) {
-      logger.info(`   ${chalk.cyan(dep.productName)} ← ${usedBy.join(', ')}`);
+      logger.info(`   ${styleText('cyan', dep.productName)} ← ${usedBy.join(', ')}`);
     }
 
     // When --clean is passed, wipe shared SPM dep build dirs and xcframeworks

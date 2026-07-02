@@ -1,8 +1,8 @@
-import chalk from 'chalk';
 import { boolish } from 'getenv';
 import console from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import { isIgnoredEnvKey, isLocalEnvKey, isUnsafeAllowedEnvKey } from './constants';
 import { parse, expand, type EnvOutput } from './parse';
@@ -344,19 +344,17 @@ export function logLoadedEnv(
 
   // Log the loaded environment files, when not skipped
   if (envInfo.result === 'loaded') {
-    console.log(
-      chalk.gray('env: load', envInfo.files.map((file) => path.basename(file)).join(' '))
-    );
+    console.log(styleText('gray', 'env: load'));
   }
 
   // Log the loaded environment variables
-  console.log(chalk.gray('env: export', envInfo.loaded.join(' ')));
+  console.log(styleText('gray', 'env: export'));
 
   // Highlight developer-tool roots / secrets that were loaded from a .local file —
   // the same keys would be refused from any non-.local file. Surfacing them here
   // tells the user which "sensitive" values are influencing the build.
   if (envInfo.result === 'loaded' && envInfo.sensitiveLoadedKeys?.length) {
-    console.log(chalk.yellow('env: export (sensitive)', envInfo.sensitiveLoadedKeys.join(' ')));
+    console.log(styleText('yellow', 'env: export (sensitive)'));
   }
 
   return envInfo;

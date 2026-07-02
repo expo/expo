@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
 import Debug from 'debug';
 import { constants, promises as fs } from 'fs';
 import { boolish } from 'getenv';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { actionAsync } from './doctor';
@@ -16,9 +16,15 @@ if (
   (nodeVersion[0] === NODE_MIN[0] && nodeVersion[1]! < NODE_MIN[1])
 ) {
   console.error(
-    chalk.red`{bold Node.js (${process.version}) is outdated and unsupported.}` +
-      chalk.red` Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n` +
-      chalk.red`Go to: https://nodejs.org/en/download\n`
+    styleText(
+      'red',
+      `${styleText('bold', `Node.js (${process.version}`)} is outdated and unsupported.`
+    ) +
+      styleText(
+        'red',
+        ` Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n`
+      ) +
+      styleText('red', `Go to: https://nodejs.org/en/download\n`)
   );
 }
 
@@ -56,7 +62,7 @@ async function run() {
 
   await fs.access(projectRoot, constants.F_OK).catch((err: any) => {
     if (err) {
-      console.error(chalk.red(`Project directory ${projectRoot} does not exist`));
+      console.error(styleText('red', `Project directory ${projectRoot} does not exist`));
       process.exit(1);
     }
   });

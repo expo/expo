@@ -1,6 +1,6 @@
 import { AssertionError } from 'assert';
-import chalk from 'chalk';
 import { execSync } from 'child_process';
+import { styleText } from 'node:util';
 
 import { exit, exception, warn } from '../log';
 
@@ -69,9 +69,9 @@ export function logCmdError(error: any): never {
     exit(error);
   }
 
-  const errorDetails = error.stack ? '\n' + chalk.gray(error.stack) : '';
+  const errorDetails = error.stack ? '\n' + styleText('gray', error.stack) : '';
 
-  exit(chalk.red(error.toString()) + errorDetails);
+  exit(styleText('red', error.toString()) + errorDetails);
 }
 
 /** This should never be thrown in production. */

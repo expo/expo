@@ -1,5 +1,5 @@
 import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import { getVersionedDependenciesAsync } from './doctor/dependencies/validateDependenciesVersions';
@@ -76,12 +76,21 @@ export function getDependencyCheckMessage(
 ): string[] {
   if (result?.expo) {
     return [
-      chalk.yellow`An update for {bold expo} is available: {red ${result.expo.actualVersion}} {dim →} {green ${result.expo.expectedVersionOrRange}}`,
-      chalk.yellow`${result.otherCount} other package${result.otherCount === 1 ? '' : 's'} may need updating. Run {bold npx expo install --check} for details.`,
+      styleText(
+        'yellow',
+        `An update for ${styleText('bold', `expo`)} is available: ${styleText('red', result.expo.actualVersion)} ${styleText('dim', `→`)} ${styleText('green', result.expo.expectedVersionOrRange)}`
+      ),
+      styleText(
+        'yellow',
+        `${result.otherCount} other package${result.otherCount === 1 ? '' : 's'} may need updating. Run ${styleText('bold', `npx expo install --check`)} for details.`
+      ),
     ];
   } else if (result?.otherCount) {
     return [
-      chalk.yellow`${result.otherCount} package${result.otherCount === 1 ? '' : 's'} may need updating. Run {bold npx expo install --check} for details.`,
+      styleText(
+        'yellow',
+        `${result.otherCount} package${result.otherCount === 1 ? '' : 's'} may need updating. Run ${styleText('bold', `npx expo install --check`)} for details.`
+      ),
     ];
   } else {
     return [];

@@ -1,5 +1,5 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import ora from 'ora';
 import readline from 'readline';
 
@@ -426,7 +426,7 @@ function showCompactStatus(weekNum: number, weekFriday: Date, categories: Catego
   const endStr = weekFriday.toISOString().slice(0, 10);
 
   logger.info('');
-  logger.info(chalk.bold(`GitHub Inspect — Week ${weekNum} (${startStr} → ${endStr})`));
+  logger.info(styleText('bold', `GitHub Inspect — Week ${weekNum} (${startStr} → ${endStr})`));
   logger.info('');
 
   if (categories.length === 0) {
@@ -470,26 +470,26 @@ async function fetchAllData(
 }
 
 function showItemHeader(item: QueueItem, index: number, total: number, selected: boolean): void {
-  const prefix = selected ? chalk.green('\u25b6') : ' ';
-  const num = chalk.cyan(`#${item.number}`);
+  const prefix = selected ? styleText('green', '\u25b6') : ' ';
+  const num = styleText('cyan', `#${item.number}`);
   const title = truncate(item.title, 60);
-  const author = chalk.dim(item.author);
-  const pos = chalk.gray(`${index + 1}/${total}`);
+  const author = styleText('dim', item.author);
+  const pos = styleText('gray', `${index + 1}/${total}`);
   logger.info(`  ${prefix} ${pos} ${num} ${title} ${author}`);
 }
 
 function showCategoryList(categories: CategoryInfo[], selectedIndex: number): void {
   for (let i = 0; i < categories.length; i++) {
     const cat = categories[i];
-    const prefix = i === selectedIndex ? chalk.green('\u25b6') : ' ';
-    const recommended = i === 0 ? chalk.bgGreen.black(' RECOMMENDED ') + ' ' : '';
+    const prefix = i === selectedIndex ? styleText('green', '\u25b6') : ' ';
+    const recommended = i === 0 ? styleText(['bgGreen', 'black'], ' RECOMMENDED ') + ' ' : '';
     logger.info(
-      `  ${prefix} ${chalk.green(`${i + 1}.`)} ${recommended}${chalk.bold(cat.label)} ${chalk.cyan(`(${cat.items.length})`)}`
+      `  ${prefix} ${styleText('green', `${i + 1}.`)} ${recommended}${styleText('bold', cat.label)} ${styleText('cyan', `(${cat.items.length})`)}`
     );
-    logger.info(chalk.dim(`       ${cat.guidance}`));
+    logger.info(styleText('dim', `       ${cat.guidance}`));
     logger.info('');
   }
-  logger.info(chalk.gray('  \u2191\u2193 navigate / Enter select / Esc quit'));
+  logger.info(styleText('gray', '  \u2191\u2193 navigate / Enter select / Esc quit'));
 }
 
 const MAX_VISIBLE_ITEMS = 15;
@@ -508,12 +508,12 @@ function showItemList(category: CategoryInfo, selectedIndex: number): void {
   const total = category.items.length;
   const { start, end } = getScrollWindow(total, selectedIndex);
 
-  logger.info(chalk.bold(category.label));
-  logger.info(chalk.dim(`  ${category.guidance}`));
+  logger.info(styleText('bold', category.label));
+  logger.info(styleText('dim', `  ${category.guidance}`));
   logger.info('');
 
   if (start > 0) {
-    logger.info(chalk.gray(`  \u25b2 ${start} more above`));
+    logger.info(styleText('gray', `  \u25b2 ${start} more above`));
   }
 
   for (let i = start; i < end; i++) {
@@ -521,11 +521,11 @@ function showItemList(category: CategoryInfo, selectedIndex: number): void {
   }
 
   if (end < total) {
-    logger.info(chalk.gray(`  \u25bc ${total - end} more below`));
+    logger.info(styleText('gray', `  \u25bc ${total - end} more below`));
   }
 
   logger.info('');
-  logger.info(chalk.gray('  \u2191\u2193 navigate / Enter expand / Esc back'));
+  logger.info(styleText('gray', '  \u2191\u2193 navigate / Enter expand / Esc back'));
 }
 
 function clearLines(count: number): void {
@@ -706,7 +706,7 @@ async function fetchDetailData(item: QueueItem): Promise<DetailData> {
     const pr = await getPullRequestAsync(issue.number);
     base.branch = `${pr.base.ref} \u2190 ${pr.head.ref}`;
     base.mergeable = String(pr.mergeable ?? 'unknown');
-    base.diffStats = `${chalk.green(`+${pr.additions}`)} ${chalk.red(`-${pr.deletions}`)} in ${pr.changed_files} files`;
+    base.diffStats = `${styleText('green', `+${pr.additions}`)} ${styleText('red', `-${pr.deletions}`)} in ${pr.changed_files} files`;
     try {
       const reviews = await listPullRequestReviewsAsync(pr.number);
       base.reviews = reviews.map((r) => ({
@@ -814,8 +814,8 @@ function renderDetailView(
   const lines: string[] = [];
   const type = detail.isPR ? 'PR' : 'Issue';
 
-  lines.push(chalk.bold(`=== ${type} #${detail.number} ===`));
-  lines.push(`  URL:     ${chalk.blue(detail.url)}`);
+  lines.push(styleText('bold', `=== ${type} #${detail.number} ===`));
+  lines.push(`  URL:     ${styleText('blue', detail.url)}`);
   lines.push(`  Title:   ${detail.title}`);
   lines.push(`  State:   ${detail.state}`);
   lines.push(`  Author:  ${detail.author}`);
@@ -829,53 +829,49 @@ function renderDetailView(
     lines.push(`  Diff:    ${detail.diffStats}`);
     if (detail.reviews && detail.reviews.length > 0) {
       lines.push('');
-      lines.push(chalk.bold('  Reviews:'));
+      lines.push(styleText('bold', '  Reviews:'));
       for (const r of detail.reviews) {
         const color =
-          r.state === 'APPROVED'
-            ? chalk.green
-            : r.state === 'CHANGES_REQUESTED'
-              ? chalk.red
-              : chalk.gray;
-        lines.push(`    ${chalk.dim(r.login)} — ${color(r.state)} (${r.date})`);
+          r.state === 'APPROVED' ? 'green' : r.state === 'CHANGES_REQUESTED' ? 'red' : 'gray';
+        lines.push(`    ${styleText('dim', r.login)} — ${styleText(color, r.state)} (${r.date})`);
       }
     }
   } else {
     if (detail.reproLinks) {
       lines.push('');
-      lines.push(chalk.bold('  Repro links:'));
-      for (const url of detail.reproLinks) lines.push(`    ${chalk.blue(url)}`);
+      lines.push(styleText('bold', '  Repro links:'));
+      for (const url of detail.reproLinks) lines.push(`    ${styleText('blue', url)}`);
     }
     if (detail.referencedIssues) {
       lines.push(`  Refs:    ${detail.referencedIssues.join(' ')}`);
     }
     if (detail.closedBy) {
-      lines.push(`  Closed:  ${chalk.blue(detail.closedBy)}`);
+      lines.push(`  Closed:  ${styleText('blue', detail.closedBy)}`);
     }
   }
 
   if (showBody) {
     lines.push('');
-    lines.push(chalk.bold('  --- Body ---'));
+    lines.push(styleText('bold', '  --- Body ---'));
     if (detail.body) {
       for (const line of truncate(detail.body, 800).split('\n')) {
         lines.push(`  ${line}`);
       }
     } else {
-      lines.push(chalk.gray('  (no body)'));
+      lines.push(styleText('gray', '  (no body)'));
     }
   }
 
   if (showComments) {
     lines.push('');
-    lines.push(chalk.bold(`  --- Comments (${detail.comments}) ---`));
+    lines.push(styleText('bold', `  --- Comments (${detail.comments}) ---`));
     // Comments are loaded asynchronously, rendered separately
-    lines.push(chalk.gray('  Loading...'));
+    lines.push(styleText('gray', '  Loading...'));
   }
 
   if (analysisText) {
     lines.push('');
-    lines.push(chalk.bold('  --- AI Analysis ---'));
+    lines.push(styleText('bold', '  --- AI Analysis ---'));
     for (const line of analysisText.split('\n')) {
       lines.push(`  ${line}`);
     }
@@ -884,18 +880,22 @@ function renderDetailView(
   lines.push('');
 
   // Hint line
-  const bodyToggle = showBody ? chalk.yellow('(b)ody') : chalk.green('(b)ody');
+  const bodyToggle = showBody ? styleText('yellow', '(b)ody') : styleText('green', '(b)ody');
   const commentsLabel = `(c)omments (${detail.comments})`;
-  const commentsToggle = showComments ? chalk.yellow(commentsLabel) : chalk.green(commentsLabel);
-  const analyzeToggle = analysisText ? chalk.yellow('(a)nalyze') : chalk.green('(a)nalyze');
-  const parts = [bodyToggle, commentsToggle, analyzeToggle, chalk.gray('Esc back')];
-  lines.push(chalk.gray('  ') + parts.join(chalk.gray(' / ')));
+  const commentsToggle = showComments
+    ? styleText('yellow', commentsLabel)
+    : styleText('green', commentsLabel);
+  const analyzeToggle = analysisText
+    ? styleText('yellow', '(a)nalyze')
+    : styleText('green', '(a)nalyze');
+  const parts = [bodyToggle, commentsToggle, analyzeToggle, styleText('gray', 'Esc back')];
+  lines.push(styleText('gray', '  ') + parts.join(styleText('gray', ' / ')));
 
   return lines;
 }
 
 async function showDetailInteractive(item: QueueItem): Promise<void> {
-  logger.info(chalk.gray('  Loading...'));
+  logger.info(styleText('gray', '  Loading...'));
   const detail = await fetchDetailData(item);
   clearLines(1); // remove "Loading..."
 
@@ -963,12 +963,16 @@ async function showDetailInteractive(item: QueueItem): Promise<void> {
         rawComments = comments;
         commentLines = [];
         if (comments.length === 0) {
-          commentLines.push(chalk.gray('  No comments.'));
+          commentLines.push(styleText('gray', '  No comments.'));
         } else {
           for (const comment of comments) {
-            const badge = isTeamResponse(comment) ? chalk.green('[TEAM]') : chalk.gray('[EXT]');
+            const badge = isTeamResponse(comment)
+              ? styleText('green', '[TEAM]')
+              : styleText('gray', '[EXT]');
             const date = new Date(comment.created_at).toISOString().slice(0, 10);
-            commentLines.push(`  ${badge} ${chalk.dim(comment.user?.login ?? '-')} (${date})`);
+            commentLines.push(
+              `  ${badge} ${styleText('dim', comment.user?.login ?? '-')} (${date})`
+            );
             commentLines.push(`    ${truncate(comment.body ?? '', 300)}`);
             commentLines.push('');
           }
@@ -1071,7 +1075,9 @@ async function action(options: ActionOptions) {
 
   if (!(await isAuthenticatedAsync())) {
     spinner.stop();
-    logger.warn(chalk.yellow('Unblocked API not configured — (a)nalyze will be unavailable.'));
+    logger.warn(
+      styleText('yellow', 'Unblocked API not configured — (a)nalyze will be unavailable.')
+    );
     const shouldSetup = await promptYesNo('Set up Unblocked API key now?');
     if (shouldSetup) {
       await authenticateAsync();
@@ -1079,9 +1085,11 @@ async function action(options: ActionOptions) {
       if (key) {
         setApiKey(key.trim());
         if (await isAuthenticatedAsync()) {
-          logger.info(chalk.green('Unblocked authenticated successfully.'));
+          logger.info(styleText('green', 'Unblocked authenticated successfully.'));
         } else {
-          logger.warn(chalk.yellow('Token appears invalid — (a)nalyze will be unavailable.'));
+          logger.warn(
+            styleText('yellow', 'Token appears invalid — (a)nalyze will be unavailable.')
+          );
         }
       }
     }

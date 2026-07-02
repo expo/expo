@@ -1,6 +1,6 @@
 import type * as PackageManager from '@expo/package-manager';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import { getRunningProcess } from '../utils/getRunningProcess';
@@ -49,7 +49,7 @@ export async function installExpoPackageAsync(
     }
   } catch (error) {
     Log.error(
-      chalk`Cannot install the latest Expo package. Install {bold expo@latest} with ${packageManager.name} and then run {bold npx expo install} again.`
+      `Cannot install the latest Expo package. Install ${styleText('bold', `expo@latest`)} with ${packageManager.name} and then run ${styleText('bold', `npx expo install`)} again.`
     );
     throw error;
   }
@@ -63,7 +63,9 @@ export async function installExpoPackageAsync(
       commandSegments = [...commandSegments, '--', ...packageManagerArguments];
     }
 
-    Log.log(chalk`\u203A Running {bold npx expo install} under the updated expo version`);
+    Log.log(
+      `\u203A Running ${styleText('bold', `npx expo install`)} under the updated expo version`
+    );
     Log.log('> ' + commandSegments.join(' '));
 
     await spawnAsync('npx', commandSegments, {

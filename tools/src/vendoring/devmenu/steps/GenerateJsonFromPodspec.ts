@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { Task } from './Task';
@@ -28,7 +28,7 @@ export class GenerateJsonFromPodspec extends Task {
     const workDirectory = this.getWorkingDirectory();
 
     this.logSubStep(
-      `➕ generating podspec from ${chalk.green('<workingDirectory>')}/${chalk.green(this.from)}`
+      `➕ generating podspec from ${styleText('green', '<workingDirectory>')}/${styleText('green', this.from)}`
     );
     const podspec = await readPodspecAsync(path.join(workDirectory, this.from));
     const transformedPodspec = await this.transform(podspec);

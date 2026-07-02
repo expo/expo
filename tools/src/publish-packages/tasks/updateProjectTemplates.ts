@@ -1,5 +1,5 @@
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -7,8 +7,6 @@ import { PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { magenta, green, blue, cyan } = chalk;
 
 const BUNDLED_NATIVE_MODULES_PATH = path.join(PACKAGES_DIR, 'expo', 'bundledNativeModules.json');
 const DEPENDENCIES_KEYS = ['dependencies', 'devDependencies', 'peerDependencies'];
@@ -33,7 +31,7 @@ function resolveTargetVersionRange(targetVersionRange: string, currentVersion: s
  * @param modulesToUpdate An object with module names to update and their version ranges.
  */
 async function updateTemplateAsync(parcel: Parcel, modulesToUpdate: Record<string, string>) {
-  logger.info('  ', `${green.bold(parcel.pkg.packageName)}...`);
+  logger.info('  ', `${styleText(['green', 'bold'], parcel.pkg.packageName)}...`);
 
   const packageJsonPath = path.join(parcel.pkg.path, 'package.json');
   // Read fresh JSON from disk to avoid Node's require cache returning stale data.
@@ -56,7 +54,7 @@ async function updateTemplateAsync(parcel: Parcel, modulesToUpdate: Record<strin
       }
       logger.log(
         '    >',
-        `Updating ${blue(dependencyName)} from ${cyan(currentVersion)} to ${cyan(targetVersion)}...`
+        `Updating ${styleText('blue', dependencyName)} from ${styleText('cyan', currentVersion)} to ${styleText('cyan', targetVersion)}...`
       );
       deps[dependencyName] = targetVersion;
     }
@@ -76,7 +74,9 @@ export const updateProjectTemplates = new Task<TaskArgs>(
   async (parcels: Parcel[], options: CommandOptions) => {
     const bundledNativeModules = require(BUNDLED_NATIVE_MODULES_PATH);
 
-    logger.info(`\n🆙 Updating ${magenta.bold('templates')} with bundledNativeModules...`);
+    logger.info(
+      `\n🆙 Updating ${styleText(['magenta', 'bold'], 'templates')} with bundledNativeModules...`
+    );
 
     for (const parcel of parcels) {
       if (!parcel.pkg.isTemplate()) {

@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { ensureBareExpoDependencies } from './ensureBareExpoDependencies';
@@ -50,7 +50,8 @@ async function cleanupStaleBuildDirectories(): Promise<void> {
         type: 'list',
         name: 'action',
         prefix: '🧹',
-        message: chalk.cyan(
+        message: styleText(
+          'cyan',
           `Found ${dirsToRemove.length} stale build director${dirsToRemove.length === 1 ? 'y' : 'ies'} (*.cxx, android/build). Remove?`
         ),
         choices: [
@@ -65,7 +66,7 @@ async function cleanupStaleBuildDirectories(): Promise<void> {
     if (action === 'list') {
       logger.log();
       for (const dir of dirsToRemove) {
-        logger.log('  ', chalk.gray(path.relative(EXPO_DIR, dir)));
+        logger.log('  ', styleText('gray', path.relative(EXPO_DIR, dir)));
       }
       logger.log();
       return promptForCleanup();
@@ -138,9 +139,9 @@ export const publishAndroidArtifacts = new Task<TaskArgs>(
 
       if (publicationCommands.length === 1) {
         const publicationCommand = publicationCommands[0];
-        batch.log('  ', '  ', `${chalk.green(pkg.packageName)}: ${publicationCommand}`);
+        batch.log('  ', '  ', `${styleText('green', pkg.packageName)}: ${publicationCommand}`);
       } else {
-        batch.log('  ', '  ', `${chalk.green(pkg.packageName)}:`);
+        batch.log('  ', '  ', `${styleText('green', pkg.packageName)}:`);
         for (const command of publicationCommands) {
           batch.log('  ', '  ', '  ', `${command}`);
         }

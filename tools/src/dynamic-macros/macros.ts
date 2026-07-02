@@ -4,9 +4,9 @@ import {
   parseMultipartMixedResponseAsync,
 } from '@expo/multipart-body-parser';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import crypto from 'crypto';
 import { lanNetwork } from 'lan-network';
+import { styleText } from 'node:util';
 import os from 'os';
 import path from 'path';
 
@@ -189,10 +189,12 @@ export default {
       return kernelManifestAndAssetRequestHeadersObjectToJson(manifestAndAssetRequestHeaders);
     } catch {
       console.error(
-        chalk.red(
-          `Unable to generate manifest from ${chalk.cyan(
+        styleText(
+          'red',
+          `Unable to generate manifest from ${styleText(
+            'cyan',
             EXPO_GO_DIR
-          )}: Failed to fetch manifest from ${chalk.cyan(url)}`
+          )}: Failed to fetch manifest from ${styleText('cyan', url)}`
         )
       );
       return '';

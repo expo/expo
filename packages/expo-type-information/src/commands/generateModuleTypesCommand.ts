@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import commander from 'commander';
+import { styleText } from 'node:util';
 
 import { generateModuleTypesFileContent } from '../typescriptGeneration';
 import {
@@ -29,7 +29,7 @@ export function generateModuleTypesCommand(cli: commander.Command) {
 
         const moduleTypesFileContent = await generateModuleTypesFileContent(typeInfo);
         if (!moduleTypesFileContent) {
-          console.error(chalk.red(`Couldn't generate module types file content!`));
+          console.error(styleText('red', `Couldn't generate module types file content!`));
           return;
         }
         writeStringToFileOrPrintToConsole(moduleTypesFileContent, realOutputPath);

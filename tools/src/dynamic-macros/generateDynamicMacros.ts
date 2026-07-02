@@ -1,6 +1,6 @@
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import AndroidMacrosGenerator from './AndroidMacrosGenerator';
@@ -54,8 +54,8 @@ async function generateMacrosAsync(platform, configuration) {
 
     console.log(
       'Resolved %s macro to %s',
-      chalk.green(name),
-      chalk.yellow(JSON.stringify(macroValue))
+      styleText('green', name),
+      styleText('yellow', JSON.stringify(macroValue))
     );
   }
   console.log();
@@ -113,7 +113,7 @@ async function copyTemplateFileAsync(
   ]);
 
   if (!currentSourceFile) {
-    console.error(`Couldn't find ${chalk.magenta(source)} file.`);
+    console.error(`Couldn't find ${styleText('magenta', source)} file.`);
     process.exit(1);
   }
 
@@ -157,15 +157,15 @@ async function copyTemplateFilesAsync(platform: string, args: any, templateSubst
     if (skipTemplates.includes(source)) {
       console.log(
         'Skipping template %s ...',
-        chalk.cyan(path.join(templateFilesPath, platform, source))
+        styleText('cyan', path.join(templateFilesPath, platform, source))
       );
       continue;
     }
 
     console.log(
       'Rendering %s from template %s...',
-      chalk.cyan(path.join(EXPO_DIR, dest)),
-      chalk.cyan(path.join(templateFilesPath, platform, source))
+      styleText('cyan', path.join(EXPO_DIR, dest)),
+      styleText('cyan', path.join(templateFilesPath, platform, source))
     );
 
     promises.push(

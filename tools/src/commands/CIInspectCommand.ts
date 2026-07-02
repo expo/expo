@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import { glob } from 'glob';
+import { styleText } from 'node:util';
 import ora from 'ora';
 import path from 'path';
 
@@ -270,9 +270,9 @@ function computeDailyRates(
 
 function successRateColor(rate: number): string {
   const pct = `${rate.toFixed(1)}%`;
-  if (rate >= 90) return chalk.green(pct);
-  if (rate >= 75) return chalk.yellow(pct);
-  return chalk.red(pct);
+  if (rate >= 90) return styleText('green', pct);
+  if (rate >= 75) return styleText('yellow', pct);
+  return styleText('red', pct);
 }
 
 // --- Auth helpers ---
@@ -310,12 +310,12 @@ function printAuthStatus(auth: AuthStatus): void {
   const warnings: string[] = [];
   if (!auth.github) {
     warnings.push(
-      `GitHub: ${chalk.red('\u2717')} not authenticated \u2014 run ${chalk.cyan('export GITHUB_TOKEN="$(gh auth token)"')}`
+      `GitHub: ${styleText('red', '\u2717')} not authenticated \u2014 run ${styleText('cyan', 'export GITHUB_TOKEN="$(gh auth token)"')}`
     );
   }
   if (!auth.eas) {
     warnings.push(
-      `EAS: ${chalk.red('\u2717')} not authenticated \u2014 run ${chalk.cyan('eas login')}`
+      `EAS: ${styleText('red', '\u2717')} not authenticated \u2014 run ${styleText('cyan', 'eas login')}`
     );
   }
   if (warnings.length > 0) {
@@ -443,7 +443,7 @@ function stripLogTimestamps(log: string): string {
 }
 
 function printLogSnippets(snippets: string[]): void {
-  logger.log(`\n    ${chalk.bold('Error output:')}`);
+  logger.log(`\n    ${styleText('bold', 'Error output:')}`);
   logger.log('    \u250c' + '\u2500'.repeat(70));
   for (let si = 0; si < snippets.length; si++) {
     const indented = snippets[si]
@@ -656,7 +656,10 @@ function showCompactStatus(
 
   logger.log('');
   logger.log(
-    chalk.bold(`CI Metrics \u2014 Week ${weekNum} (${startStr} \u2192 ${endStr}) \u2014 ${branch}`)
+    styleText(
+      'bold',
+      `CI Metrics \u2014 Week ${weekNum} (${startStr} \u2192 ${endStr}) \u2014 ${branch}`
+    )
   );
   logger.log('');
 
@@ -667,12 +670,12 @@ function showCompactStatus(
     logger.log(`  Expo Workflows: ${easTotal} runs, ${successRateColor(easRate)} success rate`);
   }
   if (ghTotal === 0 && easTotal === 0) {
-    logger.log(chalk.gray('  No workflow runs found.'));
+    logger.log(styleText('gray', '  No workflow runs found.'));
   }
 
   const alerts: string[] = [];
-  if (brokenCount > 0) alerts.push(chalk.red(`${brokenCount} broken`));
-  if (attentionCount > 0) alerts.push(chalk.yellow(`${attentionCount} needs attention`));
+  if (brokenCount > 0) alerts.push(styleText('red', `${brokenCount} broken`));
+  if (attentionCount > 0) alerts.push(styleText('yellow', `${attentionCount} needs attention`));
   if (alerts.length > 0) {
     logger.log(`  ${alerts.join(', ')}`);
   }
@@ -685,14 +688,17 @@ function showCategoryList(categories: CategoryInfo[], selectedIndex: number): vo
 
   for (let i = 0; i < categories.length; i++) {
     const cat = categories[i];
-    const prefix = i === selectedIndex ? chalk.green('\u25b6') : ' ';
-    const badge = i === recommendedIdx ? chalk.bgGreen.black(' RECOMMENDED ') + ' ' : '';
-    const count = chalk.cyan(`(${cat.items.length})`);
-    logger.log(`  ${prefix} ${chalk.green(`${i + 1}.`)} ${badge}${chalk.bold(cat.label)} ${count}`);
-    logger.log(chalk.dim(`       ${cat.guidance}`));
+    const prefix = i === selectedIndex ? styleText('green', '\u25b6') : ' ';
+    const badge =
+      i === recommendedIdx ? styleText(['bgGreen', 'black'], ' RECOMMENDED ') + ' ' : '';
+    const count = styleText('cyan', `(${cat.items.length})`);
+    logger.log(
+      `  ${prefix} ${styleText('green', `${i + 1}.`)} ${badge}${styleText('bold', cat.label)} ${count}`
+    );
+    logger.log(styleText('dim', `       ${cat.guidance}`));
     logger.log('');
   }
-  logger.log(chalk.gray('  \u2191\u2193 navigate / Enter select / Esc quit'));
+  logger.log(styleText('gray', '  \u2191\u2193 navigate / Enter select / Esc quit'));
 }
 
 function categoryLineCount(categories: CategoryInfo[]): number {
@@ -704,37 +710,37 @@ function showWorkflowList(category: CategoryInfo, selectedIndex: number): void {
   const total = category.items.length;
   const { start, end } = getScrollWindow(total, selectedIndex);
 
-  logger.log(chalk.bold(category.label));
-  logger.log(chalk.dim(`  ${category.guidance}`));
+  logger.log(styleText('bold', category.label));
+  logger.log(styleText('dim', `  ${category.guidance}`));
   logger.log('');
 
   if (total === 0) {
-    logger.log(chalk.gray('  No workflows in this category.'));
+    logger.log(styleText('gray', '  No workflows in this category.'));
     logger.log('');
-    logger.log(chalk.gray('  Esc back'));
+    logger.log(styleText('gray', '  Esc back'));
     return;
   }
 
   if (start > 0) {
-    logger.log(chalk.gray(`  \u25b2 ${start} more above`));
+    logger.log(styleText('gray', `  \u25b2 ${start} more above`));
   }
 
   for (let i = start; i < end; i++) {
     const wf = category.items[i];
-    const prefix = i === selectedIndex ? chalk.green('\u25b6') : ' ';
-    const pos = chalk.gray(`${i + 1}/${total}`);
-    const sourceTag = wf.source === 'eas' ? chalk.gray(`[${wf.project}] `) : '';
-    const statsStr = `${wf.total} runs, ${successRateColor(wf.successRate)}, ${chalk.red(`${wf.failed}`)} failed`;
+    const prefix = i === selectedIndex ? styleText('green', '\u25b6') : ' ';
+    const pos = styleText('gray', `${i + 1}/${total}`);
+    const sourceTag = wf.source === 'eas' ? styleText('gray', `[${wf.project}] `) : '';
+    const statsStr = `${wf.total} runs, ${successRateColor(wf.successRate)}, ${styleText('red', `${wf.failed}`)} failed`;
 
     logger.log(`  ${prefix} ${pos} ${sourceTag}${wf.name} \u2014 ${statsStr}`);
   }
 
   if (end < total) {
-    logger.log(chalk.gray(`  \u25bc ${total - end} more below`));
+    logger.log(styleText('gray', `  \u25bc ${total - end} more below`));
   }
 
   logger.log('');
-  logger.log(chalk.gray('  \u2191\u2193 navigate / Enter expand / Esc back'));
+  logger.log(styleText('gray', '  \u2191\u2193 navigate / Enter expand / Esc back'));
 }
 
 function workflowListLineCount(category: CategoryInfo, selectedIndex: number): number {
@@ -755,7 +761,7 @@ function renderDailyTrend(dailyRates: DailyRate[]): number {
   let lines = 0;
   const barWidth = 15;
 
-  logger.log(chalk.bold('  Daily Trend'));
+  logger.log(styleText('bold', '  Daily Trend'));
   lines++;
 
   let prevRate: number | null = null;
@@ -763,25 +769,30 @@ function renderDailyTrend(dailyRates: DailyRate[]): number {
     const rate = day.total > 0 ? (day.successful / day.total) * 100 : -1;
 
     if (rate < 0) {
-      logger.log(`    ${chalk.gray(day.label)}  ${chalk.gray('\u2014  no data')}`);
+      logger.log(`    ${styleText('gray', day.label)}  ${styleText('gray', '\u2014  no data')}`);
       lines++;
       continue;
     }
 
     const filled = Math.round((rate / 100) * barWidth);
-    const barColor = rate >= 90 ? chalk.green : rate >= 75 ? chalk.yellow : chalk.red;
-    const bar = barColor('\u2588'.repeat(filled)) + chalk.gray('\u2591'.repeat(barWidth - filled));
+    const barColor = (message: string) => {
+      const color = rate >= 90 ? 'green' : rate >= 75 ? 'yellow' : 'red';
+
+      return styleText(color, message);
+    };
+    const bar =
+      barColor('\u2588'.repeat(filled)) + styleText('gray', '\u2591'.repeat(barWidth - filled));
 
     let trend = '  ';
     if (prevRate !== null) {
       const diff = rate - prevRate;
-      if (diff > 2) trend = chalk.green('\u2191');
-      else if (diff < -2) trend = chalk.red('\u2193');
-      else trend = chalk.gray('\u2192');
+      if (diff > 2) trend = styleText('green', '\u2191');
+      else if (diff < -2) trend = styleText('red', '\u2193');
+      else trend = styleText('gray', '\u2192');
     }
 
     logger.log(
-      `    ${day.label}  ${bar}  ${successRateColor(rate)}  ${trend}  ${chalk.gray(`(${day.total} runs)`)}`
+      `    ${day.label}  ${bar}  ${successRateColor(rate)}  ${trend}  ${styleText('gray', `(${day.total} runs)`)}`
     );
     lines++;
     prevRate = rate;
@@ -795,14 +806,14 @@ function renderDailyTrend(dailyRates: DailyRate[]): number {
 function renderDetailView(wf: WorkflowItem, showFailed: boolean): number {
   let lines = 0;
 
-  const sourceTag = wf.source === 'eas' ? chalk.gray(` [${wf.project}]`) : '';
-  logger.log(chalk.bold(`${wf.name}${sourceTag}`));
+  const sourceTag = wf.source === 'eas' ? styleText('gray', ` [${wf.project}]`) : '';
+  logger.log(styleText('bold', `${wf.name}${sourceTag}`));
   lines++;
   logger.log('');
   lines++;
 
   logger.log(
-    `  Total: ${wf.total}  ${chalk.green(`${wf.success} success`)}  ${chalk.red(`${wf.failed} failed`)}  ${chalk.gray(`${wf.cancelled} cancelled`)}  ${chalk.gray(`${wf.other} other`)}`
+    `  Total: ${wf.total}  ${styleText('green', `${wf.success} success`)}  ${styleText('red', `${wf.failed} failed`)}  ${styleText('gray', `${wf.cancelled} cancelled`)}  ${styleText('gray', `${wf.other} other`)}`
   );
   lines++;
   logger.log(`  Success rate: ${successRateColor(wf.successRate)}`);
@@ -813,16 +824,16 @@ function renderDetailView(wf: WorkflowItem, showFailed: boolean): number {
   lines += renderDailyTrend(wf.dailyRates);
 
   if (showFailed) {
-    logger.log(chalk.bold('  Recent Failed Runs'));
+    logger.log(styleText('bold', '  Recent Failed Runs'));
     lines++;
     if (wf.failedRuns.length === 0) {
-      logger.log(chalk.gray('    No failed runs.'));
+      logger.log(styleText('gray', '    No failed runs.'));
       lines++;
     } else {
       for (const run of wf.failedRuns) {
-        const commit = run.commitMessage ? chalk.gray(` \u2014 ${run.commitMessage}`) : '';
-        const url = run.url ? chalk.gray(` ${run.url}`) : '';
-        logger.log(`    ${chalk.red('\u2717')} ${run.date}${commit}${url}`);
+        const commit = run.commitMessage ? styleText('gray', ` \u2014 ${run.commitMessage}`) : '';
+        const url = run.url ? styleText('gray', ` ${run.url}`) : '';
+        logger.log(`    ${styleText('red', '\u2717')} ${run.date}${commit}${url}`);
         lines++;
       }
     }
@@ -830,9 +841,11 @@ function renderDetailView(wf: WorkflowItem, showFailed: boolean): number {
     lines++;
   }
 
-  const failedToggle = showFailed ? chalk.yellow('(f)ailed runs') : chalk.green('(f)ailed runs');
-  const parts = [failedToggle, chalk.green('(l)ogs'), chalk.gray('Esc back')];
-  logger.log(chalk.gray('  ') + parts.join(chalk.gray(' / ')));
+  const failedToggle = showFailed
+    ? styleText('yellow', '(f)ailed runs')
+    : styleText('green', '(f)ailed runs');
+  const parts = [failedToggle, styleText('green', '(l)ogs'), styleText('gray', 'Esc back')];
+  logger.log(styleText('gray', '  ') + parts.join(styleText('gray', ' / ')));
   lines++;
 
   return lines;
@@ -842,14 +855,14 @@ function renderDetailView(wf: WorkflowItem, showFailed: boolean): number {
 
 async function inspectLatestFailureLogs(wf: WorkflowItem): Promise<void> {
   if (wf.failedRuns.length === 0) {
-    logger.log(chalk.gray('  No failed runs to inspect.'));
+    logger.log(styleText('gray', '  No failed runs to inspect.'));
     return;
   }
 
   const latestFailed = wf.failedRuns[0];
 
   if (wf.source === 'github') {
-    logger.log(chalk.gray(`  Downloading logs for run ${latestFailed.id}...`));
+    logger.log(styleText('gray', `  Downloading logs for run ${latestFailed.id}...`));
 
     let jobs;
     try {
@@ -861,16 +874,16 @@ async function inspectLatestFailureLogs(wf: WorkflowItem): Promise<void> {
 
     const failedJobs = jobs.filter((j) => j.conclusion === 'failure');
     if (!failedJobs.length) {
-      logger.log(chalk.gray('  No failed jobs found.'));
+      logger.log(styleText('gray', '  No failed jobs found.'));
       return;
     }
 
     for (const job of failedJobs) {
-      logger.log(`\n  ${chalk.red('\u2717')} ${chalk.bold(job.name)}`);
+      logger.log(`\n  ${styleText('red', '\u2717')} ${styleText('bold', job.name)}`);
 
       const failedSteps = (job.steps ?? []).filter((s) => s.conclusion === 'failure');
       for (const step of failedSteps) {
-        logger.log(`    Step: ${chalk.red(step.name)}`);
+        logger.log(`    Step: ${styleText('red', step.name)}`);
       }
 
       const rawLog = await downloadJobLogsAsync(job.id);
@@ -888,14 +901,14 @@ async function inspectLatestFailureLogs(wf: WorkflowItem): Promise<void> {
   } else {
     // EAS workflow logs
     if (!wf.project) {
-      logger.log(chalk.gray('  No project info available for this EAS workflow.'));
+      logger.log(styleText('gray', '  No project info available for this EAS workflow.'));
       return;
     }
 
     const projectDirs = await findEASProjectDirs();
     const projectDir = projectDirs.find((d) => path.basename(d) === wf.project);
     if (!projectDir) {
-      logger.log(chalk.gray(`  Could not find project directory for ${wf.project}.`));
+      logger.log(styleText('gray', `  Could not find project directory for ${wf.project}.`));
       return;
     }
 
@@ -905,7 +918,7 @@ async function inspectLatestFailureLogs(wf: WorkflowItem): Promise<void> {
       EAS_BUILD_PROFILE: process.env.EAS_BUILD_PROFILE ?? 'release-client',
     };
 
-    logger.log(chalk.gray(`  Fetching run details for ${latestFailed.id}...`));
+    logger.log(styleText('gray', `  Fetching run details for ${latestFailed.id}...`));
 
     const runDetails = await runEASCommand(
       ['workflow:view', String(latestFailed.id), '--json', '--non-interactive'],
@@ -923,19 +936,19 @@ async function inspectLatestFailureLogs(wf: WorkflowItem): Promise<void> {
     );
 
     if (!failedJobs.length) {
-      logger.log(chalk.gray('  No failed jobs found.'));
+      logger.log(styleText('gray', '  No failed jobs found.'));
       return;
     }
 
     if (runDetails.logURL) {
-      logger.log(`  ${chalk.gray(runDetails.logURL)}`);
+      logger.log(`  ${styleText('gray', runDetails.logURL)}`);
     }
 
     for (const job of failedJobs) {
       const jobName = job.name ?? job.key ?? 'unknown';
-      logger.log(`\n  ${chalk.red('\u2717')} ${chalk.bold(jobName)}`);
+      logger.log(`\n  ${styleText('red', '\u2717')} ${styleText('bold', jobName)}`);
 
-      logger.log(chalk.gray(`    Downloading log for "${jobName}"...`));
+      logger.log(styleText('gray', `    Downloading log for "${jobName}"...`));
 
       let rawLog: string | null = null;
       try {
@@ -994,7 +1007,7 @@ async function showDetailInteractive(wf: WorkflowItem): Promise<void> {
     } else if (key === 'l') {
       await inspectLatestFailureLogs(wf);
       logger.log('');
-      logger.log(chalk.gray('  Press any key to continue...'));
+      logger.log(styleText('gray', '  Press any key to continue...'));
       await waitForKey(['escape', 'f', 'l', 'enter', 'up', 'down']);
       // After viewing logs, reset since output has scrolled
       lastRenderedCount = 0;

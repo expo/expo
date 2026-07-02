@@ -3,7 +3,7 @@ import type { WatcherStatus } from '@expo/metro/metro-file-map';
 // This file represents an abstraction on the metro TerminalReporter.
 // We use this abstraction to safely extend the TerminalReporter for our own custom logging.
 import UpstreamTerminalReporter from '@expo/metro/metro/lib/TerminalReporter';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import util from 'util';
 
 import { stripAnsi } from '../../../utils/ansi';
@@ -24,7 +24,7 @@ const debug = require('debug')('expo:metro:logger') as typeof console.log;
  */
 export function logWarning(terminal: Terminal, format: string, ...args: any[]): void {
   const str = util.format(format, ...args);
-  terminal.log('%s: %s', chalk.yellow('warning'), str);
+  terminal.log('%s: %s', styleText('yellow', 'warning'), str);
 }
 
 /**
@@ -33,12 +33,12 @@ export function logWarning(terminal: Terminal, format: string, ...args: any[]): 
 export function logError(terminal: Terminal, format: string, ...args: any[]): void {
   terminal.log(
     '%s: %s',
-    chalk.red('error'),
+    styleText('red', 'error'),
     // Syntax errors may have colors applied for displaying code frames
     // in various places outside of where Metro is currently running.
     // If the current terminal does not support color, we'll strip the colors
     // here.
-    util.format(chalk.supportsColor ? format : stripAnsi(format), ...args)
+    util.format(process.stdout.hasColors() ? format : stripAnsi(format), ...args)
   );
 }
 
@@ -129,7 +129,7 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
       lines.splice(lines.length - 1, 1);
     }
 
-    const originTag = origin === 'stdout' ? chalk.dim('|') : chalk.yellow('|');
+    const originTag = origin === 'stdout' ? styleText('dim', '|') : styleText('yellow', '|');
     lines.forEach((line: string) => {
       this.terminal.log(originTag, line);
     });

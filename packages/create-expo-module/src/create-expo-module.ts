@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import { Command, Option } from 'commander';
 import fs from 'node:fs';
 import path from 'node:path';
+import { styleText } from 'node:util';
 import prompts from 'prompts';
 import validateNpmPackage from 'validate-npm-package-name';
 
@@ -77,7 +77,8 @@ export function resolveLocalModuleDir(packageJsonPath: string, targetOrSlug: str
     packageJson = JSON.parse(fileContent);
   } catch {
     console.log(
-      chalk.yellow(
+      styleText(
+        'yellow',
         `⚠️ Could not parse package.json at ${packageJsonPath}. Using the \`modules\` directory in the root of the project as the module location.`
       )
     );
@@ -105,12 +106,14 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
   }
   if (!packageJsonPath) {
     console.log(
-      chalk.red.bold(
+      styleText(
+        ['red', 'bold'],
         '⚠️ This command should be run inside your Expo project when run with the --local flag.'
       )
     );
     console.log(
-      chalk.red(
+      styleText(
+        'red',
         'For native modules to autolink correctly, you need to place them in the directory specified in `expo.autolinking.nativeModulesDir` field in `package.json` which defaults to `modules` directory in the root of the project when unspecified.'
       )
     );
@@ -182,13 +185,16 @@ async function resolvePlatformsAsync(
     );
     if (invalid.length > 0) {
       console.warn(
-        chalk.yellow(
+        styleText(
+          'yellow',
           `⚠️  Unknown platform(s) ignored: ${invalid.join(', ')}. Valid values: ${ALL_PLATFORMS.join(', ')}`
         )
       );
     }
     if (valid.length === 0) {
-      console.warn(chalk.yellow(`⚠️  No valid platforms specified. Defaulting to all platforms.`));
+      console.warn(
+        styleText('yellow', `⚠️  No valid platforms specified. Defaulting to all platforms.`)
+      );
       return [...ALL_PLATFORMS];
     }
     return valid;
@@ -216,7 +222,7 @@ export { resolveFeatures };
 
 function warnIfViewAutoIncluded(rawFeatures: Feature[]): void {
   if (rawFeatures.includes('ViewEvent') && !rawFeatures.includes('View')) {
-    console.log(chalk.yellow('⚠️  ViewEvent requires View — adding View automatically.'));
+    console.log(styleText('yellow', '⚠️  ViewEvent requires View — adding View automatically.'));
   }
 }
 
@@ -262,7 +268,8 @@ function resolveModuleName(rawName: string): string {
   if (wasRenamed) {
     console.log();
     console.log(
-      chalk.yellow(
+      styleText(
+        'yellow',
         `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
       )
     );
@@ -296,9 +303,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (options.local) {
     console.log();
     console.log(
-      `${chalk.gray('The local module will be created in ')}${chalk.gray.bold.italic(
-        relativePath
-      )} ${chalk.gray('directory. Learn more: ')}${chalk.gray.bold(FYI_LOCAL_DIR)}`
+      `${styleText('gray', 'The local module will be created in ')}${styleText(['gray', 'bold', 'italic'], relativePath)} ${styleText('gray', 'directory. Learn more: ')}${styleText(['gray', 'bold'], FYI_LOCAL_DIR)}`
     );
     console.log();
   }
@@ -331,7 +336,8 @@ async function main(target: string | undefined, options: CommandOptions) {
     });
   } else if (!options.local && options.barrel) {
     console.warn(
-      chalk.yellow(
+      styleText(
+        'yellow',
         'Warning: The --barrel flag only applies to local modules (--local). It will be ignored.'
       )
     );
@@ -387,7 +393,9 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   console.log();
   if (options.local) {
-    console.log(`✅ Successfully created Expo module in ${chalk.bold.italic(relativePath)}`);
+    console.log(
+      `✅ Successfully created Expo module in ${styleText(['bold', 'italic'], relativePath)}`
+    );
     const importPath = relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
     printFurtherLocalInstructions(
       data.project.moduleName,
@@ -449,11 +457,13 @@ async function createGitRepositoryAsync(targetDir: string) {
       stdio: 'ignore',
       cwd: targetDir,
     });
-    debug(chalk.dim('New project is already inside of a Git repository, skipping `git init`.'));
+    debug(
+      styleText('dim', 'New project is already inside of a Git repository, skipping `git init`.')
+    );
     return null;
   } catch (e: any) {
     if (e.errno === 'ENOENT') {
-      debug(chalk.dim('Unable to initialize Git repo. `git` not in $PATH.'));
+      debug(styleText('dim', 'Unable to initialize Git repo. `git` not in $PATH.'));
       return false;
     }
   }
@@ -468,7 +478,7 @@ async function createGitRepositoryAsync(targetDir: string) {
     cwd: targetDir,
   });
 
-  debug(chalk.dim('Initialized a Git repository.'));
+  debug(styleText('dim', 'Initialized a Git repository.'));
   return true;
 }
 
@@ -656,7 +666,7 @@ async function getSubstitutionDataFromOptions(
 
   if (isLocal) {
     const warning = buildDefaultsWarning(defaults);
-    if (warning) process.stderr.write(chalk.yellow(warning) + '\n');
+    if (warning) process.stderr.write(styleText('yellow', warning) + '\n');
 
     return {
       project: {
@@ -702,7 +712,7 @@ async function getSubstitutionDataFromOptions(
 
   const warning = buildDefaultsWarning(defaults);
   if (warning) {
-    process.stderr.write(chalk.yellow(warning) + '\n');
+    process.stderr.write(styleText('yellow', warning) + '\n');
   }
 
   return {
@@ -743,8 +753,9 @@ async function confirmTargetDirAsync(targetDir: string, options: CommandOptions)
   if (!isInteractive()) {
     debug(`Non-interactive mode: target directory "${targetDir}" is not empty, continuing anyway`);
     console.log(
-      chalk.yellow(
-        `Warning: Target directory ${chalk.magenta(targetDir)} is not empty, continuing anyway.`
+      styleText(
+        'yellow',
+        `Warning: Target directory ${styleText('magenta', targetDir)} is not empty, continuing anyway.`
       )
     );
     return;
@@ -754,9 +765,7 @@ async function confirmTargetDirAsync(targetDir: string, options: CommandOptions)
     {
       type: 'confirm',
       name: 'shouldContinue',
-      message: `The target directory ${chalk.magenta(
-        targetDir
-      )} is not empty, do you want to continue anyway?`,
+      message: `The target directory ${styleText('magenta', targetDir)} is not empty, do you want to continue anyway?`,
       initial: true,
     },
     {
@@ -834,10 +843,10 @@ function printFurtherInstructions(
     console.log(
       'To start developing your module, navigate to the directory and open Android and iOS projects of the example app'
     );
-    commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
+    commands.forEach((command) => console.log(styleText('gray', '>'), styleText('bold', command)));
     console.log();
   }
-  console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
+  console.log(`Learn more on Expo Modules APIs: ${styleText(['blue', 'bold'], DOCS_URL)}`);
 }
 
 function printFurtherLocalInstructions(
@@ -851,21 +860,32 @@ function printFurtherLocalInstructions(
   console.log(`You can now import this module inside your application.`);
   console.log(`For example, you can add these lines to your App.tsx or App.js file:`);
   if (barrel) {
-    console.log(chalk.gray.italic(`import ${moduleName}, { ${viewName} } from '${relativePath}';`));
+    console.log(
+      styleText(['gray', 'italic'], `import ${moduleName}, { ${viewName} } from '${relativePath}';`)
+    );
   } else {
     console.log(
-      chalk.gray.italic(`import ${moduleName} from '${relativePath}/src/${moduleName}';`)
+      styleText(
+        ['gray', 'italic'],
+        `import ${moduleName} from '${relativePath}/src/${moduleName}';`
+      )
     );
     console.log(
-      chalk.gray.italic(`import { default as ${viewName} } from '${relativePath}/src/${viewName}';`)
+      styleText(
+        ['gray', 'italic'],
+        `import { default as ${viewName} } from '${relativePath}/src/${viewName}';`
+      )
     );
-    console.log(chalk.gray.italic(`import type { } from '${relativePath}/src/${name}.types';`));
+    console.log(
+      styleText(['gray', 'italic'], `import type { } from '${relativePath}/src/${name}.types';`)
+    );
   }
   console.log();
-  console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
+  console.log(`Learn more on Expo Modules APIs: ${styleText(['blue', 'bold'], DOCS_URL)}`);
   console.log(
-    chalk.yellow(
-      `Remember to re-build your native app (for example, with ${chalk.bold('npx expo run')}) when you make changes to the module. Native code changes are not reloaded with Fast Refresh.`
+    styleText(
+      'yellow',
+      `Remember to re-build your native app (for example, with ${styleText('bold', 'npx expo run')}) when you make changes to the module. Native code changes are not reloaded with Fast Refresh.`
     )
   );
 }

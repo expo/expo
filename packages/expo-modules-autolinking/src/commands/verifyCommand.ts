@@ -1,6 +1,6 @@
-import chalk from 'chalk';
 import type commander from 'commander';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import {
@@ -166,7 +166,7 @@ export async function verifySearchResults(
 
   if (groups.duplicates.length) {
     for (const revision of groups.duplicates) {
-      console.warn(`⚠️  Found duplicate installations for ${chalk.green(revision.name)}`);
+      console.warn(`⚠️  Found duplicate installations for ${styleText('green', revision.name)}`);
       const revisions = [revision, ...(revision.duplicates ?? [])];
       for (let idx = 0; idx < revisions.length; idx++) {
         const prefix = idx !== revisions.length - 1 ? '├─' : '└─';

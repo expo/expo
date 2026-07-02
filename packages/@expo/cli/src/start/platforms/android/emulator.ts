@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import { spawn } from 'child_process';
 import os from 'os';
 
@@ -58,7 +58,7 @@ export async function startDeviceAsync(
     interval?: number;
   } = {}
 ): Promise<Device> {
-  Log.log(`\u203A Opening emulator ${chalk.bold(device.name)}`);
+  Log.log(`\u203A Opening emulator ${styleText("bold", device.name)}`);
 
   // Start a process to open an emulator
   const emulatorProcess = spawn(

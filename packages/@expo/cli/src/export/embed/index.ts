@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import type arg from 'arg';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import type { Command } from '../../index';
@@ -54,9 +54,9 @@ export const expoExportEmbed: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `(Internal) Export the JavaScript bundle during a native build script for embedding in a native binary`,
-      chalk`npx expo export:embed {dim <dir>}`,
+      `npx expo export:embed ${styleText('dim', `<dir>`)}`,
       [
-        chalk`<dir>                                  Directory of the Expo project. {dim Default: Current working directory}`,
+        `<dir>                                  Directory of the Expo project. ${styleText('dim', `Default: Current working directory`)}`,
         `--entry-file <path>                    Path to the root JS file, either absolute or relative to current working directory`,
         `--platform <string>                    Either "ios" or "android" (default: "ios")`,
         `--transformer <string>                 Specify a custom transformer to be used`,

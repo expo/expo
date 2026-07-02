@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { boolish } from 'getenv';
+import { styleText } from 'node:util';
 
 import { Options, createFingerprintAsync } from '../../../build/index';
 import { Command } from '../cli';
@@ -27,12 +27,12 @@ export const generateFingerprintAsync: Command = async (argv) => {
 
   if (args['--help']) {
     Log.exit(
-      chalk`
-{bold Description}
+      `
+${styleText('bold', 'Description')}
 Generate fingerprint for a project
 
-{bold Usage}
-  {dim $} npx @expo/fingerprint fingerprint:generate
+${styleText('bold', 'Usage')}
+  ${styleText('dim', '$')} npx @expo/fingerprint fingerprint:generate
 
   Options
   --platform <string[]>                Limit native files to those for specified platforms. Default is ['android', 'ios'].

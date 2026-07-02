@@ -1,6 +1,6 @@
 import { getConfig } from '@expo/config';
 import type * as PackageManager from '@expo/package-manager';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import {
@@ -56,9 +56,9 @@ export async function checkPackagesAsync(
 
   if (pkg.expo?.install?.exclude?.length && !json) {
     Log.log(
-      chalk`Skipped ${fix ? 'fixing' : 'checking'} dependencies: ${joinWithCommasAnd(
+      `Skipped ${fix ? 'fixing' : 'checking'} dependencies: ${joinWithCommasAnd(
         pkg.expo.install.exclude
-      )}. These dependencies are listed in {bold expo.install.exclude} in package.json. ${learnMore(
+      )}. These dependencies are listed in ${styleText('bold', `expo.install.exclude`)} in package.json. ${learnMore(
         'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
       )}`
     );
@@ -70,7 +70,7 @@ export async function checkPackagesAsync(
     if (json) {
       console.log(JSON.stringify({ dependencies: [], upToDate: true }));
     } else {
-      Log.exit(chalk.greenBright('Dependencies are up to date'), 0);
+      Log.exit(styleText('greenBright', 'Dependencies are up to date'), 0);
     }
     return;
   }
@@ -101,5 +101,5 @@ export async function checkPackagesAsync(
   }
 
   // Exit with non-zero exit code if any of the dependencies are out of date.
-  Log.exit(chalk.red('Found outdated dependencies'), 1);
+  Log.exit(styleText('red', 'Found outdated dependencies'), 1);
 }

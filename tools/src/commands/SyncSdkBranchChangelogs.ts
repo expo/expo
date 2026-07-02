@@ -1,5 +1,5 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import { Changelog, MemChangelog, UNPUBLISHED_VERSION_NAME } from '../Changelogs';
@@ -36,7 +36,7 @@ export default (program: Command) => {
           changed = await syncChangelogAsync(pkg, options.branch);
         } catch (e) {
           const errorMessage = e.message ?? String(e);
-          console.error(`❌ ${chalk.red(pkg.packageName)}: ${errorMessage}`);
+          console.error(`❌ ${styleText('red', pkg.packageName)}: ${errorMessage}`);
         }
         if (changed) {
           console.log(`✅ ${pkg.packageName}`);

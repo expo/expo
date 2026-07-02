@@ -1,6 +1,6 @@
 import type { JSONObject } from '@expo/json-file';
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { Log } from '../../../log';
@@ -76,7 +76,7 @@ async function writeUpdates(tsConfigPath: string, tsConfig: JSONObject, updates:
     await JsonFile.writeAsync(tsConfigPath, tsConfig);
     for (const update of updates) {
       Log.log(
-        chalk`{bold TypeScript}: The {cyan tsconfig.json#${update}} property has been updated`
+        `${styleText('bold', `TypeScript`)}: The ${styleText('cyan', `tsconfig.json#${update}`)} property has been updated`
       );
     }
   }

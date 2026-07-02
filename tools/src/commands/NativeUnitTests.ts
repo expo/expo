@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 
 import { androidNativeUnitTests } from './AndroidNativeUnitTests';
 import { iosNativeUnitTests } from './IosNativeUnitTests';
@@ -17,7 +17,7 @@ async function thisAction({
   packages?: string;
 }) {
   if (!platform) {
-    console.log(chalk.yellow("You haven't specified platform to run unit tests for!"));
+    console.log(styleText('yellow', "You haven't specified platform to run unit tests for!"));
     const result = await inquirer.prompt<{ platform: PlatformName }>([
       {
         name: 'platform',

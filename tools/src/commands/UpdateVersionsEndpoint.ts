@@ -1,10 +1,10 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
 import inquirer from 'inquirer';
 import * as jsondiffpatch from 'jsondiffpatch';
 import cloneDeep from 'lodash/cloneDeep';
 import set from 'lodash/set';
 import unset from 'lodash/unset';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import * as Versions from '../Versions';
@@ -38,9 +38,7 @@ async function askForCorrectnessAsync(): Promise<boolean> {
     {
       type: 'confirm',
       name: 'isCorrect',
-      message: `Does this look correct? Type \`y\` or press enter to update ${chalk.green(
-        'staging'
-      )} config.`,
+      message: `Does this look correct? Type \`y\` or press enter to update ${styleText('green', 'staging')} config.`,
       default: true,
     },
   ]);
@@ -49,22 +47,22 @@ async function askForCorrectnessAsync(): Promise<boolean> {
 
 function setConfigValueForKey(config: object, key: string, value: any): void {
   if (value === undefined) {
-    console.log(`Deleting ${chalk.yellow(key)} config key ...`);
+    console.log(`Deleting ${styleText('yellow', key)} config key ...`);
     unset(config, key);
   } else {
-    console.log(`Changing ${chalk.yellow(key)} config key ...`);
+    console.log(`Changing ${styleText('yellow', key)} config key ...`);
     set(config, key, value);
   }
 }
 
 async function applyChangesToStagingAsync(delta: any, previousVersions: any, newVersions: any) {
   if (!delta) {
-    console.log(chalk.yellow('There are no changes to apply in the configuration.'));
+    console.log(styleText('yellow', 'There are no changes to apply in the configuration.'));
     return;
   }
 
   console.log(
-    `\nHere is the diff of changes to apply on ${chalk.green('staging')} version config:`
+    `\nHere is the diff of changes to apply on ${styleText('green', 'staging')} version config:`
   );
   console.log(jsondiffpatch.formatters.console.format(delta!, previousVersions));
 
@@ -79,11 +77,11 @@ async function applyChangesToStagingAsync(delta: any, previousVersions: any, new
     }
 
     console.log(
-      chalk.green('\nSuccessfully updated staging config. You can check it out on'),
-      chalk.blue(`https://${Versions.VersionsApiHost.STAGING}/v2/versions`)
+      styleText('green', '\nSuccessfully updated staging config. You can check it out on'),
+      styleText('blue', `https://${Versions.VersionsApiHost.STAGING}/v2/versions`)
     );
   } else {
-    console.log(chalk.yellow('Canceled'));
+    console.log(styleText('yellow', 'Canceled'));
   }
 }
 
@@ -105,7 +103,7 @@ async function applyChangesToRootAsync(options: ActionOptions, versions: any) {
   const newVersions = cloneDeep(versions);
   if (options.key) {
     if (!('value' in options) && !options.delete) {
-      console.log(chalk.red('`--key` flag requires `--value` or `--delete` flag.'));
+      console.log(styleText('red', '`--key` flag requires `--value` or `--delete` flag.'));
       return;
     }
     setConfigValueForKey(newVersions, options.key, options.delete ? undefined : options.value);
@@ -124,7 +122,9 @@ async function applyChangesToSDKVersionAsync(options: ActionOptions, versions: a
   const containsSdk = sdkVersions.includes(sdkVersion);
 
   if (!semver.valid(sdkVersion)) {
-    console.error(chalk.red(`Provided SDK version ${chalk.cyan(sdkVersion)} is invalid.`));
+    console.error(
+      styleText('red', `Provided SDK version ${styleText('cyan', sdkVersion)} is invalid.`)
+    );
     return;
   }
   if (!containsSdk) {
@@ -132,14 +132,12 @@ async function applyChangesToSDKVersionAsync(options: ActionOptions, versions: a
       {
         type: 'confirm',
         name: 'addNewSdk',
-        message: `Configuration for SDK ${chalk.cyan(
-          sdkVersion
-        )} doesn't exist. Do you want to initialize it?`,
+        message: `Configuration for SDK ${styleText('cyan', sdkVersion)} doesn't exist. Do you want to initialize it?`,
         default: true,
       },
     ]);
     if (!addNewSdk) {
-      console.log(chalk.yellow('Canceled'));
+      console.log(styleText('yellow', 'Canceled'));
       return;
     }
   }
@@ -147,8 +145,8 @@ async function applyChangesToSDKVersionAsync(options: ActionOptions, versions: a
   // If SDK is already there, make a deep clone of the sdkVersion config so we can calculate a diff later.
   const sdkVersionConfig = containsSdk ? cloneDeep(versions.sdkVersions[sdkVersion]) : {};
 
-  console.log(`\nUsing ${chalk.blue(Versions.VersionsApiHost.STAGING)} host ...`);
-  console.log(`Using SDK ${chalk.cyan(sdkVersion)} ...`);
+  console.log(`\nUsing ${styleText('blue', Versions.VersionsApiHost.STAGING)} host ...`);
+  console.log(`Using SDK ${styleText('cyan', sdkVersion)} ...`);
 
   if ('deprecated' in options) {
     setConfigValueForKey(sdkVersionConfig, 'isDeprecated', !!options.deprecated);
@@ -158,7 +156,7 @@ async function applyChangesToSDKVersionAsync(options: ActionOptions, versions: a
   }
   if (options.key) {
     if (!('value' in options) && !options.delete) {
-      console.log(chalk.red('`--key` flag requires `--value` or `--delete` flag.'));
+      console.log(styleText('red', '`--key` flag requires `--value` or `--delete` flag.'));
       return;
     }
     setConfigValueForKey(sdkVersionConfig, options.key, options.delete ? undefined : options.value);
@@ -204,7 +202,7 @@ export default (program: Command) => {
     .command('update-versions-endpoint')
     .alias('update-versions')
     .description(
-      `Updates SDK configuration under ${chalk.blue(`https://${Versions.VersionsApiHost.STAGING}/v2/versions`)}`
+      `Updates SDK configuration under ${styleText('blue', `https://${Versions.VersionsApiHost.STAGING}/v2/versions`)}`
     )
     .option(
       '-s, --sdkVersion [string]',

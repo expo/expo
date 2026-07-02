@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from "node:util";
 
 import type { Device } from './adb';
 import { logUnauthorized } from './adb';
@@ -34,7 +34,7 @@ export async function promptForDeviceAsync(devices: Device[]): Promise<Device> {
 export function formatDeviceChoice(device: Device): { title: string; value: string } {
   const symbol = getDeviceChoiceSymbol(device);
   const name = getDeviceChoiceName(device);
-  const type = chalk.dim(device.isAuthorized ? device.type : 'unauthorized');
+  const type = styleText("dim", device.isAuthorized ? device.type : 'unauthorized');
 
   return {
     value: device.name,
@@ -64,9 +64,9 @@ function getDeviceChoiceName(device: Device) {
 
   // A device that is connected and ready to be used should be bolded to match iOS.
   if (device.isAuthorized) {
-    return chalk.bold(device.name);
+    return styleText("bold", device.name);
   }
 
   // Devices that are unauthorized and connected cannot be used, but they are connected so gray them out.
-  return chalk.bold(chalk.gray(device.name));
+  return styleText("bold", styleText('gray', device.name));
 }

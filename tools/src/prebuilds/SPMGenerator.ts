@@ -1,6 +1,6 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import { glob } from 'glob';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import logger from '../Logger';
@@ -68,7 +68,7 @@ export const SPMGenerator = {
     artifacts?: DownloadedDependencies
   ): Promise<void> => {
     logger.verbose(
-      `📦 Generating Package.swift for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)}...`
+      `📦 Generating Package.swift for ${styleText('green', pkg.packageName)}/${styleText('green', product.name)}...`
     );
     // Use SPMPackage to generate Package.swift
     const packageSwiftPath = SPMGenerator.getSwiftPackagePath(pkg, product);
@@ -97,7 +97,7 @@ export const SPMGenerator = {
    * @param product Product
    */
   generateIsolatedSourcesForTargetsAsync: async (pkg: SPMPackageSource, product: SPMProduct) => {
-    const loggerTitle = `${chalk.green(pkg.packageName)}/${chalk.green(product.name)}`;
+    const loggerTitle = `${styleText('green', pkg.packageName)}/${styleText('green', product.name)}`;
     logger.verbose(`📂 Generating files for ${loggerTitle}`);
 
     // Walk through all targets for the product and collect source files to copy into spm code structure
@@ -108,7 +108,7 @@ export const SPMGenerator = {
       }
 
       const spinner = createAsyncSpinner(
-        `Generating source folder structure for target ${chalk.green(target.name)}...`,
+        `Generating source folder structure for target ${styleText('green', target.name)}...`,
         pkg,
         product
       );
@@ -146,7 +146,7 @@ export const SPMGenerator = {
             const targetPath = path.join(headerRootPath, mapping.from);
 
             spinner.info(
-              `Creating symlink ${chalk.cyan(mapping.to)} → ${chalk.cyan(mapping.from)}...`
+              `Creating symlink ${styleText('cyan', mapping.to)} → ${styleText('cyan', mapping.from)}...`
             );
 
             await fs.ensureDir(path.dirname(symlinkPath));
@@ -184,7 +184,7 @@ export const SPMGenerator = {
             }
 
             spinner.info(
-              `Mapping ${mapping.type} file ${chalk.cyan(file)} → ${chalk.cyan(path.relative(targetDestination, destinationFilePath))}...`
+              `Mapping ${mapping.type} file ${styleText('cyan', file)} → ${styleText('cyan', path.relative(targetDestination, destinationFilePath))}...`
             );
 
             await fs.ensureDir(path.dirname(destinationFilePath));
@@ -217,7 +217,7 @@ export const SPMGenerator = {
 
         // Create symlink to source file in the target source folder
         spinner.info(
-          `Generating source for target ${chalk.green(target.name)} ${path.basename(file)}...`
+          `Generating source for target ${styleText('green', target.name)} ${path.basename(file)}...`
         );
         const sourceFilePath = path.join(targetSourcePath, file);
         const destinationFilePath = path.join(targetDestination, file);
@@ -238,7 +238,7 @@ export const SPMGenerator = {
         if (!validDestPaths.has(filePath)) {
           const stat = await fs.lstat(filePath).catch(() => null);
           if (stat?.isSymbolicLink()) {
-            spinner.info(`Removing stale symlink ${chalk.yellow(file)}...`);
+            spinner.info(`Removing stale symlink ${styleText('yellow', file)}...`);
             await fs.remove(filePath);
           }
         }
@@ -271,7 +271,7 @@ export const SPMGenerator = {
             const linked = await refreshHardlinkIfNeeded(sourceFilePath, destinationFilePath);
             if (linked) {
               spinner.info(
-                `Linking header file for target ${chalk.green(target.name)} ${path.basename(file)}...`
+                `Linking header file for target ${styleText('green', target.name)} ${path.basename(file)}...`
               );
             }
           }
@@ -286,7 +286,7 @@ export const SPMGenerator = {
         await fs.ensureDir(includeDir);
         if (writeFileIfChanged(moduleMapPath, target.moduleMapContent)) {
           spinner.info(
-            `Generated custom module.modulemap for target ${chalk.green(target.name)}...`
+            `Generated custom module.modulemap for target ${styleText('green', target.name)}...`
           );
         }
       }
@@ -325,7 +325,7 @@ ${allImports.join('\n')}
           // Only write if content changed (preserves mtime for Xcode incremental builds)
           if (writeFileIfChanged(exportsFilePath, fileContent)) {
             spinner.info(
-              `Generated ${product.name}+Exports.swift for target ${loggerTitle + '/' + chalk.green(product.name) + '/' + chalk.green(target.name)}...`
+              `Generated ${product.name}+Exports.swift for target ${loggerTitle + '/' + styleText('green', product.name) + '/' + styleText('green', target.name)}...`
             );
           }
         }
@@ -356,7 +356,7 @@ ${allImports.join('\n')}
             // Only copy if content changed (preserves mtime for Xcode incremental builds)
             if (hasFileContentChanged(sourceFilePath, destinationFilePath)) {
               spinner.info(
-                `Copying resource ${chalk.cyan(file)} → ${chalk.cyan(path.relative(targetDestination, destinationFilePath))}...`
+                `Copying resource ${styleText('cyan', file)} → ${styleText('cyan', path.relative(targetDestination, destinationFilePath))}...`
               );
               await fs.copy(sourceFilePath, destinationFilePath, { overwrite: true });
             }
@@ -364,7 +364,9 @@ ${allImports.join('\n')}
         }
       }
 
-      spinner.succeed(`Generated source folder structure for target ${chalk.green(target.name)}.`);
+      spinner.succeed(
+        `Generated source folder structure for target ${styleText('green', target.name)}.`
+      );
     }
   },
 
@@ -378,7 +380,7 @@ ${allImports.join('\n')}
     product: SPMProduct
   ): Promise<void> => {
     logger.verbose(
-      `🧹 Cleaning generated source code for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)}...`
+      `🧹 Cleaning generated source code for ${styleText('green', pkg.packageName)}/${styleText('green', product.name)}...`
     );
 
     const sourceCodePath = SPMGenerator.getGeneratedProductFilesPath(pkg, product);

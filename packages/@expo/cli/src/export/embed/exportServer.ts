@@ -7,9 +7,9 @@
 import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import { modifyConfigAsync } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import fs from 'fs';
 import { execSync } from 'node:child_process';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { disableNetwork } from '../../api/settings';
@@ -193,7 +193,10 @@ async function runServerDeployCommandAsync(
 
     logMetroErrorInXcode(
       projectRoot,
-      chalk.red`Running CLI in offline mode, skipping server deployment. Deploy manually with: ${manualScript}`
+      styleText(
+        'red',
+        `Running CLI in offline mode, skipping server deployment. Deploy manually with: ${manualScript}`
+      )
     );
   };
   if (env.EXPO_OFFLINE) {
@@ -280,7 +283,8 @@ async function runServerDeployCommandAsync(
     if (isSpawnResultError(error)) {
       const output = error.output.join('\n').trim() || error.toString();
       Log.log(
-        chalk.dim(
+        styleText(
+          'dim',
           'An error occurred while deploying server. Logs stored at: ' +
             (await dumpDeploymentLogs(projectRoot, output, 'deploy-error'))
         )
@@ -290,7 +294,7 @@ async function runServerDeployCommandAsync(
       if (output.match(/ENOTFOUND/)) {
         logOfflineError();
         // Print the raw error message to help provide more context.
-        Log.log(chalk.dim(output));
+        Log.log(styleText('dim', output));
         // Prevent any other network requests (unlikely for this command).
         disableNetwork();
         return false;

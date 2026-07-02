@@ -1,5 +1,5 @@
 import { IOSConfig } from '@expo/config-plugins';
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import path from 'path';
 
 import * as Log from '../../../log';
@@ -51,7 +51,7 @@ export async function promptOrQueryNativeSchemeAsync(
           value.type === IOSConfig.Target.TargetType.APPLICATION && value.osType === 'iOS';
         return {
           value: value.name,
-          title: isApp ? chalk.bold(value.name) + chalk.gray(' (app)') : value.name,
+          title: isApp ? styleText("bold", value.name) + styleText("gray", ' (app)') : value.name,
         };
       }),
       {

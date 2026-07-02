@@ -1,6 +1,6 @@
 import type { AppJSONConfig, ExpoConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
 import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
@@ -37,7 +37,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
       const configName = getProjectConfigDescriptionWithPaths(this.projectRoot, config);
       throw new PrerequisiteCommandError(
         'WEB_SUPPORT',
-        chalk`Skipping web setup: {bold "web"} is not included in the project ${configName} {bold "platforms"} array.`
+        `Skipping web setup: ${styleText('bold', `"web"`)} is not included in the project ${configName} ${styleText('bold', `"platforms"`)} array.`
       );
     }
 
@@ -85,7 +85,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
         isProjectMutable: false,
         exp,
         installMessage: `It looks like you're trying to use web support but don't have the required dependencies installed.`,
-        warningMessage: chalk`If you're not using web, please ensure you remove the {bold "web"} string from the platforms array in the project Expo config.`,
+        warningMessage: `If you're not using web, please ensure you remove the ${styleText('bold', `"web"`)} string from the platforms array in the project Expo config.`,
         requiredPackages,
       });
     } catch (error) {
@@ -96,7 +96,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
       const hasReactDOM = !!(pkg.dependencies?.['react-dom'] || pkg.devDependencies?.['react-dom']);
       if (hasReactDOM) {
         Log.warn(
-          chalk`{bold react-native-web} is not installed. Some React Native components may not work on web without it. Install it with: {bold npx expo install react-native-web}`
+          `${styleText('bold', `react-native-web`)} is not installed. Some React Native components may not work on web without it. Install it with: ${styleText('bold', `npx expo install react-native-web`)}`
         );
         return false;
       }

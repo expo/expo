@@ -56,7 +56,6 @@
   "dependencies": {
     "@expo/env": "workspace:~2.3.0",
     "@expo/spawn-async": "^1.8.0",
-    "chalk": "^4.1.2",
     "commander": "^14.0.3",
     "diff": "^5.2.0",
     "expo-build-properties": "workspace:~56.0.15",

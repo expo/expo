@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import { spawn, spawnSync } from 'child_process';
 import fs from 'fs-extra';
+import { styleText } from 'node:util';
 import os from 'os';
 import path from 'path';
 
@@ -37,7 +37,7 @@ export const FrameworkVerifier = {
     options?: XCFrameworkVerifyOptions
   ): Promise<Map<string, XCFrameworkVerificationReport>> => {
     logger.verbose(
-      `🔍 Verifying xcframework for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)} [${buildFlavor.toLowerCase()}]`
+      `🔍 Verifying xcframework for ${styleText('green', pkg.packageName)}/${styleText('green', product.name)} [${buildFlavor.toLowerCase()}]`
     );
 
     // Check required tools once
@@ -84,15 +84,16 @@ export const FrameworkVerifier = {
         }
 
         logger.error(
-          `  ${chalk.red('✗')} Verification failed for ${chalk.green(product.name)}.xcframework: ${failures.join(', ')}`
+          `  ${styleText('red', '✗')} Verification failed for ${styleText('green', product.name)}.xcframework: ${failures.join(', ')}`
         );
 
         // Always show detailed errors for failures
         for (const slice of report.slices) {
           if (!slice.modularHeadersValid.success && slice.modularHeadersValid.details) {
-            logger.log(chalk.gray(`      Modular header error (${slice.sliceId}):`));
+            logger.log(styleText('gray', `      Modular header error (${slice.sliceId}):`));
             logger.log(
-              chalk.gray(
+              styleText(
+                'gray',
                 slice.modularHeadersValid.details
                   .split('\n')
                   .slice(0, 10)
@@ -102,9 +103,10 @@ export const FrameworkVerifier = {
             );
           }
           if (!slice.clangModuleImport.success && slice.clangModuleImport.details) {
-            logger.log(chalk.gray(`      Clang error (${slice.sliceId}):`));
+            logger.log(styleText('gray', `      Clang error (${slice.sliceId}):`));
             logger.log(
-              chalk.gray(
+              styleText(
+                'gray',
                 slice.clangModuleImport.details
                   .split('\n')
                   .slice(0, 10)
@@ -114,9 +116,10 @@ export const FrameworkVerifier = {
             );
           }
           if (!slice.swiftInterfaceTypecheck.success && slice.swiftInterfaceTypecheck.details) {
-            logger.log(chalk.gray(`      Swift typecheck error (${slice.sliceId}):`));
+            logger.log(styleText('gray', `      Swift typecheck error (${slice.sliceId}):`));
             logger.log(
-              chalk.gray(
+              styleText(
+                'gray',
                 slice.swiftInterfaceTypecheck.details
                   .split('\n')
                   .slice(0, 10)
@@ -126,9 +129,10 @@ export const FrameworkVerifier = {
             );
           }
           if (!slice.dsymDebugPrefixMapping.success && slice.dsymDebugPrefixMapping.details) {
-            logger.log(chalk.gray(`      dSYM debug prefix error (${slice.sliceId}):`));
+            logger.log(styleText('gray', `      dSYM debug prefix error (${slice.sliceId}):`));
             logger.log(
-              chalk.gray(
+              styleText(
+                'gray',
                 slice.dsymDebugPrefixMapping.details
                   .split('\n')
                   .slice(0, 10)
@@ -138,9 +142,10 @@ export const FrameworkVerifier = {
             );
           }
           if (!slice.dsymUuidMatch.success && slice.dsymUuidMatch.details) {
-            logger.log(chalk.gray(`      dSYM UUID mismatch (${slice.sliceId}):`));
+            logger.log(styleText('gray', `      dSYM UUID mismatch (${slice.sliceId}):`));
             logger.log(
-              chalk.gray(
+              styleText(
+                'gray',
                 slice.dsymUuidMatch.details
                   .split('\n')
                   .slice(0, 10)
@@ -158,10 +163,11 @@ export const FrameworkVerifier = {
       if (clangWarnings.length > 0 && report.overallSuccess) {
         const sliceIds = clangWarnings.map((s) => s.sliceId).join(', ');
         logger.warn(
-          `  ${chalk.yellow('⚠')} Clang @import warning for ${chalk.green(product.name)}.xcframework (${sliceIds})`
+          `  ${styleText('yellow', '⚠')} Clang @import warning for ${styleText('green', product.name)}.xcframework (${sliceIds})`
         );
         logger.log(
-          chalk.gray(
+          styleText(
+            'gray',
             '      Headers may import React types not available during standalone verification'
           )
         );
@@ -180,26 +186,31 @@ export const FrameworkVerifier = {
       if (dsymMissing.length > 0) {
         const sliceIds = dsymMissing.map((s) => s.sliceId).join(', ');
         logger.warn(
-          `  ${chalk.yellow('⚠')} dSYM missing for ${chalk.green(product.name)}.xcframework (${sliceIds})`
+          `  ${styleText('yellow', '⚠')} dSYM missing for ${styleText('green', product.name)}.xcframework (${sliceIds})`
         );
-        logger.log(chalk.gray('      Source-level debugging will not work for these slices'));
+        logger.log(
+          styleText('gray', '      Source-level debugging will not work for these slices')
+        );
       }
 
       if (dsymUuidIssues.length > 0) {
         const sliceIds = dsymUuidIssues.map((s) => s.sliceId).join(', ');
         logger.warn(
-          `  ${chalk.yellow('⚠')} dSYM UUID mismatch for ${chalk.green(product.name)}.xcframework (${sliceIds})`
+          `  ${styleText('yellow', '⚠')} dSYM UUID mismatch for ${styleText('green', product.name)}.xcframework (${sliceIds})`
         );
-        logger.log(chalk.gray('      dSYMs may be stale — rebuild to regenerate matching symbols'));
+        logger.log(
+          styleText('gray', '      dSYMs may be stale — rebuild to regenerate matching symbols')
+        );
       }
 
       if (dsymPathIssues.length > 0) {
         const sliceIds = dsymPathIssues.map((s) => s.sliceId).join(', ');
         logger.warn(
-          `  ${chalk.yellow('⚠')} dSYM debug prefix mapping issue for ${chalk.green(product.name)}.xcframework (${sliceIds})`
+          `  ${styleText('yellow', '⚠')} dSYM debug prefix mapping issue for ${styleText('green', product.name)}.xcframework (${sliceIds})`
         );
         logger.log(
-          chalk.gray(
+          styleText(
+            'gray',
             '      DWARF source paths contain absolute paths that should have been remapped to /expo-src/'
           )
         );
@@ -244,11 +255,11 @@ export const FrameworkVerifier = {
 
           if (missingSlices.length > 0) {
             logger.error(
-              `  ${chalk.red('✗')} Resource bundle ${chalk.cyan(bundleName)} missing from slices: ${missingSlices.join(', ')}`
+              `  ${styleText('red', '✗')} Resource bundle ${styleText('cyan', bundleName)} missing from slices: ${missingSlices.join(', ')}`
             );
           } else {
             logger.verbose(
-              `  ${chalk.green('✓')} Resource bundle ${chalk.cyan(bundleName)} present in all slices (${foundSlices.join(', ')})`
+              `  ${styleText('green', '✓')} Resource bundle ${styleText('cyan', bundleName)} present in all slices (${foundSlices.join(', ')})`
             );
           }
         }
@@ -260,7 +271,7 @@ export const FrameworkVerifier = {
       }
     } catch (error) {
       logger.error(
-        `  ${chalk.red('✗')} Verification failed for ${chalk.green(product.name)}.xcframework: ${error instanceof Error ? error.message : String(error)}`
+        `  ${styleText('red', '✗')} Verification failed for ${styleText('green', product.name)}.xcframework: ${error instanceof Error ? error.message : String(error)}`
       );
       // Still add a failed report so caller knows about the failure
       results.set(product.name, {

@@ -1,6 +1,6 @@
 import { spawnAsync as spawnAppleScriptAsync } from '@expo/osascript';
 import assert from 'assert';
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import fs from 'fs';
 import path from 'path';
 
@@ -128,15 +128,13 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
         if (appId === EXPO_GO_BUNDLE_IDENTIFIER) {
           errorMessage = `Couldn't open Expo Go app on device "${this.name}". Install it: https://expo.dev/go.`;
         } else {
-          errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
-            `npx expo run:ios -d ${this.device.udid}`
-          )}`;
+          errorMessage += `\nThe app might not be installed, try installing it with: ${styleText("bold", `npx expo run:ios -d ${this.device.udid}`)}`;
         }
       }
       if (error.stderr) {
-        errorMessage += chalk.gray(`\n${error.stderr}`);
+        errorMessage += styleText("gray", `\n${error.stderr}`);
       } else if (error.message) {
-        errorMessage += chalk.gray(`\n${error.message}`);
+        errorMessage += styleText("gray", `\n${error.message}`);
       }
       throw new CommandError(errorMessage);
     }

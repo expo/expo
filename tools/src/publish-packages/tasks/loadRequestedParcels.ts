@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Changelogs from '../../Changelogs';
 import Git from '../../Git';
@@ -9,7 +9,6 @@ import { PackagesGraph, PackagesGraphNode } from '../../packages-graph';
 import { getMinReleaseType, getPackageGitLogsAsync } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
-const { green } = chalk;
 const parcelsCache = new Map<PackagesGraphNode, Parcel>();
 
 /**
@@ -38,7 +37,9 @@ export const loadRequestedParcels = new Task<TaskArgs>(
     // Verify that provided package names are valid.
     for (const packageName of packageNames) {
       if (!allPackagesObj[packageName]) {
-        throw new Error(`Package with provided name ${green(packageName)} does not exist.`);
+        throw new Error(
+          `Package with provided name ${styleText('green', packageName)} does not exist.`
+        );
       }
     }
 

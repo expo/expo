@@ -1,6 +1,6 @@
 import JsonFile from '@expo/json-file';
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import path from 'path';
 import semver from 'semver';
 
@@ -13,8 +13,6 @@ import { promptOtp, withOtpRetry } from '../../NpmOtp';
 import { Task } from '../../TasksRunner';
 import { sleepAsync } from '../../Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { green, cyan, yellow } = chalk;
 
 /**
  * Publishes all packages that have been selected to publish.
@@ -44,7 +42,7 @@ export const publishPackages = new Task<TaskArgs>(
 
       logger.log(
         '  ',
-        `${green(pkg.packageName)} version ${cyan(releaseVersion)} as ${yellow(options.tag)}`
+        `${styleText('green', pkg.packageName)} version ${styleText('cyan', releaseVersion)} as ${styleText('yellow', options.tag)}`
       );
 
       // Update `gitHead` property so it will be available to read using `npm view --json`.
@@ -69,7 +67,10 @@ export const publishPackages = new Task<TaskArgs>(
         // Assign SDK tag when package is a template
         if (pkg.isTemplate() && !options.canary) {
           const sdkTag = `sdk-${semver.major(releaseVersion)}`;
-          logger.log('  ', `Assigning ${yellow(sdkTag)} tag to ${green(pkg.packageName)}`);
+          logger.log(
+            '  ',
+            `Assigning ${styleText('yellow', sdkTag)} tag to ${styleText('green', pkg.packageName)}`
+          );
           if (!options.dry) {
             await sleepAsync(1000); // wait for npm to process the package
             await withOtpRetry(() => Npm.addTagAsync(pkg.packageName, releaseVersion, sdkTag));

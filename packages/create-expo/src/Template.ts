@@ -2,9 +2,9 @@ import type { ExpoConfig } from '@expo/config';
 import type { JSONObject } from '@expo/json-file';
 import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
-import chalk from 'chalk';
 import fs from 'fs';
 import { glob } from 'glob';
+import { styleText } from 'node:util';
 import ora from 'ora';
 import path from 'path';
 
@@ -449,7 +449,7 @@ export function logProjectReady({
   cdPath: string;
   packageManager: PackageManagerName;
 }) {
-  console.log(chalk.bold(`✅ Your project is ready!`));
+  console.log(styleText('bold', `✅ Your project is ready!`));
   console.log();
 
   // empty string if project was created in current directory
@@ -458,22 +458,22 @@ export function logProjectReady({
       `To run your project, navigate to the directory and run one of the following ${packageManager} commands.`
     );
     console.log();
-    console.log(`- ${chalk.bold('cd ' + cdPath)}`);
+    console.log(`- ${styleText('bold', 'cd ' + cdPath)}`);
   } else {
     console.log(`To run your project, run one of the following ${packageManager} commands.`);
     console.log();
   }
 
-  console.log(`- ${chalk.bold(formatRunCommand(packageManager, 'android'))}`);
+  console.log(`- ${styleText('bold', formatRunCommand(packageManager, 'android'))}`);
 
   let macOSComment = '';
   if (!isMacOS) {
     macOSComment =
       ' # you need to use macOS to build the iOS project - use the Expo app if you need to do iOS development without a Mac';
   }
-  console.log(`- ${chalk.bold(formatRunCommand(packageManager, 'ios'))}${macOSComment}`);
+  console.log(`- ${styleText('bold', formatRunCommand(packageManager, 'ios'))}${macOSComment}`);
 
-  console.log(`- ${chalk.bold(formatRunCommand(packageManager, 'web'))}`);
+  console.log(`- ${styleText('bold', formatRunCommand(packageManager, 'web'))}`);
 }
 
 export async function installPodsAsync(projectRoot: string) {
@@ -497,7 +497,8 @@ export async function installPodsAsync(projectRoot: string) {
     } catch (e: any) {
       step.stopAndPersist({
         symbol: '⚠️ ',
-        text: chalk.red(
+        text: styleText(
+          'red',
           'Unable to install the CocoaPods CLI. Continuing with initializing the project, you can install CocoaPods afterwards.'
         ),
       });
@@ -515,7 +516,8 @@ export async function installPodsAsync(projectRoot: string) {
   } catch (e: any) {
     step.stopAndPersist({
       symbol: '⚠️ ',
-      text: chalk.red(
+      text: styleText(
+        'red',
         'Something went wrong running `pod install` in the `ios` directory. Continuing with initializing the project, you can debug this afterwards.'
       ),
     });
@@ -529,7 +531,7 @@ export async function installPodsAsync(projectRoot: string) {
 export function logNewSection(title: string) {
   const disabled = env.CI || env.EXPO_DEBUG;
   const spinner = ora({
-    text: chalk.bold(title),
+    text: styleText('bold', title),
     // Ensure our non-interactive mode emulates CI mode.
     isEnabled: !disabled,
     // In non-interactive mode, send the stream to stdout so it prevents looking like an error.

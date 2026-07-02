@@ -1,6 +1,6 @@
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -8,8 +8,6 @@ import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-
-const { green, yellow } = chalk;
 
 const BARE_EXPO_PACKAGE_JSON = path.join(EXPO_DIR, 'apps/bare-expo/package.json');
 
@@ -66,7 +64,7 @@ export const ensureBareExpoDependencies = new Task<TaskArgs>(
 
     logger.info('\n📦 Adding missing native packages to bare-expo...');
     for (const name of missing) {
-      logger.log('  ', `${green('+')} ${yellow(name)}`);
+      logger.log('  ', `${styleText('green', '+')} ${styleText('yellow', name)}`);
       dependencies[name] = 'workspace:*';
     }
 

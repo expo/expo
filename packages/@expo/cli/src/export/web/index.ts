@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+
+import { styleText } from 'node:util';
 
 import type { Command } from '../../index';
 import { assertArgs, getProjectRoot, printHelp } from '../../utils/args';
@@ -22,9 +23,9 @@ export const expoExportWeb: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `(Deprecated) Bundle the static files of the web app with Webpack for hosting on a web server`,
-      chalk`npx expo export:web {dim <dir>}`,
+      `npx expo export:web ${styleText('dim', `<dir>`)}`,
       [
-        chalk`<dir>                         Directory of the Expo project. {dim Default: Current working directory}`,
+        `<dir>                         Directory of the Expo project. ${styleText('dim', `Default: Current working directory`)}`,
         `--dev                         Bundle in development mode`,
         `-c, --clear                   Clear the bundler cache`,
         `-h, --help                    Usage info`,

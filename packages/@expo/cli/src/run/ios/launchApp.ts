@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import path from 'path';
 
 import * as XcodeBuild from './XcodeBuild';
@@ -30,7 +30,7 @@ export async function launchAppAsync(
 ) {
   appId ??= (await profile(getLaunchInfoForBinaryAsync)(binaryPath)).bundleId;
 
-  Log.log(chalk.gray`\u203A Installing ${binaryPath}`);
+  Log.log(styleText("gray", `\u203A Installing ${binaryPath}`));
   if (!props.isSimulator) {
     if (props.device.osType === 'macOS') {
       await launchBinaryOnMacAsync(appId, binaryPath);
@@ -47,12 +47,12 @@ export async function launchAppAsync(
     return;
   }
 
-  XcodeBuild.logPrettyItem(chalk`{bold Installing} on ${props.device.name}`);
+  XcodeBuild.logPrettyItem(`${styleText('bold', `Installing`)} on ${props.device.name}`);
 
   const device = await AppleDeviceManager.resolveAsync({ device: props.device });
   await device.installAppAsync(binaryPath);
 
-  XcodeBuild.logPrettyItem(chalk`{bold Opening} on ${device.name} {dim (${appId})}`);
+  XcodeBuild.logPrettyItem(`${styleText('bold', `Opening`)} on ${device.name} ${styleText('dim', `(${appId})`)}`);
 
   if (props.shouldStartBundler) {
     await SimulatorLogStreamer.getStreamer(device.device, {

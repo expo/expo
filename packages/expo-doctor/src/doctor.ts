@@ -1,5 +1,5 @@
 import { load as loadEnv } from '@expo/env';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
 import { resolveChecksInScope } from './utils/checkResolver';
@@ -41,7 +41,7 @@ export async function printCheckResultSummaryOnComplete(
   // but outputting these just in time will make the EAS Build log timestamps for each line representative of the execution time.
   if (showVerboseTestResults) {
     Log.log(
-      `${job.result?.isSuccessful ? chalk.green('✔') : chalk.red('✖')} ${job.check.description}` +
+      `${job.result?.isSuccessful ? styleText('green', '✔') : styleText('red', '✖')} ${job.check.description}` +
         (env.EXPO_DEBUG ? ` (${formatMilliseconds(job.duration)})` : '')
     );
   }
@@ -73,16 +73,16 @@ export async function printFailedCheckIssueAndAdvice(job: DoctorCheckRunnerJob) 
     return;
   }
 
-  Log.log(chalk.red(`✖ ${job.check.description}`));
+  Log.log(styleText('red', `✖ ${job.check.description}`));
 
   if (result.issues.length) {
     for (const issue of result.issues) {
-      Log.log(chalk.yellow(issue));
+      Log.log(styleText('yellow', issue));
     }
     if (result.advice.length) {
-      Log.log(chalk.green(`Advice:`));
+      Log.log(styleText('green', `Advice:`));
       for (const advice of result.advice) {
-        Log.log(chalk.green(`${advice}`));
+        Log.log(styleText('green', `${advice}`));
       }
     }
     Log.log();
@@ -147,7 +147,10 @@ export async function actionAsync(projectRoot: string, showVerboseTestResults: b
     // expo-doctor relies on versioned CLI, which is only available for 44+
     if (ltSdkVersion(projectConfig.exp, '46.0.0')) {
       Log.exit(
-        chalk.red(`expo-doctor supports Expo SDK 46+. Use 'expo-cli doctor' for SDK 45 and lower.`)
+        styleText(
+          'red',
+          `expo-doctor supports Expo SDK 46+. Use 'expo-cli doctor' for SDK 45 and lower.`
+        )
       );
       return;
     }
@@ -173,7 +176,8 @@ export async function actionAsync(projectRoot: string, showVerboseTestResults: b
     if (failedJobs.length) {
       if (failedJobs.some((job) => job.result.issues?.length)) {
         Log.log(
-          chalk.red(
+          styleText(
+            'red',
             `${checksInScope.length - failedJobs.length}/${checksInScope.length} checks passed. ${failedJobs.length} checks failed. Possible issues detected:`
           )
         );
@@ -195,13 +199,15 @@ export async function actionAsync(projectRoot: string, showVerboseTestResults: b
         }
       }
       Log.exit(
-        chalk.red(
+        styleText(
+          'red',
           `${failedJobs.length} ${failedJobs.length === 1 ? 'check' : 'checks'} failed, indicating possible issues with the project.`
         )
       );
     } else {
       Log.log(
-        chalk.green(
+        styleText(
+          'green',
           `${checksInScope.length}/${checksInScope.length} checks passed. No issues detected!`
         )
       );

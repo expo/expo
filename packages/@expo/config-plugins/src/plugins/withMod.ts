@@ -1,7 +1,7 @@
 import type { ExpoConfig } from '@expo/config-types';
 import type { JSONObject } from '@expo/json-file';
-import chalk from 'chalk';
 import { boolish } from 'getenv';
+import { styleText } from 'node:util';
 
 import type { ExportedConfig, ExportedConfigWithProps, Mod, ModPlatform } from '../Plugin.types';
 import { PluginError } from '../utils/errors';
@@ -80,7 +80,7 @@ export function withBaseMod<T>(
     const stack = new Error().stack;
     // Format the stack trace to create the debug log
     debugTrace = getDebugPluginStackFromStackTrace(stack);
-    const modStack = chalk.bold(`${platform}.${mod}`);
+    const modStack = styleText('bold', `${platform}.${mod}`);
 
     debugTrace = `${modStack}: ${debugTrace}`;
   }
@@ -179,18 +179,18 @@ function getDebugPluginStackFromStackTrace(stacktrace?: string): string {
       .map((pluginName, index) => {
         // Base mods indicate a logical section.
         if (pluginName.includes('BaseMod')) {
-          pluginName = chalk.bold(pluginName);
+          pluginName = styleText('bold', pluginName);
         }
         // highlight dangerous mods
         if (pluginName.toLowerCase().includes('dangerous')) {
-          pluginName = chalk.red(pluginName);
+          pluginName = styleText('red', pluginName);
         }
 
         if (index === 0) {
-          return chalk.blue(pluginName);
+          return styleText('blue', pluginName);
         } else if (commonPlugins.includes(pluginName)) {
           // Common mod names often clutter up the logs, dim them out
-          return chalk.dim(pluginName);
+          return styleText('dim', pluginName);
         }
         return pluginName;
       })

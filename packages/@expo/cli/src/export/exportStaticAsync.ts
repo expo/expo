@@ -7,11 +7,11 @@
 import type { ExpoConfig } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
-import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import type { RoutesManifest } from 'expo-server/private';
+import { styleText } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
@@ -690,16 +690,22 @@ function warnPossibleInvalidExportType(appDir: string) {
   if (apiRoutes.length) {
     // TODO: Allow API Routes for native-only.
     Log.warn(
-      chalk.yellow`Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
-        .map((v) => path.relative(appDir, v))
-        .join(', ')}`
+      styleText(
+        'yellow',
+        `Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
+          .map((v) => path.relative(appDir, v))
+          .join(', ')}`
+      )
     );
   }
 
   const middlewareFile = getMiddlewareForDirectory(appDir);
   if (middlewareFile) {
     Log.warn(
-      chalk.yellow`Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`
+      styleText(
+        'yellow',
+        `Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`
+      )
     );
   }
 }

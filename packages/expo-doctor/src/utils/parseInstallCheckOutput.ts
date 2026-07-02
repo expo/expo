@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 /**
@@ -78,24 +78,20 @@ export function parseInstallCheckOutput(
       const formatSection = (
         title: string,
         rws: Row[],
-        color: (s: string) => string,
+        color: Parameters<typeof styleText>[0],
         icon: string
       ) => {
         if (!rws.length) return '';
         const sectionLines: string[] = [];
 
-        sectionLines.push(chalk.bold(color(`${icon} ${title}`)));
+        sectionLines.push(styleText('bold', styleText(color, `${icon} ${title}`)));
         sectionLines.push(
-          chalk(
-            `${pad('package', nameWidth)}${pad('expected', expWidth)}${pad('found', foundWidth)}`
-          )
+          `${pad('package', nameWidth)}${pad('expected', expWidth)}${pad('found', foundWidth)}`
         );
         sectionLines.push(
           ...rws.map(
             (r) =>
-              `${pad(r.name, nameWidth)}${chalk.green(pad(r.expected, expWidth))}${chalk.red(
-                pad(r.found, foundWidth)
-              )}`
+              `${pad(r.name, nameWidth)}${styleText('green', pad(r.expected, expWidth))}${styleText('red', pad(r.found, foundWidth))}`
           )
         );
         sectionLines.push('');
@@ -109,10 +105,10 @@ export function parseInstallCheckOutput(
             `- ${r.name} → https://github.com/expo/expo/blob/sdk-${projectMajorSdkVersion}/packages/${r.name}/CHANGELOG.md`
         );
       const sections = [
-        formatSection('Major version mismatches', major, chalk.yellow, '❗'),
-        formatSection('Minor version mismatches', minor, chalk.yellow, '⚠️'),
-        formatSection('Patch version mismatches', patch, chalk.yellow, '🔧'),
-        formatSection('Other/prerelease mismatches', unknown, chalk.magenta, '➿'),
+        formatSection('Major version mismatches', major, 'yellow', '❗'),
+        formatSection('Minor version mismatches', minor, 'yellow', '⚠️'),
+        formatSection('Patch version mismatches', patch, 'yellow', '🔧'),
+        formatSection('Other/prerelease mismatches', unknown, 'magenta', '➿'),
       ].filter(Boolean);
 
       const body = sections
@@ -125,10 +121,11 @@ export function parseInstallCheckOutput(
         .join('\n');
 
       const changelogs = changelogLines.length
-        ? chalk.bold('Changelogs:\n') + chalk.dim.blue(changelogLines.join('\n'))
+        ? styleText('bold', 'Changelogs:\n') + styleText(['dim', 'blue'], changelogLines.join('\n'))
         : '';
 
-      const footer = chalk.bold(
+      const footer = styleText(
+        'bold',
         `\n${rows.length} package${rows.length > 1 ? 's' : ''} out of date.`
       );
 

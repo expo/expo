@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import { execSync } from 'child_process';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import * as Log from '../../../log';
@@ -130,13 +130,16 @@ export class XcodePrerequisite extends Prerequisite {
           Log.error(
             [
               '',
-              chalk.bold('Xcode has not been fully setup for Apple development yet.'),
+              styleText('bold', 'Xcode has not been fully setup for Apple development yet.'),
               'Download at: https://developer.apple.com/xcode/',
               'or in the App Store.',
               '',
               'After downloading Xcode, run the following two commands in your terminal:',
-              chalk.cyan('  sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer'),
-              chalk.cyan('  sudo xcodebuild -runFirstLaunch'),
+              styleText(
+                'cyan',
+                '  sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer'
+              ),
+              styleText('cyan', '  sudo xcodebuild -runFirstLaunch'),
               '',
               'Then you can re-run Expo CLI. Alternatively, you can build apps in the cloud with EAS CLI, or preview using the Expo Go app on a physical device.',
               '',

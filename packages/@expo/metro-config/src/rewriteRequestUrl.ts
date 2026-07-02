@@ -2,8 +2,8 @@
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { resolveEntryPoint, getMetroServerRoot } from '@expo/config/paths';
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 const debug = require('debug')('expo:metro:config:rewriteRequestUrl');
@@ -85,7 +85,7 @@ export function getRewriteRequestUrl(projectRoot: string) {
 
       if (!entry) {
         throw new Error(
-          chalk`The project entry file could not be resolved (platform: ${platform}, root: ${projectRoot}). Define it in the {bold package.json} "main" field.`
+          `The project entry file could not be resolved (platform: ${platform}, root: ${projectRoot}). Define it in the ${styleText('bold', `package.json`)} "main" field.`
         );
       }
 

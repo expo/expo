@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import checkForUpdate from 'update-check';
 
 export default async function shouldUpdate(): Promise<void> {
@@ -11,8 +11,12 @@ export default async function shouldUpdate(): Promise<void> {
     if (res && res.latest) {
       const _packageJson = packageJson();
       console.log();
-      console.log(chalk.yellow.bold(`A new version of \`${_packageJson.name}\` is available`));
-      console.log('You can update by running: ' + chalk.cyan(`npm i -g ${_packageJson.name}`));
+      console.log(
+        styleText(['yellow', 'bold'], `A new version of \`${_packageJson.name}\` is available`)
+      );
+      console.log(
+        'You can update by running: ' + styleText('cyan', `npm i -g ${_packageJson.name}`)
+      );
       console.log();
     }
   } catch {

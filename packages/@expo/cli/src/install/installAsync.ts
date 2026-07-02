@@ -1,6 +1,6 @@
 import { getConfig, getPackageJson } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import * as Log from '../log';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
@@ -133,9 +133,9 @@ export async function installPackagesAsync(
   });
 
   Log.log(
-    chalk`\u203A Installing ${
+    `\u203A Installing ${
       versioning.messages.length ? versioning.messages.join(' and ') + ' ' : ''
-    }using {bold ${packageManager.name}}`
+    }using ${styleText('bold', packageManager.name)}`
   );
 
   if (versioning.excludedNativeModules.length) {
@@ -148,14 +148,14 @@ export async function installPackagesAsync(
 
     if (alreadyExcluded.length) {
       Log.log(
-        chalk`\u203A Using ${joinWithCommasAnd(
+        `\u203A Using ${joinWithCommasAnd(
           alreadyExcluded.map(
             ({ bundledNativeVersion, name, specifiedVersion }) =>
               `${specifiedVersion || 'latest'} instead of  ${bundledNativeVersion} for ${name}`
           )
         )} because ${
           alreadyExcluded.length > 1 ? 'they are' : 'it is'
-        } listed in {bold expo.install.exclude} in package.json. ${learnMore(
+        } listed in ${styleText('bold', `expo.install.exclude`)} in package.json. ${learnMore(
           'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
         )}`
       );
@@ -163,14 +163,14 @@ export async function installPackagesAsync(
 
     if (specifiedExactVersion.length) {
       Log.log(
-        chalk`\u203A Using ${joinWithCommasAnd(
+        `\u203A Using ${joinWithCommasAnd(
           specifiedExactVersion.map(
             ({ bundledNativeVersion, name, specifiedVersion }) =>
               `${specifiedVersion} instead of ${bundledNativeVersion} for ${name}`
           )
         )} because ${
           specifiedExactVersion.length > 1 ? 'these versions' : 'this version'
-        } was explicitly provided. Packages excluded from dependency validation should be listed in {bold expo.install.exclude} in package.json. ${learnMore(
+        } was explicitly provided. Packages excluded from dependency validation should be listed in ${styleText('bold', `expo.install.exclude`)} in package.json. ${learnMore(
           'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
         )}`
       );

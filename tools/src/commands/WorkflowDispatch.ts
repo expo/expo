@@ -1,6 +1,6 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import open from 'open';
 
 import Git from '../Git';
@@ -50,9 +50,7 @@ export default (program: Command) => {
       false
     )
     .description(
-      `Dispatches an event that triggers a workflow on GitHub Actions. Requires ${chalk.magenta(
-        'GITHUB_TOKEN'
-      )} env variable to be set.`
+      `Dispatches an event that triggers a workflow on GitHub Actions. Requires ${styleText('magenta', 'GITHUB_TOKEN')} env variable to be set.`
     )
     .asyncAction(main);
 };
@@ -76,7 +74,7 @@ async function main(workflowSlug: string | undefined, options: CommandOptions) {
   // We need a confirmation to trigger a custom workflow.
   if (!process.env.CI && workflow.inputs && !(await confirmTriggeringWorkflowAsync(workflow))) {
     logger.warn(
-      `\n⚠️  Triggering custom workflow ${chalk.green(workflow.slug)} has been canceled.`
+      `\n⚠️  Triggering custom workflow ${styleText('green', workflow.slug)} has been canceled.`
     );
     return;
   }
@@ -109,12 +107,14 @@ async function main(workflowSlug: string | undefined, options: CommandOptions) {
       if (options.open && !process.env.CI) {
         await open(url);
       }
-      logger.log(`🧭 You can open ${chalk.magenta(url)} to track the new workflow run.`);
+      logger.log(`🧭 You can open ${styleText('magenta', url)} to track the new workflow run.`);
     } else {
       logger.warn(`⚠️  Cannot get URL for job: `, jobs[0]);
     }
   } else {
-    logger.warn(`⚠️  Cannot find any triggered jobs for ${chalk.green(workflow.slug)} workflow`);
+    logger.warn(
+      `⚠️  Cannot find any triggered jobs for ${styleText('green', workflow.slug)} workflow`
+    );
   }
 }
 
@@ -176,7 +176,7 @@ async function promptWorkflowAsync(workflows: Workflow[]): Promise<Workflow> {
       message: 'Which workflow do you want to dispatch?',
       choices: workflows.map((workflow) => {
         return {
-          name: `${chalk.yellow(workflow.name)} (${chalk.green.italic(workflow.slug)})`,
+          name: `${styleText('yellow', workflow.name)} (${styleText(['green', 'italic'], workflow.slug)})`,
           value: workflow,
         };
       }),
@@ -191,7 +191,7 @@ async function promptWorkflowAsync(workflows: Workflow[]): Promise<Workflow> {
  */
 async function confirmTriggeringWorkflowAsync(workflow: Workflow): Promise<boolean> {
   logger.info(
-    `\n👉 I'll trigger ${chalk.green(workflow.baseSlug)} workflow extended by the following input:`
+    `\n👉 I'll trigger ${styleText('green', workflow.baseSlug)} workflow extended by the following input:`
   );
   logger.log(workflow.inputs, '\n');
 

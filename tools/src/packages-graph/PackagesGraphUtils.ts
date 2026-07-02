@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { EOL } from 'os';
 
 import PackagesGraph from './PackagesGraph';
@@ -26,17 +26,17 @@ export function printGraph(
     const name = formatNodeName(node.name, kind, level);
 
     if (visited[node.name] === true) {
-      process.stdout.write(chalk.dim(`${name} ...`) + EOL);
+      process.stdout.write(styleText('dim', `${name} ...`) + EOL);
       return;
     }
 
     visited[node.name] = true;
 
-    process.stdout.write(`${name} ${chalk.cyan(version)}` + EOL);
+    process.stdout.write(`${name} ${styleText('cyan', version)}` + EOL);
 
     if (edges.length === 0 && level === 0) {
       // It has no dependencies, but let's explicitly show that for the origin nodes.
-      process.stdout.write(edgePointer(true, false, false) + chalk.dim('none') + EOL);
+      process.stdout.write(edgePointer(true, false, false) + styleText('dim', 'none') + EOL);
       return;
     }
     for (let i = 0; i < edges.length; i++) {
@@ -45,7 +45,7 @@ export function printGraph(
       const nextEdges = edge.destination.getOutgoingEdgesOfKinds(kinds);
       const hasMore = nextEdges.length > 0 && visited[edge.destination.name] !== true;
 
-      process.stdout.write(chalk.gray(prefix) + edgePointer(isLast, hasMore, edge.isCyclic));
+      process.stdout.write(styleText('gray', prefix) + edgePointer(isLast, hasMore, edge.isCyclic));
 
       visitNodeEdges({
         node: edge.destination,
@@ -82,14 +82,14 @@ export function printNodeDependents(
   const nodes = node.getAllDependents(kinds);
 
   if (nodes.length === 0) {
-    console.log(`${chalk.bold(node.name)} has no dependents`);
+    console.log(`${styleText('bold', node.name)} has no dependents`);
     return;
   }
 
-  console.log(`All dependents of the ${chalk.bold(node.name)} package:`);
+  console.log(`All dependents of the ${styleText('bold', node.name)} package:`);
 
   for (const node of nodes) {
-    console.log(`- ${chalk.bold(node.name)}`);
+    console.log(`- ${styleText('bold', node.name)}`);
   }
 }
 
@@ -97,10 +97,10 @@ function edgePointer(isLast: boolean, hasMore: boolean, isCyclic: boolean): stri
   const rawPointer = [
     isLast ? '└─' : '├─',
     hasMore ? '┬─' : '──',
-    isCyclic ? chalk.red('∞') : '',
+    isCyclic ? styleText('red', '∞') : '',
     ' ',
   ].join('');
-  return chalk.gray(rawPointer);
+  return styleText('gray', rawPointer);
 }
 
 function nodeIndent(isLast: boolean): string {
@@ -109,16 +109,16 @@ function nodeIndent(isLast: boolean): string {
 
 function formatNodeName(name: string, kind: DependencyKind, level: number): string {
   if (level === 0) {
-    return chalk.bold(name);
+    return styleText('bold', name);
   }
   switch (kind) {
     case DependencyKind.Normal:
-      return chalk.green(name);
+      return styleText('green', name);
     case DependencyKind.Dev:
-      return chalk.yellow(name);
+      return styleText('yellow', name);
     case DependencyKind.Peer:
-      return chalk.magenta(name);
+      return styleText('magenta', name);
     case DependencyKind.Optional:
-      return chalk.gray(name);
+      return styleText('gray', name);
   }
 }

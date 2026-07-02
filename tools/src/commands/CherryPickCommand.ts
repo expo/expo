@@ -1,6 +1,6 @@
 import { Command } from '@expo/commander';
-import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import Git, { GitLog } from '../Git';
@@ -71,9 +71,7 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
   }
 
   logger.info(
-    `\nLooking for commits to cherry-pick from ${chalk.bold(chalk.blue(source))} to ${chalk.bold(
-      chalk.blue(destination)
-    )}...\n`
+    `\nLooking for commits to cherry-pick from ${styleText(['bold', 'blue'], source)} to ${styleText(['bold', 'blue'], destination)}...\n`
   );
 
   const packagePaths = packageNames.map((packageName) => path.join('.', 'packages', packageName));
@@ -128,14 +126,14 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
     });
 
   if (commitsBeforeStartDate.length !== 0) {
-    logger.log(chalk.bold(chalk.red('Ignoring the following commits from before the start date:')));
+    logger.log(
+      styleText(['bold', 'red'], 'Ignoring the following commits from before the start date:')
+    );
     logger.log(
       commitsBeforeStartDate
         .map(
           (commit) =>
-            ` ❌ ${chalk.red(commit.hash.slice(0, 10))} ${commit.authorDate} ${chalk.magenta(
-              sanitizeTerminalOutput(commit.authorName)
-            )} ${sanitizeTerminalOutput(commit.title)}`
+            ` ❌ ${styleText('red', commit.hash.slice(0, 10))} ${commit.authorDate} ${styleText('magenta', sanitizeTerminalOutput(commit.authorName))} ${sanitizeTerminalOutput(commit.title)}`
         )
         .join('\n')
     );
@@ -151,15 +149,11 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
     {
       type: 'checkbox',
       name: 'commitsToCherryPick',
-      message: `Choose which commits to cherry-pick from ${chalk.blue(source)} to ${chalk.blue(
-        destination
-      )}\n  ${chalk.green('●')} selected  ○ unselected\n`,
+      message: `Choose which commits to cherry-pick from ${styleText('blue', source)} to ${styleText('blue', destination)}\n  ${styleText('green', '●')} selected  ○ unselected\n`,
       choices: candidateCommits.map((commit) => ({
         value: commit.hash,
         short: commit.hash,
-        name: `${chalk.yellow(commit.hash.slice(0, 10))} ${commit.authorDate} ${chalk.magenta(
-          sanitizeTerminalOutput(commit.authorName)
-        )} ${sanitizeTerminalOutput(commit.title)}`,
+        name: `${styleText('yellow', commit.hash.slice(0, 10))} ${commit.authorDate} ${styleText('magenta', sanitizeTerminalOutput(commit.authorName))} ${sanitizeTerminalOutput(commit.title)}`,
       })),
       default: candidateCommits.map((commit) => commit.hash),
       pageSize: Math.min(candidateCommits.length, (process.stdout.rows || 100) - 4),
@@ -170,9 +164,9 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
 
   if (destination !== (await Git.getCurrentBranchNameAsync())) {
     if (options.dry) {
-      logger.log(chalk.bold(chalk.yellow(`git checkout ${destination}`)));
+      logger.log(styleText(['bold', 'yellow'], `git checkout ${destination}`));
     } else {
-      logger.info(`Checking out ${chalk.bold(chalk.blue(destination))} branch...`);
+      logger.info(`Checking out ${styleText(['bold', 'blue'], destination)} branch...`);
       await Git.checkoutAsync({
         ref: destination,
       });
@@ -185,9 +179,9 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
   );
   const commitHashes = commitsToCherryPickOrdered.map((commit) => commit.hash);
   if (options.dry) {
-    logger.log(chalk.bold(chalk.yellow(`git cherry-pick ${commitHashes.join(' ')}`)));
+    logger.log(styleText(['bold', 'yellow'], `git cherry-pick ${commitHashes.join(' ')}`));
   } else {
-    logger.info(`Running ${chalk.yellow(`git cherry-pick ${commitHashes.join(' ')}`)}`);
+    logger.info(`Running ${styleText('yellow', `git cherry-pick ${commitHashes.join(' ')}`)}`);
     try {
       // pipe output to current process stdio to emulate user running this command directly
       await Git.cherryPickAsync(commitHashes, { inheritStdio: true });

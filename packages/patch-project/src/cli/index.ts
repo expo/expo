@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import arg from 'arg';
-import chalk from 'chalk';
 import type { ModPlatform } from 'expo/config-plugins';
 import { existsSync } from 'fs';
 import path from 'path';
+import { styleText } from 'node:util';
 
 import * as logger from './logger';
 import { patchProjectAsync } from './patchProjectAsync';
@@ -23,12 +23,12 @@ import { patchProjectAsync } from './patchProjectAsync';
   if (args['--help']) {
     printHelp(
       `(Experimental) Generate patch files for iOS and Android native projects to persist changes made manually after prebuild`,
-      chalk`npx patch-project {dim <dir>}`,
+      `npx patch-project ${styleText('dim', '<dir>')}`,
       [
-        chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
+        `<dir>                                    Directory of the Expo project. ${styleText('dim', 'Default: Current working directory')}`,
         `--clean                                  Delete the native folders after the conversion`,
         `--template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo`,
-        chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,
+        `-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. ${styleText('dim', 'Default: all')}`,
         `-h, --help                               Usage info`,
       ].join('\n')
     );
@@ -61,14 +61,14 @@ process.on('SIGTERM', () => process.exit(0));
 
 function printHelp(info: string, usage: string, options: string, extra: string = ''): never {
   logger.exit(
-    chalk`
-  {bold Info}
+    `
+  ${styleText('bold', 'Info')}
     ${info}
 
-  {bold Usage}
-    {dim $} ${usage}
+  ${styleText('bold', 'Usage')}
+    ${styleText('dim', '$')} ${usage}
 
-  {bold Options}
+  ${styleText('bold', 'Options')}
     ${options.split('\n').join('\n    ')}
 ` + extra,
     0

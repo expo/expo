@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { diffFingerprints } from '../../../build/index';
 import { Command } from '../cli';
@@ -20,12 +20,12 @@ export const diffFingerprintsAsync: Command = async (argv) => {
 
   if (args['--help']) {
     Log.exit(
-      chalk`
-{bold Description}
+      `
+${styleText('bold', 'Description')}
 Diff two fingerprints
 
-{bold Usage}
-  {dim $} npx @expo/fingerprint fingerprint:diff <fingerprintFile1> <fingerprintFile2>
+${styleText('bold', 'Usage')}
+  ${styleText('dim', '$')} npx @expo/fingerprint fingerprint:diff <fingerprintFile1> <fingerprintFile2>
 
   Options
   -h, --help                           Output usage information

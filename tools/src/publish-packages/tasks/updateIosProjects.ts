@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -8,8 +8,6 @@ import { Task } from '../../TasksRunner';
 import { filterAsync } from '../../Utils';
 import * as Workspace from '../../Workspace';
 import { Parcel, TaskArgs } from '../types';
-
-const { green } = chalk;
 
 /**
  * Updates pods in Expo client's and bare-expo.
@@ -40,11 +38,11 @@ export const updateIosProjects = new Task<TaskArgs>(
           .filter(Boolean) as string[];
 
         if (podspecNames.length === 0) {
-          logger.log('  ', `${green(nativeApp.packageName)}: No pods to update.`);
+          logger.log('  ', `${styleText('green', nativeApp.packageName)}: No pods to update.`);
           return;
         }
 
-        logger.log('  ', `${green(nativeApp.packageName)}: Reinstalling pods...`);
+        logger.log('  ', `${styleText('green', nativeApp.packageName)}: Reinstalling pods...`);
 
         // Use `pod update`: we just bumped these pods' versions, and precompiled modules
         // register them as `:podspec =>` sources, which trip CocoaPods' strict version-drift check on
@@ -56,7 +54,7 @@ export const updateIosProjects = new Task<TaskArgs>(
           });
         } catch (e) {
           logger.debug(e.stderr || e.stdout);
-          logger.error('🍎 Failed to install pods in', green(nativeApp.packageName));
+          logger.error('🍎 Failed to install pods in', styleText('green', nativeApp.packageName));
           logger.error('🍎 Please review the output above and fix it once the publish completes');
         }
       })

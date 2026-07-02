@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import * as Directories from '../Directories';
@@ -22,7 +22,9 @@ type TestType = (typeof testTypes)[number];
 
 function consoleErrorOutput(output: string, label: string, colorifyLine: (string) => string): void {
   const lines = output.trim().split(/\r\n?|\n/g);
-  console.error(lines.map((line) => `${chalk.gray(label)} ${colorifyLine(line)}`).join('\n'));
+  console.error(
+    lines.map((line) => `${styleText('gray', label)} ${colorifyLine(line)}`).join('\n')
+  );
 }
 
 export async function androidNativeUnitTests({
@@ -67,9 +69,9 @@ export async function androidNativeUnitTests({
     return includesTests;
   });
 
-  console.log(chalk.green('Packages to test: '));
+  console.log(styleText('green', 'Packages to test: '));
   androidPackages.forEach((pkg) => {
-    console.log(chalk.yellow(pkg.packageSlug));
+    console.log(styleText('yellow', pkg.packageSlug));
   });
 
   if (type === 'instrumented') {
@@ -96,22 +98,22 @@ export async function androidNativeUnitTests({
     const spotlessApplyCommand = 'spotlessApply';
     const spotlessCheckCommand = 'spotlessCheck';
     try {
-      console.log(chalk.green('Running spotlessCheck...'));
+      console.log(styleText('green', 'Running spotlessCheck...'));
       await runGradlew(androidPackages, spotlessCheckCommand, BARE_EXPO_DIR);
-      console.log(chalk.green('spotlessCheck succeeded'));
+      console.log(styleText('green', 'spotlessCheck succeeded'));
     } catch (e: any) {
       console.log(
-        chalk.yellow(`spotlessCheck failed: ${e}. Attempting to fix with spotlessApply...`)
+        styleText('yellow', `spotlessCheck failed: ${e}. Attempting to fix with spotlessApply...`)
       );
       await runGradlew(androidPackages, spotlessApplyCommand, BARE_EXPO_DIR);
-      chalk.green('spotlessApply succeeded');
+      styleText('green', 'spotlessApply succeeded');
     }
   } else {
     const testCommand = 'testDebugUnitTest';
     await runGradlew(androidPackages, testCommand, BARE_EXPO_DIR);
   }
 
-  console.log(chalk.green('Finished android unit tests successfully.'));
+  console.log(styleText('green', 'Finished android unit tests successfully.'));
 }
 
 async function runGradlew(packages: Packages.Package[], testCommand: string, cwd: string) {
@@ -131,8 +133,8 @@ async function runGradlew(packages: Packages.Package[], testCommand: string, cwd
     );
   } catch (error) {
     console.error('Failed while executing android unit tests');
-    consoleErrorOutput(error.stdout, 'stdout >', chalk.reset);
-    consoleErrorOutput(error.stderr, 'stderr >', chalk.red);
+    consoleErrorOutput(error.stdout, 'stdout >', (message) => styleText('reset', message));
+    consoleErrorOutput(error.stderr, 'stderr >', (message) => styleText('red', message));
     throw error;
   }
 }

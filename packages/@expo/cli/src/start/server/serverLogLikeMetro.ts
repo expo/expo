@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { INTERNAL_CALLSITES_REGEX } from '@expo/metro-config';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 import * as stackTraceParser from 'stacktrace-parser';
 
@@ -44,10 +44,10 @@ export function logLikeMetro(
   const logFunction = console[level] && level !== 'trace' ? level : 'log';
   const color =
     level === 'error'
-      ? chalk.inverse.red
+      ? (['inverse', 'red'] as const)
       : level === 'warn'
-        ? chalk.inverse.yellow
-        : chalk.inverse.white;
+        ? (['inverse', 'yellow'] as const)
+        : (['inverse', 'white'] as const);
 
   if (level === 'group') {
     groupStack.push(level);
@@ -58,7 +58,7 @@ export function logLikeMetro(
     collapsedGuardTimer = setTimeout(() => {
       if (groupStack.includes('groupCollapsed')) {
         originalLogFunction(
-          chalk.inverse.yellow.bold(' WARN '),
+          styleText(['inverse', 'yellow', 'bold'], ' WARN '),
           'Expected `console.groupEnd` to be called after `console.groupCollapsed`.'
         );
         groupStack.length = 0;
@@ -81,10 +81,12 @@ export function logLikeMetro(
     }
 
     const modePrefix =
-      platform && platform !== 'BRIDGE' && platform !== 'NOBRIDGE' ? chalk.bold`${platform} ` : '';
+      platform && platform !== 'BRIDGE' && platform !== 'NOBRIDGE'
+        ? styleText('bold', `${platform} `)
+        : '';
     originalLogFunction(
       modePrefix +
-        color.bold(` ${logFunction.toUpperCase()} `) +
+        styleText([...color, 'bold'], ` ${logFunction.toUpperCase()} `) +
         ''.padEnd(groupStack.length * 2, ' '),
       ...data
     );
@@ -251,7 +253,9 @@ function formatParsedStackLikeMetro(
         return null;
       }
       // If a file is collapsed, print it with dim styling.
-      const style = isCollapsed ? chalk.dim : chalk.gray;
+      const style = isCollapsed
+        ? (text: string) => styleText('dim', text)
+        : (text: string) => styleText('gray', text);
       // Use the `at` prefix to match Node.js
       let fileName = line.file!;
       if (fileName.startsWith(path.sep)) {

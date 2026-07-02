@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import { logNewSection } from './ora';
@@ -13,6 +13,6 @@ export async function clearNodeModulesAsync(projectRoot: string) {
   // TODO: this is substantially slower, we should find a better alternative to ensuring the modules are installed.
   await fs.promises.rm(path.join(projectRoot, 'node_modules'), { recursive: true, force: true });
   cleanJsDepsStep.succeed(
-    `Cleaned JavaScript dependencies ${chalk.gray(Date.now() - time + 'ms')}`
+    `Cleaned JavaScript dependencies ${styleText('gray', Date.now() - time + 'ms')}`
   );
 }

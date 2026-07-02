@@ -1,5 +1,5 @@
 import { getConfig } from '@expo/config';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { getLogFile, shouldReduceLogs } from '../events';
 import * as Log from '../log';
@@ -77,10 +77,10 @@ export async function startAsync(
   settings: { webOnly?: boolean }
 ) {
   if (!shouldReduceLogs()) {
-    Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+    Log.log(styleText('gray', `Starting project at ${projectRoot}`));
     const logFile = getLogFile();
     if (!isInteractive() && logFile) {
-      Log.log(chalk.gray(`Logs: ${logFile}`));
+      Log.log(styleText('gray', `Logs: ${logFile}`));
     }
   }
 
@@ -153,7 +153,7 @@ export async function startAsync(
         // Print the URL to stdout for tests
         console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: defaultServerUrl })}`);
       }
-      Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
+      Log.log(`Waiting on ${styleText('underline', defaultServerUrl)}`);
       Log.log();
       await printDevToolsPluginCliBannersAsync(devServerManager);
     }
@@ -171,8 +171,8 @@ export async function startAsync(
   // Final note about closing the server.
   const logLocation = settings.webOnly ? 'in the browser console' : 'below';
   Log.log(
-    chalk`Logs for your project will appear ${logLocation}.${
-      isInteractive() ? chalk.dim(` Press Ctrl+C to exit.`) : ''
+    `Logs for your project will appear ${logLocation}.${
+      isInteractive() ? styleText('dim', ` Press Ctrl+C to exit.`) : ''
     }`
   );
 }

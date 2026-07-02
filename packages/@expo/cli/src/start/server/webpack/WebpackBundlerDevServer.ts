@@ -1,8 +1,8 @@
-import chalk from 'chalk';
 import type { Application } from 'express';
 import fs from 'node:fs';
 import type http from 'node:http';
 import path from 'node:path';
+import { styleText } from 'node:util';
 import resolveFrom from 'resolve-from';
 import type webpack from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
@@ -115,13 +115,16 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       config.plugins = [];
     }
 
-    const bar = createProgressBar(chalk`{bold Web} Bundling Javascript [:bar] :percent`, {
-      width: 64,
-      total: 100,
-      clear: true,
-      complete: '=',
-      incomplete: ' ',
-    });
+    const bar = createProgressBar(
+      `${styleText('bold', `Web`)} Bundling Javascript [:bar] :percent`,
+      {
+        width: 64,
+        total: 100,
+        clear: true,
+        complete: '=',
+        incomplete: ' ',
+      }
+    );
 
     // NOTE(EvanBacon): Add a progress bar to the webpack logger if defined (e.g. not in CI).
     if (bar != null) {
@@ -141,7 +144,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     try {
       await compileAsync(compiler);
     } catch (error: any) {
-      Log.error(chalk.red('Failed to compile'));
+      Log.error(styleText('red', 'Failed to compile'));
       throw error;
     } finally {
       bar?.terminate();
@@ -185,7 +188,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const config = await this.loadConfigAsync(options);
 
-    Log.log(chalk`Starting Webpack on port ${port} in {underline ${mode}} mode.`);
+    Log.log(`Starting Webpack on port ${port} in ${styleText('underline', mode!)} mode.`);
 
     // Create a webpack compiler that is configured with custom messages.
     const compiler = webpack(config);
@@ -290,7 +293,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     projectRoot: string,
     mode: string = 'development'
   ): Promise<void> {
-    Log.log(chalk.dim(`Clearing Webpack ${mode} cache directory...`));
+    Log.log(styleText('dim', `Clearing Webpack ${mode} cache directory...`));
 
     const dir = await ensureDotExpoProjectDirectoryInitialized(projectRoot);
     const cacheFolder = path.join(dir, 'web/cache', mode);

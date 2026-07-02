@@ -2,7 +2,7 @@
 // adapted to return warnings instead of displaying, with some modest renaming to match,
 // but otherwise logic is unchanged.
 
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import semver from 'semver';
 
 import { explainAsync } from './explainAsync';
@@ -68,18 +68,20 @@ function formatInvalidPackagesWarning(
   } else {
     lines.push(`Expected to not find any copies of ${formatPkg(pkg, 'green')}`);
   }
-  lines.push(chalk`Found invalid:`);
+  lines.push(`Found invalid:`);
   lines.push(explanations.map((explanation) => '  ' + formatPkg(explanation, 'red')).join('\n'));
-  lines.push(chalk`  {dim (for more info, run: {bold npm why ${pkg.name}})}`);
+  lines.push(
+    `  ${styleText('dim', `(for more info, run: ${styleText('bold', `npm why ${pkg.name}`)})`)}`
+  );
 
   return lines.join('\n');
 }
 
-function formatPkg(pkg: TargetPackage, versionColor: string) {
+function formatPkg(pkg: TargetPackage, versionColor: Parameters<typeof styleText>[0]) {
   if (pkg.version) {
-    return chalk`{bold ${pkg.name}}{cyan @}{${versionColor} ${pkg.version}}`;
+    return `${styleText('bold', pkg.name)}${styleText('cyan', `@`)}${styleText(versionColor, pkg.version)}`;
   } else {
-    return chalk`{bold ${pkg.name}}`;
+    return `${styleText('bold', pkg.name)}`;
   }
 }
 

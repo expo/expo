@@ -1,5 +1,5 @@
 import assert from 'assert';
-import chalk from 'chalk';
+import { styleText } from "node:util";
 
 import { activateWindowAsync } from './activateWindow';
 import * as AndroidDebugBridge from './adb';
@@ -118,11 +118,9 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     } catch (error: any) {
       let errorMessage = `Couldn't open Android app with activity "${launchActivity}" on device "${this.name}".`;
       if (error instanceof CommandError && error.code === 'APP_NOT_INSTALLED') {
-        errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
-          `npx expo run:android -d ${this.name}`
-        )}`;
+        errorMessage += `\nThe app might not be installed, try installing it with: ${styleText("bold", `npx expo run:android -d ${this.name}`)}`;
       }
-      errorMessage += chalk.gray(`\n${error.message}`);
+      errorMessage += styleText("gray", `\n${error.message}`);
       error.message = errorMessage;
       throw error;
     }

@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from "node:util";
 import type { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
@@ -54,7 +54,7 @@ export async function installOnDeviceAsync(props: {
         if (!indicator) {
           indicator = ora(status).start();
         }
-        indicator.text = `${chalk.bold(status)} ${progress}%`;
+        indicator.text = `${styleText("bold", status)} ${progress}%`;
         if (isComplete) {
           indicator.succeed();
         }

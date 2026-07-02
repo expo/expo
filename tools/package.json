@@ -33,7 +33,6 @@
     "@expo/swiftlint": "^0.57.1",
     "@linear/sdk": "^2.6.0",
     "@octokit/rest": "^19.0.7",
-    "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "cwait": "^1.1.2",
     "diff": "^8.0.3",

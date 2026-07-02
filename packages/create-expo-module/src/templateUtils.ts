@@ -1,9 +1,9 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk from 'chalk';
 import ejs from 'ejs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import { usesCompose, usesExpoUI, usesSwiftUI } from './features';
 import type { Platform } from './prompts';
@@ -196,7 +196,8 @@ async function getTemplateVersion(isLocal: boolean) {
   } catch {
     console.log();
     console.warn(
-      chalk.yellow(
+      styleText(
+        'yellow',
         "Couldn't determine the SDK version from the local project, using `latest` as the template version."
       )
     );
@@ -221,7 +222,8 @@ export async function downloadPackageAsync(targetDir: string, isLocal = false): 
     } catch {
       console.log();
       console.warn(
-        chalk.yellow(
+        styleText(
+          'yellow',
           "Couldn't download the versioned template from npm, falling back to the latest version."
         )
       );

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import type arg from 'arg';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import path from 'path';
 
 import type { Command } from '../index';
@@ -45,18 +45,18 @@ export const expoExport: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Export the static files of the app for hosting it on a web server`,
-      chalk`npx expo export {dim <dir>}`,
+      `npx expo export ${styleText('dim', `<dir>`)}`,
       [
-        chalk`<dir>                      Directory of the Expo project. {dim Default: Current working directory}`,
-        chalk`--output-dir <dir>         The directory to export the static files to. {dim Default: dist}`,
+        `<dir>                      Directory of the Expo project. ${styleText('dim', `Default: Current working directory`)}`,
+        `--output-dir <dir>         The directory to export the static files to. ${styleText('dim', `Default: dist`)}`,
         `--dev                      Configure static files for developing locally using a non-https server`,
         `--no-minify                Prevent minifying source`,
         `--no-bytecode              Prevent generating Hermes bytecode`,
         `--max-workers <number>     Maximum number of tasks to allow the bundler to spawn`,
         `--dump-assetmap            Emit an asset map for further processing`,
         `--no-ssg, --api-only       Skip exporting static HTML files and only export API routes for web`,
-        chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
-        chalk`-s, --source-maps [mode]   Emit JavaScript source maps. {dim Options: true, false, inline, external. Default: false}`,
+        `-p, --platform <platform>  Options: android, ios, web, all. ${styleText('dim', `Default: all`)}`,
+        `-s, --source-maps [mode]   Emit JavaScript source maps. ${styleText('dim', `Options: true, false, inline, external. Default: false`)}`,
         `-c, --clear                Clear the bundler cache`,
         `-h, --help                 Usage info`,
       ].join('\n')

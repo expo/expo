@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import fs from 'fs';
+import { styleText } from 'node:util';
 import parsePng from 'parse-png';
 import path from 'path';
 
@@ -115,7 +115,8 @@ async function maybeWarnAboutInstallingSharpAsync() {
   if (env.EXPO_IMAGE_UTILS_DEBUG && !hasWarned && !(await Sharp.isAvailableAsync())) {
     hasWarned = true;
     console.warn(
-      chalk.yellow(
+      styleText(
+        'yellow',
         `Using node to generate images. This is much slower than using native packages.\n\u203A Optionally you can stop the process and try again after successfully running \`npm install -g sharp-cli\`.\n`
       )
     );
