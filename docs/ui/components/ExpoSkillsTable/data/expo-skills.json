@@ -2,7 +2,7 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-06-27T08:19:06.017Z"
+    "fetchedAt": "2026-07-01T09:11:00.236Z"
   },
   "totalSkills": 16,
   "skills": [
@@ -43,7 +43,7 @@
     },
     {
       "name": "expo-dev-client",
-      "description": "Build and distribute Expo development clients locally or via TestFlight.",
+      "description": "Build Expo app for development.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-dev-client/SKILL.md"
     },
     {
