@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.setSplashImageDrawablesAsync = setSplashImageDrawablesAsync;
 exports.setSplashImageDrawablesForThemeAsync = setSplashImageDrawablesForThemeAsync;
 exports.withAndroidSplashImages = void 0;

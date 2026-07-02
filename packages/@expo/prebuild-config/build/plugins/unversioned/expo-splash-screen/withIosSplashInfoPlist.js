@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.setSplashInfoPlist = setSplashInfoPlist;
 exports.withIosSplashInfoPlist = void 0;
 function _configPlugins() {

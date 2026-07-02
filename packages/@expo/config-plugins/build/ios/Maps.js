@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.MATCH_INIT = void 0;
 exports.addGoogleMapsAppDelegateImport = addGoogleMapsAppDelegateImport;
 exports.addGoogleMapsAppDelegateInit = addGoogleMapsAppDelegateInit;

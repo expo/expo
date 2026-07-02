@@ -1,15 +1,7 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-Object.defineProperty(exports, "JSONSchema", {
-  enumerable: true,
-  get: function () {
-    return _JSONSchema().JSONSchema;
-  }
-});
-exports.ValidationError = void 0;
+exports.__esModule = true;
+exports.ValidationError = exports.JSONSchema = void 0;
 exports.derefSchema = derefSchema;
 exports.validate = validate;
 function _deref() {
@@ -33,6 +25,7 @@ function _JSONSchema() {
   };
   return data;
 }
+exports.JSONSchema = _JSONSchema().JSONSchema;
 const CACHE_SYMBOL = Symbol('@expo/schema-utils');
 const flattenValidationResults = (input, output = []) => {
   output.push({

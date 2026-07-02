@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getAllowBackup = getAllowBackup;
 exports.getAllowBackupFromManifest = getAllowBackupFromManifest;
 exports.setAllowBackup = setAllowBackup;

@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.evalModule = evalModule;
 exports.loadModule = loadModule;
 exports.loadModuleSync = loadModuleSync;

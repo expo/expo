@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.deref = deref;
 /** Return JSON schema ref if input is of `NodeRef` type */
 const getRef = node => node != null && typeof node === 'object' && '$ref' in node && typeof node.$ref === 'string' ? node.$ref : undefined;

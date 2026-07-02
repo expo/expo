@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.LOADED_ENV_NAME = exports.KNOWN_MODES = void 0;
 exports.get = get;
 exports.getEnvFiles = getEnvFiles;

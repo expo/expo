@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getStatusBarStyle = getStatusBarStyle;
 exports.setStatusBarStyles = setStatusBarStyles;
 exports.withStatusBar = void 0;

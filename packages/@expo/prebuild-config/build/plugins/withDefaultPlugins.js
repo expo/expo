@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getAutoPlugins = getAutoPlugins;
 exports.getLegacyExpoPlugins = getLegacyExpoPlugins;
 exports.withIosExpoPlugins = exports.withAndroidExpoPlugins = void 0;

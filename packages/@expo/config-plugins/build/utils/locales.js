@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.getResolvedLocalesAsync = getResolvedLocalesAsync;
 function _jsonFile() {
   const data = _interopRequireDefault(require("@expo/json-file"));

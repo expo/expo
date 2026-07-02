@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.createLegacyPlugin = createLegacyPlugin;
 function _configPlugins() {
   const data = require("@expo/config-plugins");

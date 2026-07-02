@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.applySplashScreenStoryboard = applySplashScreenStoryboard;
 exports.withIosSplashScreenImage = void 0;
 function _InterfaceBuilder() {

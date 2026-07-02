@@ -1,8 +1,6 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 exports.withPlugins = void 0;
 function _assert() {
   const data = _interopRequireDefault(require("assert"));
