@@ -39,9 +39,9 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   val bodyUsed: Boolean
     get() = this.sink.bodyUsed
 
-  override fun deallocate() {
+  override fun sharedObjectDidRelease() {
     this.sink.finalize(directBuffer = false)
-    super.deallocate()
+    super.sharedObjectDidRelease()
   }
 
   fun onStarted() {
