@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added an `imageLoaded` module event emitted with the decoded pixel size from every load path. ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
+- Added an `expo-observe` integration that reports oversized images. ([#47145](https://github.com/expo/expo/pull/47145) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

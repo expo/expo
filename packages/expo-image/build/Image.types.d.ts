@@ -2,6 +2,7 @@ import type { NativeModule, SharedRef, SharedRefType } from 'expo';
 import type { ImageStyle as RNImageStyle, TextStyle, StyleProp, View, ViewProps, ViewStyle, ColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import type ExpoImage from './ExpoImage';
+import type { ExpoImageIntegrationConfig } from './observe';
 export type ImageSource = {
     /**
      * A string representing the resource identifier for the image,
@@ -725,5 +726,10 @@ export type ImageCacheConfig = {
      */
     maxMemoryCount?: number;
 };
+declare module 'expo-observe' {
+    interface ObserveIntegrationsConfig {
+        'expo-image'?: boolean | ExpoImageIntegrationConfig;
+    }
+}
 export {};
 //# sourceMappingURL=Image.types.d.ts.map
