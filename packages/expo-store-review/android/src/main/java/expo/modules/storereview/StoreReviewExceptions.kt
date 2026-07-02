@@ -7,3 +7,6 @@ internal class RMTaskException :
 
 internal class RMUnsuccessfulTaskException :
   CodedException("Android ReviewManager task was not successful")
+
+internal class RMMissingActivityException :
+  CodedException("Android ReviewManager cannot launch without a current Activity")
