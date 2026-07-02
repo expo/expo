@@ -2,13 +2,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   setupServer,
   RUNTIME_EXPO_SERVE,
   RUNTIME_WORKERD,
 } from '../../utils/runtime';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -23,9 +23,7 @@ describe('export server with custom headers', () => {
             'Set-Cookie': ['hello=world', 'foo=bar'],
             'Content-Type': 'application/pdf',
           }),
-          E2E_ROUTER_REWRITES: JSON.stringify([
-            { source: '/rewrite/api', destination: '/api' },
-          ]),
+          E2E_ROUTER_REWRITES: JSON.stringify([{ source: '/rewrite/api', destination: '/api' }]),
         },
       },
     })

@@ -1,5 +1,4 @@
 import 'abort-controller/polyfill';
-
 import * as Application from 'expo-application';
 
 import ServerRegistrationModule from '../../ServerRegistrationModule';

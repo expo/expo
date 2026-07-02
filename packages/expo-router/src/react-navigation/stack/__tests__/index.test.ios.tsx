@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler/jestSetup';
-
 import { expect, jest, test } from '@jest/globals';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import * as React from 'react';

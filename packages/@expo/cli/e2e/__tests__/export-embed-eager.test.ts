@@ -2,8 +2,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import { projectRoot, findProjectFiles } from './utils';
 import { executeExpoAsync } from '../utils/expo';
+import { projectRoot, findProjectFiles } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;

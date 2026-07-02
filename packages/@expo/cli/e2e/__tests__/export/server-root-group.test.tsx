@@ -1,11 +1,11 @@
 /* eslint-env jest */
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import { processFindPrefixedValue } from '../../utils/process';
 import { createBackgroundServer } from '../../utils/server';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 

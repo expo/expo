@@ -4,13 +4,13 @@ import fs from 'fs/promises';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
+import { executeExpoAsync } from '../utils/expo';
 import {
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
 } from './utils';
-import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -183,20 +183,14 @@ describe('server', () => {
 
     // If this changes then everything else probably changed as well.
     expect(findProjectFiles(outputDir)).toEqual([
-      expect.pathMatching(
-        new RegExp(`_expo/static/js/android/index-${MD5_REGEX.source}\\.hbc$`)
-      ),
+      expect.pathMatching(new RegExp(`_expo/static/js/android/index-${MD5_REGEX.source}\\.hbc$`)),
       expect.pathMatching(
         new RegExp(`_expo/static/js/android/index-${MD5_REGEX.source}\\.hbc\\.map$`)
       ),
       expect.pathMatching(new RegExp(`_expo/static/js/ios/index-${MD5_REGEX.source}\\.hbc$`)),
-      expect.pathMatching(
-        new RegExp(`_expo/static/js/ios/index-${MD5_REGEX.source}\\.hbc\\.map$`)
-      ),
+      expect.pathMatching(new RegExp(`_expo/static/js/ios/index-${MD5_REGEX.source}\\.hbc\\.map$`)),
       expect.pathMatching(new RegExp(`_expo/static/js/web/index-${MD5_REGEX.source}\\.js$`)),
-      expect.pathMatching(
-        new RegExp(`_expo/static/js/web/index-${MD5_REGEX.source}\\.js\\.map$`)
-      ),
+      expect.pathMatching(new RegExp(`_expo/static/js/web/index-${MD5_REGEX.source}\\.js\\.map$`)),
 
       'assetmap.json',
       expect.pathMatching(ASSETS_MD5_PATH),
@@ -291,9 +285,7 @@ describe('server', () => {
     // If this changes then everything else probably changed as well.
     expect(findProjectFiles(outputDir)).toEqual([
       expect.pathMatching(new RegExp(`_expo/static/js/ios/index-${MD5_REGEX.source}\\.js$`)),
-      expect.pathMatching(
-        new RegExp(`_expo/static/js/ios/index-${MD5_REGEX.source}\\.js\\.map$`)
-      ),
+      expect.pathMatching(new RegExp(`_expo/static/js/ios/index-${MD5_REGEX.source}\\.js\\.map$`)),
       'assetmap.json',
       expect.stringMatching(ASSETS_MD5_PATH),
       expect.stringMatching(ASSETS_MD5_PATH),
@@ -374,9 +366,7 @@ describe('server', () => {
     // If this changes then everything else probably changed as well.
     expect(findProjectFiles(outputDir)).toEqual([
       expect.pathMatching(new RegExp(`_expo/static/js/ios/index-${MD5_REGEX.source}\\.js$`)),
-      expect.pathMatching(
-        new RegExp(`_expo/static/js/ios/index-${MD5_REGEX.source}\\.js\\.map$`)
-      ),
+      expect.pathMatching(new RegExp(`_expo/static/js/ios/index-${MD5_REGEX.source}\\.js\\.map$`)),
       'assetmap.json',
       expect.pathMatching(new RegExp(`assets/assets/font\\.${MD5_REGEX.source}\\.ttf$`)),
       expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}\\.png$`)),
@@ -402,9 +392,7 @@ describe('server', () => {
     // Ensure the app entry has the expected export name
     expect(findProjectFiles(path.join(projectRoot, 'dist'))).toEqual([
       expect.pathMatching(new RegExp(`_expo/static/js/web/index-${MD5_REGEX.source}\\.js$`)),
-      expect.pathMatching(
-        new RegExp(`_expo/static/js/web/index-${MD5_REGEX.source}\\.js\\.map$`)
-      ),
+      expect.pathMatching(new RegExp(`_expo/static/js/web/index-${MD5_REGEX.source}\\.js\\.map$`)),
       'assetmap.json',
       expect.pathMatching(new RegExp(`assets/assets/font\\.${MD5_REGEX.source}\\.ttf$`)),
       expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}\\.png$`)),

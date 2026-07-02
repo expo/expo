@@ -3,7 +3,7 @@ appId: ${APP_ID}
 # Launch the app
 - runFlow: ../common/_nested-flows/launch-brownfield.yml
 
-# Validate that brownfield app 
+# Validate that brownfield app
 # can be opened multiple times
 - runFlow:
     when:
@@ -81,7 +81,7 @@ appId: ${APP_ID}
 - tapOn:
     id: navigation-enable-native-back
 
-# Verify that back action now works within 
+# Verify that back action now works within
 # the host app
 - runFlow:
     when:

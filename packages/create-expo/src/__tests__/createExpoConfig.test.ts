@@ -1,10 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import {
-  loadMonorepoConfigAsync,
-  CREATE_EXPO_CONFIG_NAME,
-} from '../createExpoConfig';
+import { loadMonorepoConfigAsync, CREATE_EXPO_CONFIG_NAME } from '../createExpoConfig';
 
 jest.mock('fs');
 
@@ -14,14 +11,12 @@ describe(loadMonorepoConfigAsync, () => {
   });
 
   it(`parses ${CREATE_EXPO_CONFIG_NAME} as JSON and returns the object`, async () => {
-    const spyReadFile = jest
-      .spyOn(fs.promises, 'readFile')
-      .mockImplementation(async (filePath) => {
-        expect(path.basename(filePath as string)).toBe(CREATE_EXPO_CONFIG_NAME);
-        return JSON.stringify({
-          renamePatterns: ['apps/*/app.json', 'apps/*/ios/Podfile'],
-        });
+    const spyReadFile = jest.spyOn(fs.promises, 'readFile').mockImplementation(async (filePath) => {
+      expect(path.basename(filePath as string)).toBe(CREATE_EXPO_CONFIG_NAME);
+      return JSON.stringify({
+        renamePatterns: ['apps/*/app.json', 'apps/*/ios/Podfile'],
       });
+    });
 
     const result = await loadMonorepoConfigAsync('/fake-project');
     expect(spyReadFile).toHaveBeenCalledTimes(1);
@@ -37,9 +32,7 @@ describe(loadMonorepoConfigAsync, () => {
       throw error;
     });
 
-    await expect(
-      loadMonorepoConfigAsync('/fake-project'),
-    ).resolves.toBeUndefined();
+    await expect(loadMonorepoConfigAsync('/fake-project')).resolves.toBeUndefined();
   });
 
   it('returns undefined on other read errors (and does not throw)', async () => {
@@ -49,35 +42,21 @@ describe(loadMonorepoConfigAsync, () => {
       throw error;
     });
 
-    await expect(
-      loadMonorepoConfigAsync('/fake-project'),
-    ).resolves.toBeUndefined();
+    await expect(loadMonorepoConfigAsync('/fake-project')).resolves.toBeUndefined();
   });
 
   it('returns undefined when the file contains invalid JSON', async () => {
-    jest
-      .spyOn(fs.promises, 'readFile')
-      .mockResolvedValueOnce('not { valid : json');
+    jest.spyOn(fs.promises, 'readFile').mockResolvedValueOnce('not { valid : json');
 
-    await expect(
-      loadMonorepoConfigAsync('/fake-project'),
-    ).resolves.toBeUndefined();
+    await expect(loadMonorepoConfigAsync('/fake-project')).resolves.toBeUndefined();
   });
 
   it('returns undefined when the parsed value is not an object', async () => {
-    jest
-      .spyOn(fs.promises, 'readFile')
-      .mockResolvedValueOnce(JSON.stringify(['not', 'an object']));
-    await expect(
-      loadMonorepoConfigAsync('/fake-project'),
-    ).resolves.toBeUndefined();
+    jest.spyOn(fs.promises, 'readFile').mockResolvedValueOnce(JSON.stringify(['not', 'an object']));
+    await expect(loadMonorepoConfigAsync('/fake-project')).resolves.toBeUndefined();
 
-    jest
-      .spyOn(fs.promises, 'readFile')
-      .mockResolvedValueOnce(JSON.stringify('a string'));
-    await expect(
-      loadMonorepoConfigAsync('/fake-project'),
-    ).resolves.toBeUndefined();
+    jest.spyOn(fs.promises, 'readFile').mockResolvedValueOnce(JSON.stringify('a string'));
+    await expect(loadMonorepoConfigAsync('/fake-project')).resolves.toBeUndefined();
   });
 
   it('accepts an empty object (every field is optional)', async () => {
@@ -89,9 +68,7 @@ describe(loadMonorepoConfigAsync, () => {
   it('accepts a partial object (renamePatterns only)', async () => {
     jest
       .spyOn(fs.promises, 'readFile')
-      .mockResolvedValueOnce(
-        JSON.stringify({ renamePatterns: ['apps/*/app.json'] }),
-      );
+      .mockResolvedValueOnce(JSON.stringify({ renamePatterns: ['apps/*/app.json'] }));
 
     await expect(loadMonorepoConfigAsync('/fake-project')).resolves.toEqual({
       renamePatterns: ['apps/*/app.json'],

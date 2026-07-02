@@ -2,9 +2,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { executeExpoAsync } from '../utils/expo';
 import { runExportSideEffects } from './export/export-side-effects';
 import { findProjectFiles, setupTestProjectWithOptionsAsync } from './utils';
-import { executeExpoAsync } from '../utils/expo';
 
 runExportSideEffects();
 
