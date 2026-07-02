@@ -131,6 +131,8 @@ describe('tasks:android command', () => {
   describe('with prebuild', () => {
     beforeAll(async () => {
       TEMP_DIR_PREBUILD = await createTempProject('tasksandroidpb', true);
+      // Run once to warm up Gradle — the first run downloads all dependencies and is slow.
+      await tasksAndroidTest({ directory: TEMP_DIR_PREBUILD });
     }, 1800000);
 
     afterAll(async () => {
