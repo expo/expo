@@ -16,6 +16,9 @@
 - Replace the deprecated `videoOrientation` API with `AVCaptureDevice.RotationCoordinator` for the iOS camera preview. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix dark frames and the preview rotating into place on iOS launch by fully configuring the camera session before it starts running. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
 - Default the iOS camera `pictureSize` to `photo` instead of `high`. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
+- Process captured photos off the main thread on iOS so full-resolution captures no longer hang the UI on older devices. ([#00000](https://github.com/expo/expo/pull/00000) by [@boojamya](https://github.com/boojamya))
+- Fix iOS captures being saved above their native resolution due to orientation normalization rendering at the screen scale. ([#00000](https://github.com/expo/expo/pull/00000) by [@boojamya](https://github.com/boojamya))
+- Remove a redundant full-resolution JPEG re-encode when saving captured photos on iOS. ([#00000](https://github.com/expo/expo/pull/00000) by [@boojamya](https://github.com/boojamya))
 
 ### 💡 Others
 
