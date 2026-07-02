@@ -3682,6 +3682,31 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
 
+  packages/expo-app-intents:
+    dependencies:
+      react:
+        specifier: '*'
+        version: 19.2.3
+      react-native:
+        specifier: 0.86.0
+        version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
+    devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.19.15
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.14
+      expo:
+        specifier: workspace:*
+        version: link:../expo
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+
   packages/expo-app-metrics:
     dependencies:
       expo-updates-interface:
