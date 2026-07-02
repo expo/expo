@@ -1,3 +1,4 @@
+/* oxlint-disable testing-library/no-node-access */
 import { jest } from '@jest/globals';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 
@@ -138,7 +139,14 @@ describe(CodeSelectionCopy, () => {
 
     expect(writeText).toHaveBeenCalledWith('visible start\nvisible end');
     expect(screen.getByRole('button', { name: 'Copied!' })).toBeInTheDocument();
-    await act(() => new Promise(resolve => requestAnimationFrame(() => resolve(null))));
+    await act(
+      () =>
+        new Promise(resolve => {
+          requestAnimationFrame(() => {
+            resolve(null);
+          });
+        })
+    );
     expect(screen.getByRole('status')).toHaveTextContent('Copied!');
   });
 
