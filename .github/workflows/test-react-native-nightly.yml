@@ -35,9 +35,7 @@ jobs:
         run: |
           brew install watchman || true
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
-        with:
-          version: 10
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
       - name: 🚀 Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
@@ -106,9 +104,7 @@ jobs:
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
-        with:
-          version: 10
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
       - name: 🚀 Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
