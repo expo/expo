@@ -74,7 +74,7 @@ describe(PageHeader, () => {
     expect(linkElement).toBe(undefined);
   });
 
-  test('displays compatible version when packageName provided', async () => {
+  test('displays recommended version when packageName provided', async () => {
     renderWithHeadings(
       <PageHeader
         title="test-title"
@@ -83,15 +83,15 @@ describe(PageHeader, () => {
         testRequire={require}
       />
     );
-    await screen.findByText(/compatible version:/i);
+    await screen.findByText(/recommended version:/i);
   });
 
-  test('explains the compatible version through an accessible tooltip', async () => {
+  test('explains the recommended version through an accessible tooltip', async () => {
     renderWithHeadings(
       <PageHeader title="test-title" packageName="expo-audio" testRequire={require} />
     );
     const infoButton = await screen.findByRole('button', {
-      name: /more information about compatible version/i,
+      name: /more information about recommended version/i,
     });
 
     fireEvent.focus(infoButton);
@@ -112,7 +112,7 @@ describe(PageHeader, () => {
       />
     );
     const infoButton = await screen.findByRole('button', {
-      name: /more information about compatible version/i,
+      name: /more information about recommended version/i,
     });
 
     fireEvent.focus(infoButton);
