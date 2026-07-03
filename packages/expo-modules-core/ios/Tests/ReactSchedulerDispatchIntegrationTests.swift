@@ -1,5 +1,4 @@
 import ExpoModulesJSI
-import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore

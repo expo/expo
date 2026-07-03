@@ -25,6 +25,11 @@ void *createReactSchedulerHandle(const std::shared_ptr<facebook::react::RuntimeS
 void dispatchOnReactScheduler(void *schedulerHandle, int priority, void (^callback)()) noexcept
 {
   auto *handle = static_cast<SchedulerHandle *>(schedulerHandle);
+  if (handle == nullptr) {
+    // `createReactSchedulerHandle` returns null when there was no scheduler to reference.
+    // Drop the task so callers don't have to guard the handle/dispatch pair themselves.
+    return;
+  }
   // Locking either keeps the scheduler alive for the duration of `scheduleTask` or reports
   // that the React instance already destroyed it, in which case the task is dropped.
   auto scheduler = handle->scheduler.lock();

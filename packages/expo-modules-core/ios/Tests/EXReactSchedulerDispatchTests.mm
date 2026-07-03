@@ -18,6 +18,18 @@ using facebook::react::RuntimeScheduler;
   XCTAssertEqual(expo::createReactSchedulerHandle(nullptr), nullptr);
 }
 
+- (void)testDispatchDropsTaskWhenHandleIsNull
+{
+  // A null handle is what `createReactSchedulerHandle` returns when there was no
+  // scheduler to reference, so dispatching through it must be a safe no-op.
+  __block BOOL called = NO;
+  expo::dispatchOnReactScheduler(nullptr, /* NormalPriority */ 3, ^{
+    called = YES;
+  });
+
+  XCTAssertFalse(called);
+}
+
 - (void)testDispatchForwardsTaskToLiveScheduler
 {
   auto scheduledWorkCount = std::make_shared<int>(0);

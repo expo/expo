@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Releases the scheduler the way the React instance does on teardown (e.g. reload).
  */
-- (void)destroyScheduler;
+- (void)destroyScheduler NS_SWIFT_NAME(destroy());
 
 @end
 
