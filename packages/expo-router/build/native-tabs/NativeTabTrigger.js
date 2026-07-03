@@ -72,7 +72,7 @@ exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     Badge: elements_1.NativeTabsTriggerBadge,
     VectorIcon: elements_1.NativeTabsTriggerVectorIcon,
 });
-function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, disableTransparentOnScrollEdge, disabled, rippleColor, indicatorColor, disableIndicator, labelVisibilityMode, }, isDynamic = false) {
+function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, disableTransparentOnScrollEdge, disabled, rippleColor, indicatorColor, disableIndicator, labelVisibilityMode, testID, accessibilityLabel, }, isDynamic = false) {
     const initialOptions = isDynamic
         ? {
             ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
@@ -82,6 +82,10 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
             ...(indicatorColor !== undefined ? { indicatorColor } : {}),
             ...(disableIndicator !== undefined ? { disableIndicator } : {}),
             ...(labelVisibilityMode !== undefined ? { labelVisibilityMode } : {}),
+            ...(testID !== undefined ? { tabBarItemTestID: testID } : {}),
+            ...(accessibilityLabel !== undefined
+                ? { tabBarItemAccessibilityLabel: accessibilityLabel }
+                : {}),
         }
         : {
             hidden: !!hidden,
@@ -101,6 +105,10 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
             ...(indicatorColor !== undefined ? { indicatorColor } : {}),
             ...(disableIndicator !== undefined ? { disableIndicator } : {}),
             ...(labelVisibilityMode !== undefined ? { labelVisibilityMode } : {}),
+            ...(testID !== undefined ? { tabBarItemTestID: testID } : {}),
+            ...(accessibilityLabel !== undefined
+                ? { tabBarItemAccessibilityLabel: accessibilityLabel }
+                : {}),
         };
     const allowedChildren = (0, children_1.filterAllowedChildrenElements)(children, [
         elements_1.NativeTabsTriggerBadge,
