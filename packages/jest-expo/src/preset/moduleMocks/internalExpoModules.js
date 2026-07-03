@@ -21,6 +21,9 @@ module.exports = {
           { name: 'Material3Color', argumentsCount: 2, key: 'Material3Color' },
           { name: 'Material3DynamicColor', argumentsCount: 2, key: 'Material3DynamicColor' },
         ],
+        // Expo Go only module. The bare generator can't produce it, but tests rely on it existing
+        // so isRunningInExpoGo() (requireNativeModule('ExpoGo')) stays true, e.g. expo-asset.
+        ExpoGo: [],
       },
     },
   },
