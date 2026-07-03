@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added more default `getConfig` exclusion packages. ([#47503](https://github.com/expo/expo/pull/47503) by [@kudo](https://github.com/kudo))
+
 ## 0.19.6 — 2026-07-03
 
 _This version does not introduce any user-facing changes._

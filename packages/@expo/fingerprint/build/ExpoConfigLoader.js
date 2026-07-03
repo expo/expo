@@ -25,7 +25,9 @@ async function runAsync(programName, args = []) {
     require('@expo/env').load(projectRoot);
     const loadedModulesBefore = new Set(Object.keys(module_1.default._cache));
     const { getConfig } = require((0, resolve_from_1.default)(path_1.default.resolve(projectRoot), 'expo/config'));
-    const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
+    const config = await getConfig(projectRoot, {
+        skipSDKVersionRequirement: true,
+    });
     const virtualModuleNames = new Set();
     const loadedModules = [];
     // TODO(@kitten): Don't rely on `module._cache` for this over Node loader hooks
@@ -75,7 +77,10 @@ async function runAsync(programName, args = []) {
             throw error;
         }
     }))).filter((modulePath) => modulePath != null);
-    const result = JSON.stringify({ config, loadedModules: existingLoadedModules });
+    const result = JSON.stringify({
+        config,
+        loadedModules: existingLoadedModules,
+    });
     if (node_process_1.default.send) {
         node_process_1.default.send(result);
     }
@@ -156,6 +161,9 @@ const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
         'ajv-formats',
         'ajv-keywords',
         'ansi-styles',
+        'base64-js',
+        'big-integer',
+        'bplist-creator',
         'chalk',
         'debug',
         'dotenv',
@@ -175,6 +183,7 @@ const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
         'parse-png',
         'path-key',
         'picocolors',
+        'plist',
         'pngjs',
         'lines-and-columns',
         'require-from-string',
@@ -182,6 +191,8 @@ const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
         'sax',
         'schema-utils',
         'signal-exit',
+        'simple-plist',
+        'stream-buffers',
         'sucrase',
         'supports-color',
         'ts-interface-checker',
@@ -189,6 +200,8 @@ const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
         'xml2js',
         'xmlbuilder',
         'which',
+        'uuid',
+        'xcode',
     ].join(',')}}/**/*`,
 ];
 //# sourceMappingURL=ExpoConfigLoader.js.map
