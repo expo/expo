@@ -57,7 +57,8 @@ const useNativeDriver = react_native_1.Platform.OS !== 'web';
 const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescriptor, nextDescriptor, isPresentationModal, isPreloaded, onWillDisappear, onWillAppear, onAppear, onDisappear, onDismissed, onHeaderBackButtonClicked, onNativeDismissCancelled, onGestureCancel, onSheetDetentChanged, }) => {
     const { route, navigation, options, render } = descriptor;
     let { animation, animationMatchesGesture, presentation = isPresentationModal ? 'modal' : 'card', fullScreenGestureEnabled, } = options;
-    const { animationDuration, animationTypeForReplace = 'push', fullScreenGestureShadowEnabled = true, gestureEnabled, gestureDirection = presentation === 'card' ? 'horizontal' : 'vertical', gestureResponseDistance, header, headerBackButtonMenuEnabled, headerShown, headerBackground, headerTransparent, autoHideHomeIndicator, keyboardHandlingEnabled, navigationBarColor, navigationBarTranslucent, navigationBarHidden, orientation, sheetAllowedDetents = [1.0], sheetLargestUndimmedDetentIndex = -1, sheetGrabberVisible = false, sheetCornerRadius = -1.0, sheetElevation = 24, sheetExpandsWhenScrolledToEdge = true, sheetInitialDetentIndex = 0, sheetShouldOverflowTopInset = false, sheetResizeAnimationEnabled = true, statusBarAnimation, statusBarHidden, statusBarStyle, statusBarTranslucent, statusBarBackgroundColor, unstable_sheetFooter, scrollEdgeEffects, freezeOnBlur, contentStyle, } = options;
+    const { animationDuration, animationTypeForReplace = 'push', fullScreenGestureShadowEnabled = true, gestureEnabled, gestureDirection = presentation === 'card' ? 'horizontal' : 'vertical', gestureResponseDistance, header, headerBackButtonMenuEnabled, headerShown, headerBackground, headerTransparent, autoHideHomeIndicator, keyboardHandlingEnabled, navigationBarColor, navigationBarTranslucent, navigationBarHidden, orientation, sheetAllowedDetents = [1.0], sheetLargestUndimmedDetentIndex = -1, sheetGrabberVisible = false, sheetCornerRadius = -1.0, sheetElevation = 24, sheetExpandsWhenScrolledToEdge = true, sheetInitialDetentIndex = 0, sheetShouldOverflowTopInset = false, sheetResizeAnimationEnabled = true, statusBarAnimation, statusBarHidden, statusBarStyle, statusBarTranslucent, statusBarBackgroundColor, unstable_sheetFooter, scrollEdgeEffects, freezeOnBlur, contentStyle, unstable_nativeProps, } = options;
+    const screenNativeProps = unstable_nativeProps;
     if (gestureDirection === 'vertical' && react_native_1.Platform.OS === 'ios') {
         // for `vertical` direction to work, we need to set `fullScreenGestureEnabled` to `true`
         // so the screen can be dismissed from any point on screen.
@@ -220,7 +221,7 @@ const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescripto
                     backgroundColor: colors.background,
                 },
                 contentStyle,
-            ], headerConfig: headerConfig, unstable_sheetFooter: unstable_sheetFooter, 
+            ], unstable_sheetFooter: unstable_sheetFooter, ...screenNativeProps, headerConfig: headerConfig, 
             // When ts-expect-error is added, it affects all the props below it
             // So we keep any props that need it at the end
             // Otherwise invalid props may not be caught by TypeScript

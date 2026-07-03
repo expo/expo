@@ -108,10 +108,11 @@ const getMenuItem = (item) => {
         subtitle: description,
     };
 };
-function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBackButtonDisplayMode, headerBackButtonMenuEnabled, headerBackTitle, headerBackTitleStyle, headerBackVisible, headerShadowVisible, headerLargeStyle, headerLargeTitle: headerLargeTitleDeprecated, headerLargeTitleEnabled = headerLargeTitleDeprecated, headerLargeTitleShadowVisible, headerLargeTitleStyle, headerBackground, headerLeft, headerRight, headerShown, headerStyle, headerBlurEffect, headerTintColor, headerTitle, headerTitleAlign, headerTitleStyle, headerTransparent, headerSearchBarOptions, headerTopInsetEnabled, headerBack, route, title, unstable_headerLeftItems: headerLeftItems, unstable_headerRightItems: headerRightItems, }) {
+function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBackButtonDisplayMode, headerBackButtonMenuEnabled, headerBackTitle, headerBackTitleStyle, headerBackVisible, headerShadowVisible, headerLargeStyle, headerLargeTitle: headerLargeTitleDeprecated, headerLargeTitleEnabled = headerLargeTitleDeprecated, headerLargeTitleShadowVisible, headerLargeTitleStyle, headerBackground, headerLeft, headerRight, headerShown, headerStyle, headerBlurEffect, headerTintColor, headerTitle, headerTitleAlign, headerTitleStyle, headerTransparent, headerSearchBarOptions, headerTopInsetEnabled, headerBack, route, title, unstable_headerLeftItems: headerLeftItems, unstable_headerRightItems: headerRightItems, unstable_nativeProps, }) {
     const { direction } = (0, native_1.useLocale)();
     const { colors, fonts, dark } = (0, native_1.useTheme)();
     const tintColor = headerTintColor ?? (react_native_1.Platform.OS === 'ios' ? colors.primary : colors.text);
+    const headerNativeProps = unstable_nativeProps?.headerConfig;
     const headerBackTitleStyleFlattened = react_native_1.StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
     const headerLargeTitleStyleFlattened = react_native_1.StyleSheet.flatten([
         react_native_1.Platform.select({ ios: fonts.heavy, default: fonts.medium }),
@@ -271,6 +272,7 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
         headerLeftBarButtonItems: processBarButtonItems(leftItems, colors, fonts),
         headerRightBarButtonItems: processBarButtonItems(rightItems, colors, fonts),
         experimental_userInterfaceStyle: dark ? 'dark' : 'light',
+        ...headerNativeProps,
     };
 }
 //# sourceMappingURL=useHeaderConfigProps.js.map

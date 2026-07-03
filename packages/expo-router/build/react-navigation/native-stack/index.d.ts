@@ -13,5 +13,5 @@ export { useAnimatedHeaderHeight } from './utils/useAnimatedHeaderHeight';
 /**
  * Types
  */
-export type { NativeStackHeaderBackProps, NativeStackHeaderItem, NativeStackHeaderItemButton, NativeStackHeaderItemCustom, NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction, NativeStackHeaderItemMenuSubmenu, NativeStackHeaderItemProps, NativeStackHeaderItemSpacing, NativeStackHeaderLeftProps, NativeStackHeaderProps, NativeStackHeaderRightProps, NativeStackNavigationEventMap, NativeStackNavigationOptions, NativeStackNavigationProp, NativeStackNavigatorProps, NativeStackOptionsArgs, NativeStackScreenProps, } from './types';
+export type { NativeStackHeaderBackProps, NativeStackHeaderItem, NativeStackHeaderItemButton, NativeStackHeaderItemCustom, NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction, NativeStackHeaderItemMenuSubmenu, NativeStackHeaderItemProps, NativeStackHeaderItemSpacing, NativeStackHeaderLeftProps, NativeStackHeaderProps, NativeStackHeaderRightProps, NativeStackHeaderNativeProps, NativeStackNativeProps, NativeStackNavigationEventMap, NativeStackNavigationOptions, NativeStackNavigationProp, NativeStackNavigatorProps, NativeStackOptionsArgs, NativeStackScreenNativeProps, NativeStackScreenProps, } from './types';
 //# sourceMappingURL=index.d.ts.map
