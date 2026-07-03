@@ -33,7 +33,8 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
           override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)
             val message = convertErrorCode(errorCode)
-            continuation.resumeWithException(AuthenticationException(message))
+            val detail = if (errString.isNotEmpty()) "$message. $errString" else message
+            continuation.resumeWithException(AuthenticationException(detail))
           }
 
           override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {

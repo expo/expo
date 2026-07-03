@@ -77,8 +77,9 @@ export type SecureStoreOptions = {
    *   (requires API 23). `'deviceCredentials'` requires API 30+.
    * - iOS: Equivalent to [`biometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/2937192-biometrycurrentset) or [`userPresence`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags).
    *
-   * Complete functionality is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService`
-   * value used for the others non-authenticated operations.
+   * On Android, authenticated entries use separate keystore aliases derived from `keychainService` and the
+   * authentication mode (for example, `:no-auth`, `:auth`, and `:auth-deviceCredentials`), so the same key
+   * can use different `requireAuthentication` values without colliding with non-authenticated entries.
    *
    * This option works slightly differently across platforms: On Android, user authentication is required for all operations.
    * On iOS, the user is prompted to authenticate only when reading or updating an existing value (not when creating a new one).
@@ -175,7 +176,7 @@ export async function getItemAsync(
  *
  * @return A promise that rejects if value cannot be stored on the device.
  *
- * > **Note:** When `requireAuthentication` is `true`, the biometric prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
+ * > **Note:** When `requireAuthentication` is not `false`, the authentication prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
  * > In these cases the promise rejects with an error whose `message` is the native string (for example, `"User canceled the authentication"` on Android or `"User canceled the operation."` on iOS).
  * > Wrap the call in `try/catch` and treat a rejection as an auth-flow outcome to retry or back out of, not as data corruption.
  */
@@ -202,7 +203,7 @@ export async function setItemAsync(
  * @param value The value to store.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * > **Note:** When `requireAuthentication` is `true`, the biometric prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
+ * > **Note:** When `requireAuthentication` is not `false`, the authentication prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
  * > In these cases the function throws an error whose `message` is the native string (for example, `"User canceled the authentication"` on Android or `"User canceled the operation."` on iOS).
  * > Wrap the call in `try/catch` and treat the error as an auth-flow outcome to retry or back out of, not as data corruption.
  */
@@ -227,7 +228,7 @@ export function setItem(key: string, value: string, options: SecureStoreOptions 
  * @return Previously stored value. It resolves with `null` if there is no entry
  * for the given key or if the key has been invalidated.
  *
- * > **Note:** When `requireAuthentication` is `true`, the biometric prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
+ * > **Note:** When `requireAuthentication` is not `false`, the authentication prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
  * > In these cases the function throws an error whose `message` is the native string (for example, `"User canceled the authentication"` on Android or `"User canceled the operation."` on iOS).
  * > Wrap the call in `try/catch` and treat the error as an auth-flow outcome to retry or back out of, not as data corruption.
  */
