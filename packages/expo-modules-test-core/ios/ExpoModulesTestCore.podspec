@@ -24,6 +24,12 @@ Pod::Spec.new do |s|
   s.dependency 'Quick', '~> 7.3.0'
   s.dependency 'Nimble', '~> 13.0.0'
 
+  # React renderer headers require the folly config. Defined through the xcconfig
+  # (C-family sources only) so the defines don't leak into Swift compilation.
+  s.pod_target_xcconfig = {
+    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) FOLLY_MOBILE=1 FOLLY_USE_LIBCPP=1 FOLLY_CFG_NO_COROUTINES=1 FOLLY_HAVE_CLOCK_GETTIME=1'
+  }
+
   # react_native_pods.rb will add the ENV['USE_HERMES'],
   # we could use this to check current js runtime.
   if ENV['USE_HERMES'] == '0'
