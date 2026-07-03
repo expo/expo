@@ -1,10 +1,17 @@
+import { ThemeProvider, useTheme } from 'ThemeProvider';
+import {
+  DarkTheme,
+  DefaultTheme,
+  Stack,
+  ThemeProvider as NavigationThemeProvider,
+} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { ThemeProvider, useTheme } from '../common/ThemeProvider';
-import RootNavigation from './src/navigation/RootNavigation';
-import loadAssetsAsync from './src/utilities/loadAssetsAsync';
+import { getSearchScreenOptions } from '../screens/SearchScreen';
+import loadAssetsAsync from '../utilities/loadAssetsAsync';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,8 +38,8 @@ function useSplashScreen(loadingFunction: () => Promise<void>) {
   return isLoadingCompleted;
 }
 
-function AppContent() {
-  const { name: themeName } = useTheme();
+function RootLayout() {
+  const { name: themeName, theme } = useTheme();
   const isLoadingCompleted = useSplashScreen(async () => {
     await loadAssetsAsync();
   });
@@ -43,13 +50,27 @@ function AppContent() {
     }
   }, [themeName]);
 
-  return isLoadingCompleted ? <RootNavigation /> : null;
+  if (!isLoadingCompleted) {
+    return null;
+  }
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationThemeProvider value={themeName === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack screenOptions={{ presentation: 'modal', headerShown: false }}>
+          <Stack.Screen name="(main)" />
+          <Stack.Screen name="redirect" />
+          <Stack.Screen name="search" options={getSearchScreenOptions(theme)} />
+        </Stack>
+      </NavigationThemeProvider>
+    </GestureHandlerRootView>
+  );
 }
 
-export default function App() {
+export default function Layout() {
   return (
     <ThemeProvider>
-      <AppContent />
+      <RootLayout />
     </ThemeProvider>
   );
 }

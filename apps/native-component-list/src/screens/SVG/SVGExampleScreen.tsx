@@ -1,4 +1,4 @@
-import { StackScreenProps } from '@react-navigation/stack';
+import { type NativeStackScreenProps } from 'expo-router';
 import * as React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -6,7 +6,7 @@ import examples from './examples';
 
 type Links = { SVGExample: { exampleKey?: string } };
 
-type Props = StackScreenProps<Links, 'SVGExample'>;
+type Props = NativeStackScreenProps<Links, 'SVGExample'>;
 
 export default function SVGExampleScreen(props: Props) {
   React.useLayoutEffect(() => {

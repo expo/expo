@@ -1,5 +1,5 @@
-import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar/legacy';
+import { type NativeStackScreenProps } from 'expo-router';
 import React from 'react';
 import { Alert, Button, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -37,7 +37,7 @@ type Links = {
   Reminders: { calendarId: string };
 };
 
-type Props = StackScreenProps<Links, 'Reminders'>;
+type Props = NativeStackScreenProps<Links, 'Reminders'>;
 
 export default class RemindersScreen extends React.Component<Props, State> {
   static navigationOptions = {

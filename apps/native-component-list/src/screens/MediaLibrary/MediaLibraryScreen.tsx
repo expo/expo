@@ -1,7 +1,6 @@
-import { useFocusEffect } from '@react-navigation/native';
-import { StackScreenProps } from '@react-navigation/stack';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as MediaLibrary from 'expo-media-library/legacy';
+import { router, useFocusEffect, type NativeStackScreenProps } from 'expo-router';
 import React from 'react';
 import {
   Alert,
@@ -51,7 +50,7 @@ type Links = {
   MediaAlbums: undefined;
 };
 
-type Props = StackScreenProps<Links, 'MediaLibrary'> & {
+type Props = NativeStackScreenProps<Links, 'MediaLibrary'> & {
   accessPrivileges?: MediaLibrary.PermissionResponse['accessPrivileges'];
 };
 
@@ -108,7 +107,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
 
   // Set the navigation options
   React.useLayoutEffect(() => {
-    const goToAlbums = () => navigation.navigate('MediaAlbums');
+    const goToAlbums = () => router.push('/apis/mediaalbums');
     const clearAlbumSelection = () =>
       navigation.setParams({ albumId: undefined, albumTitle: undefined });
     const addImage = async () => {
@@ -286,13 +285,12 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
 
   const onCellPress = React.useCallback(
     (asset: MediaLibrary.Asset) => {
-      navigation.navigate('MediaDetails', {
-        assetId: asset.id,
-        albumId,
-        albumTitle,
+      router.push({
+        pathname: '/apis/mediadetails',
+        params: { assetId: asset.id, albumId, albumTitle },
       });
     },
-    [navigation, albumId, albumTitle]
+    [albumId, albumTitle]
   );
 
   const renderRowItem: ListRenderItem<MediaLibrary.Asset> = React.useCallback(

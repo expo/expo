@@ -1,4 +1,3 @@
-import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
 import {
   AddEventWithFormOptions,
@@ -7,6 +6,7 @@ import {
   ExpoCalendarEvent,
   getCalendars,
 } from 'expo-calendar';
+import { type NativeStackScreenProps } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -54,7 +54,7 @@ type Links = {
   Events: { calendarId: string };
 };
 
-type Props = StackScreenProps<Links, 'Events'>;
+type Props = NativeStackScreenProps<Links, 'Events'>;
 
 function prepareEvent(calendarId: string, recurring: boolean = false) {
   const timeInOneHour = new Date();

@@ -1,5 +1,5 @@
-import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar/legacy';
+import { type NativeStackScreenProps } from 'expo-router';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -47,7 +47,7 @@ type Links = {
   Events: { calendarId: string };
 };
 
-type Props = StackScreenProps<Links, 'Events'>;
+type Props = NativeStackScreenProps<Links, 'Events'>;
 
 function createEvent(calendarId: string, recurring: boolean = false) {
   const timeInOneHour = new Date();
