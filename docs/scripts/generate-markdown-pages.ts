@@ -16,6 +16,7 @@ import path from 'node:path';
 import { Worker } from 'node:worker_threads';
 
 import { findHtmlPages, findMarkdownPages } from './generate-markdown-pages-utils.ts';
+import { generateUpgradeDiffPages } from './generate-upgrade-diff-pages.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
 const PAGES_DIR = path.join(process.cwd(), 'pages');
@@ -106,6 +107,27 @@ try {
   console.error(`\x1b[31m✗\x1b[0m ${(err as Error).message}`);
   process.exit(1);
 }
+
+const diffInfo = JSON.parse(
+  fs.readFileSync(
+    path.join(process.cwd(), 'public', 'static', 'diffs', 'template-bare-minimum', 'diffInfo.json'),
+    'utf-8'
+  )
+);
+const { VERSIONS } = JSON.parse(
+  fs.readFileSync(
+    path.join(process.cwd(), 'public', 'static', 'constants', 'versions.json'),
+    'utf-8'
+  )
+);
+const upgradeDiffPages = generateUpgradeDiffPages({
+  outDir: OUT_DIR,
+  diffInfo,
+  includeUnversioned: VERSIONS.includes('unversioned'),
+});
+console.warn(
+  ` \x1b[1m\x1b[32m✓\x1b[0m Generated ${upgradeDiffPages.length} upgrade helper diff pages`
+);
 
 const parts: string[] = [];
 if (warned) {
