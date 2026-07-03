@@ -132,7 +132,9 @@ const SceneView = ({
     scrollEdgeEffects,
     freezeOnBlur,
     contentStyle,
+    unstable_nativeProps,
   } = options;
+  const screenNativeProps = unstable_nativeProps;
 
   if (gestureDirection === 'vertical' && Platform.OS === 'ios') {
     // for `vertical` direction to work, we need to set `fullScreenGestureEnabled` to `true`
@@ -399,8 +401,9 @@ const SceneView = ({
             },
           contentStyle,
         ]}
-        headerConfig={headerConfig}
         unstable_sheetFooter={unstable_sheetFooter}
+        {...screenNativeProps}
+        headerConfig={headerConfig}
         // When ts-expect-error is added, it affects all the props below it
         // So we keep any props that need it at the end
         // Otherwise invalid props may not be caught by TypeScript

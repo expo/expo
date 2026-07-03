@@ -50,6 +50,11 @@ export type NativeStackOptionsArgs<ParamList extends ParamListBase, RouteName ex
 };
 export type NativeStackNavigationHelpers = NavigationHelpers<ParamListBase, NativeStackNavigationEventMap>;
 export type NativeStackNavigationConfig = {};
+export type NativeStackScreenNativeProps = Partial<Omit<ScreenProps, 'children' | 'screenId' | 'activityState'>>;
+export type NativeStackHeaderNativeProps = Partial<ScreenStackHeaderConfigProps>;
+export type NativeStackNativeProps = NativeStackScreenNativeProps & {
+    headerConfig?: NativeStackHeaderNativeProps;
+};
 export type NativeStackHeaderProps = {
     /**
      * Options for the back button.
@@ -348,6 +353,18 @@ export type NativeStackNavigationOptions = {
      * If you don't have a `ScrollView`, specify `headerTransparent: false`.
      */
     headerSearchBarOptions?: SearchBarProps;
+    /**
+     * Props passed to the underlying native stack implementation in `react-native-screens`.
+     * Use this to configure props that are not directly exposed by Expo Router.
+     *
+     * > **Note**: This will override any other props set by Expo Router and may lead to unexpected behavior.
+     *
+     * > **Note**: This is an unstable API and may change or be removed in minor versions.
+     *
+     * @platform android
+     * @platform ios
+     */
+    unstable_nativeProps?: NativeStackNativeProps;
     /**
      * Boolean indicating whether to show the menu on longPress of iOS >= 14 back button. Defaults to `true`.
      * Requires `react-native-screens` version >=3.3.0.

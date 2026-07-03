@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `unstable_nativeProps` to native Stack options. ([#47482](https://github.com/expo/expo/pull/47482) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
