@@ -1,0 +1,143 @@
+## Fixing Critical Issues
+
+### 1. First, let me fix React Hook Dependencies and add security improvements to App.js:
+Action: file_editor str_replace /app/frontend/src/App.js --old-str "import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import axios from 'axios';
+import './App.css';
+import Login from './screens/Login';
+import Home from './screens/Home';
+import Search from './screens/Search';
+import Upload from './screens/Upload';
+import Profile from './screens/Profile';
+import Navigation from './components/Navigation';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+// Create axios instance with interceptor
+const api = axios.create({
+  baseURL: API,
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await api.get('/auth/me');
+        setUser(response.data);
+        setIsAuthenticated(true);
+      } catch (error) {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+      }
+    }
+    setLoading(false);
+  };
+
+  const handleLogin = (token, userData) => {
+    localStorage.setItem('token', token);
+    setUser(userData);
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+    setIsAuthenticated(false);
+  };" --new-str "import { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import axios from 'axios';
+import './App.css';
+import Login from './screens/Login';
+import Home from './screens/Home';
+import Search from './screens/Search';
+import Upload from './screens/Upload';
+import Profile from './screens/Profile';
+import Navigation from './components/Navigation';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+// Security note: For production, consider using httpOnly cookies instead of localStorage
+// to prevent XSS attacks. Current implementation is acceptable for MVP/demo purposes.
+const TOKEN_KEY = 'fishworld_auth_token';
+
+// Create axios instance with interceptor
+const api = axios.create({
+  baseURL: API,
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Add response interceptor to handle token expiration
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const checkAuth = useCallback(async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
+      try {
+        const response = await api.get('/auth/me');
+        setUser(response.data);
+        setIsAuthenticated(true);
+      } catch (error) {
+        localStorage.removeItem(TOKEN_KEY);
+        setIsAuthenticated(false);
+      }
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  const handleLogin = useCallback((token, userData) => {
+    localStorage.setItem(TOKEN_KEY, token);
+    setUser(userData);
+    setIsAuthenticated(true);
+  }, []);
+
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    setUser(null);
+    setIsAuthenticated(false);
+  }, []);"
+Observation: Edit was successful.
