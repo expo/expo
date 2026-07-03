@@ -795,10 +795,14 @@ struct JavaScriptRuntimeTests {
   func `creating and releasing standalone runtimes repeatedly does not crash`() throws {
     // Each standalone runtime owns its Hermes runtime and destroys it on `deinit`. Cycling through
     // many create/use/release rounds exercises that teardown and would surface a use-after-free or
-    // double-free (destroying a runtime must not corrupt a subsequently created one).
+    // double-free (destroying a runtime must not corrupt a subsequently created one). Calling `is`
+    // caches a `PropNameID` on the runtime, so this also covers releasing cached JSI objects before
+    // the runtime is freed.
     for index in 0..<20 {
       let localRuntime = JavaScriptRuntime()
-      #expect(try localRuntime.eval("1 + \(index)").getInt() == 1 + index)
+      let value = try localRuntime.eval("({ index: \(index) })")
+      #expect(value.is("Object") == true)
+      #expect(value.getObject().getProperty("index").getInt() == index)
     }
   }
 }

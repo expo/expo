@@ -112,9 +112,20 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   deinit {
     // Destroy the runtime only if this wrapper created it (standalone `init()`); adopted runtimes
     // are owned elsewhere (e.g. React Native) and must not be freed here.
-    if ownsRuntime {
-      expo.destroyRuntime(runtimePointee)
+    guard ownsRuntime else {
+      return
     }
+    // Release cached JSI objects (e.g. `PropNameID`s) before the runtime goes away. Swift tears
+    // down stored properties only after `deinit` returns, so leaving them for that phase would
+    // destroy them against an already-freed runtime, which JSI forbids: all objects associated with
+    // a runtime must be destroyed before the runtime itself.
+    //
+    // No thread hop is needed. JSI documents that destructors are safe to call from any thread; the
+    // requirement is only that there is no concurrent access, which holds here since `deinit` runs
+    // when the last reference is gone. `deinit` is `nonisolated`, so it can touch the actor-isolated
+    // registry directly given that exclusive access.
+    propNameIdsRegistry.removeAll()
+    expo.destroyRuntime(runtimePointee)
   }
 
   /// Provides scoped access to a raw pointer to the underlying `facebook.jsi.Runtime`.
