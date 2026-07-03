@@ -216,6 +216,7 @@ jobs:
           NODE_ENV: production
           RCT_USE_PREBUILT_RNCORE: 1
           RCT_USE_RN_DEP: 1
+          EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK: 1 # Temporary workaround for build error before expo-router migration
         with:
           platform: ios
           fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
@@ -422,6 +423,7 @@ jobs:
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
+          EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK: 1 # Temporary workaround for build error before expo-router migration
         with:
           platform: android
           fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
