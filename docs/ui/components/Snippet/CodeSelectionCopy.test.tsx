@@ -234,4 +234,52 @@ describe(CodeSelectionCopy, () => {
     fireEvent(window, new Event('resize'));
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
+
+  it('disappears on its own shortly after copying', () => {
+    jest.useFakeTimers();
+    renderWithFixture(CODE_BLOCK);
+    const code = document.getElementById('code')!;
+    const button = showButton(code.firstChild!, code, 1);
+
+    fireEvent.click(button);
+    expect(screen.getByRole('button', { name: 'Copied!' })).toBeInTheDocument();
+
+    act(() => {
+      jest.advanceTimersByTime(1200);
+    });
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    jest.useRealTimers();
+  });
+
+  it('does not hide a fresh selection because of an earlier copy timer', () => {
+    jest.useFakeTimers();
+    renderWithFixture(CODE_BLOCK);
+    const code = document.getElementById('code')!;
+    const button = showButton(code.firstChild!, code, 1);
+
+    fireEvent.click(button);
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    showButton(code.firstChild!, code, 1);
+
+    act(() => {
+      jest.advanceTimersByTime(1400);
+    });
+    expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
+    jest.useRealTimers();
+  });
+
+  it('hides the button when the selection collapses instead of leaving a dead button', () => {
+    renderWithFixture(DIFF_BLOCK);
+    const body = document.getElementById('diff-body')!;
+    showButton(body.firstChild!, body, body.childNodes.length);
+
+    fireEvent(document, new Event('selectionchange'));
+    expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
+
+    mockSelection({ startNode: body.firstChild!, isCollapsed: true });
+    fireEvent(document, new Event('selectionchange'));
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
 });

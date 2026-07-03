@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { useIntl } from 'react-intl';
 
 const CODE_BLOCK_SELECTOR = 'pre[data-md-lang], .diff-unified';
+const COPIED_DISMISS_MS = 1200;
 
 type Position = { top: number; left: number };
 
@@ -100,17 +101,38 @@ export function CodeSelectionCopy() {
         setPosition(null);
       }
     };
+    const onSelectionChange = () => {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed || !selection.toString().trim()) {
+        setPosition(null);
+      }
+    };
     document.addEventListener('mousedown', onMouseDown);
     document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('selectionchange', onSelectionChange);
     window.addEventListener('scroll', dismiss, true);
     window.addEventListener('resize', dismiss);
     return () => {
       document.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('selectionchange', onSelectionChange);
       window.removeEventListener('scroll', dismiss, true);
       window.removeEventListener('resize', dismiss);
     };
   }, [position]);
+
+  useEffect(() => {
+    if (!copied) {
+      return;
+    }
+    const timeout = window.setTimeout(() => {
+      setPosition(null);
+      setCopied(false);
+    }, COPIED_DISMISS_MS);
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [copied]);
 
   if (!position) {
     return null;
