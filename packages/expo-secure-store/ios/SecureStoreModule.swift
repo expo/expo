@@ -48,19 +48,8 @@ public final class SecureStoreModule: Module {
       }
     }
 
-    Function("canUseBiometricAuthentication") {() -> Bool in
-      #if os(tvOS)
-      return false
-      #else
-      let context = LAContext()
-      var error: NSError?
-      let isBiometricsSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
-
-      if error != nil {
-        return false
-      }
-      return isBiometricsSupported
-      #endif
+    Function("canUseBiometricAuthentication") { () -> Bool in
+      return canUseBiometricAuthentication()
     }
 
     Function("canUseDeviceCredentialsAuthentication") { () -> Bool in
@@ -107,7 +96,9 @@ public final class SecureStoreModule: Module {
       setItemQuery[kSecAttrAccessible as String] = accessibility
     } else {
       let isDeviceCredentialsRequired = authenticationRequirement == "deviceCredentials"
-      if !isDeviceCredentialsRequired {
+      let requiresFaceIDUsageDescription =
+        !isDeviceCredentialsRequired || canUseBiometricAuthentication()
+      if requiresFaceIDUsageDescription {
         guard let _ = Bundle.main.infoDictionary?["NSFaceIDUsageDescription"] as? String else {
           throw MissingPlistKeyException()
         }
@@ -232,5 +223,23 @@ public final class SecureStoreModule: Module {
       return nil
     }
     return key
+  }
+
+  private func canUseBiometricAuthentication() -> Bool {
+    #if os(tvOS)
+    return false
+    #else
+    let context = LAContext()
+    var error: NSError?
+    let isBiometricsSupported = context.canEvaluatePolicy(
+      LAPolicy.deviceOwnerAuthenticationWithBiometrics,
+      error: &error
+    )
+
+    if error != nil {
+      return false
+    }
+    return isBiometricsSupported
+    #endif
   }
 }
