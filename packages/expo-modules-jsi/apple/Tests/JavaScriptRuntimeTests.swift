@@ -801,6 +801,46 @@ struct JavaScriptRuntimeTests {
       #expect(try localRuntime.eval("1 + \(index)").getInt() == 1 + index)
     }
   }
+
+  // MARK: - Long-lived objects teardown
+
+  /// Records whether `allowRelease()` was called.
+  final class TrackedObject: LongLivedObject {
+    private(set) var released = false
+
+    func allowRelease() {
+      released = true
+    }
+  }
+
+  @Test
+  func `tearing down the runtime clears its long-lived objects`() {
+    let tracked = TrackedObject()
+
+    do {
+      let localRuntime = JavaScriptRuntime()
+      localRuntime.longLivedObjects.add(tracked)
+      #expect(localRuntime.longLivedObjects.count == 1)
+      // Leaving the scope releases the runtime. Its `deinit` destroys the owned Hermes runtime,
+      // tearing down the JS heap, which drops the teardown object's native state and fires its
+      // deallocator, sweeping the collection.
+    }
+
+    #expect(tracked.released == true)
+  }
+
+  @Test
+  func `an object removed before teardown is not released by the sweep`() {
+    let tracked = TrackedObject()
+
+    do {
+      let localRuntime = JavaScriptRuntime()
+      localRuntime.longLivedObjects.add(tracked)
+      localRuntime.longLivedObjects.remove(tracked)
+    }
+
+    #expect(tracked.released == false)
+  }
 }
 
 /// Runs `body` on a freshly spawned synchronous thread and bridges the result back into the

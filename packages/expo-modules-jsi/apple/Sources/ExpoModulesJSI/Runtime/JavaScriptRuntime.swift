@@ -64,6 +64,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.pointee = expo.iruntime(runtime)
     self.scheduler = expo.RuntimeScheduler()
     self.ownsRuntime = false
+    installLongLivedObjectsTeardown()
   }
 
   /// Creates a standalone Hermes runtime. Scheduled tasks run synchronously —
@@ -74,6 +75,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.pointee = expo.iruntime(runtime)
     self.scheduler = expo.RuntimeScheduler()
     self.ownsRuntime = true
+    installLongLivedObjectsTeardown()
   }
 
   /// Creates a runtime from a raw pointer to the underlying `facebook.jsi.Runtime`.
@@ -85,6 +87,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.pointee = expo.iruntime(runtime)
     self.scheduler = expo.RuntimeScheduler()
     self.ownsRuntime = false
+    installLongLivedObjectsTeardown()
   }
 
   /// Creates a runtime bound to a host-provided React `RuntimeScheduler`. Calls to
@@ -107,6 +110,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.pointee = expo.iruntime(runtime)
     self.scheduler = expo.RuntimeScheduler(scheduler, fn)
     self.ownsRuntime = false
+    installLongLivedObjectsTeardown()
   }
 
   deinit {
@@ -663,6 +667,42 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// JavaScript thread while the runtime is still valid.
   @JavaScriptActor
   public let longLivedObjects = LongLivedObjectCollection()
+
+  /// Property name under which the teardown object is pinned on `global` (see
+  /// ``installLongLivedObjectsTeardown()``).
+  private static let teardownObjectPropertyName = "__expo_long_lived_objects_teardown__"
+
+  /// Attaches a native state to a dedicated JS object whose deallocator clears ``longLivedObjects``
+  /// when the runtime is torn down. The object is pinned by storing it as a property on `global`, so
+  /// it stays reachable within the JavaScript heap for the runtime's whole life (no Swift-side strong
+  /// reference) and its native state drops only when the runtime's object graph is destroyed. That
+  /// fires the deallocator on the JavaScript thread while the runtime is still valid, the point at
+  /// which any surviving long-lived objects can safely release their JSI state.
+  private func installLongLivedObjectsTeardown() {
+    // Runtime initializers run on the JavaScript thread but aren't actor-isolated, so reach the
+    // isolated object/native-state/`clear()` APIs through the actor.
+    JavaScriptActor.assumeIsolated {
+      // Capture the collection strongly, not `self`: teardown may run as the runtime itself
+      // deallocates, and the sweep must still call `allowRelease()` on survivors. Holding the
+      // collection keeps it alive for the sweep; it does not retain the runtime.
+      let longLivedObjects = self.longLivedObjects
+      let nativeState = JavaScriptNativeState()
+      nativeState.setDeallocator { nativeState in
+        // Fires as the teardown object is released on the JavaScript thread with the runtime still
+        // valid, so releasing JSI state here is safe. Mirrors the caveat on `AppContext.NativeState`:
+        // a future cross-runtime path that could drop this state from another thread would have to
+        // hop back to the JavaScript thread first.
+        JavaScriptActor.assumeIsolated {
+          longLivedObjects.clear()
+        }
+      }
+      let object = createObject()
+      object.setNativeState(nativeState)
+      // Pin via a JS-heap reference on `global` rather than a Swift property, so the object's
+      // lifetime is governed by the runtime's object graph.
+      global().setProperty(JavaScriptRuntime.teardownObjectPropertyName, value: object.asValue())
+    }
+  }
 }
 
 private func createFunctionClosure(
