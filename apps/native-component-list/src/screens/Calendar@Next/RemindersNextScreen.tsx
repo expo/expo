@@ -1,5 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { ExpoCalendar, ExpoCalendarReminder } from 'expo-calendar';
+import { EntityTypes, ExpoCalendar, ExpoCalendarReminder, getCalendars } from 'expo-calendar';
 import * as Calendar from 'expo-calendar/legacy';
 import React, { useState, useEffect } from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -21,22 +21,32 @@ const ReminderRow = ({ reminder, getReminder, updateReminder, deleteReminder }: 
   </View>
 );
 
+// Route params must stay serializable, so this screen receives the id and refetches the calendar.
 type Links = {
-  Reminders: { calendar: ExpoCalendar };
+  Reminders: { calendarId: string };
 };
 
 type Props = StackScreenProps<Links, 'Reminders'>;
 
 const RemindersScreen = ({ route }: Props) => {
   const [reminders, setReminders] = useState<ExpoCalendarReminder[]>([]);
+  const [calendar, setCalendar] = useState<ExpoCalendar | null>(null);
 
-  const calendar = route.params?.calendar;
+  const calendarId = route.params?.calendarId;
 
   useEffect(() => {
-    if (calendar) {
-      findReminders(calendar);
+    if (!calendarId) {
+      return;
     }
-  }, [calendar]);
+    (async () => {
+      const calendars = await getCalendars(EntityTypes.REMINDER);
+      const calendar = calendars.find(({ id }) => id === calendarId) ?? null;
+      setCalendar(calendar);
+      if (calendar) {
+        findReminders(calendar);
+      }
+    })();
+  }, [calendarId]);
 
   const findReminders = async (calendar: ExpoCalendar) => {
     try {
@@ -49,7 +59,9 @@ const RemindersScreen = ({ route }: Props) => {
   };
 
   const addReminder = async () => {
-    const { calendar } = route.params!;
+    if (!calendar) {
+      return;
+    }
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -83,7 +95,9 @@ const RemindersScreen = ({ route }: Props) => {
   };
 
   const updateReminder = async (reminder: ExpoCalendarReminder) => {
-    const { calendar } = route.params!;
+    if (!calendar) {
+      return;
+    }
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -103,16 +117,17 @@ const RemindersScreen = ({ route }: Props) => {
 
   const deleteReminder = async (reminder: ExpoCalendarReminder) => {
     try {
-      const { calendar } = route.params!;
       reminder.delete();
       Alert.alert('Reminder deleted successfully');
-      findReminders(calendar);
+      if (calendar) {
+        findReminders(calendar);
+      }
     } catch (e: any) {
       Alert.alert('Reminder not deleted successfully', e.message);
     }
   };
 
-  if (!route.params?.calendar) {
+  if (!calendarId) {
     return <Text>Access this screen from the "Calendars" screen.</Text>;
   }
 

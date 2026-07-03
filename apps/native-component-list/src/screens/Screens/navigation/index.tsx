@@ -1,4 +1,4 @@
-import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { Animated, Button, Image, StyleSheet, TextInput, View } from 'react-native';
 
@@ -22,10 +22,12 @@ const Background: React.FunctionComponent<{ index: number }> = ({ index }) => (
   />
 );
 
-type Links = { Details: undefined | { index?: number } };
+type Links = { ScreensNavigation: undefined | { index?: number } };
 
-type Props = NativeStackScreenProps<Links, 'Details'>;
+type Props = NativeStackScreenProps<Links, 'ScreensNavigation'>;
 
+// This screen demos react-navigation stack pushes backed by react-native-screens.
+// It pushes itself repeatedly instead of wrapping its own navigator.
 class DetailsScreen extends React.Component<Props, { count: number; text: string }> {
   animvalue = new Animated.Value(0);
   rotation = this.animvalue.interpolate({
@@ -34,6 +36,9 @@ class DetailsScreen extends React.Component<Props, { count: number; text: string
   });
   state = { count: 1, text: '' };
   componentDidMount() {
+    this.props.navigation.setOptions({
+      title: 'Details screen #' + this.getIndex(),
+    });
     Animated.loop(
       Animated.timing(this.animvalue, {
         toValue: 1,
@@ -43,15 +48,19 @@ class DetailsScreen extends React.Component<Props, { count: number; text: string
     ).start();
     setInterval(() => this.setState(({ count }) => ({ count: count + 1 })), 500);
   }
+  getIndex(): number {
+    // Params may arrive as strings when set from a deep link.
+    return Number(this.props.route.params?.index ?? 0);
+  }
   render() {
-    const index = this.props.route.params?.index ?? 0;
+    const index = this.getIndex();
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Background index={index} />
         <Button
           title="More details"
           onPress={() =>
-            this.props.navigation.push('Details', {
+            this.props.navigation.push('ScreensNavigation', {
               index: index + 1,
             })
           }
@@ -81,29 +90,7 @@ class DetailsScreen extends React.Component<Props, { count: number; text: string
   }
 }
 
-const Stack = createNativeStackNavigator();
-
-const App = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="Details"
-      component={DetailsScreen}
-      options={({ route }) => {
-        return {
-          title: 'Details screen #' + ((route.params as any)?.index ?? '0'),
-        };
-      }}
-    />
-  </Stack.Navigator>
-);
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
   textInput: {
     backgroundColor: 'white',
     borderWidth: 1,
@@ -114,4 +101,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default DetailsScreen;

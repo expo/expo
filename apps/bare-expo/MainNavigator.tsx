@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   BottomTabNavigationOptions,
   createBottomTabNavigator,
@@ -60,6 +59,13 @@ const Redirect = optionalRequire(() =>
 const Search = optionalRequire(() =>
   require('native-component-list/src/screens/SearchScreen')
 ) as any;
+const getSearchScreenOptions = (() => {
+  try {
+    return require('native-component-list/src/screens/SearchScreen').getSearchScreenOptions;
+  } catch {
+    return null;
+  }
+})();
 
 const nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
@@ -130,64 +136,32 @@ function TabNavigator() {
     </Tab.Navigator>
   );
 }
-const PERSISTENCE_KEY = 'NAVIGATION_STATE_V1';
-
 export default function MainNavigator() {
-  const { name: themeName } = useTheme();
-  const [isReady, setIsReady] = React.useState(Platform.OS === 'web');
-  const [initialState, setInitialState] = React.useState();
+  const { name: themeName, theme } = useTheme();
 
   React.useEffect(() => {
-    if (isReady) {
-      return;
-    }
-    const restoreState = async () => {
-      const key = 'PERSIST_NAV_STATE';
-      const persistenceEnabled = !!(await AsyncStorage.getItem(key));
+    AppMetrics.markInteractive({
+      params: {
+        theme: themeName,
+      },
+    });
+  }, []);
 
-      if (persistenceEnabled) {
-        const initialUrl = await Linking.getInitialURL();
-
-        if (initialUrl == null) {
-          // Only restore state if there's no deep link
-          const savedStateString = await AsyncStorage.getItem(PERSISTENCE_KEY);
-          const state = savedStateString ? JSON.parse(savedStateString) : undefined;
-
-          if (state !== undefined) {
-            setInitialState(state);
-          }
-        }
-      }
-    };
-    restoreState()
-      .catch(console.error)
-      .finally(() => {
-        setIsReady(true);
-        AppMetrics.markInteractive({
-          params: {
-            theme: themeName,
-          },
-        });
-      });
-  }, [isReady]);
-
-  if (!isReady) {
-    return null;
-  }
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ObserveNavigationContainer
-        linking={linking}
-        initialState={initialState}
-        onStateChange={(state) => {
-          AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
-        }}>
+      <ObserveNavigationContainer linking={linking}>
         <Switch.Navigator
           screenOptions={{ headerShown: false }}
           initialRouteName="main"
           id={undefined}>
           {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
-          {Search && <Switch.Screen name="searchNavigator" component={Search} />}
+          {Search && (
+            <Switch.Screen
+              name="searchNavigator"
+              component={Search}
+              options={getSearchScreenOptions?.(theme)}
+            />
+          )}
           <Switch.Screen name="main" component={TabNavigator} />
         </Switch.Navigator>
         <StatusBar style={themeName === 'light' ? 'dark' : 'light'} />

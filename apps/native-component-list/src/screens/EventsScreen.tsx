@@ -39,10 +39,12 @@ const EventRow: React.FunctionComponent<{
 
 interface State {
   events: Calendar.Event[];
+  calendar: Calendar.Calendar | null;
 }
 
+// Route params must stay serializable, so this screen receives the id and refetches the calendar.
 type Links = {
-  Events: { calendar: Calendar.Calendar };
+  Events: { calendarId: string };
 };
 
 type Props = StackScreenProps<Links, 'Events'>;
@@ -75,17 +77,21 @@ export default class EventsScreen extends React.Component<Props, State> {
 
   readonly state: State = {
     events: [],
+    calendar: null,
   };
 
   componentDidMount() {
-    const { params } = this.props.route;
-    if (params) {
-      const { id } = params.calendar;
-      if (id) {
-        this._findEvents(id);
-      }
+    const calendarId = this.props.route.params?.calendarId;
+    if (calendarId) {
+      this._loadCalendar(calendarId);
+      this._findEvents(calendarId);
     }
   }
+
+  _loadCalendar = async (calendarId: string) => {
+    const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+    this.setState({ calendar: calendars.find(({ id }) => id === calendarId) ?? null });
+  };
 
   _findEvents = async (id: string) => {
     const yesterday = new Date();
@@ -97,7 +103,10 @@ export default class EventsScreen extends React.Component<Props, State> {
   };
 
   _addEvent = async (recurring: boolean) => {
-    const { calendar } = this.props.route.params!;
+    const { calendar } = this.state;
+    if (!calendar) {
+      return;
+    }
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -138,7 +147,10 @@ export default class EventsScreen extends React.Component<Props, State> {
   };
 
   _updateEvent = async (event: Calendar.Event) => {
-    const { calendar } = this.props.route.params!;
+    const { calendar } = this.state;
+    if (!calendar) {
+      return;
+    }
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -160,13 +172,13 @@ export default class EventsScreen extends React.Component<Props, State> {
 
   _deleteEvent = async (event: Calendar.Event) => {
     try {
-      const { calendar } = this.props.route.params!;
+      const { calendarId } = this.props.route.params!;
       await Calendar.deleteEventAsync(event.id!, {
         futureEvents: false,
         instanceStartDate: event.recurrenceRule ? event.startDate : undefined,
       });
       Alert.alert('Event deleted successfully');
-      this._findEvents(calendar.id);
+      this._findEvents(calendarId);
     } catch (e: any) {
       Alert.alert('Event not deleted successfully', e.message);
     }
@@ -212,8 +224,8 @@ export default class EventsScreen extends React.Component<Props, State> {
         <Button onPress={() => this._addEvent(true)} title="Add New Recurring Event" />
         <Button
           onPress={async () => {
-            const { calendar } = this.props.route.params!;
-            const newEvent = createEvent(calendar.id);
+            const { calendarId } = this.props.route.params!;
+            const newEvent = createEvent(calendarId);
             const result = await Calendar.createEventInCalendarAsync(newEvent);
             setTimeout(() => {
               Alert.alert('createEventInCalendarAsync result', JSON.stringify(result), undefined, {
@@ -228,7 +240,7 @@ export default class EventsScreen extends React.Component<Props, State> {
   };
 
   render() {
-    if (!this.props.route.params?.calendar) {
+    if (!this.props.route.params?.calendarId) {
       return <Text>Access this screen from the "Calendars" screen.</Text>;
     }
     const events = this.state.events.length ? (
