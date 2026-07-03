@@ -137,7 +137,6 @@ it('push should include (group)/index as an anchor route when using withAnchor',
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -146,7 +145,6 @@ it('push should include (group)/index as an anchor route when using withAnchor',
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -230,7 +228,6 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -239,7 +236,6 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {

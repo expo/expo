@@ -102,8 +102,10 @@ describe('Tabs visibility', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(screen.queryByTestId('third')).toBeNull();
-    // 2 mounted tabs, each rendered twice under eager preload.
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    // The seeded routeNames include the non-trigger `third`, so on mount the navigator repairs to
+    // the trigger-only list (getStateForRouteNamesChange, Steps 6/10 boundary), dropping the
+    // preloaded tabs; the self-healing preload re-adds them in one extra pass: 2 tabs x 3 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
   });
 
   it('does not render hidden tabs', () => {
@@ -128,8 +130,10 @@ describe('Tabs visibility', () => {
     expect(screen.queryByTestId('third')).toBeNull();
     expect(screen.queryByTestId('fourth')).toBeNull();
     expect(screen.getByTestId('fifth')).toBeVisible();
-    // 3 visible tabs, each rendered twice under eager preload.
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
+    // The seeded routeNames include non-trigger siblings, so on mount the navigator repairs to the
+    // trigger-only list (getStateForRouteNamesChange, Steps 6/10 boundary), dropping the preloaded
+    // tabs; the self-healing preload re-adds them in one extra pass: 3 visible tabs x 3 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(9);
   });
 
   it('does not render tabs, when route does not exist', () => {
@@ -190,11 +194,14 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    // Eager preload renders both tabs twice; order is preserved within each pass.
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    // The seeded routeNames order differs from the trigger list, so on mount the navigator repairs
+    // (getStateForRouteNamesChange, Steps 6/10 boundary), dropping the preloaded tab; the
+    // self-healing preload re-adds it in one extra pass: 2 tabs x 3 passes. Order is preserved
+    // within each pass.
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
     expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)second$/);
     expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)index$/);
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(3);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)index$/);
   });
 
@@ -232,8 +239,8 @@ describe('First focused tab', () => {
       expect(screen.getByTestId('first')).toBeVisible();
       expect(screen.getByTestId('second')).toBeVisible();
       expect(screen.queryByTestId('index')).toBeNull();
-      // Eager preload adds one extra render pass of the tabs view.
-      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      // extra pass: seeded mount re-preloads (self-heal)
+      expect(NativeTabsView).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -486,17 +493,19 @@ describe('Dynamic tab visibility remounting', () => {
         fireEvent.press(screen.getByTestId('toggle'));
       });
 
-      // Verify remount occurred - the already-materialized `index` remounts. The newly shown
-      // `second` is a lazy tab, so it does not mount until it is focused.
-      expect(onMount).toHaveBeenCalledTimes(1);
+      // Verify remount occurred - the already-materialized `index` remounts, and the newly shown
+      // `second` is preloaded (and so mounted) eagerly at reveal by the self-healing preload.
+      expect(onMount).toHaveBeenCalledTimes(2);
       expect(onMount).toHaveBeenCalledWith('index');
+      expect(onMount).toHaveBeenCalledWith('second');
 
-      // Navigating to the shown tab mounts it lazily.
+      // Navigating to the shown tab is a pure refocus - it was already mounted at reveal.
       onMount.mockClear();
       act(() => {
         router.navigate('/second');
       });
-      expect(onMount).toHaveBeenCalledWith('second');
+      expect(onMount).not.toHaveBeenCalled();
+      expect(screen.getByTestId('second')).toBeVisible();
     });
 
     it('navigator remounts when tab Trigger is conditionally mounted', () => {
@@ -539,18 +548,21 @@ describe('Dynamic tab visibility remounting', () => {
         fireEvent.press(screen.getByTestId('toggle'));
       });
 
-      // Verify remount occurred - the already-materialized `index` and `second` remount. The
-      // newly added `third` is a lazy tab, so it does not mount until it is focused.
-      expect(onMount).toHaveBeenCalledTimes(2);
+      // Verify remount occurred - the already-materialized `index` and `second` remount, and the
+      // newly added `third` is preloaded (and so mounted) eagerly at reveal by the self-healing
+      // preload.
+      expect(onMount).toHaveBeenCalledTimes(3);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('second');
+      expect(onMount).toHaveBeenCalledWith('third');
 
-      // Navigating to the added tab mounts it lazily.
+      // Navigating to the added tab is a pure refocus - it was already mounted at reveal.
       onMount.mockClear();
       act(() => {
         router.navigate('/third');
       });
-      expect(onMount).toHaveBeenCalledWith('third');
+      expect(onMount).not.toHaveBeenCalled();
+      expect(screen.getByTestId('third')).toBeVisible();
     });
 
     it('navigator remounts when tab Trigger is conditionally unmounted', () => {
@@ -795,16 +807,19 @@ describe('Dynamic tab visibility remounting', () => {
         fireEvent.press(screen.getByTestId('toggle'));
       });
 
-      // The already-materialized `index` remounts. The re-shown nested Stack tab is lazy, so it
-      // does not mount until it is focused - and its state has reset back to `stack/index`.
-      expect(onMount).toHaveBeenCalledTimes(1);
+      // The already-materialized `index` remounts, and the re-shown nested Stack tab is preloaded
+      // eagerly at reveal by the self-healing preload - with its state reset back to `stack/index`.
+      expect(onMount).toHaveBeenCalledTimes(2);
       expect(onMount).toHaveBeenCalledWith('index');
+      expect(onMount).toHaveBeenCalledWith('stack-index');
 
+      // Navigating to the re-shown tab is a pure refocus - it was already mounted at reveal.
       onMount.mockClear();
       act(() => {
         router.navigate('/stack');
       });
-      expect(onMount).toHaveBeenCalledWith('stack-index');
+      expect(onMount).not.toHaveBeenCalled();
+      expect(screen.getByTestId('stack-index')).toBeVisible();
     });
   });
 });

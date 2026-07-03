@@ -1,17 +1,8 @@
 import Constants from 'expo-constants';
 import { useColorScheme } from 'react-native';
 
-import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
-
-export function shouldAppendSitemap() {
-  const config = Constants.expoConfig?.extra?.router;
-  return config?.sitemap !== false;
-}
-
-export function shouldAppendNotFound() {
-  const config = Constants.expoConfig?.extra?.router;
-  return config?.notFound !== false;
-}
+import { INTERNAL_SLOT_NAME } from '../constants';
+import { store } from './store';
 
 export function shouldReactToColorSchemeChanges() {
   const config = Constants.expoConfig?.extra?.router;
@@ -24,13 +15,12 @@ export const useColorSchemeChangesIfNeeded = shouldReactToColorSchemeChanges()
   ? useColorScheme
   : function () {};
 
-export function getRootStackRouteNames() {
-  const routes = [INTERNAL_SLOT_NAME];
-  if (shouldAppendNotFound()) {
-    routes.push(NOT_FOUND_ROUTE_NAME);
-  }
-  if (shouldAppendSitemap()) {
-    routes.push(SITEMAP_ROUTE_NAME);
-  }
-  return routes;
+// The root stack's route names come from the compiled linking config's top-level screen keys — the
+// single source of truth for the internal-slot level. `getLinkingConfig` produces exactly
+// `[__root, +not-found?, _sitemap?]` (omitting `+not-found` when the app declares its own root-level
+// catch-all, and each generated screen when disabled), so this always matches the rendered
+// `<Screen>` order in ExpoRoot's `Content`. Falls back to just the slot before linking is available.
+export function getRootStackRouteNames(): string[] {
+  const screens = store.linking?.config?.screens;
+  return screens ? Object.keys(screens) : [INTERNAL_SLOT_NAME];
 }

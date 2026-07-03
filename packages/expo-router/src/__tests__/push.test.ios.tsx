@@ -60,7 +60,6 @@ it('stacks should always push a new route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -69,7 +68,6 @@ it('stacks should always push a new route', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -313,7 +311,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 2,
           key: expect.any(String),
@@ -322,7 +319,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -448,7 +444,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 3,
           key: expect.any(String),
@@ -457,7 +452,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
             {
               key: expect.any(String),
               name: 'a',
-              params: undefined,
               path: '/a',
             },
             {
@@ -590,7 +584,6 @@ it('push should also add anchor routes', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -599,7 +592,6 @@ it('push should also add anchor routes', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {

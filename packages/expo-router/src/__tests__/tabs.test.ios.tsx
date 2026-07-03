@@ -411,7 +411,6 @@ it('can use replace navigation', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           // `replace` prunes the replaced `one` from the back stack: it moves past
           // the focused `two`, which lands at index 0 (so back is blocked).
@@ -428,7 +427,6 @@ it('can use replace navigation', () => {
             {
               key: expect.any(String),
               name: 'one',
-              params: undefined,
               path: '/one',
             },
           ],

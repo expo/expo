@@ -33,7 +33,6 @@ describe('push', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 5,
             key: expect.any(String),
@@ -42,7 +41,6 @@ describe('push', () => {
               {
                 key: expect.any(String),
                 name: 'page',
-                params: undefined,
                 path: '/page',
               },
               {
@@ -156,7 +154,6 @@ describe('navigate', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 0,
             key: expect.any(String),
@@ -201,7 +198,6 @@ describe('navigate', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 3,
             key: expect.any(String),
@@ -210,7 +206,6 @@ describe('navigate', () => {
               {
                 key: expect.any(String),
                 name: 'index',
-                params: undefined,
                 path: '/',
               },
               {
@@ -255,7 +250,6 @@ describe('navigate', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 0,
             key: expect.any(String),
@@ -264,7 +258,6 @@ describe('navigate', () => {
               {
                 key: expect.any(String),
                 name: 'index',
-                params: undefined,
                 path: '/',
               },
             ],
@@ -303,7 +296,6 @@ describe('replace', () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             index: 3,
             key: expect.any(String),
@@ -312,7 +304,6 @@ describe('replace', () => {
               {
                 key: expect.any(String),
                 name: 'page',
-                params: undefined,
                 path: '/page',
               },
               {

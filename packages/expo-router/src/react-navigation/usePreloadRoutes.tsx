@@ -10,39 +10,29 @@ import type { NavigationState } from './routers';
  * focus). The caller decides the policy — e.g. native/material-top preload all tabs, bottom-tabs and
  * drawer only their non-lazy ones.
  *
- * Dedup uses a pending set that CLEARS once a name shows up in `state.routes`, not a lifetime mark.
- * A lifetime mark would never re-preload a tab that was shown, then removed (e.g. a hidden tab), and
- * then requested again. Clearing on presence means a later removal makes the name eligible again.
+ * Self-healing: every run dispatches for every absent name — no pending marks. A dispatched preload
+ * can be LOST without the routes identity ever changing (StrictMode's double-invoked mount effects
+ * wipe and restore the child state) or by a competing commit landing over it (e.g.
+ * `getStateForRouteNamesChange` repairing a seeded native-tabs level whose compiled `routeNames`
+ * don't match the live trigger-only list). Any later effect run simply re-dispatches what's still
+ * absent; the by-name idempotent reducer (absent → insert, present → refresh in place) converges
+ * duplicates instead of duplicating routes, and a no-op dispatch doesn't re-trigger the effect, so
+ * this can't loop.
  */
 export function usePreloadRoutes(
   state: Pick<NavigationState, 'routes'>,
   navigation: { preload: (name: string, params?: object) => void },
   routeNamesToPreload: readonly string[]
 ): void {
-  // Names we've dispatched a preload for and are still waiting to see land in `state.routes`.
-  const pending = React.useRef<Set<string>>(new Set());
-
   React.useEffect(() => {
     const present = new Set(state.routes.map((route) => route.name));
 
-    // A dispatched preload has landed (or the route was added some other way): stop tracking it so a
-    // future removal can re-preload.
-    for (const name of pending.current) {
-      if (present.has(name)) {
-        pending.current.delete(name);
-      }
-    }
-
     for (const name of routeNamesToPreload) {
-      if (present.has(name) || pending.current.has(name)) {
-        continue;
+      if (!present.has(name)) {
+        navigation.preload(name);
       }
-      pending.current.add(name);
-      navigation.preload(name);
     }
-    // Re-runs only when the present routes, navigation, or policy list change. `state.routes`
-    // changing identity is exactly when a route lands or is removed, so re-preload-after-removal
-    // still fires. The dep'd identities are stable per render (the builder returns new arrays only
-    // on real change; callers memoize the policy list).
+    // Re-runs when the present routes, navigation, or policy list change identity, so
+    // re-preload-after-removal (hidden tab shown again) and re-preload-after-loss both fire.
   }, [state.routes, navigation, routeNamesToPreload]);
 }

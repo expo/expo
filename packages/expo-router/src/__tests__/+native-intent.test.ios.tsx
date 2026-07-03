@@ -44,6 +44,35 @@ it('can use async redirectSystemPath', async () => {
   expect(screen.getByTestId('page')).toBeVisible();
 });
 
+it('async redirectSystemPath rejection falls back to default route', async () => {
+  let reject: (error: Error) => void;
+  const promise = new Promise<string>((_, rej) => (reject = rej));
+
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  renderRouter({
+    index: () => <View testID="index" />,
+    page: () => <View testID="page" />,
+    '+native-intent': {
+      redirectSystemPath({ path, initial }) {
+        if (initial) {
+          return promise;
+        }
+        return path;
+      },
+    },
+  });
+
+  expect(screen.toJSON()).toBeNull();
+
+  await act(async () => reject(new Error('boom')));
+
+  expect(errorSpy).toHaveBeenCalled();
+  expect(screen.getByTestId('index')).toBeVisible();
+
+  errorSpy.mockRestore();
+});
+
 it('legacy_subscribe', () => {
   let listener: (url: string) => void = () => {};
 

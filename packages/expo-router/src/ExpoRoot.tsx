@@ -12,7 +12,6 @@ import { store, useStore } from './global-state/router-store';
 import type { ServerContextType } from './global-state/serverLocationContext';
 import { ServerContext } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
-import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
@@ -137,6 +136,13 @@ function ContextNavigator({
 
   useDomComponentNavigation();
 
+  // The initial URL resolves asynchronously (async `+native-intent` redirect, Android race) and no
+  // seed exists yet. Render nothing until it resolves — this replaces the readiness fallback that
+  // previously lived in the fork's `NavigationContainer`.
+  if (store.hasPendingInitialURL) {
+    return null;
+  }
+
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
     if (process.env.NODE_ENV === 'development') {
@@ -156,7 +162,6 @@ function ContextNavigator({
     <StoreContext.Provider value={store}>
       <UpstreamNavigationContainer
         ref={store.navigationRef}
-        initialState={store.state}
         linking={store.linking as LinkingOptions<any>}
         onUnhandledAction={onUnhandledAction}
         onStateChange={store.onStateChange}
@@ -173,13 +178,20 @@ function ContextNavigator({
 }
 
 function Content() {
+  // Render exactly the screens the compiler emitted at the root level, in the same order: the
+  // top-level keys of the linking config are `[__root, +not-found?, _sitemap?]`. Deriving from this
+  // one source keeps the rendered `<Screen>` order identical to the seed's root `routeNames`, so
+  // `useNavigationBuilder` never fires `getStateForRouteNamesChange` to reconcile them. In
+  // particular, when the app declares its own root-level catch-all the compiler omits the internal
+  // `+not-found`, so we must not render the internal NOT_FOUND screen here either.
+  const rootScreens = store.linking?.config?.screens ?? {};
   const children = [
     <Screen key="SLOT" name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
   ];
-  if (shouldAppendNotFound()) {
+  if (NOT_FOUND_ROUTE_NAME in rootScreens) {
     children.push(<Screen key="NOT-FOUND" name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />);
   }
-  if (shouldAppendSitemap()) {
+  if (SITEMAP_ROUTE_NAME in rootScreens) {
     children.push(<Screen key="SITEMAP" name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
   }
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {

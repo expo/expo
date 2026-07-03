@@ -88,9 +88,11 @@ describe('Native Bottom Tabs Navigation', () => {
       hidden: () => <View testID="hidden" />,
       notSpecified: () => <View testID="not-specified" />,
     });
-    // Initial mount is eager: every tab mounts and the preload effect adds one extra render pass,
-    // so the two visible tabs render twice (4 calls) rather than once.
-    expectTwoRenders();
+    // The seeded routeNames include the non-trigger `notSpecified`, so on mount the navigator
+    // repairs to the trigger-only list (getStateForRouteNamesChange, Steps 6/10 boundary),
+    // dropping the preloaded tab; the self-healing preload re-adds it in one extra pass:
+    // 2 visible tabs x 3 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
     expectIndexTabFocused();
     TabsScreen.mockClear();
   });

@@ -502,3 +502,38 @@ describe('Stack nested in Tabs render counts', () => {
     expect(router.canGoBack()).toBe(false);
   });
 });
+
+describe('Seeded deep-link startup render counts', () => {
+  it('renders each component in the seeded tree exactly once', () => {
+    // The verbatim compiled seed does not need rehydration re-renders:
+    // each navigator receives the complete keyed state verbatim, so
+    // getRehydratedState is a no-op and no render cycles are triggered.
+    const layoutRender = jest.fn();
+    const nestedLayoutRender = jest.fn();
+    const pageRender = jest.fn();
+
+    renderRouter(
+      {
+        _layout: function Layout() {
+          layoutRender();
+          return <TestStack />;
+        },
+        'nested/_layout': function NestedLayout() {
+          nestedLayoutRender();
+          return <TestStack />;
+        },
+        'nested/page': function Page() {
+          pageRender();
+          return <Text testID="page">Page</Text>;
+        },
+      },
+      { initialUrl: '/nested/page' }
+    );
+
+    expect(screen.getByTestId('page')).toBeVisible();
+
+    expect(layoutRender).toHaveBeenCalledTimes(1);
+    expect(nestedLayoutRender).toHaveBeenCalledTimes(1);
+    expect(pageRender).toHaveBeenCalledTimes(1);
+  });
+});

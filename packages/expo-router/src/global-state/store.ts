@@ -26,6 +26,8 @@ type StoreRef = {
   config: any;
   redirects: StoreRedirects[];
   routeInfo?: UrlObject;
+  // True while `getInitialURL()` returned a promise that hasn't resolved yet, so no seed exists.
+  hasPendingInitialURL?: boolean;
 };
 
 export const storeRef = {
@@ -47,12 +49,60 @@ export function setHasAttemptedToHideSplash(value: boolean) {
   hasAttemptedToHideSplash = value;
 }
 
+// Dev-only invariant: assert a committed state is complete at every level (stale: false, keyed,
+// explicit in-range index, non-empty routeNames), recursing into every route's nested state. Throws
+// on the first violation so the offending level is obvious. See the RFC's "state invariant".
+function assertStateIsComplete(state: ReactNavigationState, path: string[] = []): void {
+  // `ReactNavigationState` is a union with `PartialState`, whose completeness fields are optional;
+  // read them structurally rather than narrowing the union.
+  const { stale, key, index, routeNames, routes } = state as {
+    stale?: boolean;
+    key?: unknown;
+    index?: unknown;
+    routeNames?: unknown;
+    routes: { name: string; state?: ReactNavigationState }[];
+  };
+  const at = path.length ? ` at ${path.join(' > ')}` : ' at the root';
+  const fail = (reason: string): never => {
+    throw new Error(
+      `Incomplete navigation state${at}: ${reason}. Navigation state must be complete at every ` +
+        `level (stale: false, a key, an in-range index, and full routeNames). This is a bug in ` +
+        `Expo Router — the compiler builds complete state and reducers only rearrange it. Please ` +
+        `report it with the route you navigated to.`
+    );
+  };
+
+  if (stale !== false) {
+    fail(`stale is ${String(stale)} (expected false)`);
+  }
+  if (typeof key !== 'string' || key.length === 0) {
+    fail(`missing a key`);
+  }
+  if (!Array.isArray(routeNames) || routeNames.length === 0) {
+    fail(`missing routeNames`);
+  }
+  if (typeof index !== 'number' || index < 0 || index >= routes.length) {
+    fail(`index ${String(index)} is out of range for ${routes.length} routes`);
+  }
+
+  for (const route of routes) {
+    if (route.state !== undefined) {
+      assertStateIsComplete(route.state, [...path, route.name]);
+    }
+  }
+}
+
 export const store = {
   shouldShowTutorial() {
     return !storeRef.current.routeNode && process.env.NODE_ENV === 'development';
   },
   get state() {
     return storeRef.current.state;
+  },
+  // Readiness gate: while the initial URL is still resolving there is no seed to render, so
+  // `ExpoRoot` renders nothing (matching the old `NavigationContainer` fallback) until it resolves.
+  get hasPendingInitialURL() {
+    return storeRef.current.hasPendingInitialURL ?? false;
   },
   get navigationRef() {
     return storeRef.current.navigationRef;
@@ -99,24 +149,10 @@ export const store = {
       return;
     }
     if (process.env.NODE_ENV === 'development') {
-      let isStale: boolean | undefined = false;
-      let state: ReactNavigationState | undefined = newState;
-
-      while (!isStale && state) {
-        isStale = state.stale;
-        state =
-          state.routes?.[
-            'index' in state && typeof state.index === 'number'
-              ? state.index
-              : state.routes.length - 1
-          ]?.state;
-      }
-      if (isStale) {
-        // This should never happen, as onStateChange should provide a full state. However, adding this check to catch any undocumented behavior.
-        console.error(
-          'Detected stale state in onStateChange. This is likely a bug in Expo Router.'
-        );
-      }
+      // Every committed state must be complete at every level: the store is the single seed and
+      // reducers only rearrange present routes, so a stale/keyless level is a bug in the compiler
+      // or a router — a hard failure in dev, not a silent warning.
+      assertStateIsComplete(newState);
     }
 
     storeRef.current.state = newState;

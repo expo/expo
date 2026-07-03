@@ -36,26 +36,26 @@ test('never preloads a route that is already present', () => {
   expect(navigation.preload).toHaveBeenCalledWith('b');
 });
 
-test('dedups while a preload is pending (route still absent)', () => {
+test('re-dispatches a lost preload when the state commits without it (self-heal)', () => {
   const navigation = makeNavigation();
-  // The dispatched preload hasn't landed in state yet (async), so `a` is still absent on rerender.
-  const state = makeState(['home'], ['home', 'a']);
-
+  // The dispatched preload was clobbered by another commit (e.g. `getStateForRouteNamesChange`
+  // repairing a seeded tab level), so `a` is still absent in the NEW state object.
   const { rerender } = renderHook(
     ({ s }: { s: TabNavigationState<ParamListBase> }) => usePreloadRoutes(s, navigation, ['a']),
     {
-      initialProps: { s: state },
+      initialProps: { s: makeState(['home'], ['home', 'a']) },
     }
   );
 
   expect(navigation.preload).toHaveBeenCalledTimes(1);
 
-  // Re-render with the SAME (still-absent) state: must not dispatch again.
+  // A new state identity landed and `a` is STILL absent: the dispatch was lost — dispatch again.
+  // The tab PRELOAD reducer is by-name idempotent, so a duplicate converges instead of duplicating.
   rerender({ s: makeState(['home'], ['home', 'a']) });
-  expect(navigation.preload).toHaveBeenCalledTimes(1);
+  expect(navigation.preload).toHaveBeenCalledTimes(2);
 });
 
-test('clears the pending mark once the route appears, and does NOT re-preload while it stays present', () => {
+test('does NOT re-preload while the route stays present', () => {
   const navigation = makeNavigation();
 
   const { rerender } = renderHook(
@@ -66,7 +66,7 @@ test('clears the pending mark once the route appears, and does NOT re-preload wh
   );
   expect(navigation.preload).toHaveBeenCalledTimes(1);
 
-  // `a` is now present -> pending mark clears, but it is present so no new preload.
+  // `a` is now present, so no new preload.
   rerender({ s: makeState(['home', 'a'], ['home', 'a']) });
   expect(navigation.preload).toHaveBeenCalledTimes(1);
 
@@ -86,13 +86,12 @@ test('re-preloads after a route is removed then requested again (the key bug)', 
   );
   expect(navigation.preload).toHaveBeenCalledTimes(1);
 
-  // `a` materializes -> pending clears.
+  // `a` materializes -> present, no new dispatch.
   rerender({ s: makeState(['home', 'a'], ['home', 'a']) });
   expect(navigation.preload).toHaveBeenCalledTimes(1);
 
-  // `a` is removed (hidden tab) -> absent again and no longer pending.
+  // `a` is removed (hidden tab) -> absent again, so it must be re-preloaded.
   rerender({ s: makeState(['home'], ['home', 'a']) });
-  // Must re-preload because the pending mark was cleared when it became present.
   expect(navigation.preload).toHaveBeenCalledTimes(2);
 });
 
@@ -127,7 +126,9 @@ test('reacts to a name being added to the policy list later', () => {
   expect(navigation.preload).toHaveBeenCalledTimes(1);
   expect(navigation.preload).toHaveBeenCalledWith('a');
 
+  // The new name is dispatched; the still-absent `a` is re-dispatched too (self-heal — the
+  // by-name idempotent reducer converges duplicates).
   rerender({ s: makeState(['home'], ['home', 'a', 'b']), names: ['a', 'b'] });
-  expect(navigation.preload).toHaveBeenCalledTimes(2);
+  expect(navigation.preload).toHaveBeenCalledTimes(3);
   expect(navigation.preload).toHaveBeenCalledWith('b');
 });

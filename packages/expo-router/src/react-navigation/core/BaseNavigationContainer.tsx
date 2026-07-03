@@ -2,10 +2,10 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { getSeedState } from '../../global-state/seedState';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
-  type InitialState,
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
@@ -42,40 +42,9 @@ const serializableWarnings: string[] = [];
 const duplicateNameWarnings: string[] = [];
 
 /**
- * Remove `key` and `routeNames` from the state objects recursively to get partial state.
- *
- * @param state Initial state object.
- */
-const getPartialState = (
-  state: InitialState | undefined
-): PartialState<NavigationState> | undefined => {
-  if (state === undefined) {
-    return;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { key, routeNames, ...partialState } = state;
-
-  return {
-    ...partialState,
-    stale: true,
-    routes: state.routes.map((route) => {
-      if (route.state === undefined) {
-        return route as Route<string> & {
-          state?: PartialState<NavigationState>;
-        };
-      }
-
-      return { ...route, state: getPartialState(route.state) };
-    }),
-  };
-};
-
-/**
  * Container component which holds the navigation state.
  * This should be rendered at the root wrapping the whole app.
  *
- * @param props.initialState Initial state object for the navigation tree.
  * @param props.onReady Callback which is called after the navigation tree mounts.
  * @param props.onStateChange Callback which is called with the latest navigation state when it changes.
  * @param props.onUnhandledAction Callback which is called when an action is not handled.
@@ -102,8 +71,14 @@ export function BaseNavigationContainer({
     );
   }
 
-  const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(() =>
-    getPartialState(initialState == null ? undefined : initialState)
+  // Seed verbatim — no staling, no `getPartialState`. The app path (ExpoRoot) passes no
+  // `initialState`: the store has already compiled the initial URL into a complete, keyed state
+  // before anything mounts, so it is the seed. An explicit `initialState` (standalone / tests /
+  // future persistence) still wins and is likewise seeded as-is. Navigators render their slice
+  // directly (their init/rehydrate branches become identity on a complete state).
+  // TODO(@ubax): re-add a state-seeding entry point for persistence (Step 8's validate-or-recompile model)
+  const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(
+    () => (initialState == null ? getSeedState() : initialState) as State
   );
 
   const isFirstMountRef = React.useRef<boolean>(true);

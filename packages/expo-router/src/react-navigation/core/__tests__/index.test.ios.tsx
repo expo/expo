@@ -1781,9 +1781,9 @@ test('restores previously discarded state when route names change after navigati
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     index: 0,
-    key: '2',
+    key: '1',
     routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'qux-1', name: 'qux' }],
+    routes: [{ key: 'qux-0', name: 'qux' }],
     stale: false,
   });
   expect(root).toMatchInlineSnapshot(`"[qux]"`);
@@ -1913,9 +1913,9 @@ test('restores previously discarded state when route names change after navigati
         name: 'test',
         state: {
           index: 0,
-          key: '3',
+          key: '1',
           routeNames: ['bar', 'baz', 'qux'],
-          routes: [{ key: 'qux-2', name: 'qux' }],
+          routes: [{ key: 'qux-0', name: 'qux' }],
           stale: false,
         },
       },
@@ -1996,9 +1996,9 @@ test('restores previously discarded state when route names change after navigati
         params: { screen: 'qux' },
         state: {
           index: 0,
-          key: '2',
+          key: '1',
           routeNames: ['foo', 'bar', 'baz'],
-          routes: [{ key: 'foo-1', name: 'foo' }],
+          routes: [{ key: 'foo', name: 'foo' }],
           stale: false,
         },
       },
@@ -2036,9 +2036,9 @@ test('restores previously discarded state when route names change after navigati
         params: { screen: 'qux' },
         state: {
           index: 0,
-          key: '4',
+          key: '3',
           routeNames: ['bar', 'baz', 'qux'],
-          routes: [{ key: 'qux-3', name: 'qux' }],
+          routes: [{ key: 'qux-2', name: 'qux' }],
           stale: false,
         },
       },

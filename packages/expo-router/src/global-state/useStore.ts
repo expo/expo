@@ -2,7 +2,7 @@
 
 import Constants from 'expo-constants';
 import type { ComponentType } from 'react';
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
@@ -33,9 +33,18 @@ export function useStore(
   const navigationRef = useNavigationContainerRef();
   const config = Constants.expoConfig?.extra?.router;
 
+  // `getInitialURL()` may return a promise (async `+native-intent` redirect, or Android's
+  // `Linking.getInitialURL()` race). We can't compile the seed synchronously in that case, so we
+  // subscribe to the promise and re-render once it resolves, then compile from the resolved URL.
+  const initialURLSubscribed = useRef(false);
+  const [resolvedInitialURL, setResolvedInitialURL] = useState<
+    { url: string | null | undefined } | undefined
+  >(undefined);
+
   let linking: ExpoLinkingOptions | undefined;
   let rootComponent: ComponentType<any> = Fragment;
   let initialState: ReactNavigationState | undefined;
+  let hasPendingInitialURL = false;
 
   const routeNode = getRoutes(context, {
     ...config,
@@ -68,22 +77,57 @@ export function useStore(
     });
     rootComponent = getQualifiedRouteComponent(routeNode);
 
+    // Compile the seed state (and its cached route info) from a URL. This is the synchronous path
+    // that static rendering (single pass) relies on. The seed is raw compiled state: its state keys
+    // are the deterministic `navigator*` ones, not the live-minted `stack-<nanoid>` keys, until the
+    // first `onStateChange` reconciles it.
+    const seedFromURL = (url: string) => {
+      let initialPath = extractExpoPathFromURL(linking!.prefixes, url);
+      // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
+      if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
+      initialState = linking!.getStateFromPath(initialPath, linking!.config);
+      const initialRouteInfo = getRouteInfoFromState(initialState);
+      setCachedRouteInfo(initialState as any, initialRouteInfo);
+    };
+
     // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
     // This will cause static rendering to fail, which once performs a single pass.
     // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
     const initialURL = linking?.getInitialURL?.();
     if (typeof initialURL === 'string') {
-      let initialPath = extractExpoPathFromURL(linking.prefixes, initialURL);
-
-      // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
-      if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
-
-      // This seed is raw compiled state: its state keys are the deterministic `navigator*` ones,
-      // not the live-minted `stack-<nanoid>` keys, until the first `onStateChange` reconciles it.
-      // Container seeding is reworked in Step 3 of the global-state RFC.
-      initialState = linking.getStateFromPath(initialPath, linking.config);
-      const initialRouteInfo = getRouteInfoFromState(initialState);
-      setCachedRouteInfo(initialState as any, initialRouteInfo);
+      seedFromURL(initialURL);
+    } else if (initialURL) {
+      // A promise: the initial URL resolves asynchronously.
+      if (resolvedInitialURL) {
+        // Resolved on a previous render — compile synchronously from its value, exactly like the
+        // string case. A null/undefined URL means no seed (navigators fall back to their initial state).
+        if (typeof resolvedInitialURL.url === 'string') {
+          seedFromURL(resolvedInitialURL.url);
+        }
+      } else {
+        // Still pending: nothing to seed yet, so the container must not mount. `getInitialURL()`
+        // returns a fresh promise every render, so only ever subscribe to the first one. (Attaching
+        // `.then` during render is safe only because the ref guard survives replays.) A rejection
+        // (e.g. a throwing async `redirectSystemPath`) must still unblock rendering — fall back to
+        // no seed instead of hanging on a blank screen forever.
+        hasPendingInitialURL = true;
+        if (!initialURLSubscribed.current) {
+          initialURLSubscribed.current = true;
+          Promise.resolve(initialURL).then(
+            (url) => setResolvedInitialURL({ url }),
+            (error) => {
+              console.error(
+                `Expo Router couldn't resolve the initial URL because 'getInitialURL' (or an async ` +
+                  `'redirectSystemPath' in +native-intent) rejected, so the app starts at its ` +
+                  `default route instead of the deep link. Fix the rejection to restore deep ` +
+                  `linking. Rejection:`,
+                error
+              );
+              setResolvedInitialURL({ url: null });
+            }
+          );
+        }
+      }
     }
   } else {
     // Only error in production, in development we will show the onboarding screen
@@ -103,6 +147,7 @@ export function useStore(
     linking,
     redirects,
     state: initialState,
+    hasPendingInitialURL,
   };
 
   if (initialState) {
