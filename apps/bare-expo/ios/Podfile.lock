@@ -644,6 +644,13 @@ PODS:
     - Yoga
   - ExpoPrint (56.0.3):
     - ExpoModulesCore
+  - ExpoRouter (56.2.7):
+    - ExpoModulesCore
+    - RNScreens
+  - ExpoRouter/Tests (56.2.7):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - RNScreens
   - ExpoScreenCapture (56.0.4):
     - ExpoModulesCore
   - ExpoScreenOrientation (56.0.5):
@@ -778,6 +785,29 @@ PODS:
   - hermes-engine (250829098.0.14):
     - hermes-engine/Pre-built (= 250829098.0.14)
   - hermes-engine/Pre-built (250829098.0.14)
+  - JestMockSchema (0.0.1):
+    - ExpoModulesCore
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - libavif/core (1.0.0)
   - libavif/libdav1d (1.0.0):
     - libavif/core
@@ -3439,6 +3469,8 @@ DEPENDENCIES:
   - ExpoObserve (from `../../../packages/expo-observe/ios`)
   - ExpoObserve/Tests (from `../../../packages/expo-observe/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
+  - ExpoRouter (from `../../../packages/expo-router/ios`)
+  - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
@@ -3467,6 +3499,7 @@ DEPENDENCIES:
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
   - "FBLazyVector (from `../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-preset@0.86.0_@babel+core@7.2_ef63ad2607bf1660bcad07b5e75613ee/node_modules/react-native/Libraries/FBLazyVector`)"
   - "hermes-engine (from `../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-preset@0.86.0_@babel+core@7.2_ef63ad2607bf1660bcad07b5e75613ee/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)"
+  - JestMockSchema (from `../modules/jest-mock-schema/ios`)
   - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.8_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_c9fb061a55ccecab613bf2c96d8bd167/node_modules/lottie-react-native`)"
   - "RCTDeprecation (from `../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-preset@0.86.0_@babel+core@7.2_ef63ad2607bf1660bcad07b5e75613ee/node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)"
   - "RCTRequired (from `../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-preset@0.86.0_@babel+core@7.2_ef63ad2607bf1660bcad07b5e75613ee/node_modules/react-native/Libraries/Required`)"
@@ -3771,6 +3804,9 @@ EXTERNAL SOURCES:
   ExpoPrint:
     inhibit_warnings: false
     :path: "../../../packages/expo-print/ios"
+  ExpoRouter:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-router/ios"
   ExpoScreenCapture:
     inhibit_warnings: false
     :path: "../../../packages/expo-screen-capture/ios"
@@ -3842,6 +3878,9 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-preset@0.86.0_@babel+core@7.2_ef63ad2607bf1660bcad07b5e75613ee/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-v250829098.0.14
+  JestMockSchema:
+    inhibit_warnings: false
+    :path: "../modules/jest-mock-schema/ios"
   lottie-react-native:
     :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.8_@lottiefiles+dotlottie-react@0.13.5_react@19.2.3__react-nativ_c9fb061a55ccecab613bf2c96d8bd167/node_modules/lottie-react-native"
   RCTDeprecation:
@@ -4101,6 +4140,7 @@ SPEC CHECKSUMS:
   ExpoNotifications: 4f6324955cea640a65f40c67a8e42505a6a514b7
   ExpoObserve: ebc1555f8538f65727dfe9208ae39a3111077d4f
   ExpoPrint: 6b5bcac4492908b7e28144c2e7265c1c5ee4ade0
+  ExpoRouter: 06524ed53f9833aabf49053a119bcc92c1442098
   ExpoScreenCapture: c388565b6244aec9d96c18941efbee8655b2fec2
   ExpoScreenOrientation: 75ebc86da7f64e94d34d10a743acbd75f9814dd6
   ExpoSecureStore: f1bd083c1b7b8d4142013ffcc0082d377d9f49f4
@@ -4124,7 +4164,8 @@ SPEC CHECKSUMS:
   EXUpdates: c6488f0bebe92d6decb5f9b685d33ee91feeccf0
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: f82264cb26a7ebd16729de6e6cfebc411900ac62
+  hermes-engine: 4c998771d5218e20701b63d8358199a520a54447
+  JestMockSchema: 96b4cfec246644f6323d1c30693b6a02044be1e6
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

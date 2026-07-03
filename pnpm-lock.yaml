@@ -192,6 +192,9 @@ importers:
       expo-observe:
         specifier: workspace:*
         version: link:../../packages/expo-observe
+      expo-router:
+        specifier: workspace:*
+        version: link:../../packages/expo-router
       expo-splash-screen:
         specifier: workspace:*
         version: link:../../packages/expo-splash-screen
@@ -697,24 +700,6 @@ importers:
         version: 19.2.14
 
   apps/expo-workflow-testing: {}
-
-  apps/jest-expo-mock-generator:
-    dependencies:
-      '@expo/mux':
-        specifier: ^1.0.7
-        version: 1.0.7
-      expo:
-        specifier: workspace:*
-        version: link:../../packages/expo
-      expo-clipboard:
-        specifier: workspace:*
-        version: link:../../packages/expo-clipboard
-      react:
-        specifier: 19.2.3
-        version: 19.2.3
-      react-native:
-        specifier: 0.86.0
-        version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
 
   apps/minimal-tester:
     dependencies:
@@ -7736,9 +7721,6 @@ packages:
 
   '@expo/multipart-body-parser@1.1.0':
     resolution: {integrity: sha512-XOaS79wFIJgx0J7oUzRb+kZsnZmFqGpisu0r8RPO3b0wjbW7xpWgiXmRR4RavKeGiVAPauZOi4vad7cJ3KCspg==}
-
-  '@expo/mux@1.0.7':
-    resolution: {integrity: sha512-HJGYCv03mUq9wnW4DvmcBU3Y5SpKEwng7rwRr05SawiIfUr743qMwJQRtCYpC1m98nWmKFjq5ca5Qq/fMq+WFA==}
 
   '@expo/ngrok-bin-darwin-arm64@2.3.41':
     resolution: {integrity: sha512-TPf95xp6SkvbRONZjltTOFcCJbmzAH7lrQ36Dv+djrOckWGPVq4HCur48YAeiGDqspmFEmqZ7ykD5c/bDfRFOA==}
@@ -16858,10 +16840,6 @@ snapshots:
       dicer: 0.3.1
       nullthrows: 1.1.1
       structured-headers: 0.4.1
-
-  '@expo/mux@1.0.7':
-    dependencies:
-      lodash: 4.17.23
 
   '@expo/ngrok-bin-darwin-arm64@2.3.41':
     optional: true
