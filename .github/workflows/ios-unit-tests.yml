@@ -6,7 +6,7 @@ on:
     paths:
       - .github/workflows/ios-unit-tests.yml
       - apps/expo-go/ios/**
-      - packages/**/ios/**
+      - 'packages/**/{ios,apple}/**'
       - apps/native-tests/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
@@ -21,7 +21,7 @@ on:
     paths:
       - .github/workflows/ios-unit-tests.yml
       - apps/expo-go/ios/**
-      - packages/**/ios/**
+      - 'packages/**/{ios,apple}/**'
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
       - tools/src/commands/IosNativeUnitTests.ts
