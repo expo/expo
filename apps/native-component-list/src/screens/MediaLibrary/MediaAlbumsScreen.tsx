@@ -1,5 +1,5 @@
-import { StackNavigationProp } from '@react-navigation/stack';
 import * as MediaLibrary from 'expo-media-library/legacy';
+import { router } from 'expo-router';
 import React from 'react';
 import {
   FlatList,
@@ -19,11 +19,7 @@ interface State {
   albums: MediaLibrary.Album[];
 }
 
-type Props = {
-  navigation: StackNavigationProp<{ MediaLibrary: { albumId: string; albumTitle: string } }>;
-};
-
-export default class MediaAlbumsScreen extends React.Component<Props, State> {
+export default class MediaAlbumsScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'MediaLibrary Albums',
   };
@@ -37,7 +33,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
     this.fetchAlbums(this.state.includeSmartAlbums).then((albums) => this.setState({ albums }));
   }
 
-  componentDidUpdate(_: Props, lastState: State) {
+  componentDidUpdate(_: object, lastState: State) {
     if (lastState.includeSmartAlbums !== this.state.includeSmartAlbums) {
       this.fetchAlbums(this.state.includeSmartAlbums).then((albums) => this.setState({ albums }));
     }
@@ -60,7 +56,10 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
   keyExtractor = (item: MediaLibrary.Album) => item.id;
 
   openAlbum = (album: MediaLibrary.Album) => {
-    this.props.navigation.navigate('MediaLibrary', { albumId: album.id, albumTitle: album.title });
+    router.push({
+      pathname: '/apis/medialibrary',
+      params: { albumId: album.id, albumTitle: album.title },
+    });
   };
 
   renderItem: ListRenderItem<MediaLibrary.Album> = ({ item }) => {

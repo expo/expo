@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
 import format from 'date-format';
 import {
   getStatusAsync,
@@ -8,6 +7,7 @@ import {
   BackgroundFetchResult,
   BackgroundFetchStatus,
 } from 'expo-background-fetch';
+import { useFocusEffect } from 'expo-router';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';

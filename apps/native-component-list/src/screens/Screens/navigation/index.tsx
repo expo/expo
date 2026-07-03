@@ -1,4 +1,4 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { router, type NativeStackScreenProps } from 'expo-router';
 import * as React from 'react';
 import { Animated, Button, Image, StyleSheet, TextInput, View } from 'react-native';
 
@@ -60,8 +60,9 @@ class DetailsScreen extends React.Component<Props, { count: number; text: string
         <Button
           title="More details"
           onPress={() =>
-            this.props.navigation.push('ScreensNavigation', {
-              index: index + 1,
+            router.push({
+              pathname: '/components/screens/navigation',
+              params: { index: index + 1 },
             })
           }
         />

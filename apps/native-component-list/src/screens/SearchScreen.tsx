@@ -1,7 +1,4 @@
-import {
-  NativeStackNavigationOptions,
-  NativeStackNavigationProp,
-} from '@react-navigation/native-stack';
+import { type NativeStackNavigationOptions, useNavigation } from 'expo-router';
 import Fuse from 'fuse.js';
 import React from 'react';
 
@@ -25,11 +22,8 @@ export function getSearchScreenOptions(theme: ThemeType): NativeStackNavigationO
   };
 }
 
-export default function SearchScreen({
-  navigation,
-}: {
-  navigation: NativeStackNavigationProp<any>;
-}) {
+export default function SearchScreen() {
+  const navigation = useNavigation();
   const { theme } = useTheme();
   const [query, setQuery] = React.useState('');
 

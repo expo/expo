@@ -1,9 +1,9 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import * as Location from 'expo-location';
+import { useFocusEffect } from 'expo-router';
+import { type NativeStackNavigationProp } from 'expo-router';
 import * as TaskManager from 'expo-task-manager';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as React from 'react';
@@ -39,7 +39,7 @@ const locationActivityTypes: {
 };
 
 interface Props {
-  navigation: StackNavigationProp<any>;
+  navigation: NativeStackNavigationProp<any>;
 }
 
 type Region = {

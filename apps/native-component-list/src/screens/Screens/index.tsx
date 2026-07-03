@@ -1,5 +1,5 @@
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useObserve } from 'expo-observe';
+import { router } from 'expo-router';
 import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
@@ -33,9 +33,7 @@ export const ScreensExampleScreens: ScreenConfig[] = [
   },
 ];
 
-type Props = { navigation: NativeStackNavigationProp<Record<string, undefined>> };
-
-function ScreensScreen({ navigation }: Props) {
+function ScreensScreen() {
   const { markInteractive } = useObserve();
   useEffect(() => {
     markInteractive();
@@ -49,7 +47,7 @@ function ScreensScreen({ navigation }: Props) {
       renderItem={({ item }) => (
         <MainScreenItem
           title={(item.options as { title: string }).title}
-          onPress={() => navigation.navigate(item.name)}
+          onPress={() => router.push(`/components/${item.route}`)}
         />
       )}
     />
