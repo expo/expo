@@ -655,6 +655,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   @JavaScriptActor
   internal var propNameIdsRegistry: [String: JavaScriptPropNameID] = [:]
+
+  // MARK: - Long-lived objects
+
+  /// Registry of JSI objects (such as in-flight promises) that must outlive the native call that
+  /// created them. Cleared when the runtime is torn down so their JSI state is released on the
+  /// JavaScript thread while the runtime is still valid.
+  @JavaScriptActor
+  public let longLivedObjects = LongLivedObjectCollection()
 }
 
 private func createFunctionClosure(
