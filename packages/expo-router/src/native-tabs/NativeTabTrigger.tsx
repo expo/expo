@@ -102,6 +102,8 @@ export function convertTabPropsToOptions(
     indicatorColor,
     disableIndicator,
     labelVisibilityMode,
+    testID,
+    accessibilityLabel,
   }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
@@ -114,6 +116,10 @@ export function convertTabPropsToOptions(
         ...(indicatorColor !== undefined ? { indicatorColor } : {}),
         ...(disableIndicator !== undefined ? { disableIndicator } : {}),
         ...(labelVisibilityMode !== undefined ? { labelVisibilityMode } : {}),
+        ...(testID !== undefined ? { tabBarItemTestID: testID } : {}),
+        ...(accessibilityLabel !== undefined
+          ? { tabBarItemAccessibilityLabel: accessibilityLabel }
+          : {}),
       }
     : {
         hidden: !!hidden,
@@ -133,6 +139,10 @@ export function convertTabPropsToOptions(
         ...(indicatorColor !== undefined ? { indicatorColor } : {}),
         ...(disableIndicator !== undefined ? { disableIndicator } : {}),
         ...(labelVisibilityMode !== undefined ? { labelVisibilityMode } : {}),
+        ...(testID !== undefined ? { tabBarItemTestID: testID } : {}),
+        ...(accessibilityLabel !== undefined
+          ? { tabBarItemAccessibilityLabel: accessibilityLabel }
+          : {}),
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
     NativeTabsTriggerBadge,
