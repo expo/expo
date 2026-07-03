@@ -12,7 +12,6 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { DownloadSlide } from '~/ui/components/DownloadSlide';
 import { FAQ } from '~/ui/components/FAQ';
-import { Terminal } from '~/ui/components/Snippet';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 **EAS Workflows** is a CI/CD service from EAS (Expo Application Services) that lets teams automate repeated tasks such as building Android and iOS binaries, publishing over-the-air updates, submitting to app stores, running E2E tests with Maestro, and deploying web apps to EAS Hosting.
@@ -27,72 +26,36 @@ EAS Workflows run in managed cloud environments with pre-packaged job types desi
 
 <br />
 
-## Quick start
+## Get started
 
-> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+Workflows are defined as YAML files in the **.eas/workflows/** directory at the root of your project. Each file specifies a `name`, optional triggers (`on`), and one or more `jobs` that run in the cloud. The Get started guide walks you through the prerequisites and your first workflow run, with no CI configuration required.
 
-Workflows are defined as YAML files in the **.eas/workflows/** directory at the root of your project. Each file specifies a `name`, optional triggers (`on`), and one or more `jobs` that run in the cloud. You can run a workflow with EAS CLI with the following command:
-
-<Terminal cmd={['$ eas workflow:run .eas/workflows/your-workflow.yml']} />
+<BoxLink
+  title="Create your first workflow"
+  description="Set up your project and create development builds with a workflow."
+  href="/eas/workflows/get-started"
+  Icon={Dataflow03Icon}
+/>
 
 ## Key features
 
-- **Pre-packaged for React Native/Expo**: Comes with ready-to-use job types (`build`, `submit`, `update`, `maestro`, `deploy`, and more) that abstract away implementation complexity
-- **No infrastructure to manage**: Runs on EAS with macOS and Linux workers, so you don't need to maintain CI servers or configure Android Studio/Xcode
-- **Unified artifact management**: All build artifacts, updates, and logs appear on EAS dashboard
-- **GitHub integration**: Trigger workflows automatically on push, pull request, label, or ref deletion events with branch and path filtering
-- **Faster iteration**: Combine Fingerprint, Get Build, and Update jobs to avoid redundant native builds and publish OTA (over-the-air) updates when possible
-- **E2E testing built-in**: Run Maestro tests on Android emulators and iOS simulators directly in workflows
-- **Slack notifications**: Send notifications to Slack channels when workflows run successfully or fail
-- **Repack**: Reuse an existing build's metadata and JavaScript bundle to create a compatible build faster
-
-## Workflow trigger types
-
-### Push workflows
-
-Run when commits are pushed to matching branches or tags. Supports branch, tag, and path filtering with glob patterns.
-
-### Ref delete workflows
-
-Run when GitHub branches or tags are deleted. Supports branch and tag filtering with glob patterns. Useful for cleaning up EAS Update branches that share names with Git branches.
-
-See [`on.ref_delete` syntax reference](/eas/workflows/syntax/#onref_delete).
-
-### Pull request workflows
-
-Run when pull requests are opened, updated, or labeled. Useful for preview builds and automated testing before merge.
-
-### Scheduled workflows
-
-Run on a cron schedule (for example, nightly builds or weekly regression tests). Scheduled workflows run on the default branch only.
-
-### Manual workflows
-
-Run on-demand using `eas workflow:run` command. Supports parameterized inputs for flexible execution.
-
-### App Store Connect workflows
-
-Run when selected App Store Connect events occur (for example app version state changes, build upload states, external beta states, or beta feedback events).
-
-To use App Store Connect triggers, configure an App Store Connect connection in the EAS dashboard: **[Project settings > General > Connections](https://expo.dev/accounts/[account]/projects/[project]/settings)**.
-
-See [`on.app_store_connect` syntax reference](/eas/workflows/syntax/#onapp_store_connect) for configuration details and supported values.
+- **Pre-packaged jobs**: [ready-to-use jobs](/eas/workflows/pre-packaged-jobs/) that build, submit, and update your app, run Maestro E2E tests, send Slack messages, and more. [Custom jobs](/eas/workflows/syntax/#custom-jobs) run any command you need.
+- **Flexible triggers**: run workflows on [GitHub events](/eas/workflows/syntax/#on) (push, pull request, label, branch or tag deletion), on a cron schedule, on [App Store Connect events](/eas/workflows/syntax/#onapp_store_connect), manually with `eas workflow:run`, or from the [REST API](/eas/workflows/rest-api/).
+- **No infrastructure to manage**: jobs run on EAS-hosted macOS and Linux workers, so you don't need to maintain CI servers or configure Android Studio and Xcode.
+- **Everything on one dashboard**: builds, updates, test results, artifacts, and logs all appear on [expo.dev](https://expo.dev/).
+- **Faster releases**: combine `fingerprint`, `get-build`, and `update` jobs to skip redundant native builds and publish over-the-air updates when possible.
 
 ## When to use EAS Workflows
 
-| Scenario                                                                           | Recommendation |
-| ---------------------------------------------------------------------------------- | -------------- |
-| Automate Android and iOS builds for your Expo and React Native apps                | <YesIcon />    |
-| Submit builds to App Store and Google Play automatically                           | <YesIcon />    |
-| Publish over-the-air updates on every commit or merge                              | <YesIcon />    |
-| Run E2E tests with Maestro as part of CI                                           | <YesIcon />    |
-| Trigger builds and updates from GitHub push or pull request events                 | <YesIcon />    |
-| Deploy web apps to EAS Hosting                                                     | <YesIcon />    |
-| Use fingerprint-based logic to skip redundant native builds                        | <YesIcon />    |
-| CI/CD without managing your own infrastructure or macOS machines                   | <YesIcon />    |
-| Highly customized pipelines with non-EAS services (such as Docker, custom runners) | <NoIcon />     |
-| Matrix builds with multiple configuration variations in parallel                   | <NoIcon />     |
-| CI/CD for non-React Native projects                                                | <NoIcon />     |
+| Scenario                                                                             | Recommendation |
+| ------------------------------------------------------------------------------------ | -------------- |
+| Automate builds, app store submissions, and over-the-air updates for your app        | <YesIcon />    |
+| Run E2E tests with Maestro as part of CI                                             | <YesIcon />    |
+| Trigger builds and updates from GitHub push or pull request events                   | <YesIcon />    |
+| CI/CD without managing your own infrastructure or macOS machines                     | <YesIcon />    |
+| Highly customized pipelines that depend on non-EAS services (Docker, custom runners) | <NoIcon />     |
+
+See [Limitations](/eas/workflows/limitations) for current constraints, such as matrix builds.
 
 ## Frequently asked questions (FAQ)
 
@@ -168,14 +131,7 @@ Share the following slide in your next team meeting to discuss what EAS Workflow
 
 </FAQ>
 
-## Get started
-
-<BoxLink
-  title="Create your first workflow"
-  description="Learn how to create and run your first workflow."
-  href="/eas/workflows/get-started"
-  Icon={Dataflow03Icon}
-/>
+## Learn more
 
 <BoxLink
   title="Pre-packaged jobs"

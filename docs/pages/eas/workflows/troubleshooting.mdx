@@ -1,0 +1,56 @@
+---
+title: Troubleshoot EAS Workflows
+sidebar_title: Troubleshooting
+description: Learn how to diagnose and fix common issues when running EAS Workflows.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+This page lists common EAS Workflows failure modes and how to fix them. If a workflow doesn't start or a job fails, start with the workflow run's detail page on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows). It shows each job's status, logs, and errors.
+
+## Validate the workflow file
+
+Check a workflow file for YAML syntax and schema errors before running it:
+
+<Terminal cmd={['$ eas workflow:validate .eas/workflows/my-workflow.yml']} />
+
+The [Expo Tools VS Code extension](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) also provides descriptions and autocompletion for workflow files as you edit them.
+
+## Workflow doesn't start on GitHub events
+
+If a workflow with an [`on` trigger](/eas/workflows/syntax/#on) never starts, check the following:
+
+- **GitHub connection**: triggers such as `push`, `pull_request`, and `ref_delete` require your EAS project to be [linked to a GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events).
+- **Workflow file location and ref**: the file must be inside the **.eas/workflows** directory. For `push` and `pull_request` events, EAS reads the workflow file from the triggering commit, so the file must exist on that branch. For `schedule` and `ref_delete` events, EAS reads the workflow file from the default branch.
+- **Trigger filters**: `branches`, `tags`, `paths`, `types`, and `labels` filters must match the event. For example, `on.push.branches: ['main']` ignores pushes to every other branch.
+- **Commit message skip markers**: runs triggered by `push` and `pull_request` events are skipped when the commit message contains `[eas skip]`, `[skip eas]`, or `[no eas]`.
+- **Scheduled workflows**: `on.schedule` workflows only run from the repository's default branch, run in the GMT time zone, and may be delayed during periods of high load.
+
+## Build job fails with "Missing build profile in eas.json"
+
+Pre-packaged [build jobs](/eas/workflows/pre-packaged-jobs/#build) require the build profile they use to exist in your project's **eas.json**. Build jobs use the `production` profile unless the job's `params.profile` says otherwise, so an empty or missing **eas.json** fails with this error.
+
+Add the profile to **eas.json**, or run `eas build:configure` to generate the file with default profiles. Builds also need app signing credentials for each platform. Completing one build with EAS CLI using the same platform and profile sets up both. See [create your first build](/build/setup/).
+
+## Environment variable is empty or missing
+
+[EAS environment variables](/eas/environment-variables/) are scoped to an environment: `production`, `preview`, or `development`. A job only sees variables from the environment set by its [`environment` key](/eas/workflows/syntax/#jobsjob_idenvironment), which defaults to `production`. If a variable is empty in a job, confirm the variable exists in the environment the job uses, or set the job's `environment` to match where the variable is defined.
+
+Also note that the [`env` key](/eas/workflows/syntax/#jobsjob_idenv) is not available on the `apple-device-registration-request`, `branch-delete`, `doc`, `get-build`, `github-comment`, `require-approval`, and `slack` jobs.
+
+## Workflow run is stuck in "action-required"
+
+The `action-required` status means a job is waiting on a person, not that something is broken:
+
+- A [`require-approval`](/eas/workflows/pre-packaged-jobs/#require-approval) job waits until a team member approves or rejects the run on the workflow run's detail page.
+- An [`apple-device-registration-request`](/eas/workflows/pre-packaged-jobs/#apple-device-registration-request) job waits until a device enrolls and a team member approves the enrollment.
+
+Open the workflow run's detail page to complete the pending action.
+
+## Branch delete job fails with a channel mapping error
+
+A [`branch-delete`](/eas/workflows/pre-packaged-jobs/#branch-delete) job fails when a channel points to the EAS Update branch it is trying to delete. Remove or repoint the [channel–branch link](/eas-update/eas-cli/) before deleting the branch. To keep cleanup workflows from failing on branches that are already gone, leave `fail_on_missing` at its default of `false`.
+
+## More help
+
+If you're still stuck, email [workflows@expo.dev](mailto:workflows@expo.dev) with your workflow file and a link to the failing run, or ask in the [Expo Discord](https://chat.expo.dev/).
