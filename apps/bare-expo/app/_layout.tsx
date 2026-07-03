@@ -22,22 +22,24 @@ try {
   // do nothing
 }
 
-DevMenu.registerDevMenuItems([
-  {
-    name: 'Action 1',
-    callback: () => {
-      console.log('Action 1 executed');
+if (process.env.EXPO_OS !== 'web') {
+  DevMenu.registerDevMenuItems([
+    {
+      name: 'Action 1',
+      callback: () => {
+        console.log('Action 1 executed');
+      },
+      shouldCollapse: true,
     },
-    shouldCollapse: true,
-  },
-  {
-    name: 'Action 2',
-    callback: () => {
-      console.log('Action 2 executed');
+    {
+      name: 'Action 2',
+      callback: () => {
+        console.log('Action 2 executed');
+      },
+      shouldCollapse: false,
     },
-    shouldCollapse: false,
-  },
-]);
+  ]);
+}
 
 Splashscreen.setOptions({ fade: true, duration: 800 });
 
