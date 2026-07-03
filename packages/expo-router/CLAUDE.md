@@ -125,6 +125,19 @@ File-based routing library for React Native and web applications. It provides au
 └── build/                     # Compiled JavaScript output
 ```
 
+## Native Stack Escape Hatch
+
+Native Stack screen options expose `unstable_nativeProps` for raw `react-native-screens` props that Expo Router does not model directly. The prop is split by native target:
+
+```tsx
+unstable_nativeProps: {
+  screen?: Partial<ScreenProps>;
+  header?: Partial<ScreenStackHeaderConfigProps>;
+}
+```
+
+When changing this behavior, keep raw props after Expo Router's optional defaults so callers can override those defaults, but before stack-owned identity props, event handlers, and composed header children/items so internal wiring remains intact.
+
 ## Testing
 
 Run tests with jest-expo multi-platform presets:

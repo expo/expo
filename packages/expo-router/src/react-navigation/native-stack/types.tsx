@@ -91,6 +91,43 @@ export type NativeStackNavigationHelpers = NavigationHelpers<
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type NativeStackNavigationConfig = {};
 
+export type NativeStackScreenNativeProps = Partial<
+  Omit<
+    ScreenProps,
+    | 'children'
+    | 'screenId'
+    | 'activityState'
+    | 'style'
+    | 'aria-hidden'
+    | 'preventNativeDismiss'
+    | 'nativeBackButtonDismissalEnabled'
+    | 'headerConfig'
+    | 'shouldFreeze'
+    | 'onWillAppear'
+    | 'onWillDisappear'
+    | 'onAppear'
+    | 'onDisappear'
+    | 'onDismissed'
+    | 'onGestureCancel'
+    | 'onSheetDetentChanged'
+    | 'onHeaderBackButtonClicked'
+    | 'onNativeDismissCancelled'
+    | 'onHeaderHeightChange'
+  >
+>;
+
+export type NativeStackHeaderNativeProps = Partial<
+  Omit<
+    ScreenStackHeaderConfigProps,
+    'children' | 'headerLeftBarButtonItems' | 'headerRightBarButtonItems'
+  >
+>;
+
+export type NativeStackNativeProps = {
+  screen?: NativeStackScreenNativeProps;
+  header?: NativeStackHeaderNativeProps;
+};
+
 export type NativeStackHeaderProps = {
   /**
    * Options for the back button.
@@ -398,6 +435,16 @@ export type NativeStackNavigationOptions = {
    * If you don't have a `ScrollView`, specify `headerTransparent: false`.
    */
   headerSearchBarOptions?: SearchBarProps;
+  /**
+   * Props passed to the underlying native stack implementation in `react-native-screens`.
+   * Use this to configure props that are not directly exposed by Expo Router.
+   *
+   * > **Note**: This is an unstable API and may change or be removed in minor versions.
+   *
+   * @platform android
+   * @platform ios
+   */
+  unstable_nativeProps?: NativeStackNativeProps;
   /**
    * Boolean indicating whether to show the menu on longPress of iOS >= 14 back button. Defaults to `true`.
    * Requires `react-native-screens` version >=3.3.0.
