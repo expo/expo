@@ -144,6 +144,20 @@ export function BaseNavigationContainer({
     }
   });
 
+  const canDismiss = useLatestCallback(() => {
+    if (listeners.focus[0] == null) {
+      return false;
+    }
+
+    const { result, handled } = listeners.focus[0]((navigation) => navigation.canDismiss?.());
+
+    if (handled) {
+      return result ?? false;
+    } else {
+      return false;
+    }
+  });
+
   const resetRoot = useLatestCallback((state?: PartialState<NavigationState> | NavigationState) => {
     // Always target the live root navigator, ignoring the incoming state's key. Compiled states
     // (from `getStateFromPath`) carry deterministic keys that never match the live-minted root key,
@@ -197,6 +211,7 @@ export function BaseNavigationContainer({
       resetRoot,
       isFocused: () => true,
       canGoBack,
+      canDismiss,
       getParent: () => undefined,
       getState,
       getRootState,
@@ -209,6 +224,7 @@ export function BaseNavigationContainer({
     }),
     [
       canGoBack,
+      canDismiss,
       dispatch,
       emitter,
       getCurrentOptions,

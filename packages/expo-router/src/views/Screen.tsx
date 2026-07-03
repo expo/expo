@@ -31,7 +31,7 @@ export function Screen<TOptions extends object = object>({ name, options }: Scre
   const route = useRoute();
   const navigation = useNavigation();
   const isFocused = navigation.isFocused();
-  const navigatorType = use(NavigatorTypeContext);
+  const navigatorType = use(NavigatorTypeContext)?.type;
   const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route, navigatorType);
 
   useSafeLayoutEffect(() => {

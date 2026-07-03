@@ -2,7 +2,10 @@
 import * as React from 'react';
 
 import { useOptionalContextKey } from '../../../Route';
-import { NavigatorTypeContext } from '../../core/NavigatorTypeContext';
+import {
+  NavigatorTypeContext,
+  useNavigatorTypeContextValue,
+} from '../../core/NavigatorTypeContext';
 import {
   createNavigatorFactory,
   type NavigatorTypeBagBase,
@@ -91,8 +94,10 @@ function BottomTabNavigator({
   }, [state.routeNames, nonLazyRouteNames, backBehavior, initialRouteName]);
   usePreloadRoutes(state, navigation, routeNamesToPreload);
 
+  const navigatorTypeValue = useNavigatorTypeContextValue('tab', state.key);
+
   return (
-    <NavigatorTypeContext value="tab">
+    <NavigatorTypeContext value={navigatorTypeValue}>
       <NavigationContent>
         <BottomTabView
           {...rest}

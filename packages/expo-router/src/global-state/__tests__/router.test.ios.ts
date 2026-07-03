@@ -26,6 +26,7 @@ jest.mock('../store', () => ({
       isReady: jest.fn(() => true),
       current: {
         canGoBack: jest.fn(),
+        canDismiss: jest.fn(),
         setParams: jest.fn(),
         goBack: jest.fn(),
         getRootState: jest.fn(),
@@ -75,115 +76,18 @@ beforeEach(() => {
   (store as any).state = undefined;
 });
 
-// TODO(@ubax): uncomment when canDismiss is fixed
-describe.skip('canDismiss', () => {
-  it('returns false when state is undefined', () => {
-    (store as any).state = undefined;
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('returns false for single-route stack', () => {
-    (store as any).state = {
-      type: 'stack',
-      routes: [{ name: 'home' }],
-      index: 0,
-    };
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('returns true for stack with >1 routes', () => {
-    (store as any).state = {
-      type: 'stack',
-      routes: [{ name: 'home' }, { name: 'detail' }],
-      index: 1,
-    };
-    expect(canDismiss()).toBe(true);
-  });
-
-  it('traverses nested navigators (tab → stack with 2 routes → true)', () => {
-    (store as any).state = {
-      type: 'tab',
-      routes: [
-        {
-          name: 'tab1',
-          state: {
-            type: 'stack',
-            routes: [{ name: 'page1' }, { name: 'page2' }],
-            index: 1,
-          },
-        },
-      ],
-      index: 0,
-    };
-    expect(canDismiss()).toBe(true);
-  });
-
-  it('returns false when index is undefined in state', () => {
-    (store as any).state = {
-      type: 'tab',
-      routes: [{ name: 'tab1' }],
-    };
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('returns false for non-stack navigator with single route', () => {
-    (store as any).state = {
-      type: 'tab',
-      routes: [
-        {
-          name: 'tab1',
-          state: {
-            type: 'stack',
-            routes: [{ name: 'only-page' }],
-            index: 0,
-          },
-        },
-      ],
-      index: 0,
-    };
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('traverses deeply nested navigators (tab → stack → tab → stack with 2 routes)', () => {
-    (store as any).state = {
-      type: 'tab',
-      routes: [
-        {
-          name: 'tab1',
-          state: {
-            type: 'stack',
-            routes: [
-              {
-                name: 'nested-tab',
-                state: {
-                  type: 'tab',
-                  routes: [
-                    {
-                      name: 'inner-tab',
-                      state: {
-                        type: 'stack',
-                        routes: [{ name: 'page1' }, { name: 'page2' }],
-                        index: 1,
-                      },
-                    },
-                  ],
-                  index: 0,
-                },
-              },
-            ],
-            index: 0,
-          },
-        },
-      ],
-      index: 0,
-    };
-    expect(canDismiss()).toBe(true);
-  });
-});
-
 describe('canDismiss', () => {
-  it('throws not implemented', () => {
-    expect(() => canDismiss()).toThrow('canDismiss is not implemented yet.');
+  it('returns false when navigation not ready', () => {
+    (store.navigationRef.isReady as jest.Mock).mockReturnValueOnce(false);
+
+    expect(canDismiss()).toBe(false);
+  });
+
+  it('delegates to navigationRef.current.canDismiss()', () => {
+    (store.navigationRef.current!.canDismiss as jest.Mock).mockReturnValueOnce(true);
+
+    expect(canDismiss()).toBe(true);
+    expect(store.navigationRef.current!.canDismiss).toHaveBeenCalled();
   });
 });
 

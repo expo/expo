@@ -46,7 +46,7 @@ function UnmatchedInner() {
   }, []);
 
   const isFocused = navigation.isFocused();
-  const navigatorType = React.use(NavigatorTypeContext);
+  const navigatorType = React.use(NavigatorTypeContext)?.type;
   const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route, navigatorType);
 
   /** This route may be prefetched if a <Link prefetch href="/<unmatched>" /> is used */

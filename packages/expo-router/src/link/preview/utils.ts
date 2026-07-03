@@ -1,113 +1,125 @@
-import type { TabPath } from './native';
-import type { ReactNavigationState } from '../../global-state/router-store';
-import type { NavigationRoute, ParamListBase } from '../../react-navigation/native';
+import { store, type ReactNavigationState } from '../../global-state/router-store';
+import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/stateUtils';
+import { removeInternalExpoRouterParams } from '../../navigationParams';
+import type {
+  NavigationRoute,
+  NavigationState,
+  ParamListBase,
+  TabNavigationState,
+} from '../../react-navigation/native';
 import type { Href } from '../../types';
+import { resolveHref } from '../href';
+import type { TabPath } from './native';
 
-// TODO(@ubax): rework the link preview navigation to check state types on native. `type` was
-// removed from navigation state, so we can no longer detect the tab navigators along the href path.
 export function getTabPathFromRootStateByHref(
-  _href: Href,
-  _rootState: ReactNavigationState
+  href: Href,
+  rootState: ReactNavigationState,
+  tabNavigatorKeys: ReadonlySet<string>
 ): TabPath[] {
-  return [];
-  // const hrefState = store.getStateForHref(resolveHref(href));
-  // const state: ReactNavigationState | undefined = rootState;
-  // if (!hrefState || !state) {
-  //   return [];
-  // }
-  // // Replicating the logic from `linkTo`
-  // const { navigationRoutes } = findDivergentState(hrefState, state as NavigationState, true);
+  const hrefState = store.getStateForHref(resolveHref(href));
+  const state: ReactNavigationState | undefined = rootState;
+  if (!hrefState || !state) {
+    return [];
+  }
+  // Replicating the logic from `linkTo`
+  const { navigationRoutes } = findDivergentState(
+    hrefState,
+    state as NavigationState,
+    tabNavigatorKeys
+  );
 
-  // if (!navigationRoutes.length) {
-  //   return [];
-  // }
+  if (!navigationRoutes.length) {
+    return [];
+  }
 
-  // const tabPath: TabPath[] = [];
-  // navigationRoutes.forEach((route, i, arr) => {
-  //   if (route.state?.type === 'tab') {
-  //     const tabState = route.state as TabNavigationState<ParamListBase>;
-  //     const oldTabKey = tabState.routes[tabState.index]!.key;
-  //     // The next route will be either stack inside a tab or a new tab key
-  //     if (!arr[i + 1]) {
-  //       throw new Error(
-  //         `New tab route is missing for ${route.key}. This is likely an internal Expo Router bug.`
-  //       );
-  //     }
-  //     const newTabKey = arr[i + 1]!.key;
-  //     tabPath.push({ oldTabKey, newTabKey });
-  //   }
-  // });
-  // return tabPath;
+  const tabPath: TabPath[] = [];
+  navigationRoutes.forEach((route, i, arr) => {
+    // A navigation route is a tab level when its child navigator is one of the looked-through tabs.
+    if (route.state?.key != null && tabNavigatorKeys.has(route.state.key)) {
+      const tabState = route.state as TabNavigationState<ParamListBase>;
+      const oldTabKey = tabState.routes[tabState.index]!.key;
+      // The next route is the target tab route (a stack inside a tab or a new tab key).
+      if (!arr[i + 1]) {
+        throw new Error(
+          `New tab route is missing for ${route.key}. This is likely an internal Expo Router bug.`
+        );
+      }
+      const newTabKey = arr[i + 1]!.key;
+      tabPath.push({ oldTabKey, newTabKey });
+    }
+  });
+  return tabPath;
 }
 
-// TODO(@ubax): rework the link preview navigation to check state types on native. `type` was
-// removed from navigation state, so we can no longer detect the stack holding a preloaded route.
 export function getPreloadedRouteFromRootStateByHref(
-  _href: Href,
-  _rootState: ReactNavigationState
+  href: Href,
+  rootState: ReactNavigationState,
+  tabNavigatorKeys: ReadonlySet<string>
 ): NavigationRoute<ParamListBase, string> | undefined {
-  // const hrefState = store.getStateForHref(resolveHref(href));
-  // const state: ReactNavigationState | undefined = rootState;
-  // if (!hrefState || !state) {
-  //   return undefined;
-  // }
-  // // Replicating the logic from `linkTo`
-  // const { navigationState, actionStateRoute } = findDivergentState(
-  //   hrefState,
-  //   state as NavigationState,
-  //   true
-  // );
+  const hrefState = store.getStateForHref(resolveHref(href));
+  const state: ReactNavigationState | undefined = rootState;
+  if (!hrefState || !state) {
+    return undefined;
+  }
+  // Replicating the logic from `linkTo`
+  const { navigationState, actionStateRoute } = findDivergentState(
+    hrefState,
+    state as NavigationState,
+    tabNavigatorKeys
+  );
 
-  // if (!navigationState || !actionStateRoute) {
-  //   return undefined;
-  // }
+  if (!navigationState || !actionStateRoute) {
+    return undefined;
+  }
 
-  // if (navigationState.type === 'stack') {
-  //   const stackState = navigationState as StackNavigationState<ParamListBase>;
-  //   const payload = getPayloadFromStateRoute(actionStateRoute);
+  // No navigator-kind check: this fork keeps no `preloadedRoutes` array, so preloaded (inactive)
+  // routes are simply the `routes` tail after `index` — for every navigator kind. Tab and drawer
+  // navigators keep their inactive items in the tail too, so unlike the old stack-only lookup this
+  // can intentionally match a preloaded tab route (e.g. previewing a sibling leaf tab).
+  const payload = getPayloadFromStateRoute(actionStateRoute);
+  const index = navigationState.index ?? 0;
 
-  //   const preloadedRoute = stackState.preloadedRoutes.find(
-  //     (route) =>
-  //       route.name === actionStateRoute.name &&
-  //       deepEqual(
-  //         removeInternalExpoRouterParams(route.params),
-  //         removeInternalExpoRouterParams(payload.params)
-  //       )
-  //   );
+  const preloadedRoute = navigationState.routes
+    .slice(index + 1)
+    .find(
+      (route) =>
+        route.name === actionStateRoute.name &&
+        deepEqual(
+          removeInternalExpoRouterParams(route.params),
+          removeInternalExpoRouterParams(payload.params)
+        )
+    );
 
-  //   const activeRoute = stackState.routes[stackState.index]!;
-  //   // When the active route is the same as the preloaded route,
-  //   // then we should not navigate. It aligns with base link behavior.
-  //   if (
-  //     activeRoute.name === preloadedRoute?.name &&
-  //     deepEqual(
-  //       // using ?? {}, because from our perspective undefined === {}, as both mean no params
-  //       removeInternalExpoRouterParams(activeRoute.params ?? {}),
-  //       removeInternalExpoRouterParams(payload.params ?? {})
-  //     )
-  //   ) {
-  //     return undefined;
-  //   }
+  const activeRoute = navigationState.routes[index]!;
+  // When the active route already matches the target, we should not navigate. This aligns with base
+  // link behavior.
+  if (
+    activeRoute.name === preloadedRoute?.name &&
+    deepEqual(
+      // using ?? {}, because from our perspective undefined === {}, as both mean no params
+      removeInternalExpoRouterParams(activeRoute.params ?? {}),
+      removeInternalExpoRouterParams(payload.params ?? {})
+    )
+  ) {
+    return undefined;
+  }
 
-  //   return preloadedRoute;
-  // }
-
-  return undefined;
+  return preloadedRoute;
 }
 
-// export function deepEqual(
-//   a: { [key: string]: any } | undefined,
-//   b: { [key: string]: any } | undefined
-// ): boolean {
-//   if (a === b) {
-//     return true;
-//   }
-//   if (a == null || b == null) {
-//     return false;
-//   }
-//   if (typeof a !== 'object' || typeof b !== 'object') {
-//     return false;
-//   }
-//   const keys = Object.keys(a);
-//   return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
-// }
+export function deepEqual(
+  a: { [key: string]: any } | undefined,
+  b: { [key: string]: any } | undefined
+): boolean {
+  if (a === b) {
+    return true;
+  }
+  if (a == null || b == null) {
+    return false;
+  }
+  if (typeof a !== 'object' || typeof b !== 'object') {
+    return false;
+  }
+  const keys = Object.keys(a);
+  return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
+}

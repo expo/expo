@@ -820,29 +820,26 @@ it('can still use <Screen /> while prefetching in stack', () => {
     },
   });
 
-  // The prefetched 'second' screen now mounts with a complete state and renders its own
-  // <Stack.Screen> header ('Should only change after focus') during prefetch.
+  // While prefetched (unfocused), the screen's own <Stack.Screen> override is suppressed by the
+  // preloaded-in-stack guard, so the layout-declared 'custom-title' still shows.
   expect(headerTitle.mock.calls).toStrictEqual([
     // TODO(@ubax): find out why this is called twice on initial render
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
-    [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
-    [{ tintColor: 'rgb(0, 122, 255)', children: 'Should only change after focus' }],
   ]);
 
-  // Check that it actually prefetched the screen (it renders its own <Stack.Screen> override).
-  expect(screen.UNSAFE_getByProps({ title: 'Should only change after focus' })).toBeDefined();
+  // Check that it actually prefetched the screen
+  expect(screen.UNSAFE_getByProps({ title: 'custom-title' })).toBeDefined();
 
   headerTitle.mockClear();
   act(() => router.push('/second'));
 
   expect(headerTitle.mock.calls).toStrictEqual([
-    // Call after navigation. The prefetched screen already applied its own <Stack.Screen>
-    // override during prefetch, so its title is 'Should only change after focus' from the start.
+    // Call after navigation
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
-    [{ tintColor: 'rgb(0, 122, 255)', children: 'Should only change after focus' }],
-    // Call from the <Stack.Screen />
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+    // Call from the <Stack.Screen /> — the override applies once the screen gains focus.
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'Should only change after focus' }],
   ]);

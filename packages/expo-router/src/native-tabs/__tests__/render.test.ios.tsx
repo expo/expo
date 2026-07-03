@@ -831,6 +831,22 @@ it('when nesting NativeTabs, it throws an Error', () => {
   );
 });
 
+it('throws when Trigger is used outside of a tab navigator', () => {
+  expect(() =>
+    renderRouter(
+      {
+        _layout: () => <Stack />,
+        index: () => (
+          <View testID="index">
+            <NativeTabs.Trigger name="index" />
+          </View>
+        ),
+      },
+      { initialUrl: '/' }
+    )
+  ).toThrow('Trigger component can only be used in the tab screen. Current route: index');
+});
+
 describe('Native props validation', () => {
   let warn: jest.SpyInstance;
   beforeEach(() => {

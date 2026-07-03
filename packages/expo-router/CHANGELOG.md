@@ -23,6 +23,7 @@
 ### 🐛 Bug fixes
 
 - [android] Disable safe area insets in Native Tabs on Android when tab bar is hidden. ([#47611](https://github.com/expo/expo/pull/47611) by [@debitan](https://github.com/debitan))
+- Restore the navigator-kind consumers broken by removing `type` from the navigation state: `router.canDismiss()` (now simulates the `POP` that `dismiss()` dispatches, so a stack whose only extra route is a preloaded one correctly reports `false`), cross-tab link-preview navigation, scroll-to-top on tab press, and the `NativeTabs.Trigger` placement assertion — navigator kind now flows only from `NavigatorTypeContext` inside React. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
 - Sync config plugin `Props` type with the options schema, adding the missing `redirects`, `rewrites`, `platformRoutes`, and `disableSynchronousScreensUpdates` options. ([#46677](https://github.com/expo/expo/pull/46677) by [@zoontek](https://github.com/zoontek))
 - [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))
 - Allow async routes to rehydrate synchronously by carrying through preloaded modules preventing FOUC in production output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))

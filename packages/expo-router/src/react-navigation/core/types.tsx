@@ -370,6 +370,13 @@ type NavigationHelpersCommon<
   canGoBack(): boolean;
 
   /**
+   * Check if dispatching a `POP` (stack dismiss) will be handled by some navigator on the focused
+   * chain. Unlike `canGoBack`, tab/drawer switches don't count — only a poppable stack does.
+   * Optional so `NavigationProp`-typed mocks needn't implement it; the real helpers always do.
+   */
+  canDismiss?(): boolean;
+
+  /**
    * Returns the name of the navigator specified in the `name` prop.
    * If no name is specified, returns `undefined`.
    */

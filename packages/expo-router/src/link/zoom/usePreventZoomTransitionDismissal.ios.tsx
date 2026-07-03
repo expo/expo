@@ -22,7 +22,7 @@ export function usePreventZoomTransitionDismissal(
   const navigation = useNavigation();
   const isPreview = useIsPreview();
   const isFocused = navigation.isFocused();
-  const navigatorType = use(NavigatorTypeContext);
+  const navigatorType = use(NavigatorTypeContext)?.type;
   const isPreloaded = isPreview
     ? false
     : isRoutePreloadedInStack(navigation.getState(), route, navigatorType);

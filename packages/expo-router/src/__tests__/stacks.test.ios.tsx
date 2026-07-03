@@ -2,7 +2,6 @@ import { act, screen } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -40,11 +39,9 @@ describe('canDismiss', () => {
       }
     );
 
-    // TODO(@ubax): uncomment when canDismiss is fixed
-    // expect(router.canDismiss()).toBe(false);
+    expect(router.canDismiss()).toBe(false);
     act(() => router.push('/b'));
-    // TODO(@ubax): uncomment when canDismiss is fixed
-    // expect(router.canDismiss()).toBe(true);
+    expect(router.canDismiss()).toBe(true);
   });
 
   it('should always return false while not within a stack', () => {
@@ -59,11 +56,9 @@ describe('canDismiss', () => {
       }
     );
 
-    // TODO(@ubax): uncomment when canDismiss is fixed
-    // expect(router.canDismiss()).toBe(false);
+    expect(router.canDismiss()).toBe(false);
     act(() => router.push('/b'));
-    // TODO(@ubax): uncomment when canDismiss is fixed
-    // expect(router.canDismiss()).toBe(false);
+    expect(router.canDismiss()).toBe(false);
   });
 });
 
@@ -114,12 +109,10 @@ test('dismissAll', () => {
 
   act(() => router.dismissAll());
   expect(screen).toHavePathname('/a');
-  // TODO(@ubax): uncomment when canDismiss is fixed
-  // expect(router.canDismiss()).toBe(false);
+  expect(router.canDismiss()).toBe(false);
 });
 
-// TODO(@ubax): restore once navigator-kind resolution is reworked (type removed from navigation state).
-test.skip('dismissAll nested', () => {
+test('dismissAll nested', () => {
   renderRouter(
     {
       _layout: () => <Tabs />,
@@ -147,270 +140,44 @@ test.skip('dismissAll nested', () => {
   testRouter.push('/one/two/page');
   testRouter.push('/one/two/page');
 
-  // We should have three top level routes (/a, /b, /one)
-  // The last route should include a sub-state for /one/_layout
-  // It will have three routes  (/one/index, /one/page, /one/two)
-  // The last route should include a sub-state for /one/two/_layout
-  expect(store.state).toStrictEqual({
-    index: 0,
-    key: expect.any(String),
-    routeNames: ['__root', '+not-found', '_sitemap'],
-    routes: [
-      {
-        key: expect.any(String),
-        name: '__root',
-        params: undefined,
-        state: {
-          index: 2,
-          key: expect.any(String),
-          routeNames: ['a', 'b', 'one'],
-          routes: [
-            {
-              key: expect.any(String),
-              name: 'a',
-              params: undefined,
-              path: '/a',
-            },
-            {
-              key: expect.any(String),
-              name: 'b',
-              params: {},
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'one',
-              params: {
-                params: {},
-                screen: 'index',
-              },
-              path: undefined,
-              state: {
-                index: 3,
-                key: expect.any(String),
-                routeNames: ['index', 'two', 'page'],
-                routes: [
-                  {
-                    key: expect.any(String),
-                    name: 'index',
-                    params: {},
-                    path: undefined,
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'page',
-                    params: {},
-                    path: undefined,
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'page',
-                    params: {},
-                    path: undefined,
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'two',
-                    params: {
-                      params: {},
-                      screen: 'index',
-                    },
-                    path: undefined,
-                    state: {
-                      index: 2,
-                      key: expect.any(String),
-                      routeNames: ['index', 'page'],
-                      routes: [
-                        {
-                          key: expect.any(String),
-                          name: 'index',
-                          params: {},
-                          path: undefined,
-                        },
-                        {
-                          key: expect.any(String),
-                          name: 'page',
-                          params: {},
-                          path: undefined,
-                        },
-                        {
-                          key: expect.any(String),
-                          name: 'page',
-                          params: {},
-                          path: undefined,
-                        },
-                      ],
-                      stale: false,
-                    },
-                  },
-                ],
-                stale: false,
-              },
-            },
-          ],
-          stale: false,
-        },
-      },
-    ],
-    stale: false,
-  });
+  expect(screen).toHavePathname('/one/two/page');
 
-  // This should only dismissing the sub-state for /one/two/_layout
+  // Structural view of each level: [route names, focused index], from the root tabs down.
+  const levels = () => {
+    const result: [string[], number | undefined][] = [];
+    let state = (screen as ReturnType<typeof renderRouter>).getRouterState()?.routes[0]?.state;
+    while (state) {
+      result.push([state.routes.map((route) => route.name), state.index]);
+      state = state.routes[state.index ?? 0]?.state;
+    }
+    return result;
+  };
+
+  expect(levels()).toStrictEqual([
+    [['a', 'one', 'b'], 1],
+    [['index', 'page', 'page', 'two'], 3],
+    [['index', 'page', 'page'], 2],
+  ]);
+
+  // dismissAll pops only the innermost stack (/one/two/_layout) back to its root; outer levels
+  // keep their history intact.
   testRouter.dismissAll();
   expect(screen).toHavePathname('/one/two');
-  expect(store.state).toStrictEqual({
-    index: 0,
-    key: expect.any(String),
-    routeNames: ['__root', '+not-found', '_sitemap'],
-    routes: [
-      {
-        key: expect.any(String),
-        name: '__root',
-        params: undefined,
-        state: {
-          index: 2,
-          key: expect.any(String),
-          routeNames: ['a', 'b', 'one'],
-          routes: [
-            {
-              key: expect.any(String),
-              name: 'a',
-              params: undefined,
-              path: '/a',
-            },
-            {
-              key: expect.any(String),
-              name: 'b',
-              params: {},
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'one',
-              params: {
-                params: {},
-                screen: 'index',
-              },
-              path: undefined,
-              state: {
-                index: 3,
-                key: expect.any(String),
-                routeNames: ['index', 'two', 'page'],
-                routes: [
-                  {
-                    key: expect.any(String),
-                    name: 'index',
-                    params: {},
-                    path: undefined,
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'page',
-                    params: {},
-                    path: undefined,
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'page',
-                    params: {},
-                    path: undefined,
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'two',
-                    params: {
-                      params: {},
-                      screen: 'index',
-                    },
-                    path: undefined,
-                    state: {
-                      index: 0,
-                      key: expect.any(String),
-                      routeNames: ['index', 'page'],
-                      routes: [
-                        {
-                          key: expect.any(String),
-                          name: 'index',
-                          params: {},
-                          path: undefined,
-                        },
-                      ],
-                      stale: false,
-                    },
-                  },
-                ],
-                stale: false,
-              },
-            },
-          ],
-          stale: false,
-        },
-      },
-    ],
-    stale: false,
-  });
+  expect(levels()).toStrictEqual([
+    [['a', 'one', 'b'], 1],
+    [['index', 'page', 'page', 'two'], 3],
+    [['index'], 0],
+  ]);
 
-  // This should only dismissing the sub-state for /one/_layout
+  // The next dismissAll pops the outer stack (/one/_layout) back to its root.
   testRouter.dismissAll();
   expect(screen).toHavePathname('/one');
-  expect(store.state).toStrictEqual({
-    index: 0,
-    key: expect.any(String),
-    routeNames: ['__root', '+not-found', '_sitemap'],
-    routes: [
-      {
-        key: expect.any(String),
-        name: '__root',
-        params: undefined,
-        state: {
-          index: 2,
-          key: expect.any(String),
-          routeNames: ['a', 'b', 'one'],
-          routes: [
-            {
-              key: expect.any(String),
-              name: 'a',
-              params: undefined,
-              path: '/a',
-            },
-            {
-              key: expect.any(String),
-              name: 'b',
-              params: {},
-              path: undefined,
-            },
-            {
-              key: expect.any(String),
-              name: 'one',
-              params: {
-                params: {},
-                screen: 'index',
-              },
-              path: undefined,
-              state: {
-                index: 0,
-                key: expect.any(String),
-                routeNames: ['index', 'two', 'page'],
-                routes: [
-                  {
-                    key: expect.any(String),
-                    name: 'index',
-                    params: {},
-                    path: undefined,
-                  },
-                ],
-                stale: false,
-              },
-            },
-          ],
-          stale: false,
-        },
-      },
-    ],
-    stale: false,
-  });
+  expect(levels()).toStrictEqual([
+    [['a', 'one', 'b'], 1],
+    [['index'], 0],
+  ]);
 
-  // Cannot dismiss again as we are at the root Tabs layout
+  // Cannot dismiss again as we are at the root Tabs layout.
   expect(router.canDismiss()).toBe(false);
 });
 

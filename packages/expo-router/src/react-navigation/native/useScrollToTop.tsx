@@ -10,6 +10,7 @@ import {
   type ParamListBase,
   useRoute,
 } from '../core';
+import { collectTabNavigatorKeys, NavigatorTypeContext } from '../core/NavigatorTypeContext';
 
 type ScrollOptions = { x?: number; y?: number; animated?: boolean };
 
@@ -56,6 +57,10 @@ function getScrollableNode(ref: React.RefObject<ScrollableWrapper>) {
 export function useScrollToTop(ref: React.RefObject<ScrollableWrapper>) {
   const navigation = use(NavigationContext);
   const route = useRoute();
+  // Navigation state no longer carries a `type`; the tab navigators owning this screen are read
+  // from the React context chain by their navigation state keys.
+  const navigatorType = use(NavigatorTypeContext);
+  const tabKeys = React.useMemo(() => collectTabNavigatorKeys(navigatorType), [navigatorType]);
 
   if (navigation === undefined) {
     throw new Error(
@@ -69,11 +74,9 @@ export function useScrollToTop(ref: React.RefObject<ScrollableWrapper>) {
     // If the screen is nested inside multiple tab navigators, we should scroll to top for any of them
     // So we need to find all the parent tab navigators and add the listeners there
     while (currentNavigation) {
-      // TODO(@ubax): `type` was removed from navigation state, so we can no longer detect which
-      // parent navigators are tabs to attach `tabPress` scroll-to-top listeners.
-      // if (currentNavigation.getState().type === 'tab') {
-      tabNavigations.push(currentNavigation);
-      // }
+      if (tabKeys.has(currentNavigation.getState().key)) {
+        tabNavigations.push(currentNavigation);
+      }
 
       currentNavigation = currentNavigation.getParent();
     }
@@ -122,5 +125,5 @@ export function useScrollToTop(ref: React.RefObject<ScrollableWrapper>) {
     return () => {
       unsubscribers.forEach((unsubscribe) => unsubscribe());
     };
-  }, [navigation, ref, route.key]);
+  }, [navigation, ref, route.key, tabKeys]);
 }

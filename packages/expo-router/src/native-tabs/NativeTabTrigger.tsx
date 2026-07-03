@@ -1,10 +1,11 @@
 'use client';
 
-import { useCallback, type ReactElement, type ReactNode } from 'react';
+import { use, useCallback, type ReactElement, type ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
-import { useNavigation } from '../react-navigation/native';
+import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
+import { useNavigation, useRoute } from '../react-navigation/native';
 import { useFocusEffect } from '../useFocusEffect';
 import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
 import {
@@ -55,8 +56,11 @@ import { appendIconOptions } from './utils/optionsIconConverter';
  * ```
  */
 function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
+  const route = useRoute();
   const navigation = useNavigation();
   const isInPreview = useIsPreview();
+  // Navigation state no longer carries a `type`; the nearest navigator kind comes from context.
+  const navigatorType = use(NavigatorTypeContext)?.type;
 
   useFocusEffect(
     useCallback(() => {
@@ -64,18 +68,15 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
       // As long as all tabs are loaded at the start, we don't need this check.
       // It is here to ensure similar behavior to stack
       if (!isInPreview) {
-        // TODO(@ubax): `type` was removed from navigation state, so we can no longer assert that a
-        // Trigger is mounted inside a tab navigator. Rework to resolve navigator kind from the
-        // static layout config.
-        // if (navigation.getState()?.type !== 'tab') {
-        //   throw new Error(
-        //     `Trigger component can only be used in the tab screen. Current route: ${route.name}`
-        //   );
-        // }
+        if (navigatorType !== 'tab') {
+          throw new Error(
+            `Trigger component can only be used in the tab screen. Current route: ${route.name}`
+          );
+        }
         const options = convertTabPropsToOptions(props, true);
         navigation.setOptions(options);
       }
-    }, [props, isInPreview])
+    }, [props, isInPreview, navigatorType, navigation, route.name])
   );
 
   return null;

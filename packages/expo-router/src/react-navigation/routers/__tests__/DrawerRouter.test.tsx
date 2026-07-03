@@ -6,7 +6,10 @@ import {
   DrawerRouter,
   type ParamListBase,
   type RouterConfigOptions,
+  StackActions,
 } from '..';
+
+const names = (state: { routes: { name: string }[] }) => state.routes.map((route) => route.name);
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
 
@@ -273,6 +276,40 @@ test('GO_BACK delegates to the tab router', () => {
       { key: 'qux-0', name: 'qux' },
     ],
   });
+});
+
+test('REPLACE drops the replaced route from the back stack (inherited from the tab router)', () => {
+  const router = DrawerRouter({ backBehavior: 'firstRoute' });
+  const options: RouterConfigOptions = {
+    routeNames: ['one', 'two'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  // Focus one at index 0. replace two: JUMP_TO two -> firstRoute [one, two] index 1,
+  // then prune the replaced one past focused -> [two, one] index 0. GO_BACK -> null.
+  const state: DrawerNavigationState<ParamListBase> = {
+    stale: false,
+    key: 'root',
+    index: 0,
+    routeNames: ['one', 'two'],
+    routes: [
+      { key: 'one', name: 'one' },
+      { key: 'two', name: 'two' },
+    ],
+  };
+
+  const replaced = router.getStateForAction(
+    state,
+    // REPLACE isn't part of the drawer action union; the tab wrapper handles it at runtime.
+    StackActions.replace('two') as unknown as Parameters<typeof router.getStateForAction>[1],
+    options
+  ) as DrawerNavigationState<ParamListBase>;
+  expect(names(replaced)).toEqual(['two', 'one']);
+  expect(replaced.index).toBe(0);
+
+  expect(router.getStateForAction(replaced, CommonActions.goBack(), options)).toBeNull();
 });
 
 test('getStateForRouteFocus focuses the route in place', () => {

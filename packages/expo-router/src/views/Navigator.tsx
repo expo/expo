@@ -8,7 +8,10 @@ import { useContextKey, useRouteNode } from '../Route';
 import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
-import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
+import {
+  NavigatorTypeContext,
+  useNavigatorTypeContextValue,
+} from '../react-navigation/core/NavigatorTypeContext';
 import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
 import { useSortedScreens } from '../useScreens';
@@ -77,6 +80,14 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
     initialRouteName,
   });
 
+  // A custom `router` has an unknown kind: it announces `type: undefined` so nearest-kind reads
+  // don't pair the ancestor's kind with this navigator's state, while the parent chain stays
+  // walkable; only the default stack announces a kind.
+  const navigatorTypeValue = useNavigatorTypeContextValue(
+    (router as unknown) === StackRouter ? stackNavigatorType : undefined,
+    navigation.state.key
+  );
+
   // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
   if (!sortedScreens.length) {
     console.warn(`Navigator at "${contextKey}" has no children.`);
@@ -90,9 +101,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {/* A custom `router` has an unknown kind, so only the default stack is announced. */}
-      <NavigatorTypeContext
-        value={(router as unknown) === StackRouter ? stackNavigatorType : undefined}>
+      <NavigatorTypeContext value={navigatorTypeValue}>
         <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
           {nonScreenChildren}
         </GuardContextProvider>
@@ -127,8 +136,10 @@ function SlotNavigator(props: NavigatorProps<any>) {
     children: useSortedScreens(screens ?? [], guardedRedirects),
   });
 
+  const navigatorTypeValue = useNavigatorTypeContextValue(stackNavigatorType, state.key);
+
   return (
-    <NavigatorTypeContext value={stackNavigatorType}>
+    <NavigatorTypeContext value={navigatorTypeValue}>
       <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
         <NavigationContent>
           {descriptors[state.routes[state.index]!.key]!.render()}

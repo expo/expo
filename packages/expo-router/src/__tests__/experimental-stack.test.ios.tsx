@@ -1,9 +1,13 @@
 import { act, screen } from '@testing-library/react-native';
-import { type ReactNode } from 'react';
+import { type ReactNode, use } from 'react';
 import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
 import { ExperimentalStack } from '../layouts/experimental-stack';
+import {
+  NavigatorTypeContext,
+  type NavigatorTypeContextValue,
+} from '../react-navigation/core/NavigatorTypeContext';
 import { renderRouter } from '../testing-library';
 
 jest.mock('react-native-screens/experimental', () => {
@@ -79,14 +83,12 @@ describe('ExperimentalStack — basic navigation', () => {
 
     expect(MockedHost).toHaveBeenCalled();
     expect(screen).toHavePathname('/a');
-    // TODO(@ubax): uncomment when canDismiss is fixed
-    // expect(router.canDismiss()).toBe(false);
+    expect(router.canDismiss()).toBe(false);
 
     act(() => router.push('/b'));
 
     expect(screen).toHavePathname('/b');
-    // TODO(@ubax): uncomment when canDismiss is fixed
-    // expect(router.canDismiss()).toBe(true);
+    expect(router.canDismiss()).toBe(true);
   });
 
   it('pops via router.dismiss', () => {
@@ -123,8 +125,7 @@ describe('ExperimentalStack — basic navigation', () => {
 
     act(() => router.replace('/b'));
     expect(screen).toHavePathname('/b');
-    // TODO(@ubax): uncomment when canDismiss is fixed
-    // expect(router.canDismiss()).toBe(false);
+    expect(router.canDismiss()).toBe(false);
   });
 });
 
@@ -376,5 +377,25 @@ describe('ExperimentalStack — unsupported option warning', () => {
     } finally {
       warnSpy.mockRestore();
     }
+  });
+});
+
+describe('ExperimentalStack — navigator type', () => {
+  it('announces itself as a stack via NavigatorTypeContext', () => {
+    let captured: NavigatorTypeContextValue | undefined;
+    function Probe() {
+      captured = use(NavigatorTypeContext);
+      return null;
+    }
+
+    renderRouter(
+      {
+        a: Probe,
+        _layout: () => <ExperimentalStack />,
+      },
+      { initialUrl: '/a' }
+    );
+
+    expect(captured?.type).toBe('stack');
   });
 });

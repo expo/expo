@@ -3,7 +3,10 @@
 import React, { use, useCallback, useMemo, useRef } from 'react';
 import type { NavigatorArgs, NavigatorDescriptor, NavigatorRoute } from 'standard-navigation';
 
-import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
+import {
+  NavigatorTypeContext,
+  useNavigatorTypeContextValue,
+} from '../react-navigation/core/NavigatorTypeContext';
 import { useStableTabOrder } from '../react-navigation/core/useStableTabOrder';
 import type {
   ParamListBase,
@@ -36,6 +39,9 @@ interface NativeTabsCreatedProps {
   lazyRoutes: NavigatorRoute[];
   lazyDescriptors: Record<string, NavigatorDescriptor<NativeTabOptions>>;
   preload: (name: string) => void;
+  // React Navigation state key of this navigator (the standard-navigation `state` prop omits it).
+  // Provided to `NavigatorTypeContext` so link-preview navigation can look through this tab.
+  stateKey: string;
 }
 
 function NativeTabsContent({
@@ -49,6 +55,7 @@ function NativeTabsContent({
   lazyRoutes,
   lazyDescriptors,
   preload,
+  stateKey,
   // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
   // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
   // `NativeTabsView` as top-level props.
@@ -173,8 +180,10 @@ function NativeTabsContent({
   > &
     Record<Exclude<keyof typeof rest, keyof NativeTabsViewProps>, never> = rest;
 
+  const navigatorTypeValue = useNavigatorTypeContextValue('tab', stateKey);
+
   return (
-    <NavigatorTypeContext value="tab">
+    <NavigatorTypeContext value={navigatorTypeValue}>
       <NativeTabsContext value>
         <NativeTabsView
           {...nativeTabsViewProps}
@@ -215,6 +224,7 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
         lazyRoutes.map((route) => [route.key, { ...describe(route, true), render: () => null }])
       ),
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
+      stateKey: state.key,
     };
   },
 });

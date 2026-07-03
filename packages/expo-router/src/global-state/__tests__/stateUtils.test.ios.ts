@@ -370,61 +370,102 @@ describe('findDivergentState', () => {
     expect(result.navigationRoutes[0]!.name).toBe('root');
   });
 
-  // TODO(@ubax): rework the link preview navigation to check state types on native
-  // Remove when logic is moved to native
-  describe('lookThroughAllTabs', () => {
-    it('uses current index even when lookThroughAllTabs is true', () => {
-      const actionState: PartialState<NavigationState> = {
-        routes: [
-          {
-            name: 'settings',
-            state: {
-              routes: [{ name: 'page' }],
-            },
+  // `tabNavigatorKeys` holds the state keys of tab navigators that are React ancestors of the
+  // preview link (captured from NavigatorTypeContext). When the current navigator's key is in the
+  // set, the traversal looks through all of that navigator's routes (not just the focused one),
+  // which is what enables cross-tab link-preview navigation.
+  describe('tabNavigatorKeys', () => {
+    // A tab navigator whose target tab is not the focused one. Navigating to a nested route in the
+    // 'settings' tab while 'home' is focused.
+    const tabActionState: PartialState<NavigationState> = {
+      routes: [
+        {
+          name: 'settings',
+          state: {
+            routes: [{ name: 'page' }],
           },
-        ],
-      };
-
-      const navState: NavigationState = {
-        routes: [
-          {
-            key: 'home-key',
-            name: 'home',
+        },
+      ],
+    };
+    const tabNavState: NavigationState = {
+      routes: [
+        { key: 'home-key', name: 'home' },
+        {
+          key: 'settings-key',
+          name: 'settings',
+          state: {
+            routes: [{ key: 'page-key', name: 'page' }],
+            index: 0,
+            key: 'nav-settings',
+            routeNames: ['page'],
+            stale: false,
           },
-          {
-            key: 'settings-key',
-            name: 'settings',
-            state: {
-              routes: [{ key: 'page-key', name: 'page' }],
-              index: 0,
-              key: 'nav-settings',
-              routeNames: ['page'],
-              stale: false,
-            },
-          },
-        ],
-        index: 0, // Currently on 'home' tab
-        key: 'nav-tabs',
-        routeNames: ['home', 'settings'],
-        stale: false,
-      };
+        },
+      ],
+      index: 0, // Currently on 'home' tab
+      key: 'nav-tabs',
+      routeNames: ['home', 'settings'],
+      stale: false,
+    };
 
-      const result = findDivergentState(actionState, navState, true);
+    it('looks through all routes when the navigator key is in tabNavigatorKeys', () => {
+      const result = findDivergentState(
+        tabActionState,
+        tabNavState,
+        new Set(['nav-tabs'])
+      );
 
-      // Current index is 'home', so the 'settings' action route diverges there.
+      // Look-through finds the non-focused 'settings' tab, descends into it, and diverges at the
+      // leaf 'page' route rather than at the focused 'home' tab.
+      expect(result.actionStateRoute?.name).toBe('page');
+      expect(result.navigationRoutes).toHaveLength(1);
+      expect(result.navigationRoutes[0]!.name).toBe('settings');
+    });
+
+    it('uses the focused route when the navigator key is not in tabNavigatorKeys (stack)', () => {
+      const result = findDivergentState(tabActionState, tabNavState, new Set(['other-key']));
+
+      // 'nav-tabs' is treated like any non-tab navigator: only the focused 'home' route is compared,
+      // so 'settings' diverges immediately.
       expect(result.actionStateRoute?.name).toBe('settings');
       expect(result.navigationRoutes).toHaveLength(0);
     });
 
-    it('falls back to current index when tab name not found and lookThroughAllTabs is true', () => {
+    it('uses the focused route when tabNavigatorKeys is omitted', () => {
+      const result = findDivergentState(tabActionState, tabNavState);
+
+      expect(result.actionStateRoute?.name).toBe('settings');
+      expect(result.navigationRoutes).toHaveLength(0);
+    });
+
+    it('pushes the diverging tab route so the tab can be switched', () => {
+      // Switching to a leaf tab ('faces') that has no child state. At divergence the target tab
+      // route must be pushed so callers can compute the new tab key.
       const actionState: PartialState<NavigationState> = {
+        routes: [{ name: 'faces' }],
+      };
+      const navState: NavigationState = {
         routes: [
-          {
-            name: 'unknown-tab',
-          },
+          { key: 'home-key', name: 'home' },
+          { key: 'faces-key', name: 'faces' },
         ],
+        index: 0,
+        key: 'nav-tabs',
+        routeNames: ['home', 'faces'],
+        stale: false,
       };
 
+      const result = findDivergentState(actionState, navState, new Set(['nav-tabs']));
+
+      expect(result.actionStateRoute?.name).toBe('faces');
+      expect(result.navigationRoutes).toHaveLength(1);
+      expect(result.navigationRoutes[0]!.key).toBe('faces-key');
+    });
+
+    it('falls back to the focused route when the tab name is not found', () => {
+      const actionState: PartialState<NavigationState> = {
+        routes: [{ name: 'unknown-tab' }],
+      };
       const navState: NavigationState = {
         routes: [
           { key: 'home-key', name: 'home' },
@@ -436,65 +477,10 @@ describe('findDivergentState', () => {
         stale: false,
       };
 
-      const result = findDivergentState(actionState, navState, true);
+      const result = findDivergentState(actionState, navState, new Set(['nav-tabs']));
 
-      // Falls back to index 0 (home), and diverges because 'unknown-tab' !== 'home'
+      // Falls back to index 0 (home); diverges because 'unknown-tab' !== 'home'.
       expect(result.actionStateRoute?.name).toBe('unknown-tab');
-    });
-
-    it('uses current index when lookThroughAllTabs is false (default)', () => {
-      const actionState: PartialState<NavigationState> = {
-        routes: [
-          {
-            name: 'settings',
-          },
-        ],
-      };
-
-      const navState: NavigationState = {
-        routes: [
-          { key: 'home-key', name: 'home' },
-          { key: 'settings-key', name: 'settings' },
-        ],
-        index: 0, // Currently on 'home'
-        key: 'nav-tabs',
-        routeNames: ['home', 'settings'],
-        stale: false,
-      };
-
-      const result = findDivergentState(actionState, navState, false);
-
-      // Should use index 0 ('home'), so it diverges because 'settings' !== 'home'
-      expect(result.actionStateRoute?.name).toBe('settings');
-      expect(result.navigationRoutes).toHaveLength(0);
-    });
-
-    it('diverges at current index regardless of lookThroughAllTabs', () => {
-      const actionState: PartialState<NavigationState> = {
-        routes: [
-          {
-            name: 'settings',
-          },
-        ],
-      };
-
-      const navState: NavigationState = {
-        routes: [
-          { key: 'home-key', name: 'home' },
-          { key: 'settings-key', name: 'settings' },
-        ],
-        index: 0,
-        key: 'nav-tabs',
-        routeNames: ['home', 'settings'],
-        stale: false,
-      };
-
-      const result = findDivergentState(actionState, navState, true);
-
-      // No-op: uses current index ('home'), so 'settings' diverges there and
-      // no tab route is added to navigationRoutes.
-      expect(result.actionStateRoute?.name).toBe('settings');
-      expect(result.navigationRoutes).toHaveLength(0);
     });
   });
 });

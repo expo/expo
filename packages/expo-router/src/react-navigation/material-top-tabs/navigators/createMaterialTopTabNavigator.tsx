@@ -1,5 +1,8 @@
 import { useOptionalContextKey } from '../../../Route';
-import { NavigatorTypeContext } from '../../core/NavigatorTypeContext';
+import {
+  NavigatorTypeContext,
+  useNavigatorTypeContextValue,
+} from '../../core/NavigatorTypeContext';
 import {
   createNavigatorFactory,
   type NavigatorTypeBagBase,
@@ -68,8 +71,10 @@ function MaterialTopTabNavigator({
     state.routeNames
   );
 
+  const navigatorTypeValue = useNavigatorTypeContextValue('tab', state.key);
+
   return (
-    <NavigatorTypeContext value="tab">
+    <NavigatorTypeContext value={navigatorTypeValue}>
       <NavigationContent>
         <MaterialTopTabView
           {...rest}

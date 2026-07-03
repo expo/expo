@@ -24,15 +24,13 @@ it('native stack handles mixed modal + normal screens', () => {
 
   // Starts at the root route.
   expect(screen).toHavePathname('/');
-  // TODO(@ubax): uncomment when canDismiss is fixed
-  // expect(router.canDismiss()).toBe(false);
+  expect(router.canDismiss()).toBe(false);
 
   // Push the modal route and ensure navigation works.
   act(() => router.push('/second'));
 
   expect(screen).toHavePathname('/second');
-  // TODO(@ubax): uncomment when canDismiss is fixed
-  // expect(router.canDismiss()).toBe(true);
+  expect(router.canDismiss()).toBe(true);
   // Modal content should now be visible.
   expect(screen.getByTestId('modal')).toBeTruthy();
 });

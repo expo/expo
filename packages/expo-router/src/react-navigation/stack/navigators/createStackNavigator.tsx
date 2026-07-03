@@ -1,7 +1,10 @@
 'use client';
 import * as React from 'react';
 
-import { NavigatorTypeContext } from '../../core/NavigatorTypeContext';
+import {
+  NavigatorTypeContext,
+  useNavigatorTypeContextValue,
+} from '../../core/NavigatorTypeContext';
 import {
   createNavigatorFactory,
   type EventArg,
@@ -83,8 +86,10 @@ function StackNavigator({
     [navigation, state.index, state.key]
   );
 
+  const navigatorTypeValue = useNavigatorTypeContextValue('stack', state.key);
+
   return (
-    <NavigatorTypeContext value="stack">
+    <NavigatorTypeContext value={navigatorTypeValue}>
       <NavigationContent>
         <StackView
           {...rest}

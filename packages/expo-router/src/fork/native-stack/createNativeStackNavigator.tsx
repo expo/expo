@@ -7,6 +7,10 @@ import {
   type InternalNavigationOptions,
 } from '../../navigationParams';
 import {
+  NavigatorTypeContext,
+  useNavigatorTypeContextValue,
+} from '../../react-navigation/core/NavigatorTypeContext';
+import {
   createNavigatorFactory,
   type EventArg,
   type NavigatorTypeBagBase,
@@ -143,27 +147,33 @@ function NativeStackNavigator({
   );
   // END FORK
 
+  // START FORK
+  const navigatorTypeContextValue = useNavigatorTypeContextValue('stack', state.key);
+  // END FORK
+
   return (
     // START FORK
-    <DescriptorsContext value={descriptors}>
-      {/* END FORK */}
-      <NavigationContent>
-        <CompositionContext value={contextValue}>
-          <NativeStackView
-            {...rest}
-            // START FORK
-            state={computedState}
-            navigation={navigationWrapper}
-            descriptors={mergedDescriptors}
-            // state={state}
-            // navigation={navigation}
-            // descriptors={descriptors}
-            // END FORK
-          />
-        </CompositionContext>
-      </NavigationContent>
-      {/* START FORK */}
-    </DescriptorsContext>
+    <NavigatorTypeContext value={navigatorTypeContextValue}>
+      <DescriptorsContext value={descriptors}>
+        {/* END FORK */}
+        <NavigationContent>
+          <CompositionContext value={contextValue}>
+            <NativeStackView
+              {...rest}
+              // START FORK
+              state={computedState}
+              navigation={navigationWrapper}
+              descriptors={mergedDescriptors}
+              // state={state}
+              // navigation={navigation}
+              // descriptors={descriptors}
+              // END FORK
+            />
+          </CompositionContext>
+        </NavigationContent>
+        {/* START FORK */}
+      </DescriptorsContext>
+    </NavigatorTypeContext>
     // END FORK
   );
 }

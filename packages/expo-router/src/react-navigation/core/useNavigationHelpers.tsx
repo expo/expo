@@ -4,6 +4,7 @@ import { use } from 'react';
 
 import {
   CommonActions,
+  StackActions,
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
@@ -87,6 +88,24 @@ export function useNavigationHelpers<
             routeGetIdList: {},
           }) !== null ||
           parentNavigationHelpers?.canGoBack() ||
+          false
+        );
+      },
+      canDismiss: () => {
+        const state = getState();
+
+        // Mirror of `canGoBack`, but simulating the `POP` that `dismiss()` dispatches. Only a
+        // StackRouter handles POP; tab/drawer routers fall through to `null`, so we walk up to a
+        // poppable ancestor stack (if any). Like `canGoBack`, this does not account for
+        // `usePreventRemove`/`beforeRemove` guards that can block the actual pop.
+        return (
+          router.getStateForAction(state, StackActions.pop(1) as Action, {
+            routeNames: state.routeNames,
+            pathname: undefined,
+            routeParamList: {},
+            routeGetIdList: {},
+          }) !== null ||
+          parentNavigationHelpers?.canDismiss?.() ||
           false
         );
       },

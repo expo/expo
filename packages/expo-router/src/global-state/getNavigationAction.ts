@@ -62,10 +62,17 @@ export function getNavigateAction(
    * Other parameters such as search params and hash are not evaluated.
    */
 
+  // Tab navigator keys are captured in React by the caller (see `useNextScreenId`) and threaded
+  // through the internal option so the traversal can look through tabs. They are passed whenever
+  // present, regardless of event type. Each target navigator's own router interprets the base action.
+  const tabNavigatorKeys = options.__internal__tabNavigatorKeys
+    ? new Set(options.__internal__tabNavigatorKeys)
+    : undefined;
+
   const { actionStateRoute, navigationState } = findDivergentState(
     state,
     rootState,
-    type === 'PRELOAD'
+    tabNavigatorKeys
   );
 
   /*
@@ -73,17 +80,6 @@ export function getNavigateAction(
    * We need to convert the action state to a payload that can be dispatched
    */
   const rootPayload = getPayloadFromStateRoute(actionStateRoute || {});
-
-  // TODO(@ubax): `type` was removed from navigation state, so we can no longer remap the action to
-  // the target navigator's kind (PUSH→NAVIGATE on non-stacks, expo-tab/drawer→JUMP_TO). The base
-  // action type is emitted as-is. Rework to resolve navigator kind from the static layout config.
-  // if (type === 'PUSH' && navigationState.type !== 'stack') {
-  //   type = 'NAVIGATE';
-  // } else if (navigationState.type === 'expo-tab') {
-  //   type = 'JUMP_TO';
-  // } else if (type === 'REPLACE' && navigationState.type === 'drawer') {
-  //   type = 'JUMP_TO';
-  // }
 
   if (withAnchor) {
     if (rootPayload.params.initial) {

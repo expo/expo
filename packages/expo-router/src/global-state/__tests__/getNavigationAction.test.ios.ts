@@ -255,23 +255,36 @@ describe(getNavigateAction, () => {
     expect(result!.payload.singular).toBe(true);
   });
 
-  it('PRELOAD uses lookThroughAllTabs=true on findDivergentState', () => {
+  // Tab navigator keys are captured in React and threaded through the internal option so the
+  // state-layer traversal can look through tabs. They are passed whenever present, regardless of
+  // event type (simplest and harmless).
+  it('threads tabNavigatorKeys from options into findDivergentState as a Set', () => {
+    getNavigateAction('/home', { __internal__tabNavigatorKeys: ['tab-1', 'tab-2'] }, 'PRELOAD');
+
+    expect(mockFindDivergentState).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      new Set(['tab-1', 'tab-2'])
+    );
+  });
+
+  it('passes undefined tabNavigatorKeys when the option is absent', () => {
     getNavigateAction('/home', {}, 'PRELOAD');
 
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
       expect.anything(),
-      true // lookThroughAllTabs
+      undefined
     );
   });
 
-  it('non-PRELOAD uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'NAVIGATE');
+  it('threads tabNavigatorKeys for non-PRELOAD events too', () => {
+    getNavigateAction('/home', { __internal__tabNavigatorKeys: ['tab-1'] }, 'NAVIGATE');
 
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
       expect.anything(),
-      false
+      new Set(['tab-1'])
     );
   });
 
@@ -305,23 +318,4 @@ describe(getNavigateAction, () => {
     expect(result).toBeDefined();
   });
 
-  it('PUSH uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'PUSH');
-
-    expect(mockFindDivergentState).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      false
-    );
-  });
-
-  it('REPLACE uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'REPLACE');
-
-    expect(mockFindDivergentState).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      false
-    );
-  });
 });
