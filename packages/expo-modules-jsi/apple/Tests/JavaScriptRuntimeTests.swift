@@ -790,6 +790,17 @@ struct JavaScriptRuntimeTests {
     let otherRuntime = JavaScriptRuntime()
     #expect(otherRuntime.id != runtime.id)
   }
+
+  @Test
+  func `creating and releasing standalone runtimes repeatedly does not crash`() throws {
+    // Each standalone runtime owns its Hermes runtime and destroys it on `deinit`. Cycling through
+    // many create/use/release rounds exercises that teardown and would surface a use-after-free or
+    // double-free (destroying a runtime must not corrupt a subsequently created one).
+    for index in 0..<20 {
+      let localRuntime = JavaScriptRuntime()
+      #expect(try localRuntime.eval("1 + \(index)").getInt() == 1 + index)
+    }
+  }
 }
 
 /// Runs `body` on a freshly spawned synchronous thread and bridges the result back into the

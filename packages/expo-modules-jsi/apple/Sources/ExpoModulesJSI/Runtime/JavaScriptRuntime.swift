@@ -38,6 +38,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   internal let runtimePointee: facebook.jsi.Runtime
   internal let scheduler: expo.RuntimeScheduler
 
+  /// Whether this wrapper owns the underlying `jsi::Runtime` and must destroy it on `deinit`. True
+  /// only for the standalone `init()`, which creates the runtime via `createHermesRuntime()`. The
+  /// other initializers adopt a runtime owned elsewhere (e.g. React Native), which must never be
+  /// freed here, matching the immortal (no-op) release semantics of the imported reference type.
+  private let ownsRuntime: Bool
+
   /// Thread ID of the JavaScript thread, captured at construction time. Used by `isOnJavaScriptThread()`
   /// for a fast integer comparison instead of `Thread.current.name == "..."`.
   /// Assumes runtime initializers always run on the JS thread.
@@ -57,6 +63,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.scheduler = expo.RuntimeScheduler()
+    self.ownsRuntime = false
   }
 
   /// Creates a standalone Hermes runtime. Scheduled tasks run synchronously —
@@ -66,6 +73,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.scheduler = expo.RuntimeScheduler()
+    self.ownsRuntime = true
   }
 
   /// Creates a runtime from a raw pointer to the underlying `facebook.jsi.Runtime`.
@@ -76,6 +84,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.scheduler = expo.RuntimeScheduler()
+    self.ownsRuntime = false
   }
 
   /// Creates a runtime bound to a host-provided React `RuntimeScheduler`. Calls to
@@ -97,6 +106,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.scheduler = expo.RuntimeScheduler(scheduler, fn)
+    self.ownsRuntime = false
+  }
+
+  deinit {
+    // Destroy the runtime only if this wrapper created it (standalone `init()`); adopted runtimes
+    // are owned elsewhere (e.g. React Native) and must not be freed here.
+    if ownsRuntime {
+      expo.destroyRuntime(runtimePointee)
+    }
   }
 
   /// Provides scoped access to a raw pointer to the underlying `facebook.jsi.Runtime`.
