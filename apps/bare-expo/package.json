@@ -72,7 +72,7 @@
     "react-native-svg": "15.15.4",
     "react-native-view-shot": "4.0.3",
     "react-native-webview": "13.16.1",
-    "react-native-worklets": "0.10.0",
+    "react-native-worklets": "0.10.1",
     "test-suite": "workspace:*"
   },
   "devDependencies": {
