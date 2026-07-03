@@ -201,7 +201,7 @@ struct ExpoCameraUtils {
     let processedImageData = NSMutableData()
 
     guard let destinationCGImageRef =
-      CGImageDestinationCreateWithData(processedImageData, "public.jpeg" as CFString, 1, nil) else {
+      CGImageDestinationCreateWithData(processedImageData, UTType.jpeg.identifier as CFString, 1, nil) else {
       return nil
     }
 

@@ -163,7 +163,7 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     let size = captureDelegate.previewLayer.frame.size
     return captureDelegate.deviceOrientation == .portrait
       ? CGSize(width: size.height, height: size.width)
-      : CGSize(width: size.width, height: size.height)
+      : size
   }
 
   private func processImageData(
