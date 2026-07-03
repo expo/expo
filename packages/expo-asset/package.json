@@ -48,8 +48,8 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/image-utils": "workspace:^0.10.1",
-    "expo-constants": "workspace:~56.0.19"
+    "@expo/image-utils": "workspace:^0.10.2",
+    "expo-constants": "workspace:~56.0.20"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",

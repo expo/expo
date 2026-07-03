@@ -38,7 +38,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/image-utils": "workspace:^0.10.1"
+    "@expo/image-utils": "workspace:^0.10.2"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

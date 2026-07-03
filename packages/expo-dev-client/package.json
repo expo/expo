@@ -31,7 +31,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/dev-client/",
   "dependencies": {
-    "expo-dev-launcher": "workspace:~56.0.21",
+    "expo-dev-launcher": "workspace:~56.0.22",
     "expo-dev-menu": "workspace:~56.0.18",
     "expo-dev-menu-interface": "workspace:~56.0.0",
     "expo-manifests": "workspace:~56.0.4",

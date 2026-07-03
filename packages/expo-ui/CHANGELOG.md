@@ -6,10 +6,16 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.20 — 2026-07-03
+
+### 🎉 New features
+
 - [iOS] Added `accessibilityAddTraits` and `accessibilityRemoveTraits` SwiftUI modifiers, accepting an array of trait names. ([#47387](https://github.com/expo/expo/pull/47387) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added the SwiftUI `strokeBorder` modifier with a full `StrokeStyle` (line width, cap, join, miter limit, dash array, dash phase) for dashed and dotted inset borders that follow the shape's corners. ([#47426](https://github.com/expo/expo/pull/47426) by [@ramonclaudio](https://github.com/ramonclaudio))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

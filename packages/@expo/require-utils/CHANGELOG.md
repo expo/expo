@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.1.4 — 2026-07-03
+
+### 🐛 Bug fixes
+
 - Automatically switch to ESM mode when evaluated module contains non-qualifying module syntax, like `import.meta` or top-level await ([#47441](https://github.com/expo/expo/pull/47441) by [@kitten](https://github.com/kitten))
 - Fix compatibility with ES modules in Node.js ([#47445](https://github.com/expo/expo/pull/47445) by [@kitten](https://github.com/kitten))
 

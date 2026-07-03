@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix compatibility with ES modules in Node.js ([#47445](https://github.com/expo/expo/pull/47445) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 2.3.1 — 2026-07-03
+
+### 🐛 Bug fixes
+
+- Fix compatibility with ES modules in Node.js ([#47445](https://github.com/expo/expo/pull/47445) by [@kitten](https://github.com/kitten))
 
 ## 2.3.0 — 2026-05-20
 
