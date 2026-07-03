@@ -201,7 +201,7 @@ export function useHeaderConfigProps({
   const { direction } = useLocale();
   const { colors, fonts, dark } = useTheme();
   const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
-  const headerNativeProps = unstable_nativeProps?.header;
+  const headerNativeProps = unstable_nativeProps?.headerConfig;
 
   const headerBackTitleStyleFlattened =
     StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
@@ -473,10 +473,10 @@ export function useHeaderConfigProps({
     titleFontWeight: String(titleFontWeight),
     topInsetEnabled: headerTopInsetEnabled,
     translucent: translucent === true,
-    experimental_userInterfaceStyle: dark ? 'dark' : 'light',
-    ...headerNativeProps,
     children,
     headerLeftBarButtonItems: processBarButtonItems(leftItems, colors, fonts),
     headerRightBarButtonItems: processBarButtonItems(rightItems, colors, fonts),
+    experimental_userInterfaceStyle: dark ? 'dark' : 'light',
+    ...headerNativeProps,
   } as const;
 }

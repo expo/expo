@@ -134,7 +134,7 @@ const SceneView = ({
     contentStyle,
     unstable_nativeProps,
   } = options;
-  const screenNativeProps = unstable_nativeProps?.screen;
+  const screenNativeProps = unstable_nativeProps;
 
   if (gestureDirection === 'vertical' && Platform.OS === 'ios') {
     // for `vertical` direction to work, we need to set `fullScreenGestureEnabled` to `true`
@@ -335,6 +335,10 @@ const SceneView = ({
   return (
     <NavigationProvider route={route} navigation={navigation}>
       <ScreenStackItem
+        screenId={route.key}
+        activityState={isPreloaded ? 0 : 2}
+        style={StyleSheet.absoluteFill}
+        aria-hidden={!focused}
         customAnimationOnSwipe={animationMatchesGesture}
         fullScreenSwipeEnabled={fullScreenGestureEnabled}
         fullScreenSwipeShadowEnabled={fullScreenGestureShadowEnabled}
@@ -371,13 +375,25 @@ const SceneView = ({
         statusBarTranslucent={statusBarTranslucent}
         swipeDirection={gestureDirectionOverride}
         transitionDuration={animationDuration}
+        onWillAppear={onWillAppear}
+        onWillDisappear={onWillDisappear}
+        onAppear={onAppear}
+        onDisappear={onDisappear}
+        onDismissed={onDismissed}
+        onGestureCancel={onGestureCancel}
+        onSheetDetentChanged={onSheetDetentChanged}
         gestureResponseDistance={gestureResponseDistance}
+        nativeBackButtonDismissalEnabled={false} // on Android
+        onHeaderBackButtonClicked={onHeaderBackButtonClicked}
+        preventNativeDismiss={isRemovePrevented} // on iOS
         scrollEdgeEffects={{
           bottom: scrollEdgeEffects?.bottom ?? 'automatic',
           top: scrollEdgeEffects?.top ?? 'automatic',
           left: scrollEdgeEffects?.left ?? 'automatic',
           right: scrollEdgeEffects?.right ?? 'automatic',
         }}
+        onNativeDismissCancelled={onNativeDismissCancelled}
+        onHeaderHeightChange={onHeaderHeightChange}
         contentStyle={[
           presentation !== 'transparentModal' &&
             presentation !== 'containedTransparentModal' && {
@@ -387,22 +403,6 @@ const SceneView = ({
         ]}
         unstable_sheetFooter={unstable_sheetFooter}
         {...screenNativeProps}
-        screenId={route.key}
-        activityState={isPreloaded ? 0 : 2}
-        style={StyleSheet.absoluteFill}
-        aria-hidden={!focused}
-        preventNativeDismiss={isRemovePrevented} // on iOS
-        nativeBackButtonDismissalEnabled={false} // on Android
-        onWillAppear={onWillAppear}
-        onWillDisappear={onWillDisappear}
-        onAppear={onAppear}
-        onDisappear={onDisappear}
-        onDismissed={onDismissed}
-        onGestureCancel={onGestureCancel}
-        onSheetDetentChanged={onSheetDetentChanged}
-        onHeaderBackButtonClicked={onHeaderBackButtonClicked}
-        onNativeDismissCancelled={onNativeDismissCancelled}
-        onHeaderHeightChange={onHeaderHeightChange}
         headerConfig={headerConfig}
         // When ts-expect-error is added, it affects all the props below it
         // So we keep any props that need it at the end

@@ -45,7 +45,7 @@ describe("unstable_nativeProps", () => {
   it("forwards raw screen props to ScreenStackItem", () => {
     const props = renderStack({
       unstable_nativeProps: {
-        screen: { gestureEnabled: false },
+        gestureEnabled: false,
       },
     });
 
@@ -56,29 +56,28 @@ describe("unstable_nativeProps", () => {
     const props = renderStack({
       animation: "fade",
       unstable_nativeProps: {
-        screen: { stackAnimation: "none" },
+        stackAnimation: "none",
       },
     });
 
     expect(props.stackAnimation).toBe("none");
   });
 
-  it("does not let raw screen props override wired handlers", () => {
+  it("lets raw screen props override wired handlers", () => {
     const onDismissed = jest.fn();
     const props = renderStack({
       unstable_nativeProps: {
-        screen: { onDismissed },
+        onDismissed,
       } as unknown as NativeStackNavigationOptions["unstable_nativeProps"],
     });
 
-    expect(props.onDismissed).not.toBe(onDismissed);
-    expect(props.onDismissed).toBeInstanceOf(Function);
+    expect(props.onDismissed).toBe(onDismissed);
   });
 
   it("forwards raw header props to headerConfig", () => {
     const props = renderStack({
       unstable_nativeProps: {
-        header: { disableTopInsetApplication: true },
+        headerConfig: { disableTopInsetApplication: true },
       },
     });
 
@@ -89,22 +88,22 @@ describe("unstable_nativeProps", () => {
     const props = renderStack({
       headerShadowVisible: true,
       unstable_nativeProps: {
-        header: { hideShadow: true },
+        headerConfig: { hideShadow: true },
       },
     });
 
     expect(props.headerConfig?.hideShadow).toBe(true);
   });
 
-  it("does not let raw header props override composed children", () => {
+  it("lets raw header props override composed children", () => {
     const rawChildren = <Text testID="raw-header-children">Raw</Text>;
     const props = renderStack({
       unstable_nativeProps: {
-        header: { children: rawChildren },
+        headerConfig: { children: rawChildren },
       } as unknown as NativeStackNavigationOptions["unstable_nativeProps"],
     });
 
-    expect(props.headerConfig?.children).not.toBe(rawChildren);
+    expect(props.headerConfig?.children).toBe(rawChildren);
   });
 
   it("renders without unstable_nativeProps", () => {

@@ -92,40 +92,13 @@ export type NativeStackNavigationHelpers = NavigationHelpers<
 export type NativeStackNavigationConfig = {};
 
 export type NativeStackScreenNativeProps = Partial<
-  Omit<
-    ScreenProps,
-    | 'children'
-    | 'screenId'
-    | 'activityState'
-    | 'style'
-    | 'aria-hidden'
-    | 'preventNativeDismiss'
-    | 'nativeBackButtonDismissalEnabled'
-    | 'headerConfig'
-    | 'shouldFreeze'
-    | 'onWillAppear'
-    | 'onWillDisappear'
-    | 'onAppear'
-    | 'onDisappear'
-    | 'onDismissed'
-    | 'onGestureCancel'
-    | 'onSheetDetentChanged'
-    | 'onHeaderBackButtonClicked'
-    | 'onNativeDismissCancelled'
-    | 'onHeaderHeightChange'
-  >
+  Omit<ScreenProps, 'children' | 'screenId' | 'activityState'>
 >;
 
-export type NativeStackHeaderNativeProps = Partial<
-  Omit<
-    ScreenStackHeaderConfigProps,
-    'children' | 'headerLeftBarButtonItems' | 'headerRightBarButtonItems'
-  >
->;
+export type NativeStackHeaderNativeProps = Partial<ScreenStackHeaderConfigProps>;
 
-export type NativeStackNativeProps = {
-  screen?: NativeStackScreenNativeProps;
-  header?: NativeStackHeaderNativeProps;
+export type NativeStackNativeProps = NativeStackScreenNativeProps & {
+  headerConfig?: NativeStackHeaderNativeProps;
 };
 
 export type NativeStackHeaderProps = {
@@ -438,6 +411,8 @@ export type NativeStackNavigationOptions = {
   /**
    * Props passed to the underlying native stack implementation in `react-native-screens`.
    * Use this to configure props that are not directly exposed by Expo Router.
+   *
+   * > **Note**: This will override any other props set by Expo Router and may lead to unexpected behavior.
    *
    * > **Note**: This is an unstable API and may change or be removed in minor versions.
    *
