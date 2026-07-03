@@ -201,9 +201,18 @@ describe('createStateChangeHandler', () => {
     initModule.getReactNavigationIntegrationConfig.mockReturnValue({
       filteredParams: ['userId', 'token'],
     });
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
     storage.screenTimes['a'] = { lastInteractiveCall: performance.now() };
 
-    handle(stackState([{ key: 'a', params: { userId: '1', tab: 'home' } }]));
+    handle(
+      stackState([
+        {
+          key: 'a',
+          params: { userId: '1', tab: 'home', callback: () => {}, circular },
+        },
+      ])
+    );
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(2);

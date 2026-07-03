@@ -1,15 +1,11 @@
 import type { ObserveNavigationIntegrationConfig } from '../types';
 
 type NavigationIntegrationConfig = boolean | ObserveNavigationIntegrationConfig | undefined;
-type NavigationMetricParams<T extends object | undefined> = {
-  routeParams: T | Record<string, never>;
+type NavigationMetricParams = {
+  routeParams: Record<string, unknown>;
 } & ({ url: string | undefined; urlHidden?: false } | { url?: undefined; urlHidden: true });
-type FilteredNavigationParams<T extends object | undefined> = {
-  routeParams: T | Record<string, never>;
-  ignoredParam: boolean;
-};
-type NavigationRouteParams<T extends object | undefined> = {
-  routeParams: T | Record<string, never>;
+type NavigationRouteParams = {
+  routeParams: Record<string, unknown>;
   urlHidden?: true;
 };
 
@@ -21,40 +17,56 @@ function getFilteredParamKeys(config: NavigationIntegrationConfig): Set<string> 
   return keys.size > 0 ? keys : null;
 }
 
-export function getNavigationRouteParams<T extends object | undefined>(
+function prepareNavigationRouteParams(
   config: NavigationIntegrationConfig,
-  params: T
-): NavigationRouteParams<T> {
-  const { routeParams, ignoredParam } = getFilteredNavigationParams(config, params);
+  params: object | undefined
+): NavigationRouteParams {
+  const filteredKeys = getFilteredParamKeys(config);
+  let urlHidden = false;
+  const routeParams = Object.fromEntries(
+    Object.entries(params ?? {})
+      .filter(([key]) => {
+        const keep = !filteredKeys?.has(key);
+        urlHidden ||= !keep;
+        return keep;
+      })
+      .map(([key, value]) => {
+        try {
+          if (value === undefined) return null;
+
+          const serialized = JSON.stringify(value);
+          if (serialized === undefined) return null;
+
+          return [key, JSON.parse(serialized)] as const;
+        } catch {
+          // Ignore only the individual param value that cannot cross the native boundary.
+          return null;
+        }
+      })
+      .filter((entry): entry is readonly [string, unknown] => entry != null)
+  );
+
   return {
     routeParams,
-    ...(ignoredParam ? { urlHidden: true as const } : {}),
+    ...(urlHidden ? { urlHidden: true as const } : {}),
   };
 }
 
-function getFilteredNavigationParams<T extends object | undefined>(
+export function getNavigationRouteParams(
   config: NavigationIntegrationConfig,
-  params: T
-): FilteredNavigationParams<T> {
-  const filteredKeys = getFilteredParamKeys(config);
-  if (!params || !filteredKeys) return { routeParams: params, ignoredParam: false };
-
-  let ignoredParam = false;
-  const filtered = Object.fromEntries(
-    Object.entries(params).filter(([key]) => {
-      const keep = !filteredKeys.has(key);
-      ignoredParam ||= !keep;
-      return keep;
-    })
-  );
-  return { routeParams: filtered as T | Record<string, never>, ignoredParam };
+  params: object | undefined
+): NavigationRouteParams {
+  const navigationParams = prepareNavigationRouteParams(config, params);
+  return navigationParams.urlHidden
+    ? { routeParams: navigationParams.routeParams, urlHidden: true }
+    : { routeParams: navigationParams.routeParams };
 }
 
-export function getNavigationMetricParams<T extends object | undefined>(
+export function getNavigationMetricParams(
   config: NavigationIntegrationConfig,
-  routeParams: T,
+  routeParams: object | undefined,
   url: string | undefined
-): NavigationMetricParams<T> {
+): NavigationMetricParams {
   const navigationParams = getNavigationRouteParams(config, routeParams);
 
   return navigationParams.urlHidden

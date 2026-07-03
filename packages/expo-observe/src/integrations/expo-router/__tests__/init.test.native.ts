@@ -146,13 +146,18 @@ describe('initListeners', () => {
 
   it('filters route params from cold_ttr, warm_ttr, and deferred tti metrics', async () => {
     setRouterConfig({ filteredParams: ['userId', 'token'] });
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
     storage.screenTimes['b'] = { lastInteractiveCall: performance.now() };
 
-    focus(events, 'a', { params: { userId: '1', tab: 'home' } });
+    focus(events, 'a', { params: { userId: '1', tab: 'home', callback: () => {}, circular } });
     await flushAsync();
 
     dispatch(events, 'NAVIGATE');
-    focus(events, 'b', { pathname: '/b?token=secret', params: { token: 'secret', q: 'ok' } });
+    focus(events, 'b', {
+      pathname: '/b?token=secret',
+      params: { token: 'secret', q: 'ok', callback: () => {}, circular },
+    });
     await flushAsync();
 
     expect(mockAddMetric.mock.calls[0][0].params).toEqual({
