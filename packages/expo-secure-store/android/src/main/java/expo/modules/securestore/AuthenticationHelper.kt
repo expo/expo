@@ -45,6 +45,9 @@ class AuthenticationHelper(
 
     try {
       if (isDeviceCredentialsRequired) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+          throw UnsupportedDeviceCredentialsException()
+        }
         assertDeviceSecurity()
       } else {
         assertBiometricsSupport()

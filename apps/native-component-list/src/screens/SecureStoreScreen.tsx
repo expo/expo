@@ -40,19 +40,13 @@ function SecureStoreView() {
   const [canUseFallback, setCanUseFallback] = React.useState<boolean>(false);
   const [byteSize, setByteSize] = React.useState<string>('4096');
 
-  const forceDeviceFallback = React.useMemo(
-    () =>
-      !SecureStore.canUseBiometricAuthentication() &&
-      SecureStore.canUseDeviceCredentialsAuthentication(),
-    []
-  );
+  const forceDeviceFallback =
+    !SecureStore.canUseBiometricAuthentication() &&
+    SecureStore.canUseDeviceCredentialsAuthentication();
 
-  const canUseAnyAuthentication = React.useMemo(
-    () =>
-      SecureStore.canUseDeviceCredentialsAuthentication() ||
-      SecureStore.canUseBiometricAuthentication(),
-    []
-  );
+  const canUseAnyAuthentication =
+    SecureStore.canUseDeviceCredentialsAuthentication() ||
+    SecureStore.canUseBiometricAuthentication();
 
   const authMode = React.useMemo(() => {
     if (!requireAuth) return false;

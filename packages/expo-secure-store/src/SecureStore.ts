@@ -299,7 +299,7 @@ function normalizeAuthenticationRequirement(
       return 'deviceCredentials';
     default:
       throw new Error(
-        `Invalid value for requireAuthentication: ${JSON.stringify(value)}. Expected true, false, "biometry", "deviceCredentials", or null.`
+        `Invalid value for requireAuthentication: ${JSON.stringify(value)}. Expected true, false, "biometry", "deviceCredentials", undefined, or null.`
       );
   }
 }
