@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Remove navigation state restoration across activity recreation. ([#47422](https://github.com/expo/expo/pull/47422) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 56.2.13 — 2026-07-03

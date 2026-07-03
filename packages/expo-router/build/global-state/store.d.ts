@@ -1,10 +1,10 @@
 import type { ComponentType } from 'react';
-import { type UrlObject } from './getRouteInfoFromState';
-import type { FocusedRouteState, LinkToOptions, ReactNavigationState, StoreRedirects } from './types';
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
+import { type UrlObject } from './getRouteInfoFromState';
+import type { FocusedRouteState, LinkToOptions, ReactNavigationState, StoreRedirects } from './types';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
-import type { RequireContext, Href } from '../types';
+import type { Href } from '../types';
 export type RouterStore = typeof store;
 type StoreRef = {
     navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
@@ -15,7 +15,6 @@ type StoreRef = {
     config: any;
     redirects: StoreRedirects[];
     routeInfo?: UrlObject;
-    context?: RequireContext;
 };
 export declare const storeRef: {
     current: StoreRef;
