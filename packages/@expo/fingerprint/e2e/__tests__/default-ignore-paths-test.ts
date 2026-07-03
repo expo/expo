@@ -48,6 +48,12 @@ describe('default template ignore paths', () => {
       if (source.type === 'contents') {
         continue;
       }
+      // Skip config-plugin sources. These are modules loaded while evaluating the Expo config
+      // (such as base64-js or big-integer via @expo/config-plugins), not native autolinking
+      // modules, so they are out of scope for this check.
+      if (source.reasons.length === 1 && source.reasons[0] === 'expoConfigPlugins') {
+        continue;
+      }
       const { filePath } = source;
       const nodeModulesIndex = filePath.indexOf('node_modules' + path.sep);
       if (nodeModulesIndex < 0) {
