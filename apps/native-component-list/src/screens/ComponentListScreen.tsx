@@ -84,12 +84,13 @@ function LinkButton({
           onPressIn={() => setIsPressed(true)}
           onPressOut={() => setIsPressed(false)}
           {...rest}
-          style={[
+          // `Link asChild` requires a flattened style object on its child.
+          style={StyleSheet.flatten([
             {
               backgroundColor: isPressed ? theme.background.hover : undefined,
             },
             rest.style,
-          ]}>
+          ])}>
           {children}
         </Pressable>
       </Link>
@@ -98,7 +99,11 @@ function LinkButton({
 
   return (
     <Link href={href} asChild>
-      <TouchableHighlight underlayColor={theme.background.hover} {...rest}>
+      <TouchableHighlight
+        underlayColor={theme.background.hover}
+        {...rest}
+        // `Link asChild` requires a flattened style object on its child.
+        style={StyleSheet.flatten(rest.style)}>
         {children}
       </TouchableHighlight>
     </Link>
