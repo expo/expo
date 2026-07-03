@@ -92,10 +92,6 @@ export function useStore(
     rootComponent = Fragment;
   }
 
-  if (Platform.OS === 'android' && storeRef.current.state && storeRef.current.context === context) {
-    initialState = storeRef.current.state;
-  }
-
   storeRef.current = {
     navigationRef,
     routeNode,
@@ -104,7 +100,6 @@ export function useStore(
     linking,
     redirects,
     state: initialState,
-    context,
   };
 
   if (initialState) {
