@@ -44,9 +44,10 @@ const sortByStates: { [key in MediaLibrary.SortByKey]: MediaLibrary.SortByKey } 
   [MediaLibrary.SortBy.duration]: MediaLibrary.SortBy.default,
 };
 
+// Route params must stay serializable, so screens pass ids and refetch the data they need.
 type Links = {
-  MediaLibrary: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
-  MediaDetails: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
+  MediaLibrary: { albumId?: string; albumTitle?: string };
+  MediaDetails: { assetId: string; albumId?: string; albumTitle?: string };
   MediaAlbums: undefined;
 };
 
@@ -103,12 +104,13 @@ function useMediaLibraryPermissions(): [undefined | MediaLibrary.PermissionRespo
 }
 
 export default function MediaLibraryScreen({ navigation, route }: Props) {
-  const album = route.params?.album;
+  const albumId = route.params?.albumId;
 
   // Set the navigation options
   React.useLayoutEffect(() => {
     const goToAlbums = () => navigation.navigate('MediaAlbums');
-    const clearAlbumSelection = () => navigation.setParams({ album: undefined });
+    const clearAlbumSelection = () =>
+      navigation.setParams({ albumId: undefined, albumTitle: undefined });
     const addImage = async () => {
       const randomNameGenerator: (num: number) => string = (num) => {
         let res = '';
@@ -126,7 +128,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
     };
 
     const removeAlbum = async () => {
-      await MediaLibrary.deleteAlbumsAsync(album);
+      await MediaLibrary.deleteAlbumsAsync(albumId!);
       clearAlbumSelection();
     };
 
@@ -135,20 +137,20 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
       headerRight: () => (
         <View style={{ marginRight: 5, flexDirection: 'row' }}>
           <RNButton
-            title={album ? 'Remove' : 'Add'}
-            onPress={album ? removeAlbum : addImage}
+            title={albumId ? 'Remove' : 'Add'}
+            onPress={albumId ? removeAlbum : addImage}
             color={Colors.tintColor}
           />
           <View style={{ width: 5 }} />
           <RNButton
-            title={album ? 'Show all' : 'Albums'}
-            onPress={album ? clearAlbumSelection : goToAlbums}
+            title={albumId ? 'Show all' : 'Albums'}
+            onPress={albumId ? clearAlbumSelection : goToAlbums}
             color={Colors.tintColor}
           />
         </View>
       ),
     });
-  }, [album, navigation]);
+  }, [albumId, navigation]);
 
   // Ensure the permissions are granted.
   const [permission] = useMediaLibraryPermissions();
@@ -178,7 +180,8 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
 
 // The fetching and sorting logic is split out from the navigation and permission logic for simplicity.
 function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
-  const album = route.params?.album;
+  const albumId = route.params?.albumId;
+  const albumTitle = route.params?.albumTitle;
 
   const isLoadingAssets = React.useRef(false);
 
@@ -192,7 +195,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   // Update without showing the refresh indicator whenever the sorting parameters change.
   React.useEffect(() => {
     dispatch({ type: 'reset', refreshing: false });
-  }, [mediaType, sortBy, album?.id]);
+  }, [mediaType, sortBy, albumId]);
 
   const toggleMediaType = React.useCallback(() => {
     setMediaType(mediaTypeStates[mediaType]);
@@ -221,7 +224,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
         mediaType,
         mediaSubtypes: [],
         sortBy,
-        album: album?.id,
+        album: albumId,
       });
 
       // Get the last asset currently in the state.
@@ -243,7 +246,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
       // Toggle this back to false in a finally to ensure we can reload later, even if an error ocurred.
       isLoadingAssets.current = false;
     }
-  }, [state.endCursor, state.hasNextPage, state.assets, mediaType, sortBy, album?.id]);
+  }, [state.endCursor, state.hasNextPage, state.assets, mediaType, sortBy, albumId]);
 
   // Fetch data whenever the state.fetching value is true.
   React.useEffect(() => {
@@ -257,8 +260,16 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   }, []);
 
   // Subscribe to state changes
+  const isFirstFocus = React.useRef(true);
   useFocusEffect(
     React.useCallback(() => {
+      // The details screen may delete or modify assets while this screen is unfocused
+      // (and its listener removed), so refresh whenever the screen regains focus.
+      if (isFirstFocus.current) {
+        isFirstFocus.current = false;
+      } else {
+        dispatch({ type: 'reset', refreshing: false });
+      }
       // When new media is added or removed, update the library
       const subscription = MediaLibrary.addListener((event) => {
         if (!event.hasIncrementalChanges) {
@@ -276,12 +287,12 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   const onCellPress = React.useCallback(
     (asset: MediaLibrary.Asset) => {
       navigation.navigate('MediaDetails', {
-        asset,
-        album,
-        onGoBack: refresh,
+        assetId: asset.id,
+        albumId,
+        albumTitle,
       });
     },
-    [navigation, album, refresh]
+    [navigation, albumId, albumTitle]
   );
 
   const renderRowItem: ListRenderItem<MediaLibrary.Asset> = React.useCallback(
@@ -301,7 +312,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
     return (
       <View style={styles.header}>
         <HeadingText style={styles.headerText}>
-          {album ? `Album: ${album.title}` : 'All albums'}
+          {albumId ? `Album: ${albumTitle}` : 'All albums'}
         </HeadingText>
 
         <View style={styles.headerButtons}>
@@ -329,7 +340,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
         )}
       </View>
     );
-  }, [mediaType, album, sortBy, toggleMediaType, toggleSortBy]);
+  }, [mediaType, albumId, albumTitle, sortBy, toggleMediaType, toggleSortBy]);
 
   const renderFooter = React.useCallback(() => {
     if (state.refreshing) {

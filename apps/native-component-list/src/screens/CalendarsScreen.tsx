@@ -20,9 +20,10 @@ export const CalendarsScreens = [
   },
 ];
 
+// Route params must stay serializable, so the target screens receive the id and refetch the calendar.
 type StackNavigation = StackNavigationProp<{
-  Reminders: { calendar: any };
-  Events: { calendar: any };
+  Reminders: { calendarId: string };
+  Events: { calendarId: string };
 }>;
 
 const CalendarRow = (props: {
@@ -39,7 +40,7 @@ const CalendarRow = (props: {
       <HeadingText>{calendar.title}</HeadingText>
       <MonoText>{JSON.stringify(calendar, null, 2)}</MonoText>
       <ListButton
-        onPress={() => props.navigation.navigate(calendarTypeName, { calendar })}
+        onPress={() => props.navigation.navigate(calendarTypeName, { calendarId: calendar.id })}
         title={`View ${calendarTypeName}`}
       />
       <ListButton

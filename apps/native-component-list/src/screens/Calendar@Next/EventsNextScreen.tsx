@@ -1,6 +1,12 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { AddEventWithFormOptions, ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar';
+import {
+  AddEventWithFormOptions,
+  EntityTypes,
+  ExpoCalendar,
+  ExpoCalendarEvent,
+  getCalendars,
+} from 'expo-calendar';
 import React, { useState, useEffect } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -43,8 +49,9 @@ const EventRow = ({
   </View>
 );
 
+// Route params must stay serializable, so this screen receives the id and refetches the calendar.
 type Links = {
-  Events: { calendar: ExpoCalendar };
+  Events: { calendarId: string };
 };
 
 type Props = StackScreenProps<Links, 'Events'>;
@@ -72,6 +79,7 @@ function prepareEvent(calendarId: string, recurring: boolean = false) {
 
 const EventsScreen = ({ route }: Props) => {
   const [events, setEvents] = useState<ExpoCalendarEvent[]>([]);
+  const [calendar, setCalendar] = useState<ExpoCalendar | null>(null);
 
   const findEvents = async (calendar: ExpoCalendar) => {
     const yesterday = new Date();
@@ -83,16 +91,26 @@ const EventsScreen = ({ route }: Props) => {
     setEvents(sortedEvents);
   };
 
-  const calendar = route.params?.calendar;
+  const calendarId = route.params?.calendarId;
 
   useEffect(() => {
-    if (calendar) {
-      findEvents(calendar);
+    if (!calendarId) {
+      return;
     }
-  }, [calendar]);
+    (async () => {
+      const calendars = await getCalendars(EntityTypes.EVENT);
+      const calendar = calendars.find(({ id }) => id === calendarId) ?? null;
+      setCalendar(calendar);
+      if (calendar) {
+        findEvents(calendar);
+      }
+    })();
+  }, [calendarId]);
 
   const addEvent = async (recurring: boolean) => {
-    const { calendar } = route.params!;
+    if (!calendar) {
+      return;
+    }
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -150,7 +168,9 @@ const EventsScreen = ({ route }: Props) => {
   };
 
   const updateEvent = async (event: ExpoCalendarEvent) => {
-    const { calendar } = route.params!;
+    if (!calendar) {
+      return;
+    }
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -228,7 +248,9 @@ const EventsScreen = ({ route }: Props) => {
         <Button onPress={() => addEvent(true)} title="Add New Recurring Event" />
         <Button
           onPress={async () => {
-            const { calendar } = route.params!;
+            if (!calendar) {
+              return;
+            }
             const newEvent = prepareEvent(calendar.id, true);
             const result = await calendar.addEventWithForm(newEvent as AddEventWithFormOptions);
             setTimeout(() => {
@@ -243,7 +265,7 @@ const EventsScreen = ({ route }: Props) => {
     );
   };
 
-  if (!route.params?.calendar) {
+  if (!calendarId) {
     return <Text>Access this screen from the "Calendars" screen.</Text>;
   }
 

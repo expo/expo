@@ -12,7 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useTheme } from '../../../common/ThemeProvider';
 import RedirectScreen from '../screens/RedirectScreen';
-import SearchScreen from '../screens/SearchScreen';
+import SearchScreen, { getSearchScreenOptions } from '../screens/SearchScreen';
 import MainNavigators from './MainNavigators';
 import MainTabNavigator from './MainTabNavigator';
 
@@ -29,17 +29,13 @@ export const linking: LinkingOptions<object> = {
           components: MainNavigators.components.linking,
         },
       },
-      search: {
-        screens: {
-          search: 'search',
-        },
-      },
+      searchNavigator: 'search',
     },
   },
 };
 
 export default function RootNavigation() {
-  const { name: themeName } = useTheme();
+  const { name: themeName, theme } = useTheme();
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer
@@ -49,7 +45,11 @@ export default function RootNavigation() {
         <Switch.Navigator screenOptions={{ presentation: 'modal', headerShown: false }}>
           <Switch.Screen name="main" component={MainTabNavigator} />
           <Switch.Screen name="redirect" component={RedirectScreen} />
-          <Switch.Screen name="searchNavigator" component={SearchScreen} />
+          <Switch.Screen
+            name="searchNavigator"
+            component={SearchScreen}
+            options={getSearchScreenOptions(theme)}
+          />
         </Switch.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

@@ -10,8 +10,9 @@ import MonoText from '../../components/MonoText';
 
 const EXPO_ALBUM_NAME = 'Expo';
 
+// Route params must stay serializable, so this screen receives ids and refetches the asset.
 type Links = {
-  MediaDetails: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
+  MediaDetails: { assetId: string; albumId?: string; albumTitle?: string };
 };
 
 type Props = StackScreenProps<Links, 'MediaDetails'>;
@@ -34,30 +35,22 @@ export default class MediaDetailsScreen extends React.Component<Props> {
   }
 
   getAssetDetails = () => {
-    const { asset } = this.props.route.params;
-    MediaLibrary.getAssetInfoAsync(asset, { shouldDownloadFromNetwork: false }).then((details) => {
-      this.setState({ detailsWithoutDownloadingFromNetwork: details });
-    });
-    MediaLibrary.getAssetInfoAsync(asset).then((details) => {
+    const { assetId } = this.props.route.params;
+    MediaLibrary.getAssetInfoAsync(assetId, { shouldDownloadFromNetwork: false }).then(
+      (details) => {
+        this.setState({ detailsWithoutDownloadingFromNetwork: details });
+      }
+    );
+    MediaLibrary.getAssetInfoAsync(assetId).then((details) => {
       this.setState({ details });
     });
   };
 
-  goBack() {
-    const { navigation, route } = this.props;
-    const { onGoBack } = route.params;
-
-    if (onGoBack) {
-      onGoBack();
-    }
-    navigation.goBack();
-  }
-
   deleteAsset = async () => {
-    const { asset } = this.props.route.params!;
+    const { assetId } = this.props.route.params;
 
-    await MediaLibrary.deleteAssetsAsync([asset]);
-    this.goBack();
+    await MediaLibrary.deleteAssetsAsync([assetId]);
+    this.props.navigation.goBack();
   };
 
   addToAlbum = async () => {
@@ -67,31 +60,31 @@ export default class MediaDetailsScreen extends React.Component<Props> {
       return;
     }
 
-    const { asset } = this.props.route.params!;
+    const { assetId } = this.props.route.params;
     const expoAlbum = await MediaLibrary.getAlbumAsync(EXPO_ALBUM_NAME);
 
     if (expoAlbum) {
-      await MediaLibrary.addAssetsToAlbumAsync(asset, expoAlbum);
+      await MediaLibrary.addAssetsToAlbumAsync(assetId, expoAlbum);
     } else {
-      await MediaLibrary.createAlbumAsync(EXPO_ALBUM_NAME, asset);
+      await MediaLibrary.createAlbumAsync(EXPO_ALBUM_NAME, assetId);
     }
 
     alert('Successfully added asset to Expo album!');
   };
 
   removeFromAlbum = async () => {
-    const { asset, album } = this.props.route.params!;
+    const { assetId, albumId } = this.props.route.params;
 
-    if (album) {
-      await MediaLibrary.removeAssetsFromAlbumAsync(asset.id, album.id);
-      this.goBack();
+    if (albumId) {
+      await MediaLibrary.removeAssetsFromAlbumAsync(assetId, albumId);
+      this.props.navigation.goBack();
     }
   };
 
   addToFavorites = async () => {
-    const { asset } = this.props.route.params!;
+    const { assetId } = this.props.route.params;
 
-    const success = await MediaLibrary.setAssetFavoriteAsync(asset, true);
+    const success = await MediaLibrary.setAssetFavoriteAsync(assetId, true);
     if (success) {
       alert('Asset marked as favorite!');
       this.getAssetDetails();
@@ -99,16 +92,16 @@ export default class MediaDetailsScreen extends React.Component<Props> {
   };
 
   removeFromFavorites = async () => {
-    const { asset } = this.props.route.params!;
+    const { assetId } = this.props.route.params;
 
-    const success = await MediaLibrary.setAssetFavoriteAsync(asset, false);
+    const success = await MediaLibrary.setAssetFavoriteAsync(assetId, false);
     if (success) {
       alert('Asset removed from favorites!');
       this.getAssetDetails();
     }
   };
 
-  renderAsset(asset: MediaLibrary.Asset) {
+  renderAsset(asset: MediaLibrary.AssetInfo) {
     const aspectRatio = asset.height ? asset.width / asset.height : 1;
 
     switch (asset.mediaType) {
@@ -128,7 +121,7 @@ export default class MediaDetailsScreen extends React.Component<Props> {
 
   render() {
     const { details, detailsWithoutDownloadingFromNetwork } = this.state;
-    const { asset, album } = this.props.route.params!;
+    const { albumId, albumTitle } = this.props.route.params;
 
     return (
       <ScrollView style={styles.container}>
@@ -139,22 +132,22 @@ export default class MediaDetailsScreen extends React.Component<Props> {
             title="Delete asset"
             onPress={this.deleteAsset}
           />
-          {album && (
+          {albumId && (
             <Button
               style={styles.button}
               buttonStyle={{ backgroundColor: 'red' }}
-              title={`Remove from ${album.title} album`}
+              title={`Remove from ${albumTitle} album`}
               onPress={this.removeFromAlbum}
             />
           )}
         </View>
-        {(!album || album.title !== EXPO_ALBUM_NAME) && (
+        {(!albumId || albumTitle !== EXPO_ALBUM_NAME) && (
           <View style={styles.buttons}>
             <Button style={styles.button} title="Add to Expo album" onPress={this.addToAlbum} />
           </View>
         )}
 
-        {!album && details && Platform.OS === 'ios' && (
+        {!albumId && details && Platform.OS === 'ios' && (
           <Button
             style={styles.button}
             buttonStyle={{ backgroundColor: 'green' }}
@@ -163,10 +156,7 @@ export default class MediaDetailsScreen extends React.Component<Props> {
           />
         )}
 
-        <View style={styles.imageContainer}>{this.renderAsset(asset)}</View>
-
-        <HeadingText>Base asset data</HeadingText>
-        <MonoText>{JSON.stringify(asset, null, 2)}</MonoText>
+        {details && <View style={styles.imageContainer}>{this.renderAsset(details)}</View>}
 
         {details && (
           <View style={styles.details}>
