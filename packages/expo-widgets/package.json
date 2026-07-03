@@ -1,6 +1,6 @@
 {
   "name": "expo-widgets",
-  "version": "57.0.1",
+  "version": "57.0.2",
   "description": "Widgets.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,7 +32,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/widgets/",
   "dependencies": {
     "@expo/plist": "workspace:^0.8.0",
-    "@expo/ui": "workspace:~57.0.2"
+    "@expo/ui": "workspace:~57.0.3"
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.8.0",

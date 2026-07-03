@@ -1,6 +1,6 @@
 {
   "name": "expo-media-library",
-  "version": "57.0.0",
+  "version": "57.0.1",
   "description": "Provides access to user's media library.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
