@@ -75,9 +75,6 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         // In development, we will show the onboarding screen
         rootComponent = react_1.Fragment;
     }
-    if (react_native_1.Platform.OS === 'android' && store_1.storeRef.current.state && store_1.storeRef.current.context === context) {
-        initialState = store_1.storeRef.current.state;
-    }
     store_1.storeRef.current = {
         navigationRef,
         routeNode,
@@ -86,7 +83,6 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         linking,
         redirects,
         state: initialState,
-        context,
     };
     if (initialState) {
         store_1.storeRef.current.routeInfo = (0, routeInfoCache_1.getCachedRouteInfo)(initialState);
