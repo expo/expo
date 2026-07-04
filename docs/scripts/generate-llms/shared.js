@@ -33,18 +33,6 @@ const LLMS_FILES = [
     filename: 'llms-sdk-v54.0.0.txt',
     description: 'Complete documentation for Expo SDK 54',
   },
-  {
-    filename: 'llms-sdk-v53.0.0.txt',
-    description: 'Complete documentation for Expo SDK 53',
-  },
-  {
-    filename: 'llms-sdk-v52.0.0.txt',
-    description: 'Complete documentation for Expo SDK 52',
-  },
-  {
-    filename: 'llms-sdk-v51.0.0.txt',
-    description: 'Complete documentation for Expo SDK 51',
-  },
 ];
 
 const CONTENT_SEPARATOR = '\n\n---\n\n';

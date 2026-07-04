@@ -196,10 +196,12 @@ export function useHeaderConfigProps({
   title,
   unstable_headerLeftItems: headerLeftItems,
   unstable_headerRightItems: headerRightItems,
+  unstable_nativeProps,
 }: Props): ScreenStackHeaderConfigProps {
   const { direction } = useLocale();
   const { colors, fonts, dark } = useTheme();
   const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
+  const headerNativeProps = unstable_nativeProps?.headerConfig;
 
   const headerBackTitleStyleFlattened =
     StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
@@ -475,5 +477,6 @@ export function useHeaderConfigProps({
     headerLeftBarButtonItems: processBarButtonItems(leftItems, colors, fonts),
     headerRightBarButtonItems: processBarButtonItems(rightItems, colors, fonts),
     experimental_userInterfaceStyle: dark ? 'dark' : 'light',
+    ...headerNativeProps,
   } as const;
 }

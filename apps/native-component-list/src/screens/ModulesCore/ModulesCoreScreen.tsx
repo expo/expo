@@ -28,6 +28,13 @@ if (!isRunningInExpoGo()) {
       return optionalRequire(() => require('./Benchmarks/ModulesBenchmarksScreen'));
     },
   });
+  ModulesCoreScreens.push({
+    name: 'Jest Mock Generator',
+    route: 'modulescore/jest-mock-generator',
+    getComponent() {
+      return optionalRequire(() => require('./JestMockGeneratorScreen'));
+    },
+  });
 }
 
 export default function ModulesCoreScreen() {
