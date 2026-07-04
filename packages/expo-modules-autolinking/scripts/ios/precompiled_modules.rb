@@ -989,11 +989,22 @@ module Expo
           update_xcconfig_header_search_paths(xcconfig_path, paths_string)
         end
 
-        # Also update the main project targets' build settings directly
+        # Also update the main project targets' build settings directly.
+        # NOTE: Xcodeproj build settings can be either a String or an Array — React Native's
+        # post_install sets HEADER_SEARCH_PATHS as an Array (e.g. ["$(inherited)",
+        # "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCodegen/...\""]) on every pod that depends on
+        # ReactCodegen. Interpolating an Array into a String serializes its inspect form
+        # (`["$(inherited)", ...]`), which clang receives as a single bogus `-I[...` argument that
+        # swallows all inherited header search paths for the target ("ReactCodegen/... file not
+        # found" under use_frameworks). Append per-type instead.
+        quoted_paths = header_search_paths.map { |p| "\"#{p}\"" }
         installer.pods_project.targets.each do |target|
           target.build_configurations.each do |config|
             existing = config.build_settings['HEADER_SEARCH_PATHS'] || '$(inherited)'
-            unless existing.include?(paths_string)
+            if existing.is_a?(Array)
+              missing = quoted_paths.reject { |path| existing.include?(path) }
+              config.build_settings['HEADER_SEARCH_PATHS'] = existing + missing if missing.any?
+            elsif !existing.include?(paths_string)
               config.build_settings['HEADER_SEARCH_PATHS'] = "#{existing} #{paths_string}"
             end
           end
