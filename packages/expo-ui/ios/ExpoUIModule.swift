@@ -7,6 +7,15 @@ public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
 
+    OnCreate {
+      // Consume the outside-tap that dismisses a SwiftUI Menu/ContextMenu so it does
+      // not pass through to the React Native view behind it. Idempotent.
+      // iOS-only: the guard (and the pass-through bug it fixes) is iOS-specific.
+      #if os(iOS)
+      ExpoUIMenuDismissTouchGuard.install()
+      #endif
+    }
+
     View(RNHostView.self)
 
     OnDestroy {
