@@ -36,6 +36,7 @@ import { checkDependencyWebAsync } from './webResolver';
 const deepObjectMerge = (target: any, source: any): any => {
   if (
     source !== undefined &&
+    source !== null &&
     typeof target === 'object' &&
     target != null &&
     !Array.isArray(target) &&
