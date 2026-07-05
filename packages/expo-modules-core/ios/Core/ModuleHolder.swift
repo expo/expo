@@ -1,8 +1,6 @@
 import ExpoModulesJSI
 
-/**
- Holds a reference to the module instance and caches its definition.
- */
+/// Holds a reference to the module instance and caches its definition.
 public final class ModuleHolder {
   /**
    Name of the module.
@@ -55,6 +53,7 @@ public final class ModuleHolder {
     self._name = name
     self.module = module
     self.definition = ModuleHolder.buildDefinition(for: module)
+    module.didCreate()
     post(event: .moduleCreate)
   }
 
@@ -70,7 +69,8 @@ public final class ModuleHolder {
   private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
     let userDefinition = module.definition()
     let synthesized = module._synthesizedDefinition()
-    let definition = synthesized.isEmpty
+    let definition =
+      synthesized.isEmpty
       ? userDefinition
       : ModuleDefinition(definitions: synthesized + userDefinition.rawDefinitions)
 
@@ -141,6 +141,8 @@ public final class ModuleHolder {
       // (the direct-JSI path). A no-op for modules that don't use the macro.
       try module._decorateModule(object: object, in: appContext.runtime)
 
+      try installListeningHooks(on: object, in: appContext.runtime)
+
       return object
     } catch {
       log.error("Building the module object failed: \(error)")
@@ -171,7 +173,35 @@ public final class ModuleHolder {
   // MARK: Deallocation
 
   deinit {
+    module.willDestroy()
     post(event: .moduleDestroy)
+  }
+
+  // MARK: - Privates
+
+  /// Installs host functions that the JavaScript `EventEmitter` implementation calls when
+  /// the number of listeners for an event switches between zero and non-zero. They notify
+  /// the module through the `didStartListening` and `didStopListening` lifecycle hooks.
+  @JavaScriptActor
+  private func installListeningHooks(on object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
+    let startListening = runtime.createFunction("__expo_onStartListeningToEvent") {
+      [weak module = self.module] _, arguments in
+      guard let module, arguments.count > 0 else {
+        return .undefined
+      }
+      module.didStartListening(event: try arguments[0].asString())
+      return .undefined
+    }
+    let stopListening = runtime.createFunction("__expo_onStopListeningToEvent") {
+      [weak module = self.module] _, arguments in
+      guard let module, arguments.count > 0 else {
+        return .undefined
+      }
+      module.didStopListening(event: try arguments[0].asString())
+      return .undefined
+    }
+    object.defineProperty("__expo_onStartListeningToEvent", value: startListening.asValue(), options: [])
+    object.defineProperty("__expo_onStopListeningToEvent", value: stopListening.asValue(), options: [])
   }
 
   // MARK: - Exceptions
