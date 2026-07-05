@@ -99,7 +99,14 @@ function fromDeepLink(url: string): string {
       return '';
     }
     const incomingUrl = res.searchParams.get('url')!;
-    return extractExactPathFromURL(decodeURI(incomingUrl));
+    let decodedIncomingUrl: string;
+    try {
+      decodedIncomingUrl = decodeURI(incomingUrl);
+    } catch {
+      // Malformed percent-encoding (e.g. `%GG`) would otherwise throw and drop the link.
+      decodedIncomingUrl = incomingUrl;
+    }
+    return extractExactPathFromURL(decodedIncomingUrl);
   }
 
   let results = '';
@@ -115,7 +122,16 @@ function fromDeepLink(url: string): string {
   const qs = !res.search
     ? ''
     : // @ts-ignore: `entries` is not on `URLSearchParams` in some typechecks.
-      [...res.searchParams.entries()].map(([k, v]) => `${k}=${decodeURIComponent(v)}`).join('&');
+      [...res.searchParams.entries()]
+        .map(([k, v]) => {
+          try {
+            return `${k}=${decodeURIComponent(v)}`;
+          } catch {
+            // Malformed percent-encoding (e.g. `%GG`) would otherwise throw and drop the link.
+            return `${k}=${v}`;
+          }
+        })
+        .join('&');
 
   if (qs) {
     results += '?' + qs;
