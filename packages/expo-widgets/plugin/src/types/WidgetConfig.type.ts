@@ -52,6 +52,7 @@ export type WidgetParameterBoolean = {
 export type WidgetParameterEnum = {
   title: string;
   type: 'enum';
+  dynamic?: boolean;
   values: {
     name: string;
     value: string;

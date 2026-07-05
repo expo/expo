@@ -126,7 +126,7 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
         'Makes the widget [configurable](#configurable-widgets). The values the user picks are passed to your widget at runtime through `environment.configuration`. An object with:',
         '* `title` - The title shown when the user edits the widget.',
         '* `description` - An optional description shown when the user edits the widget.',
-        '* `parameters` - A map of parameter keys to parameter definitions. Each parameter has a `title`, a `type` (`string`, `number`, `boolean`, or `enum`), and a `default`. An `enum` parameter additionally takes a `values` array of `{ name, value }` options.',
+        '* `parameters` - A map of parameter keys to parameter definitions. Each parameter has a `title`, a `type` (`string`, `number`, `boolean`, or `enum`), and a `default`. An `enum` parameter additionally takes a `values` array of `{ name, value }` options and can set `dynamic: true` to let the app replace those options at runtime.',
       ].join('\n'),
     },
   ]}
@@ -173,7 +173,8 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
                       "values": [
                         { "name": "San Francisco", "value": "sf" },
                         { "name": "New York", "value": "nyc" }
-                      ]
+                      ],
+                      "dynamic": true
                     }
                   }
                 }
@@ -462,6 +463,18 @@ const WeatherWidget = (
 };
 
 export default createWidget<WeatherProps, WeatherConfiguration>('WeatherWidget', WeatherWidget);
+```
+
+#### Dynamic enum options
+
+Set `dynamic: true` on an enum parameter when the list of choices is only known at runtime, such as workspaces loaded after sign-in. The `values` array in app config is used as the fallback list until the app provides runtime options.
+
+```tsx
+WeatherWidget.setConfigurationParameterEnum('city', [
+  { name: 'Current City', value: 'current' },
+  { name: 'San Francisco', value: 'sf' },
+  { name: 'New York', value: 'nyc' },
+]);
 ```
 
 ### Live Activities
