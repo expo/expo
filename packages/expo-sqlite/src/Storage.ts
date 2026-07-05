@@ -384,14 +384,15 @@ export class SQLiteStorage {
     return db.withTransactionAsync(async () => {
       const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
       let currentDbVersion = result?.user_version ?? 0;
-      if (currentDbVersion >= DATABASE_VERSION) {
-        return;
+      // Always run the migration statement even when user_version is already at
+      // DATABASE_VERSION. MIGRATION_STATEMENT_0 uses IF NOT EXISTS, so it is a
+      // no-op when the table exists. This self-heals a DB that was left with
+      // user_version = 1 but no storage table (possible when getDbSync() raced
+      // a concurrent getDbAsync() call before this lock was introduced).
+      await db.execAsync(MIGRATION_STATEMENT_0);
+      if (currentDbVersion < DATABASE_VERSION) {
+        await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
       }
-      if (currentDbVersion === 0) {
-        await db.execAsync(MIGRATION_STATEMENT_0);
-        currentDbVersion = 1;
-      }
-      await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
     });
   }
 
@@ -399,14 +400,15 @@ export class SQLiteStorage {
     db.withTransactionSync(() => {
       const result = db.getFirstSync<{ user_version: number }>('PRAGMA user_version');
       let currentDbVersion = result?.user_version ?? 0;
-      if (currentDbVersion >= DATABASE_VERSION) {
-        return;
+      // Always run the migration statement even when user_version is already at
+      // DATABASE_VERSION. MIGRATION_STATEMENT_0 uses IF NOT EXISTS, so it is a
+      // no-op when the table exists. This self-heals a DB that was left with
+      // user_version = 1 but no storage table because getDbSync() raced a
+      // concurrent getDbAsync() call during first launch.
+      db.execSync(MIGRATION_STATEMENT_0);
+      if (currentDbVersion < DATABASE_VERSION) {
+        db.execSync(`PRAGMA user_version = ${DATABASE_VERSION}`);
       }
-      if (currentDbVersion === 0) {
-        db.execSync(MIGRATION_STATEMENT_0);
-        currentDbVersion = 1;
-      }
-      db.execSync(`PRAGMA user_version = ${DATABASE_VERSION}`);
     });
   }
 
