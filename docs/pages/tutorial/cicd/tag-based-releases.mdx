@@ -1,0 +1,178 @@
+---
+title: 'Using Git tags to trigger production deployments'
+sidebar_title: Tag-based releases
+description: Learn how to trigger production deployments from Git tags on EAS Workflows.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { BranchVsTagTrigger } from '~/ui/components/FlowDiagram/Diagrams/BranchVsTagTrigger';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+Pushing to a release branch runs the production workflow on every commit, whether the team meant that commit as a release or not.
+
+## Learning outcomes
+
+- Switch the production workflow trigger from a `release/*` branch to a Git tag matching `v*.*.*`
+- Cut a release by pushing a tag from `main` and watch the workflow run on the EAS dashboard
+- Match pre-release tags like `v*.*.*-rc.*` to run the workflow on release candidates without shipping them to app users
+
+## Tags as release events
+
+EAS Workflows supports tag-based triggers through [`on.push`](/eas/workflows/syntax/#onpush) with a `tags` list. The workflow runs only when a tag matching a glob pattern is pushed to the remote. A Git tag is a one-time event tied to a specific commit and version, unlike a branch that can be updated over time. That makes tags well-suited for marking releases.
+
+A tag-based release workflow fits teams that:
+
+- Want the version number in Git to match the version they ship to app users
+- Release from `main` directly rather than maintaining long-lived release branches
+- Want a clear audit trail of every release commit by version
+
+<BranchVsTagTrigger />
+
+## Switch production.yml to a tag trigger
+
+Open **.eas/workflows/production.yml** and replace the `on.push.branches` trigger with `on.push.tags`. Everything else inside the workflow stays the same.
+
+<Step label="1">
+
+### Change the trigger
+
+Replace the `branches` trigger with a `tags` trigger. The `tags` glob matches tags like `v1.0.0`, `v2.3.7`, and `v10.0.0-beta.1`.
+
+```yaml .eas/workflows/production.yml
+name: Deploy to production
+
+# @info #
+on:
+  push:
+    tags: ['v*.*.*']
+# @end #
+
+jobs:
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: production
+  get_android_build:
+    name: Check for existing Android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: production
+  get_ios_build:
+    name: Check for existing iOS build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: production
+  build_android:
+    name: Build Android
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: production
+  update_android:
+    name: Publish Android update
+    needs: [get_android_build]
+    if: ${{ needs.get_android_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: android
+  update_ios:
+    name: Publish iOS update
+    needs: [get_ios_build]
+    if: ${{ needs.get_ios_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: ios
+```
+
+For tags to trigger the workflow, we need to pick a pattern that matches our team's flow. Common patterns include:
+
+- `['v*']` matches any tag that starts with `v`
+- `['v*.*.*']` matches strict three-part semantic versions (recommended)
+
+We don't need to change any other jobs. The `fingerprint`, `get-build`, `build`, and `update` jobs work identically because they operate on the commit.
+
+</Step>
+
+<Step label="2">
+
+### Commit and push the workflow change
+
+Commit the change to **production.yml** and push it to `main`. This doesn't trigger the workflow because we switched from a branch trigger to a tag trigger.
+
+<Terminal
+  cmd={[
+    '$ git add .eas/workflows/production.yml',
+    '',
+    '$ git commit -m "Switch production workflow to tag trigger"',
+    '',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add .eas/workflows/production.yml && git commit -m 'Switch production workflow to tag trigger' && git push origin main"
+/>
+
+</Step>
+
+<Step label="3">
+
+### Create a tag to test the workflow
+
+To run the workflow, we need to push a tag that matches the glob pattern defined in **production.yml**.
+
+Make a TypeScript/JavaScript change in our example project, commit it, and push a new tag:
+
+<Terminal
+  cmd={[
+    '$ git add .',
+    '',
+    '$ git commit -m "Fix welcome copy"',
+    '',
+    '$ git tag v0.1.0',
+    '',
+    '$ git push origin main --tags',
+  ]}
+  cmdCopy="git add . && git commit -m 'Fix welcome copy' && git tag v0.1.0 && git push origin main --tags"
+/>
+
+The workflow triggers on the `v0.1.0` tag. Open the EAS dashboard, and under **Workflows**, notice "Deploy to production" running with `refs/tags/v0.1.0` as its branch:
+
+<ContentSpotlight
+  alt="EAS Workflows dashboard showing a tag-triggered production workflow run with fingerprint, get-build, and update jobs for Android and iOS."
+  src="/static/images/tutorial/cicd/eas-workflows-tag-based-production-run.webp"
+  className="max-w-160"
+/>
+
+Since this is the first production run with the fingerprint generated for a tag-based release, the `build` jobs run for both Android and iOS. Subsequent tags that point to TypeScript/JavaScript changes skip the build jobs and go straight to `update` jobs.
+
+<ContentSpotlight
+  alt="EAS Workflows dashboard showing parallel Android and iOS production build jobs for a v0.1.0 tag release."
+  src="/static/images/tutorial/cicd/eas-workflows-tag-based-build-android-ios.png"
+  className="max-w-160"
+/>
+
+</Step>
+
+## Pre-release tags for release candidates
+
+To run the production workflow for release candidates, use a separate glob that matches pre-release tags. For example, `['v*.*.*-rc.*']` matches `v1.0.0-rc.1`.
+
+## Summary
+
+<ProgressTracker name="CICD_TUTORIAL" currentChapterSlug="/tutorial/cicd/tag-based-releases" />

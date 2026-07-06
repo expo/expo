@@ -1,0 +1,181 @@
+---
+title: 'Deploy web apps to EAS Hosting with EAS Workflows'
+sidebar_title: Web deployments
+description: Learn how to deploy web builds to EAS Hosting alongside Android and iOS releases to existing EAS Workflows.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+Our workflows from previous chapters cover Android and iOS. EAS Workflows can also deploy the web build of an Expo project to [EAS Hosting](/eas/hosting/introduction/) alongside the same release.
+
+## Learning outcomes
+
+- Configure the Expo project to export a static web build
+- Add a web deployment job to **preview.yml** to generate a non-production web build
+- Add a web deployment job to **production.yml** to generate a production web build
+
+## EAS Hosting and the deploy job
+
+**EAS Hosting** is a service for hosting and deploying web builds of an Expo app. Each deployment gets its own unique URL, and a project has a single production URL that serves whatever we last deployed to production.
+
+The [`deploy`](/eas/workflows/pre-packaged-jobs/#deploy) pre-packaged job in EAS Workflows runs the web export, uploads the output of the export step to EAS Hosting, and returns the deployment URL as the job output. The `deploy` job has two parameters:
+
+| Parameter | Type    | Description                                                                                     |
+| --------- | ------- | ----------------------------------------------------------------------------------------------- |
+| `prod`    | boolean | Optional. If `true`, deploys to the project's production URL. If omitted, deploys as a preview. |
+| `alias`   | string  | Optional. Names a stable alias URL like `awesome-project--staging.expo.app`.                    |
+
+## Configure web.output for static export
+
+Before we add web deployment jobs to our workflows, we need to configure our Expo project to export a [static web build](/router/web/static-rendering/). In **app.json**, set the [`web.output`](/versions/latest/config/app/#web) field to `static`:
+
+```json app.json
+{
+  "expo": {
+    /* @hide ... */ /* @end */
+    "web": {
+      "output": "static"
+    }
+  }
+}
+```
+
+`static` tells the Expo CLI to produce a directory of static HTML, JavaScript, and asset files that EAS Hosting can serve.
+
+After updating the **app.json** with the above configuration, commit the change and push it to the repository's `main` branch.
+
+## Add a web preview deployment
+
+Setting `prod: true` is the difference between a preview deployment and a production deployment. Previews get unique per-deployment URLs. We created a preview workflow in [Chapter 3 Step 1](/tutorial/cicd/preview-builds/#add-a-previewyml). Let's add a `deploy_web` job to that workflow so any time we create a new preview build, we also get a new web deployment.
+
+<Step label="1">
+
+### Add a deploy_web job
+
+Open **.eas/workflows/preview.yml** and add a `deploy_web` job. This new job runs in parallel with existing build jobs because it has no `needs` dependency.
+
+```yaml .eas/workflows/preview.yml
+name: Preview builds
+
+jobs:
+  # ... existing fingerprint, get-build, build_android, build_ios, notify jobs
+
+  deploy_web:
+    name: Deploy web (preview)
+    type: deploy
+```
+
+With no `prod` parameter, this deploys as a non-production version. Each push gets a unique URL like `https://awesome-project--abc123.expo.app`.
+
+</Step>
+
+<Step label="2">
+
+### Push the workflow change to the repository
+
+Commit the change to **preview.yml** and push it to the `main` branch of the GitHub repository. EAS Workflows reads workflow files from the default branch, so this is what makes the change effective.
+
+<Terminal
+  cmd={[
+    '$ git add .eas/workflows/preview.yml',
+    '',
+    '$ git commit -m "Add web preview deploy job to preview workflow"',
+    '',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add .eas/workflows/preview.yml && git commit -m 'Add web preview deploy job to preview workflow' && git push origin main"
+/>
+
+</Step>
+
+<Step label="3">
+
+### Test the workflow
+
+Now, manually run the preview workflow using the following command:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
+
+On the EAS dashboard, the preview workflow run shows the `deploy_web` job alongside the build jobs.
+
+<ContentSpotlight
+  alt="EAS Workflows preview run showing a deploy_web job running in parallel with Android and iOS build jobs."
+  src="/static/images/tutorial/cicd/eas-workflows-web-deploy-preview-job.png"
+  className="max-w-160"
+/>
+
+Under **Deploy web (preview)**, click the **View Deployment** link to open the deployed web build in the browser.
+
+<ContentSpotlight
+  alt="EAS Hosting deployment URL output from a deploy_web job, showing a unique per-deployment preview URL."
+  src="/static/images/tutorial/cicd/eas-hosting-deployment-url-output.webp"
+  className="max-w-160"
+/>
+
+</Step>
+
+## Add a web production deployment
+
+The production workflow from [Chapter 6, Step 1](/tutorial/cicd/tag-based-releases/#change-the-trigger) runs when we push a new Git tag, and it builds or updates the native app. Let's add a `deploy_web` job to that workflow so that releasing a new version of the app also updates the web version on the production URL.
+
+<Step label="1">
+
+### Add a deploy_web job
+
+Open **.eas/workflows/production.yml** and add a `deploy_web` job. This new job runs in parallel with existing build jobs because it has no `needs` dependency.
+
+```yaml .eas/workflows/production.yml
+name: Deploy to production
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+jobs:
+  # ... existing fingerprint, get-build, build, update jobs ...
+
+  deploy_web:
+    name: Deploy web (production)
+    type: deploy
+    params:
+      prod: true
+```
+
+In the above workflow, the `['v*.*.*']` matches strict three-part semantic versions. The `params.prod: true` deploys the web app to the production URL like `https://awesome-project.expo.app`.
+
+</Step>
+
+<Step label="2">
+
+### Create a tag to test the workflow
+
+Commit the workflow change to the `main` branch of the repository:
+
+<Terminal
+  cmd={[
+    '$ git add .eas/workflows/production.yml',
+    '',
+    '$ git commit -m "Add web production deploy to production workflow"',
+    '',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add .eas/workflows/production.yml && git commit -m 'Add web production deploy to production workflow' && git push origin main"
+/>
+
+To run the workflow, create a new tag and push it to the repository:
+
+<Terminal
+  cmd={['$ git tag v0.2.0', '', '$ git push origin v0.2.0']}
+  cmdCopy="git tag v0.2.0 && git push origin v0.2.0"
+/>
+
+The production workflow now runs on the release of the `v0.2.0` tag. The `deploy_web` job deploys the web build to the production URL.
+
+</Step>
+
+## Summary
+
+<ProgressTracker name="CICD_TUTORIAL" currentChapterSlug="/tutorial/cicd/web-deployments" />

@@ -9,7 +9,7 @@ export type Chapter = {
   nextDescription: string;
 };
 
-export type TutorialName = 'GET_STARTED' | 'EAS_TUTORIAL' | 'BUILD_WITH_AI';
+export type TutorialName = 'GET_STARTED' | 'EAS_TUTORIAL' | 'BUILD_WITH_AI' | 'CICD_TUTORIAL';
 
 export type TutorialTrailer = {
   title: string;
@@ -256,10 +256,69 @@ export const BUILD_WITH_AI_TUTORIAL_CHAPTERS: Chapter[] = [
   },
 ];
 
+export const CICD_TUTORIAL_CHAPTERS: Chapter[] = [
+  {
+    title: 'Chapter 1: First EAS Workflows job',
+    slug: '/tutorial/cicd/first-workflow',
+    summary:
+      'We created a custom job workflow, triggered it manually and automatically, chained jobs using needs and outputs, and used the EAS dashboard to verify job execution.',
+    nextDescription:
+      'In the next chapter, learn how to automate development builds with fingerprinting to skip unnecessary rebuilds.',
+  },
+  {
+    title: 'Chapter 2: Development builds',
+    slug: '/tutorial/cicd/development-builds',
+    summary:
+      'We automated development builds using pre-packaged jobs, added fingerprints to skip unnecessary rebuilds, and integrated unit tests as a custom job before the build pipeline.',
+    nextDescription:
+      'In the next chapter, learn how to create preview builds with Slack notifications and PR preview updates.',
+  },
+  {
+    title: 'Chapter 3: Preview builds',
+    slug: '/tutorial/cicd/preview-builds',
+    summary:
+      'We created a preview build workflow with fingerprinting, added Slack notifications for build status, and set up PR previews using EAS Update so reviewers can test changes without checking out a branch.',
+    nextDescription:
+      'In the next chapter, learn how to run end-to-end tests with Maestro in an EAS Workflows job.',
+  },
+  {
+    title: 'Chapter 4: E2E tests',
+    slug: '/tutorial/cicd/e2e-tests',
+    summary:
+      'We created a Maestro E2E test workflow on development builds for Android and iOS, kept the trigger manual by default, and learned how to use a pull request label trigger for on-demand runs.',
+    nextDescription:
+      'In the next chapter, learn how to create a production workflow with fingerprinting and OTA updates.',
+  },
+  {
+    title: 'Chapter 5: Production deployments',
+    slug: '/tutorial/cicd/production',
+    summary:
+      'We created a production workflow for Android and iOS triggered by pushes to a release branch, used fingerprinting to choose between a native build and an OTA update, and saw how EAS Submit automates app store submissions.',
+    nextDescription:
+      'In the next chapter, learn how to switch production deployments from release branches to version tags.',
+  },
+  {
+    title: 'Chapter 6: Tag-based releases',
+    slug: '/tutorial/cicd/tag-based-releases',
+    summary:
+      'We switched the production workflow trigger from a release branch to a Git tag, tested the change by pushing a versioned tag from main, and learned how to gate release candidates with a pre-release tag glob.',
+    nextDescription:
+      'In the next chapter, learn how to deploy web builds to EAS Hosting from a workflow.',
+  },
+  {
+    title: 'Chapter 7: Web deployments',
+    slug: '/tutorial/cicd/web-deployments',
+    summary:
+      'We configured the Expo project for static web export, added a deploy job to the preview workflow for non-production web URLs, and added a deploy job with `prod: true` to the production workflow so every release ships the web build with the native release.',
+    nextDescription: 'Learn about the next steps to use EAS Workflows.',
+  },
+];
+
 export const TUTORIAL_CHAPTERS: Record<TutorialName, Chapter[]> = {
   GET_STARTED: GET_STARTED_TUTORIAL_CHAPTERS,
   EAS_TUTORIAL: EAS_TUTORIAL_INITIAL_CHAPTERS,
   BUILD_WITH_AI: BUILD_WITH_AI_TUTORIAL_CHAPTERS,
+  CICD_TUTORIAL: CICD_TUTORIAL_CHAPTERS,
 };
 
 export const TUTORIAL_TRAILERS: Record<TutorialName, TutorialTrailer> = {
@@ -269,4 +328,8 @@ export const TUTORIAL_TRAILERS: Record<TutorialName, TutorialTrailer> = {
     slug: '/tutorial/eas/next-steps',
   },
   BUILD_WITH_AI: { title: 'Expo tutorial', slug: '/tutorial/introduction' },
+  CICD_TUTORIAL: {
+    title: 'Next steps in your journey with EAS Workflows',
+    slug: '/tutorial/cicd/next-steps',
+  },
 };

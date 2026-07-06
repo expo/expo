@@ -58,6 +58,10 @@ export const TutorialChapterCompletionProvider = ({ children }: PropsWithChildre
     name: 'BUILD_WITH_AI',
     defaultValue: {},
   });
+  const [cicdMap, setCicdMap] = useLocalStorage<CompletionMap>({
+    name: 'CICD_TUTORIAL',
+    defaultValue: {},
+  });
 
   useEffect(() => {
     const migrated = migrateLegacyShape(easMap);
@@ -80,16 +84,25 @@ export const TutorialChapterCompletionProvider = ({ children }: PropsWithChildre
     }
   }, [buildWithAiMap, setBuildWithAiMap]);
 
+  useEffect(() => {
+    const migrated = migrateLegacyShape(cicdMap);
+    if (migrated) {
+      setCicdMap(migrated);
+    }
+  }, [cicdMap, setCicdMap]);
+
   const value = useMemo<ChapterContextType>(() => {
     const maps: Record<TutorialName, CompletionMap> = {
       EAS_TUTORIAL: safeMap(easMap),
       GET_STARTED: safeMap(getStartedMap),
       BUILD_WITH_AI: safeMap(buildWithAiMap),
+      CICD_TUTORIAL: safeMap(cicdMap),
     };
     const setters: Record<TutorialName, (next: CompletionMap) => void> = {
       EAS_TUTORIAL: setEasMap,
       GET_STARTED: setGetStartedMap,
       BUILD_WITH_AI: setBuildWithAiMap,
+      CICD_TUTORIAL: setCicdMap,
     };
     return {
       getChapters: name => TUTORIAL_CHAPTERS[name],
@@ -101,7 +114,16 @@ export const TutorialChapterCompletionProvider = ({ children }: PropsWithChildre
         setters[name]({});
       },
     };
-  }, [easMap, getStartedMap, buildWithAiMap, setEasMap, setGetStartedMap, setBuildWithAiMap]);
+  }, [
+    easMap,
+    getStartedMap,
+    buildWithAiMap,
+    cicdMap,
+    setEasMap,
+    setGetStartedMap,
+    setBuildWithAiMap,
+    setCicdMap,
+  ]);
 
   return (
     <TutorialChapterCompletionContext.Provider value={value}>
