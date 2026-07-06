@@ -1,7 +1,7 @@
 import type { ObserveNavigationIntegrationConfig } from '../types';
 type NavigationIntegrationConfig = boolean | ObserveNavigationIntegrationConfig | undefined;
-type NavigationMetricParams<T extends object | undefined> = {
-    routeParams: T | Record<string, never>;
+type NavigationMetricParams = {
+    routeParams: Record<string, unknown>;
 } & ({
     url: string | undefined;
     urlHidden?: false;
@@ -9,11 +9,11 @@ type NavigationMetricParams<T extends object | undefined> = {
     url?: undefined;
     urlHidden: true;
 });
-type NavigationRouteParams<T extends object | undefined> = {
-    routeParams: T | Record<string, never>;
+type NavigationRouteParams = {
+    routeParams: Record<string, unknown>;
     urlHidden?: true;
 };
-export declare function getNavigationRouteParams<T extends object | undefined>(config: NavigationIntegrationConfig, params: T): NavigationRouteParams<T>;
-export declare function getNavigationMetricParams<T extends object | undefined>(config: NavigationIntegrationConfig, routeParams: T, url: string | undefined): NavigationMetricParams<T>;
+export declare function getNavigationRouteParams(config: NavigationIntegrationConfig, params: object | undefined): NavigationRouteParams;
+export declare function getNavigationMetricParams(config: NavigationIntegrationConfig, routeParams: object | undefined, url: string | undefined): NavigationMetricParams;
 export {};
 //# sourceMappingURL=navigationConfig.d.ts.map
