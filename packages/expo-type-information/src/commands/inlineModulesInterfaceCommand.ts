@@ -114,8 +114,8 @@ async function inlineModulesWatcher({
         }
         const resolvedFilePath = path.resolve(dir, fileName);
         if (fs.existsSync(resolvedFilePath)) {
-          if (!(await fileHasModuleDeclaration(fileName))) {
-            compileOnlyModules.add(fileName);
+          if (!(await fileHasModuleDeclaration(resolvedFilePath))) {
+            compileOnlyModules.add(resolvedFilePath);
             return;
           }
 
@@ -124,10 +124,10 @@ async function inlineModulesWatcher({
             dirPath: path.dirname(resolvedFilePath),
             typeInference,
             mapUnicodeCharacters,
-            compileOnlyModules: compileOnlyModules,
+            compileOnlyModules,
           });
         } else {
-          compileOnlyModules.delete(fileName);
+          compileOnlyModules.delete(resolvedFilePath);
         }
       });
     };
@@ -198,7 +198,7 @@ export async function inlineModulesInterfaceCommand(cli: commander.Command) {
           if (!dirent.name.endsWith('.swift')) {
             continue;
           }
-          const resolvedFilePath = path.resolve(dir, dirent.name);
+          const resolvedFilePath = dirent.path;
           if (
             fs.existsSync(resolvedFilePath) &&
             !(await fileHasModuleDeclaration(resolvedFilePath))
