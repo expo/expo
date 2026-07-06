@@ -13,7 +13,6 @@
 ### 💡 Others
 
 - Annotate more top-level errors when evaluating modules ([#47441](https://github.com/expo/expo/pull/47441) by [@kitten](https://github.com/kitten))
-- Fix `resolveFrom` tests asserting POSIX paths on Windows ([#47548](https://github.com/expo/expo/pull/47548) by [@kudo](https://github.com/kudo))
 
 ## 56.1.3 — 2026-05-23
 
