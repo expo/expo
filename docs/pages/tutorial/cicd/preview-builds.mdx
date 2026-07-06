@@ -17,7 +17,7 @@ Sharing in-progress mobile changes with teammates and pull request (PR) reviewer
 
 - Automate preview builds with fingerprinting for internal distribution
 - Post Slack notifications when a build finishes
-- Publish an OTA update on every pull request and comment on the PR with a link to test it
+- Publish an [OTA update](/deploy/send-over-the-air-updates/) on every pull request and comment on the PR with a link to test it
 
 <Prerequisites>
 
@@ -64,7 +64,7 @@ Teams use preview builds for stakeholder testing. Members install the build thro
 
 <PreviewPipeline />
 
-Like development builds, we add fingerprints to avoid unnecessary rebuilds when native code doesn't change.
+Like [development builds](/tutorial/cicd/development-builds/#skip-unnecessary-builds-with-fingerprints), we add fingerprints to avoid unnecessary rebuilds when native code doesn't change.
 
 <Step label="1">
 
@@ -132,7 +132,7 @@ Run the workflow manually using the following command:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
 
-In the EAS dashboard, notice that the workflow follows the same fingerprint pattern we implemented for development builds. Since we are creating the preview build for the first time, it runs the build jobs for Android and iOS. If we push another commit to the `main` branch without changing native code, the workflow skips the build jobs since compatible builds already exist.
+In the EAS dashboard, notice that the workflow follows the same fingerprint pattern we implemented for [development builds](/tutorial/cicd/development-builds/#skip-unnecessary-builds-with-fingerprints). Since we are creating the preview build for the first time, it runs the build jobs for Android and iOS. If we push another commit to the `main` branch without changing native code, the workflow skips the build jobs since compatible builds already exist.
 
 <ContentSpotlight
   alt="EAS Workflows preview run where the fingerprint and get-build jobs skip the build jobs because compatible Android and iOS builds already exist."
@@ -227,11 +227,11 @@ We can also verify this in the Slack channel integrated with the app.
 
 ## PR previews using EAS Update
 
-A PR reviewer can read the diff, but cannot see the changes visually or test them on a device. To do that, they need to check out the branch and start a development server locally.
+A PR reviewer can read the diff, but cannot see the changes visually or test them on a device.
 
-Web teams solve this with deploy previews. When someone opens a pull request, a CI/CD workflow generates a preview link. Reviewers click and test the changes without checking out the branch.
+Web teams solve this with deploy previews. When someone opens a pull request, a CI/CD workflow generates a preview link. Reviewers open the link and test the changes without checking out the branch.
 
-For mobile, we can set up the equivalent using [EAS Update](/eas-update/introduction/). EAS Update delivers a JavaScript bundle to devices that already have a compatible build installed, skipping the native compilation step. For PR previews, an update is the right fit because reviewers can install and test quickly, then leave feedback on the PR.
+For mobile, we can set up the equivalent using [EAS Update](/eas-update/introduction/). It delivers a JavaScript bundle to devices that already have a compatible build installed, skipping the native compilation step. For PR previews, an update is the right fit because reviewers can open and test quickly, then leave feedback on the PR.
 
 EAS Workflows provides a [`github-comment`](/eas/workflows/pre-packaged-jobs/#github-comment) pre-packaged job for this. It posts a comment on the pull request after the update publishes, giving reviewers a link or QR code to open the update on their device.
 

@@ -14,7 +14,7 @@ import { Step } from '~/ui/components/Step';
 
 Manually rebuilding a development client on every push to a GitHub repository can be slow. Team members or new contributors who pull native changes (a new module, a new permission, an SDK upgrade) wait for a fresh build before they can run the project.
 
-Automating development builds on the `main` branch keeps a current build ready to install. Developers can run `eas build:dev` to install the latest compatible build. If the project fingerprint matches an existing EAS Build, EAS downloads that build instead of creating a new one.
+Automating development builds on the `main` branch keeps a current build ready to install. We can run `eas build:dev` to install the latest compatible build. If the project fingerprint matches an existing build, EAS downloads that build instead of creating a new one.
 
 ## Learning outcomes
 
@@ -36,7 +36,7 @@ EAS CLI prompts to generate credentials the first time we trigger a build for a 
 
 ## The `build` job type for development builds
 
-The `build` job type is one of the [pre-packaged jobs](/tutorial/cicd/first-workflow/#types-of-jobs-in-eas-workflows) from EAS Workflows. Instead of defining each step of the build process, we use the `build` job type to run an EAS Build for Android and iOS. We only need to specify the parameters the build jobs require.
+The `build` job type is one of the [pre-packaged jobs](/tutorial/cicd/first-workflow/#types-of-jobs-in-eas-workflows) from EAS Workflows. Instead of defining each step of the build process, we use the `build` job type to run an EAS Build for Android and iOS.
 
 For this chapter, we use the `development` build profile from our **eas.json**. We use this profile during Expo app development.
 
@@ -89,7 +89,7 @@ Let's run the workflow manually using the command:
 
 ### Verify on the EAS dashboard
 
-On the EAS dashboard, notice that it says "Triggered manually" under the **Workflow graph** tab. Any time the **Trigger** is set to **Manual**, the workflow was triggered using the `eas workflow:run` command.
+On the EAS dashboard, notice that it says "Triggered manually" under the **Workflow graph** tab. Any time the **Trigger** shows **Manual**, that means the workflow was started with the `eas workflow:run` command.
 
 <ContentSpotlight
   alt="EAS Workflows dashboard showing a manually-triggered run that creates development builds for Android and iOS in parallel."
@@ -97,7 +97,7 @@ On the EAS dashboard, notice that it says "Triggered manually" under the **Workf
   className="max-w-160"
 />
 
-The logs for each build appear inside the workflow interface. Clicking the build ID (for example, `ef90d1f` is the Android build ID above) opens the EAS Build page.
+The logs for each build appear inside the workflow interface. Click a build's ID to open its EAS Build page.
 
 <ContentSpotlight
   alt="EAS Build details page for an Android development build, showing the build status, fingerprint hash, commit SHA, and expanded log output."
@@ -113,7 +113,7 @@ Wait for both builds to complete before moving to the next step. Once they compl
 
 ## Skip unnecessary builds with fingerprints
 
-When our project has only TypeScript/JavaScript changes, we do not need a new development build. The existing build is still compatible. Our team pulls the latest from the `main` branch, runs `npx expo start`, and the development server delivers the JS changes to the build on their device or emulator/simulator.
+When our project has only TypeScript/JavaScript changes, the existing development build is still compatible, so we do not need a new one.
 
 [**Expo Fingerprint**](/versions/latest/sdk/fingerprint/) automates this decision. It hashes the project's native characteristics (dependencies, native project files, configuration). If the hash matches an existing build, native code has not changed, and EAS skips the rebuild. If the hash is different, native code changed, and EAS creates a new build.
 
@@ -302,7 +302,7 @@ This triggers a new workflow that completes in seconds. On the EAS dashboard, bo
   className="max-w-160"
 />
 
-Our team pulls the latest from the `main` branch and runs `npx expo start`. The existing development build picks up the JS changes.
+We pull the latest from the `main` branch and run `npx expo start`. The existing development build picks up the JS changes.
 
 </Step>
 
@@ -312,7 +312,7 @@ Our team pulls the latest from the `main` branch and runs `npx expo start`. The 
 
 When working in a team, we want every change pushed to the `main` branch to pass tests before triggering a new build.
 
-Without automation, our team has to remember to run tests locally before pushing to `main`. If they forget and the code has a failing test, the next workflow can create a build from broken code.
+Without automation, the team has to remember to run tests locally before pushing to `main`. If they forget and the code has a failing test, the next workflow can create a build from broken code.
 
 With **EAS Workflows**, we can automate this process by mixing a custom job with our existing pre-packaged jobs. This custom job runs before fingerprint and build jobs. If a test fails, EAS stops the workflow and creates no build.
 
@@ -336,13 +336,13 @@ jobs:
   run_tests:
     name: Run unit tests
     steps:
-      - uses: eas/checkout
+      - uses: eas/checkout # Check out the repo
       - uses: eas/install_node_modules
       - run: npx jest --ci
   # @end #
   fingerprint:
     name: Fingerprint
-    # @info Add this to the fingerprint job. #
+    # @info Add this to the fingerprint job. It runs only after tests pass; if tests fail, nothing builds. #
     needs: [run_tests]
     # @end #
     type: fingerprint

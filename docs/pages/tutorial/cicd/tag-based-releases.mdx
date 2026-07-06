@@ -10,13 +10,13 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Pushing to a release branch runs the production workflow on every commit, whether the team meant that commit as a release or not.
+Pushing to a release branch runs the production workflow on every commit, even ones we never meant as a release.
 
 ## Learning outcomes
 
 - Switch the production workflow trigger from a `release/*` branch to a Git tag matching `v*.*.*`
 - Cut a release by pushing a tag from `main` and watch the workflow run on the EAS dashboard
-- Match pre-release tags like `v*.*.*-rc.*` to run the workflow on release candidates without shipping them to app users
+- Exclude pre-release tags like `v1.0.0-rc.1` from production and run release candidates in a separate workflow
 
 ## Tags as release events
 
@@ -32,7 +32,7 @@ A tag-based release workflow fits teams that:
 
 ## Switch production.yml to a tag trigger
 
-Open **.eas/workflows/production.yml** and replace the `on.push.branches` trigger with `on.push.tags`. Everything else inside the workflow stays the same.
+Open the **.eas/workflows/production.yml** workflow from the [previous chapter](/tutorial/cicd/production/) and replace the `on.push.branches` trigger with `on.push.tags`. Everything else inside the workflow stays the same.
 
 <Step label="1">
 
@@ -171,7 +171,15 @@ Since this is the first production run with the fingerprint generated for a tag-
 
 ## Pre-release tags for release candidates
 
-To run the production workflow for release candidates, use a separate glob that matches pre-release tags. For example, `['v*.*.*-rc.*']` matches `v1.0.0-rc.1`.
+The `v*.*.*` glob also matches pre-release tags like `v1.0.0-rc.1`, which would ship a release candidate to app users. To keep release candidates out of production, exclude them from the production workflow's trigger:
+
+```yaml .eas/workflows/production.yml
+on:
+  push:
+    tags: ['v*.*.*', '!v*.*.*-rc.*']
+```
+
+To exercise a release candidate before the real release, create a separate workflow that matches only pre-release tags (`tags: ['v*.*.*-rc.*']`) and reuses the `fingerprint`, `get-build`, and `build` jobs without the `update` and `submit` jobs. The same pipeline runs, and nothing reaches app users.
 
 ## Summary
 

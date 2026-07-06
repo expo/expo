@@ -42,8 +42,8 @@ const nodes: DiagramNode[] = [
 ];
 
 const edges: DiagramEdge[] = [
-  { id: 'e-tests-pass', source: 'tests', target: 'pass', label: 'Pass' },
-  { id: 'e-tests-fail', source: 'tests', target: 'fail', label: 'Fail' },
+  { id: 'e-tests-pass', source: 'tests', target: 'pass' },
+  { id: 'e-tests-fail', source: 'tests', target: 'fail' },
   { id: 'e-pass-pipeline', source: 'pass', target: 'pipeline' },
   { id: 'e-fail-nobuild', source: 'fail', target: 'no-build', dashed: true },
 ];

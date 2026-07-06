@@ -42,7 +42,7 @@ Let's create our first workflow using a custom job and run it on EAS.
 
 ### Create the workflow directory
 
-Create the **.eas/workflows/** directory at the root of our project. EAS looks for workflow files only in this location.
+Create the **.eas/workflows/** directory at the root of our Expo project. EAS looks for workflow files only in this location.
 
 <Terminal cmd={['$ mkdir -p .eas/workflows']} />
 
@@ -100,7 +100,7 @@ The EAS dashboard is where we view and debug any workflow job. The **Workflow gr
 
 Switch to the **Workflow file** tab. This is the workflow file we wrote in Step 2, preserved with the run.
 
-> **info** **Tip:** To view all of our project's workflows or filter them by status or workflow type, we can go to the [Workflows page](https://expo.dev/accounts/[account]/projects/[project]/workflows) and view the list.
+> **info** **Tip:** View all of our project's workflows and filter them by status or type on the [Workflows page](https://expo.dev/accounts/[account]/projects/[project]/workflows).
 
 </Step>
 
@@ -199,14 +199,18 @@ name: Hello
 
 jobs:
   greet:
+    # @info #
     outputs:
-      greeting: ${{ steps.set_greeting.outputs.greeting }}
+      greeting: ${{ steps.set_greeting.outputs.greeting }} # Expose the step output at the job level
+    # @end #
     steps:
       - id: set_greeting
         run: set-output greeting "Hello from EAS Workflows"
   show_info:
-    needs: [greet]
-    type: doc
+    # @info #
+    needs: [greet] # Wait for greet to finish, then read its outputs
+    type: doc # Pre-packaged job that renders Markdown on the dashboard
+    # @end #
     params:
       md: |
         # Workflow Output
@@ -218,7 +222,7 @@ The above workflow file does the following:
 - Defines a `greet` job, which is a custom job. It uses the [`set-output`](/eas/workflows/syntax/#set-output) shell function to set a value called `greeting`. The `outputs` field at the job level exposes the step output so other jobs can reference it.
 - Defines a `show_info` job which uses `needs: [greet]` to wait for the `greet` job to complete and access its output. Then, it uses the pre-packaged `doc` job type to render a Markdown document in the EAS dashboard. The Markdown content includes the value of `greeting` set in the previous job.
 
-> **info** **Tip:** In EAS Workflows, the `needs` field is a list of job IDs where a previous job must complete successfully before the current job that uses `needs` can start. If a job in the `needs` list fails, the dependent job is skipped.
+> **info** **Tip:** In EAS Workflows, jobs run in parallel by default. The `needs` field is what makes a job wait: it lists the job IDs that must complete successfully before the job using `needs` can start. If a job in the `needs` list fails, the dependent job is skipped.
 
 </Step>
 

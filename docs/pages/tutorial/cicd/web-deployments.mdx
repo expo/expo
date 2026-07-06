@@ -9,7 +9,7 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Our workflows from previous chapters cover Android and iOS. EAS Workflows can also deploy the web build of an Expo project to [EAS Hosting](/eas/hosting/introduction/) alongside the same release.
+Our workflows from previous chapters cover Android and iOS. Let's extend them to also deploy the web build to [EAS Hosting](/eas/hosting/introduction/) alongside the same release.
 
 ## Learning outcomes
 
@@ -43,7 +43,7 @@ Before we add web deployment jobs to our workflows, we need to configure our Exp
 }
 ```
 
-`static` tells the Expo CLI to produce a directory of static HTML, JavaScript, and asset files that EAS Hosting can serve.
+`static` tells the Expo CLI to produce a directory of static HTML, JavaScript, and asset files that EAS Hosting can serve. Expo also supports `single` and `server` output; `static` produces plain files that any host can serve, which is all we need here.
 
 After updating the **app.json** with the above configuration, commit the change and push it to the repository's `main` branch.
 

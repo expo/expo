@@ -16,7 +16,7 @@ Building, testing, and delivering an Expo and React Native app is rarely a one-s
 
 By the end of this tutorial, every push to our Expo project builds, tests, or ships automatically. The service that makes this possible is [EAS Workflows](/eas/workflows/introduction/), a Continuous Integration (CI)/Continuous Delivery (CD) service from Expo Application Services (EAS) for Expo and React Native apps.
 
-We define a workflow in a [YAML](https://en.wikipedia.org/wiki/YAML) file that lives in **.eas/workflows/** at the root of our project. Here is a complete example that builds an Android development build on every push to the `main` branch in a GitHub repository:
+We define a workflow in a [YAML](https://en.wikipedia.org/wiki/YAML) file that lives in **.eas/workflows/** at the root of our Expo project. Here is a complete example that builds an Android development build on every push to the `main` branch in a GitHub repository:
 
 ```yaml .eas/workflows/build.yml
 name: Build Android
@@ -33,40 +33,36 @@ jobs:
       profile: development
 ```
 
-That is the entire file. EAS handles the environment, compiles the native code, stores the artifact, and notifies our team. We write more workflows like this one throughout the tutorial.
+That handful of lines is the entire workflow, and EAS handles the rest. We build on this pattern throughout the tutorial.
 
-## What is EAS Workflows and why use it?
+## Why use EAS Workflows?
 
-**EAS Workflows** is a CI/CD platform optimized for building, testing, and deploying React Native and Expo projects. It runs Android, iOS, and web builds, publishes OTA updates, submits to app stores, and runs E2E tests with Maestro, all from YAML files in our GitHub repository. Jobs run in a managed cloud environment, which means no build server setup on our end.
+EAS Workflows runs Android, iOS, and web builds, publishes [OTA updates](/deploy/send-over-the-air-updates/), submits to app stores, and runs E2E tests with Maestro, all defined in YAML files like the example above. Because jobs run in a managed cloud environment, there is no build server for us to set up or maintain.
 
-We can trigger workflows from GitHub events (push, pull request, tags, or labels), from schedules (cron), or manually using [EAS CLI](/eas/cli/).
+We can trigger workflows from GitHub events (push, pull request, tags, or labels), on a schedule (cron), or manually with [EAS CLI](/eas/cli/).
 
 ## Topics covered
 
-The tutorial has three phases:
+The tutorial has three parts:
 
-- **Development.** Create custom jobs, automate [development builds](/develop/development-builds/introduction/) with fingerprinting, and ship pull request (PR) preview updates for stakeholders.
+- **Development.** Create custom jobs, automate [development builds](/develop/development-builds/introduction/) with [fingerprinting](/tutorial/cicd/development-builds/), and ship [pull request (PR) preview updates](/tutorial/cicd/preview-builds/) for stakeholders.
 - **Testing and releasing.** Run E2E tests with Maestro in a workflow, then create a production workflow that uses fingerprinting to choose between a native build and an OTA update.
 - **Extensions.** Switch production triggers from branches to version tags and deploy web builds with [EAS Hosting](/eas/hosting/introduction/).
 
-After this tutorial, we know how to set up a CI/CD pipeline for an Expo app.
-
-## Before we write any YAML
+## Concepts worth knowing first
 
 > **info** **Tip:** Already familiar with EAS Build and EAS Update? Skip to the next section.
 
-Adding YAML files to our project is how we define jobs to create and run workflows. EAS Workflows automates these jobs that most Expo developers do by hand.
-
 Before we create our first workflow, here are a few concepts worth knowing:
 
-<Collapsible summary="Where can an Expo app ship from?">
+<Collapsible summary="Where does an Expo app ship?">
 
-An Expo app can target three deployment targets by default. Each one uses a different EAS service or a combination of two services:
+An Expo app can ship to three targets. Which one, and which EAS service delivers it, depends on what changed in the code:
 
 | Target            | EAS service              | When to use                                                         |
 | ----------------- | ------------------------ | ------------------------------------------------------------------- |
 | App stores        | EAS Build and EAS Submit | New releases, native code changes                                   |
-| Installed devices | EAS Update               | TypeScript/JavaScript only fixes, delivered over the air in seconds |
+| Installed devices | EAS Update               | TypeScript/JavaScript-only fixes, delivered over the air in seconds |
 | Web               | EAS Hosting              | Web app alongside native releases                                   |
 
 </Collapsible>
@@ -146,7 +142,7 @@ To initialize EAS in our project, run the following command:
 
 <Terminal cmd={['$ eas build:configure']} />
 
-This generates an **eas.json** file in the root of our project and creates an EAS project linked to our local project.
+This generates an **eas.json** file in the root of our Expo project and creates an EAS project linked to our local project.
 
 </Requirement>
 
@@ -170,9 +166,9 @@ Only needed if we add automated app store submission as an adaptation after Chap
 
 ## Coming from GitHub Actions?
 
-EAS Workflows files live inside the **.eas/workflows/** directory at the root of an Expo project. If we have used GitHub Actions before, those workflows live in **.github/workflows/**.
+EAS Workflows files live in the **.eas/workflows/** directory at the root of an Expo project, similar to how GitHub Actions workflows live in **.github/workflows/**. The trigger syntax (`on.push`, `on.pull_request`, and so on) also looks much the same.
 
-The trigger syntax (`on.push`, `on.pull_request`, and so on) is similar to GitHub Actions, but not identical. The biggest difference is pre-packaged jobs. There is no `runs-on` or setup step for us to write. When we set `type: build`, EAS handles the environment and the build artifacts for us. We cover these differences throughout the tutorial.
+The main difference is pre-packaged jobs: setting `type: build` lets EAS handle the environment and build artifacts, with no `runs-on` or setup step to write. We cover these as we go.
 
 ## Next step
 
