@@ -805,6 +805,58 @@ struct JavaScriptRuntimeTests {
       #expect(value.getObject().getProperty("index").getInt() == index)
     }
   }
+
+  // MARK: - Long-lived objects teardown
+
+  /// Records whether `allowRelease()` was called.
+  final class TrackedObject: LongLivedObject {
+    private(set) var released = false
+
+    func allowRelease() {
+      released = true
+    }
+  }
+
+  @Test
+  func `tearing down the runtime clears its long-lived objects`() {
+    let tracked = TrackedObject()
+
+    do {
+      let localRuntime = JavaScriptRuntime()
+      localRuntime.longLivedObjects.add(tracked)
+      #expect(localRuntime.longLivedObjects.count == 1)
+      // Leaving the scope releases the runtime. Its `deinit` destroys the owned Hermes runtime,
+      // tearing down the JS heap, which drops the teardown object's native state and fires its
+      // deallocator, sweeping the collection.
+    }
+
+    #expect(tracked.released == true)
+  }
+
+  @Test
+  func `an object removed before teardown is not released by the sweep`() {
+    let tracked = TrackedObject()
+
+    do {
+      let localRuntime = JavaScriptRuntime()
+      localRuntime.longLivedObjects.add(tracked)
+      localRuntime.longLivedObjects.remove(tracked)
+    }
+
+    #expect(tracked.released == false)
+  }
+
+  @Test
+  func `wrapping the same runtime again does not sweep the first wrapper's objects`() {
+    // Each wrapper pins its own teardown object under a per-wrapper property name. A second wrapper
+    // of the same underlying runtime must not overwrite the first's pinned object (which would let
+    // it be collected early and sweep the first wrapper's collection while the runtime is alive).
+    let tracked = TrackedObject()
+    runtime.longLivedObjects.add(tracked)
+    _ = runtime.withUnsafePointee { JavaScriptRuntime(unsafePointer: $0) }
+    #expect(tracked.released == false)
+    #expect(runtime.longLivedObjects.count == 1)
+  }
 }
 
 /// Runs `body` on a freshly spawned synchronous thread and bridges the result back into the
