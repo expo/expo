@@ -1,14 +1,15 @@
-import AppMetrics, { type MetricAttributes } from 'expo-app-metrics';
-import { use, useCallback, useEffect, useRef } from 'react';
+import AppMetrics, { type MetricAttributes } from "expo-app-metrics";
+import { use, useCallback, useEffect, useRef } from "react";
 
-import { ObserveRouterIntegrationContext } from './ObserveRouterIntegrationProvider';
-import { emitTTI } from './emitTTI';
-import { isInitialized } from './init';
-import { buildRoutePattern } from './routeName';
-import { optionalRouter } from './router';
-import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
+import { getNavigationMetricParams } from "../navigationConfig";
+import { ObserveRouterIntegrationContext } from "./ObserveRouterIntegrationProvider";
+import { emitTTI } from "./emitTTI";
+import { getRouterIntegrationConfig, isInitialized } from "./init";
+import { buildRoutePattern } from "./routeName";
+import { optionalRouter } from "./router";
+import { useAssertValueDoesNotChange } from "../../useAssertValueDoesNotChange";
 
-type MarkInteractive = (typeof AppMetrics)['markInteractive'];
+type MarkInteractive = (typeof AppMetrics)["markInteractive"];
 
 export function useObserveForRouter(): MarkInteractive | null {
   const initialized = isInitialized();
@@ -19,18 +20,19 @@ export function useObserveForRouter(): MarkInteractive | null {
   const routeInfo = optionalRouter?.useCurrentRouteInfo();
   const { pathname, params: routeParams, segments } = routeInfo ?? {};
   const routePattern = buildRoutePattern(segments);
+  const routerIntegrationConfig = getRouterIntegrationConfig();
 
   useAssertValueDoesNotChange(
     initialized,
     "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
-      "Call `Observe.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
+      "Call `Observe.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts.",
   );
 
   const screenId = route?.key;
   const prevScreenId = useRef(screenId);
   if (prevScreenId.current !== screenId) {
     console.warn(
-      '[expo-observe] Screen ID changed between renders. This is most likely an expo-router bug.'
+      "[expo-observe] Screen ID changed between renders. This is most likely an expo-router bug.",
     );
     prevScreenId.current = screenId;
   }
@@ -50,24 +52,29 @@ export function useObserveForRouter(): MarkInteractive | null {
       const now = performance.now();
       const timestamp = new Date().toISOString();
       if (!isMounted.current) {
-        console.warn('[expo-observe] Calling markInteractive on unmounted screen');
+        console.warn("[expo-observe] Calling markInteractive on unmounted screen");
         return;
       }
       if (!screenId) {
         console.warn(
-          '[expo-observe] No metadata available for the current screen. Make sure to call useObserve inside a screen component.'
+          "[expo-observe] No metadata available for the current screen. Make sure to call useObserve inside a screen component.",
         );
         return;
       }
       if (!storage) {
         throw new Error(
-          '[expo-observe] markInteractive was called without an active ObserveProvider. Wrap your app in ObserveRoot from expo-observe.'
+          "[expo-observe] markInteractive was called without an active ObserveProvider. Wrap your app in ObserveRoot from expo-observe.",
         );
       }
 
       // Snapshot BEFORE the write below so the deferred-TTI check sees the
       // pre-write state (lastInteractiveCall undefined until this call).
       const currentScreenData = storage.screenTimes[screenId];
+      const navigationParams = getNavigationMetricParams(
+        routerIntegrationConfig,
+        routeParams,
+        pathname,
+      );
 
       // Record lastInteractiveCall regardless of focus so the `pageFocused`
       // listener can emit `tti = ttr` on our behalf when this call lands
@@ -88,10 +95,17 @@ export function useObserveForRouter(): MarkInteractive | null {
 
       // All async work happens after storage is updated, so a concurrent
       // pageFocused observes our writes before its own awaited writes.
+      const attributeParams = attributes?.params ?? {};
+      const safeAttributeParams = navigationParams.urlHidden
+        ? Object.fromEntries(Object.entries(attributeParams).filter(([key]) => key !== "url"))
+        : attributeParams;
       AppMetrics.markInteractive({
         ...(attributes ?? {}),
         routeName: routePattern,
-        params: { ...(attributes?.params ?? {}), url: pathname },
+        params: {
+          ...safeAttributeParams,
+          ...navigationParams,
+        },
       });
 
       if (wasAlreadyInteractive) return;
@@ -114,9 +128,10 @@ export function useObserveForRouter(): MarkInteractive | null {
         isAppLaunch: !!currentScreenData.isAppLaunch,
         routeParams,
         url: pathname,
+        config: routerIntegrationConfig,
       });
     },
-    [screenId, navigation, pathname, routePattern, storage, routeParams]
+    [screenId, navigation, pathname, routePattern, storage, routeParams, routerIntegrationConfig],
   );
 
   return initialized ? markInteractive : null;

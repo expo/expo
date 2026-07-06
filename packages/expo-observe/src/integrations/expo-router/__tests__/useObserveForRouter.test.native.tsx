@@ -27,6 +27,7 @@ jest.mock('expo-app-metrics', () => {
 jest.mock('../init', () => ({
   __esModule: true,
   isInitialized: jest.fn(() => true),
+  getRouterIntegrationConfig: jest.fn(() => undefined),
   initListeners: jest.fn(() => () => {}),
   initRouterIntegration: jest.fn(),
 }));
@@ -59,6 +60,7 @@ const mockUseNavigation = (routerModule as unknown as { __useNavigation: jest.Mo
   .__useNavigation;
 const mockUseCurrentRouteInfo = (routerModule as unknown as { __useCurrentRouteInfo: jest.Mock })
   .__useCurrentRouteInfo;
+const initModule = require('../init') as { getRouterIntegrationConfig: jest.Mock };
 
 function wrapper(storage: RouterIntegrationStorage | null) {
   return ({ children }: { children: ReactNode }) => (
@@ -72,6 +74,7 @@ let storage: RouterIntegrationStorage;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  initModule.getRouterIntegrationConfig.mockReturnValue(undefined);
   jest.spyOn(console, 'log').mockImplementation(() => {});
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   mockUseRoute.mockReturnValue({ key: 'screen-a' });
@@ -131,7 +134,7 @@ describe('useObserveForRouter', () => {
 
       expect(AppMetrics.markInteractive).toHaveBeenCalledWith({
         routeName: expectedRouteName,
-        params: { url: pathname },
+        params: { routeParams, url: pathname },
       });
       expect(mockAddMetric).toHaveBeenCalledWith({
         timestamp: expect.any(String),
@@ -162,6 +165,44 @@ describe('useObserveForRouter', () => {
     );
   });
 
+  it('filters route params from hook-emitted TTI', async () => {
+    initModule.getRouterIntegrationConfig.mockReturnValue({ filteredParams: ['x'] });
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
+    jest.spyOn(performance, 'now').mockReturnValue(1300);
+
+    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    await act(async () => {
+      await result.current!();
+    });
+
+    expect(mockAddMetric).toHaveBeenCalledWith(
+      expect.objectContaining({
+        params: { isAppLaunch: false, routeParams: {}, urlHidden: true },
+      })
+    );
+  });
+
+  it('hides URL for markInteractive and hook-emitted TTI when a route param is filtered', async () => {
+    initModule.getRouterIntegrationConfig.mockReturnValue({ filteredParams: ['x'] });
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
+    jest.spyOn(performance, 'now').mockReturnValue(1300);
+
+    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    await act(async () => {
+      await result.current!();
+    });
+
+    expect(AppMetrics.markInteractive).toHaveBeenCalledWith({
+      routeName: '/test',
+      params: { routeParams: {}, urlHidden: true },
+    });
+    expect(mockAddMetric).toHaveBeenCalledWith(
+      expect.objectContaining({
+        params: { isAppLaunch: false, routeParams: {}, urlHidden: true },
+      })
+    );
+  });
+
   it('calls AppMetrics.markInteractive when the screen is focused', async () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
@@ -170,7 +211,22 @@ describe('useObserveForRouter', () => {
       await result.current!({ ...arg });
     });
     expect(AppMetrics.markInteractive).toHaveBeenCalledWith({
-      params: { x: 'payload', url: '/test' },
+      params: { x: 'payload', routeParams: { x: '1' }, url: '/test' },
+      routeName: '/test',
+    });
+  });
+
+  it('drops caller-provided URL from markInteractive params when a route param is filtered', async () => {
+    initModule.getRouterIntegrationConfig.mockReturnValue({ filteredParams: ['x'] });
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
+    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+
+    await act(async () => {
+      await result.current!({ params: { url: '/unsafe', custom: 'value' } });
+    });
+
+    expect(AppMetrics.markInteractive).toHaveBeenCalledWith({
+      params: { custom: 'value', routeParams: {}, urlHidden: true },
       routeName: '/test',
     });
   });

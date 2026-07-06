@@ -1,15 +1,16 @@
-import AppMetrics, { type MetricAttributes } from 'expo-app-metrics';
-import { use, useCallback, useEffect, useRef } from 'react';
+import AppMetrics, { type MetricAttributes } from "expo-app-metrics";
+import { use, useCallback, useEffect, useRef } from "react";
 
-import { ObserveReactNavigationIntegrationContext } from './context';
-import { emitTTI } from './emitTTI';
-import { getPathname } from './getPathname';
-import { isInitialized } from './init';
-import { optionalReactNavigation } from './reactNavigation';
-import type { NavigationStateLike } from './types';
-import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
+import { getNavigationRouteParams } from "../navigationConfig";
+import { ObserveReactNavigationIntegrationContext } from "./context";
+import { emitTTI } from "./emitTTI";
+import { getPathname } from "./getPathname";
+import { getReactNavigationIntegrationConfig, isInitialized } from "./init";
+import { optionalReactNavigation } from "./reactNavigation";
+import type { NavigationStateLike } from "./types";
+import { useAssertValueDoesNotChange } from "../../useAssertValueDoesNotChange";
 
-type MarkInteractive = (typeof AppMetrics)['markInteractive'];
+type MarkInteractive = (typeof AppMetrics)["markInteractive"];
 
 export function useObserveForReactNavigation(): MarkInteractive | null {
   const initialized = isInitialized();
@@ -18,18 +19,19 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
   const route = optionalReactNavigation?.useRoute();
   const navigation = optionalReactNavigation?.useNavigation();
   const stateForPath = optionalReactNavigation?.useStateForPath();
+  const reactNavigationIntegrationConfig = getReactNavigationIntegrationConfig();
 
   useAssertValueDoesNotChange(
     initialized,
     "[expo-observe] React Navigation integration was toggled during a screen's lifecycle. " +
-      "Call `Observe.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts."
+      "Call `Observe.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts.",
   );
 
   const screenId = route?.key;
   const prevScreenId = useRef(screenId);
   if (prevScreenId.current !== screenId) {
     console.warn(
-      '[expo-observe] Screen ID changed between renders. The hook should be called inside the screen component, not a higher wrapper.'
+      "[expo-observe] Screen ID changed between renders. The hook should be called inside the screen component, not a higher wrapper.",
     );
     prevScreenId.current = screenId;
   }
@@ -48,19 +50,19 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
       const now = performance.now();
       const timestamp = new Date().toISOString();
       if (!isMounted.current) {
-        console.warn('[expo-observe] Calling markInteractive on unmounted screen');
+        console.warn("[expo-observe] Calling markInteractive on unmounted screen");
         return;
       }
       if (!screenId) {
         console.warn(
-          '[expo-observe] No metadata available for the current screen. Make sure to call useObserve inside a screen component.'
+          "[expo-observe] No metadata available for the current screen. Make sure to call useObserve inside a screen component.",
         );
         return;
       }
 
       if (!contextValue) {
         throw new Error(
-          '[expo-observe] markInteractive was called without an active React Navigation integration. Wrap your tree in <ObserveNavigationContainer>, or <ObserveNavigationProvider>.'
+          "[expo-observe] markInteractive was called without an active React Navigation integration. Wrap your tree in <ObserveNavigationContainer>, or <ObserveNavigationProvider>.",
         );
       }
       const { storage } = contextValue;
@@ -74,7 +76,10 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
       // it the subtree produces the same pathname as the full state without
       // requiring access to the root navigation state from inside a leaf hook.
       const pathname = getPathname(stateForPath as NavigationStateLike | undefined) ?? route.name;
-      const routeParams = (route.params as object | undefined) ?? {};
+      const navigationParams = getNavigationRouteParams(
+        reactNavigationIntegrationConfig,
+        (route.params as object | undefined) ?? {},
+      );
 
       // Snapshot times BEFORE writing the new interactive timestamp so the
       // duplicate-detection logic below sees the previous call, not this one.
@@ -117,10 +122,10 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
         timestamp,
         routeName: pathname,
         value: interactiveTimeSeconds,
-        routeParams,
+        ...navigationParams,
       });
     },
-    [screenId, navigation, route, contextValue, stateForPath]
+    [screenId, navigation, route, contextValue, stateForPath, reactNavigationIntegrationConfig],
   );
 
   return initialized ? markInteractive : null;

@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Expose configure event ([#47388](https://github.com/expo/expo/pull/47388) by [@Ubax](https://github.com/Ubax))
+- Add `filteredParams` configuration option to navigation integrations ([#47488](https://github.com/expo/expo/pull/47488) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

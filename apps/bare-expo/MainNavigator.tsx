@@ -4,13 +4,13 @@ import { LinkingOptions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
+import { AppMetrics } from 'expo-observe';
+import { ObserveNavigationContainer } from 'expo-observe/integrations/react-navigation';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform } from 'react-native';
-import { TestStackNavigator } from 'test-suite/TestStackNavigator';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AppMetrics } from 'expo-observe';
-import { ObserveNavigationContainer } from 'expo-observe/integrations/react-navigation';
+import { TestStackNavigator } from 'test-suite/TestStackNavigator';
 
 type NavigationRouteConfigMap = React.ComponentType;
 
