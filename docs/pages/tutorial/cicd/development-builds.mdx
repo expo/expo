@@ -70,7 +70,7 @@ We add two jobs: `build_android` and `build_ios`. Both are of type `build` with 
 
 The `params` key for each job includes:
 
-- [`platform`](/eas/workflows/syntax/#params) sets the target OS for the build (`android` or `ios`)
+- [`platform`](/eas/workflows/pre-packaged-jobs/#build) sets the target OS for the build (`android` or `ios`)
 - [`profile`](/build/eas-json/#build-profiles) specifies the build profile from our **eas.json**
 
 </Step>
@@ -193,7 +193,7 @@ In the above workflow, `get-build` jobs receive the fingerprint hash from the pr
 
 ### Add conditional builds
 
-The [`if`](/eas/workflows/syntax/#if) field controls whether a job runs. The expression `${{ !needs.get_android_build.outputs.build_id }}` means: _run a job only if `get-build` did not find a matching build_. The `!` is a negation operator. If a compatible build already exists for this fingerprint, the build job is skipped.
+The [`if`](/eas/workflows/syntax/#jobsjob_idif) field controls whether a job runs. The expression `${{ !needs.get_android_build.outputs.build_id }}` means: _run a job only if `get-build` did not find a matching build_. The `!` is a negation operator. If a compatible build already exists for this fingerprint, the build job is skipped.
 
 Let's update each build job to depend on its `get-build` job and add the `if` condition:
 

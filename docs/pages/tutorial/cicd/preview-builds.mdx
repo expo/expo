@@ -72,7 +72,7 @@ Like development builds, we add fingerprints to avoid unnecessary rebuilds when 
 
 Inside **.eas/workflows/**, let's add a new file called **preview.yml**. This workflow file uses the `preview` profile.
 
-```yml .eas/workflows/preview.yml
+```yaml .eas/workflows/preview.yml
 name: Preview builds
 
 jobs:
@@ -158,6 +158,7 @@ To send messages from EAS Workflows to our Slack channel, we need a webhook URL 
 2. Under **Features**, select **Incoming Webhooks** and toggle it on.
 3. Click **Add New Webhook** and select the channel to publish notifications.
 4. Copy the webhook URL. It looks like: `https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX`
+5. Add the webhook URL as an EAS [environment variable](/eas/environment-variables/manage/) named `SLACK_WEBHOOK_URL` for the `preview` environment. Set its [visibility](/eas/environment-variables/#visibility-settings-for-environment-variables) to **secret** since only EAS servers need to read it.
 
 </Step>
 
@@ -165,7 +166,7 @@ To send messages from EAS Workflows to our Slack channel, we need a webhook URL 
 
 ### Add a Slack notification job
 
-Let's update **preview.yml** to add a `notify` job after the build jobs. The `notify` job uses `webhook_url` and `message` parameters, or a `payload` parameter for rich formatting with [Slack Block Kit](https://docs.slack.dev/block-kit). We have to add the webhook URL directly in the workflow file.
+Let's update **preview.yml** to add a `notify` job after the build jobs. The `notify` job uses `webhook_url` and `message` parameters, or a `payload` parameter for rich formatting with [Slack Block Kit](https://docs.slack.dev/block-kit). The job reads the webhook URL from the `SLACK_WEBHOOK_URL` environment variable through its `environment` field. Jobs default to the `production` environment, so setting `environment: preview` here is what makes the variable available.
 
 ```yaml .eas/workflows/preview.yml
 name: Preview builds
@@ -176,15 +177,16 @@ jobs:
   get_ios_build: # ...
   build_android: # ...
   build_ios: # ...
-  # @info
+  # @info #
   notify:
     name: Notify on Slack
     after: [build_android, build_ios]
     type: slack
+    environment: preview
     params:
-      webhook_url: https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       message: 'Preview builds are ready - Android: ${{ after.build_android.status }}, iOS: ${{ after.build_ios.status }}'
-  # @end
+  # @end #
 ```
 
 The `after` field ensures the notification fires once the builds finish, regardless of the outcome. The `message` uses `${{ after.build_android.status }}` and `${{ after.build_ios.status }}` to include each platform's outcome (success, failure, or skipped). The team sees what happened without leaving Slack.
