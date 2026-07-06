@@ -128,6 +128,44 @@ struct JavaScriptCodableArrayBufferTests {
     #expect(Array(decoded[0].data) == [10, 11])
   }
 
+  // MARK: - Error paths
+
+  @Test
+  func `decode throws for a non-object value`() throws {
+    let runtime = try runtime
+    #expect(throws: ArrayBufferJavaScriptValueConversionException.self) {
+      _ = try ArrayBuffer.decode(runtime.eval("42"), in: runtime)
+    }
+  }
+
+  @Test
+  func `decode throws for an object that is neither ArrayBuffer nor typed array`() throws {
+    let runtime = try runtime
+    #expect(throws: ArrayBufferJavaScriptValueConversionException.self) {
+      _ = try ArrayBuffer.decode(runtime.eval("({})"), in: runtime)
+    }
+  }
+
+  // MARK: - Empty and wide-element buffers
+
+  @Test
+  func `decodes an empty ArrayBuffer`() throws {
+    // A zero-length buffer short-circuits the borrow/copy logic; it must not touch a base address.
+    let runtime = try runtime
+    let decoded = try ArrayBuffer.decode(runtime.eval("new Uint8Array([]).buffer"), in: runtime)
+    #expect(decoded.byteLength == 0)
+    #expect(decoded.isNativeBacked == true)
+  }
+
+  @Test
+  func `decodes the raw bytes of a wide-element typed array buffer`() throws {
+    // `ArrayBuffer` is byte-oriented; a `Float64Array.buffer` is 8 bytes per element, so `byteLength`
+    // must reflect bytes (16), not element count (2) — a element-vs-byte confusion would fail here.
+    let runtime = try runtime
+    let decoded = try ArrayBuffer.decode(runtime.eval("new Float64Array([1.5, -2.5]).buffer"), in: runtime)
+    #expect(decoded.byteLength == 16)
+  }
+
   private func makeArrayBuffer(bytes: [UInt8]) throws -> ArrayBuffer {
     return try ArrayBuffer.copy(data: Data(bytes))
   }
