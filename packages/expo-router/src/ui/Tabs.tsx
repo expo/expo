@@ -19,6 +19,7 @@ import type {
 } from '../react-navigation/native';
 import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
 import { getBackStackAnchorName } from '../react-navigation/routers/TabRouter';
+import { usePreloadAnchor } from '../react-navigation/usePreloadAnchor';
 import { usePreloadRoutes } from '../react-navigation/usePreloadRoutes';
 import { useTabPlaceholders } from '../react-navigation/useTabPlaceholders';
 import { shouldLinkExternally } from '../utils/url';
@@ -209,20 +210,17 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
       }),
     [state.routeNames, tabState.routes, tabDescriptors]
   );
-  // Keep the implicit back-stack anchor loaded too (deep links only materialize anchors declared
-  // in the linking config).
-  const routeNamesToPreload = useMemo(() => {
-    const anchorName = getBackStackAnchorName(
-      state.routeNames,
-      rest.backBehavior,
-      initialRouteName
-    );
-    if (anchorName && !nonLazyRouteNames.includes(anchorName)) {
-      return [...nonLazyRouteNames, anchorName];
-    }
-    return nonLazyRouteNames;
-  }, [state.routeNames, nonLazyRouteNames, rest.backBehavior, initialRouteName]);
-  usePreloadRoutes(state, navigation, routeNamesToPreload);
+  // Keep the implicit back-stack anchor loaded at the FRONT of the routes so a deep link to a
+  // non-anchor tab still goes back to it (deep links only materialize anchors declared in the
+  // linking config). The anchor is excluded from the plain preload list so `FRONT_PRELOAD` (front)
+  // and `PRELOAD` (tail) don't race for the same route.
+  const anchorName = getBackStackAnchorName(state.routeNames, rest.backBehavior, initialRouteName);
+  const nonAnchorRouteNames = useMemo(
+    () => nonLazyRouteNames.filter((name) => name !== anchorName),
+    [nonLazyRouteNames, anchorName]
+  );
+  usePreloadRoutes(state, navigation, nonAnchorRouteNames);
+  usePreloadAnchor(state, navigation, rest.backBehavior, initialRouteName);
 
   const navigatorContextValue = useMemo<NavigatorContextValue>(
     () =>

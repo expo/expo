@@ -312,6 +312,45 @@ it('does not remount the anchor (index) tab when switching tabs after deep-linki
   expect(indexRenders.mock.calls.length).toBeLessThanOrEqual(6);
 });
 
+it('lands on the implicit anchor when going back after deep-linking to a non-anchor tab', () => {
+  // backBehavior=firstRoute is the default
+  renderRouter(
+    {
+      _layout: () => <Tabs />,
+      index: () => <Text testID="index">Index</Text>,
+      explore: () => <Text testID="explore">Explore</Text>,
+    },
+    {
+      initialUrl: '/explore',
+    }
+  );
+
+  expect(screen.getByTestId('explore')).toBeVisible();
+
+  act(() => router.back());
+
+  expect(screen.getByTestId('index')).toBeVisible();
+});
+
+it('lands on the first tab going back with backBehavior="initialRoute" and no initialRouteName', () => {
+  renderRouter(
+    {
+      _layout: () => <Tabs backBehavior="initialRoute" />,
+      index: () => <Text testID="index">Index</Text>,
+      explore: () => <Text testID="explore">Explore</Text>,
+    },
+    {
+      initialUrl: '/explore',
+    }
+  );
+
+  expect(screen.getByTestId('explore')).toBeVisible();
+
+  act(() => router.back());
+
+  expect(screen.getByTestId('index')).toBeVisible();
+});
+
 it('can push screens', () => {
   renderRouter(
     {

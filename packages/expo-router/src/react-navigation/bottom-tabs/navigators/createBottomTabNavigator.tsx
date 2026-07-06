@@ -19,6 +19,7 @@ import {
   useNavigationBuilder,
 } from '../../native';
 import { getBackStackAnchorName } from '../../routers/TabRouter';
+import { usePreloadAnchor } from '../../usePreloadAnchor';
 import { usePreloadRoutes } from '../../usePreloadRoutes';
 import { useTabPlaceholders } from '../../useTabPlaceholders';
 import type {
@@ -83,16 +84,17 @@ function BottomTabNavigator({
       }),
     [state.routeNames, tabState.routes, tabDescriptors]
   );
-  // Keep the implicit back-stack anchor loaded too (deep links only materialize anchors declared
-  // in the linking config).
-  const routeNamesToPreload = React.useMemo(() => {
-    const anchorName = getBackStackAnchorName(state.routeNames, backBehavior, initialRouteName);
-    if (anchorName && !nonLazyRouteNames.includes(anchorName)) {
-      return [...nonLazyRouteNames, anchorName];
-    }
-    return nonLazyRouteNames;
-  }, [state.routeNames, nonLazyRouteNames, backBehavior, initialRouteName]);
-  usePreloadRoutes(state, navigation, routeNamesToPreload);
+  // Keep the implicit back-stack anchor loaded at the FRONT of the routes so a deep link to a
+  // non-anchor tab still goes back to it (deep links only materialize anchors declared in the
+  // linking config). The anchor is excluded from the plain preload list below so `FRONT_PRELOAD`
+  // (front) and `PRELOAD` (tail) don't race for the same route.
+  const anchorName = getBackStackAnchorName(state.routeNames, backBehavior, initialRouteName);
+  const nonAnchorRouteNames = React.useMemo(
+    () => nonLazyRouteNames.filter((name) => name !== anchorName),
+    [nonLazyRouteNames, anchorName]
+  );
+  usePreloadRoutes(state, navigation, nonAnchorRouteNames);
+  usePreloadAnchor(state, navigation, backBehavior, initialRouteName);
 
   const navigatorTypeValue = useNavigatorTypeContextValue('tab', state.key);
 

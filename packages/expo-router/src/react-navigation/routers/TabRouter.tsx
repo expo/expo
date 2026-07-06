@@ -14,12 +14,21 @@ import type {
   Router,
 } from './types';
 
-export type TabActionType = {
-  type: 'JUMP_TO';
-  payload: { name: string; params?: object };
-  source?: string;
-  target?: string;
-};
+export type TabActionType =
+  | {
+      type: 'JUMP_TO';
+      payload: { name: string; params?: object };
+      source?: string;
+      target?: string;
+    }
+  | {
+      // Internal: keep the implicit back-stack anchor materialized at the FRONT of the routes so
+      // GO_BACK lands on it. Dispatched by `usePreloadAnchor`, not part of the public action helpers.
+      type: 'FRONT_PRELOAD';
+      payload: { name: string; params?: object };
+      source?: string;
+      target?: string;
+    };
 
 export type BackBehavior = 'firstRoute' | 'initialRoute' | 'order' | 'history' | 'none';
 
@@ -59,6 +68,12 @@ export const TabActions = {
   jumpTo(name: string, params?: object) {
     return {
       type: 'JUMP_TO',
+      payload: { name, params },
+    } as const satisfies TabActionType;
+  },
+  frontPreload(name: string, params?: object) {
+    return {
+      type: 'FRONT_PRELOAD',
       payload: { name, params },
     } as const satisfies TabActionType;
   },
@@ -151,17 +166,20 @@ const buildInitialSubset = (
 /**
  * The back-stack anchor implied by `backBehavior` — the route GO_BACK ultimately lands on.
  * `getStateFromPath` only materializes anchors declared in the linking config
- * (`unstable_settings.anchor`), so tab navigators keep this implicit anchor loaded by including it
- * in the route names they pass to `usePreloadRoutes`; a preloaded anchor is arranged at the front
- * of the back stack (see PRELOAD below).
+ * (`unstable_settings.anchor`), so tab navigators keep this implicit anchor loaded via
+ * `usePreloadAnchor`, which front-preloads it (see the FRONT_PRELOAD case below).
+ *
+ * Must agree with `arrangeBackStack`/`buildInitialSubset`: `order`/`history`/`none` have no anchor;
+ * `initialRoute` anchors on `initialRouteName` when declared, otherwise (like `firstRoute`) on the
+ * first declared route — which is where the router's own back logic lands too.
  */
 export function getBackStackAnchorName(
   routeNames: string[],
   backBehavior: BackBehavior = 'firstRoute',
   initialRouteName?: string
 ): string | undefined {
-  if (backBehavior === 'firstRoute') {
-    return routeNames[0];
+  if (backBehavior === 'order' || backBehavior === 'history' || backBehavior === 'none') {
+    return undefined;
   }
   if (
     backBehavior === 'initialRoute' &&
@@ -170,7 +188,7 @@ export function getBackStackAnchorName(
   ) {
     return initialRouteName;
   }
-  return undefined;
+  return routeNames[0];
 }
 
 const focusRoute = (
@@ -545,6 +563,39 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           return {
             ...state,
             routes: state.routes.map((r, index) => (index === routeIndex ? newRoute : r)),
+          };
+        }
+
+        case 'FRONT_PRELOAD': {
+          if (!routeNames.includes(action.payload.name)) {
+            return null;
+          }
+
+          if (backBehavior !== 'firstRoute' && backBehavior !== 'initialRoute') {
+            if (process.env.NODE_ENV !== 'production') {
+              console.warn(
+                `Ignored a FRONT_PRELOAD action for "${action.payload.name}" because the navigator's backBehavior is "${backBehavior}", which has no implicit back-stack anchor. FRONT_PRELOAD only applies to "firstRoute" and "initialRoute". Use PRELOAD to load a route without changing the back stack, or remove the FRONT_PRELOAD dispatch for this navigator.`
+              );
+            }
+            return state;
+          }
+
+          // Never reorder live history: if the anchor is already present anywhere, leave it be.
+          if (state.routes.some((route) => route.name === action.payload.name)) {
+            return state;
+          }
+
+          const params = createParamsFromAction({ action, routeParamList });
+          const newRoute: Route<string> = {
+            name: action.payload.name,
+            key: getNextRouteKeyFromState(pathname, action.payload.name, state),
+            params,
+          };
+
+          return {
+            ...state,
+            routes: [newRoute, ...state.routes],
+            index: state.index + 1,
           };
         }
 

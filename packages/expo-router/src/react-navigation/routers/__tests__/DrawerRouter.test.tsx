@@ -7,6 +7,7 @@ import {
   type ParamListBase,
   type RouterConfigOptions,
   StackActions,
+  TabActions,
 } from '..';
 
 const names = (state: { routes: { name: string }[] }) => state.routes.map((route) => route.name);
@@ -342,5 +343,40 @@ test('getStateForRouteFocus focuses the route in place', () => {
       { key: 'qux-0', name: 'qux' },
     ],
     stale: false,
+  });
+});
+
+test('front-preloads the implicit anchor at the front (delegating to the tab router)', () => {
+  const router = DrawerRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  // Deep-linked to baz; the firstRoute anchor (bar) is absent. Front-preload inserts it at index 0
+  // and bumps the index so baz stays focused, keeping the drawer's `drawer-` key.
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'drawer-test',
+        index: 0,
+        routeNames: ['bar', 'baz', 'qux'],
+        routes: [{ key: 'baz-0', name: 'baz' }],
+      },
+      TabActions.frontPreload('bar'),
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'drawer-test',
+    index: 1,
+    routeNames: ['bar', 'baz', 'qux'],
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'baz-0', name: 'baz' },
+    ],
   });
 });

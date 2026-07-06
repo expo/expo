@@ -19,6 +19,7 @@ export type {
 } from './StackRouter';
 export { StackActions, StackRouter, getRoutesForRouteNames } from './StackRouter';
 export type {
+  BackBehavior,
   TabActionHelpers,
   TabActionType,
   TabNavigationState,

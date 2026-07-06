@@ -1900,3 +1900,166 @@ test("doesn't preload a screen that isn't a declared route name", () => {
     )
   ).toBeNull();
 });
+
+// --- FRONT_PRELOAD ------------------------------------------------------------
+// Like PRELOAD, but inserts the implicit back-stack anchor at the FRONT of the routes so GO_BACK
+// lands on it. Only used for the firstRoute/initialRoute anchor; present routes are never reordered.
+
+test('front-preloads an absent route at the front, shifting focus to keep the focused route', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['anchor', 'bar', 'qux'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  // anchor is declared but absent (deep-linked straight to bar). Front-preload inserts it at index 0
+  // and bumps index so bar stays focused; a later GO_BACK now lands on anchor.
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 0,
+        routeNames: ['anchor', 'bar', 'qux'],
+        routes: [{ key: 'bar', name: 'bar', params: { answer: 42 } }],
+      },
+      TabActions.frontPreload('anchor'),
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'root',
+    index: 1,
+    routeNames: ['anchor', 'bar', 'qux'],
+    routes: [
+      { key: 'anchor', name: 'anchor' },
+      { key: 'bar', name: 'bar', params: { answer: 42 } },
+    ],
+  });
+});
+
+test('front-preloads an absent route with params', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['anchor', 'bar', 'qux'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 0,
+        routeNames: ['anchor', 'bar', 'qux'],
+        routes: [{ key: 'bar', name: 'bar' }],
+      },
+      TabActions.frontPreload('anchor', { welcome: true }),
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'root',
+    index: 1,
+    routeNames: ['anchor', 'bar', 'qux'],
+    routes: [
+      { key: 'anchor', name: 'anchor', params: { welcome: true } },
+      { key: 'bar', name: 'bar' },
+    ],
+  });
+});
+
+test('front-preloading an already-present route is a no-op (never reorders history)', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['anchor', 'bar', 'qux'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  // Present at the tail: it must stay put, not be moved to the front.
+  const presentAtTail: TabNavigationState<ParamListBase> = {
+    stale: false,
+    key: 'root',
+    index: 0,
+    routeNames: ['anchor', 'bar', 'qux'],
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'anchor', name: 'anchor' },
+    ],
+  };
+  expect(router.getStateForAction(presentAtTail, TabActions.frontPreload('anchor'), options)).toBe(
+    presentAtTail
+  );
+
+  // Present at the front already: still a no-op (same identity).
+  const presentAtFront: TabNavigationState<ParamListBase> = {
+    stale: false,
+    key: 'root',
+    index: 1,
+    routeNames: ['anchor', 'bar', 'qux'],
+    routes: [
+      { key: 'anchor', name: 'anchor' },
+      { key: 'bar', name: 'bar' },
+    ],
+  };
+  expect(router.getStateForAction(presentAtFront, TabActions.frontPreload('anchor'), options)).toBe(
+    presentAtFront
+  );
+});
+
+test.each(['order', 'history', 'none'] as const)(
+  'front-preload is a no-op and warns in dev with backBehavior %s (no implicit anchor to arrange)',
+  (backBehavior) => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const router = TabRouter({ backBehavior });
+    const options: RouterConfigOptions = {
+      routeNames: ['anchor', 'bar', 'qux'],
+      routeParamList: {},
+      pathname: undefined,
+      routeGetIdList: {},
+    };
+
+    const state: TabNavigationState<ParamListBase> = {
+      stale: false,
+      key: 'root',
+      index: 0,
+      routeNames: ['anchor', 'bar', 'qux'],
+      routes: [{ key: 'bar', name: 'bar' }],
+    };
+
+    expect(router.getStateForAction(state, TabActions.frontPreload('anchor'), options)).toBe(state);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining(`backBehavior is "${backBehavior}"`));
+
+    warn.mockRestore();
+  }
+);
+
+test("doesn't front-preload a screen that isn't a declared route name", () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['anchor', 'bar', 'qux'],
+    routeParamList: {},
+    pathname: undefined,
+    routeGetIdList: {},
+  };
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 0,
+        routeNames: ['anchor', 'bar', 'qux'],
+        routes: [{ key: 'bar', name: 'bar' }],
+      },
+      TabActions.frontPreload('non-existent'),
+      options
+    )
+  ).toBeNull();
+});
