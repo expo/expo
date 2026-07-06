@@ -145,6 +145,29 @@ describe('useObserveForReactNavigation', () => {
     );
   });
 
+  it('omits non-serializable route params from hook-emitted TTI', async () => {
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+    mockUseRoute.mockReturnValue({
+      key: 'screen-a',
+      name: 'A',
+      params: { id: '42', callback: () => {}, circular },
+    });
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
+    jest.spyOn(performance, 'now').mockReturnValue(1300);
+
+    const { result } = renderHook(() => useObserveForReactNavigation(), {
+      wrapper: wrapper({ storage }),
+    });
+    await act(async () => {
+      await result.current!();
+    });
+
+    expect(mockAddMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ params: { routeParams: { id: '42' } } })
+    );
+  });
+
   it('still records lastInteractiveCall when the screen is not focused (skips markInteractive and TTI)', async () => {
     mockUseNavigation.mockReturnValue({ isFocused: () => false });
     storage.screenTimes['screen-a'] = { dispatchTime: 1000 };

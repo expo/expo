@@ -182,6 +182,33 @@ describe('useObserveForRouter', () => {
     );
   });
 
+  it('omits non-serializable route params from markInteractive and hook-emitted TTI', async () => {
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+    mockUseCurrentRouteInfo.mockReturnValue({
+      pathname: '/test',
+      params: { id: '42', callback: () => {}, circular },
+      segments: ['test'],
+    });
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
+    jest.spyOn(performance, 'now').mockReturnValue(1300);
+
+    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    await act(async () => {
+      await result.current!();
+    });
+
+    expect(AppMetrics.markInteractive).toHaveBeenCalledWith({
+      routeName: '/test',
+      params: { routeParams: { id: '42' }, url: '/test' },
+    });
+    expect(mockAddMetric).toHaveBeenCalledWith(
+      expect.objectContaining({
+        params: { isAppLaunch: false, routeParams: { id: '42' }, url: '/test' },
+      })
+    );
+  });
+
   it('hides URL for markInteractive and hook-emitted TTI when a route param is filtered', async () => {
     initModule.getRouterIntegrationConfig.mockReturnValue({ filteredParams: ['x'] });
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
