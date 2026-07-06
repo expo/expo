@@ -158,7 +158,13 @@ To send messages from EAS Workflows to our Slack channel, we need a webhook URL 
 2. Under **Features**, select **Incoming Webhooks** and toggle it on.
 3. Click **Add New Webhook** and select the channel to publish notifications.
 4. Copy the webhook URL. It looks like: `https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX`
-5. Add the webhook URL as an EAS [environment variable](/eas/environment-variables/manage/) named `SLACK_WEBHOOK_URL` for the `preview` environment. Set its [visibility](/eas/environment-variables/#visibility-settings-for-environment-variables) to **secret** since only EAS servers need to read it.
+5. Add the webhook URL as an EAS environment variable named `SLACK_WEBHOOK_URL`. Open our project's [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) page on the EAS dashboard, create the variable for the `preview` environment, and set its [visibility](/eas/environment-variables/#visibility-settings-for-environment-variables) to **secret** since only EAS servers need to read it. Alternatively, create it with [EAS CLI](/eas/environment-variables/manage/):
+
+<Terminal
+  cmd={[
+    '$ eas env:create --name SLACK_WEBHOOK_URL --value https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX --environment preview --visibility secret',
+  ]}
+/>
 
 </Step>
 
@@ -166,7 +172,7 @@ To send messages from EAS Workflows to our Slack channel, we need a webhook URL 
 
 ### Add a Slack notification job
 
-Let's update **preview.yml** to add a `notify` job after the build jobs. The `notify` job uses `webhook_url` and `message` parameters, or a `payload` parameter for rich formatting with [Slack Block Kit](https://docs.slack.dev/block-kit). The job reads the webhook URL from the `SLACK_WEBHOOK_URL` environment variable through its `environment` field. Jobs default to the `production` environment, so setting `environment: preview` here is what makes the variable available.
+Let's update **preview.yml** to add a `notify` job after the build jobs. The `notify` job uses `webhook_url` and `message` parameters, or a `payload` parameter for rich formatting with [Slack Block Kit](https://docs.slack.dev/block-kit). The job reads the webhook URL from the [`SLACK_WEBHOOK_URL` environment variable we created earlier](#create-a-slack-webhook-url) through its `environment` field. Jobs default to the `production` environment, so setting `environment: preview` here is what makes the variable available.
 
 ```yaml .eas/workflows/preview.yml
 name: Preview builds
