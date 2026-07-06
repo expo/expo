@@ -66,6 +66,16 @@ module Pod
       # "Compiling for iOS 15.1, but module 'ExpoModulesCore' has a minimum deployment target of iOS 16.4"
       # type of message
       reconcile_expo_module_deployment_targets()
+
+      # Raise each pod's resource bundle targets to the pod's effective
+      # deployment target. CocoaPods generates resource bundle targets with
+      # the deployment target declared by the pod's own podspec, and
+      # `react_native_post_install` raises only the pods' library targets,
+      # so a bundle can be left below the minimum supported by the Xcode SDK
+      # (e.g. ReachabilitySwift's privacy manifest bundle at iOS 12.0),
+      # which fails the build on Xcode 27. Runs after the reconciliation
+      # above so bundles of Expo modules pick up the reconciled values.
+      reconcile_resource_bundle_deployment_targets()
     end
 
     define_method(:run_podfile_pre_install_hooks) do
@@ -157,6 +167,50 @@ module Pod
           summary = platforms.map { |label| "#{label}=#{versions_by_label[label]}" }.join(' ')
           Pod::UI.puts "  #{pod_name} (#{summary})".yellow
         end
+        self.pods_project.save
+      end
+    end
+
+    # See call site in perform_post_install_actions for rationale.
+    # Bundle targets are only ever raised to their owning pod's library
+    # target value, never lowered, so a bundle already declaring a higher
+    # deployment target keeps it.
+    def reconcile_resource_bundle_deployment_targets
+      deployment_target_keys = [
+        'IPHONEOS_DEPLOYMENT_TARGET',
+        'MACOSX_DEPLOYMENT_TARGET',
+        'TVOS_DEPLOYMENT_TARGET',
+      ]
+
+      bumped = [] # names of bumped resource bundle targets
+      self.target_installation_results.pod_target_installation_results.each_value do |result|
+        library_settings_by_config = result.native_target.build_configurations
+          .map { |config| [config.name, config.build_settings] }
+          .to_h
+
+        result.resource_bundle_targets.each do |bundle_target|
+          bundle_target.build_configurations.each do |config|
+            library_settings = library_settings_by_config[config.name]
+            next if library_settings.nil?
+
+            deployment_target_keys.each do |key|
+              current = config.build_settings[key]
+              effective = library_settings[key]
+              # nil means the target doesn't build for that platform. Empty
+              # strings and xcconfig references (e.g. `$(inherited)`) can't be
+              # compared as versions, so leave those alone.
+              next if current.nil? || current.empty? || current.start_with?('$')
+              next if effective.nil? || effective.empty? || effective.start_with?('$')
+              next unless Gem::Version.new(current) < Gem::Version.new(effective)
+              config.build_settings[key] = effective
+              bumped << bundle_target.name unless bumped.include?(bundle_target.name)
+            end
+          end
+        end
+      end
+
+      unless bumped.empty?
+        Pod::UI.puts "[Expo] ".blue + "Raised resource bundle deployment targets to match their pods: #{bumped.join(', ')}".yellow
         self.pods_project.save
       end
     end
