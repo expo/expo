@@ -1,36 +1,71 @@
-// Single authority for deterministic route-key generation.
+// Single authority for deterministic, globally-unique navigation keys.
 //
-// A route's key is derived from the navigator's `pathname` (its location in the route tree, i.e.
-// its contextKey), the screen `name`, and a per-name `index`. The pathname keeps keys unique across
-// navigators; the index disambiguates same-name routes within one navigator (e.g. a stack that
-// pushes the same screen twice). Because the key is a pure function of these inputs, any layer can
-// recompute the key the router will assign without waiting for the route to exist.
+// Keys are structural paths: every key embeds the chain of parents above it, so two mounted
+// instances of the same route never collide. A route key is derived from the navigator's own
+// `state.key`, the screen `name`, and a per-name `index`; a navigator's state key is simply the key
+// of the route it renders under (the root has no parent route, so it gets the `@` seed). Because
+// keys are pure functions of position, any layer can recompute the key the router will assign
+// without waiting for the route to exist, and the compiler produces the same keys as the live
+// reducers. No implementation should depend on the key structure — only on its uniqueness and
+// determinism.
 
-/**
- * Derive a route key from `pathname`, `name`, and a per-name `index`. The index is appended only
- * when greater than 0; the pathname is omitted when absent (we never emit the literal "undefined"),
- * keeping the common tab key clean (e.g. `/(tabs)-home`).
- */
-export function getRouteKey(pathname: string | undefined, name: string, index: number = 0): string {
-  const base = pathname ? `${pathname}-${name}` : name;
-  return index > 0 ? `${base}-${index}` : base;
+const SEP = ':';
+const ESCAPE = '%';
+
+// Escape a route name so it can't be confused with the structural encoding. The escape char is
+// escaped first, then the separator, so `:` in a name becomes `%:` (never a bare separator) and the
+// whole scheme stays injective. Only route NAMES need escaping — the parent state key is already an
+// escaped composition, and the index is a plain integer.
+function escapeRouteName(name: string): string {
+  return name.split(ESCAPE).join(`${ESCAPE}${ESCAPE}`).split(SEP).join(`${ESCAPE}${SEP}`);
 }
 
 /**
- * Pick a key for a new `name` route under `pathname`. The base index is how many routes already use
+ * Derive a route key from the navigator's `stateKey`, the screen `name`, and a per-name `index`
+ * (default 0). The index is ALWAYS emitted so the encoding is injective (a name ending in a number
+ * can't collide with a higher-index sibling). Only `name` is escaped; `stateKey` is passed through
+ * verbatim.
+ */
+export function getRouteKey({
+  stateKey,
+  name,
+  index,
+}: {
+  stateKey: string;
+  name: string;
+  index?: number;
+}): string {
+  return `${stateKey}${SEP}${escapeRouteName(name)}${SEP}${index ?? 0}`;
+}
+
+/**
+ * Derive a navigator's state key: the key of the route it renders under, verbatim. The root
+ * container has no parent route, so it gets the `@` seed. `@` contains no separator and no route key
+ * equals it (every route key contains a `:`), so the seed is unique.
+ */
+export function getStateKey(parentRouteKey: string | undefined): string {
+  return parentRouteKey === undefined ? '@' : parentRouteKey;
+}
+
+/**
+ * Pick a key for a new `name` route under `stateKey`. The base index is how many routes already use
  * `name` (so repeated routes get sequential keys without rescanning); the loop only bumps the index
  * further on the off chance that base key is already taken.
  */
-export function getNextRouteKeyFromState(
-  pathname: string | undefined,
-  name: string,
-  state: { routes: readonly { key: string; name: string }[] }
-): string {
+export function getNextRouteKeyFromState({
+  stateKey,
+  name,
+  state,
+}: {
+  stateKey: string;
+  name: string;
+  state: { routes: readonly { key: string; name: string }[] };
+}): string {
   let index = state.routes.filter((route) => route.name === name).length;
-  let key = getRouteKey(pathname, name, index);
+  let key = getRouteKey({ stateKey, name, index });
   while (state.routes.some((route) => route.key === key)) {
     index += 1;
-    key = getRouteKey(pathname, name, index);
+    key = getRouteKey({ stateKey, name, index });
   }
   return key;
 }

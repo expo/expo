@@ -10,7 +10,7 @@ import { resetRouterSpies, routerSpyCalls } from './routerSpies';
 // Step 3 of the "global navigation state" refactor: the compiled state from `getStateFromPath`
 // seeds the container VERBATIM. Today `BaseNavigationContainer` stales the seed (strips `key` and
 // `routeNames`, sets `stale: true`), so every navigator rebuilds its slice at render via
-// `getInitialState` / `getRehydratedState`, minting fresh `stack-/tab-<nanoid>` keys. After Step 3
+// `getInitialState` / `getRehydratedState`, minting fresh live keys. After Step 3
 // the first committed state must deep-equal the compiled seed, and those repair functions must not
 // mutate it (identity).
 //
@@ -72,8 +72,9 @@ const declaredAnchorTabsApp = {
 };
 
 // Test A: the live root state committed on a deep-link mount must deep-equal the compiled seed.
-// Fails today: the live tree carries `stack-/tab-<nanoid>` keys where the compiled seed carries
-// deterministic `navigator<pathname>` state keys at every level.
+// Fails today: the live tree carries freshly-minted live keys where the compiled seed carries
+// deterministic keys from `getStateKey(parentRouteKey)` / `getRouteKey({ stateKey, name, index })` at
+// every level.
 it('commits the compiled seed verbatim for a deep link through nested stacks', () => {
   const initialUrl = '/settings/profile/42';
 

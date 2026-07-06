@@ -1,8 +1,5 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import {
   type TabActionHelpers,
-  TabActions,
   type TabActionType,
   type TabNavigationState,
   TabRouter,
@@ -25,45 +22,16 @@ export type DrawerNavigationState<ParamList extends ParamListBase> = TabNavigati
 export type DrawerActionHelpers<ParamList extends ParamListBase> = TabActionHelpers<ParamList>;
 
 /**
- * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
+ * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version.
+ *
+ * Keys are kind-free (derived structurally from the parent route key), so the drawer needs no
+ * behavior of its own — it is exactly a TabRouter.
  */
 export function DrawerRouter(
   options: DrawerRouterOptions
 ): Router<DrawerNavigationState<ParamListBase>, DrawerActionType | CommonNavigationAction> {
-  const router = TabRouter(options) as unknown as Router<
+  return TabRouter(options) as unknown as Router<
     DrawerNavigationState<ParamListBase>,
     DrawerActionType | CommonNavigationAction
   >;
-
-  return {
-    ...router,
-
-    getInitialState({ routeNames, pathname, routeParamList, routeGetIdList }) {
-      const state = router.getInitialState({
-        routeNames,
-        pathname,
-        routeParamList,
-        routeGetIdList,
-      });
-
-      return { ...state, key: `drawer-${nanoid()}` };
-    },
-
-    getRehydratedState(partialState, { routeNames, pathname, routeParamList, routeGetIdList }) {
-      if (partialState.stale === false) {
-        return partialState;
-      }
-
-      const state = router.getRehydratedState(partialState, {
-        routeNames,
-        pathname,
-        routeParamList,
-        routeGetIdList,
-      });
-
-      return { ...state, key: `drawer-${nanoid()}` };
-    },
-
-    actionCreators: TabActions,
-  };
 }

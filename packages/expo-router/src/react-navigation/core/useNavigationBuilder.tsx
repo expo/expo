@@ -5,7 +5,6 @@ import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
-import { useOptionalContextKey } from '../../Route';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -315,9 +314,10 @@ export function useNavigationBuilder<
 
   const route = use(NavigationRouteContext) as NavigatorRoute | undefined;
 
-  // The navigator's pathname (contextKey), threaded into every routerConfigOptions so routers can
-  // derive deterministic route keys (see `getRouteKey`). `undefined` outside a route boundary.
-  const pathname = useOptionalContextKey();
+  // This navigator's own route key, threaded into every routerConfigOptions as `parentRouteKey` so
+  // routers derive their state key and deterministic route keys from it (see `getRouteKey`).
+  // `undefined` at the root container, which yields the `navigator` sentinel state key.
+  const parentRouteKey = route?.key;
 
   const isNestedParamsConsumed =
     typeof route?.params === 'object' && route.params != null
@@ -454,7 +454,7 @@ export function useNavigationBuilder<
         ? lastStateRef.current
         : router.getRehydratedState(lastStateRef.current, {
             routeNames,
-            pathname,
+            parentRouteKey,
             routeParamList,
             routeGetIdList,
           });
@@ -499,7 +499,7 @@ export function useNavigationBuilder<
         undefined,
         router.getInitialState({
           routeNames,
-          pathname,
+          parentRouteKey,
           routeParamList: initialRouteParamList,
           routeGetIdList,
         }),
@@ -518,13 +518,13 @@ export function useNavigationBuilder<
         stateBeforeInitialization == null
           ? router.getInitialState({
               routeNames,
-              pathname,
+              parentRouteKey,
               routeParamList: initialRouteParamList,
               routeGetIdList,
             })
           : router.getRehydratedState(stateBeforeInitialization, {
               routeNames,
-              pathname,
+              parentRouteKey,
               routeParamList: initialRouteParamList,
               routeGetIdList,
             });
@@ -590,7 +590,7 @@ export function useNavigationBuilder<
     shouldClearUnhandledState = true;
     nextState = router.getRehydratedState(unhandledState as PartialState<State>, {
       routeNames,
-      pathname,
+      parentRouteKey,
       routeParamList,
       routeGetIdList,
     });
@@ -601,7 +601,7 @@ export function useNavigationBuilder<
     // When the list of route names change, the router should handle it to remove invalid routes
     nextState = router.getStateForRouteNamesChange(state, {
       routeNames,
-      pathname,
+      parentRouteKey,
       routeParamList,
       routeGetIdList,
       routeKeyChanges: Object.keys(routeKeyList).filter(
@@ -664,7 +664,7 @@ export function useNavigationBuilder<
     const updatedState = action
       ? router.getStateForAction(nextState, action, {
           routeNames,
-          pathname,
+          parentRouteKey,
           routeParamList,
           routeGetIdList,
         })
@@ -674,7 +674,7 @@ export function useNavigationBuilder<
       updatedState !== null
         ? router.getRehydratedState(updatedState, {
             routeNames,
-            pathname,
+            parentRouteKey,
             routeParamList,
             routeGetIdList,
           })
@@ -835,7 +835,7 @@ export function useNavigationBuilder<
     beforeRemoveListeners: keyedListeners.beforeRemove,
     routerConfigOptions: {
       routeNames,
-      pathname,
+      parentRouteKey,
       routeParamList,
       routeGetIdList,
     },

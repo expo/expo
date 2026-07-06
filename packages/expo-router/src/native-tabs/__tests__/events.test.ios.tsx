@@ -117,8 +117,8 @@ it('emits tabPress event onNativeFocusChange', () => {
   expect(screen.getByTestId('second')).toBeVisible();
   // Eager preload renders both tabs twice; order is preserved within each pass.
   expect(TabsScreen).toHaveBeenCalledTimes(4);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)index$/);
-  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)second$/);
+  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)index:\d+$/);
+  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)second:\d+$/);
 
   const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
   const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
@@ -225,8 +225,8 @@ it('does not pop stack on repeated tab press', async () => {
   expect(screen.getByTestId('a-index')).toBeVisible();
   // Eager preload renders both tabs twice; order is preserved within each pass.
   expect(TabsScreen).toHaveBeenCalledTimes(4);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)index$/);
-  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)a$/);
+  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)index:\d+$/);
+  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)a:\d+$/);
 
   const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
   const aTabKey = TabsScreen.mock.calls[1][0].screenKey;

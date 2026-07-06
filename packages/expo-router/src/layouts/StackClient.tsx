@@ -331,7 +331,11 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               // For preloaded route, we want to use the same key, so that preloaded screen is used.
               const key =
                 routes.length === activeRoutes.length && !isPreloadedRoute
-                  ? getNextRouteKeyFromState(options.pathname, action.payload.name, state)
+                  ? getNextRouteKeyFromState({
+                      stateKey: state.key,
+                      name: action.payload.name,
+                      state,
+                    })
                   : route.key;
 
               routes.push({
@@ -359,7 +363,11 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             routes = [
               ...activeRoutes,
               {
-                key: getNextRouteKeyFromState(options.pathname, action.payload.name, state),
+                key: getNextRouteKeyFromState({
+                  stateKey: state.key,
+                  name: action.payload.name,
+                  state,
+                }),
                 name: action.payload.name,
                 path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
                 params,
@@ -467,11 +475,11 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             };
           } else {
             // START FORK
-            const preloadedRouteKey = getNextRouteKeyFromState(
-              options.pathname,
-              action.payload.name,
-              state
-            );
+            const preloadedRouteKey = getNextRouteKeyFromState({
+              stateKey: state.key,
+              name: action.payload.name,
+              state,
+            });
             const preloadedRouteParams =
               routeParamList[action.payload.name] !== undefined
                 ? {

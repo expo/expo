@@ -78,9 +78,9 @@ export function useStore(
     rootComponent = getQualifiedRouteComponent(routeNode);
 
     // Compile the seed state (and its cached route info) from a URL. This is the synchronous path
-    // that static rendering (single pass) relies on. The seed is raw compiled state: its state keys
-    // are the deterministic `navigator*` ones, not the live-minted `stack-<nanoid>` keys, until the
-    // first `onStateChange` reconciles it.
+    // that static rendering (single pass) relies on. The seed's keys are the deterministic
+    // parent-derived ones (seeded at `@`) the live reducers also mint (see `getStateKey`/`getRouteKey`),
+    // so compiled and live keys match by construction — no reconciliation needed.
     const seedFromURL = (url: string) => {
       let initialPath = extractExpoPathFromURL(linking!.prefixes, url);
       // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent

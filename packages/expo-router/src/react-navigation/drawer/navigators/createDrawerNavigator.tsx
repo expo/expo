@@ -1,7 +1,6 @@
 'use client';
 import * as React from 'react';
 
-import { useOptionalContextKey } from '../../../Route';
 import {
   NavigatorTypeContext,
   useNavigatorTypeContextValue,
@@ -64,14 +63,12 @@ function DrawerNavigator({
     UNSTABLE_router,
   });
 
-  // Key placeholders with the same pathname the router keys real routes with, so the real route
+  // Placeholders reuse the key the router will assign (derived from `state.key`), so the real route
   // reconciles onto its placeholder instead of remounting.
-  const pathname = useOptionalContextKey();
   const [tabState, tabDescriptors] = useTabPlaceholders(
     state,
     descriptors,
     describe,
-    pathname,
     state.routeNames
   );
 

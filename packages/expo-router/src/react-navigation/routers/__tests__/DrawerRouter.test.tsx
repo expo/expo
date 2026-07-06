@@ -1,4 +1,4 @@
-import { expect, jest, test } from '@jest/globals';
+import { expect, test } from '@jest/globals';
 
 import {
   CommonActions,
@@ -12,11 +12,9 @@ import {
 
 const names = (state: { routes: { name: string }[] }) => state.routes.map((route) => route.name);
 
-jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
-
 // The drawer's open/closed status lives in the drawer navigator's local React state, so the router
-// behaves like the tab router plus a `drawer-` key. In the new model `routes` is a SUBSET of
-// `routeNames` (presence is the loaded signal) and there is no `preloadedRouteKeys` field.
+// delegates entirely to the tab router (no dedicated drawer key). In the new model `routes` is a
+// SUBSET of `routeNames` (presence is the loaded signal) and there is no `preloadedRouteKeys` field.
 
 test('gets initial state materializing the anchor and the initial route with initialRouteName', () => {
   const router = DrawerRouter({ initialRouteName: 'baz' });
@@ -29,16 +27,16 @@ test('gets initial state materializing the anchor and the initial route with ini
         baz: { answer: 42 },
         qux: { name: 'Jane' },
       },
-      pathname: undefined,
+      parentRouteKey: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
     index: 1,
-    key: 'drawer-test',
+    key: '@',
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'baz', name: 'baz', params: { answer: 42 } },
+      { key: '@:bar:0', name: 'bar' },
+      { key: '@:baz:0', name: 'baz', params: { answer: 42 } },
     ],
     stale: false,
   });
@@ -54,14 +52,14 @@ test('gets initial state materializing only the focused route without initialRou
         baz: { answer: 42 },
         qux: { name: 'Jane' },
       },
-      pathname: undefined,
+      parentRouteKey: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
     index: 0,
-    key: 'drawer-test',
+    key: '@',
     routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar', name: 'bar' }],
+    routes: [{ key: '@:bar:0', name: 'bar' }],
     stale: false,
   });
 });
@@ -73,14 +71,14 @@ test('defaultStatus does not affect navigation state', () => {
     router.getInitialState({
       routeNames: ['bar', 'baz'],
       routeParamList: {},
-      pathname: undefined,
+      parentRouteKey: undefined,
       routeGetIdList: {},
     })
   ).toEqual({
     index: 0,
-    key: 'drawer-test',
+    key: '@',
     routeNames: ['bar', 'baz'],
-    routes: [{ key: 'bar', name: 'bar' }],
+    routes: [{ key: '@:bar:0', name: 'bar' }],
     stale: false,
   });
 });
@@ -94,7 +92,7 @@ test('rehydrates preserving the persisted subset and appending the anchor', () =
       baz: { answer: 42 },
       qux: { name: 'Jane' },
     },
-    pathname: undefined,
+    parentRouteKey: undefined,
     routeGetIdList: {},
   };
 
@@ -113,7 +111,7 @@ test('rehydrates preserving the persisted subset and appending the anchor', () =
     )
   ).toEqual({
     index: 1,
-    key: 'drawer-test',
+    key: '@',
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
       { key: 'bar-0', name: 'bar' },
@@ -132,7 +130,7 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
       baz: { answer: 42 },
       qux: { name: 'Jane' },
     },
-    pathname: undefined,
+    parentRouteKey: undefined,
     routeGetIdList: {},
   };
 
@@ -147,10 +145,10 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
     )
   ).toEqual({
     index: 1,
-    key: 'drawer-test',
+    key: '@',
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
-      { key: 'bar', name: 'bar' },
+      { key: '@:bar:0', name: 'bar' },
       { key: 'baz-0', name: 'baz', params: { answer: 42 } },
     ],
     stale: false,
@@ -167,9 +165,9 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
     )
   ).toEqual({
     index: 0,
-    key: 'drawer-test',
+    key: '@',
     routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar', name: 'bar' }],
+    routes: [{ key: '@:bar:0', name: 'bar' }],
     stale: false,
   });
 });
@@ -193,7 +191,7 @@ test("doesn't rehydrate state if it's not stale", () => {
     router.getRehydratedState(state, {
       routeNames: [],
       routeParamList: {},
-      pathname: undefined,
+      parentRouteKey: undefined,
       routeGetIdList: {},
     })
   ).toBe(state);
@@ -204,7 +202,7 @@ test('handles navigate action by focusing the target route in place', () => {
   const options: RouterConfigOptions = {
     routeNames: ['baz', 'bar', 'qux'],
     routeParamList: {},
-    pathname: undefined,
+    parentRouteKey: undefined,
     routeGetIdList: {},
   };
 
@@ -244,7 +242,7 @@ test('GO_BACK delegates to the tab router', () => {
   const options: RouterConfigOptions = {
     routeNames: ['bar', 'baz', 'qux'],
     routeParamList: {},
-    pathname: undefined,
+    parentRouteKey: undefined,
     routeGetIdList: {},
   };
 
@@ -284,7 +282,7 @@ test('REPLACE drops the replaced route from the back stack (inherited from the t
   const options: RouterConfigOptions = {
     routeNames: ['one', 'two'],
     routeParamList: {},
-    pathname: undefined,
+    parentRouteKey: undefined,
     routeGetIdList: {},
   };
 
@@ -351,12 +349,12 @@ test('front-preloads the implicit anchor at the front (delegating to the tab rou
   const options: RouterConfigOptions = {
     routeNames: ['bar', 'baz', 'qux'],
     routeParamList: {},
-    pathname: undefined,
+    parentRouteKey: undefined,
     routeGetIdList: {},
   };
 
   // Deep-linked to baz; the firstRoute anchor (bar) is absent. Front-preload inserts it at index 0
-  // and bumps the index so baz stays focused, keeping the drawer's `drawer-` key.
+  // and bumps the index so baz stays focused, keeping the navigator's state key.
   expect(
     router.getStateForAction(
       {
@@ -375,7 +373,7 @@ test('front-preloads the implicit anchor at the front (delegating to the tab rou
     index: 1,
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
-      { key: 'bar', name: 'bar' },
+      { key: 'drawer-test:bar:0', name: 'bar' },
       { key: 'baz-0', name: 'baz' },
     ],
   });

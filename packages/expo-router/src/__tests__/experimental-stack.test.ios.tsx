@@ -231,11 +231,8 @@ describe('ExperimentalStack — Screen activityMode', () => {
 
     const props = screenPropsByKey();
     const keys = Object.keys(props);
-    // TODO(@ubax): Make this assertions better in this and other tests
-    // Route keys are deterministic now: `<pathname>-<name>` (or just `<name>` when the navigator
-    // has no pathname), so match the route-name suffix rather than the old random `<name>-<id>`.
-    expect(keys.some((k) => k === 'a' || k.endsWith('-a'))).toBe(true);
-    expect(keys.some((k) => k === 'b' || k.endsWith('-b'))).toBe(true);
+    expect(keys).toContain('@:__root:0:a:0');
+    expect(keys).toContain('@:__root:0:b:0');
   });
 });
 
@@ -254,7 +251,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     const propsB = MockedScreen.mock.calls
       .map((c) => c[0])
       .reverse()
-      .find((p: any) => p.screenKey === 'b' || p.screenKey?.endsWith('-b'));
+      .find((p: any) => p.screenKey?.endsWith(':b:0'));
 
     expect(propsB).toBeDefined();
     expect(propsB.onDismiss).toBeUndefined();
@@ -302,7 +299,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     const propsB = MockedScreen.mock.calls
       .map((c) => c[0])
       .reverse()
-      .find((p: any) => p.screenKey === 'b' || p.screenKey?.endsWith('-b'));
+      .find((p: any) => p.screenKey?.endsWith(':b:0'));
 
     act(() => {
       propsB.onNativeDismiss(propsB.screenKey);

@@ -93,6 +93,43 @@ function expectCompleteLevel(state: AnyState, path: string[], screens?: ScreensC
   }
 }
 
+// A minimal structural view of any navigation state — loose enough that the live `getRootState()`
+// type and the compiler's `CompleteResultState` both satisfy it (we only read keys + nested state).
+type KeyTreeNode = {
+  key?: unknown;
+  routes: readonly { key?: unknown; state?: KeyTreeNode }[];
+};
+
+// Gather the keys in a committed tree, split by kind. A nested navigator's `state.key` is its parent
+// route's key verbatim (no marker), so state and route keys deliberately overlap — the meaningful
+// invariant is that route keys are unique among routes and state keys unique among navigators, which
+// callers assert against the two arrays separately.
+export function collectKeys(state: KeyTreeNode | undefined): {
+  routeKeys: string[];
+  stateKeys: string[];
+} {
+  const routeKeys: string[] = [];
+  const stateKeys: string[] = [];
+
+  const walk = (s: KeyTreeNode | undefined) => {
+    if (s === undefined) {
+      return;
+    }
+    if (typeof s.key === 'string') {
+      stateKeys.push(s.key);
+    }
+    for (const route of s.routes) {
+      if (typeof route.key === 'string') {
+        routeKeys.push(route.key);
+      }
+      walk(route.state);
+    }
+  };
+
+  walk(state);
+  return { routeKeys, stateKeys };
+}
+
 // Deep copy with the completeness additions removed. `index` is dropped only when it is 0, because
 // the upstream literals omit index (implicit 0) but explicitly assert `index: 1` for inserted
 // initial routes — those must survive the strip.

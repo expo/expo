@@ -4,14 +4,15 @@ import { getRouteKey } from '../routers/getRouteKey';
 import type { ParamListBase, TabNavigationState } from '../routers';
 import { useTabPlaceholders } from '../useTabPlaceholders';
 
-const PATHNAME = '/(tabs)';
+// The tab navigator's own state key; both real and placeholder route keys derive from it.
+const STATE_KEY = 'navigator++(tabs)';
 
 const makeState = (routesPresent: string[], routeNames: string[]): TabNavigationState<ParamListBase> => ({
   stale: false,
-  key: 'tab',
+  key: STATE_KEY,
   index: 0,
   routeNames,
-  routes: routesPresent.map((name) => ({ key: getRouteKey(PATHNAME, name), name })),
+  routes: routesPresent.map((name) => ({ key: getRouteKey({ stateKey: STATE_KEY, name }), name })),
 });
 
 // Minimal descriptor map: a real descriptor per present route, keyed by routeKey.
@@ -40,19 +41,19 @@ const makeDescribe = (descriptors: Record<string, any>) =>
     };
   });
 
-test('adds placeholders for declared tabs not yet present, keyed by getRouteKey(pathname,name,0)', () => {
+test('adds placeholders for declared tabs not yet present, keyed by getRouteKey({ stateKey, name, index })', () => {
   const state = makeState(['home'], ['home', 'a', 'b']);
   const descriptors = makeDescriptors(state);
   const describe = makeDescribe(descriptors);
 
   const { result } = renderHook(() =>
-    useTabPlaceholders(state, descriptors, describe, PATHNAME, ['home', 'a', 'b'])
+    useTabPlaceholders(state, descriptors, describe, ['home', 'a', 'b'])
   );
   const [augmentedState, augmentedDescriptors] = result.current;
 
   // `a` and `b` got placeholder routes with the exact key the router will later assign at index 0.
-  const aKey = getRouteKey(PATHNAME, 'a', 0);
-  const bKey = getRouteKey(PATHNAME, 'b', 0);
+  const aKey = getRouteKey({ stateKey: STATE_KEY, name: 'a', index: 0 });
+  const bKey = getRouteKey({ stateKey: STATE_KEY, name: 'b', index: 0 });
   expect(augmentedState.routes.find((r) => r.name === 'a')?.key).toBe(aKey);
   expect(augmentedState.routes.find((r) => r.name === 'b')?.key).toBe(bKey);
   // Descriptor map contains both real and placeholder entries.
@@ -66,12 +67,12 @@ test('placeholder key equals the real key assigned when the route materializes a
   const describe = makeDescribe(descriptors);
 
   const { result } = renderHook(() =>
-    useTabPlaceholders(placeholderState, descriptors, describe, PATHNAME, ['home', 'a'])
+    useTabPlaceholders(placeholderState, descriptors, describe, ['home', 'a'])
   );
   const placeholderKey = result.current[0].routes.find((r) => r.name === 'a')!.key;
 
-  // When `a` actually materializes, the router keys it via getRouteKey(pathname,name,0).
-  const realKey = getRouteKey(PATHNAME, 'a', 0);
+  // When `a` actually materializes, the router keys it via getRouteKey({ stateKey, name, index }).
+  const realKey = getRouteKey({ stateKey: STATE_KEY, name: 'a', index: 0 });
   expect(placeholderKey).toBe(realKey);
 });
 
@@ -82,7 +83,7 @@ test('merges placeholders with real routes in declaration order', () => {
   const describe = makeDescribe(descriptors);
 
   const { result } = renderHook(() =>
-    useTabPlaceholders(state, descriptors, describe, PATHNAME, ['home', 'a', 'b', 'c'])
+    useTabPlaceholders(state, descriptors, describe, ['home', 'a', 'b', 'c'])
   );
 
   expect(result.current[0].routes.map((r) => r.name)).toEqual(['home', 'a', 'b', 'c']);
@@ -94,9 +95,9 @@ test('does not create a placeholder for a route already present (keeps the real 
   const describe = makeDescribe(descriptors);
 
   const { result } = renderHook(() =>
-    useTabPlaceholders(state, descriptors, describe, PATHNAME, ['home', 'a'])
+    useTabPlaceholders(state, descriptors, describe, ['home', 'a'])
   );
-  const aKey = getRouteKey(PATHNAME, 'a', 0);
+  const aKey = getRouteKey({ stateKey: STATE_KEY, name: 'a', index: 0 });
 
   // describe should never be asked for a placeholder of an already-present route.
   expect(describe).not.toHaveBeenCalledWith(expect.objectContaining({ name: 'a' }), true);
@@ -109,9 +110,9 @@ test('resolves placeholder options via describe up front (not lazily)', () => {
   const describe = makeDescribe(descriptors);
 
   const { result } = renderHook(() =>
-    useTabPlaceholders(state, descriptors, describe, PATHNAME, ['home', 'a'])
+    useTabPlaceholders(state, descriptors, describe, ['home', 'a'])
   );
-  const aKey = getRouteKey(PATHNAME, 'a', 0);
+  const aKey = getRouteKey({ stateKey: STATE_KEY, name: 'a', index: 0 });
 
   // describe was called for the placeholder during the hook, and its resolved options are exposed.
   expect(describe).toHaveBeenCalledWith(expect.objectContaining({ name: 'a' }), true);
@@ -128,7 +129,7 @@ test('falls back to a valid in-range index (0) and warns when the focused route 
   const describe = makeDescribe(descriptors);
 
   const { result } = renderHook(() =>
-    useTabPlaceholders(state, descriptors, describe, PATHNAME, ['home', 'a', 'b'])
+    useTabPlaceholders(state, descriptors, describe, ['home', 'a', 'b'])
   );
   const [augmentedState] = result.current;
 
@@ -148,7 +149,7 @@ test('returns referentially-stable output across a re-render with unchanged stat
   const { result, rerender } = renderHook(
     // A fresh `describe` closure each render (mirrors useDescriptors), but stable state/descriptors.
     () =>
-      useTabPlaceholders(state, descriptors, makeDescribe(descriptors), PATHNAME, routeNamesToShow)
+      useTabPlaceholders(state, descriptors, makeDescribe(descriptors), routeNamesToShow)
   );
   const first = result.current;
 
@@ -162,9 +163,9 @@ test('placeholder render returns null', () => {
   const describe = makeDescribe(descriptors);
 
   const { result } = renderHook(() =>
-    useTabPlaceholders(state, descriptors, describe, PATHNAME, ['home', 'a'])
+    useTabPlaceholders(state, descriptors, describe, ['home', 'a'])
   );
-  const aKey = getRouteKey(PATHNAME, 'a', 0);
+  const aKey = getRouteKey({ stateKey: STATE_KEY, name: 'a', index: 0 });
 
   expect(result.current[1][aKey]!.render()).toBeNull();
 });

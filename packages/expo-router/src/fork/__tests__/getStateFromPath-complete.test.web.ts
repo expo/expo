@@ -10,30 +10,32 @@ describe('completeness', () => {
 
     expectComplete(state);
 
-    // Container level: `__root` is the focused route, keyed name-only (container pathname undefined).
+    // Container level: `__root` is derived from the root container state key (`@`).
     expect(state!.routes[0]!.name).toBe('__root');
-    expect(state!.routes[0]!.key).toBe('__root');
+    expect(state!.routes[0]!.key).toBe(getRouteKey({ stateKey: state!.key, name: '__root' }));
     expect(state!.routeNames).toContain('__root');
 
-    // app/_layout level (pathname '').
+    // app/_layout level: each route key derives from its navigator's own state key.
     const rootState = state!.routes[0]!.state!;
-    expect(rootState.routes.find((r) => r.name === '(tabs)')!.key).toBe(getRouteKey('', '(tabs)'));
+    expect(rootState.routes.find((r) => r.name === '(tabs)')!.key).toBe(
+      getRouteKey({ stateKey: rootState.key, name: '(tabs)' })
+    );
 
-    // (tabs) level (pathname '/(tabs)').
+    // (tabs) level: `second`'s key derives from the (tabs) navigator state key.
     const tabsState = rootState.routes.find((r) => r.name === '(tabs)')!.state!;
     const second = tabsState.routes.find((r) => r.name === 'second')!;
-    expect(second.key).toBe(getRouteKey('/(tabs)', 'second'));
-    expect(second.key).toBe('/(tabs)-second');
+    expect(second.key).toBe(getRouteKey({ stateKey: tabsState.key, name: 'second' }));
+    expect(second.key).toBe('@:__root:0:(tabs):0:second:0');
   });
 
-  it('computes tab index route keys as getRouteKey(pathname, name)', () => {
+  it('computes tab index route keys as getRouteKey({ stateKey: state.key, name })', () => {
     const config = getMockConfig(['_layout', '(tabs)/_layout', '(tabs)/index', '(tabs)/second']);
     const state = getStateFromPath('/', config);
 
     const tabsState = state!.routes[0]!.state!.routes.find((r) => r.name === '(tabs)')!.state!;
     const index = tabsState.routes.find((r) => r.name === 'index')!;
-    expect(index.key).toBe(getRouteKey('/(tabs)', 'index'));
-    expect(index.key).toBe('/(tabs)-index');
+    expect(index.key).toBe(getRouteKey({ stateKey: tabsState.key, name: 'index' }));
+    expect(index.key).toBe('@:__root:0:(tabs):0:index:0');
   });
 
   it('is deterministic: identical inputs produce deeply identical output including keys', () => {
@@ -119,7 +121,7 @@ describe('declared anchors', () => {
     expect(feed.name).toBe('Feed');
     expect(feed.state).toBeDefined();
     expect(feed.state!.routes.map((r) => r.name)).toEqual(['FeedList']);
-    expect(feed.state!.routes[0]!.key).toBe(getRouteKey('/Feed', 'FeedList'));
+    expect(feed.state!.routes[0]!.key).toBe(getRouteKey({ stateKey: feed.state!.key, name: 'FeedList' }));
   });
 });
 

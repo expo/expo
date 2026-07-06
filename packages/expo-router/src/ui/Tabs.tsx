@@ -199,7 +199,6 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     state,
     descriptors,
     describe,
-    contextKey,
     state.routeNames
   );
   const nonLazyRouteNames = useMemo(

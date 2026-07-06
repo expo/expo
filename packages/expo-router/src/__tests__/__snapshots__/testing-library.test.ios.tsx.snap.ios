@@ -37,7 +37,7 @@ exports[`toHaveRouterState fails with the correct message 1`] = `
   Object {
 -   "routes": Array [],
 +   "index": 0,
-+   "key": "navigator",
++   "key": "@",
 +   "routeNames": Array [
 +     "__root",
 +     "+not-found",
@@ -45,20 +45,20 @@ exports[`toHaveRouterState fails with the correct message 1`] = `
 +   ],
 +   "routes": Array [
 +     Object {
-+       "key": "__root",
++       "key": "@:__root:0",
 +       "name": "__root",
 +       "params": Object {
 +         "slug": "home",
 +       },
 +       "state": Object {
 +         "index": 0,
-+         "key": "navigator/",
++         "key": "@:__root:0",
 +         "routeNames": Array [
 +           "[slug]",
 +         ],
 +         "routes": Array [
 +           Object {
-+             "key": "[slug]",
++             "key": "@:__root:0:[slug]:0",
 +             "name": "[slug]",
 +             "params": Object {
 +               "slug": "home",
@@ -78,8 +78,8 @@ exports[`toHaveRouterState fails with the correct message 1`] = `
 exports[`toHaveRouterState fails with the correct message for a .not assertion 1`] = `
 "expect(received).not.toHaveRouterState(expected)
 
-Expected: not {"index": 0, "key": "navigator", "routeNames": ["__root", "+not-found", "_sitemap"], "routes": [{"key": "__root", "name": "__root", "params": {"slug": "home"}, "state": {"index": 0, "key": "navigator/", "routeNames": ["[slug]"], "routes": [{"key": "[slug]", "name": "[slug]", "params": {"slug": "home", "test": "true"}, "path": "/home?test=true"}], "stale": false}}], "stale": false}
-Received: {"index": 0, "key": "navigator", "routeNames": ["__root", "+not-found", "_sitemap"], "routes": [{"key": "__root", "name": "__root", "params": {"slug": "home"}, "state": {"index": 0, "key": "navigator/", "routeNames": ["[slug]"], "routes": [{"key": "[slug]", "name": "[slug]", "params": {"slug": "home", "test": "true"}, "path": "/home?test=true"}], "stale": false}}], "stale": false}"
+Expected: not {"index": 0, "key": "@", "routeNames": ["__root", "+not-found", "_sitemap"], "routes": [{"key": "@:__root:0", "name": "__root", "params": {"slug": "home"}, "state": {"index": 0, "key": "@:__root:0", "routeNames": ["[slug]"], "routes": [{"key": "@:__root:0:[slug]:0", "name": "[slug]", "params": {"slug": "home", "test": "true"}, "path": "/home?test=true"}], "stale": false}}], "stale": false}
+Received: {"index": 0, "key": "@", "routeNames": ["__root", "+not-found", "_sitemap"], "routes": [{"key": "@:__root:0", "name": "__root", "params": {"slug": "home"}, "state": {"index": 0, "key": "@:__root:0", "routeNames": ["[slug]"], "routes": [{"key": "@:__root:0:[slug]:0", "name": "[slug]", "params": {"slug": "home", "test": "true"}, "path": "/home?test=true"}], "stale": false}}], "stale": false}"
 `;
 
 exports[`toHaveSearchParams fails with the correct message 1`] = `

@@ -4,7 +4,6 @@ import { type ComponentType, useCallback, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
-import { useOptionalContextKey } from '../Route';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -150,12 +149,12 @@ export function unstable_integrateWithRouter<
 
     const { dispatch } = navigation;
 
-    // The pathname keys are derived from, so `getKey` matches the deterministic key the router
-    // assigns when a route materializes.
-    const pathname = useOptionalContextKey();
+    // Keys derive from the navigator's own `state.key`, so `getKey` matches the deterministic key
+    // the router assigns when a route materializes.
     const getKey = useCallback(
-      (routeName: string) => getNextRouteKeyFromState(pathname, routeName, state),
-      [pathname, state]
+      (routeName: string) =>
+        getNextRouteKeyFromState({ stateKey: state.key, name: routeName, state }),
+      [state]
     );
 
     const derivedProps = useMemo<Partial<CreateProps>>(

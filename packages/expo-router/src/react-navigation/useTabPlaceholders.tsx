@@ -1,8 +1,8 @@
 'use client';
 import * as React from 'react';
 
-import { getRouteKey } from './routers/getRouteKey';
 import type { NavigationState, Route } from './routers';
+import { getRouteKey } from './routers/getRouteKey';
 
 // The shape `describe` and the descriptor map share. We only touch these fields here; the navigator
 // passes the fully-typed versions through.
@@ -19,7 +19,7 @@ type Describe = (route: Route<string>, placeholder: boolean) => MinimalDescripto
  * Augment `state` and `descriptors` with PLACEHOLDER routes for declared tabs that haven't
  * materialized yet, so the tab bar shows every tab from the first frame.
  *
- * Each placeholder's key is `getRouteKey(pathname, name, 0)` — identical to the key the router
+ * Each placeholder's key is `getRouteKey({ stateKey: state.key, name, index: 0 })` — identical to the key the router
  * assigns when the route first materializes at index 0. Matching keys mean react-native-screens
  * RECONCILES the native screen instead of remounting it when the real route arrives.
  *
@@ -31,11 +31,13 @@ type Describe = (route: Route<string>, placeholder: boolean) => MinimalDescripto
  * the bar shows tabs in order. The returned descriptor map holds both real and placeholder entries —
  * Phase 4's tab-press / `onTabChange` reads from this map.
  */
-export function useTabPlaceholders<State extends NavigationState, Descriptors extends Record<string, MinimalDescriptor>>(
+export function useTabPlaceholders<
+  State extends NavigationState,
+  Descriptors extends Record<string, MinimalDescriptor>,
+>(
   state: State,
   descriptors: Descriptors,
   describe: Describe,
-  pathname: string | undefined,
   routeNamesToShow: readonly string[]
 ): [State, Descriptors] {
   return React.useMemo(() => {
@@ -53,7 +55,7 @@ export function useTabPlaceholders<State extends NavigationState, Descriptors ex
 
       // Placeholder route uses the key the router will assign at index 0, so the real route
       // reconciles onto it later.
-      const key = getRouteKey(pathname, name, 0);
+      const key = getRouteKey({ stateKey: state.key, name, index: 0 });
       const placeholderRoute: Route<string> = { key, name };
       orderedRoutes.push(placeholderRoute);
 
@@ -89,7 +91,7 @@ export function useTabPlaceholders<State extends NavigationState, Descriptors ex
     // `describe` is intentionally excluded: it's a fresh closure each render (no hit if included),
     // but it reads only `state`-derived data already in the deps, so excluding it is safe and keeps
     // the memo stable across unrelated re-renders.
-  }, [state, descriptors, pathname, routeNamesToShow]);
+  }, [state, descriptors, routeNamesToShow]);
 }
 
 // Placeholder screens render nothing; they only reserve the tab slot until the real route arrives.

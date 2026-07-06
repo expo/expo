@@ -174,10 +174,10 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('second')).toBeVisible();
     // Eager preload renders both tabs twice; order is preserved within each pass.
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)index$/);
-    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)second$/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)index:\d+$/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)second:\d+$/);
     expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)index$/);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)index:\d+$/);
   });
 
   it('index tab is focused when it is second tab', () => {
@@ -199,10 +199,10 @@ describe('First focused tab', () => {
     // self-healing preload re-adds it in one extra pass: 2 tabs x 3 passes. Order is preserved
     // within each pass.
     expect(TabsScreen).toHaveBeenCalledTimes(6);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)second$/);
-    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)index$/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)second:\d+$/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)index:\d+$/);
     expect(TabsHost).toHaveBeenCalledTimes(3);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)index$/);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)index:\d+$/);
   });
 
   describe('First tab is used, when index is hidden', () => {
@@ -286,10 +286,10 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('second')).toBeVisible();
     // Eager preload renders both tabs twice; order is preserved within each pass.
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)first$/);
-    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)second$/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)first:\d+$/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)second:\d+$/);
     expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)second$/);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)second:\d+$/);
   });
 
   it('Correct tab is shown, when index does not exist, redirect is set in layout and +not-found is specified', () => {
@@ -316,10 +316,10 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('second')).toBeVisible();
     // Eager preload renders both tabs twice; order is preserved within each pass.
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)first$/);
-    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)second$/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)first:\d+$/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)second:\d+$/);
     expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)second$/);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)second:\d+$/);
   });
 
   it('404 is shown, when index does not exist, redirect is set in layout and no +not-found is specified', () => {
@@ -376,10 +376,10 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('second')).toBeVisible();
     // Eager preload renders both tabs twice; order is preserved within each pass.
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)index$/);
-    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)second$/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)index:\d+$/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)second:\d+$/);
     expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)index$/);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)index:\d+$/);
 
     TabsScreen.mockClear();
     TabsHost.mockClear();
@@ -388,11 +388,11 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[2][0].screenKey).toMatch(/(^|-)index$/);
-    expect(TabsScreen.mock.calls[3][0].screenKey).toMatch(/(^|-)second$/);
+    expect(TabsScreen.mock.calls[2][0].screenKey).toMatch(/(^|:)index:\d+$/);
+    expect(TabsScreen.mock.calls[3][0].screenKey).toMatch(/(^|:)second:\d+$/);
     expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)index$/);
-    expect(TabsHost.mock.calls[1][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)second$/);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)index:\d+$/);
+    expect(TabsHost.mock.calls[1][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)second:\d+$/);
 
     TabsScreen.mockClear();
     TabsHost.mockClear();
@@ -403,11 +403,11 @@ describe('First focused tab', () => {
     expect(screen.queryByTestId('second')).toBeNull();
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|-)index$/);
-    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|-)index$/);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)index:\d+$/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)index:\d+$/);
     expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)index$/);
-    expect(TabsHost.mock.calls[1][0].navStateRequest.selectedScreenKey).toMatch(/(^|-)index$/);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)index:\d+$/);
+    expect(TabsHost.mock.calls[1][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)index:\d+$/);
   });
 });
 

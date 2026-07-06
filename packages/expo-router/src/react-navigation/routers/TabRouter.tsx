@@ -1,9 +1,7 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import type { StackActionType } from '../core';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
-import { getNextRouteKeyFromState, getRouteKey } from './getRouteKey';
+import { getNextRouteKeyFromState, getRouteKey, getStateKey } from './getRouteKey';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -237,10 +235,12 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
   > = {
     ...BaseRouter,
 
-    getInitialState({ routeNames, pathname, routeParamList }) {
+    getInitialState({ routeNames, parentRouteKey, routeParamList }) {
+      const key = getStateKey(parentRouteKey);
+
       const buildRoute = (name: string) => ({
         name,
-        key: getRouteKey(pathname, name),
+        key: getRouteKey({ stateKey: key, name }),
         params: routeParamList[name],
       });
 
@@ -255,19 +255,21 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
 
       return {
         stale: false,
-        key: `tab-${nanoid()}`,
+        key,
         index,
         routeNames,
         routes,
       };
     },
 
-    getRehydratedState(partialState, { routeNames, pathname, routeParamList }) {
+    getRehydratedState(partialState, { routeNames, parentRouteKey, routeParamList }) {
       const state = partialState;
 
       if (state.stale === false) {
         return state;
       }
+
+      const key = getStateKey(parentRouteKey);
 
       const partialRoutes = (state as PartialState<TabNavigationState<ParamListBase>>).routes;
 
@@ -275,7 +277,10 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
         ({
           ...route,
           name,
-          key: route && route.name === name && route.key ? route.key : getRouteKey(pathname, name),
+          key:
+            route && route.name === name && route.key
+              ? route.key
+              : getRouteKey({ stateKey: key, name }),
           params:
             routeParamList[name] !== undefined
               ? {
@@ -308,7 +313,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           initialRouteName,
           (name) => buildRoute(name, undefined)
         );
-        return { stale: false, key: `tab-${nanoid()}`, index, routeNames, routes };
+        return { stale: false, key, index, routeNames, routes };
       }
 
       const persistedFocusedName = partialRoutes[state?.index ?? 0]?.name;
@@ -339,14 +344,14 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
 
       return {
         stale: false,
-        key: `tab-${nanoid()}`,
+        key,
         index,
         routeNames,
         routes,
       };
     },
 
-    getStateForRouteNamesChange(state, { routeNames, pathname, routeParamList, routeKeyChanges }) {
+    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
       const seen = new Set<string>();
       const rebuilt: Route<string>[] = [];
 
@@ -370,7 +375,11 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           routeNames,
           backBehavior,
           initialRouteName,
-          (name) => ({ name, key: getRouteKey(pathname, name), params: routeParamList[name] })
+          (name) => ({
+            name,
+            key: getRouteKey({ stateKey: state.key, name }),
+            params: routeParamList[name],
+          })
         );
         return { ...state, routeNames, routes, index };
       }
@@ -411,7 +420,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       return { ...state, routes, index };
     },
 
-    getStateForAction(state, action, { routeNames, pathname, routeParamList, routeGetIdList }) {
+    getStateForAction(state, action, { routeNames, routeParamList, routeGetIdList }) {
       switch (action.type) {
         case 'JUMP_TO':
         case 'NAVIGATE':
@@ -431,7 +440,11 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
             ? state.routes[index]!
             : {
                 name: action.payload.name,
-                key: getNextRouteKeyFromState(pathname, action.payload.name, state),
+                key: getNextRouteKeyFromState({
+                  stateKey: state.key,
+                  name: action.payload.name,
+                  state,
+                }),
                 params: routeParamList[action.payload.name],
               };
           const fromIndex = existed ? index : state.routes.length;
@@ -447,7 +460,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           const key =
             currentId === nextId
               ? route.key
-              : getNextRouteKeyFromState(pathname, route.name, state);
+              : getNextRouteKeyFromState({ stateKey: state.key, name: route.name, state });
 
           let params;
 
@@ -477,6 +490,12 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
             params !== route.params || path !== route.path || key !== route.key
               ? { ...route, key, path, params }
               : route;
+
+          // A changed key means a fresh identity, so any retained nested state belongs to the old
+          // identity — drop it so the subtree remounts clean (and a re-minted key can't land on it).
+          if (updatedRoute !== route && key !== route.key) {
+            delete (updatedRoute as { state?: unknown }).state;
+          }
 
           if (existed && updatedRoute === route && index === state.index) {
             return state;
@@ -528,7 +547,11 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
             const params = createParamsFromAction({ action, routeParamList });
             const newRoute: Route<string> = {
               name: action.payload.name,
-              key: getNextRouteKeyFromState(pathname, action.payload.name, state),
+              key: getNextRouteKeyFromState({
+                stateKey: state.key,
+                name: action.payload.name,
+                state,
+              }),
               params,
             };
 
@@ -551,10 +574,16 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           const key =
             currentId === nextId
               ? route.key
-              : getNextRouteKeyFromState(pathname, route.name, state);
+              : getNextRouteKeyFromState({ stateKey: state.key, name: route.name, state });
 
           const params = createParamsFromAction({ action, routeParamList });
           const newRoute = params !== route.params ? { ...route, key, params } : route;
+
+          // A changed key means a fresh identity, so any retained nested state belongs to the old
+          // identity — drop it so the subtree remounts clean (and a re-minted key can't land on it).
+          if (newRoute !== route && key !== route.key) {
+            delete (newRoute as { state?: unknown }).state;
+          }
 
           if (newRoute === route) {
             return state;
@@ -588,7 +617,11 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           const params = createParamsFromAction({ action, routeParamList });
           const newRoute: Route<string> = {
             name: action.payload.name,
-            key: getNextRouteKeyFromState(pathname, action.payload.name, state),
+            key: getNextRouteKeyFromState({
+              stateKey: state.key,
+              name: action.payload.name,
+              state,
+            }),
             params,
           };
 

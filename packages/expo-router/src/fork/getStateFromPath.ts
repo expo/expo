@@ -4,7 +4,7 @@ import { INTERNAL_SLOT_NAME } from '../constants';
 import type { PathConfigMap } from '../react-navigation/native';
 import { validatePathConfig } from '../react-navigation/native';
 import type { InitialState } from '../react-navigation/routers';
-import { getRouteKey } from '../react-navigation/routers/getRouteKey';
+import { getRouteKey, getStateKey } from '../react-navigation/routers/getRouteKey';
 import { findFocusedRoute } from './findFocusedRoute';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 import * as expo from './getStateFromPath-forks';
@@ -649,21 +649,6 @@ const findInitialRoute = (
 // `screens`/`initialRouteName`). Typed loosely because the linking config is untyped internally.
 type ScreenConfigMap = Record<string, any>;
 
-// A navigator's key is deterministic and kind-free: its own `pathname` (contextKey) in the route
-// tree. The root container has no pathname; app/_layout's pathname is '' — both get stable
-// sentinels. Live navigators still mint random `stack-`/`tab-` state keys; reconciling compiled and
-// live state keys is a later step. Route keys, by contrast, already match live via `getRouteKey`.
-function getStateKey(pathname: string | undefined): string {
-  return pathname === undefined ? 'navigator' : `navigator${pathname || '/'}`;
-}
-
-// Pathname (contextKey) of the child navigator nested under route `name`. Mirrors `getContextKey`:
-// the container is `undefined`, its immediate child is '', and deeper levels append '/' + the route
-// name. Route names may contain slashes, which reproduces the contextKey exactly.
-function childPathname(pathname: string | undefined, name: string): string {
-  return pathname === undefined ? '' : `${pathname}/${name}`;
-}
-
 function getChildScreens(
   screens: ScreenConfigMap | undefined,
   name: string
@@ -706,14 +691,16 @@ function pickDefaultChild(screens: ScreenConfigMap, ownInitialRouteName?: string
 }
 
 // Build a route entry, and — when it is a navigator — its complete default subtree down to a leaf.
-// Used for declared anchors: back (index--) must never land on a hollow route.
+// Used for declared anchors: back (index--) must never land on a hollow route. `stateKey` is the
+// key of the navigator this route lives in; the route's own key is minted from it, and its child
+// navigator's state key is derived from that route key (see `getStateKey`).
 function buildRouteWithDefaultSubtree(
   name: string,
   screens: ScreenConfigMap | undefined,
-  pathname: string | undefined,
+  stateKey: string,
   params: Record<string, any> | undefined
 ): CompleteRoute {
-  const route: CompleteRoute = { key: getRouteKey(pathname, name), name };
+  const route: CompleteRoute = { key: getRouteKey({ stateKey, name }), name };
   if (params) {
     route.params = params;
   }
@@ -722,13 +709,13 @@ function buildRouteWithDefaultSubtree(
   if (childScreens) {
     const ownInitial = screens?.[name]?.initialRouteName as string | undefined;
     const childName = pickDefaultChild(childScreens, ownInitial);
-    const childPath = childPathname(pathname, name);
+    const childStateKey = getStateKey(route.key);
     route.state = {
       stale: false,
-      key: getStateKey(childPath),
+      key: childStateKey,
       index: 0,
       routeNames: levelRouteNames(childScreens, [childName]),
-      routes: [buildRouteWithDefaultSubtree(childName, childScreens, childPath, params)],
+      routes: [buildRouteWithDefaultSubtree(childName, childScreens, childStateKey, params)],
     };
   }
 
@@ -736,19 +723,21 @@ function buildRouteWithDefaultSubtree(
 }
 
 // Build the complete state for the matched route chain, threading the nested screens config and the
-// navigator pathname down each level. Every level gets `stale: false`, a deterministic key, explicit
+// parent route key down each level. Every level derives its state key from the parent route key
+// (see `getStateKey`) — matching what the live reducers mint — then gets `stale: false`, explicit
 // `index`, full sibling `routeNames`, and declared anchors materialized as complete branches.
 const buildStateForChain = (
   chain: ParsedRoute[],
   screens: ScreenConfigMap | undefined,
-  pathname: string | undefined,
+  parentRouteKey: string | undefined,
   parentScreens: string[],
   initialRoutes: InitialRouteConfig[]
 ): CompleteResultState => {
   const focused = chain[0]!;
+  const stateKey = getStateKey(parentRouteKey);
 
   const focusedRoute: CompleteRoute = {
-    key: getRouteKey(pathname, focused.name),
+    key: getRouteKey({ stateKey, name: focused.name }),
     name: focused.name,
   };
   if (focused.params) {
@@ -759,7 +748,7 @@ const buildStateForChain = (
     focusedRoute.state = buildStateForChain(
       chain.slice(1),
       getChildScreens(screens, focused.name),
-      childPathname(pathname, focused.name),
+      focusedRoute.key,
       [...parentScreens, focused.name],
       initialRoutes
     );
@@ -771,7 +760,7 @@ const buildStateForChain = (
   let index: number;
   if (initialRouteName) {
     routes = [
-      buildRouteWithDefaultSubtree(initialRouteName, screens, pathname, focused.params),
+      buildRouteWithDefaultSubtree(initialRouteName, screens, stateKey, focused.params),
       focusedRoute,
     ];
     index = 1;
@@ -782,7 +771,7 @@ const buildStateForChain = (
 
   return {
     stale: false,
-    key: getStateKey(pathname),
+    key: stateKey,
     index,
     routeNames: levelRouteNames(
       screens,

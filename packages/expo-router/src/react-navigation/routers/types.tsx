@@ -123,11 +123,11 @@ export type RouterFactory<
 export type RouterConfigOptions = {
   routeNames: string[];
   /**
-   * The navigator's location in the route tree (its contextKey, e.g. `/(tabs)`). Used to derive
-   * deterministic route keys via `getRouteKey`. `useNavigationBuilder` supplies it to every router;
-   * `undefined` outside a route boundary (keys then fall back to name-only).
+   * The key of the route this navigator renders under (its parent route key). The navigator derives
+   * its own state key from it via `getStateKey`, and all its route keys from that. `useNavigationBuilder`
+   * supplies it to every router; `undefined` at the root container, which yields the `navigator` sentinel.
    */
-  pathname: string | undefined;
+  parentRouteKey: string | undefined;
   routeParamList: ParamListBase;
   routeGetIdList: Record<
     string,

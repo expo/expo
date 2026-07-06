@@ -82,8 +82,8 @@ export function useNavigationHelpers<
         return (
           router.getStateForAction(state, CommonActions.goBack() as Action, {
             routeNames: state.routeNames,
-            // goBack never creates routes, so the key-deriving pathname is irrelevant here.
-            pathname: undefined,
+            // goBack never creates routes, so the key-deriving parentRouteKey is irrelevant here.
+            parentRouteKey: undefined,
             routeParamList: {},
             routeGetIdList: {},
           }) !== null ||
@@ -101,7 +101,7 @@ export function useNavigationHelpers<
         return (
           router.getStateForAction(state, StackActions.pop(1) as Action, {
             routeNames: state.routeNames,
-            pathname: undefined,
+            parentRouteKey: undefined,
             routeParamList: {},
             routeGetIdList: {},
           }) !== null ||
