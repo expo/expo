@@ -877,6 +877,11 @@ module Expo
         installer.pods_project.targets.each do |target|
           target.build_configurations.each do |config|
             existing = config.build_settings['HEADER_SEARCH_PATHS'] || '$(inherited)'
+            # HEADER_SEARCH_PATHS may be an Array (e.g. after React Native's own
+            # per-target header path merge). Interpolating an Array serializes it
+            # as '["$(inherited)", ...]' which Xcode treats as junk paths and
+            # shadows the pod xcconfig. Join to a space-separated string first.
+            existing = existing.join(' ') if existing.is_a?(Array)
             unless existing.include?(paths_string)
               config.build_settings['HEADER_SEARCH_PATHS'] = "#{existing} #{paths_string}"
             end

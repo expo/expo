@@ -19,6 +19,7 @@
 - [iOS] Respect an explicit `ios.usePrecompiledModules: false` even when `EXPO_USE_PRECOMPILED_MODULES` is already set in the environment (e.g. EAS Build). ([#46983](https://github.com/expo/expo/pull/46983) by [@ryanda9910](https://github.com/ryanda9910))
 - [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.5.0`'s generated component and native view sources. ([#47201](https://github.com/expo/expo/pull/47201) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Add the missing `ENABLE_CROSS_RUNTIME_STACK_TRACES` flag to the `react-native-worklets` precompile config so its prebuilt XCFramework matches the package's `staticFlags.json`. ([#47478](https://github.com/expo/expo/pull/47478) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix corrupted `HEADER_SEARCH_PATHS` (stringified Ruby Array) written into every target's build settings by the precompiled modules post-install hook on React Native 0.86. ([#47552](https://github.com/expo/expo/pull/47552) by [@ahmetberkincoglu](https://github.com/ahmetberkincoglu))
 
 ### 💡 Others
 
