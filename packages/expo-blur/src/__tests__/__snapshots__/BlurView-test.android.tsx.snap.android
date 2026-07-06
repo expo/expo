@@ -22,6 +22,18 @@ exports[`passes radius styles to the native blur view 1`] = `
   <ViewManagerAdapter_ExpoBlur
     blurMethod="none"
     blurReductionFactor={4}
+    borderRadii={
+      [
+        8,
+        8,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+      ]
+    }
     intensity={80}
     style={
       [

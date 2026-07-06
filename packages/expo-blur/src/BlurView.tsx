@@ -12,6 +12,10 @@ type BlurViewState = {
   blurTargetId?: number | null;
 };
 
+type AndroidBlurViewProps = {
+  borderRadii?: number[];
+};
+
 const nativeBlurViewRadiusStyleKeys = [
   'borderBottomEndRadius',
   'borderBottomLeftRadius',
@@ -104,10 +108,15 @@ export default class BlurView extends React.Component<BlurViewProps, BlurViewSta
     const nativeBlurViewStyle = nativeBlurViewRadiusStyle
       ? [StyleSheet.absoluteFill, nativeBlurViewRadiusStyle]
       : StyleSheet.absoluteFill;
+    const androidBlurViewProps: AndroidBlurViewProps =
+      Platform.OS === 'android' && nativeBlurViewRadiusStyle
+        ? { borderRadii: getAndroidBlurViewBorderRadii(nativeBlurViewRadiusStyle) }
+        : {};
 
     return (
       <View {...props} style={[styles.container, style]}>
         <NativeBlurView
+          {...androidBlurViewProps}
           blurTargetId={this.state.blurTargetId}
           ref={this.blurViewRef}
           tint={tint}
@@ -149,6 +158,29 @@ function getNativeBlurViewRadiusStyle(style: BlurViewProps['style']): ViewStyle 
 
   radiusStyle.overflow = 'hidden';
   return radiusStyle;
+}
+
+function getAndroidBlurViewBorderRadii(style: ViewStyle): number[] {
+  const borderRadius = getRadiusValue(style.borderRadius) ?? 0;
+  const borderTopLeftRadius = getRadiusValue(style.borderTopLeftRadius) ?? borderRadius;
+  const borderTopRightRadius = getRadiusValue(style.borderTopRightRadius) ?? borderRadius;
+  const borderBottomRightRadius = getRadiusValue(style.borderBottomRightRadius) ?? borderRadius;
+  const borderBottomLeftRadius = getRadiusValue(style.borderBottomLeftRadius) ?? borderRadius;
+
+  return [
+    borderTopLeftRadius,
+    borderTopLeftRadius,
+    borderTopRightRadius,
+    borderTopRightRadius,
+    borderBottomRightRadius,
+    borderBottomRightRadius,
+    borderBottomLeftRadius,
+    borderBottomLeftRadius,
+  ];
+}
+
+function getRadiusValue(value: ViewStyle[keyof ViewStyle]): number | undefined {
+  return typeof value === 'number' ? value : undefined;
 }
 
 const styles = StyleSheet.create({
