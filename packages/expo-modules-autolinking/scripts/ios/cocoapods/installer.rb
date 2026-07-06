@@ -149,9 +149,11 @@ module Pod
           required.each do |key, info|
             current = config.build_settings[key]
             # nil means the pod doesn't target this platform — don't create a setting for it.
-            # Empty string or an xcconfig reference (e.g. `$(inherited)`) means we can't
-            # compare versions, so leave it alone.
-            next if current.nil? || current.empty? || current.start_with?('$')
+            # Empty string, an xcconfig reference (e.g. `$(inherited)`), or a malformed
+            # value written by another post_install hook means we can't compare versions,
+            # so leave it alone.
+            next if current.nil? || current.empty?
+            next unless Gem::Version.correct?(current)
             next unless Gem::Version.new(current) < Gem::Version.new(info[:version])
             config.build_settings[key] = info[:version]
             bumped_platforms << info[:label] unless bumped_platforms.include?(info[:label])
@@ -183,6 +185,7 @@ module Pod
       ]
 
       bumped = [] # names of bumped resource bundle targets
+      dirty_projects = Set.new
       self.target_installation_results.pod_target_installation_results.each_value do |result|
         library_settings_by_config = result.native_target.build_configurations
           .map { |config| [config.name, config.build_settings] }
@@ -197,12 +200,14 @@ module Pod
               current = config.build_settings[key]
               effective = library_settings[key]
               # nil means the target doesn't build for that platform. Empty
-              # strings and xcconfig references (e.g. `$(inherited)`) can't be
-              # compared as versions, so leave those alone.
-              next if current.nil? || current.empty? || current.start_with?('$')
-              next if effective.nil? || effective.empty? || effective.start_with?('$')
+              # strings, xcconfig references (e.g. `$(inherited)`), and
+              # malformed values written by another post_install hook can't
+              # be compared as versions, so leave those alone.
+              next if current.nil? || current.empty? || effective.nil? || effective.empty?
+              next unless Gem::Version.correct?(current) && Gem::Version.correct?(effective)
               next unless Gem::Version.new(current) < Gem::Version.new(effective)
               config.build_settings[key] = effective
+              dirty_projects << bundle_target.project
               bumped << bundle_target.name unless bumped.include?(bundle_target.name)
             end
           end
@@ -211,7 +216,10 @@ module Pod
 
       unless bumped.empty?
         Pod::UI.puts "[Expo] ".blue + "Raised resource bundle deployment targets to match their pods: #{bumped.join(', ')}".yellow
-        self.pods_project.save
+        # Save every project that owns a bumped bundle target; with the
+        # `generate_multiple_pod_projects` install option those are per-pod
+        # projects rather than `pods_project`.
+        dirty_projects.each(&:save)
       end
     end
 
