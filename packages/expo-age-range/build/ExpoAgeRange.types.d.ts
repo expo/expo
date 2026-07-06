@@ -23,11 +23,14 @@ export type AgeRangeResponse = {
     /** The upper limit of the person’s age range. */
     upperBound: number | null;
     /**
-     * Indicates whether the age range was declared by the user themselves or someone else (parent, guardian, or Family Organizer in a Family Sharing group).
+     * Indicates how the age range was declared:
+     * - `'selfDeclared'` — declared by the user themselves.
+     * - `'guardianDeclared'` — declared by someone else (parent, guardian, or Family Organizer in a Family Sharing group).
+     * - `'confirmed'` — confirmed by the system (for example, verified against a government ID or payment method). Only reported on iOS 26.5+.
      *
      * @platform ios
      */
-    ageRangeDeclaration?: 'selfDeclared' | 'guardianDeclared' | null;
+    ageRangeDeclaration?: 'selfDeclared' | 'guardianDeclared' | 'confirmed' | null;
     /**
      * List of parental controls enabled and shared as a part of age range declaration.
      *
