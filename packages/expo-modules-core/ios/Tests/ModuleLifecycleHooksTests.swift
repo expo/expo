@@ -11,20 +11,43 @@ private final class LifecycleHooksModule: Module {
   var startedListeningEvents: [String] = []
   var stoppedListeningEvents: [String] = []
 
-  func didCreate() {
+  override func didCreate() {
     didCreateCalls += 1
   }
 
-  func willDestroy() {
+  override func willDestroy() {
     willDestroyCalls += 1
   }
 
-  func didStartListening(event: String) {
+  override func didStartListening(event: String) {
     startedListeningEvents.append(event)
   }
 
-  func didStopListening(event: String) {
+  override func didStopListening(event: String) {
     stoppedListeningEvents.append(event)
+  }
+}
+
+/// A base class that conforms to `Module` but doesn't implement any lifecycle hooks.
+private class EmptyBaseModule: Module {}
+
+/// A module that inherits the `Module` conformance from its base class and adds a hook itself.
+private final class SubclassedLifecycleModule: EmptyBaseModule {
+  var didCreateCalls: Int = 0
+
+  override func didCreate() {
+    didCreateCalls += 1
+  }
+}
+
+/// A macro module that doesn't inherit `Module`, so it conforms to `AnyModule`
+/// through the extension added by the `@ExpoModule` macro.
+@ExpoModule
+private final class MacroLifecycleModule {
+  var didCreateCalls: Int = 0
+
+  func didCreate() {
+    didCreateCalls += 1
   }
 }
 
@@ -51,6 +74,20 @@ private struct ModuleLifecycleHooksTests {
   }
 
   @Test
+  func `calls didCreate on a module that inherits the conformance from its base class`() {
+    let module = SubclassedLifecycleModule(appContext: appContext)
+    appContext.moduleRegistry.register(module: module, name: nil)
+    #expect(module.didCreateCalls == 1)
+  }
+
+  @Test
+  func `calls didCreate on a macro module that doesn't inherit the Module class`() {
+    let module = MacroLifecycleModule(appContext: appContext)
+    appContext.moduleRegistry.register(module: module, name: nil)
+    #expect(module.didCreateCalls == 1)
+  }
+
+  @Test
   func `calls willDestroy once the module is about to be deallocated`() {
     let module = LifecycleHooksModule(appContext: appContext)
     appContext.moduleRegistry.register(module: module, name: nil)
@@ -63,7 +100,8 @@ private struct ModuleLifecycleHooksTests {
   func `calls didStartListening when the first listener is added`() throws {
     let module = LifecycleHooksModule(appContext: appContext)
     appContext.moduleRegistry.register(module: module, name: nil)
-    try runtime.eval("""
+    try runtime.eval(
+      """
       module = expo.modules.LifecycleHooksModule
       module.addListener('testEvent', () => {})
       module.addListener('testEvent', () => {})
@@ -76,7 +114,8 @@ private struct ModuleLifecycleHooksTests {
   func `calls didStopListening when the last listener is removed`() throws {
     let module = LifecycleHooksModule(appContext: appContext)
     appContext.moduleRegistry.register(module: module, name: nil)
-    try runtime.eval("""
+    try runtime.eval(
+      """
       module = expo.modules.LifecycleHooksModule
       listenerA = () => {}
       listenerB = () => {}
@@ -93,7 +132,8 @@ private struct ModuleLifecycleHooksTests {
   func `tracks listened events separately`() throws {
     let module = LifecycleHooksModule(appContext: appContext)
     appContext.moduleRegistry.register(module: module, name: nil)
-    try runtime.eval("""
+    try runtime.eval(
+      """
       module = expo.modules.LifecycleHooksModule
       module.addListener('eventA', () => {})
       module.addListener('eventB', () => {})

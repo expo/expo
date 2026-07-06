@@ -71,19 +71,17 @@ extension AnyModule {
     // No-op by default — only `@ExpoModule`-macro modules synthesize a real implementation.
   }
 
-  public func didCreate() {
-    // No-op by default, modules can provide their own implementation.
-  }
+  // No-op defaults of the lifecycle hooks for modules that conform without inheriting
+  // `BaseModule`, e.g. plain `@ExpoModule` classes whose conformance comes from the macro's
+  // extension. These defaults are statically bound into the conformance witness, so
+  // `BaseModule` descendants are backed by its dynamically-dispatched open methods instead,
+  // which take precedence during witness resolution.
 
-  public func willDestroy() {
-    // No-op by default, modules can provide their own implementation.
-  }
+  public func didCreate() {}
 
-  public func didStartListening(event: String) {
-    // No-op by default, modules can provide their own implementation.
-  }
+  public func willDestroy() {}
 
-  public func didStopListening(event: String) {
-    // No-op by default, modules can provide their own implementation.
-  }
+  public func didStartListening(event: String) {}
+
+  public func didStopListening(event: String) {}
 }
