@@ -3,7 +3,12 @@ import path from 'path';
 import LayoutFixture from './fixtures/context-stubs/_layout';
 import IndexFixture from './fixtures/context-stubs/index';
 import NestedRouteFixture from './fixtures/context-stubs/nested/route';
-import { normalizeKeys, requireContextWithOverrides } from '../testing-library/context-stubs';
+import {
+  findDuplicateKeys,
+  normalizeKey,
+  normalizeKeys,
+  requireContextWithOverrides,
+} from '../testing-library/context-stubs';
 
 const appDir = path.join(__dirname, 'fixtures', 'context-stubs');
 
@@ -11,24 +16,49 @@ function MockLayout() {
   return null;
 }
 
-describe('normalizeKeys', () => {
-  it('maps require-context keys to extension-free, prefix-free keys', () => {
-    expect(normalizeKeys(['./_layout.tsx', './index.tsx', './nested/route.tsx'])).toEqual(
-      new Map([
-        ['_layout', './_layout.tsx'],
-        ['index', './index.tsx'],
-        ['nested/route', './nested/route.tsx'],
-      ])
-    );
+describe('normalizeKey', () => {
+  it('strips the leading `./` and a valid extension', () => {
+    expect(normalizeKey('./_layout.tsx')).toBe('_layout');
+    expect(normalizeKey('./index.jsx')).toBe('index');
+    expect(normalizeKey('./nested/route.ts')).toBe('nested/route');
   });
 
   it('leaves keys without a valid extension untouched', () => {
-    expect(normalizeKeys(['./modal'])).toEqual(new Map([['modal', './modal']]));
+    expect(normalizeKey('./modal')).toBe('modal');
+    expect(normalizeKey('modal')).toBe('modal');
+  });
+
+  it('only strips the final extension segment', () => {
+    expect(normalizeKey('./index.web.tsx')).toBe('index.web');
+  });
+});
+
+describe('findDuplicateKeys', () => {
+  it('returns an empty array when all keys are unique', () => {
+    expect(findDuplicateKeys(['_layout', 'index', 'nested/route'])).toEqual([]);
+  });
+
+  it('returns the duplicated keys', () => {
+    expect(findDuplicateKeys(['index', 'index', '_layout'])).toEqual(['index']);
+  });
+});
+
+describe('normalizeKeys', () => {
+  it('maps require-context keys to extension-free, prefix-free keys', () => {
+    expect(normalizeKeys(['./_layout.tsx', './index.tsx', './nested/route.tsx'])).toEqual({
+      _layout: './_layout.tsx',
+      index: './index.tsx',
+      'nested/route': './nested/route.tsx',
+    });
+  });
+
+  it('leaves keys without a valid extension untouched', () => {
+    expect(normalizeKeys(['./modal'])).toEqual({ modal: './modal' });
   });
 
   it('throws when multiple files resolve to the same normalized key', () => {
     expect(() => normalizeKeys(['./index.jsx', './index.tsx'])).toThrow(
-      'Multiple files resolve to the same route "index": "./index.jsx" and "./index.tsx".'
+      'Multiple routes resolved to the same route: index'
     );
   });
 });

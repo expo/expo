@@ -44,49 +44,47 @@ export function inMemoryContext(context: MemoryContext) {
   );
 }
 
+export function normalizeKey(key: string): string {
+  const withoutPrefix = key.replace(/^\.\//, '');
+  const ext = path.extname(withoutPrefix);
+  return validExtensions.includes(ext) ? withoutPrefix.slice(0, -ext.length) : withoutPrefix;
+}
+
+export function findDuplicateKeys(normalizedKeys: readonly string[]): string[] {
+  return normalizedKeys.filter(
+    (normalizedKey, index) => normalizedKeys.indexOf(normalizedKey) !== index
+  );
+}
+
 /**
  * Maps `requireContext` keys (`./name.ext`) to the extension-free, prefix-free
  * form used by `inMemoryContext` override keys (e.g. `_layout`, `nested/route`).
  *
- * The returned map is keyed by the normalized key and holds the original
+ * The returned record is keyed by the normalized key and holds the original
  * require-context key, allowing overrides to be resolved back to the id they
  * replace. When two files normalize to the same key (e.g. both `index.jsx` and
  * `index.tsx`), it throws, matching the ambiguity `requireContext` cannot
  * represent.
  */
-export function normalizeKeys(keys: string[]): Map<string, string> {
-  const normalized = new Map<string, string>();
-  for (const key of keys) {
-    const withoutPrefix = key.replace(/^\.\//, '');
-    const ext = path.extname(withoutPrefix);
-    const normalizedKey = validExtensions.includes(ext)
-      ? withoutPrefix.slice(0, withoutPrefix.length - ext.length)
-      : withoutPrefix;
-
-    const existing = normalized.get(normalizedKey);
-    if (existing !== undefined) {
-      throw new Error(
-        `Multiple files resolve to the same route "${normalizedKey}": "${existing}" and "${key}". Remove or rename one of these files.`
-      );
-    }
-    normalized.set(normalizedKey, key);
+export function normalizeKeys(keys: string[]): Record<string, string> {
+  const normalizedKeys = keys.map(normalizeKey);
+  const duplicateKeys = findDuplicateKeys(normalizedKeys);
+  if (duplicateKeys.length > 0) {
+    throw new Error(`Multiple routes resolved to the same route: ${duplicateKeys.join(', ')}`);
   }
-  return normalized;
+  return Object.fromEntries(keys.map((key) => [normalizeKey(key), key]));
 }
 
 export function requireContextWithOverrides(dir: string, overrides: MemoryContext) {
   const existingContext = requireContext(path.resolve(process.cwd(), dir));
 
-  // Normalize the existing context keys so they align with the extension-free
-  // override keys documented for `inMemoryContext` (e.g. `_layout`). This also
-  // surfaces ambiguous files (e.g. both `index.jsx` and `index.tsx`) up front.
   const normalizedExistingKeys = normalizeKeys(existingContext.keys());
 
   // Resolve each override to the require-context id it replaces, falling back to
   // `./name` for overrides that introduce a file not present in `dir`.
   const overridesByContextKey = new Map<string, FileStub | NativeIntentStub>();
   for (const [key, value] of Object.entries(overrides)) {
-    const contextKey = normalizedExistingKeys.get(key) ?? `./${key}`;
+    const contextKey = normalizedExistingKeys[key] ?? `./${key}`;
     overridesByContextKey.set(contextKey, value);
   }
 
