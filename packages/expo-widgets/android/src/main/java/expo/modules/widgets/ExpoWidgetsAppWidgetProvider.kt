@@ -12,11 +12,9 @@ open class ExpoWidgetsAppWidgetProvider(
 
   override fun onReceive(context: Context, intent: Intent) {
     if (intent.action == WIDGET_INTERACTION_ACTION) {
-      val source = intent.getStringExtra(WIDGET_INTERACTION_SOURCE_EXTRA)
-      val target = intent.getStringExtra(WIDGET_INTERACTION_TARGET_EXTRA)
-      if (source != null && target != null) {
-        WidgetsInteraction.handle(context.applicationContext, source, target)
-      }
+      val source = intent.getStringExtra(WIDGET_INTERACTION_SOURCE_EXTRA) ?: return
+      val target = intent.getStringExtra(WIDGET_INTERACTION_TARGET_EXTRA) ?: return
+      WidgetsInteraction.handle(context.applicationContext, source, target)
       return
     }
 
