@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Under precompiled modules, preserve a dynamic-framework subgraph set up by an earlier `pre_install` hook (e.g. `@rnmapbox/maps`) — both the dynamic frameworks and the pods that link against them — instead of forcing them back to static libraries. ([#47500](https://github.com/expo/expo/pull/47500) by [@kudo](https://github.com/kudo))
+- [iOS] Raise resource bundle targets to their pod's effective deployment target, fixing builds failing on Xcode 27 for pods whose podspec declares a deployment target below iOS 15.0 (e.g. `ReachabilitySwift`). ([#47562](https://github.com/expo/expo/pull/47562) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
