@@ -13,3 +13,5 @@ export {
   LocationGeofencingEventType as GeofencingEventType,
   LocationGeofencingRegionState as GeofencingRegionState,
 } from './Location.types';
+
+export { testF, GetCurrentLocation } from './next/ExpoLocationNext';
