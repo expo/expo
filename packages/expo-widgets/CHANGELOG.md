@@ -18,6 +18,7 @@
 - [Android] Implement widgets. ([#46961](https://github.com/expo/expo/pull/46961) by [@jakex7](https://github.com/jakex7))
 - [Android] Support interactions. ([#47035](https://github.com/expo/expo/pull/47035) by [@jakex7](https://github.com/jakex7))
 - [iOS][plugin] Fix extension `CFBundleVersion` sync. ([#47061](https://github.com/expo/expo/pull/47061) by [@jakex7](https://github.com/jakex7))
+- [iOS] Changing widget configuration at runtime. ([#47533](https://github.com/expo/expo/pull/47533) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
