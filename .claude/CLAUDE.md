@@ -1,14 +1,12 @@
-## Rules
-
-- **Package manager:** this is a pnpm workspace. Use `pnpm` for installing, running scripts, and
-  managing dependencies; **NEVER** use `npm` or `yarn`. Run `pnpm install` at the repo root.
-
 ## Repository layout
 
-- `packages/`: the Expo SDK packages, each with its own `CHANGELOG.md`.
+This is a pnpm workspace. Use `pnpm` for installing, running scripts, and managing dependencies;
+**NEVER** use `npm` or `yarn`. Run `pnpm install` at the repo root.
+
+- `packages/`: the Expo SDK packages, most with their own `CHANGELOG.md`.
 - `apps/`: development and test apps: `bare-expo` (manual testing of packages), `native-tests`
   (host app for native unit tests), `native-component-list` (component demos), `test-suite`
-  (JS test suite), `expo-go`.
+  (JS test suite), `expo-go` (the Expo Go app).
 - `tools/`: source of the `expotools` CLI (see the expotools section below).
 - `docs/`: the docs site (docs.expo.dev).
 - `templates/`: project templates published to npm.
@@ -60,9 +58,9 @@ for the full guide.
 
 ### Where the entry goes
 
-Add a bullet under the `## Unpublished` heading, inside the category matching the change.
-**ALWAYS** append it at the end of the category, after the existing entries: the order of changes
-sometimes matters.
+Add a bullet under the `## Unpublished` heading, inside the category matching the change; create
+the category heading if it's missing. **ALWAYS** append the entry at the end of the category,
+after the existing entries: the order of changes sometimes matters.
 
 - `🛠 Breaking changes`: API changes that require users to update their code or configuration
   (major bump).
