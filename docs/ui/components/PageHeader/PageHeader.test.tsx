@@ -132,4 +132,44 @@ describe(PageHeader, () => {
     );
     expect(linkElement.getAttribute('aria-label')).toEqual('Edit content of this page on GitHub');
   });
+
+  test('hides markdown actions on the hydration render even when the URL has a version pair', () => {
+    renderWithTestRouter(<PageHeader title="Upgrade native project" />, {
+      pathname: '/bare/upgrade',
+      asPath: '/bare/upgrade/?fromSdk=56&toSdk=57',
+      isReady: false,
+    });
+
+    expect(screen.queryAllByText('Copy page')).toHaveLength(0);
+  });
+
+  test('shows markdown actions once the router is ready with a version pair', () => {
+    renderWithTestRouter(<PageHeader title="Upgrade native project" />, {
+      pathname: '/bare/upgrade',
+      asPath: '/bare/upgrade/?fromSdk=56&toSdk=57',
+      isReady: true,
+    });
+
+    expect(screen.queryAllByText('Copy page').length).toBeGreaterThan(0);
+  });
+
+  test('keeps markdown actions hidden on the upgrade helper without a version pair', () => {
+    renderWithTestRouter(<PageHeader title="Upgrade native project" />, {
+      pathname: '/bare/upgrade',
+      asPath: '/bare/upgrade/',
+      isReady: true,
+    });
+
+    expect(screen.queryAllByText('Copy page')).toHaveLength(0);
+  });
+
+  test('shows markdown actions on regular pages during the hydration render', () => {
+    renderWithTestRouter(<PageHeader title="Overview" />, {
+      pathname: '/guides/overview',
+      asPath: '/guides/overview/',
+      isReady: false,
+    });
+
+    expect(screen.queryAllByText('Copy page').length).toBeGreaterThan(0);
+  });
 });
