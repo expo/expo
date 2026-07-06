@@ -18,6 +18,7 @@
 - Vendor `msgpackr` dependency to remove `msgpackr-extract` postinstall warning ([#46676](https://github.com/expo/expo/pull/46676) by [@kitten](https://github.com/kitten))
 - [Internal] Deduplicate find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
 - [Internal] Pass through the `media` query of `css-external` assets in metadata ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
+- Add `woff` and `woff2` to default list of `assetExts` ([#47565](https://github.com/expo/expo/pull/47565) by [@kitten](https://github.com/kitten))
 
 ## 56.0.13 — 2026-05-26
 
