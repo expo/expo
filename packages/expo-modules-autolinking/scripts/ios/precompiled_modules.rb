@@ -205,7 +205,26 @@ module Expo
 
         pods_to_downgrade = Set.new(installer.podfile.framework_modules_to_patch)
 
+        # Pods an earlier pre_install hook already switched to dynamic frameworks —
+        # e.g. @rnmapbox/maps flips its Mapbox binary pods (MapboxCommon,
+        # MapboxCoreMaps, MapboxMaps, Turf) to dynamic. Forcing these back to static
+        # breaks that required linkage and makes CocoaPods abort with "transitive
+        # dependencies that include statically linked binaries".
+        # `build_type` is a private reader on Pod::Target, so read it via `send`;
+        # hooks that override it define a public method, which `send` resolves too.
+        dynamic_framework_pods = installer.pod_targets
+          .select { |t| t.send(:build_type).dynamic_framework? }
+          .map(&:name)
+          .to_set
+
         installer.pod_targets.each do |t|
+          # Leave the dynamic framework itself untouched.
+          next if dynamic_framework_pods.include?(t.name)
+          # Leave a pod that links against one untouched too: a consumer like
+          # rnmapbox-maps is built as a framework under use_frameworks! and imports
+          # the dynamic pod with framework-style headers (#import <Mapbox…/…>), so a
+          # static-library downgrade breaks its compile.
+          next if t.root_spec.dependencies.any? { |d| dynamic_framework_pods.include?(d.name) }
           if has_vendored_xcframeworks?(t)
             pods_to_downgrade.add(t.name)
           elsif t.root_spec.dependencies.any? { |d| d.name.start_with?('React-Core') }
