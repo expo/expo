@@ -24,16 +24,30 @@ async function getResolvedWatchedDirectoriesFromAppJson(appJsonPath) {
     }
     return null;
 }
-async function generateInlineModuleTSFiles({ filePath, dirPath, typeInference, mapUnicodeCharacters, }) {
+async function generateInlineModuleTSFiles({ filePath, dirPath, typeInference, mapUnicodeCharacters, compileOnlyModules, }) {
     return await (0, commandUtils_1.generateConciseTsFiles)({
-        realInputPaths: [filePath],
+        realInputPaths: [filePath, ...compileOnlyModules],
         realOutputPath: dirPath,
         typeInference,
         watcher: false,
         mapUnicodeCharacters,
     });
 }
-async function inlineModulesWatcher({ appJsonPath, typeInference, mapUnicodeCharacters, }) {
+const swiftModuleDefinitionRegex = /\bfunc\s+definition\s*\(\s*\)\s*->\s*[\w.]*ModuleDefinition\b/;
+async function hasSwiftModuleDefinition(absoluteFilePath) {
+    try {
+        const contents = await fs_1.default.promises.readFile(absoluteFilePath, 'utf8');
+        return swiftModuleDefinitionRegex.test(contents);
+    }
+    catch {
+        console.warn(`Swift inline module '${absoluteFilePath}' could not be opened.`);
+        return false;
+    }
+}
+async function fileHasModuleDeclaration(filePath) {
+    return hasSwiftModuleDefinition(filePath);
+}
+async function inlineModulesWatcher({ appJsonPath, typeInference, mapUnicodeCharacters, compileOnlyModules, }) {
     const debouncedInlineModulesTsGeneration = (0, commandUtils_1.debounce)(generateInlineModuleTSFiles);
     const watchedDirectoriesWatchers = new Map();
     const setupWatchedDirectoriesWatchers = async () => {
@@ -60,12 +74,20 @@ async function inlineModulesWatcher({ appJsonPath, typeInference, mapUnicodeChar
                 }
                 const resolvedFilePath = path_1.default.resolve(dir, fileName);
                 if (fs_1.default.existsSync(resolvedFilePath)) {
+                    if (!(await fileHasModuleDeclaration(resolvedFilePath))) {
+                        compileOnlyModules.add(resolvedFilePath);
+                        return;
+                    }
                     debouncedInlineModulesTsGeneration({
                         filePath: resolvedFilePath,
                         dirPath: path_1.default.dirname(resolvedFilePath),
                         typeInference,
                         mapUnicodeCharacters,
+                        compileOnlyModules,
                     });
+                }
+                else {
+                    compileOnlyModules.delete(resolvedFilePath);
                 }
             });
         };
@@ -113,26 +135,36 @@ async function inlineModulesInterfaceCommand(cli) {
         if (!watchedDirectories) {
             return;
         }
-        const dirents = [];
+        const inlineModulesDirents = [];
+        const compileOnlyModules = new Set([]);
         for (const dir of watchedDirectories) {
             for await (const dirent of (0, utils_1.scanFilesRecursively)(dir)) {
                 if (!dirent.name.endsWith('.swift')) {
                     continue;
                 }
-                dirents.push(dirent);
+                const resolvedFilePath = dirent.path;
+                if (fs_1.default.existsSync(resolvedFilePath) &&
+                    !(await fileHasModuleDeclaration(resolvedFilePath))) {
+                    compileOnlyModules.add(resolvedFilePath);
+                }
+                else {
+                    inlineModulesDirents.push(dirent);
+                }
             }
         }
-        await (0, utils_1.taskAll)(dirents, async (dirent) => await generateInlineModuleTSFiles({
+        await (0, utils_1.taskAll)(inlineModulesDirents, async (dirent) => await generateInlineModuleTSFiles({
             filePath: dirent.path,
             dirPath: dirent.parentPath,
             typeInference: parsedArgs.typeInference,
             mapUnicodeCharacters,
+            compileOnlyModules,
         }));
         if (watcher) {
             await inlineModulesWatcher({
                 appJsonPath,
                 typeInference: parsedArgs.typeInference,
                 mapUnicodeCharacters,
+                compileOnlyModules,
             });
         }
     });
