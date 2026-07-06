@@ -18,6 +18,7 @@ import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider
 import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
 import { HreflangAlternates } from '~/ui/components/HreflangAlternates';
 import { markdownComponents } from '~/ui/components/Markdown';
+import { CodeSelectionCopy } from '~/ui/components/Snippet/CodeSelectionCopy';
 import { StructuredData } from '~/ui/components/StructuredData';
 import * as Tooltip from '~/ui/components/Tooltip';
 import '~/common/suppress-trailing-slash-warning';
@@ -99,6 +100,7 @@ export default function App({ Component, pageProps }: AppProps) {
                   <MDXProvider components={rootMarkdownComponents}>
                     <Tooltip.Provider>
                       <Component {...pageProps} />
+                      <CodeSelectionCopy />
                     </Tooltip.Provider>
                   </MDXProvider>
                 </CodeBlockSettingsProvider>
