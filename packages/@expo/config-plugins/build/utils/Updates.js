@@ -91,19 +91,26 @@ function getExpoUpdatesPackageVersion(projectRoot) {
 function getUpdateUrl(config) {
   return config.updates?.url ?? null;
 }
-function getAppVersion(config) {
+function getAppVersion(config, platform) {
+  if (platform === 'ios' && config.ios?.version) {
+    return config.ios.version;
+  }
+  if (platform === 'android' && config.android?.version) {
+    return config.android.version;
+  }
   return config.version ?? '1.0.0';
 }
 function getNativeVersion(config, platform) {
-  const version = IOSVersion().getVersion(config);
   switch (platform) {
     case 'ios':
       {
+        const version = IOSVersion().getVersion(config);
         const buildNumber = IOSVersion().getBuildNumber(config);
         return `${version}(${buildNumber})`;
       }
     case 'android':
       {
+        const version = AndroidVersion().getVersionName(config) ?? '1.0.0';
         const versionCode = AndroidVersion().getVersionCode(config);
         return `${version}(${versionCode})`;
       }
@@ -143,7 +150,7 @@ async function getRuntimeVersionAsync(projectRoot, config, platform) {
 }
 async function resolveRuntimeVersionPolicyAsync(policy, config, platform) {
   if (policy === 'appVersion') {
-    return getAppVersion(config);
+    return getAppVersion(config, platform);
   } else if (policy === 'nativeVersion') {
     return getNativeVersion(config, platform);
   } else if (policy === 'sdkVersion') {
