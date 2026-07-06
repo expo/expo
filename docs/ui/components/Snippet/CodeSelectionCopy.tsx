@@ -170,7 +170,7 @@ export function CodeSelectionCopy() {
           left: position.left,
           transform: 'translateX(-50%)',
         }}
-        className="z-50 inline-flex items-center gap-1.5 rounded-md border border-default bg-default px-2 py-1 text-xs text-secondary shadow-md hover:text-default cursor-pointer">
+        className="z-50 inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-default bg-default px-2 py-1 text-xs text-secondary shadow-md hover:text-default">
         <ClipboardIcon aria-hidden="true" className="icon-xs text-icon-secondary" />
         {intl.formatMessage({ id: copied ? 'codeCopied' : 'codeCopy' })}
       </button>
