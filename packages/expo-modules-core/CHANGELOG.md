@@ -29,6 +29,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [iOS] Fix `hsl()`/`hsla()` color strings failing to parse on some OS versions (observed on the iOS 27.0 beta), caused by regex-literal fragments composed in `RegexBuilder` blocks. The CSS color patterns are now built from `RegexBuilder` primitives only. ([#47543](https://github.com/expo/expo/pull/47543) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed a potential use-after-free when native code scheduled work onto the JS thread (e.g. settling an async function's promise from a background queue) while the React instance was concurrently tearing down the runtime scheduler on reload. The dispatch trampoline now references the scheduler weakly and drops the task once the scheduler is gone. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fix a reload deadlock on the new architecture where reloading (from pressing `r` in the iOS simulator) would freeze the app until the watchdog killed it. `reloadAppAsync` now triggers the reload synchronously when already on the main thread instead of always deferring via `DispatchQueue.main.async`. ([#47392](https://github.com/expo/expo/pull/47392) by [@brentvatne](https://github.com/brentvatne))
 
 ## 57.0.0 — 2026-06-25

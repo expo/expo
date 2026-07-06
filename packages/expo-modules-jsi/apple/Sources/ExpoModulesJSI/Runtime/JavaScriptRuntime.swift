@@ -96,7 +96,11 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// React Native factory uses.
   ///
   /// - `unsafePointer`: raw pointer to the underlying `facebook::jsi::Runtime`.
-  /// - `scheduler`: raw pointer to the `react::RuntimeScheduler` instance.
+  /// - `scheduler`: opaque host-owned handle that `dispatch` resolves to the real
+  ///   scheduler. The React Native factory passes a handle that references the
+  ///   `react::RuntimeScheduler` weakly (see `EXReactSchedulerDispatch.h` in
+  ///   `ExpoModulesCore`), so dispatching after the React instance tore the
+  ///   scheduler down safely drops the task.
   /// - `dispatch`: raw pointer to a C function with signature
   ///   `void (*)(void *scheduler, int priority, void (^callback)())`.
   public init(

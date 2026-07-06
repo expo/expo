@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Pass the React runtime scheduler to `ExpoModulesCore` through a weak handle, so dispatching onto the JS thread during a reload no longer risks calling into a scheduler the React instance already destroyed. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
 - Fix `Response.blob()` in `expo/fetch` throwing when the global `Blob` is react-native's implementation. ([#47538](https://github.com/expo/expo/pull/47538) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
