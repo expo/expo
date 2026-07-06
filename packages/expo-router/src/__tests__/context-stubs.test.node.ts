@@ -64,10 +64,10 @@ describe('normalizeKeys', () => {
 });
 
 describe('requireContextWithOverrides', () => {
-  it('resolves an override registered with an extension-free key to the require-context id', () => {
+  it('resolves an override registered with an extension-free key', () => {
     const ctx = requireContextWithOverrides(appDir, { _layout: MockLayout });
 
-    expect(ctx('./_layout.tsx').default).toBe(MockLayout);
+    expect(ctx('_layout').default).toBe(MockLayout);
   });
 
   it('overrides the default export for an existing file', () => {
@@ -76,27 +76,27 @@ describe('requireContextWithOverrides', () => {
     }
     const ctx = requireContextWithOverrides(appDir, { index: MockIndex });
 
-    expect(ctx('./index.tsx').default).toBe(MockIndex);
+    expect(ctx('index').default).toBe(MockIndex);
   });
 
   it('falls back to the existing context for files without an override', () => {
     const ctx = requireContextWithOverrides(appDir, { _layout: MockLayout });
 
-    expect(ctx('./index.tsx').default).toBe(IndexFixture);
+    expect(ctx('index').default).toBe(IndexFixture);
   });
 
   it('uses the existing context for every file when there are no overrides', () => {
     const ctx = requireContextWithOverrides(appDir, {});
 
-    expect(ctx('./_layout.tsx').default).toBe(LayoutFixture);
-    expect(ctx('./index.tsx').default).toBe(IndexFixture);
-    expect(ctx('./nested/route.tsx').default).toBe(NestedRouteFixture);
+    expect(ctx('_layout').default).toBe(LayoutFixture);
+    expect(ctx('index').default).toBe(IndexFixture);
+    expect(ctx('nested/route').default).toBe(NestedRouteFixture);
   });
 
   it('falls back to the existing context for a nested file without an override', () => {
     const ctx = requireContextWithOverrides(appDir, { _layout: MockLayout });
 
-    expect(ctx('./nested/route.tsx').default).toBe(NestedRouteFixture);
+    expect(ctx('nested/route').default).toBe(NestedRouteFixture);
   });
 
   it('overrides a nested file registered with an extension-free key', () => {
@@ -105,27 +105,25 @@ describe('requireContextWithOverrides', () => {
     }
     const ctx = requireContextWithOverrides(appDir, { 'nested/route': MockNestedRoute });
 
-    expect(ctx('./nested/route.tsx').default).toBe(MockNestedRoute);
+    expect(ctx('nested/route').default).toBe(MockNestedRoute);
   });
 
-  it('does not list both the override key and the require-context id for the same file', () => {
+  it('lists normalized keys and does not duplicate an overridden file', () => {
     const ctx = requireContextWithOverrides(appDir, { _layout: MockLayout });
 
     const keys = ctx.keys();
-    expect(keys).toContain('./_layout.tsx');
-    expect(keys).not.toContain('_layout');
-    expect(keys.filter((key) => key.replace(/^\.\//, '').startsWith('_layout'))).toEqual([
-      './_layout.tsx',
-    ]);
+    expect(keys).not.toContain('./_layout.tsx');
+    expect(keys.filter((key) => key === '_layout')).toEqual(['_layout']);
+    expect(keys).toEqual(expect.arrayContaining(['_layout', 'index', 'nested/route']));
   });
 
-  it('keeps overrides that do not match an existing file under a normalized key', () => {
+  it('keeps overrides that do not match an existing file', () => {
     function MockModal() {
       return null;
     }
     const ctx = requireContextWithOverrides(appDir, { modal: MockModal });
 
-    expect(ctx('./modal').default).toBe(MockModal);
-    expect(ctx.keys()).toContain('./modal');
+    expect(ctx('modal').default).toBe(MockModal);
+    expect(ctx.keys()).toContain('modal');
   });
 });

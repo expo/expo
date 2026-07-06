@@ -61,9 +61,9 @@ export function findDuplicateKeys(normalizedKeys: readonly string[]): string[] {
  * form used by `inMemoryContext` override keys (e.g. `_layout`, `nested/route`).
  *
  * The returned record is keyed by the normalized key and holds the original
- * require-context key, allowing overrides to be resolved back to the id they
- * replace. When two files normalize to the same key (e.g. both `index.jsx` and
- * `index.tsx`), it throws, matching the ambiguity `requireContext` cannot
+ * require-context key, so a normalized key can be resolved back to the file it
+ * came from. When two files normalize to the same key (e.g. both `index.jsx`
+ * and `index.tsx`), it throws, matching the ambiguity `requireContext` cannot
  * represent.
  */
 export function normalizeKeys(keys: string[]): Record<string, string> {
@@ -76,36 +76,32 @@ export function normalizeKeys(keys: string[]): Record<string, string> {
 }
 
 export function requireContextWithOverrides(dir: string, overrides: MemoryContext) {
-  const existingContext = requireContext(path.resolve(process.cwd(), dir));
+  const rawContext = requireContext(path.resolve(process.cwd(), dir));
 
-  const normalizedExistingKeys = normalizeKeys(existingContext.keys());
-
-  // Resolve each override to the require-context id it replaces, falling back to
-  // `./name` for overrides that introduce a file not present in `dir`.
-  const overridesByContextKey = new Map<string, FileStub | NativeIntentStub>();
-  for (const [key, value] of Object.entries(overrides)) {
-    const contextKey = normalizedExistingKeys[key] ?? `./${key}`;
-    overridesByContextKey.set(contextKey, value);
-  }
+  // Normalize the require-context keys (`./name.ext`) to the extension-free form
+  // used by override keys, so `overrides` can be matched directly. Keys an
+  // override replaces are dropped here so each route is only listed once.
+  const normalizedKeys = normalizeKeys(rawContext.keys());
+  const existingContext = Object.assign(
+    (id: string) => rawContext(normalizedKeys[id] ?? id),
+    {
+      keys: () => Object.keys(normalizedKeys).filter((key) => !(key in overrides)),
+      resolve: (key: string) => key,
+      id: '0',
+    }
+  );
 
   return Object.assign(
     function (id: string) {
-      if (overridesByContextKey.has(id)) {
-        const route = overridesByContextKey.get(id)!;
+      if (id in overrides) {
+        const route = overrides[id];
         return typeof route === 'function' ? { default: route } : route;
+      } else {
+        return existingContext(id);
       }
-      return existingContext(id);
     },
     {
-      // Override keys take precedence, so omit any existing key they replace to
-      // avoid listing the same route twice.
-      keys: () => {
-        const overrideKeys = [...overridesByContextKey.keys()];
-        const dedupedExisting = existingContext
-          .keys()
-          .filter((key) => !overridesByContextKey.has(key));
-        return [...overrideKeys, ...dedupedExisting];
-      },
+      keys: () => [...Object.keys(overrides), ...existingContext.keys()],
       resolve: (key: string) => key,
       id: '0',
     }
