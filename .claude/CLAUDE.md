@@ -1,23 +1,23 @@
-## expotools (`et`)
-
-This repo ships its own CLI, `expotools`, available directly as `et <command> <...args>`.
-Call it as `et`, not via `npx`, `bunx`, or `pnpm run`. It's put on the PATH by `direnv`, so run
-`direnv allow` once in the repo root if `et` isn't found; otherwise invoke it directly with
-`node ./tools/bin/expotools.js <command>`. Many of our processes (native unit tests, prebuild,
-and more) run through it.
-
-Commands you'll reach for during normal development:
-
-- `et check-packages` — verify that packages build and their tests pass.
-
-Run `et --help` to discover the rest (publishing, changelogs, on-call dashboards, and more).
-
 ## Rules
 
-- **Red/green:** write the test first and watch it fail, then implement the feature or fix until
-  it passes. Don't write the implementation before the failing test exists.
+- **Package manager:** this is a pnpm workspace. Use `pnpm` for installing, running scripts, and
+  managing dependencies; **NEVER** use `npm` or `yarn`. Run `pnpm install` at the repo root.
+
+## Repository layout
+
+- `packages/`: the Expo SDK packages, each with its own `CHANGELOG.md`.
+- `apps/`: development and test apps: `bare-expo` (manual testing of packages), `native-tests`
+  (host app for native unit tests), `native-component-list` (component demos), `test-suite`
+  (JS test suite), `expo-go`.
+- `tools/`: source of the `expotools` CLI (see the expotools section below).
+- `docs/`: the docs site (docs.expo.dev).
+- `templates/`: project templates published to npm.
+- `guides/`: contributor guides referenced throughout this file.
 
 ## Writing tests
+
+**Red/green:** write the test first and watch it fail, then implement the feature or fix until
+it passes. **DON'T** write the implementation before the failing test exists.
 
 ### Unit tests
 
@@ -40,15 +40,93 @@ one package with `--packages <name>` (e.g. `et native-unit-tests -p ios --packag
 
 ## Committing
 
-Before committing, you may use `turbo run <task>` to run an npm script for a given task on all dependents, for example `build`, `typecheck`, `depscheck`, `test`, and `lint`. This may also be run via `et check-packages <...packages>` with the names of the packages that changed. This matches how CI checks packages.
+Before committing, you may use `turbo run <task>` to run an npm script for a given task on all dependents, for example `build`, `typecheck`, `depscheck`, `test`, and `lint`. This may also be run via `et check-packages <...packages>`, which matches how CI checks packages. Keep the loop fast by scoping it to the packages you changed, e.g. `et check-packages expo-location`, rather than running repo-wide tasks.
 
-The compiled `build/` output is gitignored and is **not** committed. Turborepo regenerates and caches it on demand. Stage only your source edits (and other source files); do not stage `build/`.
+The compiled `build/` output is gitignored and is **not** committed. Turborepo regenerates and caches it on demand. Stage only your source edits (and other source files); **NEVER** stage `build/`.
+
+**Commit messages** use the format `[platform][api] Title`, e.g. `[ios][video] Fix black screen
+on older devices`. The API tag drops the `expo-` prefix: `[video]`, not `[expo-video]`.
+
+**Branches** are named `<github-username>/<short-description>`, e.g. `username/fix-video-playback`.
+
+## Changelogs
+
+Most packages in `packages/` have their own `CHANGELOG.md`, and every PR that changes a package
+should add an entry to it. A PR that changes several packages adds an entry to each changed
+package's changelog. Changelogs exist only for packages: PRs limited to `apps/`, `docs/`,
+`tools/`, or `guides/` don't need an entry anywhere. See
+[Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md)
+for the full guide.
+
+### Where the entry goes
+
+Add a bullet under the `## Unpublished` heading, inside the category matching the change.
+**ALWAYS** append it at the end of the category, after the existing entries: the order of changes
+sometimes matters.
+
+- `🛠 Breaking changes`: API changes that require users to update their code or configuration
+  (major bump).
+- `🎉 New features`: non-breaking additions to the public API (at least a minor bump). Features
+  that are internal-only belong in Others instead.
+- `🐛 Bug fixes`: bug fixes and documentation clarifications.
+- `⚠️ Notices`: deprecations and corner-case behavior changes that stay backwards compatible.
+- `💡 Others`: internal changes, refactors, build tooling, routine work.
+- `📚 3rd party library updates`: upgrades of libraries shipped in Expo Go (root changelog only).
+
+### Writing the entry
+
+- One concise sentence containing only text and links (no lists, headers, tables, images, or
+  inline HTML). Longer adoption notes for breaking changes go in the PR description or a linked
+  document on [`expo/fyi`](https://github.com/expo/fyi).
+- Write for a reader with zero context about the change: describe the user-visible effect, not
+  the implementation.
+- Prefix platform-specific entries with `[iOS]`, `[Android]`, or `[Web]`, matching existing
+  entries in the file.
+- End with links to the PR and the author's GitHub profile:
+
+  ```
+  - [iOS] Fixed video playback stalling on older devices. ([#NNNNN](https://github.com/expo/expo/pull/NNNNN) by [@username](https://github.com/username))
+  ```
+
+The PR number doesn't exist until the PR is opened, so predict it right before creating the PR:
+fetch the most recent issue and PR numbers and take `max + 1`.
+
+```
+gh issue list -R expo/expo -L 1 --state all --json number
+gh pr list   -R expo/expo -L 1 --state all --json number
+```
+
+After creating the PR, **ALWAYS** compare its actual number with the prediction and fix the entry
+if they differ. The review bot also suggests these links in a code review, but **DON'T** rely on
+it: a silent mismatch leaves a dead link.
 
 ## Creating PRs
 
-Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTING.md and the PR template:
+Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTING.md and the PR template.
 
-**Commit message:** format as `[platform][api] Title`, e.g. `[ios][video] Fix black screen on older devices`.
+**Self-review:** before opening a non-trivial PR, and before adding the changelog entry, run
+`/deep-code-review` with no arguments (local mode: it reviews the branch against `main` and
+reports findings in the conversation without posting anything to GitHub). **DON'T** fix the
+findings straightaway: present them to the author and let them decide which ones to address.
+
+**Comprehension check:** before opening a non-trivial PR, ask the author 2-4 focused questions
+about the code in the conversation to confirm they understand what's being submitted and to
+surface bugs or questionable decisions before reviewers see them. Skip this only for trivial
+changes (typo fixes, version bumps, formatting, mechanical renames).
+
+- Ask all questions in a single `AskUserQuestion` call. Give each question at least 3 concrete
+  answer options (one correct, the others plausible but wrong), plus a separate "walk me through
+  it" escape option.
+- Ask about the non-obvious parts: design decisions and tradeoffs, assumptions and edge cases the
+  change depends on, details a maintainer might trip on. Don't ask about things obvious from the
+  diff.
+- If an answer reveals a real problem, fix it before opening the PR. If the author can't answer
+  confidently, walk through that part of the code together first; a shaky answer means the code
+  isn't ready.
+- Contributors working on a fork (check `git remote -v` against `expo/expo`) get a higher bar:
+  **DON'T** open the PR until they can explain what the change does and why.
+
+**Title:** same format as commit messages, `[platform][api] Title` (see Committing above).
 
 **PR description** follows the [repo PR template](https://github.com/expo/expo/blob/main/.github/PULL_REQUEST_TEMPLATE) — fill in each section:
 
@@ -56,16 +134,42 @@ Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTI
 - **How:** how you built the feature or fixed the bug, and why you took that approach.
 - **Test Plan:** how you tested the change and how a reviewer can reproduce it — include terminal
   output or screenshots when there are no automated tests.
-- **Checklist:** added a `CHANGELOG.md` entry and verified the change builds, type-checks, lints,
-  and tests via `et check-packages`; confirmed the change works with `npx expo prebuild` & EAS Build
-  if relevant; follows the documentation style guide.
-**Before submitting:** run `et check-packages` (builds, type-checks, lints, and tests), remove stray
-`console.log`s or commented-out code, and do not stage the gitignored `build/` output.
+- **Checklist:** added a `CHANGELOG.md` entry (see Changelogs above) and verified the change
+  builds, type-checks, lints, and tests via `et check-packages`; confirmed the change works with
+  `npx expo prebuild` & EAS Build if relevant; follows the
+  [documentation style guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
-**See also:**
+Write the description from the final state of the change: describe what the PR does now, **NOT**
+how it evolved while you worked on it (approaches you abandoned, bugs you introduced and fixed
+along the way, earlier revisions of the diff). **DON'T** use em dashes (—); rewrite with commas,
+parentheses, colons, or separate sentences instead.
 
-- [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md)
-- [Expo Documentation Writing Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md)
+**Creating the PR:** **ALWAYS** create it as a draft; mark it ready for review once CI passes. Pass the
+description through stdin with a quoted heredoc so backticks and newlines survive unescaped:
+
+```
+gh pr create --draft --title "..." --body-file - <<'EOF'
+...
+EOF
+```
+
+**Before submitting:** remove stray `console.log`s and commented-out code.
+
+## expotools (`et`)
+
+This repo ships its own CLI, `expotools`, available directly as `et <command> <...args>`.
+Call it as `et`, **NOT** via `npx`, `bunx`, or `pnpm run`. It's put on the PATH by `direnv`, so run
+`direnv allow` once in the repo root if `et` isn't found; otherwise invoke it directly with
+`node ./tools/bin/expotools.js <command>`. Many of our processes (native unit tests, prebuild,
+and more) run through it.
+
+Commands you'll reach for during normal development:
+
+- `et check-packages` — verify that packages build and their tests pass. Scope it by listing
+  package names, e.g. `et check-packages expo-location`.
+- `et add-changelog` — add a changelog entry to a package (see Changelogs above).
+
+Run `et --help` to discover the rest (publishing, changelogs, on-call dashboards, and more).
 
 ## Error messages
 
