@@ -6,11 +6,9 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class RuntimeScheduler;
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace expo {
 
