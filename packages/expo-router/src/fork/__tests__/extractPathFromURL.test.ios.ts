@@ -82,6 +82,20 @@ describe(extractExpoPathFromURL, () => {
     delete expo.modules.ExpoGo;
     expect(extractExpoPathFromURL([], `custom:///?x=%20%2B%2F`)).toEqual('?x= +/');
   });
+  it(`does not throw on malformed percent-encoding, passes raw value through`, () => {
+    delete expo.modules.ExpoGo;
+    expect(extractExpoPathFromURL([], `custom:///?q=%GG`)).toEqual('?q=%GG');
+    // A truncated multi-byte UTF-8 sequence: `URLSearchParams` itself already
+    // decodes this losslessly (to a replacement char) without throwing, so
+    // the only requirement here is that it still doesn't crash.
+    expect(() => extractExpoPathFromURL([], `custom:///?q=%E0%A4%A`)).not.toThrow();
+    // Exercises the dev-client `?url=` path (`safeDecodeURI`, line ~102):
+    // the outer query decodes cleanly to `path?q=%GG`, which itself contains
+    // malformed percent-encoding.
+    expect(
+      extractExpoPathFromURL([], `scheme://expo-development-client/?url=path%3Fq%3D%25GG`)
+    ).toEqual('path?q=%GG');
+  });
   it(`decodes query params in Expo Go`, () => {
     expo.modules.ExpoGo = {};
     expect(extractExpoPathFromURL([], `custom:///?x=%20%2B%2F`)).toEqual('?x= +/');

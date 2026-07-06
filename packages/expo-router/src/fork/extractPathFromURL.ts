@@ -69,6 +69,25 @@ function isExpoDevelopmentClient(url: URL): boolean {
   return url.hostname === 'expo-development-client';
 }
 
+function safeDecodeURIComponent(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    // Malformed percent-encoding (e.g. `%GG`, or a truncated multi-byte
+    // sequence) — pass the raw value through instead of throwing, so one
+    // bad query param doesn't drop the whole deep link.
+    return value;
+  }
+}
+
+function safeDecodeURI(value: string): string {
+  try {
+    return decodeURI(value);
+  } catch {
+    return value;
+  }
+}
+
 function fromDeepLink(url: string): string {
   let res: URL | null;
   try {
@@ -99,7 +118,7 @@ function fromDeepLink(url: string): string {
       return '';
     }
     const incomingUrl = res.searchParams.get('url')!;
-    return extractExactPathFromURL(decodeURI(incomingUrl));
+    return extractExactPathFromURL(safeDecodeURI(incomingUrl));
   }
 
   let results = '';
@@ -115,7 +134,9 @@ function fromDeepLink(url: string): string {
   const qs = !res.search
     ? ''
     : // @ts-ignore: `entries` is not on `URLSearchParams` in some typechecks.
-      [...res.searchParams.entries()].map(([k, v]) => `${k}=${decodeURIComponent(v)}`).join('&');
+      [...res.searchParams.entries()]
+        .map(([k, v]) => `${k}=${safeDecodeURIComponent(v)}`)
+        .join('&');
 
   if (qs) {
     results += '?' + qs;
