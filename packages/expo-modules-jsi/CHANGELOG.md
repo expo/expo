@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Add `JavaScriptRuntime.longLivedObjects`, a `LongLivedObjectCollection` that keeps `LongLivedObject`s (such as in-flight promises) alive across asynchronous boundaries and releases any that remain when the runtime is torn down. ([#47511](https://github.com/expo/expo/pull/47511) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 56.0.14 — 2026-09-29
