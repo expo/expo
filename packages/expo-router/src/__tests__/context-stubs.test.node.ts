@@ -21,6 +21,7 @@ describe('normalizeKey', () => {
     expect(normalizeKey('./_layout.tsx')).toBe('_layout');
     expect(normalizeKey('./index.jsx')).toBe('index');
     expect(normalizeKey('./nested/route.ts')).toBe('nested/route');
+    expect(normalizeKey('./index.js')).toBe('index');
   });
 
   it('leaves keys without a valid extension untouched', () => {

@@ -79,17 +79,11 @@ export function requireContextWithOverrides(dir: string, overrides: MemoryContex
   const rawContext = requireContext(path.resolve(process.cwd(), dir));
 
   // Normalize the require-context keys (`./name.ext`) to the extension-free form
-  // used by override keys, so `overrides` can be matched directly. Keys an
-  // override replaces are dropped here so each route is only listed once.
+  // used by override keys, so `overrides` can be matched directly.
   const normalizedKeys = normalizeKeys(rawContext.keys());
-  const existingContext = Object.assign(
-    (id: string) => rawContext(normalizedKeys[id] ?? id),
-    {
-      keys: () => Object.keys(normalizedKeys).filter((key) => !(key in overrides)),
-      resolve: (key: string) => key,
-      id: '0',
-    }
-  );
+  const existingContext = Object.assign((id: string) => rawContext(normalizedKeys[id] ?? id), {
+    keys: () => Object.keys(normalizedKeys),
+  });
 
   return Object.assign(
     function (id: string) {
@@ -101,7 +95,12 @@ export function requireContextWithOverrides(dir: string, overrides: MemoryContex
       }
     },
     {
-      keys: () => [...Object.keys(overrides), ...existingContext.keys()],
+      // Overrides take precedence, so drop any existing key they replace to keep
+      // each route listed once (a duplicate key makes route resolution throw).
+      keys: () => [
+        ...Object.keys(overrides),
+        ...existingContext.keys().filter((key) => !(key in overrides)),
+      ],
       resolve: (key: string) => key,
       id: '0',
     }
