@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 
 import { BunPackageManager } from '../../node/BunPackageManager';
+import { DenoPackageManager } from '../../node/DenoPackageManager';
 import { NpmPackageManager } from '../../node/NpmPackageManager';
 import { PnpmPackageManager } from '../../node/PnpmPackageManager';
 import { YarnPackageManager } from '../../node/YarnPackageManager';
@@ -10,6 +11,7 @@ import {
   resolveWorkspaceRoot,
   BUN_LOCK_FILE,
   BUN_TEXT_LOCK_FILE,
+  DENO_LOCK_FILE,
   NPM_LOCK_FILE,
   PNPM_LOCK_FILE,
   YARN_LOCK_FILE,
@@ -38,6 +40,10 @@ describe(createForProject, () => {
 
   it(`creates bun package manager from options`, () => {
     expect(createForProject(projectRoot, { bun: true })).toBeInstanceOf(BunPackageManager);
+  });
+
+  it(`creates deno package manager from options`, () => {
+    expect(createForProject(projectRoot, { deno: true })).toBeInstanceOf(DenoPackageManager);
   });
 
   it(`defaults to npm package manager`, () => {
@@ -141,6 +147,31 @@ describe(createForProject, () => {
     );
 
     expect(createForProject(projectRoot)).toBeInstanceOf(BunPackageManager);
+  });
+
+  it(`creates deno package manager from project`, () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'project' }),
+        [DENO_LOCK_FILE]: '',
+      },
+      projectRoot
+    );
+
+    expect(createForProject(projectRoot)).toBeInstanceOf(DenoPackageManager);
+  });
+
+  it(`creates deno package manager from project using "pnpm-lock.yaml" and "deno.lock"`, () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'project' }),
+        [DENO_LOCK_FILE]: '',
+        [PNPM_LOCK_FILE]: '',
+      },
+      projectRoot
+    );
+
+    expect(createForProject(projectRoot)).toBeInstanceOf(DenoPackageManager);
   });
 
   it(`defaults to npm package manager`, () => {
@@ -336,6 +367,50 @@ describe(resolvePackageManager, () => {
     // Due to the `yarn.lock` file being present when running `bun install --yarn`,
     // yarn can be returned as package manager when prefering `yarn`.
     expect(resolvePackageManager(projectRoot, 'yarn')).toBe('yarn');
+  });
+
+  it(`resolves deno from monorepo workspace`, () => {
+    vol.fromJSON(
+      {
+        'packages/test/package.json': JSON.stringify({ name: 'project' }),
+        'package.json': JSON.stringify({
+          private: true,
+          name: 'monorepo',
+          workspaces: ['packages/*'],
+        }),
+        [DENO_LOCK_FILE]: '',
+      },
+      workspaceRoot
+    );
+
+    expect(resolvePackageManager(projectRoot)).toBe('deno');
+    expect(resolvePackageManager(projectRoot, 'deno')).toBe('deno');
+    expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
+  });
+
+  it(`resolves deno from monorepo workspace using "pnpm-lock.yaml" and "deno.lock"`, () => {
+    vol.fromJSON(
+      {
+        'packages/test/package.json': JSON.stringify({ name: 'project' }),
+        'package.json': JSON.stringify({
+          private: true,
+          name: 'monorepo',
+          workspaces: ['packages/*'],
+        }),
+        [DENO_LOCK_FILE]: '',
+        [PNPM_LOCK_FILE]: '',
+      },
+      workspaceRoot
+    );
+
+    // Deno can seed `deno.lock` from an existing `pnpm-lock.yaml`, so both
+    // lockfiles may coexist after a migration — `deno.lock` wins.
+    expect(resolvePackageManager(projectRoot)).toBe('deno');
+    expect(resolvePackageManager(projectRoot, 'deno')).toBe('deno');
+    expect(resolvePackageManager(projectRoot, 'pnpm')).toBe('pnpm');
   });
 });
 
