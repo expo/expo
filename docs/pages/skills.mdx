@@ -85,24 +85,31 @@ Use the [skills CLI](https://skills.sh/docs/cli) to add Expo Skills to any compa
 
 ## Available Expo Skills
 
-The following skills are available in the `expo` plugin:
+The following skills are available in the `expo` plugin. Skill names describe what they cover: `expo-*` skills teach agents the open source framework, and `eas-*` skills cover EAS services.
 
-<ExpoSkillsTable />
+### Expo SDK and framework
+
+<ExpoSkillsTable category="framework" />
+
+### Expo Application Services (EAS)
+
+<ExpoSkillsTable category="eas" />
 
 ## Example prompts
 
 Try the following prompts after installing Expo Skills. Your AI agent will automatically use the appropriate skill:
 
-| Example prompt                                         | Skill used                |
-| ------------------------------------------------------ | ------------------------- |
-| Build a settings screen with a form and navigation     | `building-native-ui`      |
-| Set up Tailwind CSS in my Expo project                 | `expo-tailwind-setup`     |
-| Embed a recharts chart in my native app using web code | `use-dom`                 |
-| Add a SwiftUI picker component to my Expo app          | `expo-ui-swift-ui`        |
-| Use Material Design 3 components with Jetpack Compose  | `expo-ui-jetpack-compose` |
-| How do I deploy my Expo app to the Apple App Store?    | `expo-deployment`         |
-| Create a CI/CD workflow that builds on every PR        | `expo-cicd-workflows`     |
-| Upgrade my project to the latest Expo SDK              | `upgrading-expo`          |
+| Example prompt                                         | Skill used            |
+| ------------------------------------------------------ | --------------------- |
+| Build a settings screen with native-feeling controls   | `expo-native-ui`      |
+| Add tab navigation and a modal to my app               | `expo-router`         |
+| Set up Tailwind CSS in my Expo project                 | `expo-tailwind-setup` |
+| Embed a recharts chart in my native app using web code | `expo-dom`            |
+| Add a SwiftUI picker component to my Expo app          | `expo-ui`             |
+| Use Material Design 3 components with Jetpack Compose  | `expo-ui`             |
+| How do I deploy my Expo app to the Apple App Store?    | `eas-app-stores`      |
+| Create a CI/CD workflow that builds on every PR        | `eas-workflows`       |
+| Upgrade my project to the latest Expo SDK              | `expo-upgrade`        |
 
 ## Additional resources
 
