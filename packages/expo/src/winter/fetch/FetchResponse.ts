@@ -160,9 +160,47 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     metadata: null,
   };
 
+  // Body-stream teardown state, hoisted to the instance so `abort()` (invoked
+  // from fetch()'s AbortSignal listener, outside the `body` getter closure) can
+  // reach the live controller. `bodyStreamClosed` is the single guard that
+  // makes every late native event a no-op; `abortReason` also handles an abort
+  // that lands before the body stream is created.
+  private bodyStreamClosed = false;
+  private bodyStreamController: ReadableStreamDefaultController<Uint8Array<ArrayBuffer>> | null = null;
+  private abortReason: unknown = undefined;
+
   constructor(private readonly abortCleanupFunction: AbortSubscriptionCleanupFunction) {
     super();
     this.addListener('readyForJSFinalization', this.finalize);
+  }
+
+  /**
+   * Propagate an `AbortSignal` cancellation into the JS body stream. Without
+   * this, fetch() cancels only the native request — the JS ReadableStream
+   * controller is left open, so the in-flight read hangs forever and any late
+   * native `didReceiveResponseData` is enqueued onto an abandoned controller
+   * (the enqueue-after-teardown race behind #34804 / #33549 / #33553).
+   * Erroring the controller rejects the pending read with the abort reason
+   * (a spec `AbortError`) and closes the guard so subsequent native events are
+   * dropped. Idempotent, and safe to call before the body stream exists.
+   */
+  abort(reason?: unknown): void {
+    const abortError =
+      reason != null
+        ? reason
+        : typeof DOMException !== 'undefined'
+          ? new DOMException('The operation was aborted.', 'AbortError')
+          : Object.assign(new Error('The operation was aborted.'), { name: 'AbortError' });
+    this.abortReason = abortError;
+    if (this.bodyStreamClosed) {
+      return;
+    }
+    this.bodyStreamClosed = true;
+    try {
+      this.bodyStreamController?.error(abortError);
+    } catch {
+      // Controller already closed/errored — nothing to propagate.
+    }
   }
 
   // Originals have metadata=null and fall through to the native getter via super.
@@ -196,37 +234,46 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     const body = this[stateKey].body;
 
     if (body.stream == null) {
-      // This flag prevents enqueuing data after the stream is closed or canceled.
-      // Because it might be too late for the multithreaded native code to stop enqueuing data,
-      // we cannot simply rely on the native code to stop sending `didReceiveResponseData`.
-      let isControllerClosed = false;
-
+      // `bodyStreamClosed` (instance field) prevents enqueuing/closing after
+      // the stream is closed, canceled, or ABORTED. Because it might be too
+      // late for the multithreaded native code to stop enqueuing data, we
+      // cannot rely on the native code to stop sending `didReceiveResponseData`.
       body.stream = new ReadableStream(
         {
           start: (controller) => {
+            this.bodyStreamController = controller;
+
+            // The request was aborted before the body stream was read: error
+            // the controller immediately so the first read rejects.
+            if (this.abortReason !== undefined) {
+              this.bodyStreamClosed = true;
+              controller.error(this.abortReason);
+              return;
+            }
+
             if (body.streamingState === 'completed') {
               return;
             }
 
             this.addListener('didReceiveResponseData', (data: Uint8Array<ArrayBuffer>) => {
-              if (!isControllerClosed) {
+              if (!this.bodyStreamClosed) {
                 controller.enqueue(data);
               }
             });
 
             this.addListener('didComplete', () => {
-              if (isControllerClosed) {
+              if (this.bodyStreamClosed) {
                 return;
               }
-              isControllerClosed = true;
+              this.bodyStreamClosed = true;
               controller.close();
             });
 
             this.addListener('didFailWithError', (error: string) => {
-              if (isControllerClosed) {
+              if (this.bodyStreamClosed) {
                 return;
               }
-              isControllerClosed = true;
+              this.bodyStreamClosed = true;
               controller.error(new Error(error));
             });
           },
@@ -236,10 +283,10 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
               const completedData = await this.startStreaming();
 
               if (completedData != null) {
-                if (!isControllerClosed) {
+                if (!this.bodyStreamClosed) {
                   controller.enqueue(completedData);
                   controller.close();
-                  isControllerClosed = true;
+                  this.bodyStreamClosed = true;
                 }
 
                 body.streamingState = 'completed';
@@ -248,13 +295,13 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
               }
             } else if (body.streamingState === 'completed') {
               controller.close();
-              isControllerClosed = true;
+              this.bodyStreamClosed = true;
             }
           },
 
           cancel: (reason) => {
             this.cancelStreaming(String(reason));
-            isControllerClosed = true;
+            this.bodyStreamClosed = true;
           },
         },
         {
