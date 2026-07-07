@@ -76,6 +76,10 @@ module Pod
       # which fails the build on Xcode 27. Runs after the reconciliation
       # above so bundles of Expo modules pick up the reconciled values.
       reconcile_resource_bundle_deployment_targets()
+
+      # Make React Native's ccache build settings resolve for app targets that
+      # are not integrated with CocoaPods (e.g. custom share/widget extensions).
+      fix_react_native_path_for_non_cocoapods_targets()
     end
 
     define_method(:run_podfile_pre_install_hooks) do
@@ -220,6 +224,48 @@ module Pod
         # `generate_multiple_pod_projects` install option those are per-pod
         # projects rather than `pods_project`.
         dirty_projects.each(&:save)
+      end
+    end
+
+    # See call site in perform_post_install_actions for rationale.
+    # React Native's ccache integration (`USE_CCACHE=1` or `:ccache_enabled =>
+    # true`) points the project-level CC/LD/CXX/LDPLUSPLUS build settings of
+    # the user's Xcode project at
+    # "$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang.sh", and
+    # react_native_post_install sets REACT_NATIVE_PATH itself at the project
+    # level to "${PODS_ROOT}/../<react-native>". Every target in the project
+    # inherits those settings, but PODS_ROOT is only defined by the
+    # CocoaPods-generated xcconfigs, so in targets that are not integrated
+    # with CocoaPods (custom share extensions, widgets, ...) the wrapper path
+    # resolves to "/../../node_modules/..." and the build fails with
+    # "unable to spawn process". Re-anchor the project-level REACT_NATIVE_PATH
+    # to $(SRCROOT), which Xcode defines for every target. Integrated targets
+    # are unaffected: their xcconfig-level PODS_ROOT never fed a project-level
+    # value other than this same location.
+    def fix_react_native_path_for_non_cocoapods_targets
+      user_projects = self.aggregate_targets.map { |t| t.user_project }.compact.uniq { |p| p.path }
+      user_projects.each do |project|
+        pods_root_from_srcroot = File.join('$(SRCROOT)', self.sandbox.root.relative_path_from(project.path.dirname).to_s)
+        changed = false
+        project.build_configurations.each do |config|
+          ccache_in_use = ['CC', 'LD', 'CXX', 'LDPLUSPLUS'].any? do |key|
+            config.build_settings[key].is_a?(String) && config.build_settings[key].include?('ccache-clang')
+          end
+          next unless ccache_in_use
+
+          react_native_path = config.build_settings['REACT_NATIVE_PATH']
+          next unless react_native_path.is_a?(String) && react_native_path.include?('PODS_ROOT')
+
+          config.build_settings['REACT_NATIVE_PATH'] = react_native_path
+            .gsub('${PODS_ROOT}', pods_root_from_srcroot)
+            .gsub('$(PODS_ROOT)', pods_root_from_srcroot)
+          changed = true
+        end
+
+        if changed
+          Pod::UI.puts '[Expo] '.blue + "Re-anchored REACT_NATIVE_PATH to $(SRCROOT) in #{project.path.basename} so ccache build settings resolve for all targets"
+          project.save
+        end
       end
     end
 
