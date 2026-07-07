@@ -2,8 +2,6 @@ import {
   extractExpoPathFromURL,
   parsePathAndParamsFromExpoGoLink,
   parsePathFromExpoGoLink,
-  safelyDecodeURI,
-  safelyDecodeURIComponent,
 } from '../extractPathFromURL';
 
 describe(extractExpoPathFromURL, () => {
@@ -191,31 +189,5 @@ describe(parsePathAndParamsFromExpoGoLink, () => {
         queryString: '?foo=bar',
       }
     );
-  });
-});
-
-describe(safelyDecodeURI, () => {
-  it(`decodes a well-formed URI`, () => {
-    expect(safelyDecodeURI('http://localhost:8081/example%20path')).toEqual(
-      'http://localhost:8081/example path'
-    );
-  });
-  it(`returns the original string when the URI is malformed`, () => {
-    expect(safelyDecodeURI('http://localhost:8081/%GG')).toEqual('http://localhost:8081/%GG');
-  });
-  it(`does not throw on malformed percent-encoding`, () => {
-    expect(() => safelyDecodeURI('%GG')).not.toThrow();
-  });
-});
-
-describe(safelyDecodeURIComponent, () => {
-  it(`decodes a well-formed URI component`, () => {
-    expect(safelyDecodeURIComponent('%20%2B%2F')).toEqual(' +/');
-  });
-  it(`returns the original string when the URI component is malformed`, () => {
-    expect(safelyDecodeURIComponent('%GG')).toEqual('%GG');
-  });
-  it(`does not throw on malformed percent-encoding`, () => {
-    expect(() => safelyDecodeURIComponent('%GG')).not.toThrow();
   });
 });

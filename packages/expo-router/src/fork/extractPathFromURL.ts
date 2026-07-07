@@ -1,3 +1,5 @@
+import { safeDecodeURI, safeDecodeURIComponent } from '../utils/url';
+
 export function parsePathAndParamsFromExpoGoLink(url: string): {
   pathname: string;
   queryString: string;
@@ -69,23 +71,6 @@ function isExpoDevelopmentClient(url: URL): boolean {
   return url.hostname === 'expo-development-client';
 }
 
-// Malformed percent-encoding (e.g. `%GG`) would otherwise throw and drop the link.
-export function safelyDecodeURI(uri: string): string {
-  try {
-    return decodeURI(uri);
-  } catch {
-    return uri;
-  }
-}
-
-export function safelyDecodeURIComponent(uriComponent: string): string {
-  try {
-    return decodeURIComponent(uriComponent);
-  } catch {
-    return uriComponent;
-  }
-}
-
 function fromDeepLink(url: string): string {
   let res: URL | null;
   try {
@@ -116,7 +101,7 @@ function fromDeepLink(url: string): string {
       return '';
     }
     const incomingUrl = res.searchParams.get('url')!;
-    return extractExactPathFromURL(safelyDecodeURI(incomingUrl));
+    return extractExactPathFromURL(safeDecodeURI(incomingUrl));
   }
 
   let results = '';
@@ -133,7 +118,7 @@ function fromDeepLink(url: string): string {
     ? ''
     : // @ts-ignore: `entries` is not on `URLSearchParams` in some typechecks.
       [...res.searchParams.entries()]
-        .map(([k, v]) => `${k}=${safelyDecodeURIComponent(v)}`)
+        .map(([k, v]) => `${k}=${safeDecodeURIComponent(v)}`)
         .join('&');
 
   if (qs) {
