@@ -110,9 +110,7 @@ export function test({ describe, it, expect }) {
       });
 
       it('extracts from nested defaults at multiple levels', () => {
-        const {
-          a: { b: { c = 3 } = {} } = {},
-        } = {};
+        const { a: { b: { c = 3 } = {} } = {} } = {};
         expect(c).toBe(3);
       });
 
@@ -478,9 +476,7 @@ export function test({ describe, it, expect }) {
       });
 
       it('nested destructuring in arrow params', () => {
-        const fn = ({
-          data: { id, value = 0 },
-        }) => id + value;
+        const fn = ({ data: { id, value = 0 } }) => id + value;
         expect(fn({ data: { id: 10 } })).toBe(10);
         expect(fn({ data: { id: 10, value: 5 } })).toBe(15);
       });
@@ -712,9 +708,7 @@ export function test({ describe, it, expect }) {
       // From: destructuring/const/exec.js
       it('const with nested defaults from function return', () => {
         const getState = () => ({});
-        const {
-          data: { courses: oldCourses = [] } = {},
-        } = getState();
+        const { data: { courses: oldCourses = [] } = {} } = getState();
         expect(oldCourses).toEqual([]);
       });
     });

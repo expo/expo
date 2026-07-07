@@ -436,6 +436,10 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    to a synchronous no-op scheduler — callers can detect this via
    `JavaScriptRuntime.supportsAsyncScheduling`.
 
+   `scheduler` is an opaque handle that `dispatch` understands; the factories pass
+   a handle created by `expo::createReactSchedulerHandle` that references the React
+   runtime scheduler weakly (see `EXReactSchedulerDispatch.h`).
+
    `dispatch` is a raw pointer to a C function with signature
    `void (*)(void *scheduler, int priority, void (^callback)())` — cast back
    to the typed pointer inside `ExpoModulesJSI`. It's typed as `UnsafeRawPointer`
@@ -616,12 +620,15 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   /// Returns the app context that prepared the given runtime, or `nil` if no app context did
   /// (its `global.expo` object carries no `NativeState`). Lets code that only has a runtime
-  /// recover the app context without capturing a reference to it.
+  /// recover the app context without capturing a reference to it, e.g. a `JavaScriptCodable`
+  /// witness that has the runtime but not the context.
   @JavaScriptActor
-  internal static func from(runtime: JavaScriptRuntime) -> AppContext? {
+  public static func from(runtime: borrowing JavaScriptRuntime) -> AppContext? {
     // Recovery may happen on every conversion, so look the core object up through a cached
     // prop name id to avoid re-interning the "expo" string into JSI on each call.
-    let coreObjectPropName = JavaScriptPropNameID.cached(runtime, globalCoreObjectPropertyName)
+    // TODO: drop the `copy` once `JavaScriptPropNameID.cached` borrows its runtime instead of
+    // taking it owned — it only reads the runtime, so the owned convention forces a needless retain.
+    let coreObjectPropName = JavaScriptPropNameID.cached(copy runtime, globalCoreObjectPropertyName)
     guard let coreObject = try? runtime.global().getPropertyAsObject(coreObjectPropName) else {
       return nil
     }
@@ -768,8 +775,13 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     if moduleRegistry.has(moduleWithName: "ExpoGo") {
       NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
     } else {
-      DispatchQueue.main.async {
-        RCTTriggerReloadCommandListeners(reason)
+      // Must run on the main thread (see #31789), but synchronously when already there — deferring
+      // via `DispatchQueue.main.async` deadlocks the bridgeless reload against TurboModule teardown.
+      let trigger = { RCTTriggerReloadCommandListeners(reason) }
+      if Thread.isMainThread {
+        trigger()
+      } else {
+        DispatchQueue.main.async(execute: trigger)
       }
     }
   }

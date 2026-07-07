@@ -31,7 +31,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           href={githubUrl(router.pathname)}
           aria-label="Edit content of this page on GitHub">
           <div className="flex flex-row items-center gap-2">
-            <Edit05Icon className="icon-sm text-icon-secondary" />
+            <Edit05Icon aria-hidden="true" className="icon-sm text-icon-secondary" />
             <FOOTNOTE crawlable={false} theme="secondary">
               {intl.formatMessage({ id: 'editPage' })}
             </FOOTNOTE>

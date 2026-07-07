@@ -19,12 +19,6 @@ import {
   SafeAreaProviderCompat,
   useFrameSize,
 } from '../../elements';
-import type {
-  NativeStackDescriptor,
-  NativeStackDescriptorMap,
-  NativeStackNavigationHelpers,
-} from '../types';
-import { useHeaderConfigProps } from './useHeaderConfigProps';
 import {
   NavigationProvider,
   type ParamListBase,
@@ -34,11 +28,17 @@ import {
   usePreventRemoveContext,
   useTheme,
 } from '../../native';
+import type {
+  NativeStackDescriptor,
+  NativeStackDescriptorMap,
+  NativeStackNavigationHelpers,
+} from '../types';
 import { debounce } from '../utils/debounce';
 import { getModalRouteKeys } from '../utils/getModalRoutesKeys';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 import { useDismissedRouteError } from '../utils/useDismissedRouteError';
 import { useInvalidPreventRemoveError } from '../utils/useInvalidPreventRemoveError';
+import { useHeaderConfigProps } from './useHeaderConfigProps';
 
 const ANDROID_DEFAULT_HEADER_HEIGHT = 56;
 
@@ -132,7 +132,9 @@ const SceneView = ({
     scrollEdgeEffects,
     freezeOnBlur,
     contentStyle,
+    unstable_nativeProps,
   } = options;
+  const screenNativeProps = unstable_nativeProps;
 
   if (gestureDirection === 'vertical' && Platform.OS === 'ios') {
     // for `vertical` direction to work, we need to set `fullScreenGestureEnabled` to `true`
@@ -399,8 +401,9 @@ const SceneView = ({
             },
           contentStyle,
         ]}
-        headerConfig={headerConfig}
         unstable_sheetFooter={unstable_sheetFooter}
+        {...screenNativeProps}
+        headerConfig={headerConfig}
         // When ts-expect-error is added, it affects all the props below it
         // So we keep any props that need it at the end
         // Otherwise invalid props may not be caught by TypeScript
@@ -457,6 +460,7 @@ type Props = {
 };
 
 export function NativeStackView({ state, navigation, descriptors, describe }: Props) {
+  const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state);
 
   useInvalidPreventRemoveError(descriptors);
@@ -473,7 +477,9 @@ export function NativeStackView({ state, navigation, descriptors, describe }: Pr
 
   return (
     <SafeAreaProviderCompat>
-      <ScreenStack style={styles.container}>
+      <ScreenStack
+        nativeContainerStyle={{ backgroundColor: colors.background }}
+        style={styles.container}>
         {state.routes.concat(state.preloadedRoutes).map((route, index) => {
           const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
           const isFocused = state.index === index;

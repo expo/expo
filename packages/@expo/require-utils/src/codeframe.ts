@@ -2,9 +2,8 @@ import url from 'node:url';
 import type { Diagnostic } from 'typescript';
 
 function errorToLoc(filename: string, error: Error) {
-  if (error.name === 'ReferenceError' || error.name === 'SyntaxError') {
-    let stack = `${error.stack || ''}`;
-    stack = stack.slice(error.name.length + 2 /* '${name}: ' prefix */);
+  if (typeof error.name === 'string' && typeof error.stack === 'string') {
+    let stack = error.stack.slice(error.name.length + 2 /* '${name}: ' prefix */);
     stack = stack.slice(error.message.length);
     const trace = stack.match(/at ([^\n]+):(\d+):(\d+)/m);
     if (url.pathToFileURL(filename).href === trace?.[1]) {

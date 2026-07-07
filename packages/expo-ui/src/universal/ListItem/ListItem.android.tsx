@@ -19,14 +19,22 @@ function wrapStrings(node: ReactNode): ReactNode {
  * Delegates to Material 3 `ListItem` and applies `clickable` for tap handling.
  */
 export function ListItem(props: ListItemProps) {
-  const { children, onPress, leading: leadingProp, trailing: trailingProp, supportingText } = props;
+  const {
+    children,
+    onPress,
+    leading: leadingProp,
+    trailing: trailingProp,
+    supportingText,
+    modifiers,
+  } = props;
   const slots = extractListItemSlots(children);
   const leading = slots.leading ?? leadingProp;
   const trailing = slots.trailing ?? trailingProp;
   const supporting = slots.supporting ?? supportingText;
+  const itemModifiers = [...(onPress ? [clickable(onPress)] : []), ...(modifiers ?? [])];
 
   return (
-    <ComposeListItem modifiers={onPress ? [clickable(onPress)] : undefined}>
+    <ComposeListItem modifiers={itemModifiers.length ? itemModifiers : undefined}>
       <ComposeListItem.HeadlineContent>
         <>{wrapStrings(slots.headline)}</>
       </ComposeListItem.HeadlineContent>

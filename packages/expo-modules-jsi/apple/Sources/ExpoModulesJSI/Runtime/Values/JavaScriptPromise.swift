@@ -102,9 +102,11 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       guard let rejecter = rejectFunction.take() else {
         return
       }
-      // Create a JS error from any (native) error.
-      let errorMessage = String(describing: error)
-      let errorValue = JavaScriptError(runtime, message: errorMessage).asValue()
+      // Convert the error to its JavaScript representation. This preserves an existing
+      // `JavaScriptError`'s wrapped value and a `JavaScriptThrowable`'s structured `code`
+      // (mirroring the synchronous throw path in `forwardingSwiftErrorsToJS`), so the `code`
+      // is not lost on async rejection. See `JavaScriptError.from(_:in:)`.
+      let errorValue = JavaScriptError.from(error, in: runtime).toValue()
 
       // Call the actual rejecter given in the Promise setup.
       // This will also call `deferredPromise.reject` in the `then` handler.
@@ -130,7 +132,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     }
     let onRejected = runtime.createFunction { [weak deferredPromise] this, arguments in
       guard let deferredPromise else { return .undefined }
-      let error = arguments[0]
+      // Wrap the rejection value into a `JavaScriptError` here, on the JavaScript thread, rather
+      // than inside the off-thread actor, since building the error touches the runtime.
+      let error = JavaScriptError(runtime, value: arguments[0])
       Task.immediate_polyfill {
         await deferredPromise.reject(error)
       }

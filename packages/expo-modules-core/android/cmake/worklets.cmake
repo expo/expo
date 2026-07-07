@@ -14,6 +14,8 @@ add_library(
 
 use_expo_common(expo-modules-worklets)
 
+target_precompile_headers(expo-modules-worklets REUSE_FROM expo-modules-pch)
+
 target_include_directories(
   expo-modules-worklets
   PRIVATE

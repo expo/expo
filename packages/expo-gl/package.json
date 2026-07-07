@@ -2,39 +2,37 @@
   "name": "expo-gl",
   "version": "56.0.5",
   "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "expo-build src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "jest",
-    "test:snapshots": "jest --updateSnapshot",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
-  },
   "keywords": [
-    "react-native",
     "expo",
     "gl",
     "glview",
+    "react-native",
     "webgl"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/gl-view/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-gl"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/gl-view/",
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "jest": {
-    "preset": "expo-module-scripts"
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "test:snapshots": "jest --updateSnapshot",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "invariant": "^2.2.4"
@@ -67,5 +65,8 @@
     "react-native-web": {
       "optional": true
     }
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

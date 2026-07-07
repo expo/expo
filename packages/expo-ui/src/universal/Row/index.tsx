@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 
-import type { RowProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
 import type { UniversalAlignment } from '../types';
+import type { RowProps } from './types';
 
 const styles = StyleSheet.create({
   row: {

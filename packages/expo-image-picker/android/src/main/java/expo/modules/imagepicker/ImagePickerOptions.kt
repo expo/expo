@@ -39,6 +39,7 @@ internal class ImagePickerOptions : Record, Serializable {
   @Field
   var mediaTypes: Array<JSMediaTypes> = arrayOf(JSMediaTypes.IMAGES)
 
+  @Field
   @IntRange(from = 0)
   var videoMaxDuration: Int = 0
 

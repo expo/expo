@@ -1,5 +1,5 @@
-import Drawer from './DrawerClient';
 import { Screen } from '../views/Screen';
+import Drawer from './DrawerClient';
 
 // Re-export the drawer building blocks (content components, items, types, etc.) from the
 // vendored react-navigation so apps can build custom `drawerContent` without depending on

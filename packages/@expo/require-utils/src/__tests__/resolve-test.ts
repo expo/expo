@@ -1,7 +1,10 @@
 import { vol } from 'memfs';
 import Module from 'node:module';
+import path from 'node:path';
 
 import { resolveFrom } from '../resolve';
+
+const toNativePath = (posixPath: string) => path.resolve(posixPath);
 
 beforeEach(() => {
   vol.reset();
@@ -10,22 +13,22 @@ beforeEach(() => {
 describe('direct path resolution', () => {
   it('returns the exact resolved path when the file exists', () => {
     vol.fromJSON({ '/proj/a.js': '' });
-    expect(resolveFrom('/proj', './a.js')).toBe('/proj/a.js');
+    expect(resolveFrom('/proj', './a.js')).toBe(toNativePath('/proj/a.js'));
   });
 
   it('resolves moduleId relative to fromDirectory', () => {
     vol.fromJSON({ '/proj/sub/a.js': '' });
-    expect(resolveFrom('/proj/sub', './a.js')).toBe('/proj/sub/a.js');
+    expect(resolveFrom('/proj/sub', './a.js')).toBe(toNativePath('/proj/sub/a.js'));
   });
 
   it('resolves a parent-relative specifier', () => {
     vol.fromJSON({ '/proj/a.js': '' });
-    expect(resolveFrom('/proj/sub', '../a.js')).toBe('/proj/a.js');
+    expect(resolveFrom('/proj/sub', '../a.js')).toBe(toNativePath('/proj/a.js'));
   });
 
   it('accepts an absolute moduleId', () => {
     vol.fromJSON({ '/abs/a.js': '' });
-    expect(resolveFrom('/proj', '/abs/a.js')).toBe('/abs/a.js');
+    expect(resolveFrom('/proj', '/abs/a.js')).toBe(toNativePath('/abs/a.js'));
   });
 
   it('does not return a directory as a direct match', () => {
@@ -37,24 +40,30 @@ describe('direct path resolution', () => {
 describe('extension fallback', () => {
   it('appends each provided extension and returns the first match', () => {
     vol.fromJSON({ '/proj/a.js': '' });
-    expect(resolveFrom('/proj', './a', { extensions: ['.ts', '.js'] })).toBe('/proj/a.js');
+    expect(resolveFrom('/proj', './a', { extensions: ['.ts', '.js'] })).toBe(
+      toNativePath('/proj/a.js')
+    );
   });
 
   it('respects the order of the provided extensions', () => {
     vol.fromJSON({ '/proj/a.ts': '', '/proj/a.js': '' });
-    expect(resolveFrom('/proj', './a', { extensions: ['.ts', '.js'] })).toBe('/proj/a.ts');
-    expect(resolveFrom('/proj', './a', { extensions: ['.js', '.ts'] })).toBe('/proj/a.js');
+    expect(resolveFrom('/proj', './a', { extensions: ['.ts', '.js'] })).toBe(
+      toNativePath('/proj/a.ts')
+    );
+    expect(resolveFrom('/proj', './a', { extensions: ['.js', '.ts'] })).toBe(
+      toNativePath('/proj/a.js')
+    );
   });
 
   it('normalizes extensions that omit the leading dot', () => {
     vol.fromJSON({ '/proj/a.ts': '' });
-    expect(resolveFrom('/proj', './a', { extensions: ['ts'] })).toBe('/proj/a.ts');
+    expect(resolveFrom('/proj', './a', { extensions: ['ts'] })).toBe(toNativePath('/proj/a.ts'));
   });
 
   it('falls back to default extensions when none are provided', () => {
     vol.fromJSON({ '/proj/a.js': '' });
     expect(Object.keys(Module._extensions)).toContain('.js');
-    expect(resolveFrom('/proj', './a')).toBe('/proj/a.js');
+    expect(resolveFrom('/proj', './a')).toBe(toNativePath('/proj/a.js'));
   });
 
   it('returns null for an unresolved file specifier with no extension match', () => {
@@ -65,38 +74,38 @@ describe('extension fallback', () => {
   it('accepts an empty extensions array', () => {
     vol.fromJSON({ '/proj/a.js': '' });
     expect(resolveFrom('/proj', './a', { extensions: [] })).toBeNull();
-    expect(resolveFrom('/proj', './a.js', { extensions: [] })).toBe('/proj/a.js');
+    expect(resolveFrom('/proj', './a.js', { extensions: [] })).toBe(toNativePath('/proj/a.js'));
   });
 });
 
 describe('/index fallback for file specifiers', () => {
   it('returns <dir>/index.<ext> when the file specifier resolves to a directory', () => {
     vol.fromJSON({ '/proj/pkg/index.js': '' });
-    expect(resolveFrom('/proj', './pkg')).toBe('/proj/pkg/index.js');
+    expect(resolveFrom('/proj', './pkg')).toBe(toNativePath('/proj/pkg/index.js'));
   });
 
   it('returns the /index file for moduleId "."', () => {
     vol.fromJSON({ '/proj/index.js': '' });
-    expect(resolveFrom('/proj', '.')).toBe('/proj/index.js');
+    expect(resolveFrom('/proj', '.')).toBe(toNativePath('/proj/index.js'));
   });
 
   it('returns the /index file for moduleId ".."', () => {
     vol.fromJSON({ '/index.js': '' });
-    expect(resolveFrom('/proj', '..')).toBe('/index.js');
+    expect(resolveFrom('/proj', '..')).toBe(toNativePath('/index.js'));
   });
 
   it('returns the /index file for an absolute directory moduleId', () => {
     vol.fromJSON({ '/abs/pkg/index.js': '' });
-    expect(resolveFrom('/proj', '/abs/pkg')).toBe('/abs/pkg/index.js');
+    expect(resolveFrom('/proj', '/abs/pkg')).toBe(toNativePath('/abs/pkg/index.js'));
   });
 
   it('honors the order of extensions for /index resolution', () => {
     vol.fromJSON({ '/proj/pkg/index.ts': '', '/proj/pkg/index.js': '' });
     expect(resolveFrom('/proj', './pkg', { extensions: ['.ts', '.js'] })).toBe(
-      '/proj/pkg/index.ts'
+      toNativePath('/proj/pkg/index.ts')
     );
     expect(resolveFrom('/proj', './pkg', { extensions: ['.js', '.ts'] })).toBe(
-      '/proj/pkg/index.js'
+      toNativePath('/proj/pkg/index.js')
     );
   });
 
@@ -112,7 +121,9 @@ describe('/index fallback for file specifiers', () => {
 
   it('tries /index when skipNodePath is enabled even for non-file specifiers', () => {
     vol.fromJSON({ '/proj/pkg/index.js': '' });
-    expect(resolveFrom('/proj', 'pkg', { skipNodePath: true })).toBe('/proj/pkg/index.js');
+    expect(resolveFrom('/proj', 'pkg', { skipNodePath: true })).toBe(
+      toNativePath('/proj/pkg/index.js')
+    );
   });
 });
 
@@ -131,37 +142,41 @@ describe('file specifier short-circuit', () => {
 describe('node_modules walking', () => {
   it('resolves a bare specifier with an extension from node_modules', () => {
     vol.fromJSON({ '/proj/node_modules/pkg.js': '' });
-    expect(resolveFrom('/proj', 'pkg')).toBe('/proj/node_modules/pkg.js');
+    expect(resolveFrom('/proj', 'pkg')).toBe(toNativePath('/proj/node_modules/pkg.js'));
   });
 
   it('resolves the /index file of a package directory from node_modules', () => {
     vol.fromJSON({ '/proj/node_modules/pkg/index.js': '' });
-    expect(resolveFrom('/proj', 'pkg')).toBe('/proj/node_modules/pkg/index.js');
+    expect(resolveFrom('/proj', 'pkg')).toBe(toNativePath('/proj/node_modules/pkg/index.js'));
   });
 
   it('resolves a subpath inside a package', () => {
     vol.fromJSON({ '/proj/node_modules/pkg/sub.js': '' });
-    expect(resolveFrom('/proj', 'pkg/sub')).toBe('/proj/node_modules/pkg/sub.js');
+    expect(resolveFrom('/proj', 'pkg/sub')).toBe(toNativePath('/proj/node_modules/pkg/sub.js'));
   });
 
   it('resolves a subpath /index inside a package', () => {
     vol.fromJSON({ '/proj/node_modules/pkg/sub/index.js': '' });
-    expect(resolveFrom('/proj', 'pkg/sub')).toBe('/proj/node_modules/pkg/sub/index.js');
+    expect(resolveFrom('/proj', 'pkg/sub')).toBe(
+      toNativePath('/proj/node_modules/pkg/sub/index.js')
+    );
   });
 
   it('resolves a scoped package', () => {
     vol.fromJSON({ '/proj/node_modules/@scope/pkg/index.js': '' });
-    expect(resolveFrom('/proj', '@scope/pkg')).toBe('/proj/node_modules/@scope/pkg/index.js');
+    expect(resolveFrom('/proj', '@scope/pkg')).toBe(
+      toNativePath('/proj/node_modules/@scope/pkg/index.js')
+    );
   });
 
   it('walks up to ancestor node_modules folders', () => {
     vol.fromJSON({ '/proj/sub/dir/keep': '', '/node_modules/pkg/index.js': '' });
-    expect(resolveFrom('/proj/sub/dir', 'pkg')).toBe('/node_modules/pkg/index.js');
+    expect(resolveFrom('/proj/sub/dir', 'pkg')).toBe(toNativePath('/node_modules/pkg/index.js'));
   });
 
   it('returns the direct file match path as-is', () => {
     vol.fromJSON({ '/proj/node_modules/pkg': '' });
-    expect(resolveFrom('/proj', 'pkg')).toBe('/proj/node_modules/pkg');
+    expect(resolveFrom('/proj', 'pkg')).toBe(toNativePath('/proj/node_modules/pkg'));
   });
 
   it('does not /index-resolve inside node_modules for .json moduleIds', () => {
@@ -193,7 +208,7 @@ describe('followSymlinks option', () => {
     vol.mkdirSync('/proj/node_modules', { recursive: true });
     vol.symlinkSync('/real/pkg.js', '/proj/node_modules/pkg.js');
     expect(resolveFrom('/proj', 'pkg', { followSymlinks: false, skipNodePath: true })).toBe(
-      '/proj/node_modules/pkg.js'
+      toNativePath('/proj/node_modules/pkg.js')
     );
   });
 
@@ -219,7 +234,9 @@ describe('followSymlinks option', () => {
     vol.fromJSON({ '/real/index.js': '' });
     vol.mkdirSync('/proj/pkg', { recursive: true });
     vol.symlinkSync('/real/index.js', '/proj/pkg/index.js');
-    expect(resolveFrom('/proj', './pkg', { followSymlinks: true })).toBe('/proj/pkg/index.js');
+    expect(resolveFrom('/proj', './pkg', { followSymlinks: true })).toBe(
+      toNativePath('/proj/pkg/index.js')
+    );
   });
 
   it('defaults followSymlinks to the resolved skipNodePath value', () => {
@@ -233,7 +250,7 @@ describe('followSymlinks option', () => {
 describe('JSON handling', () => {
   it('resolves a .json file by exact path without trying extensions', () => {
     vol.fromJSON({ '/proj/a.json': '' });
-    expect(resolveFrom('/proj', './a.json')).toBe('/proj/a.json');
+    expect(resolveFrom('/proj', './a.json')).toBe(toNativePath('/proj/a.json'));
   });
 
   it('does not append extensions for .json moduleIds', () => {
@@ -243,7 +260,9 @@ describe('JSON handling', () => {
 
   it('resolves a .json file from node_modules', () => {
     vol.fromJSON({ '/proj/node_modules/pkg/data.json': '' });
-    expect(resolveFrom('/proj', 'pkg/data.json')).toBe('/proj/node_modules/pkg/data.json');
+    expect(resolveFrom('/proj', 'pkg/data.json')).toBe(
+      toNativePath('/proj/node_modules/pkg/data.json')
+    );
   });
 
   it('allows skipNodePath=false to consult native resolution for /package.json', () => {
@@ -305,7 +324,7 @@ describe('symlink type detection', () => {
     vol.fromJSON({ '/real/a.js': '' });
     vol.mkdirSync('/proj', { recursive: true });
     vol.symlinkSync('/real/a.js', '/proj/a.js');
-    expect(resolveFrom('/proj', './a.js')).toBe('/proj/a.js');
+    expect(resolveFrom('/proj', './a.js')).toBe(toNativePath('/proj/a.js'));
   });
 
   it('treats a symlink-to-directory as not existing for /index fallback', () => {

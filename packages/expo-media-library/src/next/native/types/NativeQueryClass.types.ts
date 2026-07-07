@@ -1,6 +1,6 @@
+import type { AssetField, AssetFieldValueMap, AssetMetadata, SortDescriptor } from '../../types';
 import type { NativeAlbumClass } from './NativeAlbumClass.types';
 import type { NativeAssetClass } from './NativeAssetClass.types';
-import type { AssetField, AssetFieldValueMap, AssetMetadata, SortDescriptor } from '../../types';
 
 export declare class NativeQueryClass {
   constructor();

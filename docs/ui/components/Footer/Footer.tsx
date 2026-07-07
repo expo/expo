@@ -77,7 +77,7 @@ export const Footer = ({
                 'flex w-full items-center gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
-              <ArrowLeftIcon className="shrink-0 text-icon-secondary" />
+              <ArrowLeftIcon aria-hidden="true" className="shrink-0 text-icon-secondary" />
               <div>
                 <FOOTNOTE theme="secondary">
                   {intl.formatMessage({ id: 'footerPrevious' })}
@@ -103,7 +103,7 @@ export const Footer = ({
                 </FOOTNOTE>
                 <P weight="medium">{nextPage.sidebarTitle ?? nextPage.name}</P>
               </div>
-              <ArrowRightIcon className="shrink-0 text-icon-secondary" />
+              <ArrowRightIcon aria-hidden="true" className="shrink-0 text-icon-secondary" />
             </LinkBase>
           ) : (
             <div className="w-full" />

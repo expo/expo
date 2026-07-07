@@ -8,7 +8,10 @@ Observe.configure({
   dispatchingEnabled: true,
   dispatchInDebug: true,
   integrations: {
-    'expo-router': true,
+    'expo-router': { filteredParams: ['accountId', 'firstName'] },
+    'expo-image': {
+      oversizeThreshold: 1.5,
+    },
   },
 });
 

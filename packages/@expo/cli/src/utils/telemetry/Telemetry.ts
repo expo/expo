@@ -1,11 +1,12 @@
 import crypto from 'node:crypto';
 
+import { getAnonymousId } from '../../api/user/UserSettings';
+import { env } from '../env';
 import { FetchClient } from './clients/FetchClient';
 import { FetchDetachedClient } from './clients/FetchDetachedClient';
 import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecord } from './types';
+import { getAgentTelemetryContext } from './utils/agent';
 import { createContext } from './utils/context';
-import { getAnonymousId } from '../../api/user/UserSettings';
-import { env } from '../env';
 
 const debug = require('debug')('expo:telemetry') as typeof console.log;
 
@@ -90,6 +91,8 @@ export class Telemetry {
   }
 
   private recordInternal(records: TelemetryRecord[]) {
+    const agent = getAgentTelemetryContext();
+
     return this.client.record(
       records.map((record) => ({
         ...record,
@@ -101,6 +104,7 @@ export class Telemetry {
         context: {
           ...this.context,
           sessionId: this.actor.sessionId,
+          ...(agent ? { agent } : {}),
           client: { mode: this.client.strategy },
         },
       }))

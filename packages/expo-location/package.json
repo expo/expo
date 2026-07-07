@@ -2,43 +2,41 @@
   "name": "expo-location",
   "version": "56.0.14",
   "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "pnpm run build:lib && pnpm run build:plugin",
-    "build:lib": "expo-build src",
-    "build:plugin": "expo-build --base plugin cjs:src",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "jest",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
-  },
   "keywords": [
-    "react-native",
-    "expo",
-    "location",
-    "geolocation",
-    "coords",
-    "geocoding",
     "compass",
-    "heading"
+    "coords",
+    "expo",
+    "geocoding",
+    "geolocation",
+    "heading",
+    "location",
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/location/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-location"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/location/",
-  "jest": {
-    "preset": "expo-module-scripts"
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
     "@expo/image-utils": "workspace:^0.10.1"
@@ -51,5 +49,8 @@
   },
   "peerDependencies": {
     "expo": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

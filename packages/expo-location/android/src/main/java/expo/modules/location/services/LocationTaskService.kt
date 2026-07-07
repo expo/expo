@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
@@ -48,7 +47,7 @@ class LocationTaskService : Service() {
   }
 
   fun stop() {
-    stopForeground(true)
+    stopForeground(STOP_FOREGROUND_REMOVE)
     stopSelf()
   }
 

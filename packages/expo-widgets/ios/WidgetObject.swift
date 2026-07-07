@@ -33,4 +33,16 @@ final class WidgetObject: SharedObject {
     }
     return try entries.map { try WidgetsJSTimelineEntry(from: $0, appContext: appContext) }
   }
+
+  func setConfigurationParameterEnum(parameterName: String, options: [WidgetConfigurationOptionRecord]?) {
+    if let options {
+      WidgetsStorage.set(
+        options.map { $0.toDictionary() },
+        forKey: "__expo_widgets_\(name)_configuration_options_\(parameterName)"
+      )
+    } else {
+      WidgetsStorage.removeObject(forKey: "__expo_widgets_\(name)_configuration_options_\(parameterName)")
+    }
+    self.reload()
+  }
 }

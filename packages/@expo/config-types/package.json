@@ -2,8 +2,29 @@
   "name": "@expo/config-types",
   "version": "56.0.5",
   "description": "Types for the Expo config object app.config.ts",
-  "types": "build/ExpoConfig.d.ts",
+  "keywords": [
+    "app.config.js",
+    "app.json",
+    "expo",
+    "json",
+    "react",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/config-types#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/config-types"
+  },
+  "files": [
+    "build"
+  ],
   "main": "build/ExpoConfig.js",
+  "types": "build/ExpoConfig.d.ts",
   "exports": {
     ".": {
       "types": {
@@ -15,37 +36,20 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "generate": "node ./scripts/generate.js",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "jest",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/config-types"
-  },
-  "keywords": [
-    "json",
-    "app.json",
-    "app.config.js",
-    "react-native",
-    "expo",
-    "react"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/config-types#readme",
-  "files": [
-    "build"
-  ],
   "devDependencies": {
     "@types/node": "^22.14.0",
     "chalk": "^4.1.2",
@@ -54,8 +58,5 @@
     "json-schema-to-typescript": "^15.0.0",
     "prettier": "^3.8.3",
     "semver": "^7.7.4"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

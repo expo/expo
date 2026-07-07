@@ -11,7 +11,13 @@ private struct ProgressEvent {
   var percent: Int = 0
 }
 
-@ExpoModule
+@SharedObject
+private final class MacroEmittingObject: SharedObject {
+  @Event
+  var onTicked: (ProgressEvent) -> Void
+}
+
+@ExpoModule(classes: [MacroEmittingObject.self])
 private final class MacroEmitter: Module {
   @Event
   var onProgress: (ProgressEvent) -> Void
@@ -59,6 +65,23 @@ private struct MacroEventTests {
     module.onDone()
 
     try await expectResult(equals: 1)
+  }
+
+  @Test
+  func `emits an event from a shared object to a JS listener`() async throws {
+    let object = MacroEmittingObject()
+    // Encoding pairs the native object with a JS object and registers it; stash that on a global so a
+    // listener can be attached from JS.
+    let encoded = try MacroEmittingObject.encode(object, in: runtime)
+    try runtime.global().setProperty("emittingObject", value: encoded)
+    try runtime.eval("""
+      globalThis.result = null
+      emittingObject.addListener('ticked', payload => { globalThis.result = payload.percent })
+      """)
+
+    object.onTicked(ProgressEvent(percent: 30))
+
+    try await expectResult(equals: 30)
   }
 
   nonisolated private func expectResult(equals expected: Int) async throws {

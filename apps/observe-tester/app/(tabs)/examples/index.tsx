@@ -14,6 +14,11 @@ export default function ExamplesIndex() {
       contentContainerStyle={styles.content}>
       <ObserveInteractiveMarker />
       <Button
+        title="Expo Image"
+        description="Oversized-image reporting: correctly sized vs too big"
+        onPress={() => router.push('/examples/expo-image')}
+      />
+      <Button
         title="Nested stack"
         description="Network, heavy renders, params, nested modal"
         onPress={() => router.push('/examples/nested-stack')}

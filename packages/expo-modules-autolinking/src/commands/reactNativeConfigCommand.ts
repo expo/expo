@@ -1,8 +1,8 @@
 import type commander from 'commander';
 
+import { createReactNativeConfigAsync } from '../reactNativeConfig';
 import type { AutolinkingCommonArguments } from './autolinkingOptions';
 import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
-import { createReactNativeConfigAsync } from '../reactNativeConfig';
 
 interface ReactNativeConfigArguments extends AutolinkingCommonArguments {
   sourceDir?: string | null;

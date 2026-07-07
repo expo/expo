@@ -94,10 +94,12 @@ function useNativeLogBoxDataPolyfill(
 ) {
   // @ts-ignore
   // eslint-disable-next-line import/namespace
+  // oxlint-disable-next-line no-import-assign
   LogBoxData.setSelectedLog = polyfill.onChangeSelectedIndex;
 
   // @ts-ignore
   // eslint-disable-next-line import/namespace
+  // oxlint-disable-next-line no-import-assign
   LogBoxData.dismiss = (log: LogBoxLog) => {
     const index = logs.indexOf(log);
     polyfill.onDismiss?.(index);

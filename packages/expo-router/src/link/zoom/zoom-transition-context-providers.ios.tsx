@@ -2,6 +2,13 @@
 
 import { useCallback, useId, useMemo, useRef, useState } from 'react';
 
+import {
+  getInternalExpoRouterParams,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
+} from '../../navigationParams';
+import { shouldLinkExternally } from '../../utils/url';
+import { useIsPreview } from '../preview/PreviewRouteContext';
 import { isZoomTransitionEnabled } from './ZoomTransitionEnabler';
 import {
   ZoomTransitionSourceContext,
@@ -13,13 +20,6 @@ import type {
   ZoomTransitionSourceContextProviderProps,
   ZoomTransitionTargetContextProviderProps,
 } from './zoom-transition-context-providers.types';
-import {
-  getInternalExpoRouterParams,
-  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
-  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
-} from '../../navigationParams';
-import { shouldLinkExternally } from '../../utils/url';
-import { useIsPreview } from '../preview/PreviewRouteContext';
 
 export function ZoomTransitionSourceContextProvider({
   children,

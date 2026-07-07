@@ -1,5 +1,9 @@
-import { createPermissionHook, PermissionStatus, type PermissionHookOptions } from 'expo';
-import { UnavailabilityError } from 'expo-modules-core';
+import {
+  createPermissionHook,
+  PermissionStatus,
+  UnavailabilityError,
+  type PermissionHookOptions,
+} from 'expo';
 import { Platform, processColor } from 'react-native';
 
 import InternalExpoCalendar from './ExpoCalendar';

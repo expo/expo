@@ -255,7 +255,10 @@ function shouldPrintRequireCycle(modules: readonly (string | null | undefined)[]
   return modules.every((module) => !isIgnored(module));
 }
 
-function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev, moduleIdHint?: string): any | Exports {
+function metroImportDefault(
+  moduleId: ModuleID | VerboseModuleNameForDev,
+  moduleIdHint?: string
+): any | Exports {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedDefault !== EMPTY) {
     return modules.get(moduleId)!.importedDefault;
   }

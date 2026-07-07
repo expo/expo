@@ -1,16 +1,16 @@
 import { Picker } from '@react-native-picker/picker';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 import { useVideoPlayer, VideoView, VideoSource } from 'expo-video';
 import React, { useRef, useState } from 'react';
 import { ScrollView, Text, View, Button } from 'react-native';
 
+import TitledSwitch from '../../components/TitledSwitch';
 import {
   getMediaLibraryVideoSourceAsync,
   videoLabels as labelsList,
   videoSources as sourcesList,
 } from './videoSources';
 import { styles } from './videoStyles';
-import TitledSwitch from '../../components/TitledSwitch';
 
 const videoSources = [...sourcesList];
 const videoLabels = [...labelsList];

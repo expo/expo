@@ -33,6 +33,7 @@ import {
   listRowSeparator,
   listRowSpacing,
   border,
+  strokeBorder,
   onTapGesture,
   onLongPressGesture,
   onAppear,
@@ -42,6 +43,9 @@ import {
   accessibilityIdentifier,
   accessibilityHidden,
   accessibilityInputLabels,
+  accessibilityElement,
+  accessibilityAddTraits,
+  accessibilityRemoveTraits,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -76,6 +80,9 @@ import {
   shapes,
   resizable,
   tint,
+  redacted,
+  unredacted,
+  privacySensitive,
 } from '@expo/ui/swift-ui/modifiers';
 import { useAssets } from 'expo-asset';
 import { useState } from 'react';
@@ -107,6 +114,8 @@ export default function ModifiersScreen() {
   const [allowTightening, setAllowsTightening] = useState(false);
 
   const [kerningValue, setKerning] = useState(0);
+  const [redactLoading, setRedactLoading] = useState(true);
+  const [redactPrivacy, setRedactPrivacy] = useState(true);
 
   const multilineTextAlignmentOptions = ['center', 'leading', 'trailing'];
   const [multilineTextAlignmentIndex, setMultilineTextAlignment] = useState(0);
@@ -410,6 +419,52 @@ export default function ModifiersScreen() {
             </HStack>
 
             <VStack spacing={15}>
+              <Text modifiers={[font({ size: 16 })]}>Stroke borders</Text>
+              <HStack spacing={12}>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({ color: '#45B7B8', style: { lineWidth: 2 } }),
+                  ]}>
+                  solid
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({ color: '#3498DB', style: { lineWidth: 2, dash: [6, 3] } }),
+                  ]}>
+                  dash
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({
+                      color: '#16A085',
+                      style: { lineWidth: 2, dash: [0.5, 4], lineCap: 'round' },
+                    }),
+                  ]}>
+                  dot
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({
+                      color: '#9B59B6',
+                      style: { lineWidth: 2, dash: [6, 3] },
+                      shape: 'roundedRectangle',
+                      cornerRadius: 10,
+                    }),
+                  ]}>
+                  rounded
+                </Text>
+              </HStack>
+            </VStack>
+
+            <VStack spacing={15}>
               <Picker
                 label="Select alignment"
                 modifiers={[pickerStyle('menu')]}
@@ -512,6 +567,54 @@ export default function ModifiersScreen() {
                 <Image systemName="star.fill" />
                 <Text modifiers={[font({ textStyle: 'body' })]}>large</Text>
               </HStack>
+            </VStack>
+          </Section>
+          <Section title="Redacted">
+            <VStack alignment="leading" spacing={12}>
+              <Toggle
+                label="Simulate loading"
+                isOn={redactLoading}
+                onIsOnChange={setRedactLoading}
+              />
+              <VStack
+                alignment="leading"
+                spacing={6}
+                modifiers={redactLoading ? [redacted('placeholder')] : undefined}>
+                <Text modifiers={[font({ textStyle: 'headline' })]}>Jane Appleseed</Text>
+                <Text modifiers={[font({ textStyle: 'subheadline' })]}>
+                  Product Designer · San Francisco
+                </Text>
+                <Text modifiers={[font({ textStyle: 'body' })]}>
+                  Building delightful native experiences.
+                </Text>
+              </VStack>
+              <VStack
+                alignment="leading"
+                spacing={6}
+                modifiers={redactLoading ? [redacted('placeholder')] : undefined}>
+                <Text modifiers={[font({ textStyle: 'body' })]}>Profile details</Text>
+                <Text modifiers={[font({ textStyle: 'footnote' }), unredacted()]}>
+                  Loading… (unredacted, stays visible)
+                </Text>
+              </VStack>
+
+              <Toggle
+                label="Hide sensitive info"
+                isOn={redactPrivacy}
+                onIsOnChange={setRedactPrivacy}
+              />
+              <VStack
+                alignment="leading"
+                spacing={6}
+                modifiers={redactPrivacy ? [redacted('privacy')] : undefined}>
+                <Text modifiers={[font({ textStyle: 'subheadline' })]}>Account balance</Text>
+                <Text modifiers={[font({ textStyle: 'title' }), privacySensitive()]}>
+                  $12,480.55
+                </Text>
+                <Text modifiers={[font({ textStyle: 'footnote' })]}>
+                  Only the balance is privacySensitive; the labels stay visible
+                </Text>
+              </VStack>
             </VStack>
           </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
@@ -721,6 +824,35 @@ export default function ModifiersScreen() {
                 ]}>
                 End
               </Text>
+            </HStack>
+
+            {/* accessibilityElement: combine children into one VoiceOver element */}
+            <HStack spacing={6} modifiers={[accessibilityElement('combine')]}>
+              <Image systemName="star.fill" size={17} />
+              <Text>4.8 out of 5 stars</Text>
+            </HStack>
+
+            {/* accessibilityAddTraits: VoiceOver announces this as both a button and a heading */}
+            <HStack spacing={6}>
+              <Text
+                modifiers={[
+                  background('#9B59B6'),
+                  cornerRadius(8),
+                  padding({ all: 8 }),
+                  accessibilityAddTraits(['isButton', 'isHeader']),
+                ]}>
+                Filters
+              </Text>
+            </HStack>
+
+            {/* accessibilityRemoveTraits: drop the redundant "image" trait from a labeled icon */}
+            <HStack spacing={6}>
+              <Image
+                systemName="checkmark.seal.fill"
+                size={17}
+                modifiers={[accessibilityRemoveTraits(['isImage'])]}
+              />
+              <Text>Verified</Text>
             </HStack>
 
             <Text

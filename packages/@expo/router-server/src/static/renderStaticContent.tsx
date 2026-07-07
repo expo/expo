@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import '@expo/metro-runtime';
-
 import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
@@ -14,7 +13,6 @@ import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/sta
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
-import { getRootComponent } from './getRootComponent';
 import { createDebug } from '../utils/debug';
 import {
   createFaviconAsString,
@@ -23,6 +21,7 @@ import {
   createLoaderDataScriptAsString,
   serializeHelmetToHtml,
 } from '../utils/html';
+import { getRootComponent } from './getRootComponent';
 
 const debug = createDebug('expo:router:server:renderStaticContent');
 

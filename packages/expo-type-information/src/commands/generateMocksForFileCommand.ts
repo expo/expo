@@ -1,5 +1,6 @@
 import commander from 'commander';
 
+import { generateMocks } from '../mockgen';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
@@ -7,7 +8,6 @@ import {
   runCommandOnWatch,
   TypeInformationCommandCommonAllArguments,
 } from './commandUtils';
-import { generateMocks } from '../mockgen';
 
 export function generateMocksForFileCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-mocks-for-file'))

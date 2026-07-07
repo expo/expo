@@ -11,6 +11,10 @@ on:
       - '!**/*.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/**
   pull_request:
     paths:
       - apps/expo-workflow-testing/.eas/workflows/test-suite-brownfield-isolated.yml
@@ -19,6 +23,10 @@ on:
       - '!**/*.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/**
 
 concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}

@@ -1,12 +1,6 @@
 import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import semver from 'semver';
 
-import {
-  getAppConfigFieldsNotSyncedCheckStatus,
-  getReactNativeDirectoryCheckEnabled,
-} from './doctorConfig';
-import { env } from './env';
-import { Log } from './log';
 import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
 import { AutolinkingDependencyDuplicatesCheck } from '../checks/AutolinkingDependencyDuplicatesCheck';
 import { DependencyVersionOverrideCheck } from '../checks/DependencyVersionOverrideCheck';
@@ -30,6 +24,12 @@ import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from '../checks/SupportPackageVersionCheck';
 import { VectorIconsCheck } from '../checks/VectorIconsCheck';
 import type { DoctorCheck } from '../checks/checks.types';
+import {
+  getAppConfigFieldsNotSyncedCheckStatus,
+  getReactNativeDirectoryCheckEnabled,
+} from './doctorConfig';
+import { env } from './env';
+import { Log } from './log';
 
 /**
  * Resolves the checks that should be run for a given project.

@@ -5,6 +5,7 @@ import PhotosUI
 public final class MediaLibraryNextModule: Module {
   private static let libraryDidChangeEvent = "mediaLibraryDidChange"
   private let assetMapper = AssetMapper()
+  private lazy var permissionDelegate = MediaLibraryNextPermissionDelegate(appContext: appContext)
   private lazy var observerManager = PhotoLibraryObserverManager(onChange: { [weak self] body in
     guard let self = self else {
       return
@@ -16,6 +17,10 @@ public final class MediaLibraryNextModule: Module {
     Name("ExpoMediaLibraryNext")
 
     Events(MediaLibraryNextModule.libraryDidChangeEvent)
+
+    OnCreate {
+      permissionDelegate.registerPermissionRequesters()
+    }
 
     OnStartObserving(MediaLibraryNextModule.libraryDidChangeEvent) {
       observerManager.startObserving()
@@ -116,7 +121,7 @@ public final class MediaLibraryNextModule: Module {
       }
 
       StaticAsyncFunction("create") { (filePath: URL, album: Album?) async throws in
-        try await checkIfPermissionGranted()
+        try await permissionDelegate.checkIfWritePermissionGranted()
         let newAssetId = try await AssetRepository.shared.add(from: filePath)
         if let guardedAlbum = album {
           guard let asset = AssetRepository.shared.get(by: [newAssetId]).first else {
@@ -128,7 +133,7 @@ public final class MediaLibraryNextModule: Module {
       }
 
       StaticAsyncFunction("delete") { (assets: [Asset]) async throws in
-        try await checkIfPermissionGranted()
+        try await permissionDelegate.checkIfReadWritePermissionGranted()
         let assetIds = assets.map { $0.localIdentifier }
         try await AssetRepository.shared.delete(by: assetIds)
       }
@@ -225,12 +230,12 @@ public final class MediaLibraryNextModule: Module {
       }
 
       StaticAsyncFunction("getAll") {
-        try await checkIfPermissionGranted()
+        try await permissionDelegate.checkIfFullAccessGranted()
         return try await Album.getAll(assetMapper: assetMapper)
       }
 
       StaticAsyncFunction("get") { (title: String) -> Album? in
-        try await checkIfPermissionGranted()
+        try await permissionDelegate.checkIfFullAccessGranted()
         guard let collection = AssetCollectionRepository.shared.get(byTitle: title) else {
           return nil
         }
@@ -238,13 +243,13 @@ public final class MediaLibraryNextModule: Module {
       }
 
       StaticAsyncFunction("delete") { (albums: [Album], deleteAssets: Bool?) async throws in
-        try await checkIfPermissionGranted()
+        try await permissionDelegate.checkIfFullAccessGranted()
         let albumsIds = albums.map { $0.id }
         try await AssetCollectionRepository.shared.delete(by: albumsIds, deleteAssets: deleteAssets ?? false)
       }
 
       StaticAsyncFunction("create") { (name: String, assetRefs: Either<[Asset], [URL]>, moveAssets: Bool?) async throws -> Album in
-        try await checkIfPermissionGranted()
+        try await permissionDelegate.checkIfFullAccessGranted()
         let assetIds = try await getAssetIdsFromAssetRefs(from: assetRefs)
         let newCollectionId = try await AssetCollectionRepository.shared.add(name: name)
         let phAssetsToAdd = AssetRepository.shared.get(by: assetIds)
@@ -254,23 +259,11 @@ public final class MediaLibraryNextModule: Module {
     }
 
     AsyncFunction("getPermissionsAsync") { (writeOnly: Bool?, promise: Promise) in
-      appContext?
-        .permissions?
-        .getPermissionUsingRequesterClass(
-          requesterClass(writeOnly ?? false),
-          resolve: promise.legacyResolver,
-          reject: promise.legacyRejecter
-        )
+      try permissionDelegate.getPermissions(writeOnly: writeOnly ?? false, promise: promise)
     }
 
     AsyncFunction("requestPermissionsAsync") { (writeOnly: Bool?, promise: Promise) in
-      appContext?
-        .permissions?
-        .askForPermission(
-          usingRequesterClass: requesterClass(writeOnly ?? false),
-          resolve: promise.legacyResolver,
-          reject: promise.legacyRejecter
-        )
+      try permissionDelegate.requestPermissions(writeOnly: writeOnly ?? false, promise: promise)
     }
 
     AsyncFunction("presentPermissionsPicker") { (_ mediaTypes: [String]?) in
@@ -296,32 +289,5 @@ public final class MediaLibraryNextModule: Module {
       return localIdentifiers
     }
     throw FailedToCreateAlbumException("Unsupported assetRefs type")
-  }
-
-  private func checkIfPermissionGranted() async throws {
-    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-      appContext?.permissions?.getPermissionUsingRequesterClass(
-        MediaLibraryPermissionRequester.self,
-        resolve: { result in
-          if let permissions = result as? [String: Any] {
-            if permissions["status"] as? String != "granted" ||
-              permissions["accessPrivileges"] as? String != "all" {
-              continuation.resume(throwing: FailedToGrantPermissions())
-              return
-            }
-            continuation.resume(returning: ())
-            return
-          }
-          continuation.resume(throwing: FailedToGrantPermissions())
-        },
-        reject: { _, _, error in
-          if let error = error {
-            continuation.resume(throwing: error)
-          } else {
-            continuation.resume(throwing: FailedToGrantPermissions())
-          }
-        }
-      )
-    }
   }
 }

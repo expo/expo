@@ -105,12 +105,17 @@ export type FormOptions = {
   shouldShowLinkedContacts?: boolean;
   /**
    * Present the new contact controller. If set to `false` the unknown controller will be shown.
+   * @deprecated No longer has any effect. Use `presentCreateForm` to open the create contact form.
    */
   isNew?: boolean;
   /**
-   * The name of the left bar button. Only applies when editing an existing contact.
+   * The name of the left bar button. Defaults to `Cancel`.
    */
   cancelButtonTitle?: string;
+  /**
+   * Show or hide the left bar button. Defaults to `true`.
+   */
+  showsCancelButton?: boolean;
   /**
    * Prevents the controller from animating in.
    */
@@ -119,6 +124,25 @@ export type FormOptions = {
    * The parent group for a new contact.
    */
   groupId?: string;
+};
+
+/**
+ * Denotes the functionality of a native create contact form.
+ * @platform ios
+ */
+export type CreateFormOptions = {
+  /**
+   * The name of the left bar button. Defaults to `Cancel`.
+   */
+  cancelButtonTitle?: string;
+  /**
+   * Show or hide the left bar button. Defaults to `true`.
+   */
+  showsCancelButton?: boolean;
+  /**
+   * Prevents the controller from animating in.
+   */
+  preventAnimation?: boolean;
 };
 
 // @hidden

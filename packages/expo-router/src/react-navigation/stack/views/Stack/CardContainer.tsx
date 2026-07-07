@@ -4,8 +4,6 @@ import { use } from 'react';
 import type { Animated } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
-import { Card } from './Card';
-import { CardA11yWrapper, type CardA11yWrapperRef } from './CardA11yWrapper';
 import {
   getHeaderTitle,
   HeaderBackContext,
@@ -17,6 +15,8 @@ import type { Layout, Scene } from '../../types';
 import { ModalPresentationContext } from '../../utils/ModalPresentationContext';
 import { useKeyboardManager } from '../../utils/useKeyboardManager';
 import type { Props as HeaderContainerProps } from '../Header/HeaderContainer';
+import { Card } from './Card';
+import { CardA11yWrapper, type CardA11yWrapperRef } from './CardA11yWrapper';
 
 type Props = {
   interpolationIndex: number;

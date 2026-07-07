@@ -1,5 +1,4 @@
-import { isRunningInExpoGo } from 'expo';
-import { Platform } from 'expo-modules-core';
+import { isRunningInExpoGo, Platform } from 'expo';
 
 let didWarn = false;
 

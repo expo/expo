@@ -368,6 +368,20 @@ The following example **eas.json** shows how to extend existing profiles (`devel
 
 </Step>
 
+<Step label="8">
+
+### Credentials for tvOS App Store builds
+
+tvOS uses the same bundle IDs and distribution certificates as iOS and other Apple platforms. However, tvOS does not use the same provisioning profiles as iOS.
+
+Since the EAS tooling on the web and in EAS CLI only creates iOS provisioning profiles, some extra steps are required for tvOS projects. There are two ways for you to proceed:
+
+1. If a project is targeting only tvOS, you can have your credentials stored in EAS. Create the bundle ID, and upload the distribution certificate on the project's website, as you would for an iOS project. Then, you should go to Apple's developer web site and create a tvOS provisioning profile there, using the bundle ID that EAS created. Then download that profile to your computer, and upload it to the project at [your EAS project website](https://expo.dev/accounts/[account]/projects/[project]/credentials/). See the [app credentials guide](/app-signing/app-credentials/).
+
+2. If a project is targeting both tvOS and iOS, you should use [local credentials](/app-signing/local-credentials/) for tvOS, as the EAS-stored credentials will be needed by your iOS builds.
+
+</Step>
+
 ## Examples and demonstration projects
 
 <BoxLink

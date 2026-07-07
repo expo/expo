@@ -304,7 +304,8 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
       if #available(iOS 18.0, *) {
         let options = UIViewController.Transition.ZoomOptions()
 
-        options.alignmentRectProvider = { context in
+        options.alignmentRectProvider = { [weak self] context in
+          guard let self else { return nil }
           guard
             let sourceInfo = self.sourceRepository?.getSource(
               identifier: self.zoomTransitionSourceIdentifier)
@@ -341,7 +342,8 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
             return true
           }
         }
-        controller.preferredTransition = .zoom(options: options) { _ in
+        controller.preferredTransition = .zoom(options: options) { [weak self] _ in
+          guard let self else { return nil }
           let sourceInfo = self.sourceRepository?.getSource(
             identifier: self.zoomTransitionSourceIdentifier)
           var view: UIView? = sourceInfo?.view

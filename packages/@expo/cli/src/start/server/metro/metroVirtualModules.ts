@@ -1,3 +1,4 @@
+import type { FileSystem } from '@expo/metro/metro-file-map';
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -6,7 +7,6 @@
  */
 import type Bundler from '@expo/metro/metro/Bundler';
 import type DependencyGraph from '@expo/metro/metro/node-haste/DependencyGraph';
-import type { FileSystem } from '@expo/metro/metro-file-map';
 
 type ExpoPatchedFileSystem = Omit<FileSystem, 'getSha1'> & {
   getSha1: FileSystem['getSha1'] & { __patched?: boolean };

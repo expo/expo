@@ -4,22 +4,15 @@
     {
       "name": "ExpoModulesCore",
       "podName": "ExpoModulesCore",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
         "expo-modules-jsi/ExpoModulesJSI"
       ],
-      "swiftLanguageVersions": [
-        "6.0"
-      ],
-      "excludeFromUmbrella": [
-        "EXModuleRegistryAdapter.h",
-        "EXModuleRegistryHolderReactModule.h"
-      ],
+      "swiftLanguageVersions": ["6.0"],
+      "excludeFromUmbrella": ["EXModuleRegistryAdapter.h", "EXModuleRegistryHolderReactModule.h"],
       "targets": [
         {
           "type": "cpp",
@@ -34,9 +27,7 @@
             "ReactNativeDependencies",
             "expo-modules-jsi/ExpoModulesJSI"
           ],
-          "includeDirectories": [
-            "."
-          ]
+          "includeDirectories": ["."]
         },
         {
           "type": "objc",
@@ -44,12 +35,7 @@
           "path": "ios",
           "pattern": "**/*.{m,mm}",
           "headerPattern": "**/*.h",
-          "exclude": [
-            "Tests/**",
-            "WorkletsTests/**",
-            "Worklets/**",
-            "WorkletsAdapter/**"
-          ],
+          "exclude": ["Tests/**", "WorkletsTests/**", "Worklets/**", "WorkletsAdapter/**"],
           "fileMapping": [
             {
               "from": "Core/Views/SwiftUI/SwiftUIVirtualViewSharedImpl+Private.h",
@@ -64,20 +50,10 @@
             "expo-modules-jsi/ExpoModulesJSI",
             "ExpoModulesCore_common_cpp"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UserNotifications",
-            "AVKit",
-            "AVFoundation",
-            "UIKit"
-          ],
-          "includeDirectories": [
-            "."
-          ],
+          "linkedFrameworks": ["Foundation", "UserNotifications", "AVKit", "AVFoundation", "UIKit"],
+          "includeDirectories": ["."],
           "compilerFlags": {
-            "common": [
-              "-DEXPO_MODULES_CORE_VERSION=${PACKAGE_VERSION}"
-            ]
+            "common": ["-DEXPO_MODULES_CORE_VERSION=${PACKAGE_VERSION}"]
           }
         },
         {
@@ -116,18 +92,14 @@
     {
       "name": "ExpoModulesWorklets",
       "podName": "ExpoModulesWorklets",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
         "expo-modules-jsi/ExpoModulesJSI"
       ],
-      "swiftLanguageVersions": [
-        "6.0"
-      ],
+      "swiftLanguageVersions": ["6.0"],
       "targets": [
         {
           "type": "objc",
@@ -143,12 +115,8 @@
             "expo-modules-jsi/ExpoModulesJSI",
             "ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation"
-          ],
-          "includeDirectories": [
-            "."
-          ]
+          "linkedFrameworks": ["Foundation"],
+          "includeDirectories": ["."]
         },
         {
           "type": "swift",
@@ -163,10 +131,7 @@
             "ExpoModulesCore",
             "ExpoModulesWorklets_ios_objc"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     },
@@ -174,9 +139,7 @@
       "name": "ExpoModulesWorkletsAdapter",
       "podName": "ExpoModulesWorkletsAdapter",
       "sourceOnly": true,
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "autolinkWhen": {
         "podName": "RNWorklets"
       },
@@ -204,12 +167,8 @@
             "ExpoModulesWorklets",
             "RNWorklets"
           ],
-          "linkedFrameworks": [
-            "Foundation"
-          ],
-          "includeDirectories": [
-            "."
-          ]
+          "linkedFrameworks": ["Foundation"],
+          "includeDirectories": ["."]
         }
       ]
     }

@@ -7,6 +7,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
@@ -20,6 +21,9 @@ In this chapter, you'll install everything you need, starting from zero. This is
   <Requirement title="A phone">
     An Android or iOS phone, connected to the same Wi-Fi network as your computer.
   </Requirement>
+  <Requirement title="An AI agent and its account">
+    An AI coding agent and an account with the service you choose.
+  </Requirement>
   <Requirement title="About 20 minutes">That's all the setup should take.</Requirement>
 </Prerequisites>
 
@@ -27,25 +31,23 @@ In this chapter, you'll install everything you need, starting from zero. This is
 
 ## Open a terminal
 
-The terminal is the app where you'll talk to your AI agent. On macOS, open the built-in **Terminal** app (find it with Spotlight search). On Windows, open **PowerShell** from the Start menu. You'll type a handful of commands into it during this chapter. Each one is provided for you to copy and paste.
+The terminal is the app where you'll talk to your AI agent.
 
-> If you plan to use **Cursor**, you'll work inside its visual editor instead of a terminal for most of this tutorial, but keep a terminal handy: you'll still use it to run your app.
+- On macOS, open the built-in **Terminal** app. You can find it by opening Spotlight Search (<kbd>Cmd ⌘</kbd> + <kbd>Space</kbd>) and typing "Terminal".
+- On Windows, open **PowerShell** from the Start menu. You'll type a handful of commands into it during this chapter. Each one is provided for you to copy and paste.
+
+<ContentSpotlight
+  alt="An empty terminal window on macOS."
+  caption="Your terminal may look different depending on your operating system and settings, but it will work the same."
+  src="/static/images/tutorial/terminal.webp"
+  className="max-w-[640px]"
+/>
+
+> If you plan to use **Cursor**, you'll work inside its visual editor instead of a terminal for most of this tutorial, but keep a terminal handy since you'll still use it to run your app.
 
 </Step>
 
 <Step label="2">
-
-## Install Node.js
-
-Node.js is the runtime that powers Expo's developer tools. Download the **LTS** version from [nodejs.org](https://nodejs.org/en) and run the installer, accepting the default options.
-
-To confirm it worked, run the following command in your terminal. It should print a version number:
-
-<Terminal cmd={['$ node --version']} />
-
-</Step>
-
-<Step label="3">
 
 ## Install an AI agent
 
@@ -55,9 +57,11 @@ If you already use an AI coding agent, skip to the next step. Otherwise, pick on
 
 <Tab label="Claude Code">
 
-Install [Claude Code](https://claude.com/claude-code) with the following command:
+Run the following command in your terminal window to install [Claude Code](https://claude.com/claude-code):
 
-<Terminal cmd={['$ npm install -g @anthropic-ai/claude-code']} />
+<Terminal cmd={['$ curl -fsSL https://claude.ai/install.sh | bash']} />
+
+> **On Windows:** Run `irm https://claude.ai/install.ps1 | iex` if you're using PowerShell to install Claude Code.
 
 Then run `claude` in your terminal and follow the instructions to sign in. See the [Claude Code setup guide](https://code.claude.com/docs/en/setup) if you run into trouble.
 
@@ -65,23 +69,45 @@ Then run `claude` in your terminal and follow the instructions to sign in. See t
 
 <Tab label="Codex">
 
-Install [Codex](https://developers.openai.com/codex/cli) with the following command:
+Run the following command in your terminal window to install [Codex](https://developers.openai.com/codex/cli):
 
-<Terminal cmd={['$ npm install -g @openai/codex']} />
+<Terminal cmd={['$ curl -fsSL https://chatgpt.com/codex/install.sh | sh']} />
 
-Then run `codex` in your terminal and follow the instructions to sign in with your ChatGPT account.
+Then run `codex` in your terminal and follow the instructions to sign in with your ChatGPT account. See the [Codex CLI documentation](https://developers.openai.com/codex/cli) if you run into trouble.
 
 </Tab>
 
 <Tab label="Cursor">
 
-Download [Cursor](https://cursor.com) and install it like any other app. Cursor is a visual code editor with a built-in AI agent: you'll type prompts into its agent panel instead of a terminal.
+Download [Cursor](https://cursor.com) and install it like any other app. Cursor is a visual code editor with a built-in AI agent where you'll type prompts into its agent panel instead of a terminal.
 
 </Tab>
 
 </Tabs>
 
 Other agents work too. As long as your agent can edit files and run commands on your computer, you can follow along.
+
+</Step>
+
+<Step label="3">
+
+## Install Node.js
+
+Let's run your first prompt and install Node.js.
+
+Node.js is the runtime that powers Expo's developer tools. Run the following prompt that will instruct your agent to download the **Long-Term Support (LTS)** version from [nodejs.org](https://nodejs.org/en).
+
+```text Prompt|wrap
+I'm following the Expo "Build with AI" tutorial on a brand-new setup and I have no programming experience. Please install the latest LTS version of Node.js on my computer.
+
+- First, tell me in one or two plain sentences what you're about to do.
+- Detect my operating system and use the most reliable method for it.
+- When you're done, verify it worked by showing me the output of `node --version` and `npm --version`, and tell me if I need to reopen anything for it to take effect.
+```
+
+To confirm it worked, run the following command by opening a new terminal window. It should print Node.js version number currently installed:
+
+<Terminal cmd={['$ node --version']} />
 
 </Step>
 
@@ -195,7 +221,7 @@ Click the following link to install the MCP server for Cursor, then sign in with
 
 <Collapsible summary="Optional: let your agent see and tap your app">
 
-The MCP server also offers local capabilities: with extra setup, a multimodal agent can take screenshots of your app running in a simulator, tap buttons, and verify its own work. This requires a simulator on your computer (macOS only for iOS), so it's beyond this tutorial. In the chapters ahead, **you** are the one verifying the app on your phone. If you want to explore it later, see [Set up local capabilities](/eas/ai/mcp/#set-up-local-capabilities-recommended).
+The MCP server also offers local capabilities: with extra setup, a multimodal agent can take screenshots of your app running in a simulator, tap buttons, and verify its own work. This requires a simulator on your computer (macOS only for iOS), so it's beyond this tutorial. In the chapters ahead, **you** are the one verifying the app on your phone. If you want to explore it later, see [Set up local capabilities](/mcp/#set-up-local-capabilities-recommended).
 
 </Collapsible>
 
@@ -203,7 +229,7 @@ The MCP server also offers local capabilities: with extra setup, a multimodal ag
   title="Expo MCP server"
   Icon={BookOpen02Icon}
   description="Full installation instructions, available tools, and data privacy details."
-  href="/eas/ai/mcp/"
+  href="/mcp/"
 />
 
 </Step>
@@ -218,7 +244,7 @@ Let's confirm everything is wired up. Paste the following prompt into your agent
 Use the Expo MCP server to search the Expo documentation for "expo-image-picker" and tell me in one sentence what it does.
 ```
 
-**What you should see**: the agent calls an Expo documentation tool and replies with a sentence about picking images from the device's photo library. If it reports a connection or authentication error instead, repeat the sign-in part of the previous step.
+**What you should see**: The agent calls an Expo documentation tool and replies with a sentence about picking images from the device's photo library. If it reports a connection or authentication error instead, repeat the sign-in part of the previous step.
 
 </Step>
 

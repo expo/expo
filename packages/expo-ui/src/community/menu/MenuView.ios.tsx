@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import type { MenuAction, MenuComponentProps, MenuComponentRef, NativeActionEvent } from './types';
 import { Button } from '../../swift-ui/Button';
 import { ContextMenu } from '../../swift-ui/ContextMenu';
 import { Host } from '../../swift-ui/Host';
@@ -14,6 +13,7 @@ import {
   tint as tintModifier,
 } from '../../swift-ui/modifiers';
 import type { ModifierConfig } from '../../types';
+import type { MenuAction, MenuComponentProps, MenuComponentRef, NativeActionEvent } from './types';
 
 function actionId(action: MenuAction): string {
   return action.id ?? action.title;

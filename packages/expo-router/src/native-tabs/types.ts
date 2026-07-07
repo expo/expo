@@ -12,10 +12,9 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import type {
   DefaultRouterOptions,
   ParamListBase,
-  RouteProp,
-  ScreenListeners,
   TabNavigationState,
 } from '../react-navigation/native';
+import type { StandardUseNavigationBuilderOptions } from '../standard-navigation';
 import type { ScreenProps } from '../useScreens';
 
 /**
@@ -174,6 +173,16 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    * @platform iOS
    */
   disabled?: boolean;
+  /**
+   * @platform android
+   * @platform iOS
+   */
+  tabBarItemTestID?: string;
+  /**
+   * @platform android
+   * @platform iOS
+   */
+  tabBarItemAccessibilityLabel?: string;
   /**
    * @platform iOS
    */
@@ -451,11 +460,12 @@ export interface NativeTabsProps extends PropsWithChildren {
    * </NativeTabs>
    * ```
    */
-  screenListeners?:
-    | ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>
-    | ((prop: {
-        route: RouteProp<ParamListBase, string>;
-      }) => ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>);
+  screenListeners?: StandardUseNavigationBuilderOptions<
+    TabNavigationState<ParamListBase>,
+    object,
+    NativeTabNavigationEventMap
+  >['screenListeners'];
+
   /**
    * Props passed to the underlying native tab host implementation in `react-native-screens`.
    * Use this to configure props that are not directly exposed by Expo Router.
@@ -615,6 +625,27 @@ export interface NativeTabTriggerProps {
    * @platform ios
    */
   disabled?: boolean;
+  /**
+   * A test identifier for the tab bar item.
+   *
+   * On iOS it maps to the item's accessibility identifier, which XCUITest and Maestro match.
+   * On Android it maps to the item's view tag, which Espresso-based drivers like Detox read
+   * but Maestro and Appium do not. Use `accessibilityLabel` to match the tab by id there.
+   *
+   * @platform android
+   * @platform iOS
+   */
+  testID?: string;
+  /**
+   * The accessibility label of the tab bar item, announced by screen readers.
+   * Defaults to the visible tab label.
+   *
+   * On Android, maps to the item's `contentDescription` and requires API 26 or above.
+   *
+   * @platform android
+   * @platform iOS
+   */
+  accessibilityLabel?: string;
   /**
    * The children of the trigger.
    *

@@ -54,8 +54,6 @@ Add the following scripts to your `package.json` and run `yarn`
 
 Running `yarn` will now run the `prepare` script, which generates any missing files:
 
-- [`.eslintrc.js`](./templates/.eslintrc.js) ([docs](https://eslint.org/docs/user-guide/configuring)) this extends [`eslint-config-universe`](https://github.com/expo/expo/tree/main/packages/eslint-config-universe).
-  - Optionally you can customize Prettier too: [.prettierrc guide](https://github.com/expo/expo/tree/main/packages/eslint-config-universe#customizing-prettier).
 - [`.npmignore`](./templates/.npmignore) ([docs](https://docs.npmjs.com/misc/developers)) currently only ignores the `babel.config.js` in your module. You might also want to also add tests and docs.
   - Expo modules use `.npmignore` **instead of** the `files` field in the `package.json`.
   - (Pro Tip) Test which files get packaged by running `npm pack`. If you see files that aren't crucial to running the module, you should add them to `.npmignore`.
@@ -67,6 +65,7 @@ Running `yarn` will now run the `prepare` script, which generates any missing fi
 
 Besides, running `yarn prepare` script will also synchronize optional files from `expo-module-scripts` when the file is present and contains the `@generated` pattern:
 
+- [`oxlint.config.mjs`](./templates/oxlint.config.mjs): re-exports the shared [`oxlint.config.base`](./oxlint.config.base.js), which extends [`oxlint-config-universe`](https://github.com/expo/oxlint-config-universe). Lint with `oxlint`.
 - [`with-node.sh`](./templates/scripts/with-node.sh): An Xcode build phase script helper for Node.js binary resolution. It sources the project's **.xcode.env** and **.xcode.env.local** files, which may define an environment variable named `NODE_BINARY` to specify the file path of the Node.js binary to run.
 
 ### 🔌 Config Plugin

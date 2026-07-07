@@ -27,6 +27,8 @@ add_library(
 
 use_expo_common(expo-modules-core)
 
+target_precompile_headers(expo-modules-core REUSE_FROM expo-modules-pch)
+
 target_include_directories(
   expo-modules-core
   PRIVATE

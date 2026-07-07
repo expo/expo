@@ -54,6 +54,7 @@ export type EnumCase = string;
  */
 export type EnumType = {
   name: string;
+  stringBacked: boolean;
   cases: EnumCase[];
 };
 
@@ -171,6 +172,7 @@ export type FunctionDeclaration = {
   returnType: Type;
   arguments: Argument[];
   parameters: Type[];
+  isStatic: boolean;
 } & DefinitionOffset;
 
 /**
