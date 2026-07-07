@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fall back to AGP's `output-metadata.json` when resolving APK filenames to support projects that override `outputFileName` in `applicationVariants` ([#47083](https://github.com/expo/expo/pull/47083) by [@NikhilVashistha](https://github.com/NikhilVashistha))
+
 ### 💡 Others
 
 ## 55.0.33 — 2026-06-25
