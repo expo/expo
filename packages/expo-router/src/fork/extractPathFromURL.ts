@@ -1,3 +1,5 @@
+import { safeDecodeURI, safeDecodeURIComponent } from '../utils/url';
+
 export function parsePathAndParamsFromExpoGoLink(url: string): {
   pathname: string;
   queryString: string;
@@ -99,7 +101,7 @@ function fromDeepLink(url: string): string {
       return '';
     }
     const incomingUrl = res.searchParams.get('url')!;
-    return extractExactPathFromURL(decodeURI(incomingUrl));
+    return extractExactPathFromURL(safeDecodeURI(incomingUrl));
   }
 
   let results = '';
@@ -115,7 +117,9 @@ function fromDeepLink(url: string): string {
   const qs = !res.search
     ? ''
     : // @ts-ignore: `entries` is not on `URLSearchParams` in some typechecks.
-      [...res.searchParams.entries()].map(([k, v]) => `${k}=${decodeURIComponent(v)}`).join('&');
+      [...res.searchParams.entries()]
+        .map(([k, v]) => `${k}=${safeDecodeURIComponent(v)}`)
+        .join('&');
 
   if (qs) {
     results += '?' + qs;
