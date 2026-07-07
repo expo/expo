@@ -244,18 +244,30 @@ export interface RunMaestroOptions {
    * invocation in a session needs it; skipping the reinstall saves about a minute per invocation.
    */
   reinstallDriver: boolean;
+  /** How long a wedged maestro may outlive its own JUnit report before it gets killed. */
+  reportGracePeriodMs?: number;
+  /** Hard ceiling on the whole invocation, for runs that never produce a report. */
+  invocationTimeoutMs?: number;
 }
 
 /**
  * Runs the given flows in a single maestro invocation (flows execute in the given order and
  * a failed flow doesn't stop the following ones) and returns the relative paths of failed flows.
  * Throws if maestro fails without producing flow results, e.g. when it can't reach the device.
+ *
+ * Maestro writes the JUnit report only after all flows have finished, so a process that
+ * outlives the report is just wedged on exit (Maestro 2.4.0 can crash its main thread while
+ * finalizing logs and then hang forever on a non-daemon thread). A watchdog kills the process
+ * once the report has been around for the grace period and the results are read as usual;
+ * the invocation timeout backstops runs that never write a report at all.
  */
 export async function runMaestroAsync({
   deviceArgs,
   flowRelativePaths,
   e2eDir,
   reinstallDriver,
+  reportGracePeriodMs = 60_000,
+  invocationTimeoutMs = 20 * 60_000,
 }: RunMaestroOptions): Promise<string[]> {
   const reportPath = path.join(
     await fs.mkdtemp(path.join(os.tmpdir(), 'maestro-report-')),
@@ -271,29 +283,75 @@ export async function runMaestroAsync({
     reportPath,
     ...flowRelativePaths.map((flowRelativePath) => path.join(e2eDir, flowRelativePath)),
   ];
+  const maestroProcess = spawnAsync('maestro', args, {
+    stdio: 'inherit',
+    cwd: e2eDir,
+    env: {
+      ...process.env,
+      ...MAESTRO_ENV_VARS,
+    },
+  });
+
+  let killedReason: 'report-grace-period' | 'invocation-timeout' | null = null;
+  const watchdogTimers: NodeJS.Timeout[] = [];
+  const killMaestro = (reason: NonNullable<typeof killedReason>) => {
+    killedReason = reason;
+    maestroProcess.child?.kill('SIGTERM');
+    watchdogTimers.push(
+      setTimeout(() => {
+        maestroProcess.child?.kill('SIGKILL');
+      }, 10_000)
+    );
+  };
+  const reportPollTimer = setInterval(async () => {
+    if (await fileExistsAsync(reportPath)) {
+      clearInterval(reportPollTimer);
+      watchdogTimers.push(
+        setTimeout(() => {
+          return killMaestro('report-grace-period');
+        }, reportGracePeriodMs)
+      );
+    }
+  }, 1000);
+  watchdogTimers.push(
+    setTimeout(() => {
+      return killMaestro('invocation-timeout');
+    }, invocationTimeoutMs)
+  );
+
   try {
-    await spawnAsync('maestro', args, {
-      stdio: 'inherit',
-      cwd: e2eDir,
-      env: {
-        ...process.env,
-        ...MAESTRO_ENV_VARS,
-      },
-    });
+    await maestroProcess;
     return [];
   } catch (error) {
     const reportContents = await fs.readFile(reportPath, 'utf8').catch(() => null);
     if (reportContents == null) {
+      if (killedReason === 'invocation-timeout') {
+        throw new Error(
+          `maestro exceeded the invocation timeout of ${invocationTimeoutMs}ms and was killed ` +
+            `before producing any flow results.`,
+          { cause: error }
+        );
+      }
       throw error;
     }
     const failedFlows = getFailedFlowsFromJUnitReport(reportContents, flowRelativePaths);
     if (failedFlows.length === 0) {
+      if (killedReason != null) {
+        // maestro finished all flows and wrote a clean report, but wedged on exit; the kill
+        // is ours, not a test failure.
+        console.warn('⚠️ maestro did not exit after writing a clean report and was killed.');
+        return [];
+      }
       // maestro failed even though no flow was reported as failed, so something is wrong with
       // the run itself and retrying the flows wouldn't help.
       throw error;
     }
     return failedFlows;
   } finally {
+    clearInterval(reportPollTimer);
+    for (const timer of watchdogTimers) {
+      clearTimeout(timer);
+    }
     await fs.rm(path.dirname(reportPath), { recursive: true, force: true });
   }
 }
