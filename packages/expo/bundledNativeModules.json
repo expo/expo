@@ -41,6 +41,7 @@
   "expo-dev-client": "~57.0.5",
   "expo-device": "~57.0.0",
   "expo-document-picker": "~57.0.0",
+  "expo-eas-client": "~57.0.0",
   "expo-file-system": "~57.0.0",
   "expo-font": "~57.0.0",
   "expo-gl": "~57.0.1",
