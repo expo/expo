@@ -1,6 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
-
-import ExpoModulesCore
+// NOTE: This lives in ExpoModulesCore (not the `expo` package) so the ObjC
+// `EXAppDelegatesLoader` +load can call it without the `Expo` Swift target
+// depending back on it — which would form an ExpoObjC → Expo cycle under SwiftPM.
 
 @MainActor
 @preconcurrency
