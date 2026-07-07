@@ -12,6 +12,8 @@ import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.core.interfaces.ReactNativeHostHandler
 
 class DevLauncherPackage : Package, ReactPackage {
+
+  @Deprecated("Migrate to [BaseReactPackage] and implement [getModule] instead.")
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> = DevLauncherPackageDelegate.createNativeModules(reactContext)
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> = emptyList()
