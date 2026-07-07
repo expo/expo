@@ -95,12 +95,7 @@ export function requireContextWithOverrides(dir: string, overrides: MemoryContex
       }
     },
     {
-      // Overrides take precedence, so drop any existing key they replace to keep
-      // each route listed once (a duplicate key makes route resolution throw).
-      keys: () => [
-        ...Object.keys(overrides),
-        ...existingContext.keys().filter((key) => !(key in overrides)),
-      ],
+      keys: () => [...Object.keys(overrides), ...existingContext.keys()],
       resolve: (key: string) => key,
       id: '0',
     }
