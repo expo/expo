@@ -56,7 +56,7 @@
     "@types/react": "~19.2.0",
     "@types/ws": "^8.5.4",
     "expo-module-scripts": "workspace:*",
-    "ws": "^8.18.0"
+    "ws": "^8.21.0"
   },
   "peerDependencies": {
     "react": "*",

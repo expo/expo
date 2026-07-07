@@ -1876,7 +1876,7 @@ importers:
         version: 1.8.0
       '@expo/ws-tunnel':
         specifier: ^2.0.0
-        version: 2.0.0(ws@8.19.0)
+        version: 2.0.0(ws@8.21.0)
       '@expo/xcpretty':
         specifier: ^4.4.4
         version: 4.4.4
@@ -1989,8 +1989,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       ws:
-        specifier: ^8.12.1
-        version: 8.19.0
+        specifier: ^8.21.0
+        version: 8.21.0
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -2302,8 +2302,8 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       ws:
-        specifier: ^8.18.0
-        version: 8.19.0
+        specifier: ^8.21.0
+        version: 8.21.0
 
   packages/@expo/dom-webview:
     dependencies:
@@ -15958,8 +15958,20 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.19.0:
-    resolution: {integrity: sha512-blAT2mjOEIi0ZzruJfIhb3nps74PRWTCz1IjglWEEpQl5XS/UNama6u2/rjFkDDouqr4L67ry+1aGIALViWjDg==}
+  ws@7.5.11:
+    resolution: {integrity: sha512-zS54Oen9bITtp7kp2XM3AydrCIq1D+HwJOuH+c+e4LfpL/lotP5osijd+UoMnxwAam1GN8R4KtLAyIrIcBNpiA==}
+    engines: {node: '>=8.3.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
+  ws@8.21.0:
+    resolution: {integrity: sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -17720,7 +17732,7 @@ snapshots:
   '@expo/mcp-tunnel@0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))':
     dependencies:
       '@modelcontextprotocol/sdk': 1.27.1(zod@3.25.76)
-      ws: 8.19.0
+      ws: 8.21.0
       zod: 3.25.76
       zod-to-json-schema: 3.25.2(zod@3.25.76)
     transitivePeerDependencies:
@@ -17866,9 +17878,9 @@ snapshots:
       react: 19.2.3
       react-native: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
 
-  '@expo/ws-tunnel@2.0.0(ws@8.19.0)':
+  '@expo/ws-tunnel@2.0.0(ws@8.21.0)':
     dependencies:
-      ws: 8.19.0
+      ws: 8.21.0
 
   '@expo/xcpretty@4.4.4':
     dependencies:
@@ -19067,7 +19079,7 @@ snapshots:
       nullthrows: 1.1.1
       open: 7.4.2
       serve-static: 1.16.3
-      ws: 7.5.10
+      ws: 7.5.11
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -19106,9 +19118,7 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
@@ -23437,7 +23447,7 @@ snapshots:
       whatwg-encoding: 2.0.0
       whatwg-mimetype: 3.0.0
       whatwg-url: 11.0.0
-      ws: 8.19.0
+      ws: 8.21.0
       xml-name-validator: 4.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -23983,7 +23993,7 @@ snapshots:
       serialize-error: 2.1.0
       source-map: 0.5.7
       throat: 5.0.0
-      ws: 7.5.10
+      ws: 7.5.11
       yargs: 17.7.2
     transitivePeerDependencies:
       - bufferutil
@@ -24807,7 +24817,7 @@ snapshots:
   react-devtools-core@6.1.5:
     dependencies:
       shell-quote: 1.8.3
-      ws: 7.5.10
+      ws: 7.5.11
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -26779,7 +26789,9 @@ snapshots:
 
   ws@7.5.10: {}
 
-  ws@8.19.0: {}
+  ws@7.5.11: {}
+
+  ws@8.21.0: {}
 
   xcode@3.0.1:
     dependencies:
