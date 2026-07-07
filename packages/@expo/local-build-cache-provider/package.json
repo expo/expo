@@ -39,7 +39,7 @@
     "build"
   ],
   "dependencies": {
-    "@expo/config": "workspace:~57.0.2",
+    "@expo/config": "workspace:~57.0.3",
     "chalk": "^4.1.2"
   },
   "devDependencies": {

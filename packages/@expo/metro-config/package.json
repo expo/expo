@@ -58,7 +58,7 @@
     "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.20.0",
     "@babel/generator": "^7.20.5",
-    "@expo/config": "workspace:~57.0.2",
+    "@expo/config": "workspace:~57.0.3",
     "@expo/env": "workspace:~2.4.1",
     "@expo/json-file": "workspace:~11.0.0",
     "@expo/metro": "~56.0.0",

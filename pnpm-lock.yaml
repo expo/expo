@@ -1818,7 +1818,7 @@ importers:
         specifier: ^0.0.6
         version: 0.0.6
       '@expo/config':
-        specifier: workspace:~57.0.2
+        specifier: workspace:~57.0.3
         version: link:../config
       '@expo/config-plugins':
         specifier: workspace:~57.0.3
@@ -2479,7 +2479,7 @@ importers:
   packages/@expo/local-build-cache-provider:
     dependencies:
       '@expo/config':
-        specifier: workspace:~57.0.2
+        specifier: workspace:~57.0.3
         version: link:../config
       chalk:
         specifier: ^4.1.2
@@ -2562,7 +2562,7 @@ importers:
         specifier: ^7.20.5
         version: 7.29.1
       '@expo/config':
-        specifier: workspace:~57.0.2
+        specifier: workspace:~57.0.3
         version: link:../config
       '@expo/env':
         specifier: workspace:~2.4.1
@@ -2824,7 +2824,7 @@ importers:
   packages/@expo/prebuild-config:
     dependencies:
       '@expo/config':
-        specifier: workspace:~57.0.2
+        specifier: workspace:~57.0.3
         version: link:../config
       '@expo/config-plugins':
         specifier: workspace:~57.0.3
@@ -3478,10 +3478,10 @@ importers:
         specifier: ^7.20.0
         version: 7.29.2
       '@expo/cli':
-        specifier: workspace:^57.0.5
+        specifier: workspace:^57.0.6
         version: link:../@expo/cli
       '@expo/config':
-        specifier: workspace:~57.0.2
+        specifier: workspace:~57.0.3
         version: link:../@expo/config
       '@expo/config-plugins':
         specifier: workspace:~57.0.3
@@ -3532,7 +3532,7 @@ importers:
         specifier: workspace:~57.0.5
         version: link:../expo-modules-autolinking
       expo-modules-core:
-        specifier: workspace:~57.0.2
+        specifier: workspace:~57.0.3
         version: link:../expo-modules-core
       pretty-format:
         specifier: ^29.7.0
@@ -4911,7 +4911,7 @@ importers:
         specifier: 0.3.0
         version: 0.3.0
       expo-modules-jsi:
-        specifier: workspace:~57.0.0
+        specifier: workspace:~57.0.1
         version: link:../expo-modules-jsi
       invariant:
         specifier: ^2.2.4
@@ -6106,7 +6106,7 @@ importers:
         specifier: 1.0.0-alpha.24
         version: 1.0.0-alpha.24
       '@expo/config':
-        specifier: workspace:~57.0.2
+        specifier: workspace:~57.0.3
         version: link:../@expo/config
       '@expo/config-plugins':
         specifier: workspace:~57.0.3
@@ -18877,7 +18877,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 

@@ -20,7 +20,7 @@ PODS:
   - EXManifests/Tests (57.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (57.0.3):
+  - Expo (57.0.4):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -52,7 +52,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (57.0.3):
+  - Expo/Tests (57.0.4):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -186,7 +186,7 @@ PODS:
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
-  - ExpoModulesCore (57.0.2):
+  - ExpoModulesCore (57.0.3):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -216,7 +216,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesCore/Tests (57.0.2):
+  - ExpoModulesCore/Tests (57.0.3):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -247,10 +247,10 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesJSI (57.0.0):
+  - ExpoModulesJSI (57.0.1):
     - React-Core
     - ReactCommon
-  - ExpoModulesJSI/Tests (57.0.0):
+  - ExpoModulesJSI/Tests (57.0.1):
     - React-Core
     - ReactCommon
   - ExpoModulesTestCore (57.0.2):
@@ -258,14 +258,14 @@ PODS:
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
     - React-hermes
-  - ExpoModulesWorklets (57.0.2):
+  - ExpoModulesWorklets (57.0.3):
     - ExpoModulesCore
     - ExpoModulesJSI
-  - ExpoModulesWorklets/Tests (57.0.2):
+  - ExpoModulesWorklets/Tests (57.0.3):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesTestCore
-  - ExpoModulesWorkletsAdapter (57.0.2):
+  - ExpoModulesWorkletsAdapter (57.0.3):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesWorklets
@@ -4731,7 +4731,7 @@ SPEC CHECKSUMS:
   EXConstants: d069b4a2dd469d5a3a4d3d7b09757e708fda8f64
   EXJSONUtils: 55eca2b6f8fc320cb36933cf45c4f2200a441589
   EXManifests: 66a0e4af8cdb58c0983d462d886136b6d56eee38
-  Expo: 52058818367e1ba47892d7ce7a08f3e8d585a1eb
+  Expo: c771b2dfbd0a9f8702b3eaf2534b4c7dfb091cfd
   ExpoAsset: 586e89aeaab2e23bfa90b9dce4d7d5e36815c039
   ExpoAudio: 4f27c2bc1cc08f003c2af070cedf25fefd9da5bb
   ExpoBackgroundFetch: b53b0dd1df71a76340caacd5a80dd2c198e55b93
@@ -4767,11 +4767,11 @@ SPEC CHECKSUMS:
   ExpoLogBox: b39a76aab749833d58111c3be1264bb90f3b92d4
   ExpoMailComposer: 93f4d65c12dd45331f69e0906773aa0e7b74344c
   ExpoMediaLibrary: 2fa3d1b3a7681a010602c36c547819e0e83970b9
-  ExpoModulesCore: 2b7e9d8923f014ff481f65089f069b7a9c8adcad
-  ExpoModulesJSI: ef7f197a8e7eeb245557f560ade794bfc1abdc79
+  ExpoModulesCore: e2ba255f216b4bee7817a71409f4ce6762b35c32
+  ExpoModulesJSI: 0fad44a0464a4469b83a06e34e529c13043f2f69
   ExpoModulesTestCore: b6fb81e2c6279953475f5b0b757832d33119695c
-  ExpoModulesWorklets: 0340ed9a30017f8597b90a1ef9aa210c43e44c4b
-  ExpoModulesWorkletsAdapter: 03d305e6d80787f68c16c469b1e9f2490aea9494
+  ExpoModulesWorklets: f6b71b8ddeb8dceb2ce3504544ecfbd708ba79a2
+  ExpoModulesWorkletsAdapter: 8db49bc7bb9c51249d7ec873f1960aab395b774d
   ExpoNetwork: 78410dae9e08763793927278ce56c15bcfd25dd0
   ExpoNotifications: 02cd9efc076d8a4a64d36eee3297c9d84bb7e719
   ExpoPrint: 5d11315896ea8880a8081ab197f3fa22f790e35f
