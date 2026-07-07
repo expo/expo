@@ -8,7 +8,7 @@ import { DeviceABI, getDeviceABIsAsync } from '../../start/platforms/android/adb
 const debug = require('debug')('expo:run:android:resolveInstallApkName') as typeof console.log;
 
 type OutputMetadataElement = {
-  filters: { filterType: string; value: string }[];
+  filters?: { filterType: string; value: string }[];
   outputFile: string;
 };
 
@@ -18,18 +18,14 @@ type OutputMetadata = {
 
 function resolveApkFromOutputMetadata(
   apkVariantDirectory: string,
-  availableCPUs: string[]
+  availableCPUs: DeviceABI[]
 ): string | null {
   const metadataPath = path.join(apkVariantDirectory, 'output-metadata.json');
-  if (!fs.existsSync(metadataPath)) {
-    return null;
-  }
-
   let metadata: OutputMetadata;
   try {
     metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-  } catch {
-    debug('Failed to parse output-metadata.json');
+  } catch (error) {
+    debug('Failed to parse output-metadata.json', error);
     return null;
   }
 
@@ -38,35 +34,34 @@ function resolveApkFromOutputMetadata(
     return null;
   }
 
-  debug('output-metadata.json elements:', elements.map((e) => e.outputFile).join(', '));
-
   // ABI split: match by device ABI. Exclude DeviceABI.universal — AGP never uses it as an ABI filter.
-  const isAbiSplit = elements.some((e) => e.filters.some((f) => f.filterType === 'ABI'));
+  const isAbiSplit = elements.some((e) => e?.filters?.some((f) => f?.filterType === 'ABI'));
   if (isAbiSplit) {
-    const deviceCPUs = availableCPUs.filter((cpu) => cpu !== DeviceABI.universal);
-    for (const cpu of deviceCPUs) {
+    for (const cpu of availableCPUs) {
+      if (cpu === DeviceABI.universal) {
+        continue;
+      }
       const match = elements.find((e) =>
-        e.filters.some((f) => f.filterType === 'ABI' && f.value === cpu)
+        e?.filters?.some((f) => f.filterType === 'ABI' && f.value === cpu)
       );
-      if (match && fs.existsSync(path.join(apkVariantDirectory, match.outputFile))) {
-        debug('Resolved ABI-split APK from output-metadata.json:', match.outputFile);
-        return match.outputFile;
+      const outputFile = match?.outputFile;
+      if (typeof outputFile === 'string' && fs.existsSync(path.join(apkVariantDirectory, outputFile))) {
+        debug('Resolved ABI-split APK from output-metadata.json:', outputFile);
+        return outputFile;
       }
     }
     return null;
   }
 
-  // Single universal APK. Density/language splits produce multiple elements without ABI filters;
-  // we don't attempt to resolve those here.
-  if (elements.length !== 1) {
-    return null;
-  }
-  const apkFile = elements[0]?.outputFile;
-  if (apkFile && fs.existsSync(path.join(apkVariantDirectory, apkFile))) {
-    debug('Resolved APK from output-metadata.json:', apkFile);
-    return apkFile;
+  if (elements.length === 1) {
+    const outputFile = elements[0]?.outputFile;
+    if (typeof outputFile === 'string' && fs.existsSync(path.join(apkVariantDirectory, outputFile))) {
+      debug('Resolved APK from output-metadata.json:', outputFile);
+      return outputFile;
+    }
   }
 
+  // Density/language splits produce multiple elements without ABI filters
   return null;
 }
 
