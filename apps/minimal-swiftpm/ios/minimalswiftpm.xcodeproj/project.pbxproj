@@ -1,0 +1,492 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
+		F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748432D0307B40044C1D9 /* SceneDelegate.swift */; };
+		63EFA1BFF3B26ED48191BE19 /* ReactNative in Frameworks */ = {isa = PBXBuildFile; productRef = F22919FD47E160B1C255059D /* ReactNative */;};
+		875666C3F414E2DEA17AB4C6 /* ReactNativeDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 7E7D873FB92107759FFD17BD /* ReactNativeDependencies */;};
+		C1EE06F0363A2E45DF7286A5 /* hermes-engine in Frameworks */ = {isa = PBXBuildFile; productRef = 9F15E21186D6CE992DFCBF93 /* hermes-engine */;};
+		D6BD17EA9023C9F39246B71F /* Autolinked in Frameworks */ = {isa = PBXBuildFile; productRef = 3AFDEFB917B01458307FDE0A /* Autolinked */;};
+		3F1E298E4A2D7CA403A328B5 /* ReactCodegen in Frameworks */ = {isa = PBXBuildFile; productRef = 947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */;};
+		50A8621D202A6CFB97E2C1B5 /* ReactAppDependencyProvider in Frameworks */ = {isa = PBXBuildFile; productRef = F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */;};
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		13B07F961A680F5B00A75B9A /* minimalswiftpm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = minimalswiftpm.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = minimalswiftpm/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = minimalswiftpm/Info.plist; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = minimalswiftpm/SplashScreen.storyboard; sourceTree = "<group>"; };
+		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = minimalswiftpm/AppDelegate.swift; sourceTree = "<group>"; };
+		F11748432D0307B40044C1D9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = minimalswiftpm/SceneDelegate.swift; sourceTree = "<group>"; };
+		F11748442D0722820044C1D9 /* minimalswiftpm-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "minimalswiftpm-Bridging-Header.h"; path = "minimalswiftpm/minimalswiftpm-Bridging-Header.h"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				63EFA1BFF3B26ED48191BE19 /* ReactNative in Frameworks */,
+				875666C3F414E2DEA17AB4C6 /* ReactNativeDependencies in Frameworks */,
+				C1EE06F0363A2E45DF7286A5 /* hermes-engine in Frameworks */,
+				D6BD17EA9023C9F39246B71F /* Autolinked in Frameworks */,
+				3F1E298E4A2D7CA403A328B5 /* ReactCodegen in Frameworks */,
+				50A8621D202A6CFB97E2C1B5 /* ReactAppDependencyProvider in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		13B07FAE1A68108700A75B9A /* minimalswiftpm */ = {
+			isa = PBXGroup;
+			children = (
+				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
+				F11748432D0307B40044C1D9 /* SceneDelegate.swift */,
+				F11748442D0722820044C1D9 /* minimalswiftpm-Bridging-Header.h */,
+				BB2F792B24A3F905000567C9 /* Supporting */,
+				13B07FB51A68108700A75B9A /* Images.xcassets */,
+				13B07FB61A68108700A75B9A /* Info.plist */,
+				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
+			);
+			name = minimalswiftpm;
+			sourceTree = "<group>";
+		};
+		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		83CBB9F61A601CBA00E9B192 = {
+			isa = PBXGroup;
+			children = (
+				13B07FAE1A68108700A75B9A /* minimalswiftpm */,
+				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				83CBBA001A601CBA00E9B192 /* Products */,
+				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
+		};
+		83CBBA001A601CBA00E9B192 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13B07F961A680F5B00A75B9A /* minimalswiftpm.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BB2F792B24A3F905000567C9 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				BB2F792C24A3F905000567C9 /* Expo.plist */,
+			);
+			name = Supporting;
+			path = minimalswiftpm/Supporting;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		13B07F861A680F5B00A75B9A /* minimalswiftpm */ = {
+			packageProductDependencies = (
+				F22919FD47E160B1C255059D /* ReactNative */,
+				7E7D873FB92107759FFD17BD /* ReactNativeDependencies */,
+				9F15E21186D6CE992DFCBF93 /* hermes-engine */,
+				3AFDEFB917B01458307FDE0A /* Autolinked */,
+				947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */,
+				F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */,
+			);
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "minimalswiftpm" */;
+			buildPhases = (
+				658A88AFBFD620F8BC6F91BA /* Sync SPM Autolinking */,
+				13B07F871A680F5B00A75B9A /* Sources */,
+				13B07F8C1A680F5B00A75B9A /* Frameworks */,
+				13B07F8E1A680F5B00A75B9A /* Resources */,
+				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				94383382E1D546F3B8D625BF /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = minimalswiftpm;
+			productName = minimalswiftpm;
+			productReference = 13B07F961A680F5B00A75B9A /* minimalswiftpm.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		83CBB9F71A601CBA00E9B192 /* Project object */ = {
+			packageReferences = (
+				27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */,
+				C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "build/generated/autolinking" */,
+				A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */,
+			);
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1130;
+				TargetAttributes = {
+					13B07F861A680F5B00A75B9A = {
+						LastSwiftMigration = 1250;
+					};
+				};
+			};
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "minimalswiftpm" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 83CBB9F61A601CBA00E9B192;
+			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				13B07F861A680F5B00A75B9A /* minimalswiftpm */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		13B07F8E1A680F5B00A75B9A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
+				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+			);
+			name = "Bundle React Native code and images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
+		};
+		94383382E1D546F3B8D625BF /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo Dev Launcher] Strip Local Network Keys for Release";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Strip dev-launcher-specific local network permission keys from non-Debug builds\n# This only removes _expo._tcp Bonjour services and the dev-launcher usage description.\n# Other Bonjour services and custom descriptions are preserved for production use.\n\nif [ \"$CONFIGURATION\" != \"Debug\" ]; then\n  PLIST_PATH=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n  if [ -f \"$PLIST_PATH\" ]; then\n    # Check if NSBonjourServices exists\n    if /usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" >/dev/null 2>&1; then\n      # Get the count of services\n      COUNT=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n\n      # Remove _expo._tcp\n      for ((i=COUNT-1; i>=0; i--)); do\n        SERVICE=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n        if echo \"$SERVICE\" | grep -q \"_expo._tcp\"; then\n          /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || true\n        fi\n      done\n\n      # If the array is now empty, remove it entirely\n      REMAINING=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n      if [ \"$REMAINING\" -eq \"0\" ]; then\n        /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null || true\n      fi\n    fi\n\n    # Only delete the description if it matches the dev-launcher default text\n    DESC=$(/usr/libexec/PlistBuddy -c \"Print :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n    if echo \"$DESC\" | grep -q \"Expo Dev Launcher\"; then\n      /usr/libexec/PlistBuddy -c \"Delete :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || true\n    fi\n  fi\nfi\n";
+		};
+		658A88AFBFD620F8BC6F91BA /* Sync SPM Autolinking */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Sync SPM Autolinking";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\n\nSTAMP=\"$SRCROOT/build/generated/autolinking/.spm-sync-stamp\"\nSTALE=0\n\n# Check 0: xcframework artifacts missing (fresh clone)\nif [ ! -f \"$SRCROOT/build/xcframeworks/artifacts.json\" ] || \\\n   [ ! -d \"$SRCROOT/build/xcframeworks/React.xcframework\" ]; then\n  STALE=1\nfi\n\n# Find project root (where package.json lives — may be an ancestor of SRCROOT)\nPROJECT_ROOT=\"$SRCROOT\"\nwhile [ \"$PROJECT_ROOT\" != \"/\" ] && [ ! -f \"$PROJECT_ROOT/package.json\" ]; do\n  PROJECT_ROOT=\"$(dirname \"$PROJECT_ROOT\")\"\ndone\nif [ ! -f \"$PROJECT_ROOT/package.json\" ]; then\n  PROJECT_ROOT=\"$SRCROOT\"\nfi\n\n# Check 1: dependency inputs (covers app projects after any package manager install)\nfor INPUT in \\\n  \"$PROJECT_ROOT/package.json\" \\\n  \"$PROJECT_ROOT/react-native.config.js\"; do\n  if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n    STALE=1\n    break\n  fi\ndone\n\n# Check workspace lockfiles and package-manager metadata. These cover package\n# managers that do not reliably bump node_modules mtimes, and Yarn PnP projects\n# that do not have node_modules at all.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    for INPUT in \\\n      \"$DIR/package-lock.json\" \\\n      \"$DIR/npm-shrinkwrap.json\" \\\n      \"$DIR/yarn.lock\" \\\n      \"$DIR/pnpm-lock.yaml\" \\\n      \"$DIR/bun.lock\" \\\n      \"$DIR/bun.lockb\" \\\n      \"$DIR/.pnp.cjs\" \\\n      \"$DIR/.pnp.loader.mjs\"; do\n      if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n        STALE=1\n        break\n      fi\n    done\n    if [ \"$STALE\" -eq 1 ]; then\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Check node_modules mtime. In monorepos, node_modules may be hoisted to any\n# ancestor between the app package and the workspace root.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    NM_DIR=\"$DIR/node_modules\"\n    if [ -d \"$NM_DIR\" ] && [ \"$NM_DIR\" -nt \"$STAMP\" ]; then\n      STALE=1\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Also check the app root directly when SRCROOT is not the package root.\nif [ \"$STALE\" -eq 0 ] && [ \"$SRCROOT\" != \"$PROJECT_ROOT\" ]; then\n  if [ -d \"$SRCROOT/node_modules\" ] && [ \"$SRCROOT/node_modules\" -nt \"$STAMP\" ]; then\n    STALE=1\n  fi\nfi\n\n# Check 1.5: watched module source dirs (catches add/remove of source files\n# in spm.modules and autolinked deps). Directory mtime updates on both add\n# and remove of children, so a single -newer check covers both cases.\nWATCH_FILE=\"$SRCROOT/build/generated/autolinking/.spm-sync-watch-paths\"\nif [ \"$STALE\" -eq 0 ] && [ -f \"$WATCH_FILE\" ]; then\n  while IFS= read -r DIR; do\n    [ -z \"$DIR\" ] && continue\n    if [ -d \"$DIR\" ] && [ -n \"$(find \"$DIR\" -newer \"$STAMP\" -print -quit 2>/dev/null)\" ]; then\n      STALE=1\n      break\n    fi\n  done < \"$WATCH_FILE\"\nfi\n\n# Check 2: codegen spec files changed via git (covers monorepo after git pull)\nif [ \"$STALE\" -eq 0 ] && [ -f \"$STAMP\" ]; then\n  STAMP_TIME=$(stat -f %m \"$STAMP\" 2>/dev/null || stat -c %Y \"$STAMP\" 2>/dev/null || echo 0)\n  LATEST_SPEC_COMMIT=$(git -C \"$SRCROOT\" log -1 --format=%ct -- '*.js' '*.ts' 2>/dev/null || echo 0)\n  if [ \"$LATEST_SPEC_COMMIT\" -gt \"$STAMP_TIME\" ]; then\n    STALE=1\n  fi\nfi\n\nif [ ! -f \"$STAMP\" ]; then\n  STALE=1\nfi\n\nif [ \"$STALE\" -eq 0 ]; then\n  exit 0\nfi\n\necho \"SPM sync inputs changed — re-syncing (codegen + autolinking)...\"\n\nWITH_ENVIRONMENT=\"../../../node_modules/.pnpm/react-native@http+++127.0.0.1+4873+react-native+-+react-native-0.87.0-nightly-20260706-_ed3573ef0871a8f7f1027d95a2debcf9/node_modules/react-native/scripts/xcode/with-environment.sh\"\n\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  # with-environment.sh references PODS_ROOT and $1, which may be unset.\n  # Temporarily disable nounset to avoid failures when sourcing.\n  export PODS_ROOT=\"${PODS_ROOT:-$SRCROOT}\"\n  set +u\n  . \"$WITH_ENVIRONMENT\"\n  set -u\nfi\n\ncd \"$SRCROOT\"\nif command -v npx >/dev/null 2>&1; then\n  npx react-native spm sync\n  RC=$?\n  if [ \"$RC\" -eq 2 ]; then\n    # Exit 2 = an autolinked community dependency has no Package.swift. The\n    # autolinker already printed an `error:` line per dep (so Xcode shows them\n    # and the fix). Fail the build — the developer must run\n    # `npx react-native spm scaffold` from a terminal to generate the manifest.\n    exit 1\n  elif [ \"$RC\" -ne 0 ]; then\n    echo \"warning: SPM sync failed — build may use stale codegen/autolinking\"\n    exit 0\n  fi\nelse\n  echo \"warning: npx not found — skipping SPM sync\"\n  exit 0\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		13B07F871A680F5B00A75B9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
+				F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		13B07F941A680F5B00A75B9A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				REACT_NATIVE_PATH = "../../../node_modules/.pnpm/react-native@http+++127.0.0.1+4873+react-native+-+react-native-0.87.0-nightly-20260706-_ed3573ef0871a8f7f1027d95a2debcf9/node_modules/react-native";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				OTHER_SWIFT_FLAGS = (
+					"$(inherited)",
+					"-Xcc",
+					"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/build/generated/autolinking/headers",
+				);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = minimalswiftpm/minimalswiftpm.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_BITCODE = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"FB_SONARKIT_ENABLED=1",
+				);
+				INFOPLIST_FILE = minimalswiftpm/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.minimalswiftpm;
+				PRODUCT_NAME = minimalswiftpm;
+				SWIFT_OBJC_BRIDGING_HEADER = "minimalswiftpm/minimalswiftpm-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		13B07F951A680F5B00A75B9A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				REACT_NATIVE_PATH = "../../../node_modules/.pnpm/react-native@http+++127.0.0.1+4873+react-native+-+react-native-0.87.0-nightly-20260706-_ed3573ef0871a8f7f1027d95a2debcf9/node_modules/react-native";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				OTHER_SWIFT_FLAGS = (
+					"$(inherited)",
+					"-Xcc",
+					"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/build/generated/autolinking/headers",
+				);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = minimalswiftpm/minimalswiftpm.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = minimalswiftpm/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.minimalswiftpm;
+				PRODUCT_NAME = minimalswiftpm;
+				SWIFT_OBJC_BRIDGING_HEADER = "minimalswiftpm/minimalswiftpm-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		83CBBA201A601CBA00E9B192 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		83CBBA211A601CBA00E9B192 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "minimalswiftpm" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13B07F941A680F5B00A75B9A /* Debug */,
+				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "minimalswiftpm" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				83CBBA201A601CBA00E9B192 /* Debug */,
+				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+/* Begin XCLocalSwiftPackageReference section */
+		27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/xcframeworks;};
+		C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "build/generated/autolinking" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/generated/autolinking;};
+		A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/generated/ios;};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F22919FD47E160B1C255059D /* ReactNative */ = {isa = XCSwiftPackageProductDependency; package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = ReactNative;};
+		7E7D873FB92107759FFD17BD /* ReactNativeDependencies */ = {isa = XCSwiftPackageProductDependency; package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = ReactNativeDependencies;};
+		9F15E21186D6CE992DFCBF93 /* hermes-engine */ = {isa = XCSwiftPackageProductDependency; package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = "hermes-engine";};
+		3AFDEFB917B01458307FDE0A /* Autolinked */ = {isa = XCSwiftPackageProductDependency; package = C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "build/generated/autolinking" */; productName = Autolinked;};
+		947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */ = {isa = XCSwiftPackageProductDependency; package = A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */; productName = ReactCodegen;};
+		F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */ = {isa = XCSwiftPackageProductDependency; package = A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */; productName = ReactAppDependencyProvider;};
+/* End XCSwiftPackageProductDependency section */
+
+	};
+	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
+}
