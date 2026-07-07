@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Guard the deep link decode in `extractExactPathFromURL` against malformed percent-encoding. ([#47526](https://github.com/expo/expo/pull/47526) by [@momomuchu](https://github.com/momomuchu))
+
 ### 💡 Others
 
 ## 57.0.4 — 2026-07-07
