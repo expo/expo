@@ -141,6 +141,7 @@ async function loadAllCommandsAsync(callback) {
   const commandFiles = await glob('build/commands/*.js', {
     cwd: ROOT_PATH,
     absolute: true,
+    ignore: '**/*.test.js',
   });
 
   for (const commandFile of commandFiles) {
