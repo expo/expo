@@ -1,7 +1,8 @@
 
 // Top-level async to ensure esm modules are loaded correctly
 // require of esm in modern Node works(*)
-await undefined;
+// await undefined;
+// fixed on main in https://github.com/expo/expo/pull/47170
 
 export default async function handler(request) {
   const url = new URL(request.url);

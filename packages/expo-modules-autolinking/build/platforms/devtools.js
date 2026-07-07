@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveModuleAsync = resolveModuleAsync;
 exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
+const require_utils_1 = require("@expo/require-utils");
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("../utils");
 async function resolveModuleAsync(packageName, revision) {
@@ -15,18 +16,30 @@ async function resolveModuleAsync(packageName, revision) {
     return {
         packageName,
         packageRoot: revision.path,
-        webpageRoot: await resolveWebpageRoot(revision.path, devtoolsConfig.webpageRoot),
+        webpageRoot: await resolvePackageLocalWebpageRoot(revision.path, devtoolsConfig.webpageRoot),
+        bannerTitle: devtoolsConfig.bannerTitle,
+        serverEntryPoint: await resolvePackageLocalPath(revision.path, devtoolsConfig.serverEntryPoint),
         cliExtensions: devtoolsConfig.cliExtensions,
     };
 }
-async function resolveWebpageRoot(packageRoot, configuredWebpageRoot) {
-    if (!configuredWebpageRoot) {
+async function resolvePackageLocalPath(packageRoot, configuredPath) {
+    if (!configuredPath) {
         return undefined;
     }
-    const resolvedWebpageRoot = path_1.default.resolve(packageRoot, configuredWebpageRoot);
+    const resolvedPath = (0, require_utils_1.resolveFrom)(packageRoot, configuredPath);
+    if (!resolvedPath) {
+        return undefined;
+    }
+    return (0, utils_1.isPathInside)(resolvedPath, packageRoot) ? resolvedPath : undefined;
+}
+async function resolvePackageLocalWebpageRoot(packageRoot, configuredPath) {
+    if (!configuredPath) {
+        return undefined;
+    }
+    const resolvedPath = path_1.default.resolve(packageRoot, configuredPath);
     // NOTE(@kitten): Failing realpath-ing, typically due to ENOENT, results in the original value
-    const webpageRoot = (await (0, utils_1.maybeRealpath)(resolvedWebpageRoot)) ?? resolvedWebpageRoot;
-    return (0, utils_1.isPathInside)(webpageRoot, packageRoot) ? webpageRoot : undefined;
+    const realPath = (await (0, utils_1.maybeRealpath)(resolvedPath)) ?? resolvedPath;
+    return (0, utils_1.isPathInside)(realPath, packageRoot) ? realPath : undefined;
 }
 async function resolveExtraBuildDependenciesAsync(_projectNativeRoot) {
     return null;

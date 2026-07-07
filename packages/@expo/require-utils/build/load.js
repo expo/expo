@@ -358,7 +358,8 @@ async function requireOrImport(filename) {
   try {
     return require(filename);
   } catch {
-    return await Promise.resolve(`${_nodePath().default.isAbsolute(filename) ? _nodeUrl().default.pathToFileURL(filename).toString() : filename}`).then(s => _interopRequireWildcard(require(s)));
+    const importFilename = _nodePath().default.isAbsolute(filename) ? _nodeUrl().default.pathToFileURL(filename).toString() : filename;
+    return await Promise.resolve(`${importFilename}`).then(s => _interopRequireWildcard(require(s)));
   }
 }
 async function loadModule(filename) {
