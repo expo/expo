@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Response.blob()` in `expo/fetch` throwing when the global `Blob` is react-native's implementation. ([#47538](https://github.com/expo/expo/pull/47538) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-07-07
