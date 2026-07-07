@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import android.graphics.Color
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
@@ -293,15 +294,22 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       ) { it }
     )
 
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-      return converters + mapOf(
+    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+      converters + mapOf(
         Path::class.java to PathTypeConverter(),
         Color::class.java to ColorTypeConverter(),
         LocalDate::class.java to DateTypeConverter()
       )
+    } else {
+      // Below API 26 the class-based Color API isn't available, so we can't build a real Color.
+      // Register a fallback that resolves every color to null rather than leaving the type
+      // unregistered, which would make Color? args/props throw MissingTypeConverter 
+      // https://github.com/expo/expo/issues/47546
+      // TODO: Remove when we drop support for Android 7 (API 24-25).
+      converters + mapOf(
+        Color::class.java to UnavailableColorTypeConverter()
+      )
     }
-
-    return converters
   }
 
   private fun createCachedPrimitiveArrayConverters(): Map<Class<*>, TypeConverter<*>> {

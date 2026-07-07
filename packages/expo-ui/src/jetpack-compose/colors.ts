@@ -150,10 +150,12 @@ export type MaterialColorsOptions = {
   /**
    * Seed color used to generate the full Material 3 palette via the
    * `SchemeTonalSpot` variant (the same one Material You uses). When set,
-   * the palette is derived from this color on every Android device, including
-   * those below Android 12 where wallpaper-based dynamic colors are not
-   * available. When omitted, the palette comes from the device wallpaper
-   * (Android 12+) or the static Material 3 baseline.
+   * the palette is derived from this color on Android 8.0 (API 26) and above,
+   * independent of the wallpaper and including versions below Android 12 where
+   * wallpaper-based dynamic colors are not available. On Android 7 (API 24 and
+   * 25) the seed color is ignored and the Material 3 baseline is used. When
+   * omitted, the palette comes from the device wallpaper (Android 12+) or the
+   * static Material 3 baseline.
    */
   seedColor?: ColorValue;
 };
@@ -173,7 +175,9 @@ export type UseMaterialColorsOptions = Omit<MaterialColorsOptions, 'scheme'> & {
  * Whether the current device supports Material You dynamic colors (Android
  * 12+). When `false`, [`getMaterialColors`](#materialcolorsgetmaterialcolorsoptions) and [`useMaterialColors`](#usematerialcolorsoptions)
  * return the static Material 3 baseline palette unless a `seedColor` is
- * provided — seed-based palettes work on every Android API level.
+ * provided. Seed-based palettes work on Android 8.0 (API 26) and above; on
+ * Android 7 (API 24 and 25) the seed color is ignored and the baseline palette
+ * is used.
  */
 export const isDynamicColorAvailable: boolean = ExpoUIModule.isDynamicColorAvailable ?? false;
 

@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.toColorInt
 import com.facebook.react.bridge.ColorPropConverter
@@ -459,6 +460,44 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
       ),
       SingleType(
         CppType.READABLE_MAP
+      )
+    )
+
+  override fun isTrivial() = false
+}
+
+/**
+ * Fallback [Color] converter for Android below 8.0 (API < 26), where the class-based
+ * [Color] API that [ColorTypeConverter] relies on (`Color.valueOf` and the `red()`/`green()`/
+ * `blue()` accessors) doesn't exist, so a real [Color] can't be constructed. It accepts the same
+ * JS representations but resolves them all to `null`, so callers that already treat a null color
+ * as "use the platform default" degrade gracefully. Without it the [Color] type is unregistered
+ * on those versions and every `Color?` argument or view prop fails with `MissingTypeConverter`,
+ * which makes `@expo/ui` unusable on Android 7 (https://github.com/expo/expo/issues/47546).
+ */
+class UnavailableColorTypeConverter : TypeConverter<Color> {
+  private var warned = false
+
+  override fun convert(value: Any?, context: AppContext?, forceConversion: Boolean): Color? {
+    if (!warned) {
+      warned = true
+      Log.w(
+        "expo-modules-core",
+        "Color values are unavailable on Android API < 26, where 'android.graphics.Color' cannot be " +
+          "constructed. Color arguments and props resolve to null, so components fall back to their " +
+          "default colors. To use custom colors on older devices, pass them as `processColor` integers."
+      )
+    }
+    return null
+  }
+
+  override fun getCppRequiredTypes(): ExpectedType =
+    ExpectedType(
+      SingleType(CppType.INT),
+      SingleType(CppType.STRING),
+      SingleType(
+        CppType.PRIMITIVE_ARRAY,
+        arrayOf(ExpectedType(CppType.DOUBLE))
       )
     )
 
