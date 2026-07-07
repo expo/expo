@@ -1,6 +1,10 @@
 import { applyRedirects } from '../../getRoutesRedirects';
 import { getNavigateAction } from '../getNavigationAction';
-import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
+import {
+  findDivergentState,
+  getNavigationPayloadFromStateRoute,
+  getPayloadFromStateRoute,
+} from '../stateUtils';
 import { store } from '../store';
 
 jest.mock('../store', () => ({
@@ -38,6 +42,7 @@ jest.mock('../store', () => ({
 
 jest.mock('../stateUtils', () => ({
   findDivergentState: jest.fn(),
+  getNavigationPayloadFromStateRoute: jest.fn(),
   getPayloadFromStateRoute: jest.fn(),
 }));
 
@@ -50,7 +55,10 @@ jest.mock('../../link/href', () => ({
 }));
 
 const mockFindDivergentState = findDivergentState as jest.MockedFunction<typeof findDivergentState>;
-const mockGetPayload = getPayloadFromStateRoute as jest.MockedFunction<
+const mockGetPayload = getNavigationPayloadFromStateRoute as jest.MockedFunction<
+  typeof getNavigationPayloadFromStateRoute
+>;
+const mockGetLegacyPayload = getPayloadFromStateRoute as jest.MockedFunction<
   typeof getPayloadFromStateRoute
 >;
 const mockApplyRedirects = applyRedirects as jest.MockedFunction<typeof applyRedirects>;
@@ -73,8 +81,13 @@ function setupDefaultMocks() {
     navigationRoutes: [],
   });
 
-  mockGetPayload.mockReturnValue({
+  mockGetLegacyPayload.mockReturnValue({
     screen: 'home',
+    params: {},
+  });
+
+  mockGetPayload.mockReturnValue({
+    name: 'home',
     params: {},
   });
 }
@@ -207,8 +220,8 @@ describe(getNavigateAction, () => {
     expect(result!.target).toBe('nav-key');
   });
 
-  it('withAnchor sets initial: false on root and all nested params', () => {
-    mockGetPayload.mockReturnValue({
+  it('withAnchor keeps legacy initial params until Step 9b', () => {
+    mockGetLegacyPayload.mockReturnValue({
       screen: 'home',
       params: {
         screen: 'nested',
@@ -221,7 +234,6 @@ describe(getNavigateAction, () => {
 
     const result = getNavigateAction('/home', {}, 'NAVIGATE', true);
 
-    // withAnchor=true → initial should be set to false at every level (inverted logic)
     const params = result!.payload.params as Record<string, any>;
     expect(params.initial).toBe(false);
     expect(params.params.initial).toBe(false);
@@ -310,12 +322,44 @@ describe(getNavigateAction, () => {
       navigationRoutes: [],
     });
 
-    mockGetPayload.mockReturnValue({ screen: undefined, params: {} });
+    mockGetLegacyPayload.mockReturnValue({ screen: undefined, params: {} });
+    mockGetPayload.mockReturnValue({ name: undefined, params: {} });
 
     const result = getNavigateAction('/home', {});
 
-    expect(mockGetPayload).toHaveBeenCalledWith({});
+    expect(mockGetLegacyPayload).toHaveBeenCalledWith({});
+    expect(mockGetPayload).toHaveBeenCalledWith({}, expect.anything(), {});
     expect(result).toBeDefined();
+  });
+
+  it('emits payload.state alongside legacy nested screen params', () => {
+    mockGetLegacyPayload.mockReturnValue({
+      screen: 'root',
+      params: { id: '123', screen: 'leaf', params: { id: '123' } },
+    });
+    mockGetPayload.mockReturnValue({
+      name: 'root',
+      params: { id: '123' },
+      state: {
+        stale: false,
+        key: '@:root:0',
+        index: 0,
+        routeNames: ['leaf'],
+        routes: [{ key: '@:root:0:leaf:0', name: 'leaf' }],
+      },
+    });
+
+    const result = getNavigateAction('/root/leaf?id=123', {});
+
+    expect(result!.payload.name).toBe('root');
+    expect(result!.payload.params).toEqual({ id: '123', screen: 'leaf', params: { id: '123' } });
+    expect(result!.payload.state).toEqual({
+      stale: false,
+      key: '@:root:0',
+      index: 0,
+      routeNames: ['leaf'],
+      routes: [{ key: '@:root:0:leaf:0', name: 'leaf' }],
+    });
   });
 
 });

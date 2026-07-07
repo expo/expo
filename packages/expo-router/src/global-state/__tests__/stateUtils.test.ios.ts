@@ -1,5 +1,9 @@
 import type { NavigationState, PartialState } from '../../react-navigation/native';
-import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
+import {
+  findDivergentState,
+  getNavigationPayloadFromStateRoute,
+  getPayloadFromStateRoute,
+} from '../stateUtils';
 
 // React Navigation converts nested action states into a flat `{ screen, params: { screen, params: ... } }`
 // structure. `getPayloadFromStateRoute` mirrors this by merging params at each level so the
@@ -115,6 +119,115 @@ describe('getPayloadFromStateRoute', () => {
     expect(result).toEqual({
       params: { keepMe: 'yes', screen: 'child', params: { keepMe: 'yes' } },
       screen: 'parent',
+    });
+  });
+});
+
+describe('getNavigationPayloadFromStateRoute', () => {
+  it('returns route params and propagates them through the emitted child state', () => {
+    const result = getNavigationPayloadFromStateRoute(
+      {
+        name: 'profile',
+        params: { id: '123', screen: 'ignored', initial: false },
+        state: {
+          stale: false,
+          key: '@:profile:0',
+          index: 0,
+          routeNames: ['details'],
+          routes: [{ key: '@:profile:0:details:0', name: 'details' }],
+        },
+      },
+      {
+        key: '@',
+        index: 0,
+        routeNames: ['index'],
+        routes: [{ key: '@:index:0', name: 'index' }],
+        stale: false,
+      }
+    );
+
+    expect(result).toEqual({
+      name: 'profile',
+      params: { id: '123' },
+      state: {
+        stale: false,
+        key: '@:profile:0',
+        index: 0,
+        routeNames: ['details'],
+        routes: [{ key: '@:profile:0:details:0', name: 'details', params: { id: '123' } }],
+      },
+    });
+  });
+
+  it('rekeys duplicate-name subtrees against the live target state', () => {
+    const result = getNavigationPayloadFromStateRoute(
+      {
+        name: 'bar',
+        state: {
+          stale: false,
+          key: '@:bar:0',
+          index: 0,
+          routeNames: ['baz'],
+          routes: [
+            {
+              key: '@:bar:0:baz:0',
+              name: 'baz',
+              state: {
+                stale: false,
+                key: '@:bar:0:baz:0',
+                index: 0,
+                routeNames: ['leaf'],
+                routes: [{ key: '@:bar:0:baz:0:leaf:0', name: 'leaf' }],
+              },
+            },
+          ],
+        },
+      },
+      {
+        key: '@',
+        index: 0,
+        routeNames: ['bar'],
+        routes: [{ key: '@:bar:0', name: 'bar' }],
+        stale: false,
+      }
+    );
+
+    expect(result.state?.key).toBe('@:bar:1');
+    expect(result.state?.routes[0]?.key).toBe('@:bar:1:baz:0');
+    expect(result.state?.routes[0]?.state?.key).toBe('@:bar:1:baz:0');
+    expect(result.state?.routes[0]?.state?.routes[0]?.key).toBe('@:bar:1:baz:0:leaf:0');
+  });
+
+  it('propagates extra internal params through the focused emitted subtree', () => {
+    const result = getNavigationPayloadFromStateRoute(
+      {
+        name: 'modal',
+        params: { id: '123' },
+        state: {
+          stale: false,
+          key: '@:modal:0',
+          index: 0,
+          routeNames: ['leaf'],
+          routes: [{ key: '@:modal:0:leaf:0', name: 'leaf' }],
+        },
+      },
+      {
+        key: '@',
+        index: 0,
+        routeNames: ['index'],
+        routes: [{ key: '@:index:0', name: 'index' }],
+        stale: false,
+      },
+      { __internal__expo_router_is_preview_navigation: true }
+    );
+
+    expect(result.params).toEqual({
+      id: '123',
+      __internal__expo_router_is_preview_navigation: true,
+    });
+    expect(result.state?.routes[0]?.params).toEqual({
+      id: '123',
+      __internal__expo_router_is_preview_navigation: true,
     });
   });
 });

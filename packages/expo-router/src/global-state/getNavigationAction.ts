@@ -7,7 +7,11 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { SingularOptions } from '../useScreens';
-import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
+import {
+  findDivergentState,
+  getNavigationPayloadFromStateRoute,
+  getPayloadFromStateRoute,
+} from './stateUtils';
 import { store } from './store';
 import type { LinkToOptions } from './types';
 
@@ -79,7 +83,18 @@ export function getNavigateAction(
    * We found the target navigator, but the payload is in the incorrect format
    * We need to convert the action state to a payload that can be dispatched
    */
+  const expoParams: InternalExpoRouterParams = isPreviewNavigation
+    ? {
+        [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+        [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
+      }
+    : {};
   const rootPayload = getPayloadFromStateRoute(actionStateRoute || {});
+  const subtreePayload = getNavigationPayloadFromStateRoute(
+    actionStateRoute || {},
+    navigationState,
+    expoParams
+  );
 
   if (withAnchor) {
     if (rootPayload.params.initial) {
@@ -96,7 +111,7 @@ export function getNavigateAction(
      *   True: You want the initialRouteName to load.
      *   False: You do not want the initialRouteName to load.
      */
-    // Set initial on root and all nested params so anchors are loaded at every level
+    // Keep the legacy nested-param path alive until Step 9b moves this normalization to dispatch.
     let currentParams = rootPayload.params;
     while (currentParams) {
       currentParams.initial = !withAnchor;
@@ -104,22 +119,18 @@ export function getNavigateAction(
     }
   }
 
-  const expoParams: InternalExpoRouterParams = isPreviewNavigation
-    ? {
-        [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
-        [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
-      }
-    : {};
   const params = appendInternalExpoRouterParams(rootPayload.params, expoParams);
+
+  const payload = {
+    name: rootPayload.screen,
+    params,
+    singular,
+    ...(subtreePayload.state ? { state: subtreePayload.state } : null),
+  };
 
   return {
     type,
     target: navigationState.key,
-    payload: {
-      // key: rootPayload.key,
-      name: rootPayload.screen,
-      params,
-      singular,
-    },
+    payload,
   };
 }

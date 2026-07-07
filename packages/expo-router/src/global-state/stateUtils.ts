@@ -1,6 +1,7 @@
 import type { CompleteResultState } from '../fork/getStateFromPath';
 import { matchDynamicName } from '../matchers';
 import type { PartialRoute, NavigationState, PartialState } from '../react-navigation/native';
+import { getNextRouteKeyFromState, getRouteKey } from '../react-navigation/routers/getRouteKey';
 
 /**
  * React Navigation uses params to store information about the screens, rather then create new state for each level.
@@ -30,6 +31,103 @@ export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
     actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
   }
   return rootPayload;
+}
+
+type NavigationPayload = {
+  name?: string;
+  params?: Record<string, unknown>;
+  state?: NavigationState | PartialState<NavigationState>;
+};
+
+type NavigationPayloadRoute = Omit<PartialRoute<any>, 'state'> & {
+  state?: NavigationState | PartialState<NavigationState>;
+};
+
+export function getNavigationPayloadFromStateRoute(
+  actionStateRoute: NavigationPayloadRoute | undefined,
+  navigationState: NavigationState,
+  extraParams?: Record<string, unknown>
+): NavigationPayload {
+  const name = actionStateRoute?.name;
+  const params = getRouteParams(actionStateRoute?.params, extraParams);
+
+  if (!name) {
+    return { name, params };
+  }
+
+  const routeKey = getNextRouteKeyFromState({
+    stateKey: navigationState.key,
+    name,
+    state: navigationState,
+  });
+  const state = actionStateRoute?.state
+    ? rekeyState(actionStateRoute.state, routeKey, params)
+    : undefined;
+
+  return { name, params, state };
+}
+
+function getRouteParams(
+  params: PartialRoute<any>['params'],
+  extraParams?: Record<string, unknown>
+): Record<string, unknown> | undefined {
+  const result = params ? { ...(params as Record<string, unknown>) } : {};
+  delete result.screen;
+  delete result.initial;
+  delete result.params;
+  return { ...result, ...extraParams };
+}
+
+function rekeyState(
+  state: NavigationState | PartialState<NavigationState>,
+  stateKey: string,
+  inheritedParams?: Record<string, unknown>
+): NavigationState | PartialState<NavigationState> {
+  const routeNameCounts = new Map<string, number>();
+
+  return {
+    ...state,
+    key: stateKey,
+    routes: state.routes.map((route, routeIndex) => {
+      const index = routeNameCounts.get(route.name) ?? 0;
+      routeNameCounts.set(route.name, index + 1);
+      const key = getRouteKey({ stateKey, name: route.name, index });
+      const isFocusedPathRoute = routeIndex === state.routes.length - 1;
+      const routeParams = getMergedParams(
+        isFocusedPathRoute ? inheritedParams : undefined,
+        route.params
+      );
+      const { path, ...routeWithoutPath } = route;
+      void path;
+
+      const nextRoute = {
+        ...routeWithoutPath,
+        key,
+        path: undefined,
+        params: routeParams,
+      };
+
+      if (route.state) {
+        return { ...nextRoute, state: rekeyState(route.state, key, routeParams) };
+      }
+
+      return nextRoute;
+    }),
+  } as NavigationState | PartialState<NavigationState>;
+}
+
+function getMergedParams(
+  inheritedParams: Record<string, unknown> | undefined,
+  params: PartialRoute<any>['params']
+): Record<string, unknown> | undefined {
+  const routeParams = getRouteParams(params);
+  const shouldKeepParams = inheritedParams !== undefined || params !== undefined;
+
+  if (!shouldKeepParams) {
+    return undefined;
+  }
+
+  return { ...inheritedParams, ...routeParams };
 }
 
 /**
