@@ -514,9 +514,7 @@ class DevLauncherController private constructor(
     internal fun initialize(context: Context, reactHost: ReactHost) {
       try {
         val splashScreenManagerClass = Class.forName("expo.modules.splashscreen.SplashScreenManager")
-        val splashScreenManager = splashScreenManagerClass
-          .kotlin
-          .objectInstance
+        val splashScreenManager = splashScreenManagerClass.getField("INSTANCE").get(null)
         splashScreenManagerClass.getMethod("hide")
           .invoke(splashScreenManager)
       } catch (e: Throwable) {
