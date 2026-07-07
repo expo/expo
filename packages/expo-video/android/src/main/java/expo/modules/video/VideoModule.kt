@@ -27,6 +27,8 @@ import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoThumbnailOptions
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
 import expo.modules.video.managers.VideoManager
+import expo.modules.video.records.NowPlayingAction
+import expo.modules.video.records.PiPAction
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -306,6 +308,22 @@ class VideoModule : Module() {
         }
         .set { ref: VideoPlayer, options: ScrubbingModeOptions? ->
           ref.scrubbingModeOptions = options ?: ScrubbingModeOptions()
+        }
+
+      Property("nowPlayingActions")
+        .get { ref: VideoPlayer ->
+          ref.nowPlayingActions
+        }
+        .set { ref: VideoPlayer, nowPlayingActions: List<NowPlayingAction>? ->
+          ref.nowPlayingActions = nowPlayingActions
+        }
+
+      Property("pictureInPictureActions")
+        .get { ref: VideoPlayer ->
+          ref.pictureInPictureActions
+        }
+        .set { ref: VideoPlayer, pictureInPictureActions: List<PiPAction>? ->
+          ref.pictureInPictureActions = pictureInPictureActions
         }
 
       Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->

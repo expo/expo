@@ -88,6 +88,18 @@ export type VideoPlayerEvents = {
    * @platform ios
    */
   isExternalPlaybackActiveChange(payload: IsExternalPlaybackActiveChangeEventPayload): void;
+  /**
+   * Handler for an event emitted when a custom now playing action is pressed. This event is emitted when the user interacts with the media controls displayed in the notification shade on Android.
+   *
+   * @platform android
+   */
+  nowPlayingActionPressed(payload: NowPlayingActionPressedEventPayload): void;
+
+  /**
+   * Handler for an event emitted when a custom action in Picture in Picture (PiP) mode is pressed. This event is emitted when the user interacts with a custom action defined in the [`pictureInPictureActions`](#pictureinpictureactions).
+   * @platform android 8+
+   */
+  pictureInPictureActionPressed(payload: PictureInPictureActionPressedEventPayload): void;
 };
 
 /**
@@ -329,4 +341,26 @@ export type IsExternalPlaybackActiveChangeEventPayload = {
    * The previous external playback status.
    */
   oldIsExternalPlaybackActive?: boolean;
+};
+
+/**
+ * Data delivered with the [`nowPlayingActionPressed`](#videoplayerevents) event, contains information about the custom now playing action that was pressed in the notification shade on Android.
+ * @platform android
+ */
+export type NowPlayingActionPressedEventPayload = {
+  /**
+   * The custom action associated with the now playing action that was pressed.
+   */
+  action: string;
+};
+
+/**
+ * Data delivered with the [`pictureInPictureActionPressed`](#videoplayerevents) event, contains information about the custom action that was pressed in Picture in Picture mode.
+ * @platform android 8+
+ */
+export type PictureInPictureActionPressedEventPayload = {
+  /**
+   * The custom action associated with the action that was pressed in Picture In Picture mode.
+   */
+  action: string;
 };

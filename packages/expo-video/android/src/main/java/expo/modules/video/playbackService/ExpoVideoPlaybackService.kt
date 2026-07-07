@@ -2,6 +2,7 @@ package expo.modules.video.playbackService
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -43,19 +44,6 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   private var mostRecentInteractionSession: MediaSession? = null
   private var isForeground: Boolean = false
 
-  private val commandSeekForward = SessionCommand(SEEK_FORWARD_COMMAND, Bundle.EMPTY)
-  private val commandSeekBackward = SessionCommand(SEEK_BACKWARD_COMMAND, Bundle.EMPTY)
-  private val seekForwardButton = CommandButton.Builder()
-    .setDisplayName("rewind")
-    .setSessionCommand(commandSeekForward)
-    .setIconResId(R.drawable.seek_forwards_10s)
-    .build()
-
-  private val seekBackwardButton = CommandButton.Builder()
-    .setDisplayName("forward")
-    .setSessionCommand(commandSeekBackward)
-    .setIconResId(R.drawable.seek_backwards_10s)
-    .build()
 
   fun setShowNotification(showNotification: Boolean, player: ExoPlayer) {
     appContext.mainQueue.launch {
@@ -82,12 +70,13 @@ class ExpoVideoPlaybackService : MediaSessionService() {
       val mediaSession = MediaSession.Builder(this@ExpoVideoPlaybackService, player)
         .setId("ExpoVideoPlaybackService_${player.hashCode()}")
         .setCallback(VideoMediaSessionCallback())
-        .setCustomLayout(ImmutableList.of(seekBackwardButton, seekForwardButton))
         .build()
 
       // Replace the basic media session with a session connected to our playback service.
       videoPlayer.mediaSession.release()
       videoPlayer.mediaSession = mediaSession
+
+      mediaSession.sessionExtras.putString(VIDEO_PLAYER_ID_KEY, videoPlayer.id)
 
       mediaSessions[player] = mediaSession
       addSession(mediaSession)
@@ -171,6 +160,24 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     super.onDestroy()
   }
 
+  private fun getCurrentActivityPendingIntent(): PendingIntent? {
+    val context = appContext.reactContext ?: return null
+    val intent = context.packageManager.getLaunchIntentForPackage(context.packageName) ?: return null
+
+    intent.apply {
+      flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+    }
+
+    val pendingIntent = PendingIntent.getActivity(
+      context,
+      0,
+      intent,
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    return pendingIntent
+  }
+
   @MainThread
   private fun createNotification(session: MediaSession, startInForegroundRequired: Boolean = false) {
     if (session.player.currentMediaItem == null) {
@@ -184,11 +191,16 @@ class ExpoVideoPlaybackService : MediaSessionService() {
 
     // If the title is null android sets the notification to "<AppName> is running..." we want to keep the notification empty.
     val contentTitle = session.player.currentMediaItem?.mediaMetadata?.title ?: "\u200E"
-    val notificationCompat = NotificationCompat.Builder(this, CHANNEL_ID)
+    val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
       .setSmallIcon(androidx.media3.session.R.drawable.media3_icon_circular_play)
       .setContentTitle(contentTitle)
       .setStyle(MediaStyleNotificationHelper.MediaStyle(session))
-      .build()
+
+    getCurrentActivityPendingIntent()?.let {
+      notificationBuilder.setContentIntent(it)
+    }
+
+    val notificationCompat = notificationBuilder.build()
 
     val notificationId = session.player.hashCode()
 
@@ -245,6 +257,8 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     const val CHANNEL_ID = "PlaybackService"
     const val SESSION_SHOW_NOTIFICATION = "showNotification"
     const val SEEK_INTERVAL_MS = 10000L
+    const val VIDEO_PLAYER_ID_KEY = "video_player_id"
+    const val MEDIA_SESSION_CUSTOM_COMMAND = "custom_command"
 
     fun startService(appContext: AppContext, context: Context, serviceConnection: PlaybackServiceConnection): Boolean {
       appContext.reactContext?.apply {
@@ -262,6 +276,25 @@ class ExpoVideoPlaybackService : MediaSessionService() {
         return bindService(intent, serviceConnection, flags)
       }
       return false
+    }
+
+    fun getDefaultNowPlayingActions(): ImmutableList<CommandButton> {
+      val commandSeekForward = SessionCommand(SEEK_FORWARD_COMMAND, Bundle.EMPTY)
+      val commandSeekBackward = SessionCommand(SEEK_BACKWARD_COMMAND, Bundle.EMPTY)
+
+      val seekForwardButton = CommandButton.Builder()
+        .setDisplayName("rewind")
+        .setSessionCommand(commandSeekForward)
+        .setIconResId(R.drawable.seek_forwards_10s)
+        .build()
+
+      val seekBackwardButton = CommandButton.Builder()
+        .setDisplayName("forward")
+        .setSessionCommand(commandSeekBackward)
+        .setIconResId(R.drawable.seek_backwards_10s)
+        .build()
+
+      return ImmutableList.of(seekBackwardButton, seekForwardButton)
     }
   }
 }

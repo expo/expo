@@ -1,6 +1,7 @@
 package expo.modules.video.listeners
 
 import expo.modules.video.VideoView
+import expo.modules.video.records.PiPAction
 import expo.modules.video.records.PiPParams
 
 interface VideoViewListener {
@@ -10,4 +11,6 @@ interface VideoViewListener {
    * influence the view's ability to enter PiP.
    */
   fun onPiPParamsChanged(videoView: VideoView, oldPiPParams: PiPParams, newPiPParams: PiPParams) = Unit
+
+  fun onPiPActionsChanged(videoView: VideoView, pipActions: List<PiPAction>?) = Unit
 }
