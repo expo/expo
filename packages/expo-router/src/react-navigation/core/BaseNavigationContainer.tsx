@@ -3,6 +3,7 @@ import * as React from 'react';
 import { use } from 'react';
 
 import { getSeedState } from '../../global-state/seedState';
+import { ReducerRegistryContext, createReducerRegistry } from '../../global-state/storeContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -80,6 +81,7 @@ export function BaseNavigationContainer({
   const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(
     () => (initialState == null ? getSeedState() : initialState) as State
   );
+  const reducerRegistry = React.useMemo(() => createReducerRegistry(), []);
 
   const isFirstMountRef = React.useRef<boolean>(true);
 
@@ -404,19 +406,22 @@ export function BaseNavigationContainer({
 
   return (
     <NavigationIndependentTreeContext.Provider value={false}>
-      <NavigationContainerRefContext.Provider value={navigation}>
-        <NavigationBuilderContext.Provider value={builderContext}>
-          <NavigationStateContext.Provider value={context}>
-            <UnhandledActionContext.Provider value={onUnhandledAction ?? defaultOnUnhandledAction}>
-              <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
-                <EnsureSingleNavigator>
-                  <ThemeProvider value={theme}>{children}</ThemeProvider>
-                </EnsureSingleNavigator>
-              </DeprecatedNavigationInChildContext.Provider>
-            </UnhandledActionContext.Provider>
-          </NavigationStateContext.Provider>
-        </NavigationBuilderContext.Provider>
-      </NavigationContainerRefContext.Provider>
+      <ReducerRegistryContext.Provider value={reducerRegistry}>
+        <NavigationContainerRefContext.Provider value={navigation}>
+          <NavigationBuilderContext.Provider value={builderContext}>
+            <NavigationStateContext.Provider value={context}>
+              <UnhandledActionContext.Provider
+                value={onUnhandledAction ?? defaultOnUnhandledAction}>
+                <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
+                  <EnsureSingleNavigator>
+                    <ThemeProvider value={theme}>{children}</ThemeProvider>
+                  </EnsureSingleNavigator>
+                </DeprecatedNavigationInChildContext.Provider>
+              </UnhandledActionContext.Provider>
+            </NavigationStateContext.Provider>
+          </NavigationBuilderContext.Provider>
+        </NavigationContainerRefContext.Provider>
+      </ReducerRegistryContext.Provider>
     </NavigationIndependentTreeContext.Provider>
   );
 }

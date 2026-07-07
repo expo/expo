@@ -5,6 +5,7 @@ import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
+import { type NavigationReducer, ReducerRegistryContext } from '../../global-state/storeContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -826,6 +827,39 @@ export function useNavigationBuilder<
 
   const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
 
+  const routerConfigOptions: RouterConfigOptions = {
+    routeNames,
+    parentRouteKey,
+    routeParamList,
+    routeGetIdList,
+  };
+
+  const latestConfigRef = React.useRef(routerConfigOptions);
+
+  useClientLayoutEffect(() => {
+    latestConfigRef.current = routerConfigOptions;
+  });
+
+  const reducerRegistry = use(ReducerRegistryContext);
+  const registryReducer = React.useCallback<NavigationReducer>(
+    (state, action) =>
+      router.getStateForAction(
+        state as State,
+        action,
+        latestConfigRef.current
+      ) as ReturnType<NavigationReducer>,
+    [router]
+  );
+  const backBehavior = (rest as { backBehavior?: unknown }).backBehavior;
+
+  useClientLayoutEffect(() => {
+    reducerRegistry?.addReducer(state.key, registryReducer);
+
+    return () => {
+      reducerRegistry?.removeReducer(state.key, registryReducer);
+    };
+  }, [backBehavior, reducerRegistry, registryReducer, state.key]);
+
   const onAction = useOnAction({
     router,
     getState,
@@ -833,12 +867,7 @@ export function useNavigationBuilder<
     key: route?.key,
     actionListeners: childListeners.action,
     beforeRemoveListeners: keyedListeners.beforeRemove,
-    routerConfigOptions: {
-      routeNames,
-      parentRouteKey,
-      routeParamList,
-      routeGetIdList,
-    },
+    routerConfigOptions,
     emitter,
   });
 
