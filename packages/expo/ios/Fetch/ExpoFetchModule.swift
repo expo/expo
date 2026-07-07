@@ -24,6 +24,19 @@ public final class ExpoFetchModule: Module {
       urlSession.invalidateAndCancel()
     }
 
+    // TODO(kudo,20260706): remove this when we install expo-blob as globalThis.Blob
+    AsyncFunction("unstable_createBlobData") { (data: Data) -> String in
+      guard let blobManager: NSObject = self.appContext?.nativeModule(named: "BlobModule") else {
+        throw FetchBlobModuleUnavailableException()
+      }
+      let store = NSSelectorFromString("store:")
+      guard blobManager.responds(to: store),
+        let blobId = blobManager.perform(store, with: data as NSData)?.takeUnretainedValue() as? String else {
+        throw FetchBlobModuleUnavailableException()
+      }
+      return blobId
+    }
+
     // swiftlint:disable:next closure_body_length
     Class(NativeResponse.self) {
       Constructor {
