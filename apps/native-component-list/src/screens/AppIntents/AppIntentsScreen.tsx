@@ -25,7 +25,7 @@ export const AppIntentsScreens = [
     getComponent() {
       return optionalRequire(() => require('./AppIntentJournalScreen'));
     },
-  },
+  }
 ];
 
 export default function AppIntentsScreen() {

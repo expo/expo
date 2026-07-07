@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { AppIntentEntity } from 'expo-app-intents';
 
 const counterStateKey = 'native-component-list:app-intents:counter';
 const latestOrderKey = 'native-component-list:app-intents:latest-order';
@@ -34,6 +35,44 @@ export type AppIntentJournalEntry = {
 
 export type AppIntentRoute = 'counter' | 'order' | 'journal';
 
+export const appIntentSampleJournalEntries: AppIntentJournalEntry[] = [
+  {
+    id: 'sample-journal-market-notes',
+    invocationId: 'sample-journal-market-notes',
+    title: 'Market Notes',
+    message: 'Picked up basil, tomatoes, and fresh bread. The corner stall had the first cherries of the season.',
+    createdAt: Date.UTC(2026, 5, 30, 8, 20),
+  },
+  {
+    id: 'sample-journal-product-idea',
+    invocationId: 'sample-journal-product-idea',
+    title: 'Product Idea',
+    message: 'A journal entry should move cleanly from the app into Notes with the title preserved and the body intact.',
+    createdAt: Date.UTC(2026, 5, 30, 10, 45),
+  },
+  {
+    id: 'sample-journal-coffee-chat',
+    invocationId: 'sample-journal-coffee-chat',
+    title: 'Coffee Chat',
+    message: 'Met with Maya and talked through the next pass on App Intents. The main test is whether the visible entry resolves as an entity.',
+    createdAt: Date.UTC(2026, 5, 30, 13, 10),
+  },
+  {
+    id: 'sample-journal-evening-walk',
+    invocationId: 'sample-journal-evening-walk',
+    title: 'Evening Walk',
+    message: 'Took the long route home. Good reminder that small examples are easier to validate when the data feels real.',
+    createdAt: Date.UTC(2026, 5, 30, 18, 35),
+  },
+  {
+    id: 'sample-journal-release-check',
+    invocationId: 'sample-journal-release-check',
+    title: 'Release Check',
+    message: 'Before calling the feature done, make sure the entry card has an AppEntity identifier and the native query can hydrate it.',
+    createdAt: Date.UTC(2026, 5, 30, 21, 5),
+  },
+];
+
 export const appIntentDishCatalog = [
   {
     id: 'margherita-pizza',
@@ -65,6 +104,7 @@ type AppIntentProcessingResult = {
   handledInvocationIds: string[];
   route: AppIntentRoute | null;
   routeInvocationId?: string;
+  routeEntryId?: string;
 };
 
 const listeners = new Set<() => void>();
@@ -159,6 +199,36 @@ export async function clearJournalEntries(): Promise<void> {
   await writeJson<AppIntentJournalEntry[]>(journalEntriesKey, []);
 }
 
+export async function addSampleJournalEntries(): Promise<AppIntentJournalEntry[]> {
+  const existingEntries = await getJournalEntries();
+  const existingEntryIds = new Set(existingEntries.map((entry) => entry.id));
+  const newEntries = appIntentSampleJournalEntries.filter((entry) => !existingEntryIds.has(entry.id));
+
+  if (newEntries.length === 0) {
+    return existingEntries;
+  }
+
+  const entries = [...newEntries, ...existingEntries];
+  await writeJson<AppIntentJournalEntry[]>(journalEntriesKey, entries);
+  return entries;
+}
+
+export function journalEntriesToEntityCatalog(
+  entries: AppIntentJournalEntry[]
+): AppIntentEntity[] {
+  return entries.map((entry) => ({
+    id: entry.id,
+    title: entry.title,
+    subtitle: entry.message,
+    synonyms: [],
+    metadata: {
+      createdAt: String(entry.createdAt),
+      invocationId: entry.invocationId,
+      message: entry.message,
+    },
+  }));
+}
+
 async function recordJournalEntries(invocations: AppIntentInvocationLike[]): Promise<void> {
   if (invocations.length === 0) {
     return;
@@ -197,6 +267,8 @@ function routeForInvocation(invocation: AppIntentInvocationLike | null): AppInte
     case 'orderFood':
       return 'order';
     case 'createJournalEntry':
+      return 'journal';
+    case 'openJournalEntry':
       return 'journal';
     default:
       return null;
@@ -238,5 +310,7 @@ export async function processAppIntentInvocations(
     handledInvocationIds: supportedInvocations.map((invocation) => invocation.id),
     route: routeForInvocation(routeSource),
     routeInvocationId: routeSource?.id,
+    routeEntryId:
+      routeSource?.name === 'openJournalEntry' ? stringParam(routeSource.params, 'id') : undefined,
   };
 }

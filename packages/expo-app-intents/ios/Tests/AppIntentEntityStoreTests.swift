@@ -17,7 +17,13 @@ final class AppIntentEntityStoreTests: XCTestCase {
     await store.setCatalog(
       kind: "trail",
       entities: [
-        AppIntentEntityRecord(id: "t1", title: "Eagle Peak", subtitle: "5 km", synonyms: ["eagle"]),
+        AppIntentEntityRecord(
+          id: "t1",
+          title: "Eagle Peak",
+          subtitle: "5 km",
+          synonyms: ["eagle"],
+          metadata: ["difficulty": "moderate"]
+        ),
         AppIntentEntityRecord(id: "t2", title: "Lake Loop", subtitle: nil, synonyms: [])
       ])
 
@@ -26,7 +32,9 @@ final class AppIntentEntityStoreTests: XCTestCase {
     XCTAssertEqual(all[0].title, "Eagle Peak")
     XCTAssertEqual(all[0].subtitle, "5 km")
     XCTAssertEqual(all[0].synonyms, ["eagle"])
+    XCTAssertEqual(all[0].metadata, ["difficulty": "moderate"])
     XCTAssertNil(all[1].subtitle)
+    XCTAssertEqual(all[1].metadata, [:])
   }
 
   func testMatchingIdentifiers() async {

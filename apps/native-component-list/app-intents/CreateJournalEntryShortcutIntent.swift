@@ -4,10 +4,10 @@ internal import ExpoAppIntents
 
 /**
   This AppIntent keeps the shortcut provider available on devices running iOS versions
-  older than 18. The schema-based CreateJournalEntryIntent requires iOS 18, so an
-  AppShortcutsProvider that references it directly must also be marked iOS 18-only
+  older than 26. The schema-based CreateJournalEntryIntent uses GeoToolbox.PlaceDescriptor,
+  so an AppShortcutsProvider that references it directly must also be marked iOS 26-only
   (adding it conditionally is not supported).
-  If you bump the AppShortcutProvider availability to iOS 18, you can use CreateJournalEntryIntent
+  If you bump the AppShortcutProvider availability to iOS 26, you can use CreateJournalEntryIntent
   directly in the provider and remove this helper.
  */
 struct CreateJournalEntryShortcutIntent: AppIntent {

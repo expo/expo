@@ -7,10 +7,12 @@ import {
   type AppIntentRoute,
   processAppIntentInvocations,
 } from './AppIntentsStore';
+import { syncJournalEntryCatalogAsync } from './syncJournalEntryCatalogAsync';
 
 export type AppIntentNavigationTarget = {
   route: AppIntentRoute;
   invocationId?: string;
+  entryId?: string;
 };
 
 export type AppIntentNavigationRef = {
@@ -68,6 +70,7 @@ export function navigateToAppIntentScreen(
   const params = {
     source: 'siri',
     ...(target.invocationId ? { intentId: target.invocationId } : {}),
+    ...(target.entryId ? { entryId: target.entryId } : {}),
   };
 
   navigation.navigate('main', {
@@ -116,6 +119,10 @@ export function AppIntentsNavigationHandler({
       console.warn('Could not seed App Intents restaurant catalogs.', error);
     });
 
+    syncJournalEntryCatalogAsync().catch((error: unknown) => {
+      console.warn('Could not seed App Intents journal catalogs.', error);
+    });
+
     AppIntents.refreshShortcutsAsync().catch((error: unknown) => {
       console.warn('Could not refresh App Intents shortcuts.', error);
     });
@@ -127,6 +134,14 @@ export function AppIntentsNavigationHandler({
     }
 
     const result = await processAppIntentInvocations(pendingIntents, newIntent);
+    if (
+      pendingIntents.some((intent) => intent.name === 'createJournalEntry') ||
+      newIntent?.name === 'createJournalEntry'
+    ) {
+      await syncJournalEntryCatalogAsync().catch((error: unknown) => {
+        console.warn('Could not sync App Intents journal catalogs.', error);
+      });
+    }
 
     await Promise.all(
       result.handledInvocationIds.map((id) => AppIntents.removePendingInvocationAsync(id))
@@ -136,6 +151,7 @@ export function AppIntentsNavigationHandler({
       setPendingNavigationTarget({
         route: result.route,
         invocationId: result.routeInvocationId,
+        entryId: result.routeEntryId,
       });
     }
     if (newIntent == null) {
