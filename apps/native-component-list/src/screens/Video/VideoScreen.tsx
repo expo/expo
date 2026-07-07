@@ -37,6 +37,14 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Changing VideoPlayer output view (e2e)',
+    route: 'video/player-output-e2e',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoPlayerOutputE2EScreen'));
+    },
+  },
+  {
     name: 'DRM',
     route: 'video/drm',
     options: {},
