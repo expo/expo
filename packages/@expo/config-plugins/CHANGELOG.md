@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Honor `ios.version` and `android.version` in `Updates.getAppVersion`, `Updates.getNativeVersion`, and the `appVersion` runtime version policy. Previously the platform-specific overrides were ignored, so projects that used only `ios.version`/`android.version` (with no top-level `version` in `app.json`) received the `package.json` fallback (or `"1.0.0"`) wherever these helpers were consumed. `Updates.getAppVersion` gains an optional `platform` argument; passing it prefers the platform-specific override, and calls without a platform keep the previous behavior. Also fixes `Updates.getNativeVersion` on Android, which previously used the iOS version for the `${version}` component. ([#47416](https://github.com/expo/expo/pull/47416) by [@tlenahan](https://github.com/tlenahan))
-
 ### 💡 Others
+
+## 56.0.12 — 2026-07-07
+
+### 🐛 Bug fixes
+
+- Honor `ios.version` and `android.version` in `Updates.getAppVersion`, `Updates.getNativeVersion`, and the `appVersion` runtime version policy. Previously the platform-specific overrides were ignored, so projects that used only `ios.version`/`android.version` (with no top-level `version` in `app.json`) received the `package.json` fallback (or `"1.0.0"`) wherever these helpers were consumed. `Updates.getAppVersion` gains an optional `platform` argument; passing it prefers the platform-specific override, and calls without a platform keep the previous behavior. Also fixes `Updates.getNativeVersion` on Android, which previously used the iOS version for the `${version}` component. ([#47416](https://github.com/expo/expo/pull/47416) by [@tlenahan](https://github.com/tlenahan))
 
 ## 56.0.11 — 2026-07-03
 

@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "56.0.16",
+  "version": "56.0.17",
   "description": "The Babel preset for Expo projects",
   "main": "build/index.js",
   "files": [
@@ -41,7 +41,7 @@
   "peerDependencies": {
     "@babel/runtime": "^7.20.0",
     "expo": "*",
-    "expo-widgets": "workspace:^56.0.21",
+    "expo-widgets": "workspace:^56.0.22",
     "react-refresh": ">=0.14.0 <1.0.0"
   },
   "peerDependenciesMeta": {

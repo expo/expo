@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Add support for `AgeRangeService.AgeRangeDeclaration.confirmed` and fix the runtime crash it caused. ([#47475](https://github.com/expo/expo/pull/47475) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 56.0.6 — 2026-07-07
+
+### 🐛 Bug fixes
+
+- [iOS] Add support for `AgeRangeService.AgeRangeDeclaration.confirmed` and fix the runtime crash it caused. ([#47475](https://github.com/expo/expo/pull/47475) by [@kudo](https://github.com/kudo))
 
 ## 56.0.5 — 2026-05-26
 

@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'org.unimodules'
-version = '56.0.9'
+version = '56.0.10'
 
 expoModule {
   canBePublished false
@@ -14,7 +14,7 @@ android {
   namespace "org.unimodules.test.core"
   defaultConfig {
     versionCode 3
-    versionName '56.0.9'
+    versionName '56.0.10'
   }
   packagingOptions {
     resources {
