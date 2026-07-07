@@ -69,3 +69,28 @@ export function getNextRouteKeyFromState({
   }
   return key;
 }
+
+/**
+ * Dev tripwire for the Step-4 `payload.state` attach: a route's nested state key must equal the
+ * route key (see `getStateKey`). Routers attach `payload.state` verbatim, but the key a router mints
+ * (via `getNextRouteKeyFromState`) depends on the live state, so an emitter (Step 5+) that computes
+ * keys in isolation can disagree — e.g. a duplicate-name push mints `…:1` while an isolated build
+ * yields `…:0`. A mismatch silently breaks action targeting, so fail loudly in dev instead.
+ */
+export function assertSubtreeKeyMatchesRoute(
+  routeKey: string,
+  subtree: { key?: string } | undefined
+): void {
+  if (
+    process.env.NODE_ENV === 'development' &&
+    subtree?.key !== undefined &&
+    subtree.key !== routeKey
+  ) {
+    throw new Error(
+      `Navigation subtree key "${subtree.key}" does not match its route key "${routeKey}". ` +
+        `A route's nested state key must equal the route key. This usually means the action's ` +
+        `payload.state was built with keys computed in isolation from the live navigation state — ` +
+        `mint the subtree's keys against the live state (see getNextRouteKeyFromState).`
+    );
+  }
+}

@@ -2808,3 +2808,359 @@ test('does not use preloaded route with different ID when popTo replaces current
     ],
   });
 });
+
+// --- payload.state subtree insertion (Step 4) -------------------------------------------------
+// The wire (Step 5) hands the create/enter action a complete subtree for the created route's
+// not-yet-mounted child navigator; the router attaches it verbatim to that route's `.state`, but
+// only when the route is a fresh identity (a newly-minted key) — never onto a reused/live/preloaded
+// route, which already carries its own complete subtree.
+
+test('navigate attaches payload.state to the freshly created route', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const subtree = {
+    stale: false as const,
+    key: 'root:qux:0',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'root:qux:0:inner:0', name: 'inner' }],
+  };
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 1,
+        routeNames: ['baz', 'bar', 'qux'],
+        routes: [
+          { key: 'baz', name: 'baz' },
+          { key: 'bar', name: 'bar' },
+        ],
+      },
+      CommonActions.navigate({ name: 'qux', params: { answer: 42 }, state: subtree }),
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'root',
+    index: 2,
+    routeNames: ['baz', 'bar', 'qux'],
+    routes: [
+      { key: 'baz', name: 'baz' },
+      { key: 'bar', name: 'bar' },
+      { key: 'root:qux:0', name: 'qux', params: { answer: 42 }, state: subtree },
+    ],
+  });
+});
+
+test('push attaches payload.state to the freshly pushed route', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const subtree = {
+    stale: false as const,
+    key: 'root:baz:0',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'root:baz:0:inner:0', name: 'inner' }],
+  };
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 0,
+        routeNames: ['baz', 'bar', 'qux'],
+        routes: [{ key: 'bar', name: 'bar' }],
+      },
+      { type: 'PUSH', payload: { name: 'baz', state: subtree } },
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'root',
+    index: 1,
+    routeNames: ['baz', 'bar', 'qux'],
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'root:baz:0', name: 'baz', state: subtree },
+    ],
+  });
+});
+
+test('duplicate-name push appends a fresh sibling with payload.state, keeping the live route intact', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const liveState = {
+    stale: false as const,
+    key: 'root:baz:0',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'root:baz:0:inner:0', name: 'inner' }],
+  };
+  const subtree = {
+    stale: false as const,
+    key: 'root:baz:1',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'root:baz:1:inner:0', name: 'inner' }],
+  };
+
+  const next = router.getStateForAction(
+    {
+      stale: false,
+      key: 'root',
+      index: 0,
+      routeNames: ['baz', 'bar', 'qux'],
+      routes: [{ key: 'root:baz:0', name: 'baz', state: liveState } as any],
+    },
+    { type: 'PUSH', payload: { name: 'baz', state: subtree } },
+    options
+  );
+
+  // The live `baz` keeps its own subtree; the fresh sibling (new key) carries payload.state.
+  expect(next!.routes).toEqual([
+    { key: 'root:baz:0', name: 'baz', state: liveState },
+    { key: 'root:baz:1', name: 'baz', state: subtree },
+  ]);
+});
+
+test('push promoting a preloaded route keeps the preloaded subtree, ignoring payload.state', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const preloadedState = {
+    stale: false as const,
+    key: 'qux-some',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'qux-some:inner:0', name: 'inner' }],
+  };
+  const subtree = {
+    stale: false as const,
+    key: 'ignored',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'ignored:inner:0', name: 'inner' }],
+  };
+
+  const next = router.getStateForAction(
+    {
+      stale: false,
+      key: 'root',
+      index: 0,
+      routeNames: ['baz', 'bar', 'qux'],
+      routes: [
+        { key: 'bar-test', name: 'bar' },
+        // Preloaded route in the inactive tail (position > index).
+        { key: 'qux-some', name: 'qux', state: preloadedState } as any,
+      ],
+    },
+    { type: 'PUSH', payload: { name: 'qux', state: subtree } },
+    options
+  );
+
+  const qux = next!.routes.find((r) => r.name === 'qux')!;
+  expect(qux.key).toBe('qux-some');
+  expect((qux as any).state).toBe(preloadedState);
+});
+
+test('replace attaches payload.state to the freshly created replacement route', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['foo', 'bar', 'baz', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const subtree = {
+    stale: false as const,
+    key: 'root:qux:0',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'root:qux:0:inner:0', name: 'inner' }],
+  };
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 1,
+        routeNames: ['foo', 'bar', 'baz', 'qux'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+          { key: 'baz', name: 'baz' },
+        ],
+      },
+      { type: 'REPLACE', payload: { name: 'qux', params: { answer: 42 }, state: subtree } },
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'root',
+    index: 1,
+    routeNames: ['foo', 'bar', 'baz', 'qux'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      { key: 'root:qux:0', name: 'qux', params: { answer: 42 }, state: subtree },
+      { key: 'baz', name: 'baz' },
+    ],
+  });
+});
+
+test('replace promoting a preloaded route keeps the preloaded subtree, ignoring payload.state', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const preloadedState = {
+    stale: false as const,
+    key: 'bar-preloaded',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'bar-preloaded:inner:0', name: 'inner' }],
+  };
+  const subtree = {
+    stale: false as const,
+    key: 'ignored',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'ignored:inner:0', name: 'inner' }],
+  };
+
+  const next = router.getStateForAction(
+    {
+      stale: false,
+      key: 'root',
+      index: 1,
+      routeNames: ['baz', 'bar', 'qux'],
+      routes: [
+        { key: 'baz', name: 'baz' },
+        { key: 'qux', name: 'qux' },
+        // Preloaded route in the inactive tail (position > index).
+        { key: 'bar-preloaded', name: 'bar', state: preloadedState } as any,
+      ],
+    },
+    { type: 'REPLACE', payload: { name: 'bar', state: subtree } },
+    options
+  );
+
+  const bar = next!.routes.find((r) => r.name === 'bar')!;
+  expect(bar.key).toBe('bar-preloaded');
+  expect((bar as any).state).toBe(preloadedState);
+});
+
+test('navigate reusing a live route does not clobber its existing state with payload.state', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const liveState = {
+    stale: false as const,
+    key: 'bar',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'bar:inner:0', name: 'inner' }],
+  };
+  const subtree = {
+    stale: false as const,
+    key: 'ignored',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'ignored:inner:0', name: 'inner' }],
+  };
+
+  const next = router.getStateForAction(
+    {
+      stale: false,
+      key: 'root',
+      index: 1,
+      routeNames: ['baz', 'bar', 'qux'],
+      routes: [
+        { key: 'baz', name: 'baz' },
+        { key: 'bar', name: 'bar', state: liveState } as any,
+      ],
+    },
+    // Navigating to the already-focused `bar` reuses the live route (same identity).
+    CommonActions.navigate({ name: 'bar', params: { x: 1 }, merge: true, state: subtree }),
+    options
+  );
+
+  const bar = next!.routes.find((r) => r.name === 'bar')!;
+  expect((bar as any).state).toBe(liveState);
+});
+
+test('attach throws in dev when the subtree key disagrees with the minted route key', () => {
+  const prev = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'development';
+  try {
+    const router = StackRouter({});
+    const options: RouterConfigOptions = {
+      routeNames: ['baz', 'bar', 'qux'],
+      routeParamList: {},
+      parentRouteKey: undefined,
+      routeGetIdList: {},
+    };
+
+    // The router mints `root:qux:0` for the new route, but the subtree declares a different key —
+    // a sign the emitter computed keys in isolation. The dev tripwire must catch it.
+    const mismatchedSubtree = {
+      stale: false as const,
+      key: 'somewhere-else',
+      index: 0,
+      routeNames: ['inner'],
+      routes: [{ key: 'somewhere-else:inner:0', name: 'inner' }],
+    };
+
+    expect(() =>
+      router.getStateForAction(
+        {
+          stale: false,
+          key: 'root',
+          index: 0,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [{ key: 'baz', name: 'baz' }],
+        },
+        CommonActions.navigate({ name: 'qux', state: mismatchedSubtree }),
+        options
+      )
+    ).toThrow(/does not match its route key/);
+  } finally {
+    process.env.NODE_ENV = prev;
+  }
+});

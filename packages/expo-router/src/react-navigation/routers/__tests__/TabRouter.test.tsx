@@ -2106,3 +2106,214 @@ test("doesn't front-preload a screen that isn't a declared route name", () => {
     )
   ).toBeNull();
 });
+
+// --- payload.state subtree insertion (Step 4) -------------------------------------------------
+// The tab router attaches a complete subtree to the entered tab's `.state`, but only on a fresh
+// identity: an absent tab (new route) or a tab re-keyed by an id change. A live tab whose key is
+// unchanged keeps its own substate — the divergence is handled deeper by the child navigator.
+
+test('navigate attaches payload.state to a freshly created tab', () => {
+  const router = TabRouter({ backBehavior: 'order' });
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const subtree = {
+    stale: false as const,
+    key: 'root:qux:0',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'root:qux:0:inner:0', name: 'inner' }],
+  };
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        key: 'root',
+        index: 0,
+        routeNames: ['baz', 'bar', 'qux'],
+        routes: [{ key: 'baz', name: 'baz' }],
+      },
+      CommonActions.navigate({ name: 'qux', params: { answer: 42 }, state: subtree }),
+      options
+    )
+  ).toEqual({
+    stale: false,
+    key: 'root',
+    index: 1,
+    routeNames: ['baz', 'bar', 'qux'],
+    routes: [
+      { key: 'baz', name: 'baz' },
+      { key: 'root:qux:0', name: 'qux', params: { answer: 42 }, state: subtree },
+    ],
+  });
+});
+
+test('jumpTo attaches payload.state to a freshly created tab', () => {
+  const router = TabRouter({ backBehavior: 'order' });
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const subtree = {
+    stale: false as const,
+    key: 'root:qux:0',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'root:qux:0:inner:0', name: 'inner' }],
+  };
+
+  const next = router.getStateForAction(
+    {
+      stale: false,
+      key: 'root',
+      index: 0,
+      routeNames: ['baz', 'bar', 'qux'],
+      routes: [{ key: 'baz', name: 'baz' }],
+    },
+    { type: 'JUMP_TO', payload: { name: 'qux', state: subtree } },
+    options
+  );
+
+  const qux = next!.routes.find((r) => r.name === 'qux')!;
+  expect(qux.key).toBe('root:qux:0');
+  expect((qux as any).state).toBe(subtree);
+});
+
+test('navigate re-keying a tab on an id change attaches payload.state to the fresh identity', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {
+      bar: ({ params }) => `bar-${params?.answer}`,
+    },
+  };
+
+  // Key matches the key the router mints for the re-keyed route (`root:bar:1`), honoring the
+  // childState.key === routeKey invariant the dev tripwire enforces.
+  const subtree = {
+    stale: false as const,
+    key: 'root:bar:1',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'root:bar:1:inner:0', name: 'inner' }],
+  };
+
+  const next = router.getStateForAction(
+    {
+      stale: false,
+      key: 'root',
+      index: 0,
+      routeNames: ['baz', 'bar', 'qux'],
+      routes: [
+        {
+          key: 'bar-42',
+          name: 'bar',
+          params: { answer: 42 },
+          state: {
+            stale: false,
+            key: 'bar-42',
+            index: 0,
+            routeNames: ['inner'],
+            routes: [{ key: 'bar-42:inner:0', name: 'inner' }],
+          },
+        } as any,
+      ],
+    },
+    // An id change re-keys `bar` (fresh identity); the old subtree is dropped and payload.state
+    // populates the new one.
+    CommonActions.navigate({ name: 'bar', params: { answer: 43 }, state: subtree }),
+    options
+  );
+
+  const bar = next!.routes.find((r) => r.name === 'bar')!;
+  expect(bar.key).toBe('root:bar:1');
+  expect((bar as any).state).toBe(subtree);
+});
+
+test('replace (rewritten to jumpTo) attaches payload.state to a freshly created tab', () => {
+  const router = TabRouter({ backBehavior: 'order' });
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const subtree = {
+    stale: false as const,
+    key: 'root:qux:0',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'root:qux:0:inner:0', name: 'inner' }],
+  };
+
+  // The TabRouter wrapper rewrites REPLACE → JUMP_TO; payload.state must survive the rewrite.
+  const next = router.getStateForAction(
+    {
+      stale: false,
+      key: 'root',
+      index: 0,
+      routeNames: ['baz', 'bar', 'qux'],
+      routes: [{ key: 'baz', name: 'baz' }],
+    },
+    { type: 'REPLACE', payload: { name: 'qux', state: subtree } } as any,
+    options
+  );
+
+  const qux = next!.routes.find((r) => r.name === 'qux')!;
+  expect(qux.key).toBe('root:qux:0');
+  expect((qux as any).state).toBe(subtree);
+});
+
+test('jumpTo to a live tab with an unchanged key does not clobber its existing state', () => {
+  const router = TabRouter({ backBehavior: 'order' });
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const liveState = {
+    stale: false as const,
+    key: 'bar',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'bar:inner:0', name: 'inner' }],
+  };
+  const subtree = {
+    stale: false as const,
+    key: 'ignored',
+    index: 0,
+    routeNames: ['inner'],
+    routes: [{ key: 'ignored:inner:0', name: 'inner' }],
+  };
+
+  const next = router.getStateForAction(
+    {
+      stale: false,
+      key: 'root',
+      index: 0,
+      routeNames: ['baz', 'bar', 'qux'],
+      routes: [
+        { key: 'baz', name: 'baz' },
+        { key: 'bar', name: 'bar', state: liveState } as any,
+      ],
+    },
+    { type: 'JUMP_TO', payload: { name: 'bar', state: subtree } },
+    options
+  );
+
+  const bar = next!.routes.find((r) => r.name === 'bar')!;
+  expect((bar as any).state).toBe(liveState);
+});

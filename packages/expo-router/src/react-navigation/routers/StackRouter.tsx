@@ -1,12 +1,19 @@
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import { createRouteFromAction } from './createRouteFromAction';
-import { getNextRouteKeyFromState, getRouteKey, getStateKey } from './getRouteKey';
+import {
+  assertSubtreeKeyMatchesRoute,
+  getNextRouteKeyFromState,
+  getRouteKey,
+  getStateKey,
+} from './getRouteKey';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
+  NavigationRoute,
   NavigationState,
   ParamListBase,
+  PartialState,
   Route,
   Router,
 } from './types';
@@ -14,13 +21,24 @@ import type {
 export type StackActionType =
   | {
       type: 'REPLACE';
-      payload: { name: string; params?: object };
+      // TODO(Step 5/7): `state` is dormant — the complete subtree for the replacement route's
+      // not-yet-mounted child. Emitted by the wire (Step 5), inserted by the root reducer (Step 7).
+      payload: {
+        name: string;
+        params?: object;
+        state?: NavigationState | PartialState<NavigationState>;
+      };
       source?: string;
       target?: string;
     }
   | {
       type: 'PUSH';
-      payload: { name: string; params?: object };
+      // TODO(Step 5/7): `state` is dormant — see `REPLACE` above.
+      payload: {
+        name: string;
+        params?: object;
+        state?: NavigationState | PartialState<NavigationState>;
+      };
       source?: string;
       target?: string;
     }
@@ -336,13 +354,23 @@ export function StackRouter(options: StackRouterOptions) {
           const id = getId?.({ params: action.payload.params });
 
           // Re-use a preloaded route if available
-          let route = getInactiveRoutes(state).find(
+          let route: NavigationRoute<ParamListBase, string> | undefined = getInactiveRoutes(
+            state
+          ).find(
             (route) =>
               route.name === action.payload.name && id === getId?.({ params: route.params })
           );
 
           if (!route) {
             route = createRouteFromAction({ action, routeParamList }, state);
+
+            // TODO(Step 5/7): payload.state is dormant until the wire emits it and the root reducer
+            // inserts it at the boundary. Attach it only to this freshly created replacement (a
+            // newly-minted key); a promoted preloaded route keeps its own complete subtree.
+            if (action.payload.state !== undefined) {
+              route = { ...route, state: action.payload.state };
+              assertSubtreeKeyMatchesRoute(route.key, action.payload.state);
+            }
           }
 
           return {
@@ -407,7 +435,7 @@ export function StackRouter(options: StackRouterOptions) {
             params = createParamsFromAction({ action, routeParamList });
           }
 
-          let routes: Route<string>[];
+          let routes: NavigationRoute<ParamListBase, string>[];
 
           if (route) {
             if (action.type === 'NAVIGATE' && action.payload.pop) {
@@ -448,19 +476,26 @@ export function StackRouter(options: StackRouterOptions) {
               });
             }
           } else {
-            routes = [
-              ...activeRoutes,
-              {
-                key: getNextRouteKeyFromState({
-                  stateKey: state.key,
-                  name: action.payload.name,
-                  state,
-                }),
+            const newRoute: NavigationRoute<ParamListBase, string> = {
+              key: getNextRouteKeyFromState({
+                stateKey: state.key,
                 name: action.payload.name,
-                path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
-                params,
-              },
-            ];
+                state,
+              }),
+              name: action.payload.name,
+              path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
+              params,
+            };
+
+            // TODO(Step 5/7): payload.state is dormant until the wire emits it and the root reducer
+            // inserts it at the boundary. Attach it verbatim only to this freshly created route
+            // (a newly-minted key) — the child navigator it describes is not yet mounted.
+            if (action.payload.state !== undefined) {
+              newRoute.state = action.payload.state;
+              assertSubtreeKeyMatchesRoute(newRoute.key, action.payload.state);
+            }
+
+            routes = [...activeRoutes, newRoute];
           }
 
           return {

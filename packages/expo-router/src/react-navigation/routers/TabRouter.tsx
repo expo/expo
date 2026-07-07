@@ -1,7 +1,12 @@
 import type { StackActionType } from '../core';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
-import { getNextRouteKeyFromState, getRouteKey, getStateKey } from './getRouteKey';
+import {
+  assertSubtreeKeyMatchesRoute,
+  getNextRouteKeyFromState,
+  getRouteKey,
+  getStateKey,
+} from './getRouteKey';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -15,7 +20,13 @@ import type {
 export type TabActionType =
   | {
       type: 'JUMP_TO';
-      payload: { name: string; params?: object };
+      // TODO(Step 5/7): `state` is dormant — the complete subtree for the entered tab's not-yet-mounted
+      // child. Emitted by the wire (Step 5), inserted by the root reducer (Step 7).
+      payload: {
+        name: string;
+        params?: object;
+        state?: NavigationState | PartialState<NavigationState>;
+      };
       source?: string;
       target?: string;
     }
@@ -486,7 +497,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
               ? action.payload.path
               : route.path;
 
-          const updatedRoute =
+          let updatedRoute =
             params !== route.params || path !== route.path || key !== route.key
               ? { ...route, key, path, params }
               : route;
@@ -495,6 +506,20 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           // identity — drop it so the subtree remounts clean (and a re-minted key can't land on it).
           if (updatedRoute !== route && key !== route.key) {
             delete (updatedRoute as { state?: unknown }).state;
+          }
+
+          // TODO(Step 5/7): payload.state is dormant until the wire emits it and the root reducer
+          // inserts it at the boundary. Attach it only on a fresh identity — an absent tab or one
+          // re-keyed by an id change — never onto a live tab with an unchanged key (that keeps its
+          // own substate; the divergence is handled deeper by the child navigator).
+          const payloadState = action.payload.state;
+          if ((!existed || key !== route.key) && payloadState !== undefined) {
+            if (updatedRoute === route) {
+              updatedRoute = { ...route };
+            }
+            (updatedRoute as { state?: NavigationState | PartialState<NavigationState> }).state =
+              payloadState;
+            assertSubtreeKeyMatchesRoute(updatedRoute.key, payloadState);
           }
 
           if (existed && updatedRoute === route && index === state.index) {
