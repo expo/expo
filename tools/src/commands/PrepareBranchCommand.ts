@@ -65,7 +65,6 @@ function createSteps(): Step[] {
     {
       title: 'Removing node_modules and resetting tracked files',
       async runAsync() {
-        logger.info(`   Removing ${chalk.yellow('node_modules')}`);
         await fs.remove(path.join(EXPO_DIR, 'node_modules'));
         await Git.runAsync(['checkout', '.']);
       },
