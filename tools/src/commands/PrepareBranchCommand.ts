@@ -63,8 +63,6 @@ function createSteps(): Step[] {
 
   return [
     {
-      // Deleting the root node_modules breaks the pnpm virtual store that tools/ resolves from,
-      // so every dependency must be imported at module top level. A lazy require after this point fails.
       title: 'Removing node_modules and resetting tracked files',
       async runAsync() {
         logger.info(`   Removing ${chalk.yellow('node_modules')}`);
