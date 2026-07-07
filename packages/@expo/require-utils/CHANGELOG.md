@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Do not transform dynamic `import()` calls, so ESM modules can be loaded dynamically with `await import()` ([#47590](https://github.com/expo/expo/pull/47590) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 ## 56.1.4 — 2026-07-03
