@@ -67,15 +67,8 @@ function createSteps(): Step[] {
       // so every dependency must be imported at module top level. A lazy require after this point fails.
       title: 'Removing node_modules and resetting tracked files',
       async runAsync() {
-        const nodeModulesDirs = [
-          path.join(EXPO_DIR, 'node_modules'),
-          path.join(reactNativeDir, 'node_modules'),
-        ];
-
-        for (const dir of nodeModulesDirs) {
-          logger.info(`   Removing ${chalk.yellow(path.relative(EXPO_DIR, dir))}`);
-          await fs.remove(dir);
-        }
+        logger.info(`   Removing ${chalk.yellow('node_modules')}`);
+        await fs.remove(path.join(EXPO_DIR, 'node_modules'));
         await Git.runAsync(['checkout', '.']);
       },
     },
