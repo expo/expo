@@ -85,6 +85,8 @@ export function requireContextWithOverrides(dir: string, overrides: MemoryContex
     keys: () => Object.keys(normalizedKeys),
   });
 
+  const uniqueKeys = Array.from(new Set([...Object.keys(overrides), ...existingContext.keys()]));
+
   return Object.assign(
     function (id: string) {
       if (id in overrides) {
@@ -95,7 +97,7 @@ export function requireContextWithOverrides(dir: string, overrides: MemoryContex
       }
     },
     {
-      keys: () => [...Object.keys(overrides), ...existingContext.keys()],
+      keys: () => [...uniqueKeys],
       resolve: (key: string) => key,
       id: '0',
     }
