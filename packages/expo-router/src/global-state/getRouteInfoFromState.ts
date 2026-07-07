@@ -1,9 +1,8 @@
-import type { FocusedRouteState } from "./types";
-import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from "../constants";
-import { appendBaseUrl } from "../fork/getPathFromState-forks";
-import type { NavigationState, PartialState } from "../react-navigation/native";
-import { safeDecodeURIComponent } from "../utils/url";
-import type { FocusedRouteState } from "./types";
+import type { FocusedRouteState } from './types';
+import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
+import { appendBaseUrl } from '../fork/getPathFromState-forks';
+import type { NavigationState, PartialState } from '../react-navigation/native';
+import { safeDecodeURIComponent } from '../utils/url';
 
 export type UrlObject = {
   unstable_globalHref: string;
@@ -16,12 +15,12 @@ export type UrlObject = {
 };
 
 export const defaultRouteInfo: UrlObject = {
-  unstable_globalHref: "",
+  unstable_globalHref: '',
   searchParams: new URLSearchParams(),
-  pathname: "/",
+  pathname: '/',
   params: {},
   segments: [],
-  pathnameWithParams: "/",
+  pathnameWithParams: '/',
   // TODO: Remove this, it is not used anywhere
   isIndex: false,
 };
@@ -50,11 +49,11 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   if (!state) return defaultRouteInfo;
 
   // TODO(@kitten): Review edge-case type safety
-  const index = "index" in state ? (state.index ?? 0) : 0;
+  const index = 'index' in state ? (state.index ?? 0) : 0;
   let route = state.routes[index]!;
 
   if (route.name === NOT_FOUND_ROUTE_NAME || route.name === SITEMAP_ROUTE_NAME) {
-    const path = route.path || (route.name === NOT_FOUND_ROUTE_NAME ? "/" : `/${route.name}`);
+    const path = route.path || (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
     return {
       ...defaultRouteInfo,
       unstable_globalHref: appendBaseUrl(path),
@@ -71,32 +70,32 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   state = route.state;
 
   const segments: string[] = [];
-  let params: UrlObject["params"] = Object.create(null);
+  let params: UrlObject['params'] = Object.create(null);
 
   while (state) {
-    route = state.routes["index" in state && state.index ? state.index : 0]!;
+    route = state.routes['index' in state && state.index ? state.index : 0]!;
 
     Object.assign(params, route.params);
 
     let routeName = route.name;
-    if (routeName.startsWith("/")) {
+    if (routeName.startsWith('/')) {
       routeName = routeName.slice(1);
     }
 
-    segments.push(...routeName.split("/"));
+    segments.push(...routeName.split('/'));
     state = route.state;
   }
 
   params = Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
-      if (typeof value === "string") {
+      if (typeof value === 'string') {
         return [key, safeDecodeURIComponent(value)];
       } else if (Array.isArray(value)) {
         return [key, value.map((v) => safeDecodeURIComponent(v))];
       } else {
         return [key, value];
       }
-    }),
+    })
   );
 
   /**
@@ -104,50 +103,50 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
    * then the state maybe incomplete. The reset of the path is in the params, instead of being a route
    */
   let routeParams: StrictFocusedRouteParams | undefined = route.params;
-  while (routeParams && "screen" in routeParams) {
-    if (typeof routeParams.screen === "string") {
-      const screen = routeParams.screen.startsWith("/")
+  while (routeParams && 'screen' in routeParams) {
+    if (typeof routeParams.screen === 'string') {
+      const screen = routeParams.screen.startsWith('/')
         ? routeParams.screen.slice(1)
         : routeParams.screen;
-      segments.push(...screen.split("/"));
+      segments.push(...screen.split('/'));
     }
 
-    if (typeof routeParams.params === "object" && !Array.isArray(routeParams.params)) {
+    if (typeof routeParams.params === 'object' && !Array.isArray(routeParams.params)) {
       routeParams = routeParams.params;
     } else {
       routeParams = undefined;
     }
   }
 
-  if (route.params && "screen" in route.params && route.params.screen === "string") {
-    const screen = route.params.screen.startsWith("/")
+  if (route.params && 'screen' in route.params && route.params.screen === 'string') {
+    const screen = route.params.screen.startsWith('/')
       ? route.params.screen.slice(1)
       : route.params.screen;
-    segments.push(...screen.split("/"));
+    segments.push(...screen.split('/'));
   }
 
-  if (segments[segments.length - 1] === "index") {
+  if (segments[segments.length - 1] === 'index') {
     segments.pop();
   }
 
-  delete params["screen"];
-  delete params["params"];
+  delete params['screen'];
+  delete params['params'];
 
   const pathParams = new Set<string>();
 
   const pathname =
-    "/" +
+    '/' +
     segments
       .filter((segment) => {
-        return !(segment.startsWith("(") && segment.endsWith(")"));
+        return !(segment.startsWith('(') && segment.endsWith(')'));
       })
       .flatMap((segment) => {
-        if (segment === "+not-found") {
-          const notFoundPath = params["not-found"];
+        if (segment === '+not-found') {
+          const notFoundPath = params['not-found'];
 
-          pathParams.add("not-found");
+          pathParams.add('not-found');
 
-          if (typeof notFoundPath === "undefined") {
+          if (typeof notFoundPath === 'undefined') {
             // Not founds are optional, do nothing if its not present
             return [];
           } else if (Array.isArray(notFoundPath)) {
@@ -155,11 +154,11 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
           } else {
             return [notFoundPath];
           }
-        } else if (segment.startsWith("[...") && segment.endsWith("]")) {
+        } else if (segment.startsWith('[...') && segment.endsWith(']')) {
           let paramName = segment.slice(4, -1);
 
           // Legacy for React Navigation optional params
-          if (paramName.endsWith("?")) {
+          if (paramName.endsWith('?')) {
             paramName = paramName.slice(0, -1);
           }
 
@@ -168,7 +167,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
 
           // Catchall params are optional
           return values || [];
-        } else if (segment.startsWith("[") && segment.endsWith("]")) {
+        } else if (segment.startsWith('[') && segment.endsWith(']')) {
           const paramName = segment.slice(1, -1);
           const value = params[paramName];
           pathParams.add(paramName);
@@ -179,7 +178,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
           return [segment];
         }
       })
-      .join("/");
+      .join('/');
 
   const searchParams = new URLSearchParams(
     Object.entries(params).flatMap(([key, value]) => {
@@ -190,19 +189,19 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
         return value.map((v) => [key, v]);
       }
       return [[key, value]];
-    }),
+    })
   );
 
   let hash: string | undefined;
-  if (searchParams.has("#")) {
-    hash = searchParams.get("#") || undefined;
-    searchParams.delete("#");
+  if (searchParams.has('#')) {
+    hash = searchParams.get('#') || undefined;
+    searchParams.delete('#');
   }
 
   // We cannot use searchParams.size because it is not included in the React Native polyfill
   const searchParamString = searchParams.toString();
-  let pathnameWithParams = searchParamString ? pathname + "?" + searchParamString : pathname;
-  pathnameWithParams = hash ? pathnameWithParams + "#" + hash : pathnameWithParams;
+  let pathnameWithParams = searchParamString ? pathname + '?' + searchParamString : pathname;
+  pathnameWithParams = hash ? pathnameWithParams + '#' + hash : pathnameWithParams;
 
   return {
     segments,
