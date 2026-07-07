@@ -22,6 +22,7 @@ import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 import { useRouter } from 'next/compat/router';
+import { useIntl } from 'react-intl';
 
 import {
   buildLocalePath,
@@ -45,6 +46,7 @@ import { SidebarNodeProps } from './types';
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const { getChapters, isCompleted, resetTutorial } = useTutorialChapterCompletion();
   const router = useRouter();
+  const intl = useIntl();
 
   const title = route.sidebarTitle ?? route.name;
   const Icon = route.hideIcon ? undefined : getIconElement(route.name);
@@ -111,7 +113,12 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             </SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="ml-2 text-sm text-tertiary">{`${completedChaptersCount} of ${totalChapters}`}</p>
+              <p className="ml-2 text-sm text-tertiary">
+                {intl.formatMessage(
+                  { id: 'sidebarTutorialProgress' },
+                  { completed: completedChaptersCount, total: totalChapters }
+                )}
+              </p>
             </div>
           </div>
         )}
@@ -150,7 +157,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             theme="secondary"
             className="flex w-full items-center justify-center"
             href={localizedResetHref}>
-            Reset tutorial
+            {intl.formatMessage({ id: 'sidebarResetTutorial' })}
           </Button>
         )}
       </div>
