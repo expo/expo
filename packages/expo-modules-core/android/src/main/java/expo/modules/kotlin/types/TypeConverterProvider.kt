@@ -302,7 +302,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     } else {
       // Below API 26 the class-based Color API isn't available, so we can't build a real Color.
       // Register a fallback that resolves every color to null rather than leaving the type
-      // unregistered, which would make Color? args/props throw MissingTypeConverter 
+      // unregistered, which would make Color? args/props throw MissingTypeConverter
       // https://github.com/expo/expo/issues/47546
       // TODO: Remove when we drop support for Android 7 (API 24-25).
       converters + mapOf(
