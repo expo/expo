@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parsePathAndParamsFromExpoGoLink = parsePathAndParamsFromExpoGoLink;
 exports.parsePathFromExpoGoLink = parsePathFromExpoGoLink;
 exports.extractExpoPathFromURL = extractExpoPathFromURL;
+const url_1 = require("../utils/url");
 function parsePathAndParamsFromExpoGoLink(url) {
     // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
     // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
@@ -84,7 +85,7 @@ function fromDeepLink(url) {
             return '';
         }
         const incomingUrl = res.searchParams.get('url');
-        return extractExactPathFromURL(decodeURI(incomingUrl));
+        return extractExactPathFromURL((0, url_1.safeDecodeURI)(incomingUrl));
     }
     let results = '';
     if (res.host) {
@@ -96,7 +97,9 @@ function fromDeepLink(url) {
     const qs = !res.search
         ? ''
         : // @ts-ignore: `entries` is not on `URLSearchParams` in some typechecks.
-            [...res.searchParams.entries()].map(([k, v]) => `${k}=${decodeURIComponent(v)}`).join('&');
+            [...res.searchParams.entries()]
+                .map(([k, v]) => `${k}=${(0, url_1.safeDecodeURIComponent)(v)}`)
+                .join('&');
     if (qs) {
         results += '?' + qs;
     }
