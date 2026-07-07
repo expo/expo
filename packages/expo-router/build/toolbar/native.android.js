@@ -16,11 +16,15 @@ function RouterToolbarHost(props) {
         }
         return baseModifiers;
     }, [insets.bottom, props.withImePadding]);
-    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [react_native_1.StyleSheet.absoluteFill], pointerEvents: "box-none", children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Host, { style: styles.host, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Box, { modifiers: modifiers, contentAlignment: "bottomCenter", children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.HorizontalFloatingToolbar, { colors: {
+    // The wrapper fills the screen so it can pin the toolbar to the bottom, but `box-none` keeps it
+    // from being a touch target. The Compose `Host` then wraps just the toolbar (matchContents), so
+    // only that area swallows touches — taps elsewhere reach the screen content below (ENG-22124).
+    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { testID: "RouterToolbarWrapper", style: styles.container, pointerEvents: "box-none", children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Host, { matchContents: { vertical: true }, style: styles.host, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Box, { modifiers: modifiers, contentAlignment: "center", children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.HorizontalFloatingToolbar, { colors: {
                         ...(props.backgroundColor ? { toolbarContainerColor: props.backgroundColor } : {}),
                     }, modifiers: [(0, modifiers_1.height)(64)], children: props.children }) }) }) }));
 }
 const styles = react_native_1.StyleSheet.create({
-    host: { width: '100%', height: '100%', paddingHorizontal: 24 },
+    container: { ...react_native_1.StyleSheet.absoluteFill, justifyContent: 'flex-end' },
+    host: { width: '100%', paddingHorizontal: 24 },
 });
 //# sourceMappingURL=native.android.js.map
