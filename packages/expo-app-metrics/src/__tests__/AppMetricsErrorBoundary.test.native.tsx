@@ -58,6 +58,18 @@ describe(AppMetricsErrorBoundary, () => {
     expect(reportError).not.toHaveBeenCalled();
   });
 
+  it('does not render the fallback while the children are healthy', () => {
+    render(
+      <AppMetricsErrorBoundary fallback={<Text testID="fallback">something broke</Text>}>
+        <Text testID="child">healthy</Text>
+      </AppMetricsErrorBoundary>
+    );
+
+    expect(screen.getByTestId('child')).toBeVisible();
+    expect(screen.queryByTestId('fallback')).toBeNull();
+    expect(reportError).not.toHaveBeenCalled();
+  });
+
   it('renders the fallback element in place of the failed subtree', () => {
     render(
       <AppMetricsErrorBoundary fallback={<Text testID="fallback">something broke</Text>}>
@@ -76,7 +88,8 @@ describe(AppMetricsErrorBoundary, () => {
       </AppMetricsErrorBoundary>
     );
 
-    expect(screen.queryByTestId('child')).toBeNull();
+    // The whole subtree is replaced by nothing, not just the child hidden.
+    expect(screen.toJSON()).toBeNull();
   });
 
   it('catches a falsy (non-Error) throw without looping, and renders the fallback', () => {
@@ -158,6 +171,31 @@ describe(AppMetricsErrorBoundary, () => {
     fireEvent.press(screen.getByTestId('fallback'));
     expect(screen.getByTestId('recovered')).toBeVisible();
     expect(screen.queryByTestId('fallback')).toBeNull();
+  });
+
+  it('catches again after a reset if the children throw once more', () => {
+    // `resetError` re-renders the children as they are; if they still throw, the boundary must catch
+    // the new error rather than let it escape. Here the children keep throwing, so pressing retry
+    // clears then immediately re-catches.
+    render(
+      <AppMetricsErrorBoundary
+        fallback={({ resetError }) => (
+          <Text testID="fallback" onPress={resetError}>
+            broke
+          </Text>
+        )}>
+        <Boom />
+      </AppMetricsErrorBoundary>
+    );
+
+    expect(screen.getByTestId('fallback')).toBeVisible();
+    expect(reportError).toHaveBeenCalledTimes(1);
+
+    fireEvent.press(screen.getByTestId('fallback'));
+
+    // Still the fallback (re-caught), and the second catch reported another error.
+    expect(screen.getByTestId('fallback')).toBeVisible();
+    expect(reportError).toHaveBeenCalledTimes(2);
   });
 
   it('reports the React component stack of the subtree that threw', () => {

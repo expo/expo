@@ -85,9 +85,13 @@ export class AppMetricsErrorBoundary extends React.Component<AppMetricsErrorBoun
         // fatal (mirrors how Sentry marks error-boundary captures as `handled`).
         isFatal: false,
       });
-    } catch {
+    } catch (reportingError) {
       // An observability boundary must never become the source of a new error, so swallow a failure
-      // inside `reportError`. Losing one report is better than crashing.
+      // inside `reportError`. Losing one report is better than crashing. Surface it in dev so a
+      // dropped report is at least noticeable while developing.
+      if (__DEV__) {
+        console.warn('[expo-app-metrics] Failed to report a caught error:', reportingError);
+      }
     }
   }
 
