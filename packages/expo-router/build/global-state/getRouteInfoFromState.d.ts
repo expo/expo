@@ -1,5 +1,5 @@
-import type { FocusedRouteState } from './types';
-import type { NavigationState, PartialState } from '../react-navigation/native';
+import type { FocusedRouteState } from "./types";
+import type { NavigationState, PartialState } from "../react-navigation/native";
 export type UrlObject = {
     unstable_globalHref: string;
     pathname: string;

@@ -4,6 +4,8 @@ exports.hasUrlProtocolPrefix = hasUrlProtocolPrefix;
 exports.isWellKnownUri = isWellKnownUri;
 exports.shouldLinkExternally = shouldLinkExternally;
 exports.parseUrlUsingCustomBase = parseUrlUsingCustomBase;
+exports.safeDecodeURI = safeDecodeURI;
+exports.safeDecodeURIComponent = safeDecodeURIComponent;
 /**
  * Does the input string start with a valid URL scheme.
  * NOTE: Additional strictness added to ensure URLs sent in query parameters for in-app navigation are not matched.
@@ -28,5 +30,24 @@ function parseUrlUsingCustomBase(href) {
     // encoding, and all other logic, except the logic that applies to hostnames and protocols, and also not leave a
     // dummy URL in the output bytecode
     return new URL(href, 'file:');
+}
+// Malformed percent-encoding (e.g. `%GG`) would otherwise throw and drop the value.
+function safeDecodeURI(value) {
+    try {
+        return typeof value === 'string' ? decodeURI(value) : value;
+    }
+    catch {
+        // If the value is not a valid URI, return it as is
+        return value;
+    }
+}
+function safeDecodeURIComponent(value) {
+    try {
+        return typeof value === 'string' ? decodeURIComponent(value) : value;
+    }
+    catch {
+        // If the value is not a valid URI component, return it as is
+        return value;
+    }
 }
 //# sourceMappingURL=url.js.map
