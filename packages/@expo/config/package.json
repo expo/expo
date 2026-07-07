@@ -32,7 +32,7 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-plugins": "workspace:~57.0.2",
+    "@expo/config-plugins": "workspace:~57.0.3",
     "@expo/config-types": "workspace:^57.0.1",
     "@expo/json-file": "workspace:^11.0.0",
     "@expo/require-utils": "workspace:^57.0.1",
