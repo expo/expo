@@ -23,6 +23,7 @@ export { DarkTheme } from './react-navigation/native/theming/DarkTheme';
 export { DefaultTheme } from './react-navigation/native/theming/DefaultTheme';
 export { ThemeProvider } from './react-navigation/core/theming/ThemeProvider';
 export { useTheme } from './react-navigation/core/theming/useTheme';
+export type { Theme } from './react-navigation/native/types';
 export { useRoutePath } from './react-navigation/native/useRoutePath';
 export { useScrollToTop } from './react-navigation/native/useScrollToTop';
 export { useRoute } from './react-navigation/core/useRoute';

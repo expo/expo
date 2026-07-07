@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [native-tabs] Add `testID` and `accessibilityLabel` props to `NativeTabs.Trigger`. ([#47472](https://github.com/expo/expo/pull/47472) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Export the `Theme` type from the root `expo-router` entry point. ([#47476](https://github.com/expo/expo/pull/47476) by [@eliotgevers](https://github.com/eliotgevers))
 
 ### 🐛 Bug fixes
 
