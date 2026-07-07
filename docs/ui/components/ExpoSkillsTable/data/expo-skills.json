@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-07-05T09:03:23.586Z"
+    "fetchedAt": "2026-07-07T09:09:13.631Z"
   },
-  "totalSkills": 18,
+  "totalSkills": 19,
   "skills": [
     {
       "name": "add-app-clip",
@@ -13,7 +13,7 @@
     },
     {
       "name": "building-native-ui",
-      "description": "Complete guide for building beautiful apps with Expo Router. Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.",
+      "description": "Build beautiful, native-feeling Expo screens. Covers Apple HIG styling, semantic colors, native controls, SF Symbols, media, animations, visual effects, gradients, storage, and responsive layout. For routing and navigation, use the expo-router skill.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/building-native-ui/SKILL.md"
     },
     {
@@ -65,6 +65,11 @@
       "name": "expo-observe",
       "description": "Use for anything related to EAS Observe — adding `expo-observe` to an Expo project (AppMetricsRoot/ObserveRoot HOC, markInteractive, the useObserve hook, the Expo Router / React Navigation integrations for per-route metrics, and user-defined events via `Observe.logEvent`), querying via the EAS CLI (`eas observe:metrics-summary`, `observe:metrics`, `observe:routes`, `observe:events`, `observe:versions`), or interpreting the resulting metrics (cold/warm launch, TTR, TTI, navigation cold/warm TTR, update download, and the TTI frameRate params for triaging slow startups).",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-observe/SKILL.md"
+    },
+    {
+      "name": "expo-router",
+      "description": "Navigation and routing for Expo Router. Covers file-based routes, groups and dynamic routes, folder organization, Link with previews and context menus, native Stack, page titles, modals and form sheets, NativeTabs, headers and toolbars, and header search bars.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-router/SKILL.md"
     },
     {
       "name": "expo-tailwind-setup",
