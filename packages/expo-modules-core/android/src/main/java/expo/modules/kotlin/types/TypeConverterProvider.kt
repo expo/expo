@@ -2,7 +2,6 @@ package expo.modules.kotlin.types
 
 import android.graphics.Color
 import android.net.Uri
-import android.util.Log
 import android.view.View
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
