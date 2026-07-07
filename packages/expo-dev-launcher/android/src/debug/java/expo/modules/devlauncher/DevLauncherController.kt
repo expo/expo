@@ -340,6 +340,12 @@ class DevLauncherController private constructor(
       val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE", "true").toBoolean()
       val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
+        // Forward the launching intent's extras (e.g. launch arguments passed by
+        // Maestro / Detox / `adb am start -e`) so they reach the loaded app via
+        // `createAppIntent()`. Without this, cold-launching drops the extras and
+        // consumers like `react-native-launch-arguments` read nothing.
+        // Mirrors `handleExternalIntent`, which already stores extras.
+        pendingIntentExtras = intent.extras
         launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
         return true
       }

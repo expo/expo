@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Forward the launching intent's extras when cold-launching the most recently opened bundle, so launch arguments (e.g. from Maestro/Detox or `adb am start -e`) reach the app and `react-native-launch-arguments` can read them. ([#47352](https://github.com/expo/expo/pull/47352) by [@kanzelm3](https://github.com/kanzelm3))
+
 ### 💡 Others
 
 ## 56.0.27 — 2026-08-28
