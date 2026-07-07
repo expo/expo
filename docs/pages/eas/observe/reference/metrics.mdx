@@ -4,7 +4,9 @@ sidebar_title: Metrics
 description: A reference of each performance metric tracked by EAS Observe, including concepts and data handling.
 ---
 
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
+
+<TabsGroup>
 
 Reference for the performance metrics EAS Observe collects, the core concepts used to organize events (sessions and users), and how collected data is retained.
 
@@ -285,3 +287,5 @@ Metrics collected from debug builds are dropped before dispatching unless `dispa
 ### Disabling dispatching
 
 You can disable all dispatching globally using `configure({ dispatchingEnabled: false })`. While disabled, any pending metrics are dropped without being dispatched and no further metrics are dispatched until it is set back to `true`.
+
+</TabsGroup>
