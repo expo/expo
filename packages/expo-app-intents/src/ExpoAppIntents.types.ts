@@ -36,6 +36,21 @@ export type AppIntentEntity = {
   subtitle?: string;
   /** Alternative spoken names that resolve to this entity. */
   synonyms?: string[];
+  /** App-specific string metadata consumed by native AppEntity implementations. */
+  metadata?: Record<string, string>;
+};
+
+/**
+ * ExpoUI modifier config that associates a SwiftUI view with an AppEntity identifier.
+ */
+export type AppEntityIdentifierModifier = {
+  $type: 'appEntityIdentifier';
+  $scope?: string;
+  /** App-specific entity kind registered natively, for example `person` or `dish`. */
+  entity: string;
+  /** Stable entity id from the matching App Intents entity catalog. */
+  id: string;
+  [key: string]: unknown;
 };
 
 export type ExpoAppIntentsModuleEvents = {

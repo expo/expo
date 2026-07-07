@@ -2,6 +2,7 @@ import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useRef } from 'react';
 
 import type {
+  AppEntityIdentifierModifier,
   AppIntentEntity,
   AppIntentInvocation,
   AppIntentsHandler,
@@ -185,4 +186,21 @@ export async function refreshShortcutsAsync(): Promise<void> {
     throw new UnavailabilityError('expo-app-intents', 'refreshShortcutsAsync');
   }
   return ExpoAppIntents.refreshShortcutsAsync();
+}
+
+/**
+ * Returns an ExpoUI SwiftUI modifier config that ties a view to an AppEntity identifier.
+ *
+ * The `entity` value must be registered from app-target Swift with
+ * `AppEntityIdentifierRegistry.shared.register(_:as:)`.
+ */
+export function appEntityIdentifier(
+  entity: string,
+  id: string
+): AppEntityIdentifierModifier {
+  return {
+    $type: 'appEntityIdentifier',
+    entity,
+    id,
+  };
 }

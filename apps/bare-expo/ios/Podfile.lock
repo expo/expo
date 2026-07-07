@@ -332,9 +332,11 @@ PODS:
     - ExpoModulesCore
   - ExpoAppIntents (0.1.0):
     - ExpoModulesCore
+    - ExpoUI
   - ExpoAppIntents/Tests (0.1.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
+    - ExpoUI
   - ExpoAppleAuthentication (56.0.4):
     - ExpoModulesCore
   - ExpoAppMetrics (56.0.14):
@@ -4060,7 +4062,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 65402d4affb8b418aa6cec29b3abb0e313c8f443
   ExpoAgeRange: 0f0a7efa4953b7559a726a817e0fa81bed4f35a7
   ExpoAppIntegrity: 43cc62f24c533b960de07b5038568acedc3a567a
-  ExpoAppIntents: 09325ff1ba4feae09f7463bf00e96d3db5c23c84
+  ExpoAppIntents: 3d96c8124cad1e10351cf468a4bb776374765255
   ExpoAppleAuthentication: 3dd8ddd3016396a8171f06af8cc5e3e008e8eaf4
   ExpoAppMetrics: 5cdb64cf96504ddef0aa2b87e0be3c337416c75d
   ExpoAsset: c2e7b5ba1fe75be683282d6264e38fd7cd8defbb
@@ -4153,7 +4155,7 @@ SPEC CHECKSUMS:
   React: 2574546f2d017abd14d0c9b48cf2b6a0547c2591
   React-callinvoker: 03cd4b931d1d583d87aae99b8f7b6fe26bf571ee
   React-Core: 1c824d9c7dd8aa760b5f1b50d5a54c2a3f598f87
-  React-Core-prebuilt: 7da85c26e5616d52f119b81ce5e3e6fc5c9bda49
+  React-Core-prebuilt: 13924a267683b3d6fa4bde9c80380becf83a9c5c
   React-CoreModules: 2f9ed75bca7f6dea2b70e8a1f4a5ca9b6be52d76
   React-cxxreact: 7103d5ba69848c039e11079e74ceede05efe795e
   React-debug: 8cc8d99ccc664ef9e873027f7fc3fb0a50496012

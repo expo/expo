@@ -1,27 +1,28 @@
 import AppIntents
-import CoreLocation
 import Foundation
+import GeoToolbox
 internal import ExpoAppIntents
 
 /**
   On devices running the new iOS 27+ AI Siri, the `CreateJournalEntryIntent` should be automatically
   picked up by the system without the need of registering it in AppShortcutProvider phrases.
  */
-@available(iOS 18.0, *)
+
+@available(iOS 27.0, *)
 @AppIntent(schema: .journal.createEntry)
 struct CreateJournalEntryIntent {
   static var openAppWhenRun: Bool = true
 
-  var title: String?
   var message: AttributedString
-  var entryDate: Date?
-  var location: CLPlacemark?
+  var title: String?
+  var location: GeoToolbox.PlaceDescriptor?
   var mediaItems: [IntentFile]
+  var entryDate: Date?
 
   @MainActor
-  func perform() async throws -> some IntentResult & ReturnsValue<JournalEntryEntity> {
+  func perform() async throws -> some IntentResult & ReturnsValue<JournalEntity> {
     let messageText = String(message.characters)
-    let entry = JournalEntryEntity(
+    let entry = JournalEntity(
       id: UUID().uuidString,
       title: title,
       entryDate: entryDate ?? Date(),
@@ -36,7 +37,7 @@ struct CreateJournalEntryIntent {
         "id": .string(entry.id),
         "title": .string(title ?? ""),
         "entryDate": .double(entry.entryDate?.timeIntervalSince1970 ?? Date().timeIntervalSince1970),
-        "location": .string(location?.name ?? ""),
+        "location": .string(entry.locationDisplayName ?? ""),
         "mediaItemCount": .int(mediaItems.count),
         "message": .string(messageText)
       ]
