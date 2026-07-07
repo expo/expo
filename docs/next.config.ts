@@ -206,6 +206,7 @@ const nextConfig: NextConfig = {
       pathMap,
       domain: `https://docs.expo.dev`,
       output: join(outDir, `sitemap.xml`),
+      pagesDirectory: pagesDir,
       // Some of the search engines only track the first N items from the sitemap,
       // this makes sure our starting and general guides are first, and API index last (in order from new to old)
       pathsPriority: [
