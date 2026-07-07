@@ -30,88 +30,51 @@ This page walks you through creating your first EAS Workflows: development build
     />
 
   </Requirement>
-  <Requirement title="Install expo-dev-client">
-    [Development builds](/develop/development-builds/introduction/) include the `expo-dev-client` library, which adds a developer menu and connects to your development server. Install it in your project:
-
-    <Terminal cmd={['$ npx expo install expo-dev-client']} />
-
-  </Requirement>
   <Requirement title="Install EAS CLI">
-    You'll need to install EAS CLI to sync your project with EAS and run workflows:
+    You'll need to install EAS CLI to create and run workflows:
 
     <Terminal cmd={['$ npm install -g eas-cli']} />
 
   </Requirement>
-  <Requirement title="Sync the project with EAS">
-    You'll need to sync the project with EAS with the following command. This will create an EAS project and link it to your local project:
-
-    <Terminal cmd={['$ eas init']} />
-
-  </Requirement>
-  <Requirement title="Add eas.json">
-    You'll need an **eas.json** file at the root of your project with the following build profiles. The `development` profile creates development builds for Android devices and emulators, and for iOS devices. The `development-simulator` profile creates development builds for the iOS Simulator.
-
-```json eas.json
-{
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "development-simulator": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "ios": {
-        "simulator": true
-      }
-    },
-    "production": {}
-  }
-}
-```
-
-  </Requirement>
 </Prerequisites>
+
+You don't need to link your project to EAS, add an **eas.json** file, or install `expo-dev-client` up front. The `eas workflow:create` command in the next step sets all of that up for you.
 
 <Step label="1">
 
-Create your first workflow with EAS CLI. This command creates the **.eas/workflows** directory and a starter workflow file, so you don't have to write one from scratch:
+Instead of writing a workflow file by hand, generate one with EAS CLI. Pass `--template build` to create a workflow that builds development builds for every platform:
 
-<Terminal cmd={['$ eas workflow:create create-development-builds.yml']} />
+<Terminal cmd={['$ eas workflow:create --template build']} />
 
-When prompted to select a template, choose **Create development builds**. EAS CLI reads the `development` and `development-simulator` profiles from your **eas.json** and writes a workflow with a build job for each platform:
+This command does the setup work for you. It links your project to EAS (prompting you to choose an account if the project isn't linked yet), adds the `development` and `development-ios-simulator` build profiles to your **eas.json**, sets your app identifiers, installs `expo-dev-client` if it's missing, and writes the workflow to **.eas/workflows/build.yml**:
 
-```yaml .eas/workflows/create-development-builds.yml
+```yaml .eas/workflows/build.yml
 name: Create development builds
-
-on:
-  push:
-    branches: ['main']
 
 jobs:
   android_development_build:
     name: Build Android
     type: build
     params:
-      profile: development
       platform: android
+      profile: development
+  ios_device_development_build:
+    name: Build iOS device
+    type: build
+    params:
+      platform: ios
+      profile: development
   ios_simulator_development_build:
     name: Build iOS simulator
     type: build
     params:
-      profile: development-simulator
       platform: ios
-  ios_development_build:
-    name: Build iOS device
-    type: build
-    params:
-      profile: development
-      platform: ios
+      profile: development-ios-simulator
 ```
 
-This workflow creates three development builds in parallel: an Android build for emulators and devices, an iOS Simulator build, and an iOS device build. It also runs automatically on pushes to the `main` branch once you [link a GitHub repository](#automate-workflows-with-github-events).
+This workflow creates three development builds in parallel: an Android build for emulators and devices, an iOS device build, and an iOS Simulator build.
 
-The Android and iOS Simulator builds work on a brand new project: EAS generates and stores the Android signing keystore automatically, and iOS Simulator builds don't require code signing. The iOS device build requires an Apple Developer account and a registered device. If you don't have those yet, remove the `ios_development_build` job and add it back later by following [iOS device setup](/get-started/set-up-your-environment/?mode=development-build&platform=ios&device=physical).
+The Android and iOS Simulator builds work on a brand new project: EAS generates and stores the Android signing keystore automatically, and iOS Simulator builds don't require code signing. The iOS device build requires an Apple Developer account and a registered device, so EAS CLI prints a **Next steps** list after creating the workflow. To set up iOS device credentials, run the command it suggests (`eas credentials:configure-build -p ios -e development`) and register your device when prompted. You can also do this later, or skip the iOS device build for now by removing the `ios_device_development_build` job.
 
 </Step>
 
@@ -119,11 +82,11 @@ The Android and iOS Simulator builds work on a brand new project: EAS generates 
 
 Run the workflow with the following command:
 
-<Terminal cmd={['$ eas workflow:run .eas/workflows/create-development-builds.yml']} />
+<Terminal cmd={['$ eas workflow:run .eas/workflows/build.yml']} />
 
 Once you do, you can watch your workflow run on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows).
 
-> **info** `eas workflow:create` validates the file when it generates it. To check a file you've edited by hand, run `eas workflow:validate .eas/workflows/create-development-builds.yml`.
+> **info** `eas workflow:create` validates the file when it generates it. To check a file you've edited by hand, run `eas workflow:validate .eas/workflows/build.yml`.
 
 </Step>
 
@@ -135,7 +98,7 @@ When the builds finish, install and launch your app on an Android Emulator or iO
   cmd={[
     '$ eas build:run -p android --latest',
     '',
-    '$ eas build:run -p ios -e development-simulator --latest',
+    '$ eas build:run -p ios -e development-ios-simulator --latest',
   ]}
 />
 
@@ -149,9 +112,15 @@ You can install the Android and iOS device builds on physical devices from each 
 
 ## Create production builds
 
-When you're ready to build for the app stores, use the `production` profile from your **eas.json**. Production builds require app signing credentials. The easiest way to set them up is to complete one build with EAS CLI. See [set up your project](/build/setup/).
+When you're ready to build for the app stores, generate a release workflow with the `deploy` template:
 
-Create **.eas/workflows/create-production-builds.yml** with the following:
+<Terminal cmd={['$ eas workflow:create --template deploy']} />
+
+Like the `build` template, this configures EAS Build and EAS Update, then writes a complete release workflow to **.eas/workflows/deploy.yml**. The workflow fingerprints your project, reuses a matching build or creates a new production build when there are native changes, submits to the app stores, and sends an over-the-air update otherwise. Production builds and store submissions require credentials, so EAS CLI prints a **Next steps** list with the commands to set them up.
+
+For a walkthrough of the generated workflow, see the [Deploy to production example](/eas/workflows/examples/deploy-to-production).
+
+If you only need to create production builds, use a workflow with a `build` job for each platform:
 
 ```yaml .eas/workflows/create-production-builds.yml
 name: Create Production Builds
@@ -169,11 +138,9 @@ jobs:
       profile: production
 ```
 
-Then, run the workflow with the following command:
+This workflow uses the `production` profile from your **eas.json**. Production builds require app signing credentials. The easiest way to set them up is to complete one build with EAS CLI. See [set up your project](/build/setup/). Then, run the workflow:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/create-production-builds.yml']} />
-
-For a complete release workflow that builds, submits to the app stores, and sends over-the-air updates, see the [Deploy to production example](/eas/workflows/examples/deploy-to-production).
 
 ## More
 
