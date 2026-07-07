@@ -84,6 +84,23 @@ function createSteps(): Step[] {
       },
     },
     {
+      title: 'Removing expo-modules-jsi build artifacts',
+      async runAsync() {
+        for (const name of ['.DerivedData', '.generated', '.swiftpm', 'Products']) {
+          await fs.remove(path.join(jsiAppleDir, name));
+        }
+      },
+    },
+    {
+      title: 'Removing precompile caches',
+      async runAsync() {
+        for (const name of ['.build', '.cache']) {
+          await fs.remove(path.join(precompileDir, name));
+        }
+      },
+    },
+    {
+      // Runs after the expo-modules-jsi cleanup so pod install recreates the stub xcframework.
       title: 'Resyncing pods with the native projects',
       async runAsync() {
         if (process.platform !== 'darwin') {
@@ -97,22 +114,6 @@ function createSteps(): Step[] {
 
         if (!success) {
           throw new Error('pod install failed. See the output above.');
-        }
-      },
-    },
-    {
-      title: 'Removing expo-modules-jsi build artifacts',
-      async runAsync() {
-        for (const name of ['.DerivedData', '.generated', '.swiftpm', 'Products']) {
-          await fs.remove(path.join(jsiAppleDir, name));
-        }
-      },
-    },
-    {
-      title: 'Removing precompile caches',
-      async runAsync() {
-        for (const name of ['.build', '.cache']) {
-          await fs.remove(path.join(precompileDir, name));
         }
       },
     },
