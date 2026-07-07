@@ -20,6 +20,7 @@
 - Adopted the UIKit scene-based life cycle on iOS so apps built with the iOS 27 SDK launch correctly. ([#46733](https://github.com/expo/expo/pull/46733) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Mark `ExpoAppSceneDelegate` as unavailable in extensions. ([#46799](https://github.com/expo/expo/pull/46799) by [@jakex7](https://github.com/jakex7))
 - Fix `asyncRoutes` failing on Android and iOS with `Requiring unknown module` ([#46870](https://github.com/expo/expo/pull/46870) by [@hassankhan](https://github.com/hassankhan))
+- Fixed `jest-expo` test suites failing to run on Jest 30 with `You are trying to import a file outside of the scope of the test code`, caused by the `structuredClone` and `__ExpoImportMetaRegistry` winter globals lazily requiring modules during environment teardown. ([#47332](https://github.com/expo/expo/pull/47332) by [@netconomy-stephan-dum](https://github.com/netconomy-stephan-dum), [@janpe](https://github.com/janpe))
 
 ### 💡 Others
 
