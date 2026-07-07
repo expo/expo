@@ -136,10 +136,23 @@ private func log(_ message: String) {
     private func writeToPipe(_ path: String, data: Data) {
         log("Attempting to open pipe for writing")
 
-        let fd = open(path, O_WRONLY)
-        guard fd != -1 else {
-            log("Failed to open pipe for writing")
-            return
+        // The client may have timed out and abandoned this request, in which case no reader
+        // ever opens the other end and a plain blocking open would wedge the server thread
+        // forever, killing the inspector for the rest of the app's lifetime. Poll with
+        // O_NONBLOCK (which fails with ENXIO while there is no reader) and drop the response
+        // if no reader shows up in time; the server then moves on to the next request.
+        let deadline = Date().addingTimeInterval(5)
+        var fd: Int32 = -1
+        while fd == -1 {
+            fd = open(path, O_WRONLY | O_NONBLOCK)
+            if fd == -1 {
+                let openError = errno
+                if openError != ENXIO || Date() >= deadline {
+                    log("Failed to open pipe for writing, errno: \(openError); dropping response")
+                    return
+                }
+                usleep(50_000)
+            }
         }
 
         log("Pipe opened for writing, sending \(data.count) bytes")
