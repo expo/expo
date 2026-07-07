@@ -1,6 +1,10 @@
 import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs/promises';
+import * as os from 'os';
 import * as path from 'path';
+
+import { getFailedFlowsFromJUnitReport } from './maestro-junit-report';
+
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = String(180_000);
 const MAESTRO_CLI_NO_ANALYTICS = '1';
 
@@ -200,30 +204,103 @@ const getCustomMaestroFlowsAsync = async (
   return yamlFiles;
 };
 
+export type RunMaestroFlowsFunction = (
+  flowRelativePaths: string[],
+  options: { attempt: number }
+) => Promise<string[]>;
+
 export const runCustomMaestroFlowsAsync = async (
   e2eDir: string,
   platform: 'android' | 'ios',
-  fn: (maestroFlowFilePath: string) => Promise<void>
+  runFlowsAsync: RunMaestroFlowsFunction
 ) => {
-  const retriesForCustomTests = 3;
+  const maxAttempts = 3;
 
-  const maestroFlows = await getCustomMaestroFlowsAsync(e2eDir, platform);
-  for (const maestroFlowRelativePath of maestroFlows) {
-    const maestroFlowFilePath = path.join(e2eDir, maestroFlowRelativePath);
-    await retryAsync((retryNumber) => {
-      console.log(
-        `${maestroFlowRelativePath} e2e test attempt ${retryNumber + 1} of ${retriesForCustomTests}`
+  let flows = await getCustomMaestroFlowsAsync(e2eDir, platform);
+  for (let attempt = 1; flows.length > 0; ++attempt) {
+    console.log(`Custom e2e flows attempt ${attempt} of ${maxAttempts}: ${flows.join(', ')}`);
+    const failedFlows = await runFlowsAsync(flows, { attempt });
+    if (failedFlows.length === 0) {
+      return;
+    }
+    if (attempt >= maxAttempts) {
+      throw new Error(
+        `Custom e2e flows kept failing after ${maxAttempts} attempts: ${failedFlows.join(', ')}`
       );
-      return fn(maestroFlowFilePath);
-    }, retriesForCustomTests);
+    }
+    console.warn(`⚠️ Retrying failed flows: ${failedFlows.join(', ')}`);
+    flows = failedFlows;
+    await delayAsync(5000);
   }
 };
 
-export function startGroup(filePath: string) {
+export interface RunMaestroOptions {
+  /** Global maestro CLI arguments selecting the device, e.g. `['--device', deviceId]`. */
+  deviceArgs: string[];
+  flowRelativePaths: string[];
+  e2eDir: string;
+  /**
+   * Whether maestro should reinstall its on-device driver before running. Only the first
+   * invocation in a session needs it; skipping the reinstall saves about a minute per invocation.
+   */
+  reinstallDriver: boolean;
+}
+
+/**
+ * Runs the given flows in a single maestro invocation (flows execute in the given order and
+ * a failed flow doesn't stop the following ones) and returns the relative paths of failed flows.
+ * Throws if maestro fails without producing flow results, e.g. when it can't reach the device.
+ */
+export async function runMaestroAsync({
+  deviceArgs,
+  flowRelativePaths,
+  e2eDir,
+  reinstallDriver,
+}: RunMaestroOptions): Promise<string[]> {
+  const reportPath = path.join(
+    await fs.mkdtemp(path.join(os.tmpdir(), 'maestro-report-')),
+    'report.xml'
+  );
+  const args = [
+    ...deviceArgs,
+    'test',
+    ...(reinstallDriver ? [] : ['--no-reinstall-driver']),
+    '--format',
+    'junit',
+    '--output',
+    reportPath,
+    ...flowRelativePaths.map((flowRelativePath) => path.join(e2eDir, flowRelativePath)),
+  ];
+  try {
+    await spawnAsync('maestro', args, {
+      stdio: 'inherit',
+      cwd: e2eDir,
+      env: {
+        ...process.env,
+        ...MAESTRO_ENV_VARS,
+      },
+    });
+    return [];
+  } catch (error) {
+    const reportContents = await fs.readFile(reportPath, 'utf8').catch(() => null);
+    if (reportContents == null) {
+      throw error;
+    }
+    const failedFlows = getFailedFlowsFromJUnitReport(reportContents, flowRelativePaths);
+    if (failedFlows.length === 0) {
+      // maestro failed even though no flow was reported as failed, so something is wrong with
+      // the run itself and retrying the flows wouldn't help.
+      throw error;
+    }
+    return failedFlows;
+  } finally {
+    await fs.rm(path.dirname(reportPath), { recursive: true, force: true });
+  }
+}
+
+export function startGroup(label: string) {
   if (process.env.CI) {
-    const parts = filePath.split(path.sep).filter(Boolean);
-    const lastTwoComponents = parts.slice(-2).join(path.sep);
-    console.log(`::group::${lastTwoComponents}`);
+    console.log(`::group::${label}`);
   }
 }
 
