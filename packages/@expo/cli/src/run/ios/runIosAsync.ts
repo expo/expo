@@ -8,6 +8,7 @@ import type { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
+import { event } from '../events';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import * as Log from '../../log';
 import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
@@ -39,6 +40,16 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
+
+  if (props.device) {
+    event('device:selected', {
+      platform: 'ios',
+      name: props.device.name,
+      id: props.device.udid,
+      os: props.device.osType ?? null,
+      type: props.isSimulator ? 'simulator' : 'device',
+    });
+  }
 
   // We only support build cache for simulator builds for now.
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {
@@ -130,9 +141,22 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     }
 
     // Spawn the `xcodebuild` process to create the app binary.
-    const buildOutput = await XcodeBuild.buildAsync({
-      ...props,
-      eagerBundleOptions,
+    const done = event.span();
+    let buildOutput: string;
+    try {
+      buildOutput = await XcodeBuild.buildAsync({
+        ...props,
+        eagerBundleOptions,
+      });
+    } catch (error) {
+      event('build:failed', { platform: 'ios', error: event.error(error as Error) });
+      throw error;
+    }
+    done('build:done', {
+      platform: 'ios',
+      scheme: props.scheme,
+      configuration: props.configuration,
+      deviceId: props.device?.udid ?? null,
     });
 
     // Find the path to the built app binary, this will be used to install the binary
