@@ -11,6 +11,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the ZXing barcode fallback scanner returning raw AVFoundation type strings (e.g. `org.iso.PDF417`) instead of short expo `BarcodeType` values (e.g. `pdf417`) for `pdf417`, `code39`, and `codabar`, restoring the fix from [#44726](https://github.com/expo/expo/pull/44726) that was reverted by the `ExpoCameraBarcodeScanning` pod extraction in [#44766](https://github.com/expo/expo/pull/44766). ([#44726](https://github.com/expo/expo/pull/44726) by [@jensdev](https://github.com/jensdev))
 - [Android] Use the selected camera to determine video stabilization support. ([#45896](https://github.com/expo/expo/pull/45896) by [@vivekjm](https://github.com/vivekjm))
 - Host the iOS camera preview on the view's backing layer so it no longer zooms into place on launch. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
 - Replace the deprecated `videoOrientation` API with `AVCaptureDevice.RotationCoordinator` for the iOS camera preview. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
