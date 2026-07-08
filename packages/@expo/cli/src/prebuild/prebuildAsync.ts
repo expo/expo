@@ -20,6 +20,7 @@ import {
 } from './clearNativeFolder';
 import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
+import { event } from './events';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
 import { updateFromTemplateAsync } from './updateFromTemplate';
 
@@ -112,6 +113,8 @@ export async function prebuildAsync(
   // Assert if no platforms are left over after filtering.
   assertPlatforms(options.platforms);
 
+  const donePrebuild = event.span();
+
   // Get the Expo config, create it if missing.
   const { exp, pkg } = await ensureConfigAsync(projectRoot, { platforms: options.platforms });
 
@@ -144,12 +147,18 @@ export async function prebuildAsync(
           initial: true,
         })
       ) {
+        const startedAt = Date.now();
         await installAsync([], {
           npm: !!options.packageManager?.npm,
           yarn: !!options.packageManager?.yarn,
           pnpm: !!options.packageManager?.pnpm,
           bun: !!options.packageManager?.bun,
           silent: !(env.EXPO_DEBUG || env.CI),
+        });
+        event('dependencies:installed', {
+          packageManager: resolvePackageManagerName(options.packageManager),
+          ms: Date.now() - startedAt,
+          skipped: false,
         });
       }
     }
@@ -185,9 +194,12 @@ export async function prebuildAsync(
   if (options.platforms.includes('ios') && options.install && needsPodInstall) {
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
+    const startedAt = Date.now();
     podsInstalled = await installCocoaPodsAsync(projectRoot);
+    event('pods:installed', { ms: Date.now() - startedAt, skipped: false });
   } else {
     debug('Skipped pod install');
+    event('pods:installed', { ms: 0, skipped: true });
   }
   const inlineModules = exp.experiments?.inlineModules ?? false;
   if (inlineModules && options.platforms.includes('ios')) {
@@ -198,6 +210,12 @@ export async function prebuildAsync(
     });
   }
 
+  donePrebuild('done', {
+    platforms: options.platforms,
+    clean: !!options.clean,
+    template: options.template,
+  });
+
   return {
     nodeInstall: !!options.install,
     podInstall: !podsInstalled,
@@ -205,4 +223,16 @@ export async function prebuildAsync(
     hasNewProjectFiles,
     exp,
   };
+}
+
+function resolvePackageManagerName(packageManager?: {
+  npm?: boolean;
+  yarn?: boolean;
+  pnpm?: boolean;
+  bun?: boolean;
+}): string {
+  if (packageManager?.yarn) return 'yarn';
+  if (packageManager?.pnpm) return 'pnpm';
+  if (packageManager?.bun) return 'bun';
+  return 'npm';
 }
