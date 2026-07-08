@@ -44,6 +44,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       isFocused={selectedScreenKey === tab.routeKey}
       androidAppearance={androidAppearances[index]!}
       contentRenderer={tab.contentRenderer}
+      tabBarHidden={props.hidden}
     />
   ));
 
@@ -69,10 +70,11 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 
 interface InternalTabScreenProps extends SharedInternalTabScreenProps {
   androidAppearance: TabsScreenAppearanceAndroid;
+  tabBarHidden?: boolean;
 }
 
 function Screen(props: InternalTabScreenProps) {
-  const { options, androidAppearance, contentRenderer } = props;
+  const { options, androidAppearance, contentRenderer, tabBarHidden } = props;
 
   const shared = useSharedScreenProps(props);
 
@@ -89,13 +91,13 @@ function Screen(props: InternalTabScreenProps) {
           // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
           collapsable={false}
           style={{ flex: 1 }}
-          edges={{ bottom: true }}>
+          edges={{ bottom: !tabBarHidden }}>
           {content}
         </SafeAreaView>
       );
     }
     return content;
-  }, [content, options.disableAutomaticContentInsets]);
+  }, [content, options.disableAutomaticContentInsets, tabBarHidden]);
 
   return (
     <Tabs.Screen
