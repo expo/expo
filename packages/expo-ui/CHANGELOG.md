@@ -4,10 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] `<Host>`'s `ignoreSafeArea="all"` now also ignores the keyboard safe area, matching its name. Use the new `ignoreSafeArea="container"` for the previous behavior of ignoring only the device and container insets while still avoiding the keyboard. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 - [universal][android] Use `BasicTextField` component instead of Filled Material TextField. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
 
+- [iOS] Added the `ignoreSafeArea="container"` option to `<Host>`, which ignores the device and container safe area insets (notch, home indicator, status and navigation bars) while still avoiding the keyboard. Use it to keep a `matchContents` host pinned to a screen edge interactive. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `redacted`, `unredacted`, `privacySensitive`, and `invalidatableContent` modifiers, mapping SwiftUI's redaction family for native skeleton-loading and sensitive-content states. ([#47269](https://github.com/expo/expo/pull/47269) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added a `modifiers` prop to `ListItem` to override its default `buttonStyle(.plain)`. ([#47124](https://github.com/expo/expo/pull/47124) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `presentationSizing` modifier (`automatic`/`fitted`/`form`/`page`) to control sheet sizing, and applied `fitted` in `community/bottom-sheet` dynamic sizing so the sheet hugs its content on iPad instead of opening near full-screen. ([#47050](https://github.com/expo/expo/pull/47050) by [@nishan](https://github.com/intergalacticspacehighway))

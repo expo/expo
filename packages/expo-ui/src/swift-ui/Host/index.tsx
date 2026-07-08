@@ -44,11 +44,12 @@ export interface HostProps extends CommonViewModifierProps {
   layoutDirection?: 'leftToRight' | 'rightToLeft';
 
   /**
-   * Controls which safe area regions the SwiftUI hosting view should ignore. Can only be set once on mount.
-   * - `'all'`- ignores all safe area insets.
+   * Controls which safe area regions the SwiftUI hosting view should ignore.
+   * - `'all'` - ignores all safe area insets, including the keyboard.
+   * - `'container'` - ignores the safe area insets defined by the device and containers (notch, home indicator, status and navigation bars) while still avoiding the keyboard. Useful to keep a `matchContents` host pinned to a screen edge interactive, since the safe area inset would otherwise offset its content outside the host's tappable bounds.
    * - `'keyboard'` - ignores only the keyboard safe area.
    */
-  ignoreSafeArea?: 'all' | 'keyboard';
+  ignoreSafeArea?: 'all' | 'container' | 'keyboard';
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
