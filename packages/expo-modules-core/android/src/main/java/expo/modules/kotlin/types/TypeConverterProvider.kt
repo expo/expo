@@ -283,7 +283,13 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       // It will always return Unit
       Unit::class.java to UnitTypeConverter(),
 
-      ReadableArguments::class.java to ReadableArgumentsTypeConverter()
+      ReadableArguments::class.java to ReadableArgumentsTypeConverter(),
+
+      // expo-ui modifier prop are converted by ModifierRegistry, so this is just a pass-through.
+      // This converter should not be used in other cases.
+      Dynamic::class.java to createTrivialTypeConverter<Dynamic>(
+        ExpectedType(CppType.NONE)
+      ) { it }
     )
 
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
