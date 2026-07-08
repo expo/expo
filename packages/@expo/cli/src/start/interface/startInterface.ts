@@ -13,8 +13,6 @@ import type { StartOptions } from './commandsTable';
 import { BLT, printHelp, printUsage } from './commandsTable';
 import { DevServerManagerActions } from './interactiveActions';
 
-const debug = require('debug')('expo:start:interface:startInterface') as typeof console.log;
-
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
 const CTRL_L = '\u000C';
@@ -166,14 +164,12 @@ export async function startInterfaceAsync(
 
         const isDisabled = !platforms.includes('web');
         if (isDisabled) {
-          debug('Web is disabled');
           // Use warnings from the web support setup.
           break;
         }
 
         // Ensure the Webpack dev server is running first
         if (!devServerManager.getWebDevServer()) {
-          debug('Starting up webpack dev server');
           await devServerManager.ensureWebDevServerRunningAsync();
           // When this is the first time webpack is started, reprint the connection info.
           await actions.printDevServerInfoAsync(usageOptions);
