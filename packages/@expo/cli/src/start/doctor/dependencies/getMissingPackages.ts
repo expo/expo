@@ -2,6 +2,7 @@ import JsonFile from '@expo/json-file';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
+import { event } from '../events';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 
 const debug = require('debug')('expo:doctor:dependencies:getMissingPackages') as typeof console.log;
@@ -89,6 +90,8 @@ export async function getMissingPackagesAsync(
   if (!results.missing.length) {
     return results;
   }
+
+  event('dependencies:missing', { packages: results.missing.map((pkg) => pkg.pkg) });
 
   // Ensure the versions are right for the SDK that the project is currently using.
   await mutatePackagesWithKnownVersionsAsync(projectRoot, sdkVersion, results.missing);
