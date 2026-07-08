@@ -16,6 +16,7 @@ import { CommandError } from '../../../utils/errors';
 import { stripPort } from '../../../utils/url';
 import type { ManifestRequestInfo } from './ManifestMiddleware';
 import { ManifestMiddleware } from './ManifestMiddleware';
+import { manifestDebugEvent } from './events';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
 import type { ServerRequest } from './server.types';
@@ -33,8 +34,6 @@ declare module '2g' {
 }
 
 const event = events('manifest');
-
-const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
 
 let multipartMixedContentType = multipartContentType;
 if (multipartMixedContentType.startsWith(MULTIPART_TYPE)) {
@@ -59,9 +58,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     let platform = parsePlatformHeader(req);
 
     if (!platform) {
-      debug(
-        `No "expo-platform" header or "platform" query parameter specified. Falling back to "ios".`
-      );
+      manifestDebugEvent('no_platform_header', {});
       platform = 'ios';
     }
 
