@@ -8,8 +8,7 @@ import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import type { AppIdResolver } from './AppIdResolver';
 import type { DeviceManager } from './DeviceManager';
-
-const debug = require('debug')('expo:start:platforms:platformManager') as typeof console.log;
+import { event as debugEvent } from './events';
 
 declare module '2g' {
   interface EventRegistry {
@@ -88,7 +87,7 @@ export class PlatformManager<
         );
       }
       if (applicationId) {
-        debug(`Resolving launch URL: (appId: ${applicationId}, redirect URL: ${redirectUrl})`);
+        debugEvent('open_launch_url', { appId: applicationId, redirectUrl });
         // NOTE(EvanBacon): This adds considerable amount of time to the command, we should consider removing or memoizing it.
         // Finally determine if the target device has a custom dev client installed.
         if (
@@ -142,14 +141,14 @@ export class PlatformManager<
     resolveSettings: Partial<IResolveDeviceProps> = {},
     props: Partial<IOpenInCustomProps> = {}
   ): Promise<{ url: string }> {
-    debug(
-      `open custom (${Object.entries(props)
+    debugEvent('open_custom', {
+      props: Object.entries(props)
         .map(([k, v]) => `${k}: ${v}`)
-        .join(', ')})`
-    );
+        .join(', '),
+    });
 
     let url = this.props.getCustomRuntimeUrl({ scheme: props.scheme });
-    debug(`Opening project in custom runtime: ${url} -- %O`, props);
+    debugEvent('open_custom_url', { url, props: JSON.stringify(props) });
     // TODO: It's unclear why we do application id validation when opening with a URL
     // NOTE: But having it enables us to allow the deep link to directly open on iOS simulators without the modal.
     const applicationId = props.applicationId ?? (await this._getAppIdResolver().getAppIdAsync());
@@ -195,10 +194,11 @@ export class PlatformManager<
         },
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
-    debug(
-      `open (runtime: ${options.runtime}, platform: ${this.props.platform}, device: %O, shouldPrompt: ${resolveSettings.shouldPrompt})`,
-      resolveSettings.device
-    );
+    debugEvent('open_async', {
+      runtime: options.runtime,
+      platform: this.props.platform,
+      shouldPrompt: resolveSettings.shouldPrompt,
+    });
     if (options.runtime === 'expo') {
       return this.openProjectInExpoGoAsync(resolveSettings);
     } else if (options.runtime === 'web') {

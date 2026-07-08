@@ -12,8 +12,7 @@ import { memoize } from '../../../utils/fn';
 import { learnMore } from '../../../utils/link';
 import { parsePlistAsync } from '../../../utils/plist';
 import { profile } from '../../../utils/profile';
-
-const debug = require('debug')('expo:simctl') as typeof console.log;
+import { event } from '../events';
 
 type DeviceState = 'Shutdown' | 'Booted';
 
@@ -130,24 +129,16 @@ async function updateSimulatorLinkingPermissionsAsync(
   { url, appId }: { url: string; appId?: string }
 ) {
   if (!device.udid || !appId) {
-    debug('Skipping deep link permissions as missing properties could not be found:', {
-      url,
-      appId,
-      udid: device.udid,
-    });
+    event('simctl_skip_deep_link_perms', { url, appId, udid: device.udid });
     return;
   }
-  debug('Rewriting simulator permissions to support deep linking:', {
-    url,
-    appId,
-    udid: device.udid,
-  });
+  event('simctl_deep_link_perms', { url, appId, udid: device.udid });
   let scheme: string;
   try {
     // Attempt to extract the scheme from the URL.
     scheme = new URL(url).protocol.slice(0, -1);
   } catch (error: any) {
-    debug(`Could not parse the URL scheme: ${error.message}`);
+    event('simctl_url_scheme_parse_error', { error: event.error(error as Error) });
     return;
   }
 
@@ -166,11 +157,11 @@ async function updateSimulatorLinkingPermissionsAsync(
       // Can be tested by launching a new simulator or by deleting the file and relaunching the simulator.
       {};
 
-  debug('Allowed links:', plistData);
+  event('simctl_allowed_links', { plistData: plistData as Record<string, unknown> });
   const key = `com.apple.CoreSimulator.CoreSimulatorBridge-->${scheme}`;
   // Replace any existing value for the scheme with the new appId.
   plistData[key] = appId;
-  debug('Allowing deep link:', { key, appId });
+  event('simctl_allow_deep_link', { key, appId });
 
   try {
     const data = bplistCreator(plistData);
