@@ -2597,6 +2597,9 @@ importers:
 
   packages/@expo/metro-config:
     dependencies:
+      2g:
+        specifier: ^0.4.1
+        version: 0.4.1(typescript@6.0.3)
       '@babel/code-frame':
         specifier: ^7.20.0
         version: 7.29.0

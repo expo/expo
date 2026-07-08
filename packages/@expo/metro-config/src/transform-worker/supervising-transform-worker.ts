@@ -1,9 +1,14 @@
+import { installEventLogger } from '2g';
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import path from 'path';
 
+import { event } from './events';
 import * as worker from './metro-transform-worker';
 import type { TransformResponse } from './transform-worker';
 import { patchNodeModuleResolver } from './utils/moduleMapper';
+
+installEventLogger();
+event('worker:started', { pid: process.pid });
 
 const defaultTransformer: typeof import('./transform-worker') = require('./transform-worker');
 const defaultTransformerPath = require.resolve('./transform-worker');
@@ -50,11 +55,16 @@ const getCustomTransform = (() => {
       debug(`Loading custom transformer at "${_transformerPath}"`);
       try {
         _transformer = require.call(null, _transformerPath);
+        event('custom_transformer:loaded', { path: _transformerPath });
       } catch (error: any) {
         // If the user's transformer throws and fails initialization, we customize the
         // error and output a path to the user to clarify that it's the transformer that
         // failed to initialize
         const relativeTransformerPath = path.relative(projectRoot, _transformerPath);
+        event('custom_transformer:failed', {
+          path: _transformerPath,
+          error: event.error(error as Error),
+        });
         throw new Error(
           `Your custom Metro transformer has failed to initialize. Check: "${relativeTransformerPath}"\n` +
             (typeof error.message === 'string' ? error.message : `${error}`)
