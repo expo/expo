@@ -4,7 +4,7 @@ import Vision
 
 class BarcodeScannerUtils {
   static func getDefaultSettings() -> [String: [AVMetadataObject.ObjectType]] {
-    var validTypes = [
+    let validTypes = [
       "upc_e": AVMetadataObject.ObjectType.upce,
       "upc_a": AVMetadataObject.ObjectType.ean13,
       "code39": AVMetadataObject.ObjectType.code39,
