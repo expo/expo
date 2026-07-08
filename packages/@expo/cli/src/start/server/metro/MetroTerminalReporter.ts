@@ -36,8 +36,6 @@ type ClientLogLevel =
   | 'groupEnd'
   | 'debug';
 
-const debug = require('debug')('expo:metro:logger') as typeof console.log;
-
 declare module '2g' {
   interface EventRegistry {
     'metro:bundling:done': {
@@ -403,7 +401,6 @@ export class MetroTerminalReporter extends TerminalReporter {
           const fallbackIndices: number[] = [];
           const symbolicated = (await Promise.allSettled(symbolicating)).map((s, index) => {
             if (s.status === 'rejected') {
-              debug('Error formatting stack', parsed[index], s.reason);
               return parsed[index];
             } else if (!s.value) {
               return parsed[index];
