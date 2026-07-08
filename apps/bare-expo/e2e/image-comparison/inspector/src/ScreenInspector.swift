@@ -107,7 +107,7 @@ private func log(_ message: String) {
             log("Received request: \(String(data: requestData, encoding: .utf8) ?? "invalid UTF8")")
 
             let response = processRequest(requestData)
-            writeToPipe(responsePipePath, data: response)
+            writeToPipe(resolveResponsePipePath(requestData), data: response)
 
             log("Sent response, ready for next request")
         }
@@ -131,6 +131,19 @@ private func log(_ message: String) {
 
         log("Read \(bytesRead) bytes from pipe")
         return Data(buffer.prefix(bytesRead))
+    }
+
+    private func resolveResponsePipePath(_ requestData: Data) -> String {
+        // Clients create a unique response pipe per request and pass its path along, so that a
+        // response can never pair with another request's reader (a shared response pipe gets
+        // permanently desynced once a single client times out and abandons its request).
+        // Requests without the field fall back to the shared legacy pipe.
+        guard let json = try? JSONSerialization.jsonObject(with: requestData, options: []) as? [String: Any],
+              let responsePipe = json["responsePipe"] as? String,
+              responsePipe.hasPrefix("/tmp/ios_screen_inspector_response") else {
+            return responsePipePath
+        }
+        return responsePipe
     }
 
     private func writeToPipe(_ path: String, data: Data) {
