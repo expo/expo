@@ -1,4 +1,5 @@
 import { events } from '2g';
+import type { SerializedError } from '2g';
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
 
 import { Log } from '../../log';
@@ -17,6 +18,10 @@ declare module '2g' {
         cliBanner: boolean;
         webpageEndpoint: string | undefined;
       }[];
+    };
+    'expo:dev-tools-plugin:error': {
+      packageName: string;
+      error: SerializedError;
     };
   }
 }
@@ -68,6 +73,10 @@ export default class DevToolsPluginManager {
             `Skipping plugin "${pluginInfo.packageName}": ${error.message ?? 'invalid configuration'}`
           );
           debug('Plugin validation error for %s: %O', pluginInfo.packageName, error);
+          event('dev-tools-plugin:error', {
+            packageName: pluginInfo.packageName,
+            error: event.error(error as Error),
+          });
           return null;
         }
       })

@@ -4,6 +4,7 @@ import { Readable, Stream } from 'stream';
 import type { ReadableStream } from 'stream/web';
 import { promisify } from 'util';
 
+import { event } from '../api/events';
 import { createCachedFetch, fetchAsync } from '../api/rest/client';
 import type { FetchLike, ProgressCallback } from '../api/rest/client.types';
 import { createTempFilePath } from './createTempPath';
@@ -38,6 +39,7 @@ async function downloadAsync({
   }
 
   debug(`Downloading ${url} to ${outputPath}`);
+  const startedAt = Date.now();
   const res = await fetchInstance(url, {
     onProgress,
   });
@@ -47,7 +49,12 @@ async function downloadAsync({
       `Unexpected response: ${res.statusText}. From url: ${url}`
     );
   }
-  return pipeline(Readable.fromWeb(res.body as ReadableStream), fs.createWriteStream(outputPath));
+  await pipeline(Readable.fromWeb(res.body as ReadableStream), fs.createWriteStream(outputPath));
+  event('download', {
+    url,
+    bytes: fs.statSync(outputPath).size,
+    ms: Date.now() - startedAt,
+  });
 }
 
 export async function downloadAppAsync({

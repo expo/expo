@@ -1,3 +1,4 @@
+import { events } from '2g';
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
@@ -19,6 +20,14 @@ import { UrlCreator } from './UrlCreator';
 import type { PlatformBundlers } from './platformBundlers';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
+
+declare module '2g' {
+  interface EventRegistry {
+    'devserver:stop': { bundler: string; ms: number };
+  }
+}
+
+const event = events('devserver');
 
 export type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
@@ -333,6 +342,7 @@ export abstract class BundlerDevServer {
 
   /** Stop the running dev server instance. */
   async stopAsync() {
+    const stoppedAt = Date.now();
     // Reset url creator
     this.urlCreator = undefined;
 
@@ -352,7 +362,7 @@ export abstract class BundlerDevServer {
       Log.exception(e);
     });
 
-    return resolveWithTimeout(
+    await resolveWithTimeout(
       () =>
         new Promise<void>((resolve, reject) => {
           // Close the server.
@@ -385,6 +395,8 @@ export abstract class BundlerDevServer {
         errorMessage: `Timeout waiting for '${this.name}' dev server to close`,
       }
     );
+
+    event('stop', { bundler: this.name, ms: Date.now() - stoppedAt });
   }
 
   // TODO(@kitten): This should be created top-down rather than bottom up from implementors
