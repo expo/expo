@@ -14,11 +14,9 @@ import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
-import { event } from '../events';
+import { event, debugEvent } from '../events';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
-
-const debug = require('debug')('expo:run:android');
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
   // NOTE: This is a guess, the developer can overwrite with `NODE_ENV`.
@@ -50,7 +48,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     }
   }
 
-  debug('Package name: ' + props.packageName);
+  debugEvent('android:package_name', { name: props.packageName });
   Log.log('› Building app...');
 
   const androidProjectRoot = path.join(projectRoot, 'android');
