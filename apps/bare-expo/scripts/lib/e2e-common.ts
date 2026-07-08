@@ -52,12 +52,9 @@ jsEngine: graaljs
   ];
   if (warmUpDeepLinkIOS) {
     contents.push(`\
-# A deep link that cold-starts the app after clearState can get dropped before the JS side is
-# ready to handle it, so open the first link once up front and wait for the app UI to come up
-# before the per-test links below, which then hit a running app. Optional because when the
-# cold-start link does get handled, the app shows the test run screen without this header.
-# (The deep link confirmation prompt doesn't show up at all: the runner pre-approves the
-# scheme before the flows.)
+# Deep links can get dropped while the app cold-starts after clearState, so open one link up
+# front and wait for the app UI before the per-test links below. The wait is optional because
+# a handled cold-start link shows the test screen without this header.
 - openLink: bareexpo://test-suite/run?tests=${testCases[0]}
 - extendedWaitUntil:
     visible: "Expo Test Suite"

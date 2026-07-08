@@ -187,10 +187,8 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 180_000) 
 }
 
 async function preApproveDeepLinkPromptAsync(deviceId: string): Promise<void> {
-  // Approve the bareexpo:// scheme up front so the "Open in BareExpo?" confirmation prompt
-  // never shows up. The approval store lives in the simulator's global preferences (keyed by
-  // the requesting process, CoreSimulatorBridge for both simctl openurl and maestro openLink),
-  // so unlike a tapped approval it also survives clearState.
+  // Approve the bareexpo:// scheme in the simulator's LaunchServices store so the "Open in
+  // BareExpo?" prompt never shows up; unlike a tapped approval it also survives clearState.
   console.log('\n🔓 Pre-approving the deep link confirmation prompt');
   await spawnAsync('xcrun', [
     'simctl',
