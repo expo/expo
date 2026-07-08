@@ -1,3 +1,4 @@
+import { events } from '2g';
 import { getConfig } from '@expo/config';
 import type Server from '@expo/metro/metro/Server';
 import fs from 'fs/promises';
@@ -19,13 +20,23 @@ export interface TypeScriptTypeGenerationOptions {
 
 const debug = require('debug')('expo:typed-routes') as typeof console.log;
 
+declare module '2g' {
+  interface EventRegistry {
+    'typegen:done': { enabled: boolean };
+  }
+}
+
+const event = events('typegen');
+
 /** Setup all requisite features for statically typed routes in Expo Router v2 / SDK +49. */
 export async function startTypescriptTypeGenerationAsync({
   metro,
   projectRoot,
   server,
 }: TypeScriptTypeGenerationOptions) {
+  const done = event.span();
   const { exp } = getConfig(projectRoot);
+  const enabled = !!exp.experiments?.typedRoutes;
 
   // If typed routes are disabled, remove any files that were added.
   if (!exp.experiments?.typedRoutes) {
@@ -59,4 +70,6 @@ export async function startTypescriptTypeGenerationAsync({
       }),
     ]);
   }
+
+  done('done', { enabled });
 }

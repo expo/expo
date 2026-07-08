@@ -1,3 +1,4 @@
+import { events } from '2g';
 import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
@@ -9,6 +10,14 @@ import type { AppIdResolver } from './AppIdResolver';
 import type { DeviceManager } from './DeviceManager';
 
 const debug = require('debug')('expo:start:platforms:platformManager') as typeof console.log;
+
+declare module '2g' {
+  interface EventRegistry {
+    'platform:open': { platform: 'ios' | 'android'; target: 'expo-go' | 'custom'; appId: string };
+  }
+}
+
+const event = events('platform');
 
 export interface BaseOpenInCustomProps {
   scheme?: string;
@@ -120,6 +129,12 @@ export class PlatformManager<
     deviceManager.activateWindowAsync();
     await deviceManager.openUrlAsync(url, { appId: deviceManager.getExpoGoAppId() });
 
+    event('open', {
+      platform: this.props.platform,
+      target: 'expo-go',
+      appId: deviceManager.getExpoGoAppId(),
+    });
+
     return { url };
   }
 
@@ -160,6 +175,8 @@ export class PlatformManager<
     await deviceManager.openUrlAsync(url, {
       appId: applicationId,
     });
+
+    event('open', { platform: this.props.platform, target: 'custom', appId: applicationId });
 
     return {
       url,

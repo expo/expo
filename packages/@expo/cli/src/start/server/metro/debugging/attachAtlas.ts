@@ -1,3 +1,4 @@
+import { events } from '2g';
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import type { Server as ConnectServer } from 'connect';
 
@@ -6,6 +7,14 @@ import type { EnsureDependenciesOptions } from '../../../doctor/dependencies/ens
 import { AtlasPrerequisite } from './AtlasPrerequisite';
 
 const debug = require('debug')('expo:metro:debugging:attachAtlas') as typeof console.log;
+
+declare module '2g' {
+  interface EventRegistry {
+    'atlas:attached': { path: string };
+  }
+}
+
+const event = events('atlas');
 
 type AttachAtlasOptions = Pick<EnsureDependenciesOptions, 'exp'> & {
   isExporting: boolean;
@@ -52,6 +61,7 @@ function attachAtlasToDevServer(
   const instance = atlas.createExpoAtlasMiddleware(options.metroConfig as any);
   options.middleware.use('/_expo/atlas', instance.middleware);
   debug('Attached Atlas middleware for development on: /_expo/atlas');
+  event('attached', { path: '/_expo/atlas' });
   return instance;
 }
 
