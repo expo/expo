@@ -116,7 +116,7 @@ When you're ready to build for the app stores, generate a release workflow with 
 
 <Terminal cmd={['$ eas workflow:create --template deploy']} />
 
-Like the `build` template, this configures EAS Build and EAS Update, then writes a complete release workflow to **.eas/workflows/deploy.yml**. The workflow fingerprints your project, reuses a matching build or creates a new production build when there are native changes, submits to the app stores, and sends an over-the-air update otherwise. Production builds and store submissions require credentials, so EAS CLI prints a **Next steps** list with the commands to set them up.
+Like the `build` template, this sets your project up for you: it configures EAS Build and EAS Update and sets your app identifiers, then writes a complete release workflow to **.eas/workflows/deploy.yml**. When you run it, the workflow fingerprints your project, then builds and submits a new production build when there are native changes, or publishes an over-the-air update when a matching build already exists. Production builds and store submissions require credentials, so EAS CLI prints a **Next steps** list with the commands to set them up.
 
 For a walkthrough of the generated workflow, see the [Deploy to production example](/eas/workflows/examples/deploy-to-production).
 
