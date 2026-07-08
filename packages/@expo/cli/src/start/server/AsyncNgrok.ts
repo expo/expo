@@ -13,6 +13,7 @@ import type { NgrokInstance } from '../doctor/ngrok/NgrokResolver';
 import { isNgrokClientError, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
 import { hasAdbReverseAsync, startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/settings';
+import { event } from './tunnelEvents';
 
 const debug = require('debug')('expo:start:server:ngrok') as typeof console.log;
 
@@ -71,29 +72,36 @@ export class AsyncNgrok {
 
   /** Start ngrok on the given port for the project. */
   async startAsync({ timeout }: { timeout?: number } = {}): Promise<void> {
-    // Ensure the instance is loaded first, this can linger so we should run it before the timeout.
-    await this.resolver.resolveAsync({
-      // For now, prefer global install since the package has native code (harder to install) and doesn't change very often.
-      prefersGlobalInstall: true,
-    });
+    const done = event.span();
+    try {
+      // Ensure the instance is loaded first, this can linger so we should run it before the timeout.
+      await this.resolver.resolveAsync({
+        // For now, prefer global install since the package has native code (harder to install) and doesn't change very often.
+        prefersGlobalInstall: true,
+      });
 
-    // NOTE(EvanBacon): If the user doesn't have ADB installed,
-    // then skip attempting to reverse the port.
-    if (hasAdbReverseAsync()) {
-      // Ensure ADB reverse is running.
-      if (!(await startAdbReverseAsync([this.port]))) {
-        // TODO: Better error message.
-        throw new CommandError(
-          'NGROK_ADB',
-          `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android device(s).`
-        );
+      // NOTE(EvanBacon): If the user doesn't have ADB installed,
+      // then skip attempting to reverse the port.
+      if (hasAdbReverseAsync()) {
+        // Ensure ADB reverse is running.
+        if (!(await startAdbReverseAsync([this.port]))) {
+          // TODO: Better error message.
+          throw new CommandError(
+            'NGROK_ADB',
+            `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android device(s).`
+          );
+        }
       }
-    }
 
-    this.serverUrl = await this._connectToNgrokAsync({ timeout });
+      this.serverUrl = await this._connectToNgrokAsync({ timeout });
+    } catch (error) {
+      event('failed', { provider: 'ngrok', error: event.error(error as Error) });
+      throw error;
+    }
 
     debug('Tunnel URL:', this.serverUrl);
     Log.log('Tunnel ready.');
+    done('done', { provider: 'ngrok', url: this.serverUrl });
   }
 
   /** Stop the ngrok process if it's running. */

@@ -12,6 +12,7 @@ import { getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { env, envIsWebcontainer } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { event } from './tunnelEvents';
 
 const debug = require('debug')('expo:start:server:ws-tunnel') as typeof console.log;
 
@@ -33,20 +34,27 @@ export class AsyncWsTunnel {
   }
 
   async startAsync(): Promise<void> {
-    this.serverUrl = await tunnel.startAsync({
-      ...(await this.getTunnelOptionsAsync()),
-      onStatusChange(status) {
-        if (status === 'disconnected') {
-          Log.error(
-            chalk.red(
-              'Tunnel connection has been closed. This is often related to intermittent connection problems with the ws proxy servers. Restart the dev server to try connecting again.'
-            ) + chalk.gray('\nCheck the Expo status page for outages: https://status.expo.dev/')
-          );
-        }
-      },
-    });
+    const done = event.span();
+    try {
+      this.serverUrl = await tunnel.startAsync({
+        ...(await this.getTunnelOptionsAsync()),
+        onStatusChange(status) {
+          if (status === 'disconnected') {
+            Log.error(
+              chalk.red(
+                'Tunnel connection has been closed. This is often related to intermittent connection problems with the ws proxy servers. Restart the dev server to try connecting again.'
+              ) + chalk.gray('\nCheck the Expo status page for outages: https://status.expo.dev/')
+            );
+          }
+        },
+      });
+    } catch (error) {
+      event('failed', { provider: 'ws', error: event.error(error as Error) });
+      throw error;
+    }
 
     debug('Tunnel URL:', this.serverUrl.href);
+    done('done', { provider: 'ws', url: this.serverUrl.href });
   }
 
   private async getTunnelOptionsAsync(): Promise<tunnel.WsTunnelOptions> {
