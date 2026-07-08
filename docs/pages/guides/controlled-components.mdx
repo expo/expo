@@ -3,6 +3,7 @@ title: Controlled components
 description: Learn how to use controlled components in React Native to control a TextInput, format text as app users type, restrict input, and keep the cursor stable.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { UpdateLoopDiagram } from '~/scenes/guides/controlled-components/UpdateLoopDiagram';
 import { WorkletPathDiagram } from '~/scenes/guides/controlled-components/WorkletPathDiagram';
 
@@ -33,7 +34,7 @@ The following diagram shows how a keystroke travels through the update loop:
 
 <UpdateLoopDiagram />
 
-## Differences from controlled inputs on web
+<Collapsible summary="Differences from controlled inputs on web">
 
 If you have written [controlled inputs for the web](https://react.dev/reference/react-dom/components/input#controlling-an-input-with-a-state-variable), three things change in React Native:
 
@@ -50,6 +51,8 @@ The following example shows the same input on both platforms:
 // React Native
 <TextInput value={text} onChangeText={setText} />
 ```
+
+</Collapsible>
 
 ## Choose between controlled and uncontrolled inputs
 
@@ -82,7 +85,7 @@ The following table compares controlled and uncontrolled inputs:
 | Re-renders per keystroke | Yes                                       | No                                                                                                       |
 | Use when                 | Live validation, formatting, dependent UI | Search boxes, read-on-submit forms                                                                       |
 
-## Format input as users type
+### Format input as users type
 
 To format text such as a phone number, a currency amount, or a date as the user types, transform the string inside `onChangeText` and store the formatted result back in state.
 
@@ -115,7 +118,7 @@ export default function PhoneInput() {
 
 Because the formatted string differs from what the user typed, the field briefly shows the raw text during the gap between steps 2 and 5 in the diagram above.
 
-## Restrict what users can type
+### Restrict what users can type
 
 Formatting rewrites the whole string. Restricting input removes characters instead, with the same wiring. Let `onChangeText` fire, strip the unwanted characters, and push the clean value back through `value`.
 
@@ -141,7 +144,7 @@ For length limits and read-only fields, prefer the [`maxLength`](https://reactna
 
 Setting [`keyboardType`](https://reactnative.dev/docs/textinput#keyboardtype) (for example, `number-pad`, `decimal-pad`, or `phone-pad`) shows a matching keyboard, but it does not enforce anything: hardware keyboards and pasted text can still insert other characters, so keep the `onChangeText` filter.
 
-## Force uppercase input
+### Force uppercase input
 
 Forcing uppercase is the same pattern as formatting. Pair the transform with [`autoCapitalize`](https://reactnative.dev/docs/textinput#autocapitalize) so the on-screen keyboard produces capital letters to begin with.
 
@@ -156,7 +159,7 @@ The following example stores a coupon code in uppercase:
 />
 ```
 
-## Keep the cursor in place while formatting
+### Keep the cursor in place while formatting
 
 Before React Native's [New Architecture](/guides/new-architecture/), reformatting the value inside `onChangeText` snapped the cursor to the end of the field, which made edits in the middle of the input difficult.
 
@@ -168,7 +171,7 @@ If the cursor still ends up in the wrong place (on an older version of React Nat
 - Use a mask library that handles the cursor math for you. See [When to use a library](#when-to-use-a-library).
 - Move formatting onto the UI thread. See [Remove formatting flicker with worklets](#remove-formatting-flicker-with-worklets).
 
-## Remove formatting flicker with worklets
+### Remove formatting flicker with worklets
 
 Formatting in JavaScript round-trips through state and a re-render before the native field updates, so the field can briefly show the raw text before the formatted value replaces it. The universal [`TextInput`](/versions/latest/sdk/ui/universal/textinput/) from [`@expo/ui`](/versions/latest/sdk/ui/) removes that round-trip. Its `value` is an observable state object created with `useNativeState`, and `onChangeText` can be a worklet that runs synchronously on the UI thread. The formatted value lands in the same frame as the keystroke.
 
