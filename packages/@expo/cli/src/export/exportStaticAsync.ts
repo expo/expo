@@ -29,6 +29,7 @@ import {
   sortMatchedAssetsByEntryPoints,
 } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
+import { event } from './events';
 import { generateFaviconAssetAsync } from './favicon';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
 import type { ExportAssetMap } from './saveAssets';
@@ -247,6 +248,14 @@ export async function exportFromServerAsync(
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
+
+  const loaderReferenceCount = new Set(
+    resources.artifacts?.flatMap((artifact) => artifact.metadata?.loaderReferences ?? [])
+  ).size;
+  event('static:routes', {
+    total: getHtmlFiles({ manifest, includeGroupVariations: false }).length,
+    withLoaders: loaderReferenceCount,
+  });
 
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
