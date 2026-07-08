@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed a use-after-free when a `JavaScriptPromise` outlives its runtime (e.g. an async function's promise held by a completion handler that fires after `reloadAsync()`) by having the runtime's `LongLivedObjectCollection` own its JSI values and release them on the JavaScript thread when the wrapper is dropped or at teardown, instead of against a freed runtime. ([#47521](https://github.com/expo/expo/pull/47521) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add `JavaScriptRuntime.longLivedObjects`, a `LongLivedObjectCollection` that keeps `LongLivedObject`s (such as in-flight promises) alive across asynchronous boundaries and releases any that remain when the runtime is torn down. ([#47511](https://github.com/expo/expo/pull/47511) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
