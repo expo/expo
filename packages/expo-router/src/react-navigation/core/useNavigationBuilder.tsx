@@ -5,7 +5,11 @@ import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
-import { type NavigationReducer, ReducerRegistryContext } from '../../global-state/storeContext';
+import {
+  type NavigationReducer,
+  type NavigatorRegistryEntry,
+  ReducerRegistryContext,
+} from '../../global-state/storeContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -53,6 +57,7 @@ import { useNavigationHelpers } from './useNavigationHelpers';
 import { NavigationStateListenerProvider } from './useNavigationState';
 import { useOnAction } from './useOnAction';
 import { useOnGetState } from './useOnGetState';
+import { shouldPreventRemove } from './useOnPreventRemove';
 import { useOnRouteFocus } from './useOnRouteFocus';
 import { useRegisterNavigator } from './useRegisterNavigator';
 import { useScheduleUpdate } from './useScheduleUpdate';
@@ -850,15 +855,31 @@ export function useNavigationBuilder<
       ) as ReturnType<NavigationReducer>,
     [router]
   );
+  const registryEntry = React.useMemo<NavigatorRegistryEntry>(
+    () => ({
+      reduce: registryReducer,
+      focusRoute: (state, routeKey) => router.getStateForRouteFocus(state as State, routeKey),
+      shouldActionChangeFocus: router.shouldActionChangeFocus,
+      shouldPreventRemove: (currentState, nextState, action) =>
+        shouldPreventRemove(
+          emitter,
+          keyedListeners.beforeRemove,
+          currentState.routes,
+          nextState.routes,
+          action
+        ),
+    }),
+    [emitter, keyedListeners.beforeRemove, registryReducer, router]
+  );
   const backBehavior = (rest as { backBehavior?: unknown }).backBehavior;
 
   useClientLayoutEffect(() => {
-    reducerRegistry?.addReducer(state.key, registryReducer);
+    reducerRegistry?.addEntry(state.key, registryEntry);
 
     return () => {
-      reducerRegistry?.removeReducer(state.key, registryReducer);
+      reducerRegistry?.removeEntry(state.key, registryEntry);
     };
-  }, [backBehavior, reducerRegistry, registryReducer, state.key]);
+  }, [backBehavior, reducerRegistry, registryEntry, state.key]);
 
   const onAction = useOnAction({
     router,

@@ -1,0 +1,303 @@
+import {
+  TabActions,
+  TabRouter,
+  type NavigationAction,
+  type NavigationState,
+} from '../../react-navigation/routers';
+import { createReducerRegistry } from '../storeContext';
+import { getRootReducerShadowMismatch, rootReducer } from '../rootReducer';
+
+const rootState: NavigationState = {
+  stale: false,
+  key: 'root-state',
+  index: 0,
+  routeNames: ['home', 'settings'],
+  routes: [
+    {
+      key: 'home-route',
+      name: 'home',
+      state: {
+        stale: false,
+        key: 'home-state',
+        index: 0,
+        routeNames: ['feed', 'details'],
+        routes: [
+          { key: 'feed-route', name: 'feed' },
+          { key: 'details-route', name: 'details' },
+        ],
+      },
+    },
+    { key: 'settings-route', name: 'settings' },
+  ],
+};
+
+function registerNullReducers(registry = createReducerRegistry()) {
+  registry.addEntry('root-state', { reduce: jest.fn(() => null) });
+  registry.addEntry('home-state', { reduce: jest.fn(() => null) });
+
+  return registry;
+}
+
+describe(rootReducer, () => {
+  it('reduces a targeted child slice and splices it back into the root tree', () => {
+    const registry = registerNullReducers();
+    const action: NavigationAction = { type: 'JUMP_TO', target: 'home-state' };
+    const childState = rootState.routes[0]!.state as NavigationState;
+    const nextChildState = { ...childState, index: 1 };
+    const reduce = jest.fn(() => nextChildState);
+
+    registry.addEntry('home-state', { reduce });
+
+    const result = rootReducer(rootState, action, registry);
+
+    expect(result).toEqual({ state: expect.any(Object), handled: true, noop: false });
+    expect(reduce).toHaveBeenCalledWith(childState, action);
+    expect(result.state.routes[0]!.state).toBe(nextChildState);
+    expect(result.state.routes[1]).toBe(rootState.routes[1]);
+    expect(result.state).not.toBe(rootState);
+  });
+
+  it('retries GO_BACK on ancestors when the targeted child cannot handle it', () => {
+    const registry = createReducerRegistry();
+    const action: NavigationAction = { type: 'GO_BACK' };
+    const rootReduced = { ...rootState, index: 1 };
+    const childReduce = jest.fn(() => null);
+    const rootReduce = jest.fn(() => rootReduced);
+
+    registry.addEntry('root-state', { reduce: rootReduce });
+    registry.addEntry('home-state', { reduce: childReduce });
+
+    const result = rootReducer(rootState, action, registry, { originKey: 'home-state' });
+
+    expect(childReduce).toHaveBeenCalledTimes(1);
+    expect(rootReduce).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({ state: rootReduced, handled: true, noop: false });
+  });
+
+  it('treats explicitly targeted null reductions as handled no-ops', () => {
+    const registry = createReducerRegistry();
+    const action: NavigationAction = { type: 'GO_BACK', target: 'home-state' };
+    const childReduce = jest.fn(() => null);
+    const rootReduce = jest.fn(() => ({ ...rootState, index: 1 }));
+
+    registry.addEntry('root-state', { reduce: rootReduce });
+    registry.addEntry('home-state', { reduce: childReduce });
+
+    const result = rootReducer(rootState, action, registry);
+
+    expect(result).toEqual({ state: rootState, handled: true, noop: true });
+    expect(rootReduce).not.toHaveBeenCalled();
+  });
+
+  it('inserts payload.state at the first unmounted boundary', () => {
+    const registry = createReducerRegistry();
+    const payloadState: NavigationState = {
+      stale: false,
+      key: 'settings-child-state',
+      index: 0,
+      routeNames: ['profile'],
+      routes: [{ key: 'profile-route', name: 'profile' }],
+    };
+    const action: NavigationAction = {
+      type: 'NAVIGATE',
+      target: 'root-state',
+      payload: { name: 'settings', state: payloadState },
+    };
+    const reducedRoot = { ...rootState, index: 1 };
+
+    registry.addEntry('root-state', { reduce: jest.fn(() => reducedRoot) });
+
+    const result = rootReducer(rootState, action, registry);
+
+    expect(result.handled).toBe(true);
+    expect(result.state.routes[1]!.state).toBe(payloadState);
+    expect(reducedRoot.routes[1]!.state).toBeUndefined();
+  });
+
+  it('does not overwrite an existing child state with payload.state', () => {
+    const registry = createReducerRegistry();
+    const payloadState: NavigationState = {
+      stale: false,
+      key: 'ignored-state',
+      index: 0,
+      routeNames: ['ignored'],
+      routes: [{ key: 'ignored-route', name: 'ignored' }],
+    };
+    const action: NavigationAction = {
+      type: 'NAVIGATE',
+      target: 'root-state',
+      payload: { name: 'home', state: payloadState },
+    };
+
+    registry.addEntry('root-state', { reduce: jest.fn(() => rootState) });
+    registry.addEntry('home-state', { reduce: jest.fn(() => rootState.routes[0]!.state!) });
+
+    const result = rootReducer(rootState, action, registry);
+
+    expect(result.state.routes[0]!.state).toBe(rootState.routes[0]!.state);
+  });
+
+  it('inserts payload.state at a deeper unmounted boundary after descending through live children', () => {
+    const registry = createReducerRegistry();
+    const payloadState: NavigationState = {
+      stale: false,
+      key: 'details-child-state',
+      index: 0,
+      routeNames: ['comments'],
+      routes: [{ key: 'comments-route', name: 'comments' }],
+    };
+    const action: NavigationAction = {
+      type: 'NAVIGATE',
+      target: 'root-state',
+      payload: { name: 'home', state: payloadState },
+    };
+    const childState = rootState.routes[0]!.state as NavigationState;
+    const focusedChild = { ...childState, index: 1 };
+
+    registry.addEntry('root-state', { reduce: jest.fn(() => rootState) });
+    registry.addEntry('home-state', { reduce: jest.fn(() => focusedChild) });
+
+    const result = rootReducer(rootState, action, registry);
+    const nextChildState = result.state.routes[0]!.state as NavigationState;
+
+    expect(nextChildState.routes[1]!.state).toBe(payloadState);
+    expect(childState.routes[1]!.state).toBeUndefined();
+  });
+
+  it('runs a targeted tab JUMP_TO through the registered tab router', () => {
+    const tabState: NavigationState = {
+      stale: false,
+      key: 'tabs-state',
+      index: 0,
+      routeNames: ['feed', 'profile'],
+      routes: [
+        { key: 'feed-route', name: 'feed' },
+        { key: 'profile-route', name: 'profile' },
+      ],
+    };
+    const tree: NavigationState = {
+      ...rootState,
+      routes: [{ ...rootState.routes[0]!, state: tabState }, rootState.routes[1]!],
+    };
+    const router = TabRouter({ backBehavior: 'order' });
+    const registry = createReducerRegistry();
+    const action = { ...TabActions.jumpTo('profile'), target: 'tabs-state' };
+
+    registry.addEntry('tabs-state', {
+      reduce: (state, action) =>
+        router.getStateForAction(state, action as Parameters<typeof router.getStateForAction>[1], {
+          routeNames: ['feed', 'profile'],
+          parentRouteKey: 'home-route',
+          routeParamList: {},
+          routeGetIdList: {},
+        }),
+    });
+
+    const result = rootReducer(tree, action, registry);
+
+    expect(result.handled).toBe(true);
+    expect((result.state.routes[0]!.state as NavigationState).index).toBe(1);
+    expect(result.state.routes[1]).toBe(tree.routes[1]);
+  });
+
+  it('returns the original tree for unhandled actions', () => {
+    const registry = registerNullReducers();
+    const action: NavigationAction = { type: 'UNKNOWN' };
+
+    const result = rootReducer(rootState, action, registry, { originKey: 'home-state' });
+
+    expect(result).toEqual({ state: rootState, handled: false, noop: true });
+  });
+
+  it('returns the original tree when the target is missing or unregistered', () => {
+    const registry = createReducerRegistry();
+
+    expect(rootReducer(rootState, { type: 'UNKNOWN', target: 'missing' }, registry)).toEqual({
+      state: rootState,
+      handled: false,
+      noop: true,
+    });
+
+    expect(rootReducer(rootState, { type: 'UNKNOWN', target: 'home-state' }, registry)).toEqual({
+      state: rootState,
+      handled: false,
+      noop: true,
+    });
+  });
+
+  it('returns handled noop when a reducer returns the same state object', () => {
+    const registry = createReducerRegistry();
+
+    registry.addEntry('home-state', { reduce: jest.fn(() => rootState.routes[0]!.state!) });
+
+    expect(rootReducer(rootState, { type: 'UNKNOWN', target: 'home-state' }, registry)).toEqual({
+      state: rootState,
+      handled: true,
+      noop: true,
+    });
+  });
+
+  it('path-copies without cloning untouched non-serializable params', () => {
+    const callback = () => undefined;
+    const tree: NavigationState = {
+      ...rootState,
+      routes: [
+        {
+          ...rootState.routes[0]!,
+          state: {
+            ...(rootState.routes[0]!.state as NavigationState),
+            routes: [{ key: 'feed-route', name: 'feed', params: { callback } }],
+          },
+        },
+        rootState.routes[1]!,
+      ],
+    };
+    const childState = tree.routes[0]!.state as NavigationState;
+    const nextChildState = { ...childState, index: 0 };
+    const registry = createReducerRegistry();
+
+    Object.freeze(tree);
+    Object.freeze(tree.routes);
+    Object.freeze(childState);
+
+    registry.addEntry('home-state', { reduce: jest.fn(() => nextChildState) });
+
+    const result = rootReducer(tree, { type: 'SET_PARAMS', target: 'home-state' }, registry);
+
+    expect(result.state.routes[0]!.state).toBe(nextChildState);
+    expect(result.state.routes[1]).toBe(tree.routes[1]);
+    expect(result.state.routes[1]).toBe(tree.routes[1]);
+    expect((tree.routes[0]!.state as NavigationState).routes[0]!.params).toBe(
+      childState.routes[0]!.params
+    );
+    expect((tree.routes[0]!.state as NavigationState).routes[0]!.params).toEqual({ callback });
+  });
+
+  it('reports diagnostic shadow mismatches', () => {
+    const action: NavigationAction = { type: 'NAVIGATE', target: 'root-state' };
+    const committedState = { ...rootState, index: 1 };
+
+    const mismatch = getRootReducerShadowMismatch({
+      action,
+      predictedState: rootState,
+      committedState,
+    });
+
+    expect(mismatch).toEqual({
+      message: 'Root reducer shadow mismatch for NAVIGATE (target: root-state)',
+      action,
+      predictedState: rootState,
+      committedState,
+    });
+  });
+
+  it('does not report shadow mismatches for equal states', () => {
+    expect(
+      getRootReducerShadowMismatch({
+        action: { type: 'NAVIGATE' },
+        predictedState: rootState,
+        committedState: rootState,
+      })
+    ).toBeNull();
+  });
+});

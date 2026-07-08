@@ -38,6 +38,22 @@ test('keeps a newer reducer when an older registration cleans up', () => {
   expect(registry.getSnapshot()).toHaveLength(0);
 });
 
+test('keeps a newer entry when an older registration cleans up', () => {
+  const registry = createReducerRegistry();
+  const entry1 = { reduce: jest.fn(() => null) };
+  const entry2 = { reduce: jest.fn(() => null) };
+
+  registry.addEntry(rootKey, entry1);
+  registry.addEntry(rootKey, entry2);
+  registry.removeEntry(rootKey, entry1);
+
+  expect(registry.getEntry(rootKey)).toBe(entry2);
+
+  registry.removeEntry(rootKey, entry2);
+
+  expect(registry.getSnapshot()).toHaveLength(0);
+});
+
 test('registers fresh router-generated deterministic state keys', () => {
   let registry: React.ContextType<typeof ReducerRegistryContext>;
 
@@ -136,7 +152,12 @@ test('registers mounted navigator reducers by state key without leaking in Stric
   expect(keys).not.toContain(fooChildKey);
   expect(new Set(keys).size).toBe(2);
   expect(reducers).toHaveLength(2);
-  expect(reducers.every(([, reducer]) => typeof reducer === 'function')).toBe(true);
+  expect(reducers.every(([, entry]) => typeof entry.reduce === 'function')).toBe(true);
+  expect(reducers.every(([, entry]) => typeof entry.focusRoute === 'function')).toBe(true);
+  expect(reducers.every(([, entry]) => typeof entry.shouldActionChangeFocus === 'function')).toBe(
+    true
+  );
+  expect(reducers.every(([, entry]) => typeof entry.shouldPreventRemove === 'function')).toBe(true);
 
   result.unmount();
 

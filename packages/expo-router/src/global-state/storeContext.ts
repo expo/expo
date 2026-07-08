@@ -13,34 +13,62 @@ export type NavigationReducer = (
   action: NavigationAction
 ) => NavigationState | PartialState<NavigationState> | null;
 
+export type NavigatorRegistryEntry = {
+  reduce: NavigationReducer;
+  focusRoute?: (
+    state: NavigationState,
+    routeKey: string
+  ) => NavigationState | PartialState<NavigationState>;
+  shouldActionChangeFocus?: (action: NavigationAction) => boolean;
+  shouldPreventRemove?: (
+    currentState: NavigationState,
+    nextState: NavigationState,
+    action: NavigationAction
+  ) => boolean;
+};
+
 export type ReducerRegistry = {
+  addEntry: (key: string, entry: NavigatorRegistryEntry) => void;
+  removeEntry: (key: string, entry: NavigatorRegistryEntry) => void;
+  getEntry: (key: string) => NavigatorRegistryEntry | undefined;
   addReducer: (key: string, reducer: NavigationReducer) => void;
   removeReducer: (key: string, reducer: NavigationReducer) => void;
   getReducer: (key: string) => NavigationReducer | undefined;
   hasReducer: (key: string) => boolean;
-  getSnapshot: () => readonly (readonly [string, NavigationReducer])[];
+  getSnapshot: () => readonly (readonly [string, NavigatorRegistryEntry])[];
 };
 
 export function createReducerRegistry(): ReducerRegistry {
-  const reducers = new Map<string, NavigationReducer>();
+  const entries = new Map<string, NavigatorRegistryEntry>();
 
   return {
+    addEntry(key, entry) {
+      entries.set(key, entry);
+    },
+    removeEntry(key, entry) {
+      if (entries.get(key) === entry) {
+        entries.delete(key);
+      }
+    },
+    getEntry(key) {
+      return entries.get(key);
+    },
     addReducer(key, reducer) {
-      reducers.set(key, reducer);
+      entries.set(key, { reduce: reducer });
     },
     removeReducer(key, reducer) {
-      if (reducers.get(key) === reducer) {
-        reducers.delete(key);
+      if (entries.get(key)?.reduce === reducer) {
+        entries.delete(key);
       }
     },
     getReducer(key) {
-      return reducers.get(key);
+      return entries.get(key)?.reduce;
     },
     hasReducer(key) {
-      return reducers.has(key);
+      return entries.has(key);
     },
     getSnapshot() {
-      return Array.from(reducers.entries());
+      return Array.from(entries.entries());
     },
   };
 }
