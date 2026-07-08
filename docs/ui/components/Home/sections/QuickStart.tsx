@@ -1,12 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
 
 import { GridContainer, GridCell, HomeButton } from '~/ui/components/Home/components';
 import { QuickStartIcon, DevicesImage } from '~/ui/components/Home/resources';
 import { Terminal } from '~/ui/components/Snippet';
-import { H1, CALLOUT, A, P } from '~/ui/components/Text';
+import { H1, CALLOUT, A, P, RawH2 } from '~/ui/components/Text';
 
 export function QuickStart() {
   return (
@@ -68,12 +69,9 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'col-span-2 min-h-48 overflow-hidden bg-linear-to-br from-[#F3E5F5] via-[#E3F2FD] to-[#E3F2FD]',
+            'min-h-48 overflow-hidden bg-linear-to-br from-[#F3E5F5] via-[#E3F2FD] to-[#E3F2FD]',
             'border border-palette-gray7 selection:bg-palette-blue8',
-            'dark:border-[#2d3748] dark:from-[#0a0a0a] dark:via-[#1a1a2e] dark:to-[#16213e]',
-            'max-xl:col-span-1',
-            'max-lg:col-span-2',
-            'max-md:col-span-1'
+            'dark:border-[#2d3748] dark:from-[#0a0a0a] dark:via-[#1a1a2e] dark:to-[#16213e]'
           )}>
           <div
             className={mergeClasses(
@@ -116,6 +114,37 @@ export function QuickStart() {
               </HomeButton>
             </div>
           </div>
+        </GridCell>
+        <GridCell
+          className={mergeClasses(
+            'relative z-0 min-h-48 bg-subtle bg-linear-to-br from-subtle from-30% to-palette-purple3',
+            'selection:bg-palette-purple5'
+          )}>
+          <Dataflow03Icon
+            aria-hidden="true"
+            className={mergeClasses(
+              'absolute -bottom-12 -left-20 size-87.5! rotate-12 opacity-[0.12]',
+              'text-palette-purple7'
+            )}
+          />
+          <Dataflow03Icon
+            aria-hidden="true"
+            className={mergeClasses(
+              'absolute right-6 bottom-6 size-18! rounded-xl border-[6px] p-2',
+              'border-palette-purple5 bg-palette-purple4 text-palette-purple8'
+            )}
+          />
+          <RawH2 className="relative z-10 max-w-[22ch] text-lg! text-palette-purple11!">
+            Automate builds and releases with EAS Workflows
+          </RawH2>
+          <HomeButton
+            className="border-palette-purple10 bg-palette-purple10 dark:text-palette-purple2 hocus:bg-palette-purple9"
+            href="/tutorial/cicd/introduction/"
+            rightSlot={
+              <ArrowRightIcon aria-hidden="true" className="icon-md dark:text-palette-purple2" />
+            }>
+            <span className="max-sm:hidden">Start&nbsp;</span>CI/CD Tutorial
+          </HomeButton>
         </GridCell>
       </GridContainer>
     </>
