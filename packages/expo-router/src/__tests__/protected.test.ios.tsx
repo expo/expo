@@ -287,6 +287,118 @@ it('should default to anchor during initial load', () => {
   });
 });
 
+it('should move away from a focused route when its guard flips false', () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  renderRouter(
+    {
+      _layout: function Layout() {
+        const [guard, setState] = useState(true);
+        setGuard = setState;
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={guard}>
+              <Stack.Screen name="secret" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  expect(screen.getByTestId('secret')).toBeVisible();
+  expect(screen).toHavePathname('/secret');
+
+  act(() => {
+    setGuard(false);
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+});
+
+it('should remove guarded routes from history when a guard flips false', () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <Stack id={undefined}>
+          <Stack.Protected guard={guard}>
+            <Stack.Screen name="secret" />
+          </Stack.Protected>
+          <Stack.Screen name="other" />
+        </Stack>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+    other: () => <Text testID="other">other</Text>,
+  });
+
+  act(() => router.push('/secret'));
+  expect(screen.getByTestId('secret')).toBeVisible();
+  expect(screen).toHavePathname('/secret');
+
+  act(() => router.push('/other'));
+  expect(screen.getByTestId('other')).toBeVisible();
+  expect(screen).toHavePathname('/other');
+
+  act(() => {
+    setGuard(false);
+  });
+
+  act(() => router.back());
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+});
+
+it('should use the anchor when a focused route guard flips false', () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  renderRouter(
+    {
+      _layout: {
+        unstable_settings: {
+          anchor: 'home',
+        },
+        default: function Layout() {
+          const [guard, setState] = useState(true);
+          setGuard = setState;
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={guard}>
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+              <Stack.Screen name="home" />
+            </Stack>
+          );
+        },
+      },
+      index: () => <Text testID="index">index</Text>,
+      home: () => <Text testID="home">home</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  expect(screen.getByTestId('secret')).toBeVisible();
+  expect(screen).toHavePathname('/secret');
+
+  act(() => {
+    setGuard(false);
+  });
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  expect(screen).toHavePathname('/home');
+});
+
 it('will wait for React state updates before pushing', async () => {
   const SetterContext = createContext<Dispatch<SetStateAction<boolean>>>(() => {});
 
