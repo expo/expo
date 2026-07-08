@@ -81,6 +81,12 @@ export default class CameraView extends Component<CameraViewProps> {
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+) or the Google code scanner (Android).
    */
   static isModernBarcodeScannerAvailable: boolean = CameraManager.isModernBarcodeScannerAvailable;
+  /**
+   * Property that determines whether the current device can present the system document scanner through
+   * [`scanDocumentAsync`](#scandocumentasyncoptions) —
+   * ML Kit document scanner on Android, which requires Google Play Services or the
+   * VisionKit's `VNDocumentCameraViewController` on iOS.
+   */
   static isDocumentScannerAvailable: boolean = CameraManager.isDocumentScannerAvailable;
   /**
    * Check whether the current device has a camera. This is useful for web and simulators cases.
@@ -242,12 +248,26 @@ export default class CameraView extends Component<CameraViewProps> {
   }
 
   /**
-   * Presents a system document scanner. On iOS this uses VisionKit's
-   * [`VNDocumentCameraViewController`](https://developer.apple.com/documentation/visionkit/vndocumentcameraviewcontroller);
+   * Presents the system document scanner and returns the captured pages once the user saves. On iOS, this uses
+   * VisionKit's [`VNDocumentCameraViewController`](https://developer.apple.com/documentation/visionkit/vndocumentcameraviewcontroller);
    * on Android it uses the [ML Kit document scanner](https://developers.google.com/ml-kit/vision/doc-scanner).
-   * Resolves with the scanned pages once the user saves, or `null` if they cancel.
+   *
+   * The page images and the optional PDF are written to the app's cache directory, so copy them to a permanent
+   * location with [`expo-file-system`](/versions/latest/sdk/filesystem/) if you need to keep them.
+   *
    * @param options A map of `DocumentScanningOptions`.
-   * @return A promise resolving to a [`DocumentScanningResult`](#documentscanningresult), or `null` on cancel or when unavailable.
+   * @return A promise that resolves to a [`DocumentScanningResult`](#documentscanningresult), or `null` if the user
+   * cancels the scan or the scanner is unavailable on the device.
+   *
+   * @example
+   * ```ts
+   * const result = await CameraView.scanDocumentAsync({ requestPdf: true });
+   * if (result) {
+   *   console.log(result.pages); // ['file:///.../DocumentScanner/<uuid>.jpg', ...]
+   *   console.log(result.pdfUri); // 'file:///.../DocumentScanner/<uuid>.pdf'
+   * }
+   * ```
+   *
    * @platform android
    * @platform ios
    */

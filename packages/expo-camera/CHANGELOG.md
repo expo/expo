@@ -8,6 +8,7 @@
 
 - Enabled responsive capture and fast capture prioritization on iOS for lower shutter lag and faster successive photo captures.
 - [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
+- Added `CameraView.scanDocumentAsync` to scan multi-page documents on Android and iOS. ([#47362](https://github.com/expo/expo/pull/47362) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
