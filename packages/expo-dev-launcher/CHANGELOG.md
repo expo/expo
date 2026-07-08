@@ -27,6 +27,8 @@
 
 ### 💡 Others
 
+- [Android] Replace reflection into React Native internals with public 0.86 APIs. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 56.0.16 — 2026-05-26
 
 ### 🐛 Bug fixes
