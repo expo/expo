@@ -12,11 +12,9 @@ import {
   extractLocalNpmTarballAsync,
   extractNpmTarballFromUrlAsync,
 } from '../utils/npm';
-import { event } from './events';
+import { event, debugEvent } from './events';
 import { resolveLocalTemplateAsync } from './resolveLocalTemplate';
 import type { ResolvedTemplateOption } from './resolveOptions';
-
-const debug = require('debug')('expo:prebuild:resolveTemplate') as typeof console.log;
 
 type RepoInfo = {
   username: string;
@@ -64,7 +62,7 @@ export async function cloneTemplateAsync({
       return result;
     } catch (error: any) {
       const templatePackageName = getTemplateNpmPackageNameFromSdkVersion(exp.sdkVersion);
-      debug('Fallback to SDK template:', templatePackageName);
+      debugEvent('sdk_template_fallback', { name: templatePackageName });
       event('template:resolved', { source: 'npm', name: templatePackageName });
       return await downloadAndExtractNpmModuleAsync(templatePackageName, templateDirectory, {
         expName: exp.name,
@@ -129,7 +127,7 @@ async function downloadAndExtractRepoAsync(
 ): Promise<string> {
   const url = `https://codeload.github.com/${username}/${name}/tar.gz/${branch}`;
 
-  debug('Downloading tarball from:', url);
+  debugEvent('repo_tarball_download', { url });
 
   // Extract the (sub)directory into non-empty path segments
   const directory = filePath.replace(/^\//, '').split('/').filter(Boolean);

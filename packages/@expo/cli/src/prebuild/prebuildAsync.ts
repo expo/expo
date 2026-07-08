@@ -24,8 +24,6 @@ import { event } from './events';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
 import { updateFromTemplateAsync } from './updateFromTemplate';
 
-const debug = require('debug')('expo:prebuild') as typeof console.log;
-
 export type PrebuildResults = {
   /** Expo config. */
   exp: ExpoConfig;
@@ -198,7 +196,6 @@ export async function prebuildAsync(
     podsInstalled = await installCocoaPodsAsync(projectRoot);
     event('pods:installed', { ms: Date.now() - startedAt, skipped: false });
   } else {
-    debug('Skipped pod install');
     event('pods:installed', { ms: 0, skipped: true });
   }
   const inlineModules = exp.experiments?.inlineModules ?? false;
