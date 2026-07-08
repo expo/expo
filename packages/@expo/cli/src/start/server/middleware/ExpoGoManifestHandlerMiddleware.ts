@@ -1,3 +1,4 @@
+import { events } from '2g';
 import type { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
@@ -20,6 +21,18 @@ import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersi
 import type { ServerRequest } from './server.types';
 
 const MULTIPART_TYPE = 'multipart/form-data';
+
+declare module '2g' {
+  interface EventRegistry {
+    'manifest:served': {
+      type: 'expo-go' | 'dev-client';
+      runtimeVersion: string;
+      sdkVersion: string | null;
+    };
+  }
+}
+
+const event = events('manifest');
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
 
@@ -168,6 +181,12 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     };
 
     const stringifiedManifest = JSON.stringify(expoUpdatesManifest);
+
+    event('served', {
+      type: 'expo-go',
+      runtimeVersion,
+      sdkVersion: exp.sdkVersion ?? null,
+    });
 
     let manifestPartHeaders: { 'expo-signature': string } | undefined;
     let certificateChainBody: string | null = null;
