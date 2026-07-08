@@ -1,4 +1,5 @@
 import { events } from '2g';
+import type { SpanEnd } from '2g';
 import type { Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
 import path from 'path';
@@ -39,15 +40,11 @@ const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
 declare module '2g' {
   interface EventRegistry {
-    'metro:bundling:started': {
-      id: string;
-      platform: null | string;
-      environment: null | string;
-      entry: string;
-    };
     'metro:bundling:done': {
       id: string | null;
-      ms: number | null;
+      platform?: null | string;
+      environment?: null | string;
+      entry?: string;
       total: number;
     };
     'metro:bundling:failed': {
@@ -95,6 +92,13 @@ const LIGHT_BLOCK_CHAR = '\u2591';
  */
 export class MetroTerminalReporter extends TerminalReporter {
   #lastFailedBuildID: string | undefined;
+  #bundleSpans = new Map<
+    string,
+    {
+      end: SpanEnd<'metro'>;
+      start: { id: string; platform: null | string; environment: null | string; entry: string };
+    }
+  >();
 
   constructor(
     public serverRoot: string,
@@ -203,11 +207,17 @@ export class MetroTerminalReporter extends TerminalReporter {
       }
 
       if (phase === 'done') {
-        event('bundling:done', {
-          id: progress.bundleDetails.buildID ?? null,
-          total: progress.totalFileCount,
-          ms,
-        });
+        const buildID = progress.bundleDetails.buildID;
+        const span = buildID != null ? this.#bundleSpans.get(buildID) : undefined;
+        if (span) {
+          this.#bundleSpans.delete(buildID!);
+          span.end('bundling:done', { ...span.start, total: progress.totalFileCount });
+        } else {
+          event('bundling:done', {
+            id: buildID ?? null,
+            total: progress.totalFileCount,
+          });
+        }
       }
 
       // iOS Bundled 150ms
@@ -295,6 +305,7 @@ export class MetroTerminalReporter extends TerminalReporter {
    */
   _logBundleBuildFailed(buildID: string): void {
     this.#lastFailedBuildID = buildID;
+    this.#bundleSpans.delete(buildID);
     super._logBundleBuildFailed(buildID);
   }
 
@@ -434,12 +445,16 @@ export class MetroTerminalReporter extends TerminalReporter {
           evt.bundleDetails.customTransformOptions.dom.includes(path.sep)
             ? evt.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '')
             : this.#normalizePath(evt.bundleDetails.entryFile);
-        return event('bundling:started', {
-          id: evt.buildID,
-          platform: evt.bundleDetails.platform ?? null,
-          environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
-          entry,
+        this.#bundleSpans.set(evt.buildID, {
+          end: event.span(),
+          start: {
+            id: evt.buildID,
+            platform: evt.bundleDetails.platform ?? null,
+            environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
+            entry,
+          },
         });
+        return;
       }
       case 'unstable_server_log':
         return event('server_log', {
