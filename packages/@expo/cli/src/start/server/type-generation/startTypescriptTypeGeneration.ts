@@ -8,6 +8,7 @@ import { upsertGitIgnoreContents } from '../../../utils/mergeGitIgnorePaths';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import type { ServerLike } from '../BundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
+import { debugEvent } from '../metro/typegenEvents';
 import { removeExpoEnvDTS, writeExpoEnvDTS } from './expo-env';
 import { setupTypedRoutes } from './routes';
 import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
@@ -17,8 +18,6 @@ export interface TypeScriptTypeGenerationOptions {
   metro?: Server | null;
   projectRoot: string;
 }
-
-const debug = require('debug')('expo:typed-routes') as typeof console.log;
 
 declare module '2g' {
   interface EventRegistry {
@@ -40,15 +39,12 @@ export async function startTypescriptTypeGenerationAsync({
 
   // If typed routes are disabled, remove any files that were added.
   if (!exp.experiments?.typedRoutes) {
-    debug('Removing typed routes side-effects (experiments.typedRoutes: false)');
+    debugEvent('removing_side_effects', {});
     await Promise.all([forceRemovalTSConfig(projectRoot), removeExpoEnvDTS(projectRoot)]);
   } else {
     const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
     const typesDirectory = path.resolve(dotExpoDir, './types');
-    debug(
-      'Ensuring typed routes side-effects are setup (experiments.typedRoutes: true, typesDirectory: %s)',
-      typesDirectory
-    );
+    debugEvent('ensuring_side_effects', { typesDirectory: debugEvent.path(typesDirectory) });
 
     // Ensure the types directory exists.
     await fs.mkdir(typesDirectory, { recursive: true });
