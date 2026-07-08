@@ -1913,9 +1913,6 @@ importers:
       connect:
         specifier: ^3.7.0
         version: 3.7.0
-      debug:
-        specifier: ^4.3.4
-        version: 4.4.3
       dnssd-advertise:
         specifier: ^1.1.6
         version: 1.1.6
@@ -2028,9 +2025,6 @@ importers:
       '@types/cross-spawn':
         specifier: ^6.0.6
         version: 6.0.6
-      '@types/debug':
-        specifier: ^4.1.7
-        version: 4.1.12
       '@types/eslint':
         specifier: ^8.56.12
         version: 8.56.12
@@ -2081,7 +2075,7 @@ importers:
         version: 4.41.40
       '@types/webpack-dev-server':
         specifier: ^3.11.0
-        version: 3.11.6(debug@4.4.3)
+        version: 3.11.6
       '@types/wrap-ansi':
         specifier: ^3.0.0
         version: 3.0.0
@@ -18814,13 +18808,13 @@ snapshots:
 
   '@types/webgl2@0.0.6': {}
 
-  '@types/webpack-dev-server@3.11.6(debug@4.4.3)':
+  '@types/webpack-dev-server@3.11.6':
     dependencies:
       '@types/connect-history-api-fallback': 1.5.4
       '@types/express': 5.0.6
       '@types/serve-static': 2.2.0
       '@types/webpack': 4.41.40
-      http-proxy-middleware: 1.3.1(debug@4.4.3)
+      http-proxy-middleware: 1.3.1
     transitivePeerDependencies:
       - debug
 
@@ -19359,7 +19353,7 @@ snapshots:
 
   axios@0.26.1:
     dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
+      follow-redirects: 1.15.11
     transitivePeerDependencies:
       - debug
 
@@ -21107,9 +21101,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  follow-redirects@1.15.11(debug@4.4.3):
-    optionalDependencies:
-      debug: 4.4.3
+  follow-redirects@1.15.11: {}
 
   fontfaceobserver@2.3.0: {}
 
@@ -21433,20 +21425,20 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  http-proxy-middleware@1.3.1(debug@4.4.3):
+  http-proxy-middleware@1.3.1:
     dependencies:
       '@types/http-proxy': 1.17.17
-      http-proxy: 1.18.1(debug@4.4.3)
+      http-proxy: 1.18.1
       is-glob: 4.0.3
       is-plain-obj: 3.0.0
       micromatch: 4.0.8
     transitivePeerDependencies:
       - debug
 
-  http-proxy@1.18.1(debug@4.4.3):
+  http-proxy@1.18.1:
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.11(debug@4.4.3)
+      follow-redirects: 1.15.11
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug

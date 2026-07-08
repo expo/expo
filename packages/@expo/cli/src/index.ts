@@ -2,8 +2,15 @@
 import { installEventLogger } from '2g';
 import arg from 'arg';
 import chalk from 'chalk';
-import Debug from 'debug';
 import { boolish } from 'getenv';
+
+// Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG` so existing
+// muscle memory keeps surfacing debug events. This must run before `installEventLogger()` so the
+// debug flag is honored when the session activates.
+if (boolish('EXPO_DEBUG', false) || /(^|[,\s])expo(:|\*|$)/.test(process.env.DEBUG ?? '')) {
+  process.env.EXPO_DEBUG = '1';
+  process.env.LOG_DEBUG ??= '*';
+}
 
 // Setup event logger output
 // NOTE: Done before any console output
@@ -22,13 +29,6 @@ if (
       chalk.red` Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n` +
       chalk.red`Go to: https://nodejs.org/en/download\n`
   );
-}
-
-// Setup before requiring `debug`.
-if (boolish('EXPO_DEBUG', false)) {
-  Debug.enable('expo:*');
-} else if (Debug.enabled('expo:')) {
-  process.env.EXPO_DEBUG = '1';
 }
 
 const defaultCmd = 'start';
