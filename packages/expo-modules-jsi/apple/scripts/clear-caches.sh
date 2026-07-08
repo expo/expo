@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# Removes the package's local build caches and artifacts
-# (everything gitignored under apple/).
+# Removes the package's local build caches and artifacts.
 
 set -euo pipefail
 
 PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 
 BLUE=""; RESET=""
 if [ -t 1 ]; then
@@ -14,5 +15,8 @@ if [ -t 1 ]; then
 fi
 echo -e "${BLUE}[Expo]${RESET} Clearing ExpoModulesJSI caches and build artifacts"
 
-# Capital X on purpose: remove ignored files only, keep untracked files.
-git -C "${PACKAGE_DIR}" clean -fdX .
+clean_xcframework_state "$PACKAGE_DIR"
+rm -rf \
+  "${PACKAGE_DIR}/.generated" \
+  "${PACKAGE_DIR}/.xcframework-slices" \
+  "${PACKAGE_DIR}/.test-frameworks"
