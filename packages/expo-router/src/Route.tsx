@@ -96,11 +96,32 @@ export type RouteProps = PropsWithChildren<{
 
 /** Provides the matching routes and filename to the children. */
 export function Route({ children, node, params }: RouteProps) {
+  const parentParams = use(LocalRouteParamsContext);
+  const routeParams = getRouteParams(params);
+  const mergedParams =
+    parentParams == null || routeParams == null
+      ? (routeParams ?? parentParams)
+      : { ...parentParams, ...routeParams };
+
   return (
-    <LocalRouteParamsContext.Provider value={params}>
+    <LocalRouteParamsContext.Provider value={mergedParams}>
       <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
     </LocalRouteParamsContext.Provider>
   );
+}
+
+function getRouteParams(params: object | undefined) {
+  if (params == null) {
+    return undefined;
+  }
+
+  const result = { ...(params as Record<string, unknown>) };
+
+  delete result.screen;
+  delete result.initial;
+  delete result.params;
+
+  return result;
 }
 
 export { sortRoutesWithInitial, sortRoutes };

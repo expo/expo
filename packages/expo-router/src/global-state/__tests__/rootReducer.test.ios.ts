@@ -50,7 +50,7 @@ describe(rootReducer, () => {
 
     const result = rootReducer(rootState, action, registry);
 
-    expect(result).toEqual({ state: expect.any(Object), handled: true, noop: false });
+    expect(result).toMatchObject({ state: expect.any(Object), handled: true, noop: false });
     expect(reduce).toHaveBeenCalledWith(childState, action);
     expect(result.state.routes[0]!.state).toBe(nextChildState);
     expect(result.state.routes[1]).toBe(rootState.routes[1]);
@@ -71,7 +71,7 @@ describe(rootReducer, () => {
 
     expect(childReduce).toHaveBeenCalledTimes(1);
     expect(rootReduce).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({ state: rootReduced, handled: true, noop: false });
+    expect(result).toMatchObject({ state: rootReduced, handled: true, noop: false });
   });
 
   it('treats explicitly targeted null reductions as handled no-ops', () => {
@@ -85,7 +85,7 @@ describe(rootReducer, () => {
 
     const result = rootReducer(rootState, action, registry);
 
-    expect(result).toEqual({ state: rootState, handled: true, noop: true });
+    expect(result).toMatchObject({ state: rootState, handled: true, noop: true });
     expect(rootReduce).not.toHaveBeenCalled();
   });
 
@@ -200,25 +200,88 @@ describe(rootReducer, () => {
     expect(result.state.routes[1]).toBe(tree.routes[1]);
   });
 
+  it('focuses ancestor routes after a focus-changing child reduction', () => {
+    const tree: NavigationState = {
+      ...rootState,
+      index: 1,
+      routes: [
+        rootState.routes[0]!,
+        {
+          ...rootState.routes[1]!,
+          state: {
+            stale: false,
+            key: 'settings-state',
+            index: 0,
+            routeNames: ['profile'],
+            routes: [{ key: 'profile-route', name: 'profile' }],
+          },
+        },
+      ],
+    };
+    const action: NavigationAction = { type: 'NAVIGATE', target: 'home-state' };
+    const childState = tree.routes[0]!.state as NavigationState;
+    const nextChildState = { ...childState, index: 1 };
+    const registry = createReducerRegistry();
+    const focusRoute = jest.fn((state) => ({ ...state, index: 0 }));
+
+    registry.addEntry('root-state', {
+      reduce: jest.fn(() => null),
+      focusRoute,
+    });
+    registry.addEntry('home-state', {
+      reduce: jest.fn(() => nextChildState),
+      shouldActionChangeFocus: () => true,
+    });
+
+    const result = rootReducer(tree, action, registry);
+
+    expect(focusRoute).toHaveBeenCalledWith(expect.any(Object), 'home-route');
+    expect(result.state.index).toBe(0);
+    expect(result.state.routes[0]!.state).toBe(nextChildState);
+  });
+
+  it('returns ordered changed slices for centralized beforeRemove checks', () => {
+    const registry = createReducerRegistry();
+    const action: NavigationAction = { type: 'JUMP_TO', target: 'home-state' };
+    const childState = rootState.routes[0]!.state as NavigationState;
+    const nextChildState = { ...childState, index: 1 };
+    const entry = { reduce: jest.fn(() => nextChildState) };
+
+    registry.addEntry('home-state', entry);
+
+    const result = rootReducer(rootState, action, registry);
+
+    expect(result.changedSlices).toEqual([
+      {
+        key: 'home-state',
+        previousState: childState,
+        nextState: nextChildState,
+        entry,
+      },
+    ]);
+  });
+
   it('returns the original tree for unhandled actions', () => {
     const registry = registerNullReducers();
     const action: NavigationAction = { type: 'UNKNOWN' };
 
     const result = rootReducer(rootState, action, registry, { originKey: 'home-state' });
 
-    expect(result).toEqual({ state: rootState, handled: false, noop: true });
+    expect(result).toMatchObject({ state: rootState, handled: false, noop: true });
   });
 
   it('returns the original tree when the target is missing or unregistered', () => {
     const registry = createReducerRegistry();
 
-    expect(rootReducer(rootState, { type: 'UNKNOWN', target: 'missing' }, registry)).toEqual({
+    expect(rootReducer(rootState, { type: 'UNKNOWN', target: 'missing' }, registry)).toMatchObject({
       state: rootState,
       handled: false,
       noop: true,
     });
 
-    expect(rootReducer(rootState, { type: 'UNKNOWN', target: 'home-state' }, registry)).toEqual({
+    expect(
+      rootReducer(rootState, { type: 'UNKNOWN', target: 'home-state' }, registry)
+    ).toMatchObject({
       state: rootState,
       handled: false,
       noop: true,
@@ -230,11 +293,40 @@ describe(rootReducer, () => {
 
     registry.addEntry('home-state', { reduce: jest.fn(() => rootState.routes[0]!.state!) });
 
-    expect(rootReducer(rootState, { type: 'UNKNOWN', target: 'home-state' }, registry)).toEqual({
+    expect(
+      rootReducer(rootState, { type: 'UNKNOWN', target: 'home-state' }, registry)
+    ).toMatchObject({
       state: rootState,
       handled: true,
       noop: true,
     });
+  });
+
+  it('does not revisit an ancestor after a focused child cannot handle the action', () => {
+    const registry = createReducerRegistry();
+    const action: NavigationAction = {
+      type: 'SET_PARAMS',
+      source: 'home-route',
+      payload: { params: { username: 'alice' } },
+    };
+    const rootReduce = jest.fn(() => ({
+      ...rootState,
+      routes: [
+        { ...rootState.routes[0]!, params: { username: 'alice' } },
+        rootState.routes[1]!,
+      ],
+    }));
+    const childReduce = jest.fn(() => null);
+
+    registry.addEntry('root-state', { reduce: rootReduce });
+    registry.addEntry('home-state', { reduce: childReduce });
+
+    const result = rootReducer(rootState, action, registry);
+
+    expect(result).toMatchObject({ handled: true, noop: false });
+    expect(rootReduce).toHaveBeenCalledTimes(1);
+    expect(childReduce).toHaveBeenCalledTimes(1);
+    expect(result.state.routes[0]!.params).toEqual({ username: 'alice' });
   });
 
   it('path-copies without cloning untouched non-serializable params', () => {

@@ -6,7 +6,7 @@
 
 - Add `redirectTo` to protected routes and render guarded screens as redirects instead of removing them from navigators. ([#47744](https://github.com/expo/expo/pull/47744) by [@Ubax](https://github.com/Ubax))
 - Remove the `type` field from the navigation state. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
-- Seed the navigation container verbatim from the compiled store state: the container no longer stales the seed, so navigators keep the compiler's deterministic state keys (`navigator<pathname>`) and skip their startup rehydration passes. Until the tab reducer gains front-preloading, a deep link into a tab with an *implicit* anchor (no `initialRouteName`/`unstable_settings.anchor`) places the anchor after the focused tab, so back bubbles instead of landing on it — declared anchors are unaffected. The internal `+not-found` screen is no longer added when the app declares its own root-level catch-all. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
+- Seed the navigation container verbatim from the compiled store state: the container no longer stales the seed, so navigators keep the compiler's deterministic state keys (`navigator<pathname>`) and skip their startup rehydration passes. Until the tab reducer gains front-preloading, a deep link into a tab with an _implicit_ anchor (no `initialRouteName`/`unstable_settings.anchor`) places the anchor after the focused tab, so back bubbles instead of landing on it — declared anchors are unaffected. The internal `+not-found` screen is no longer added when the app declares its own root-level catch-all. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 

@@ -38,6 +38,16 @@ export type GetStateListener = () => NavigationState;
 
 export type ChildBeforeRemoveListener = (action: NavigationAction) => boolean;
 
+export type DispatchRoot = (
+  action: NavigationAction,
+  options?: {
+    originKey?: string;
+    suppressUnhandled?: boolean;
+    onNotInitialized?: () => void;
+    onMissingOrigin?: () => void;
+  }
+) => boolean;
+
 /**
  * Context which holds the required helpers needed to build nested navigators.
  */
@@ -46,6 +56,7 @@ export const NavigationBuilderContext = React.createContext<{
   addListener?: AddListener;
   addKeyedListener?: AddKeyedListener;
   onRouteFocus?: (key: string) => void;
+  dispatchRoot?: DispatchRoot;
   onDispatchAction: (action: NavigationAction, noop: boolean) => void;
   onOptionsChange: (options: object) => void;
   scheduleUpdate: (callback: () => void) => void;

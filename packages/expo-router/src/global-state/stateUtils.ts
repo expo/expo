@@ -97,11 +97,8 @@ function rekeyState(
         isFocusedPathRoute ? inheritedParams : undefined,
         route.params
       );
-      const { path, ...routeWithoutPath } = route;
-      void path;
-
       const nextRoute = {
-        ...routeWithoutPath,
+        ...route,
         key,
         path: undefined,
         params: routeParams,

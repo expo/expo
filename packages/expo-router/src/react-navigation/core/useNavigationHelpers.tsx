@@ -10,6 +10,7 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
+import type { DispatchRoot } from './NavigationBuilderContext';
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
@@ -26,6 +27,7 @@ type Options<State extends NavigationState, Action extends NavigationAction> = {
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
   stateRef: React.RefObject<State | null>;
+  dispatchRoot?: DispatchRoot;
 };
 
 /**
@@ -45,12 +47,55 @@ export function useNavigationHelpers<
   emitter,
   router,
   stateRef,
+  dispatchRoot,
 }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
 
   return React.useMemo(() => {
     const dispatch = (op: Action | ((state: State) => Action)) => {
-      const action = typeof op === 'function' ? op(getState()) : op;
+      const state = getState();
+      const action = typeof op === 'function' ? op(state) : op;
+
+      if (dispatchRoot) {
+        // TODO(Step 8): This root-reducer path intentionally does not reproduce the old
+        // `NAVIGATE_DEPRECATED` / `navigationInChildEnabled` down-bubbling fallback from
+        // `useOnAction`. If a real consumer depends on that legacy child search, reintroduce it at
+        // the dispatch boundary deliberately.
+        let isRootNotInitialized = false;
+        let isOriginMissing = false;
+        const mayFallbackLocally = action.type === 'PRELOAD' || action.target == null;
+        const handled = dispatchRoot(action, {
+          originKey: state.key,
+          suppressUnhandled: mayFallbackLocally,
+          onNotInitialized: () => {
+            isRootNotInitialized = true;
+          },
+          onMissingOrigin: () => {
+            isOriginMissing = true;
+          },
+        });
+
+        if (!handled && mayFallbackLocally) {
+          const shouldFallbackLocally =
+            action.type === 'PRELOAD' ||
+            (action.target == null &&
+              (action.type === 'NAVIGATE' ||
+                ((isRootNotInitialized || isOriginMissing) &&
+                  (action.type === 'UPDATE' || action.type === 'NOOP'))));
+
+          if (!shouldFallbackLocally) {
+            onUnhandledAction?.(action);
+            return;
+          }
+
+          const handledLocally = onAction(action);
+
+          if (!handledLocally) {
+            onUnhandledAction?.(action);
+          }
+        }
+        return;
+      }
 
       const handled = onAction(action);
 
@@ -147,5 +192,6 @@ export function useNavigationHelpers<
     onUnhandledAction,
     navigatorId,
     stateRef,
+    dispatchRoot,
   ]);
 }

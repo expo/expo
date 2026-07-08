@@ -25,6 +25,7 @@ export type NavigatorRegistryEntry = {
     nextState: NavigationState,
     action: NavigationAction
   ) => boolean;
+  onUnhandledAction?: (action: NavigationAction) => void;
 };
 
 export type ReducerRegistry = {

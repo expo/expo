@@ -43,7 +43,7 @@ beforeEach(() => {
   require('nanoid/non-secure').__key = 0;
 });
 
-test("lets parent handle the action if child didn't", () => {
+test('does not use local bubbling before the root reducer is initialized', () => {
   function CurrentRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
     const ParentRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
@@ -106,21 +106,10 @@ test("lets parent handle the action if child didn't", () => {
     </BaseNavigationContainer>
   );
 
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenLastCalledWith({
-    stale: false,
-    index: 2,
-    key: '0',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar' },
-      { key: 'foo', name: 'foo' },
-    ],
-  });
+  expect(onStateChange).not.toHaveBeenCalled();
 });
 
-test("lets children handle the action if parent didn't with navigationInChildEnabled", () => {
+test("does not down-bubble actions with navigationInChildEnabled on the root reducer path", () => {
   const CurrentParentRouter = MockRouter;
 
   function CurrentChildRouter(options: DefaultRouterOptions) {
@@ -223,33 +212,10 @@ test("lets children handle the action if parent didn't with navigationInChildEna
 
   render(element).update(element);
 
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenLastCalledWith({
-    stale: false,
-    index: 0,
-    key: '0',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      {
-        key: 'baz',
-        name: 'baz',
-        state: {
-          stale: false,
-          index: 0,
-          key: '1',
-          routeNames: ['qux', 'lex'],
-          routes: [
-            { key: 'lex', name: 'lex' },
-            { key: 'qux', name: 'qux' },
-          ],
-        },
-      },
-      { key: 'bar', name: 'bar' },
-    ],
-  });
+  expect(onStateChange).not.toHaveBeenCalled();
 });
 
-test("lets children handle the action if parent didn't with NAVIGATE_DEPRECATED", () => {
+test("does not down-bubble NAVIGATE_DEPRECATED on the root reducer path", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -304,13 +270,13 @@ test("lets children handle the action if parent didn't with NAVIGATE_DEPRECATED"
 
   act(() => navigation.navigateDeprecated('lex'));
 
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onUnhandledAction).toHaveBeenCalledTimes(1);
+  expect(onStateChange).not.toHaveBeenCalled();
+  expect(onUnhandledAction).toHaveBeenCalledTimes(2);
 
-  expect(navigation.getCurrentRoute()?.name).toBe('lex');
+  expect(navigation.getCurrentRoute()?.name).toBe('foo');
 });
 
-test('action goes to correct parent navigator if target is specified', () => {
+test('does not use target parent bubbling before the root reducer is initialized', () => {
   function CurrentTestRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
     const TestRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
@@ -401,31 +367,7 @@ test('action goes to correct parent navigator if target is specified', () => {
 
   render(element).update(element);
 
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    index: 1,
-    key: '0',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: 'foo', name: 'foo' },
-      { key: 'bar', name: 'bar' },
-      {
-        key: 'baz',
-        name: 'baz',
-        state: {
-          stale: false,
-          index: 0,
-          key: '1',
-          routeNames: ['qux', 'lex'],
-          routes: [
-            { key: 'lex', name: 'lex' },
-            { key: 'qux', name: 'qux' },
-          ],
-        },
-      },
-    ],
-  });
+  expect(onStateChange).not.toHaveBeenCalled();
 });
 
 test('action goes to correct child navigator if target is specified', () => {

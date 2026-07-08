@@ -2,11 +2,13 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { rootReducer } from '../../global-state/rootReducer';
 import { getSeedState } from '../../global-state/seedState';
 import { ReducerRegistryContext, createReducerRegistry } from '../../global-state/storeContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
+  StackActions,
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
@@ -97,42 +99,183 @@ export function BaseNavigationContainer({
 
   const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
 
+  const emitter = useEventEmitter<NavigationContainerEventMap>();
+
+  const stackRef = React.useRef<string | undefined>(undefined);
+
+  const onDispatchAction = useLatestCallback((action: NavigationAction, noop: boolean) => {
+    emitter.emit({
+      type: '__unsafe_action__',
+      data: { action, noop, stack: stackRef.current },
+    });
+  });
+
+  const defaultOnUnhandledAction = useLatestCallback((action: NavigationAction) => {
+    if (process.env.NODE_ENV === 'production') {
+      return;
+    }
+
+    const payload: Record<string, any> | undefined = action.payload;
+
+    let message = `The action '${action.type}'${
+      payload ? ` with payload ${JSON.stringify(action.payload)}` : ''
+    } was not handled by any navigator.`;
+
+    switch (action.type) {
+      case 'PRELOAD':
+      case 'NAVIGATE':
+      case 'PUSH':
+      case 'REPLACE':
+      case 'POP_TO':
+      case 'JUMP_TO':
+        if (payload?.name) {
+          message += `\n\nDo you have a screen named '${payload.name}'?\n\nIf you're trying to navigate to a screen in a nested navigator, see https://reactnavigation.org/docs/nesting-navigators#navigating-to-a-screen-in-a-nested-navigator.\n\nIf you're using conditional rendering, navigation will happen automatically and you shouldn't navigate manually, see.`;
+        } else {
+          message += `\n\nYou need to pass the name of the screen to navigate to.\n\nSee https://reactnavigation.org/docs/navigation-actions for usage.`;
+        }
+
+        break;
+      case 'GO_BACK':
+      case 'POP':
+      case 'POP_TO_TOP':
+        message += `\n\nIs there any screen to go back to?`;
+        break;
+      case 'OPEN_DRAWER':
+      case 'CLOSE_DRAWER':
+      case 'TOGGLE_DRAWER':
+        message += `\n\nIs your screen inside a Drawer navigator?`;
+        break;
+    }
+
+    message += `\n\nThis is a development-only warning and won't be shown in production.`;
+
+    console.error(message);
+  });
+
+  const dispatchRoot = useLatestCallback(
+    (
+      action: NavigationAction,
+      options: {
+        originKey?: string;
+        suppressUnhandled?: boolean;
+        onNotInitialized?: () => void;
+        onMissingOrigin?: () => void;
+      } = {}
+    ) => {
+      const rootState = (keyedListeners.getState.root?.() ?? getState()) as
+        | NavigationState
+        | undefined;
+
+      if (rootState == null) {
+        options.onNotInitialized?.();
+        if (options.onNotInitialized == null) {
+          console.error(NOT_INITIALIZED_ERROR);
+        }
+        return false;
+      }
+
+      const result = rootReducer(rootState, action, reducerRegistry, options);
+
+      if (!result.handled) {
+        const originEntry =
+          options.originKey == null ? undefined : reducerRegistry.getEntry(options.originKey);
+
+        if (options.originKey != null && !reducerRegistry.hasReducer(options.originKey)) {
+          options.onMissingOrigin?.();
+        }
+
+        if (options.suppressUnhandled) {
+          return false;
+        }
+
+        if (originEntry?.onUnhandledAction != null) {
+          originEntry.onUnhandledAction(action);
+        } else {
+          (onUnhandledAction ?? defaultOnUnhandledAction)(action);
+        }
+        return false;
+      }
+
+      onDispatchAction(action, result.noop);
+
+      if (!result.noop) {
+        const isPrevented = result.changedSlices
+          .slice()
+          .sort((a, b) => {
+            return getStateDepth(result.state, b.key) - getStateDepth(result.state, a.key);
+          })
+          .some((slice) =>
+            slice.entry.shouldPreventRemove?.(slice.previousState, slice.nextState, action)
+          );
+
+        if (isPrevented) {
+          return true;
+        }
+
+        setState(result.state);
+      }
+
+      return true;
+    }
+  );
+
+  const getFocusedOriginKey = React.useCallback(
+    (rootState: NavigationState | undefined) => {
+      if (rootState == null) {
+        return undefined;
+      }
+
+      return getDeepestFocusedRegisteredKey(rootState, reducerRegistry);
+    },
+    [reducerRegistry]
+  );
+
   const dispatch = useLatestCallback(
     (action: NavigationAction | ((state: NavigationState) => NavigationAction)) => {
-      if (listeners.focus[0] == null) {
+      const rootState = (keyedListeners.getState.root?.() ?? getState()) as
+        | NavigationState
+        | undefined;
+
+      if (rootState == null) {
         console.error(NOT_INITIALIZED_ERROR);
-      } else {
-        listeners.focus[0]((navigation) => navigation.dispatch(action));
+        return;
       }
+
+      const nextAction = typeof action === 'function' ? action(rootState) : action;
+      dispatchRoot(nextAction, { originKey: getFocusedOriginKey(rootState) });
     }
   );
 
   const canGoBack = useLatestCallback(() => {
-    if (listeners.focus[0] == null) {
+    const rootState = (keyedListeners.getState.root?.() ?? getState()) as
+      | NavigationState
+      | undefined;
+
+    if (rootState == null) {
       return false;
     }
 
-    const { result, handled } = listeners.focus[0]((navigation) => navigation.canGoBack());
+    const result = rootReducer(rootState, CommonActions.goBack(), reducerRegistry, {
+      originKey: getFocusedOriginKey(rootState),
+    });
 
-    if (handled) {
-      return result;
-    } else {
-      return false;
-    }
+    return result.handled && !result.noop;
   });
 
   const canDismiss = useLatestCallback(() => {
-    if (listeners.focus[0] == null) {
+    const rootState = (keyedListeners.getState.root?.() ?? getState()) as
+      | NavigationState
+      | undefined;
+
+    if (rootState == null) {
       return false;
     }
 
-    const { result, handled } = listeners.focus[0]((navigation) => navigation.canDismiss?.());
+    const result = rootReducer(rootState, StackActions.pop(1), reducerRegistry, {
+      originKey: getFocusedOriginKey(rootState),
+    });
 
-    if (handled) {
-      return result ?? false;
-    } else {
-      return false;
-    }
+    return result.handled && !result.noop;
   });
 
   const resetRoot = useLatestCallback((state?: PartialState<NavigationState> | NavigationState) => {
@@ -144,12 +287,10 @@ export function BaseNavigationContainer({
     if (target == null) {
       console.error(NOT_INITIALIZED_ERROR);
     } else {
-      listeners.focus[0]!((navigation) =>
-        navigation.dispatch({
-          ...CommonActions.reset(state),
-          target,
-        })
-      );
+      dispatchRoot({
+        ...CommonActions.reset(state),
+        target,
+      });
     }
   });
 
@@ -170,8 +311,6 @@ export function BaseNavigationContainer({
   });
 
   const isReady = useLatestCallback(() => listeners.focus[0] != null);
-
-  const emitter = useEventEmitter<NavigationContainerEventMap>();
 
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
@@ -215,13 +354,6 @@ export function BaseNavigationContainer({
 
   React.useImperativeHandle(ref, () => navigation, [navigation]);
 
-  const onDispatchAction = useLatestCallback((action: NavigationAction, noop: boolean) => {
-    emitter.emit({
-      type: '__unsafe_action__',
-      data: { action, noop, stack: stackRef.current },
-    });
-  });
-
   const lastEmittedOptionsRef = React.useRef<object | undefined>(undefined);
 
   const onOptionsChange = useLatestCallback((options: object) => {
@@ -237,19 +369,26 @@ export function BaseNavigationContainer({
     });
   });
 
-  const stackRef = React.useRef<string | undefined>(undefined);
-
   const builderContext = React.useMemo(
     () => ({
       addListener,
       addKeyedListener,
+      dispatchRoot,
       onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
       flushUpdates,
       stackRef,
     }),
-    [addListener, addKeyedListener, onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates]
+    [
+      addListener,
+      addKeyedListener,
+      dispatchRoot,
+      onDispatchAction,
+      onOptionsChange,
+      scheduleUpdate,
+      flushUpdates,
+    ]
   );
 
   const isInitialRef = React.useRef(true);
@@ -362,48 +501,6 @@ export function BaseNavigationContainer({
     isFirstMountRef.current = false;
   }, [getRootState, emitter, state]);
 
-  const defaultOnUnhandledAction = useLatestCallback((action: NavigationAction) => {
-    if (process.env.NODE_ENV === 'production') {
-      return;
-    }
-
-    const payload: Record<string, any> | undefined = action.payload;
-
-    let message = `The action '${action.type}'${
-      payload ? ` with payload ${JSON.stringify(action.payload)}` : ''
-    } was not handled by any navigator.`;
-
-    switch (action.type) {
-      case 'PRELOAD':
-      case 'NAVIGATE':
-      case 'PUSH':
-      case 'REPLACE':
-      case 'POP_TO':
-      case 'JUMP_TO':
-        if (payload?.name) {
-          message += `\n\nDo you have a screen named '${payload.name}'?\n\nIf you're trying to navigate to a screen in a nested navigator, see https://reactnavigation.org/docs/nesting-navigators#navigating-to-a-screen-in-a-nested-navigator.\n\nIf you're using conditional rendering, navigation will happen automatically and you shouldn't navigate manually, see.`;
-        } else {
-          message += `\n\nYou need to pass the name of the screen to navigate to.\n\nSee https://reactnavigation.org/docs/navigation-actions for usage.`;
-        }
-
-        break;
-      case 'GO_BACK':
-      case 'POP':
-      case 'POP_TO_TOP':
-        message += `\n\nIs there any screen to go back to?`;
-        break;
-      case 'OPEN_DRAWER':
-      case 'CLOSE_DRAWER':
-      case 'TOGGLE_DRAWER':
-        message += `\n\nIs your screen inside a Drawer navigator?`;
-        break;
-    }
-
-    message += `\n\nThis is a development-only warning and won't be shown in production.`;
-
-    console.error(message);
-  });
-
   return (
     <NavigationIndependentTreeContext.Provider value={false}>
       <ReducerRegistryContext.Provider value={reducerRegistry}>
@@ -424,4 +521,50 @@ export function BaseNavigationContainer({
       </ReducerRegistryContext.Provider>
     </NavigationIndependentTreeContext.Provider>
   );
+}
+
+function getDeepestFocusedRegisteredKey(
+  state: NavigationState,
+  reducerRegistry: ReturnType<typeof createReducerRegistry>
+): string {
+  let key = state.key;
+  let currentState: NavigationState | undefined = state;
+
+  while (currentState != null) {
+    const route = currentState.routes[currentState.index];
+    const childState = route?.state;
+
+    if (
+      childState == null ||
+      childState.stale !== false ||
+      !reducerRegistry.hasReducer(childState.key)
+    ) {
+      break;
+    }
+
+    key = childState.key;
+    currentState = childState as NavigationState;
+  }
+
+  return key;
+}
+
+function getStateDepth(state: NavigationState, key: string, depth = 0): number {
+  if (state.key === key) {
+    return depth;
+  }
+
+  for (const route of state.routes) {
+    const childState = route.state;
+
+    if (childState != null && childState.stale === false) {
+      const childDepth = getStateDepth(childState as NavigationState, key, depth + 1);
+
+      if (childDepth !== -1) {
+        return childDepth;
+      }
+    }
+  }
+
+  return -1;
 }

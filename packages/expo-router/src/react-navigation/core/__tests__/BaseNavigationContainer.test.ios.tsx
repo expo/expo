@@ -1,6 +1,7 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import * as rootReducerModule from '../../../global-state/rootReducer';
 import {
   type DefaultRouterOptions,
   type NavigationState,
@@ -20,6 +21,7 @@ import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/Mock
 
 beforeEach(() => {
   MockRouterKey.current = 0;
+  jest.restoreAllMocks();
 });
 
 test('throws when getState is accessed without a container', () => {
@@ -160,6 +162,112 @@ test('handle dispatching with ref', () => {
       { key: 'baz', name: 'baz' },
     ],
   });
+});
+
+test('container dispatch runs the root reducer once and commits the returned root state', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const onStateChange = jest.fn();
+  const action = { type: 'ROOT_REDUCER_ONLY' };
+  const rootReducer = jest.spyOn(rootReducerModule, 'rootReducer').mockImplementation((state) => ({
+    state: {
+      ...state,
+      routes: state.routes.slice().reverse(),
+    },
+    handled: true,
+    noop: false,
+    changedSlices: [],
+  }));
+
+  render(
+    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+      <TestNavigator>
+        <Screen name="foo">{() => null}</Screen>
+        <Screen name="bar">{() => null}</Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(() => {
+    ref.current?.dispatch(action);
+  });
+
+  expect(rootReducer).toHaveBeenCalledTimes(1);
+  expect(rootReducer.mock.calls[0]![1]).toBe(action);
+  expect(onStateChange).toHaveBeenCalledTimes(1);
+  expect(onStateChange).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      routes: [
+        expect.objectContaining({ name: 'bar' }),
+        expect.objectContaining({ name: 'foo' }),
+      ],
+    })
+  );
+});
+
+test('navigator dispatch passes local state to thunks and root reducer originKey', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  let thunkState: NavigationState | undefined;
+  let childNavigation: any;
+  const TestScreen = (props: any) => {
+    childNavigation = props.navigation;
+
+    return null;
+  };
+
+  const rootReducer = jest.spyOn(rootReducerModule, 'rootReducer').mockImplementation((state) => ({
+    state,
+    handled: true,
+    noop: true,
+    changedSlices: [],
+  }));
+
+  render(
+    <BaseNavigationContainer>
+      <TestNavigator>
+        <Screen name="foo">
+          {() => (
+            <TestNavigator>
+              <Screen name="bar" component={TestScreen} />
+            </TestNavigator>
+          )}
+        </Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(() => {
+    childNavigation.dispatch((state: NavigationState) => {
+      thunkState = state;
+      return { type: 'CHILD_THUNK' };
+    });
+  });
+
+  expect(thunkState).toEqual(expect.objectContaining({ key: '1', routeNames: ['bar'] }));
+  expect(rootReducer).toHaveBeenCalledWith(
+    expect.any(Object),
+    expect.objectContaining({ type: 'CHILD_THUNK' }),
+    expect.any(Object),
+    expect.objectContaining({ originKey: '1' })
+  );
 });
 
 test('handle resetting state with ref', () => {

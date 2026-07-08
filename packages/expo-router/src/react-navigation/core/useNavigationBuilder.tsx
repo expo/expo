@@ -24,6 +24,7 @@ import {
   type RouterFactory,
 } from '../routers';
 import { Group } from './Group';
+import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationRouteContext } from './NavigationProvider';
@@ -845,62 +846,7 @@ export function useNavigationBuilder<
     latestConfigRef.current = routerConfigOptions;
   });
 
-  const reducerRegistry = use(ReducerRegistryContext);
-  const registryReducer = React.useCallback<NavigationReducer>(
-    (state, action) =>
-      router.getStateForAction(
-        state as State,
-        action,
-        latestConfigRef.current
-      ) as ReturnType<NavigationReducer>,
-    [router]
-  );
-  const registryEntry = React.useMemo<NavigatorRegistryEntry>(
-    () => ({
-      reduce: registryReducer,
-      focusRoute: (state, routeKey) => router.getStateForRouteFocus(state as State, routeKey),
-      shouldActionChangeFocus: router.shouldActionChangeFocus,
-      shouldPreventRemove: (currentState, nextState, action) =>
-        shouldPreventRemove(
-          emitter,
-          keyedListeners.beforeRemove,
-          currentState.routes,
-          nextState.routes,
-          action
-        ),
-    }),
-    [emitter, keyedListeners.beforeRemove, registryReducer, router]
-  );
-  const backBehavior = (rest as { backBehavior?: unknown }).backBehavior;
-
-  useClientLayoutEffect(() => {
-    reducerRegistry?.addEntry(state.key, registryEntry);
-
-    return () => {
-      reducerRegistry?.removeEntry(state.key, registryEntry);
-    };
-  }, [backBehavior, reducerRegistry, registryEntry, state.key]);
-
-  const onAction = useOnAction({
-    router,
-    getState,
-    setState,
-    key: route?.key,
-    actionListeners: childListeners.action,
-    beforeRemoveListeners: keyedListeners.beforeRemove,
-    routerConfigOptions,
-    emitter,
-  });
-
-  const onRouteFocus = useOnRouteFocus({
-    router,
-    key: route?.key,
-    getState,
-    setState,
-  });
-
   const onUnhandledActionParent = use(UnhandledActionContext);
-
   const onUnhandledAction = useLatestCallback((action: NavigationAction) => {
     if (
       options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
@@ -934,6 +880,69 @@ export function useNavigationBuilder<
     onUnhandledActionParent?.(action);
   });
 
+  const reducerRegistry = use(ReducerRegistryContext);
+  const registryReducer = React.useCallback<NavigationReducer>(
+    (state, action) => {
+      const nextState = router.getStateForAction(state as State, action, latestConfigRef.current);
+
+      if (nextState == null || nextState.stale === false) {
+        return nextState as ReturnType<NavigationReducer>;
+      }
+
+      return router.getRehydratedState(
+        nextState,
+        latestConfigRef.current
+      ) as ReturnType<NavigationReducer>;
+    },
+    [router]
+  );
+  const registryEntry = React.useMemo<NavigatorRegistryEntry>(
+    () => ({
+      reduce: registryReducer,
+      focusRoute: (state, routeKey) => router.getStateForRouteFocus(state as State, routeKey),
+      shouldActionChangeFocus: router.shouldActionChangeFocus,
+      shouldPreventRemove: (currentState, nextState, action) =>
+        shouldPreventRemove(
+          emitter,
+          keyedListeners.beforeRemove,
+          currentState.routes,
+          nextState.routes,
+          action
+        ),
+      onUnhandledAction,
+    }),
+    [emitter, keyedListeners.beforeRemove, onUnhandledAction, registryReducer, router]
+  );
+  const backBehavior = (rest as { backBehavior?: unknown }).backBehavior;
+
+  useClientLayoutEffect(() => {
+    reducerRegistry?.addEntry(state.key, registryEntry);
+
+    return () => {
+      reducerRegistry?.removeEntry(state.key, registryEntry);
+    };
+  }, [backBehavior, reducerRegistry, registryEntry, state.key]);
+
+  const onAction = useOnAction({
+    router,
+    getState,
+    setState,
+    key: route?.key,
+    actionListeners: childListeners.action,
+    beforeRemoveListeners: keyedListeners.beforeRemove,
+    routerConfigOptions,
+    emitter,
+  });
+
+  const onRouteFocus = useOnRouteFocus({
+    router,
+    key: route?.key,
+    getState,
+    setState,
+  });
+
+  const { dispatchRoot } = use(NavigationBuilderContext);
+
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
     id: options.id,
     onAction,
@@ -942,6 +951,7 @@ export function useNavigationBuilder<
     emitter,
     router,
     stateRef,
+    dispatchRoot,
   });
 
   useFocusedListenersChildrenAdapter({
