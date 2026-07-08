@@ -19,6 +19,7 @@ import resolveFrom from 'resolve-from';
 import { FileStore } from './binary-file-store';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
+import { event } from './events';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
@@ -29,8 +30,6 @@ import { getPostcssConfigHash } from './transform-worker/postcss';
 import { toPosixPath } from './utils/filePath';
 import { getPkgVersion } from './utils/getPkgVersion';
 import { setOnReadonly } from './utils/setOnReadonly';
-
-const debug = require('debug')('expo:metro:config') as typeof console.log;
 
 export interface DefaultConfigOptions {
   /** @deprecated */
@@ -367,7 +366,7 @@ export function getDefaultConfig(
         if (stdRuntime) {
           preModules.push(stdRuntime);
         } else {
-          debug('"expo/src/winter" not found, this may cause issues');
+          event('missing_winter_runtime', {});
         }
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
@@ -376,7 +375,7 @@ export function getDefaultConfig(
         if (metroRuntime) {
           preModules.push(metroRuntime);
         } else {
-          debug('"@expo/metro-runtime" not found, this may cause issues');
+          event('missing_metro_runtime', {});
         }
 
         return preModules;
