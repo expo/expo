@@ -209,6 +209,26 @@ export type RunMaestroFlowsFunction = (
   options: { attempt: number }
 ) => Promise<string[]>;
 
+/**
+ * Emits a GitHub Actions annotation so that flow failures show up on the workflow summary and
+ * the PR checks page. Does nothing outside of GitHub Actions.
+ */
+export function annotate(
+  level: 'warning' | 'error',
+  title: string,
+  message: string,
+  file?: string
+): void {
+  if (!process.env.GITHUB_ACTIONS) {
+    return;
+  }
+  const properties = [`title=${title}`];
+  if (file && process.env.GITHUB_WORKSPACE) {
+    properties.push(`file=${path.relative(process.env.GITHUB_WORKSPACE, file)}`);
+  }
+  console.log(`::${level} ${properties.join(',')}::${message}`);
+}
+
 export const runCustomMaestroFlowsAsync = async (
   e2eDir: string,
   platform: 'android' | 'ios',
@@ -224,8 +244,24 @@ export const runCustomMaestroFlowsAsync = async (
       return;
     }
     if (attempt >= maxAttempts) {
+      for (const failedFlow of failedFlows) {
+        annotate(
+          'error',
+          'e2e flow failed',
+          `${failedFlow} kept failing after ${maxAttempts} attempts`,
+          path.join(e2eDir, failedFlow)
+        );
+      }
       throw new Error(
         `Custom e2e flows kept failing after ${maxAttempts} attempts: ${failedFlows.join(', ')}`
+      );
+    }
+    for (const failedFlow of failedFlows) {
+      annotate(
+        'warning',
+        'Flaky e2e flow',
+        `${failedFlow} failed on attempt ${attempt} of ${maxAttempts}`,
+        path.join(e2eDir, failedFlow)
       );
     }
     console.warn(`⚠️ Retrying failed flows: ${failedFlows.join(', ')}`);
@@ -351,6 +387,13 @@ export async function runMaestroAsync({
     clearInterval(reportPollTimer);
     for (const timer of watchdogTimers) {
       clearTimeout(timer);
+    }
+    if (process.env.CI && (await fileExistsAsync(reportPath))) {
+      // ~/.maestro/tests is uploaded as a workflow artifact, so keep the JUnit report of every
+      // invocation around for debugging.
+      const artifactsDir = path.join(os.homedir(), '.maestro', 'tests');
+      await fs.mkdir(artifactsDir, { recursive: true });
+      await fs.copyFile(reportPath, path.join(artifactsDir, `maestro-report-${Date.now()}.xml`));
     }
     await fs.rm(path.dirname(reportPath), { recursive: true, force: true });
   }

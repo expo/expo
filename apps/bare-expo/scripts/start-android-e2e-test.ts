@@ -7,6 +7,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 import {
+  annotate,
   createMaestroFlowAsync,
   fileExistsAsync,
   getStartMode,
@@ -86,6 +87,11 @@ const __dirname = dirname(__filename);
           e2eDir
         );
         if (failedFlows.length > 0) {
+          annotate(
+            retryNumber + 1 >= NUM_OF_RETRIES ? 'error' : 'warning',
+            'Native modules test suite failed',
+            `attempt  of  failed`
+          );
           throw new Error('Native modules test suite failed.');
         }
       }, NUM_OF_RETRIES);

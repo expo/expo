@@ -9,6 +9,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 import {
+  annotate,
   createMaestroFlowAsync,
   ensureDirAsync,
   getStartMode,
@@ -93,6 +94,11 @@ const __dirname = dirname(__filename);
         console.log(`Native modules test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
         const failedFlows = await testAsync([nativeModulesFlowRelativePath], deviceId, e2eDir);
         if (failedFlows.length > 0) {
+          annotate(
+            retryNumber + 1 >= NUM_OF_RETRIES ? 'error' : 'warning',
+            'Native modules test suite failed',
+            `attempt ${retryNumber + 1} of ${NUM_OF_RETRIES} failed`
+          );
           throw new Error('Native modules test suite failed.');
         }
       }, NUM_OF_RETRIES);
