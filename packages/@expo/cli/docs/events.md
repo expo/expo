@@ -71,6 +71,15 @@ Diagnostic logging is organized one category per sub-feature (`devserver`, `tunn
 subsystem — the structured successor to the old `DEBUG=expo:<area>:*` namespaces. `src/index.ts`
 bridges the legacy switches: `EXPO_DEBUG=1` (or `DEBUG=expo:*`) sets `LOG_DEBUG=*`.
 
+The CLI's diagnostic logging is organized into one category per sub-feature (`devserver`,
+`tunnel`, `metro`, `resolve`, `hmr`, `inspector`, `manifest`, `middleware`, `ssr`, `rsc`,
+`router`, `atlas`, `typegen`, `devtools`, `interface`, `platform`, `run`, `prebuild`, `export`,
+`install`, `doctor`, `api`, `utils`, `telemetry`, …) so `LOG_DEBUG=<category>:*` targets a
+single subsystem — the structured successor to the old `DEBUG=expo:<area>:*` namespaces.
+
+`src/index.ts` bridges the legacy switches: `EXPO_DEBUG=1` (or `DEBUG=expo:*`) sets `LOG_DEBUG=*`,
+so existing muscle memory keeps surfacing debug events on stderr.
+
 ## Deferred payload helpers
 
 `event.path(absolutePath)` and `event.error(error)` return `Serialized<T>` wrappers
