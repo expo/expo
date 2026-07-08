@@ -9,8 +9,7 @@ import { ensureDependenciesAsync } from '../start/doctor/dependencies/ensureDepe
 import { findFileInParents } from '../utils/findUp';
 import { isInteractive } from '../utils/interactive';
 import { confirmAsync } from '../utils/prompts';
-
-const debug = require('debug')('expo:lint') as typeof console.log;
+import { event } from './events';
 
 /** Ensure the project has the required ESLint config. */
 export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
@@ -27,8 +26,6 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
   }
 
   async bootstrapAsync(): Promise<boolean> {
-    debug('Setting up ESLint');
-
     const hasEslintConfig = await isEslintConfigured(this.projectRoot);
     if (!hasEslintConfig) {
       if (!isInteractive()) {
@@ -99,14 +96,11 @@ export class ESLintProjectPrerequisite extends ProjectPrerequisite<boolean> {
 }
 
 async function isLegacyEslintConfigured(projectRoot: string) {
-  debug('Checking for legacy ESLint configuration', projectRoot);
-
   const packageFile = await JsonFile.readAsync(path.join(projectRoot, 'package.json'));
   if (
     typeof packageFile.eslintConfig === 'object' &&
     Object.keys(packageFile.eslintConfig as JSONObject).length > 0
   ) {
-    debug('Found legacy ESLint config in package.json');
     return true;
   }
 
@@ -121,7 +115,7 @@ async function isLegacyEslintConfigured(projectRoot: string) {
     const configPath = findFileInParents(projectRoot, configFile);
 
     if (configPath) {
-      debug('Found ESLint config file:', configPath);
+      event('eslint_config_found', { path: event.path(configPath) });
       return true;
     }
   }
@@ -131,14 +125,12 @@ async function isLegacyEslintConfigured(projectRoot: string) {
 
 /** Check for flat config. */
 async function isEslintConfigured(projectRoot: string) {
-  debug('Ensuring ESLint is configured in', projectRoot);
-
   const eslintConfigFiles = ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs'];
   for (const configFile of eslintConfigFiles) {
     const configPath = findFileInParents(projectRoot, configFile);
 
     if (configPath) {
-      debug('Found ESLint config file:', configPath);
+      event('eslint_config_found', { path: event.path(configPath) });
       return true;
     }
   }

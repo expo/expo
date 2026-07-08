@@ -7,7 +7,12 @@ declare module '2g' {
       dev: boolean;
       packageManager: string;
     };
+    'install:fixing_dependencies': { packages: string[] };
+    'install:existing_plugins': { plugins: string[] };
+    'install:package_has_plugin': { package: string; hasPlugin: boolean; argCount: number | null };
+    'install:auto_plugin_skipped': { package: string };
   }
 }
 
 export const event = events('install');
+export const debugEvent = events.debug('install');

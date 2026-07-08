@@ -18,8 +18,6 @@ type Options = {
   isDefaultDirectory: boolean;
 };
 
-const debug = require('debug')('expo:serve') as typeof console.log;
-
 // Start a basic http server
 export async function serveAsync(inputDir: string, options: Options) {
   const projectRoot = findUpProjectRootOrAssert(inputDir);
@@ -137,8 +135,6 @@ async function startDynamicServerAsync(dist: string, options: Options) {
     if (!pathname) {
       return next();
     }
-
-    debug(`Maybe serve static:`, pathname);
 
     const stream = send(req, pathname, {
       root: staticDirectory,
