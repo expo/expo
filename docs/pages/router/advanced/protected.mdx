@@ -110,9 +110,10 @@ In this case:
 - `/private` is only protected if the user is logged in and is an admin.
 - `/about` is protected to any logged-in user.
 
-## Falling back to a specific screen
+## Redirecting to a specific screen
 
-You can configure the navigator to fall back to a specific screen if access is denied.
+By default, protected screens redirect to the navigator's anchor route or the first available
+screen. You can pass `redirectTo` to send users to a specific route instead.
 
 <FileTree
   files={[
@@ -134,8 +135,7 @@ const isLoggedIn = false;
 export function AppLayout() {
   return (
     <Stack>
-      <Stack.Protected guard={isLoggedIn}>
-        <Stack.Screen name="index" />
+      <Stack.Protected guard={isLoggedIn} redirectTo="/login">
         <Stack.Screen name="private" />
       </Stack.Protected>
 
@@ -145,7 +145,7 @@ export function AppLayout() {
 }
 ```
 
-In the above example, since the **index** screen is protected and the `guard` is **false**, the router redirects to the first available screen — **login**.
+In the above example, when the user is not logged in and attempts to access `/private`, the router redirects to `/login`.
 
 ## Tabs and Drawer
 

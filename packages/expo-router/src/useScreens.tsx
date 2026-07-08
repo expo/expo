@@ -9,6 +9,8 @@ import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import { useGuardRedirect } from './layouts/GuardContext';
+import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { unstable_navigationEvents } from './navigationEvents';
@@ -20,6 +22,7 @@ import {
 import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
+  CommonActions,
   useStateForPath,
   type EventConsumer,
   type EventMapBase,
@@ -30,7 +33,7 @@ import {
   type ScreenListeners,
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
-import type { UnknownOutputParams } from './types';
+import type { Href, UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
@@ -173,7 +176,7 @@ function getSortedChildren(
  */
 export function useSortedScreens(
   order: ScreenProps[],
-  protectedScreens: Set<string>,
+  guardedRedirects: Map<string, Href | undefined> = new Map(),
   useOnlyUserDefinedScreens: boolean = false
 ): React.ReactNode[] {
   const node = useRouteNode();
@@ -190,20 +193,24 @@ export function useSortedScreens(
     : nodeChildren;
 
   const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
-  return React.useMemo(
-    () =>
-      sorted
-        .filter((item) => {
-          const route = item.route.route;
-          return (
-            !protectedScreens.has(route) && !protectedScreens.has(route.replace(/\/index$/, ''))
-          );
-        })
-        .map((value) => {
-          return routeToScreen(value.route, value.props);
-        }),
-    [sorted, protectedScreens]
-  );
+  return React.useMemo(() => {
+    const screensWithGuarded = sorted.map((value) => {
+      const route = value.route.route;
+      const isGuarded =
+        guardedRedirects.has(route) || guardedRedirects.has(route.replace(/\/index$/, ''));
+      return { ...value, isGuarded };
+    });
+    const allScreensGuarded =
+      screensWithGuarded.length > 0 && screensWithGuarded.every((item) => item.isGuarded);
+
+    if (allScreensGuarded) {
+      return [];
+    }
+
+    return screensWithGuarded.map((value) => {
+      return routeToScreen(value.route, value.props, value.isGuarded);
+    });
+  }, [sorted, guardedRedirects]);
 }
 
 function fromImport(
@@ -319,6 +326,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
+    const guardRedirect = useGuardRedirect(value.route);
 
     const ResolvedSuspenseFallback =
       EXPO_ROUTER_IMPORT_MODE === 'lazy'
@@ -329,7 +337,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
 
-    if (isFocused) {
+    if (isFocused && guardRedirect == null) {
       const state = navigation.getState();
       const isLeaf = !(state && 'state' in state.routes[state.index]!);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
@@ -344,9 +352,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           // if the component itself didn’t rerender and the route info changed.
           // Otherwise, the update from the `if` above will handle it,
           // and this won’t cause a redundant second update.
-          if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
+          if (isLeaf && stateForPath && guardRedirect == null) store.setFocusedState(stateForPath);
         }),
-      [navigation]
+      [navigation, guardRedirect]
     );
 
     useEffect(() => {
@@ -363,8 +371,50 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       });
     }, [navigation]);
 
+    useEffect(() => {
+      if (guardRedirect == null || isFocused || !route?.key) {
+        return;
+      }
+
+      const state = navigation.getState();
+      if (!state) {
+        return;
+      }
+
+      const routeIndex = state.routes.findIndex((stateRoute) => stateRoute.key === route.key);
+
+      if (routeIndex < 0 || state.routes.length <= 1) {
+        return;
+      }
+
+      const routes = state.routes.filter((stateRoute) => stateRoute.key !== route.key);
+      const preloadedRoutes =
+        'preloadedRoutes' in state && Array.isArray(state.preloadedRoutes)
+          ? state.preloadedRoutes.filter((stateRoute) => stateRoute.key !== route.key)
+          : undefined;
+      const index = routeIndex < state.index ? state.index - 1 : state.index;
+
+      navigation.dispatch({
+        ...CommonActions.reset({
+          ...(state as any),
+          index: Math.min(index, routes.length - 1),
+          routes,
+          ...(preloadedRoutes ? { preloadedRoutes } : null),
+        }),
+        target: state.key,
+      });
+    }, [guardRedirect, isFocused, navigation, route?.key]);
+
     const isRouteType = value.type === 'route';
     const hasRouteKey = !!route?.key;
+
+    if (guardRedirect != null) {
+      return (
+        <Route node={value} params={route?.params}>
+          <Redirect href={guardRedirect} />
+        </Route>
+      );
+    }
 
     return (
       <Route node={value} params={route?.params}>
@@ -495,7 +545,8 @@ function AnalyticsListeners({
 
 export function screenOptionsFactory(
   route: RouteNode,
-  options?: ScreenProps['options']
+  options?: ScreenProps['options'],
+  isGuarded?: boolean
 ): ScreenProps['options'] {
   return (args) => {
     // Only eager load generated components
@@ -508,11 +559,12 @@ export function screenOptionsFactory(
     };
 
     // Prevent generated screens from showing up in the tab bar.
-    if (route.internal) {
+    if (route.internal || isGuarded) {
       output.tabBarItemStyle = { display: 'none' };
       output.tabBarButton = () => null;
       // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
       output.drawerItemStyle = { height: 0, display: 'none' };
+      output.hidden = true;
     }
 
     return output;
@@ -521,7 +573,8 @@ export function screenOptionsFactory(
 
 export function routeToScreen(
   route: RouteNode,
-  { options, getId, ...props }: Partial<ScreenProps> = {}
+  { options, getId, ...props }: Partial<ScreenProps> = {},
+  isGuarded?: boolean
 ) {
   return (
     <Screen
@@ -529,7 +582,7 @@ export function routeToScreen(
       name={route.route}
       key={route.route}
       getId={getId}
-      options={screenOptionsFactory(route, options)}
+      options={screenOptionsFactory(route, options, isGuarded)}
       getComponent={() => getQualifiedRouteComponent(route)}
     />
   );
