@@ -72,6 +72,10 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
       name: 'BUILD_WITH_AI',
       resetHref: '/tutorial/build-with-ai/introduction/',
     },
+    'CI/CD tutorial': {
+      name: 'CICD_TUTORIAL',
+      resetHref: '/tutorial/cicd/introduction/',
+    },
   };
   const tutorialTrack = tutorialTracks[route.name ?? ''];
 
@@ -258,6 +262,8 @@ function getIconElement(iconName?: string) {
       return Star06Icon;
     case 'EAS tutorial':
       return PlanEnterpriseIcon;
+    case 'CI/CD tutorial':
+      return Dataflow03Icon;
     default:
       return undefined;
   }
