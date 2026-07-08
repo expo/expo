@@ -29,6 +29,8 @@ declare module '2g' {
     'doctor:tv_dist_tags_body_error': { error: SerializedError };
     'doctor:tv_dist_tags_http_error': { status: number };
     'doctor:external_module_resolve_failed': { message: string };
+    // dependencies/getVersionedPackages.ts
+    'doctor:sdk_version_not_found': { sdkVersion: string | undefined; available: string[] };
   }
 }
 

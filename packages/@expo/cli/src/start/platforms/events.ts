@@ -59,6 +59,11 @@ declare module '2g' {
     'platform:open_custom': { props: string };
     'platform:open_custom_url': { url: string | null; props: string };
     'platform:open_async': { runtime: string; platform: string; shouldPrompt: boolean | undefined };
+    // android/AndroidPlatformManager.ts
+    'platform:android_open_custom_launch_activity': { launchActivity: string };
+    // android/AndroidAppIdResolver.ts
+    'platform:android_native_project_check_error': { message: string };
+    'platform:android_manifest_resolve_error': { message: string };
   }
 }
 
