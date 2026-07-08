@@ -19,6 +19,7 @@ import path from 'node:path';
 import type { TransformOptions } from './babel-core';
 import { loadPartialConfigSync } from './babel-core';
 import { loadBabelConfig, resolveBabelrcName } from './loadBabelConfig';
+import { debugEvent } from './transform-worker/events';
 import { transformSync } from './transformSync';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
@@ -44,8 +45,6 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   isDomComponent?: boolean;
 };
 
-const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
-
 function isCustomTruthy(value: any): boolean {
   return String(value) === 'true';
 }
@@ -64,7 +63,7 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 }
 
 const memoizeWarning = memoize((message: string) => {
-  debug(message);
+  debugEvent('babel:missing_router_root', { message });
 });
 
 function getBabelCaller({

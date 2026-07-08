@@ -37,8 +37,6 @@ export interface TransformResponse {
   readonly output: readonly ExpoJsOutput[];
 }
 
-const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
-
 function getStringArray(value: any): string[] | undefined {
   if (!value) return undefined;
   if (typeof value === 'string') {
@@ -105,7 +103,7 @@ async function transformImpl(
       const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
       // Inject client boundaries into the root client bundle for production bundling.
       if (clientBoundaries) {
-        debug('Parsed client boundaries:', clientBoundaries);
+        debugEvent('client_boundaries:parsed', { boundaries: clientBoundaries });
 
         // Inject source
         const src =

@@ -19,10 +19,6 @@ declare module '@expo/metro/metro-transform-worker' {
   }
 }
 
-const debug = require('debug')(
-  'expo:metro-config:supervising-transform-worker'
-) as typeof console.log;
-
 const getCustomTransform = (() => {
   let _transformerPath: string | undefined;
   let _transformer: typeof import('./transform-worker') | undefined;
@@ -52,7 +48,6 @@ const getCustomTransform = (() => {
       // We only load the user transformer once and cache it
       // If the user didn't add a custom transformer, we don't load it,
       // but the user maybe has a custom Babel transformer
-      debug(`Loading custom transformer at "${_transformerPath}"`);
       try {
         _transformer = require.call(null, _transformerPath);
         event('custom_transformer:loaded', { path: _transformerPath });

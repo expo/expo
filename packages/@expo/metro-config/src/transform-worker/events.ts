@@ -16,6 +16,21 @@ declare module '2g' {
       deps: number;
       cached: false;
     };
+
+    // debug keys
+    'transform:browserslist:targets': { targets: Record<string, unknown> };
+    'transform:collect_deps:magic_comment_ignored': { line: number | string; code: string };
+    'transform:client_boundaries:parsed': { boundaries: string[] };
+    'transform:postcss:config_loaded': { path: string };
+    'transform:postcss:plugin_loaded': { plugin: string };
+    'transform:module_mapper:request_redirected': { request: string; resolved: string };
+    'transform:module_mapper:redirect_failed': { request: string; error: SerializedError };
+    'transform:import_export:unexpected_object_pattern': { node: string };
+    'transform:import_export:unexpected_array_pattern': { node: string };
+    'transform:import_export:unexpected_identifier': { node: string };
+    'transform:import_export:unexpected_declaration': { node: string };
+    'transform:import_export:unexpected_specifier': { node: string };
+    'transform:babel:missing_router_root': { message: string };
   }
 }
 
