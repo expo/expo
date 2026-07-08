@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix `BlurView` not applying border radius styles to the native blur layer. ([#45691](https://github.com/expo/expo/pull/45691) by [@mvincentong](https://github.com/mvincentong)) and [@behenate](https://github.com/behenate)
-- [Android] Fixed `ExpoBlurTargetView.indexOfChild()` returning `-1` for its own child, which made gesture handlers (e.g. `react-native-gesture-handler`) treat views under a `BlurTargetView` as detached and cancel their gestures. ([#47402](https://github.com/expo/expo/issues/47402) by [@efstathiosntonas](https://github.com/efstathiosntonas))
+- [Android] Fix gesture handlers treating views under a `BlurTargetView` as detached and cancelling their gestures. ([#47404](https://github.com/expo/expo/pull/47404) by [@efstathiosntonas](https://github.com/efstathiosntonas))
 
 ### 💡 Others
 
