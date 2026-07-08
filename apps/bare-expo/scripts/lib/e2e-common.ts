@@ -29,13 +29,13 @@ export function getStartMode(programFilename: string): StartMode {
 export interface MaestroFlowParams {
   appId: string;
   e2eDir: string;
-  confirmFirstRunPromptIOS: boolean;
+  warmUpDeepLinkIOS: boolean;
 }
 
 export async function createMaestroFlowAsync({
   appId,
   e2eDir,
-  confirmFirstRunPromptIOS,
+  warmUpDeepLinkIOS,
 }: MaestroFlowParams): Promise<string> {
   const inputFile = await import('../../e2e/TestSuite-test.native.js');
   const testCases = inputFile.TESTS as string[];
@@ -50,12 +50,18 @@ jsEngine: graaljs
 - clearState
 `,
   ];
-  if (confirmFirstRunPromptIOS) {
+  if (warmUpDeepLinkIOS) {
     contents.push(`\
-# Run once to approve the first time deeplinking prompt on iOS (clearState above resets this)
+# A deep link that cold-starts the app after clearState can get dropped before the JS side is
+# ready to handle it, so open the first link once up front and wait for the app UI to come up
+# before the per-test links below, which then hit a running app. Optional because when the
+# cold-start link does get handled, the app shows the test run screen without this header.
+# (The deep link confirmation prompt doesn't show up at all: the runner pre-approves the
+# scheme before the flows.)
 - openLink: bareexpo://test-suite/run?tests=${testCases[0]}
-- tapOn:
-    text: "Open"
+- extendedWaitUntil:
+    visible: "Expo Test Suite"
+    timeout: 30000
     optional: true
 `);
   }
@@ -206,11 +212,6 @@ const getCustomMaestroFlowsAsync = async (
 
   const yamlFiles = await Array.fromAsync(fs.glob('**/*.yaml', { cwd: e2eDir, exclude: ignore }));
   yamlFiles.sort();
-
-  if (platform === 'ios' && process.env.CI) {
-    // when running locally, we assume the app can open without confirmation
-    yamlFiles.unshift('_nested-flows/confirm-app-open.yaml');
-  }
 
   console.log(`detected maestro files for ${platform}:`, yamlFiles);
   return yamlFiles;

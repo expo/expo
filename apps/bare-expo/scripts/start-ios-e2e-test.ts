@@ -57,7 +57,7 @@ const __dirname = dirname(__filename);
       const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
         appId: APP_ID,
         e2eDir,
-        confirmFirstRunPromptIOS: true,
+        warmUpDeepLinkIOS: true,
       });
 
       await retryAsync((retryNumber) => {
@@ -186,6 +186,25 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 180_000) 
   }, 3);
 }
 
+async function preApproveDeepLinkPromptAsync(deviceId: string): Promise<void> {
+  // Approve the bareexpo:// scheme up front so the "Open in BareExpo?" confirmation prompt
+  // never shows up. The approval store lives in the simulator's global preferences (keyed by
+  // the requesting process, CoreSimulatorBridge for both simctl openurl and maestro openLink),
+  // so unlike a tapped approval it also survives clearState.
+  console.log('\n🔓 Pre-approving the deep link confirmation prompt');
+  await spawnAsync('xcrun', [
+    'simctl',
+    'spawn',
+    deviceId,
+    'defaults',
+    'write',
+    'com.apple.launchservices.schemeapproval',
+    'com.apple.CoreSimulator.CoreSimulatorBridge-->bareexpo',
+    '-string',
+    APP_ID,
+  ]);
+}
+
 async function testAsync(
   maestroFlowFilePath: string,
   deviceId: string,
@@ -197,6 +216,7 @@ async function testAsync(
 
   try {
     await startSimulatorAsync(deviceId);
+    await preApproveDeepLinkPromptAsync(deviceId);
     console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
     await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
 
