@@ -1,6 +1,6 @@
 # Meta-plan: Execute Steps 5–9 of the Global Navigation State refactor
 
-> The technical, step-by-step spec lives in `~/Documents/notes/expo-rotuer/global-state-rfc/PLAN.md`
+> The technical, step-by-step spec lives in https://github.com/Ubax/notes/tree/main/expo-rotuer/global-state-rfc
 > (referred to below as the **RFC plan**). This file is the *execution* plan — how each step gets
 > planned, reviewed, implemented, reviewed again, and committed.
 
@@ -29,7 +29,7 @@ staged (9a/9b/9c).
 
 Run these seven substeps in order for each step. Do not start substep N+1 until N is complete.
 
-1. **Detailed plan** → write `~/Documents/notes/expo-rotuer/global-state-rfc/Step X.md`. Keep it
+1. **Detailed plan** → write `Step X.md` in https://github.com/Ubax/notes/tree/main/expo-rotuer/global-state-rfc. Keep it
    short and scannable (per standing preference): what changes, files, the red→green test list,
    known unknowns, and the decision(s) resolved. Not a restatement of the RFC plan.
 2. **Challenge the plan** → launch **3 fresh review agents in parallel**, distinct lenses:
@@ -42,7 +42,7 @@ Run these seven substeps in order for each step. Do not start substep N+1 until 
    weak assertions. Address findings.
 5. **Commit** → once the implementation-review agents' findings are addressed, commit directly:
    `[step x] <one-line message>` — one line, no body. No per-commit human review gate.
-6. **Update the RFC plan** → in `~/Documents/notes/expo-rotuer/global-state-rfc/PLAN.md`, mark the
+6. **Update the RFC plan** → in https://github.com/Ubax/notes/tree/main/expo-rotuer/global-state-rfc, mark the
    step landed and record any correction/deviation discovered during implementation (like the
    existing "one correction to the RFC" note).
 7. **Clean context** → clear the conversation and start the next step fresh.
