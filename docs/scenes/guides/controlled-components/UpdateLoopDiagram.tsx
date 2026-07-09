@@ -90,7 +90,7 @@ export function UpdateLoopDiagram() {
               key={LANES[step.lane] + index}
               className={mergeClasses('relative z-10 md:self-center', step.placement)}>
               <div className="relative mx-1 rounded-md border border-default bg-default px-2.5 py-2 shadow-xs">
-                <span className="absolute -top-2 -left-2 flex size-5 items-center justify-center rounded-full border border-palette-purple7 bg-palette-purple3 text-[10px] font-semibold text-default">
+                <span className="absolute -top-2 -left-2 flex size-5 items-center justify-center rounded-full border border-info bg-info text-[10px] font-semibold text-default">
                   {index + 1}
                 </span>
                 <p className="text-center text-xs leading-snug text-default">{step.label}</p>
