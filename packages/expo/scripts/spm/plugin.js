@@ -38,6 +38,7 @@ const { resolveExpoModules, generateModulesProvider } = require('./cli');
 const { describeFlavoredArtifact } = require('./swap-flavor');
 const {
   collectPrecompiledProducts,
+  collectWatchPaths,
   findModuleRoot,
   moduleNeedsReact,
   isPureSwift,
@@ -223,10 +224,23 @@ module.exports = function expoSpmPlugin(context) {
     console.warn(`[expo-spm-plugin] WARNING: ExpoModulesProvider generation failed: ${e.message}`);
   }
 
+  // Staleness inputs (`watchPaths` plugin contract): each module's checked-in
+  // Package.swift and expo-module.config.json. Editing either must trip RN's
+  // in-build re-sync — the manifests drive the generated wrapper packages, the
+  // configs drive module resolution.
+  const moduleRoots = new Set();
+  for (const mod of modules) {
+    for (const pod of mod.pods ?? []) {
+      moduleRoots.add(findModuleRoot(pod.podspecDir));
+    }
+  }
+  const watchPaths = collectWatchPaths([...moduleRoots]);
+
   return {
     packageDependencies,
     productDependencies,
     generatedSources,
     flavoredArtifacts,
+    watchPaths,
   };
 };

@@ -6,6 +6,7 @@ const path = require('path');
 
 const {
   CORE_REACT_PRODUCTS,
+  collectWatchPaths,
   textImportsReact,
   moduleNeedsReact,
   isPureSwift,
@@ -86,5 +87,24 @@ describe('isPureSwift', () => {
     } finally {
       fs.rmSync(root, { recursive: true, force: true });
     }
+  });
+});
+
+describe('collectWatchPaths', () => {
+  it('returns only the manifest/config files that exist, per module root', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'watch-'));
+    const withBoth = path.join(root, 'with-both');
+    const withConfig = path.join(root, 'with-config');
+    const withNeither = path.join(root, 'with-neither');
+    for (const dir of [withBoth, withConfig, withNeither]) fs.mkdirSync(dir);
+    fs.writeFileSync(path.join(withBoth, 'Package.swift'), '// manifest');
+    fs.writeFileSync(path.join(withBoth, 'expo-module.config.json'), '{}');
+    fs.writeFileSync(path.join(withConfig, 'expo-module.config.json'), '{}');
+
+    expect(collectWatchPaths([withBoth, withConfig, withNeither])).toEqual([
+      path.join(withBoth, 'Package.swift'),
+      path.join(withBoth, 'expo-module.config.json'),
+      path.join(withConfig, 'expo-module.config.json'),
+    ]);
   });
 });
