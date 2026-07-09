@@ -44,12 +44,20 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     // `UIApplication.shared.delegate?.window` keeps working (e.g. expo-system-ui).
     provider.window = window
 
-    // launchOptions is nil under the scene life cycle; cold-start URLs/activities arrive via
-    // `connectionOptions` and are routed below.
+    // Under the scene life cycle UIKit passes cold-start URLs and activities in `connectionOptions`
+    // rather than in the app delegate's launch options. React Native's `Linking.getInitialURL()`
+    // only reads them from launch options, so rebuild them here; otherwise a link that cold-starts
+    // the app is delivered to no one, because the `url` event routed below fires before JS is ready.
+    let browsingWebActivity = connectionOptions.userActivities.first {
+      $0.activityType == NSUserActivityTypeBrowsingWeb
+    }
     factory.startReactNative(
       withModuleName: provider.reactNativeFactoryModuleName,
       in: window,
-      launchOptions: nil
+      launchOptions: Self.launchOptions(
+        url: connectionOptions.urlContexts.first?.url,
+        userActivity: browsingWebActivity
+      )
     )
 
     // Deep links / universal links.
@@ -87,6 +95,38 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
   open func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     Self.route(userActivity: userActivity)
   }
+}
+
+// MARK: - Launch options & routing helpers
+
+extension ExpoAppSceneDelegate {
+  /// Rebuilds the launch options that `Linking.getInitialURL()` reads from a scene's connection
+  /// options. Returns `nil` when the app wasn't cold-started by a URL or a browsing-web activity,
+  /// so it can be forwarded to `startReactNative` as-is.
+  static func launchOptions(
+    url: URL?,
+    userActivity: NSUserActivity?
+  ) -> [UIApplication.LaunchOptionsKey: Any]? {
+    // Build the keys from their underlying constant strings rather than the `UIApplication`
+    // accessors (`.url`, `.userActivityDictionary`): those accessors are deprecated as of iOS 26
+    // in favor of the scene APIs, but React Native's `getInitialURL` still reads the launch options
+    // by these exact keys, so this is the shape it expects.
+    var launchOptions: [UIApplication.LaunchOptionsKey: Any] = [:]
+    if let url {
+      let urlKey = UIApplication.LaunchOptionsKey(rawValue: "UIApplicationLaunchOptionsURLKey")
+      launchOptions[urlKey] = url
+    }
+    if let userActivity {
+      let userActivityDictionaryKey = UIApplication.LaunchOptionsKey(
+        rawValue: "UIApplicationLaunchOptionsUserActivityDictionaryKey"
+      )
+      launchOptions[userActivityDictionaryKey] = [
+        "UIApplicationLaunchOptionsUserActivityTypeKey": userActivity.activityType,
+        "UIApplicationLaunchOptionsUserActivityKey": userActivity,
+      ]
+    }
+    return launchOptions.isEmpty ? nil : launchOptions
+  }
 
   /// Pass incoming URL contexts to both the subscriber manager and `RCTLinkingManager`.
   public static func route(urlContexts: Set<UIOpenURLContext>) {
@@ -95,20 +135,6 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
       _ = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, open: context.url, options: options)
       RCTLinkingManager.application(UIApplication.shared, open: context.url, options: options)
     }
-  }
-
-  private static func openURLOptions(
-    from sceneOptions: UIScene.OpenURLOptions
-  ) -> [UIApplication.OpenURLOptionsKey: Any] {
-    var options: [UIApplication.OpenURLOptionsKey: Any] = [:]
-    if let sourceApplication = sceneOptions.sourceApplication {
-      options[.sourceApplication] = sourceApplication
-    }
-    if let annotation = sceneOptions.annotation {
-      options[.annotation] = annotation
-    }
-    options[.openInPlace] = sceneOptions.openInPlace
-    return options
   }
 
   /// Passes an incoming `NSUserActivity` to both the subscriber manager and `RCTLinkingManager`.
@@ -123,6 +149,20 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
       continue: userActivity,
       restorationHandler: { _ in }
     )
+  }
+
+  private static func openURLOptions(
+    from sceneOptions: UIScene.OpenURLOptions
+  ) -> [UIApplication.OpenURLOptionsKey: Any] {
+    var options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    if let sourceApplication = sceneOptions.sourceApplication {
+      options[.sourceApplication] = sourceApplication
+    }
+    if let annotation = sceneOptions.annotation {
+      options[.annotation] = annotation
+    }
+    options[.openInPlace] = sceneOptions.openInPlace
+    return options
   }
 }
 
