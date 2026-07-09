@@ -90,7 +90,7 @@ const __dirname = dirname(__filename);
           annotate(
             retryNumber + 1 >= NUM_OF_RETRIES ? 'error' : 'warning',
             'Native modules test suite failed',
-            `attempt  of  failed`
+            `attempt ${retryNumber + 1} of ${NUM_OF_RETRIES} failed`
           );
           throw new Error('Native modules test suite failed.');
         }
