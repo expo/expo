@@ -102,7 +102,7 @@ export const VideoScreens = [
   },
   {
     // Note: Renamed "Events" to "Video Events" to avoid conflict with expo-image screens
-    name: 'Video Events',
+    name: 'Video Events (e2e)',
     route: 'video/events',
     options: {},
     getComponent() {
