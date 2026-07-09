@@ -29,24 +29,14 @@
     {
       "configUuid": "13B07F941A680F5B00A75B9A",
       "createdArrayKeys": [],
-      "appendedArrayValues": {
-        "OTHER_SWIFT_FLAGS": [
-          "\"-Xcc\"",
-          "\"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap\""
-        ]
-      },
+      "appendedArrayValues": {},
       "createdScalars": [],
       "replacedScalars": {}
     },
     {
       "configUuid": "13B07F951A680F5B00A75B9A",
       "createdArrayKeys": [],
-      "appendedArrayValues": {
-        "OTHER_SWIFT_FLAGS": [
-          "\"-Xcc\"",
-          "\"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap\""
-        ]
-      },
+      "appendedArrayValues": {},
       "createdScalars": [],
       "replacedScalars": {}
     }
@@ -57,6 +47,7 @@
       "50E95CE9435AC128E87E7923"
     ]
   },
+  "artifactsVersionOverride": null,
   "scheme": {
     "file": "minimalswiftpm.xcscheme",
     "created": false
