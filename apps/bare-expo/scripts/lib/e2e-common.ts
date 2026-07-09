@@ -29,13 +29,11 @@ export function getStartMode(programFilename: string): StartMode {
 export interface MaestroFlowParams {
   appId: string;
   e2eDir: string;
-  confirmFirstRunPromptIOS: boolean;
 }
 
 export async function createMaestroFlowAsync({
   appId,
   e2eDir,
-  confirmFirstRunPromptIOS,
 }: MaestroFlowParams): Promise<string> {
   const inputFile = await import('../../e2e/TestSuite-test.native.js');
   const testCases = inputFile.TESTS as string[];
@@ -50,15 +48,6 @@ jsEngine: graaljs
 - clearState
 `,
   ];
-  if (confirmFirstRunPromptIOS) {
-    contents.push(`\
-# Run once to approve the first time deeplinking prompt on iOS (clearState above resets this)
-- openLink: bareexpo://test-suite/run?tests=${testCases[0]}
-- tapOn:
-    text: "Open"
-    optional: true
-`);
-  }
 
   for (const testCase of testCases) {
     contents.push(`\
@@ -203,11 +192,6 @@ const getCustomMaestroFlowsAsync = async (
 
   const yamlFiles = await Array.fromAsync(fs.glob('**/*.yaml', { cwd: e2eDir, exclude: ignore }));
   yamlFiles.sort();
-
-  if (platform === 'ios' && process.env.CI) {
-    // when running locally, we assume the app can open without confirmation
-    yamlFiles.unshift('_nested-flows/confirm-app-open.yaml');
-  }
 
   console.log(`detected maestro files for ${platform}:`, yamlFiles);
   return yamlFiles;
