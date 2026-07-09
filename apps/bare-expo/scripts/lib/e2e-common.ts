@@ -29,13 +29,11 @@ export function getStartMode(programFilename: string): StartMode {
 export interface MaestroFlowParams {
   appId: string;
   e2eDir: string;
-  warmUpDeepLinkIOS: boolean;
 }
 
 export async function createMaestroFlowAsync({
   appId,
   e2eDir,
-  warmUpDeepLinkIOS,
 }: MaestroFlowParams): Promise<string> {
   const inputFile = await import('../../e2e/TestSuite-test.native.js');
   const testCases = inputFile.TESTS as string[];
@@ -50,18 +48,6 @@ jsEngine: graaljs
 - clearState
 `,
   ];
-  if (warmUpDeepLinkIOS) {
-    contents.push(`\
-# Deep links can get dropped while the app cold-starts after clearState, so open one link up
-# front and wait for the app UI before the per-test links below. The wait is optional because
-# a handled cold-start link shows the test screen without this header.
-- openLink: bareexpo://test-suite/run?tests=${testCases[0]}
-- extendedWaitUntil:
-    visible: "Expo Test Suite"
-    timeout: 30000
-    optional: true
-`);
-  }
 
   for (const testCase of testCases) {
     contents.push(`\
