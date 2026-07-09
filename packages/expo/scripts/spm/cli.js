@@ -62,9 +62,15 @@ function generateModulesProvider(appRoot, outDir, moduleNames) {
 
 /** Raw `swift package dump-package` JSON for a module (parse it with parseDumpedManifest). */
 function runDumpPackage(moduleRoot) {
+  // Inside an Xcode build phase, SDKROOT points at the iOS/tvOS SDK, which
+  // breaks `swift package` manifest compilation (it targets macOS but inherits
+  // the iOS sysroot: "unable to load standard library for target
+  // 'arm64-apple-macosx'"). Drop it so swiftpm picks the macOS SDK itself.
+  const { SDKROOT: _sdkroot, ...env } = process.env;
   return execFileSync('swift', ['package', '--package-path', moduleRoot, 'dump-package'], {
     encoding: 'utf8',
     maxBuffer: MAX_BUFFER,
+    env,
   });
 }
 
