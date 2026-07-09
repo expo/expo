@@ -10,7 +10,279 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Sync SPM Autolinking"
-               scriptText = "set -euo pipefail  # --------------------------------------------------------------------------- # Resolve a node binary and the react-native package dir at BUILD TIME. # --------------------------------------------------------------------------- NODE_BINARY=&quot;${NODE_BINARY:-}&quot; if [ -z &quot;$NODE_BINARY&quot; ]; then   # Source RN&apos;s standard app-local node-path files. They reference vars that   # may be unset and may return non-zero, so relax nounset AND errexit while   # sourcing &#x2014; a buggy user .xcode.env must degrade to PATH-based node   # resolution below, not silently abort every build.   set +eu   if [ -f &quot;$SRCROOT/.xcode.env&quot; ]; then     . &quot;$SRCROOT/.xcode.env&quot;   fi   if [ -f &quot;$SRCROOT/.xcode.env.local&quot; ]; then     . &quot;$SRCROOT/.xcode.env.local&quot;   fi   set -eu   NODE_BINARY=&quot;${NODE_BINARY:-}&quot; fi if [ -z &quot;$NODE_BINARY&quot; ]; then   NODE_BINARY=&quot;$(command -v node 2&gt;/dev/null || true)&quot; fi  # Resolve react-native&apos;s dir FROM THE APP (require.resolve), not a # generation-time baked path &#x2014; the baked path goes stale in pnpm / hoisted # stores. Fall back to the baked path if resolution fails or the resolved dir # has no setup-apple-spm.js. RN_DIR=&quot;&quot; if [ -n &quot;$NODE_BINARY&quot; ]; then   RN_DIR=&quot;$(cd &quot;$SRCROOT&quot; &amp;&amp; &quot;$NODE_BINARY&quot; --print &quot;require(&apos;path&apos;).dirname(require.resolve(&apos;react-native/package.json&apos;))&quot; 2&gt;/dev/null || true)&quot; fi if [ -z &quot;$RN_DIR&quot; ] || [ ! -f &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; ]; then   RN_DIR=&quot;../../../node_modules/.pnpm/react-native@0.88.0-nightly-20260709-24e4b2cae_@babel+core@7.29.7_@react-native+metro-c_1930de5f6bb9c9cac81cc712b7f172f1/node_modules/react-native&quot; fi  # --------------------------------------------------------------------------- # Flavor swap &#x2014; defined ONCE, called TWICE (a &quot;swap sandwich&quot;). SwiftPM can&apos;t # branch a binaryTarget on $CONFIGURATION, so &#x2014; mirroring the CocoaPods # React-Core-prebuilt swap (replace-rncore-version.js) &#x2014; swap-flavor.js (1) # REPOINTS the app-local + autolinking-plugin slot symlinks, the source Xcode&apos;s # implicit Embed step resolves and captures at build-graph-construction time, # and (2) overwrites the SPM-copied frameworks in $BUILT_PRODUCTS_DIR with the # correct-flavor slices for the Link step. Sets SWAP_OK / SWAP_REASON; the # loud-error mismatch fallback is applied only after the FINAL (trailing) call. run_swap_flavor() {   SWAP_OK=0   SWAP_REASON=&quot;&quot;   if [ -z &quot;${BUILT_PRODUCTS_DIR:-}&quot; ]; then     # Not inside an Xcode build environment &#x2014; nothing to swap against.     SWAP_OK=1     return 0   fi   if [ -z &quot;$NODE_BINARY&quot; ]; then     SWAP_REASON=&quot;no node binary found (set NODE_BINARY or add ios/.xcode.env)&quot;   elif [ ! -f &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; ]; then     SWAP_REASON=&quot;could not locate the react-native package (setup-apple-spm.js)&quot;   elif ( cd &quot;$SRCROOT&quot; &amp;&amp; &quot;$NODE_BINARY&quot; &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; swap-flavor ); then     SWAP_OK=1   else     SWAP_REASON=&quot;swap-flavor exited non-zero&quot;   fi }  # Leading swap &#x2014; the RACE-WINNING repoint (graph-time embed correctness). Scheme # pre-actions do NOT reliably block Xcode&apos;s graph construction: a sub-second # pre-action repoints the embed source in time, but a full re-sync (~15s) loses # the race. So repoint FIRST &#x2014; cheap, before the stale check / sync below &#x2014; to # fix the embed source up front. Its result is intentionally not acted on here; # the trailing swap owns the authoritative end-state + the loud-error fallback. run_swap_flavor  STAMP=&quot;$SRCROOT/build/generated/autolinking/.spm-sync-stamp&quot; STALE=0  # Check 0: xcframework artifacts missing (fresh clone) if [ ! -f &quot;$SRCROOT/build/xcframeworks/artifacts.json&quot; ] || \    [ ! -d &quot;$SRCROOT/build/xcframeworks/React.xcframework&quot; ]; then   STALE=1 fi  # Find project root (where package.json lives &#x2014; may be an ancestor of SRCROOT) PROJECT_ROOT=&quot;$SRCROOT&quot; while [ &quot;$PROJECT_ROOT&quot; != &quot;/&quot; ] &amp;&amp; [ ! -f &quot;$PROJECT_ROOT/package.json&quot; ]; do   PROJECT_ROOT=&quot;$(dirname &quot;$PROJECT_ROOT&quot;)&quot; done if [ ! -f &quot;$PROJECT_ROOT/package.json&quot; ]; then   PROJECT_ROOT=&quot;$SRCROOT&quot; fi  # Check 1: dependency inputs (covers app projects after any package manager install) for INPUT in \   &quot;$PROJECT_ROOT/package.json&quot; \   &quot;$PROJECT_ROOT/react-native.config.js&quot;; do   if [ -f &quot;$INPUT&quot; ] &amp;&amp; [ &quot;$INPUT&quot; -nt &quot;$STAMP&quot; ]; then     STALE=1     break   fi done  # Check workspace lockfiles and package-manager metadata. These cover package # managers that do not reliably bump node_modules mtimes, and Yarn PnP projects # that do not have node_modules at all. if [ &quot;$STALE&quot; -eq 0 ]; then   DIR=&quot;$PROJECT_ROOT&quot;   while [ &quot;$DIR&quot; != &quot;/&quot; ]; do     for INPUT in \       &quot;$DIR/package-lock.json&quot; \       &quot;$DIR/npm-shrinkwrap.json&quot; \       &quot;$DIR/yarn.lock&quot; \       &quot;$DIR/pnpm-lock.yaml&quot; \       &quot;$DIR/bun.lock&quot; \       &quot;$DIR/bun.lockb&quot; \       &quot;$DIR/.pnp.cjs&quot; \       &quot;$DIR/.pnp.loader.mjs&quot;; do       if [ -f &quot;$INPUT&quot; ] &amp;&amp; [ &quot;$INPUT&quot; -nt &quot;$STAMP&quot; ]; then         STALE=1         break       fi     done     if [ &quot;$STALE&quot; -eq 1 ]; then       break     fi     DIR=&quot;$(dirname &quot;$DIR&quot;)&quot;   done fi  # Check node_modules mtime. In monorepos, node_modules may be hoisted to any # ancestor between the app package and the workspace root. if [ &quot;$STALE&quot; -eq 0 ]; then   DIR=&quot;$PROJECT_ROOT&quot;   while [ &quot;$DIR&quot; != &quot;/&quot; ]; do     NM_DIR=&quot;$DIR/node_modules&quot;     if [ -d &quot;$NM_DIR&quot; ] &amp;&amp; [ &quot;$NM_DIR&quot; -nt &quot;$STAMP&quot; ]; then       STALE=1       break     fi     DIR=&quot;$(dirname &quot;$DIR&quot;)&quot;   done fi  # Also check the app root directly when SRCROOT is not the package root. if [ &quot;$STALE&quot; -eq 0 ] &amp;&amp; [ &quot;$SRCROOT&quot; != &quot;$PROJECT_ROOT&quot; ]; then   if [ -d &quot;$SRCROOT/node_modules&quot; ] &amp;&amp; [ &quot;$SRCROOT/node_modules&quot; -nt &quot;$STAMP&quot; ]; then     STALE=1   fi fi  # Check 1.5: watched module source dirs (catches add/remove of source files # in spm.modules and autolinked deps). Directory mtime updates on both add # and remove of children, so a single -newer check covers both cases. WATCH_FILE=&quot;$SRCROOT/build/generated/autolinking/.spm-sync-watch-paths&quot; if [ &quot;$STALE&quot; -eq 0 ] &amp;&amp; [ -f &quot;$WATCH_FILE&quot; ]; then   while IFS= read -r DIR; do     [ -z &quot;$DIR&quot; ] &amp;&amp; continue     if [ -d &quot;$DIR&quot; ] &amp;&amp; [ -n &quot;$(find &quot;$DIR&quot; -newer &quot;$STAMP&quot; -print -quit 2&gt;/dev/null)&quot; ]; then       STALE=1       break     fi   done &lt; &quot;$WATCH_FILE&quot; fi  # Check 2: codegen spec files changed via git (covers monorepo after git pull) if [ &quot;$STALE&quot; -eq 0 ] &amp;&amp; [ -f &quot;$STAMP&quot; ]; then   STAMP_TIME=$(stat -f %m &quot;$STAMP&quot; 2&gt;/dev/null || stat -c %Y &quot;$STAMP&quot; 2&gt;/dev/null || echo 0)   LATEST_SPEC_COMMIT=$(git -C &quot;$SRCROOT&quot; log -1 --format=%ct -- &apos;*.js&apos; &apos;*.ts&apos; 2&gt;/dev/null || echo 0)   if [ &quot;$LATEST_SPEC_COMMIT&quot; -gt &quot;$STAMP_TIME&quot; ]; then     STALE=1   fi fi  if [ ! -f &quot;$STAMP&quot; ]; then   STALE=1 fi  # Re-sync (codegen + autolinking), BETWEEN the two swaps. The sync dispatch # re-pins the app-local slot symlinks to the add-time (debug) flavor via # generate-spm-package linkOne on every re-sync, so the trailing swap below must # run AFTER it &#x2014; it has to be the LAST writer of those symlinks. When inputs are # unchanged we skip the re-sync but STILL fall through to the trailing swap: a # Debug&lt;-&gt;Release config flip changes no sync input yet must reflip the embedded # flavor. if [ &quot;$STALE&quot; -eq 1 ]; then   echo &quot;SPM sync inputs changed &#x2014; re-syncing (codegen + autolinking)...&quot;    WITH_ENVIRONMENT=&quot;$RN_DIR/scripts/xcode/with-environment.sh&quot;    if [ -f &quot;$WITH_ENVIRONMENT&quot; ]; then     # with-environment.sh references PODS_ROOT and $1, which may be unset.     # Temporarily disable nounset to avoid failures when sourcing.     export PODS_ROOT=&quot;${PODS_ROOT:-$SRCROOT}&quot;     set +u     . &quot;$WITH_ENVIRONMENT&quot;     set -u   fi    cd &quot;$SRCROOT&quot;   # `|| RC=$?` so a non-zero exit is CAPTURED rather than aborting the phase   # under `set -e` &#x2014; the whole point is to branch on the code below (2 = fail   # the build with a scaffold hint; other non-zero = warn but don&apos;t break).   RC=0   if [ -n &quot;$NODE_BINARY&quot; ] &amp;&amp; [ -f &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; ]; then     # Direct, dependency-free dispatch (no `npx react-native`, which needs     # @react-native-community/cli).     &quot;$NODE_BINARY&quot; &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; sync || RC=$?   elif command -v npx &gt;/dev/null 2&gt;&amp;1; then     npx react-native spm sync || RC=$?   else     echo &quot;warning: node/npx not found &#x2014; skipping SPM sync&quot;   fi   if [ &quot;$RC&quot; -eq 2 ]; then     # Exit 2 = an autolinked community dependency has no Package.swift. The     # autolinker already printed an `error:` line per dep (so Xcode shows them     # and the fix). Fail the build &#x2014; the developer must run     # `npx react-native spm scaffold` from a terminal to generate the manifest.     exit 1   elif [ &quot;$RC&quot; -ne 0 ]; then     # Don&apos;t exit: fall through to the swap so the flavor pin is still corrected.     echo &quot;warning: SPM sync failed &#x2014; build may use stale codegen/autolinking&quot;   fi fi  # Trailing swap &#x2014; the AUTHORITATIVE end-state. Runs LAST because the sync above # re-pins the slot symlinks to the add-time (debug) flavor via linkOne; this # call restores the requested flavor AND &#x2014; once BUILT_PRODUCTS_DIR is # materialized in the in-target phase &#x2014; rsyncs the link-step framework copies. # The loud-error mismatch fallback is tied to THIS (final) swap. run_swap_flavor if [ &quot;$SWAP_OK&quot; -eq 0 ]; then   # The swap could not run. Determine &#x2014; in pure shell, mirroring   # swap-flavor.js &#x2014; whether the pinned add-time flavor will ACTUALLY mismatch   # this configuration. swap-flavor.js maps CONFIGURATION=Release to the   # &apos;release&apos; flavor and everything else (Debug + custom config names) to   # &apos;debug&apos;; the pinned flavor is the parent dir of the React.xcframework   # symlink target (.../&lt;version&gt;/&lt;flavor&gt;/React.xcframework).   DESIRED_FLAVOR=debug   if [ &quot;${CONFIGURATION:-}&quot; = &quot;Release&quot; ]; then     DESIRED_FLAVOR=release   fi   PINNED_FLAVOR=&quot;&quot;   LINK_TARGET=&quot;$(readlink &quot;$SRCROOT/build/xcframeworks/React.xcframework&quot; 2&gt;/dev/null || true)&quot;   if [ -n &quot;$LINK_TARGET&quot; ]; then     PINNED_PARENT=&quot;$(basename &quot;$(dirname &quot;$LINK_TARGET&quot;)&quot;)&quot;     case &quot;$(printf &apos;%s&apos; &quot;$PINNED_PARENT&quot; | tr &apos;[:upper:]&apos; &apos;[:lower:]&apos;)&quot; in       debug) PINNED_FLAVOR=debug ;;       release) PINNED_FLAVOR=release ;;     esac   fi   if [ -n &quot;$PINNED_FLAVOR&quot; ] &amp;&amp; [ &quot;$PINNED_FLAVOR&quot; != &quot;$DESIRED_FLAVOR&quot; ]; then     # A certain Debug&lt;-&gt;release mix &#x2014; known-broken, not merely suboptimal (a     # Debug app linking release React has RCT_DEV=0, never queries Metro, and     # crashes at runtime with &apos;No script URL provided&apos;). Fail the build.     echo &quot;error: SwiftPM flavor swap could not run ($SWAP_REASON) and the pinned $PINNED_FLAVOR frameworks do not match the $DESIRED_FLAVOR configuration &#x2014; the app will misbehave (Debug builds: &apos;No script URL provided&apos;). Put Node on PATH or set NODE_BINARY in ios/.xcode.env, then rebuild; or run &apos;npx react-native spm swap-flavor&apos; from a terminal.&quot;     exit 1   else     echo &quot;warning: SwiftPM flavor swap could not run ($SWAP_REASON); build may link the add-time flavor&quot;   fi fi ">
+               scriptText = "set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Resolve a node binary and the react-native package dir at BUILD TIME.
+# ---------------------------------------------------------------------------
+NODE_BINARY=&quot;${NODE_BINARY:-}&quot;
+if [ -z &quot;$NODE_BINARY&quot; ]; then
+  # Source RN&apos;s standard app-local node-path files. They reference vars that
+  # may be unset and may return non-zero, so relax nounset AND errexit while
+  # sourcing — a buggy user .xcode.env must degrade to PATH-based node
+  # resolution below, not silently abort every build.
+  set +eu
+  if [ -f &quot;$SRCROOT/.xcode.env&quot; ]; then
+    . &quot;$SRCROOT/.xcode.env&quot;
+  fi
+  if [ -f &quot;$SRCROOT/.xcode.env.local&quot; ]; then
+    . &quot;$SRCROOT/.xcode.env.local&quot;
+  fi
+  set -eu
+  NODE_BINARY=&quot;${NODE_BINARY:-}&quot;
+fi
+if [ -z &quot;$NODE_BINARY&quot; ]; then
+  NODE_BINARY=&quot;$(command -v node 2&gt;/dev/null || true)&quot;
+fi
+
+# Resolve react-native&apos;s dir FROM THE APP (require.resolve), not a
+# generation-time baked path — the baked path goes stale in pnpm / hoisted
+# stores. Fall back to the baked path if resolution fails or the resolved dir
+# has no setup-apple-spm.js.
+RN_DIR=&quot;&quot;
+if [ -n &quot;$NODE_BINARY&quot; ]; then
+  RN_DIR=&quot;$(cd &quot;$SRCROOT&quot; &amp;&amp; &quot;$NODE_BINARY&quot; --print &quot;require(&apos;path&apos;).dirname(require.resolve(&apos;react-native/package.json&apos;))&quot; 2&gt;/dev/null || true)&quot;
+fi
+if [ -z &quot;$RN_DIR&quot; ] || [ ! -f &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; ]; then
+  RN_DIR=&quot;../../../node_modules/.pnpm/react-native@0.87.0-nightly-20260709-df8edb7a8ee_@babel+core@7.29.7_@react-native+metro_a26d578b6031aa6c900f84af140977ae/node_modules/react-native&quot;
+fi
+
+# ---------------------------------------------------------------------------
+# Flavor swap — defined ONCE, called TWICE (a &quot;swap sandwich&quot;). SwiftPM can&apos;t
+# branch a binaryTarget on $CONFIGURATION, so — mirroring the CocoaPods
+# React-Core-prebuilt swap (replace-rncore-version.js) — swap-flavor.js (1)
+# REPOINTS the app-local + autolinking-plugin slot symlinks, the source Xcode&apos;s
+# implicit Embed step resolves and captures at build-graph-construction time,
+# and (2) overwrites the SPM-copied frameworks in $BUILT_PRODUCTS_DIR with the
+# correct-flavor slices for the Link step. Sets SWAP_OK / SWAP_REASON; the
+# loud-error mismatch fallback is applied only after the FINAL (trailing) call.
+run_swap_flavor() {
+  SWAP_OK=0
+  SWAP_REASON=&quot;&quot;
+  if [ -z &quot;${BUILT_PRODUCTS_DIR:-}&quot; ]; then
+    # Not inside an Xcode build environment — nothing to swap against.
+    SWAP_OK=1
+    return 0
+  fi
+  if [ -z &quot;$NODE_BINARY&quot; ]; then
+    SWAP_REASON=&quot;no node binary found (set NODE_BINARY or add ios/.xcode.env)&quot;
+  elif [ ! -f &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; ]; then
+    SWAP_REASON=&quot;could not locate the react-native package (setup-apple-spm.js)&quot;
+  elif ( cd &quot;$SRCROOT&quot; &amp;&amp; &quot;$NODE_BINARY&quot; &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; swap-flavor ); then
+    SWAP_OK=1
+  else
+    SWAP_REASON=&quot;swap-flavor exited non-zero&quot;
+  fi
+}
+
+# Leading swap — the RACE-WINNING repoint (graph-time embed correctness). Scheme
+# pre-actions do NOT reliably block Xcode&apos;s graph construction: a sub-second
+# pre-action repoints the embed source in time, but a full re-sync (~15s) loses
+# the race. So repoint FIRST — cheap, before the stale check / sync below — to
+# fix the embed source up front. Its result is intentionally not acted on here;
+# the trailing swap owns the authoritative end-state + the loud-error fallback.
+run_swap_flavor
+
+STAMP=&quot;$SRCROOT/build/generated/autolinking/.spm-sync-stamp&quot;
+STALE=0
+
+# Check 0: xcframework artifacts missing (fresh clone)
+if [ ! -f &quot;$SRCROOT/build/xcframeworks/artifacts.json&quot; ] || \
+   [ ! -d &quot;$SRCROOT/build/xcframeworks/React.xcframework&quot; ]; then
+  STALE=1
+fi
+
+# Find project root (where package.json lives — may be an ancestor of SRCROOT)
+PROJECT_ROOT=&quot;$SRCROOT&quot;
+while [ &quot;$PROJECT_ROOT&quot; != &quot;/&quot; ] &amp;&amp; [ ! -f &quot;$PROJECT_ROOT/package.json&quot; ]; do
+  PROJECT_ROOT=&quot;$(dirname &quot;$PROJECT_ROOT&quot;)&quot;
+done
+if [ ! -f &quot;$PROJECT_ROOT/package.json&quot; ]; then
+  PROJECT_ROOT=&quot;$SRCROOT&quot;
+fi
+
+# Check 1: dependency inputs (covers app projects after any package manager install)
+for INPUT in \
+  &quot;$PROJECT_ROOT/package.json&quot; \
+  &quot;$PROJECT_ROOT/react-native.config.js&quot;; do
+  if [ -f &quot;$INPUT&quot; ] &amp;&amp; [ &quot;$INPUT&quot; -nt &quot;$STAMP&quot; ]; then
+    STALE=1
+    break
+  fi
+done
+
+# Check workspace lockfiles and package-manager metadata. These cover package
+# managers that do not reliably bump node_modules mtimes, and Yarn PnP projects
+# that do not have node_modules at all.
+if [ &quot;$STALE&quot; -eq 0 ]; then
+  DIR=&quot;$PROJECT_ROOT&quot;
+  while [ &quot;$DIR&quot; != &quot;/&quot; ]; do
+    for INPUT in \
+      &quot;$DIR/package-lock.json&quot; \
+      &quot;$DIR/npm-shrinkwrap.json&quot; \
+      &quot;$DIR/yarn.lock&quot; \
+      &quot;$DIR/pnpm-lock.yaml&quot; \
+      &quot;$DIR/bun.lock&quot; \
+      &quot;$DIR/bun.lockb&quot; \
+      &quot;$DIR/.pnp.cjs&quot; \
+      &quot;$DIR/.pnp.loader.mjs&quot;; do
+      if [ -f &quot;$INPUT&quot; ] &amp;&amp; [ &quot;$INPUT&quot; -nt &quot;$STAMP&quot; ]; then
+        STALE=1
+        break
+      fi
+    done
+    if [ &quot;$STALE&quot; -eq 1 ]; then
+      break
+    fi
+    DIR=&quot;$(dirname &quot;$DIR&quot;)&quot;
+  done
+fi
+
+# Check node_modules mtime. In monorepos, node_modules may be hoisted to any
+# ancestor between the app package and the workspace root.
+if [ &quot;$STALE&quot; -eq 0 ]; then
+  DIR=&quot;$PROJECT_ROOT&quot;
+  while [ &quot;$DIR&quot; != &quot;/&quot; ]; do
+    NM_DIR=&quot;$DIR/node_modules&quot;
+    if [ -d &quot;$NM_DIR&quot; ] &amp;&amp; [ &quot;$NM_DIR&quot; -nt &quot;$STAMP&quot; ]; then
+      STALE=1
+      break
+    fi
+    DIR=&quot;$(dirname &quot;$DIR&quot;)&quot;
+  done
+fi
+
+# Also check the app root directly when SRCROOT is not the package root.
+if [ &quot;$STALE&quot; -eq 0 ] &amp;&amp; [ &quot;$SRCROOT&quot; != &quot;$PROJECT_ROOT&quot; ]; then
+  if [ -d &quot;$SRCROOT/node_modules&quot; ] &amp;&amp; [ &quot;$SRCROOT/node_modules&quot; -nt &quot;$STAMP&quot; ]; then
+    STALE=1
+  fi
+fi
+
+# Check 1.5: watched paths (mixed dirs AND files). Dirs catch add/remove of
+# source files in spm.modules and autolinked deps (dir mtime updates on both);
+# files catch edits to a dep&apos;s checked-in Package.swift / plugin manifests that
+# would not bump any parent dir mtime. A path that has VANISHED (renamed/moved
+# module root) forces a re-sync so the autolinker surfaces the real, actionable
+# config error rather than the build failing later on dangling-symlink noise.
+WATCH_FILE=&quot;$SRCROOT/build/generated/autolinking/.spm-sync-watch-paths&quot;
+if [ &quot;$STALE&quot; -eq 0 ] &amp;&amp; [ -f &quot;$WATCH_FILE&quot; ]; then
+  while IFS= read -r P; do
+    [ -z &quot;$P&quot; ] &amp;&amp; continue
+    if [ -d &quot;$P&quot; ]; then
+      if [ -n &quot;$(find &quot;$P&quot; -newer &quot;$STAMP&quot; -print -quit 2&gt;/dev/null)&quot; ]; then
+        STALE=1
+        break
+      fi
+    elif [ -f &quot;$P&quot; ]; then
+      if [ &quot;$P&quot; -nt &quot;$STAMP&quot; ]; then
+        STALE=1
+        break
+      fi
+    else
+      STALE=1
+      break
+    fi
+  done &lt; &quot;$WATCH_FILE&quot;
+fi
+
+# Check 2: codegen spec files changed via git (covers monorepo after git pull)
+if [ &quot;$STALE&quot; -eq 0 ] &amp;&amp; [ -f &quot;$STAMP&quot; ]; then
+  STAMP_TIME=$(stat -f %m &quot;$STAMP&quot; 2&gt;/dev/null || stat -c %Y &quot;$STAMP&quot; 2&gt;/dev/null || echo 0)
+  LATEST_SPEC_COMMIT=$(git -C &quot;$SRCROOT&quot; log -1 --format=%ct -- &apos;*.js&apos; &apos;*.ts&apos; 2&gt;/dev/null || echo 0)
+  if [ &quot;$LATEST_SPEC_COMMIT&quot; -gt &quot;$STAMP_TIME&quot; ]; then
+    STALE=1
+  fi
+fi
+
+if [ ! -f &quot;$STAMP&quot; ]; then
+  STALE=1
+fi
+
+# Re-sync (codegen + autolinking), BETWEEN the two swaps. The sync dispatch
+# re-pins the app-local slot symlinks to the add-time (debug) flavor via
+# generate-spm-package linkOne on every re-sync, so the trailing swap below must
+# run AFTER it — it has to be the LAST writer of those symlinks. When inputs are
+# unchanged we skip the re-sync but STILL fall through to the trailing swap: a
+# Debug&lt;-&gt;Release config flip changes no sync input yet must reflip the embedded
+# flavor.
+if [ &quot;$STALE&quot; -eq 1 ]; then
+  echo &quot;SPM sync inputs changed — re-syncing (codegen + autolinking)...&quot;
+
+  WITH_ENVIRONMENT=&quot;$RN_DIR/scripts/xcode/with-environment.sh&quot;
+
+  if [ -f &quot;$WITH_ENVIRONMENT&quot; ]; then
+    # with-environment.sh references PODS_ROOT and $1, which may be unset.
+    # Temporarily disable nounset to avoid failures when sourcing.
+    export PODS_ROOT=&quot;${PODS_ROOT:-$SRCROOT}&quot;
+    set +u
+    . &quot;$WITH_ENVIRONMENT&quot;
+    set -u
+  fi
+
+  cd &quot;$SRCROOT&quot;
+  # `|| RC=$?` so a non-zero exit is CAPTURED rather than aborting the phase
+  # under `set -e` — the whole point is to branch on the code below (2 = fail
+  # the build with a scaffold hint; other non-zero = warn but don&apos;t break).
+  RC=0
+  if [ -n &quot;$NODE_BINARY&quot; ] &amp;&amp; [ -f &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; ]; then
+    # Direct, dependency-free dispatch (no `npx react-native`, which needs
+    # @react-native-community/cli).
+    &quot;$NODE_BINARY&quot; &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; sync || RC=$?
+  elif command -v npx &gt;/dev/null 2&gt;&amp;1; then
+    npx react-native spm sync || RC=$?
+  else
+    echo &quot;warning: node/npx not found — skipping SPM sync&quot;
+  fi
+  if [ &quot;$RC&quot; -eq 2 ]; then
+    # Exit 2 = an autolinked community dependency has no Package.swift. The
+    # autolinker already printed an `error:` line per dep (so Xcode shows them
+    # and the fix). Fail the build — the developer must run
+    # `npx react-native spm scaffold` from a terminal to generate the manifest.
+    exit 1
+  elif [ &quot;$RC&quot; -ne 0 ]; then
+    # Don&apos;t exit: fall through to the swap so the flavor pin is still corrected.
+    echo &quot;warning: SPM sync failed — build may use stale codegen/autolinking&quot;
+  fi
+fi
+
+# Trailing swap — the AUTHORITATIVE end-state. Runs LAST because the sync above
+# re-pins the slot symlinks to the add-time (debug) flavor via linkOne; this
+# call restores the requested flavor AND — once BUILT_PRODUCTS_DIR is
+# materialized in the in-target phase — rsyncs the link-step framework copies.
+# The loud-error mismatch fallback is tied to THIS (final) swap.
+run_swap_flavor
+if [ &quot;$SWAP_OK&quot; -eq 0 ]; then
+  # The swap could not run. Determine — in pure shell, mirroring
+  # swap-flavor.js — whether the pinned add-time flavor will ACTUALLY mismatch
+  # this configuration. swap-flavor.js maps CONFIGURATION=Release to the
+  # &apos;release&apos; flavor and everything else (Debug + custom config names) to
+  # &apos;debug&apos;; the pinned flavor is the parent dir of the React.xcframework
+  # symlink target (.../&lt;version&gt;/&lt;flavor&gt;/React.xcframework).
+  DESIRED_FLAVOR=debug
+  if [ &quot;${CONFIGURATION:-}&quot; = &quot;Release&quot; ]; then
+    DESIRED_FLAVOR=release
+  fi
+  PINNED_FLAVOR=&quot;&quot;
+  LINK_TARGET=&quot;$(readlink &quot;$SRCROOT/build/xcframeworks/React.xcframework&quot; 2&gt;/dev/null || true)&quot;
+  if [ -n &quot;$LINK_TARGET&quot; ]; then
+    PINNED_PARENT=&quot;$(basename &quot;$(dirname &quot;$LINK_TARGET&quot;)&quot;)&quot;
+    case &quot;$(printf &apos;%s&apos; &quot;$PINNED_PARENT&quot; | tr &apos;[:upper:]&apos; &apos;[:lower:]&apos;)&quot; in
+      debug) PINNED_FLAVOR=debug ;;
+      release) PINNED_FLAVOR=release ;;
+    esac
+  fi
+  if [ -n &quot;$PINNED_FLAVOR&quot; ] &amp;&amp; [ &quot;$PINNED_FLAVOR&quot; != &quot;$DESIRED_FLAVOR&quot; ]; then
+    # A certain Debug&lt;-&gt;release mix — known-broken, not merely suboptimal (a
+    # Debug app linking release React has RCT_DEV=0, never queries Metro, and
+    # crashes at runtime with &apos;No script URL provided&apos;). Fail the build.
+    echo &quot;error: SwiftPM flavor swap could not run ($SWAP_REASON) and the pinned $PINNED_FLAVOR frameworks do not match the $DESIRED_FLAVOR configuration — the app will misbehave (Debug builds: &apos;No script URL provided&apos;). Put Node on PATH or set NODE_BINARY in ios/.xcode.env, then rebuild; or run &apos;npx react-native spm swap-flavor&apos; from a terminal.&quot;
+    exit 1
+  else
+    echo &quot;warning: SwiftPM flavor swap could not run ($SWAP_REASON); build may link the add-time flavor&quot;
+  fi
+fi
+">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"
