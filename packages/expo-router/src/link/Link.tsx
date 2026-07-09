@@ -16,7 +16,7 @@ export const Link = Object.assign(
    * [`WebAnchorProps`](#webanchorprops) for more details.
    *
    * > **Note**: Client-side navigation works with both single-page apps,
-   * and [static-rendering](/router/reference/static-rendering/).
+   * and [static-rendering](/router/web/static-rendering/).
    *
    * @example
    * ```tsx
