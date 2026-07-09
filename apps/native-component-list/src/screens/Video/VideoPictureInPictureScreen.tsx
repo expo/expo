@@ -5,7 +5,7 @@ import { ScrollView, View, Text } from 'react-native';
 import Button from '../../components/Button';
 import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
 import TitledSwitch from '../../components/TitledSwitch';
-import { bigBuckBunnySource } from './videoSources';
+import { starVideoSource } from './videoSources';
 import { styles } from './videoStyles';
 
 export default function VideoPictureInPictureScreen() {
@@ -14,7 +14,7 @@ export default function VideoPictureInPictureScreen() {
   const [allowPiP, setAllowPiP] = useState(true);
   const [autoEnterPiP, setAutoEnterPiP] = useState(true);
 
-  const player = useVideoPlayer(bigBuckBunnySource, (player) => {
+  const player = useVideoPlayer(starVideoSource, (player) => {
     player.loop = true;
     player.showNowPlayingNotification = false;
     player.play();
