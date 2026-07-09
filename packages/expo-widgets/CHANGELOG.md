@@ -25,6 +25,7 @@
 
 - [Android] Fix widget strings file location. ([#46538](https://github.com/expo/expo/pull/46538) by [@jakex7](https://github.com/jakex7))
 - [Android] Add 16KB page size support. ([#47135](https://github.com/expo/expo/pull/47135) by [@jakex7](https://github.com/jakex7))
+- [iOS][plugin] Only add the `aps-environment` entitlement when `enablePushNotifications` is enabled, and keep a pre-existing value. ([#TBD](https://github.com/expo/expo/pull/TBD) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
 
