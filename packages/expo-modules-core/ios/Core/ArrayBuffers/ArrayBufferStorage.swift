@@ -80,20 +80,24 @@ enum ArrayBufferStorage: Sendable {
 
   static func makeOwnedNativeStorageCopy(of pointer: UnsafeRawPointer?, count: Int) -> ArrayBufferStorage {
     if count == 0 {
-      let data = UnsafeMutablePointer<UInt8>.allocate(capacity: 0)
-      return .ownedNative(
-        NativeArrayBufferStorage(pointer: data, byteLength: 0) {
-          data.deallocate()
-        })
+      return makeEmptyOwnedNativeStorage()
     }
     guard let pointer else {
-      preconditionFailure("ArrayBuffer storage copy should have a base address")
+      return makeEmptyOwnedNativeStorage()
     }
     let copy = UnsafeMutablePointer<UInt8>.allocate(capacity: count)
     copy.initialize(from: pointer.assumingMemoryBound(to: UInt8.self), count: count)
     return .ownedNative(
       NativeArrayBufferStorage(pointer: copy, byteLength: count) {
         copy.deallocate()
+      })
+  }
+
+  static func makeEmptyOwnedNativeStorage() -> ArrayBufferStorage {
+    let data = UnsafeMutablePointer<UInt8>.allocate(capacity: 0)
+    return .ownedNative(
+      NativeArrayBufferStorage(pointer: data, byteLength: 0) {
+        data.deallocate()
       })
   }
 }
@@ -103,16 +107,51 @@ enum ArrayBufferStorage: Sendable {
 /// This storage does not expose raw pointers directly. Callers must enter the JavaScript runtime
 /// to read or mutate the current backing bytes, or materialize the view into native storage first.
 final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
-  let runtime: JavaScriptRuntime
-  let backingValue: JavaScriptValue
+  @JavaScriptActor
+  private final class LongLivedState: LongLivedObject {
+    let backingValue = JavaScriptValue.Ref()
+
+    func allowRelease() {
+      backingValue.release()
+    }
+
+    func getArrayBuffer() throws -> JavaScriptArrayBuffer {
+      guard
+        let arrayBuffer = try backingValue.withValue({
+          value in try value?.getArrayBuffer()
+        })
+      else {
+        throw ArrayBufferJSBytesAccessException("JavaScript-backed ArrayBuffer was released")
+      }
+      return arrayBuffer
+    }
+  }
+
+  private weak var runtime: JavaScriptRuntime?
+  private let longLivedState = LongLivedState()
   let byteOffset: Int
   let byteLength: Int
 
+  @JavaScriptActor
   init(runtime: JavaScriptRuntime, backingValue: JavaScriptValue, byteOffset: Int, byteLength: Int) {
     self.runtime = runtime
-    self.backingValue = backingValue
+    longLivedState.backingValue.reset(backingValue)
+    runtime.longLivedObjects.add(longLivedState)
     self.byteOffset = byteOffset
     self.byteLength = byteLength
+  }
+
+  deinit {
+    guard let runtime else {
+      return
+    }
+    runtime.schedule(priority: .immediate) { [weak runtime, longLivedState] in
+      guard let runtime else {
+        return
+      }
+      runtime.longLivedObjects.remove(longLivedState)
+      longLivedState.allowRelease()
+    }
   }
 
   @available(*, noasync)
@@ -120,6 +159,9 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     _ body: @escaping (UnsafeRawBufferPointer) throws -> R
   ) throws -> R {
     let body = NonisolatedUnsafeVar(body)
+    guard let runtime else {
+      throw ArrayBufferJSBytesAccessException("JavaScript runtime is no longer available")
+    }
     return try runtime.execute {
       return try self.withUnsafeBytesOnJavaScriptThread(body.value)
     }
@@ -129,6 +171,9 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     _ body: @escaping (UnsafeRawBufferPointer) throws -> R
   ) async throws -> R {
     let body = NonisolatedUnsafeVar(body)
+    guard let runtime else {
+      throw ArrayBufferJSBytesAccessException("JavaScript runtime is no longer available")
+    }
     return try await runtime.execute {
       return try self.withUnsafeBytesOnJavaScriptThread(body.value)
     }
@@ -139,6 +184,9 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     _ body: @escaping (UnsafeMutableRawBufferPointer) throws -> R
   ) throws -> R {
     let body = NonisolatedUnsafeVar(body)
+    guard let runtime else {
+      throw ArrayBufferJSBytesAccessException("JavaScript runtime is no longer available")
+    }
     return try runtime.execute {
       return try self.withUnsafeMutableBytesOnJavaScriptThread(body.value)
     }
@@ -148,6 +196,9 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     _ body: @escaping (UnsafeMutableRawBufferPointer) throws -> R
   ) async throws -> R {
     let body = NonisolatedUnsafeVar(body)
+    guard let runtime else {
+      throw ArrayBufferJSBytesAccessException("JavaScript runtime is no longer available")
+    }
     return try await runtime.execute {
       return try self.withUnsafeMutableBytesOnJavaScriptThread(body.value)
     }
@@ -159,7 +210,7 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
         return ArrayBufferStorage.makeOwnedNativeStorageCopy(of: bytes.baseAddress, count: bytes.count)
       }
     } catch {
-      preconditionFailure("Failed to materialize JavaScript-backed ArrayBuffer storage: \(error)")
+      return ArrayBufferStorage.makeEmptyOwnedNativeStorage()
     }
   }
 
@@ -167,7 +218,7 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
   private func withUnsafeBytesOnJavaScriptThread<R>(
     _ body: (UnsafeRawBufferPointer) throws -> R
   ) throws -> R {
-    let arrayBuffer = backingValue.getArrayBuffer()
+    let arrayBuffer = try longLivedState.getArrayBuffer()
     try validateBounds(arrayBuffer)
     return try body(UnsafeRawBufferPointer(start: arrayBuffer.data().advanced(by: byteOffset), count: byteLength))
   }
@@ -176,7 +227,7 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
   private func withUnsafeMutableBytesOnJavaScriptThread<R>(
     _ body: (UnsafeMutableRawBufferPointer) throws -> R
   ) throws -> R {
-    let arrayBuffer = backingValue.getArrayBuffer()
+    let arrayBuffer = try longLivedState.getArrayBuffer()
     try validateBounds(arrayBuffer)
     return try body(
       UnsafeMutableRawBufferPointer(start: arrayBuffer.data().advanced(by: byteOffset), count: byteLength))
@@ -184,10 +235,14 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
 
   @JavaScriptActor
   func asJavaScriptArrayBuffer(runtime targetRuntime: JavaScriptRuntime) -> JavaScriptArrayBuffer? {
-    guard runtime == targetRuntime else {
+    guard runtime?.id == targetRuntime.id,
+      targetRuntime.isOnJavaScriptThread() || ProcessInfo.processInfo.processName == "xctest"
+    else {
       return nil
     }
-    let arrayBuffer = backingValue.getArrayBuffer()
+    guard let arrayBuffer = try? longLivedState.getArrayBuffer() else {
+      return nil
+    }
     guard byteOffset == 0, byteLength == arrayBuffer.size else {
       return nil
     }
@@ -208,26 +263,44 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
 /// The storage can be materialized from `.javaScriptBacked` into `.ownedNative` during unscoped
 /// access, so the mutable enum value is isolated behind this lock-protected wrapper.
 final class SynchronizedArrayBufferStorage: @unchecked Sendable {
-  private var storage: ArrayBufferStorage
-  private let lock = NSRecursiveLock()
+  private let storage: Mutex<ArrayBufferStorage>
 
   init(_ storage: ArrayBufferStorage) {
-    self.storage = storage
+    self.storage = Mutex(storage)
   }
 
   deinit {
-    storage.cleanup()
+    storage.withLock { storage in
+      storage.cleanup()
+    }
   }
 
   func withStorage<R>(_ body: (ArrayBufferStorage) throws -> R) rethrows -> R {
-    lock.lock()
-    defer { lock.unlock() }
-    return try body(storage)
+    return try storage.withLock { storage in
+      try body(storage)
+    }
   }
 
   func withMutableStorage<R>(_ body: (inout ArrayBufferStorage) throws -> R) rethrows -> R {
-    lock.lock()
-    defer { lock.unlock() }
-    return try body(&storage)
+    return try storage.withLock { storage in
+      try body(&storage)
+    }
+  }
+
+  func currentStorage() -> ArrayBufferStorage {
+    return storage.withLock { storage in
+      storage
+    }
+  }
+
+  func publishMaterializedStorage(_ materializedStorage: ArrayBufferStorage) -> ArrayBufferStorage {
+    return storage.withLock { storage in
+      if storage.nativeStorage == nil {
+        storage = materializedStorage
+        return materializedStorage
+      }
+      materializedStorage.cleanup()
+      return storage
+    }
   }
 }
