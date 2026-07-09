@@ -112,6 +112,10 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
         (project.findProperty("expo.inlineModules.watchedDirectories")
           ?: emptyList<String>()).toString()
       )
+      it.kotlinPackageHeaderLength.set(
+        (project.findProperty("expo.inlineModules.kotlinPackageHeaderLength")
+          ?: "512").toString()
+      )
     }
   }
 

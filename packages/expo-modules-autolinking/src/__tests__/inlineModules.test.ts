@@ -170,7 +170,10 @@ describe('inlineModules.ts', () => {
         '/example-project/SimpleModule.kt': properKotlinModule,
       });
 
-      const result = await getKotlinFileNameWithItsPackage('/example-project/SimpleModule.kt');
+      const result = await getKotlinFileNameWithItsPackage(
+        '/example-project/SimpleModule.kt',
+        512
+      );
       expect(result).toBe(properKotlinModuleNameWithPackage);
     });
 
@@ -179,13 +182,58 @@ describe('inlineModules.ts', () => {
         '/example-project/NoPackageModule.kt': noPackageKotlinModule,
       });
 
-      const result = await getKotlinFileNameWithItsPackage('/example-project/NoPackageModule.kt');
+      const result = await getKotlinFileNameWithItsPackage(
+        '/example-project/NoPackageModule.kt',
+        512
+      );
       expect(result).toBeNull();
     });
 
     it("returns null if the file doesn't exists", async () => {
-      const result = await getKotlinFileNameWithItsPackage('/example-project/NonExistentModule.kt');
+      const result = await getKotlinFileNameWithItsPackage(
+        '/example-project/NonExistentModule.kt',
+        512
+      );
       expect(result).toBeNull();
+    });
+
+    it('does not find the package when a long comment pushes it past the header length', async () => {
+      const longComment = `// ${'x'.repeat(600)}\n`;
+      vol.fromJSON({
+        '/example-project/CommentedModule.kt': `${longComment}${properKotlinModule}`,
+      });
+
+      const result = await getKotlinFileNameWithItsPackage(
+        '/example-project/CommentedModule.kt',
+        512
+      );
+      expect(result).toBeNull();
+    });
+
+    it('finds the package past the header length with a larger kotlinPackageHeaderLength', async () => {
+      const longComment = `// ${'x'.repeat(600)}\n`;
+      vol.fromJSON({
+        '/example-project/CommentedModule.kt': `${longComment}${properKotlinModule}`,
+      });
+
+      const result = await getKotlinFileNameWithItsPackage(
+        '/example-project/CommentedModule.kt',
+        2048
+      );
+      expect(result).toBe('some.package.inlineModulesExamples.CommentedModule');
+    });
+
+    it("finds the package regardless of its offset when kotlinPackageHeaderLength is 'WHOLE_FILE'", async () => {
+      const longComment = `// ${'x'.repeat(2000)}\n`;
+      vol.fromJSON({
+        '/example-project/CommentedModule.kt': `${longComment}${properKotlinModule}`,
+      });
+
+      const result = await getKotlinFileNameWithItsPackage(
+        '/example-project/CommentedModule.kt',
+        'WHOLE_FILE'
+      );
+      expect(result).toBe('some.package.inlineModulesExamples.CommentedModule');
     });
   });
 
@@ -208,10 +256,11 @@ describe('inlineModules.ts', () => {
           'package app.valid\nclass ValidAndroid2 : Module() {\n  override fun definition() = ModuleDefinition { Name("ValidAndroid2") }\n}',
       });
 
-      const result = await getMirrorStateObject(
-        ['app', 'src/nested/', '../other-project/src'],
-        '/example-project'
-      );
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['app', 'src/nested/', '../other-project/src'],
+        appRoot: '/example-project',
+        kotlinPackageHeaderLength: 'WHOLE_FILE',
+      });
 
       expect(result.swiftModuleClassNames).toEqual(['ValidApple1', 'ValidApple2']);
       expect(result.kotlinClasses).toEqual(['app.valid.ValidAndroid1', 'app.valid.ValidAndroid2']);
@@ -260,7 +309,11 @@ describe('inlineModules.ts', () => {
         '/example-project/intents/Helper.compile.kt': 'package some.pkg',
       });
 
-      const result = await getMirrorStateObject(['intents'], '/example-project');
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['intents'],
+        appRoot: '/example-project',
+        kotlinPackageHeaderLength: 'WHOLE_FILE',
+      });
 
       expect(result.swiftModuleClassNames).toEqual(['MyModule']);
       expect(result.kotlinClasses).toEqual([]);
@@ -268,6 +321,28 @@ describe('inlineModules.ts', () => {
         '/example-project/intents/AppShortcuts.compile.swift',
         '/example-project/intents/Helper.compile.kt',
         '/example-project/intents/MyModule.swift',
+      ]);
+    });
+
+    it('skips resolving kotlin packages when kotlinPackageHeaderLength is omitted', async () => {
+      vol.fromJSON({
+        '/example-project/package.json': '{}',
+        '/example-project/app/ValidAndroid1.kt':
+          'package app.valid\nclass ValidAndroid1 : Module() {\n  override fun definition() = ModuleDefinition { Name("ValidAndroid1") }\n}',
+        '/example-project/app/ValidApple1.swift':
+          'internal import ExpoModulesCore\nfunc definition() -> ModuleDefinition',
+      });
+
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['app'],
+        appRoot: '/example-project',
+      });
+
+      expect(result.swiftModuleClassNames).toEqual(['ValidApple1']);
+      expect(result.kotlinClasses).toEqual([]);
+      expect(result.files.map((f) => f.filePath).sort()).toEqual([
+        '/example-project/app/ValidAndroid1.kt',
+        '/example-project/app/ValidApple1.swift',
       ]);
     });
   });
@@ -281,7 +356,11 @@ describe('inlineModules.ts', () => {
           'package some.pkg\nclass MyModule : Module() {\n  override fun definition() = ModuleDefinition { Name("MyModule") }\n}',
       });
 
-      const result = await getMirrorStateObject(['modules'], '/example-project');
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['modules'],
+        appRoot: '/example-project',
+        kotlinPackageHeaderLength: 'WHOLE_FILE',
+      });
 
       expect(result.kotlinClasses).toEqual(['some.pkg.My.Module']);
       expect(result.files.map((file) => file.filePath)).toEqual([
@@ -298,7 +377,11 @@ describe('inlineModules.ts', () => {
           'import ExpoModulesCore\nfunc definition() -> ModuleDefinition',
       });
 
-      const result = await getMirrorStateObject(['intents'], '/example-project');
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['intents'],
+        appRoot: '/example-project',
+        kotlinPackageHeaderLength: 'WHOLE_FILE',
+      });
 
       expect(result.swiftModuleClassNames).toEqual(['My.Module']);
       expect(result.files.map((file) => file.filePath)).toEqual([
@@ -315,7 +398,11 @@ describe('inlineModules.ts', () => {
           'internal import ExpoModulesCore\npublic final class MyModule: Module {}',
       });
 
-      const result = await getMirrorStateObject(['intents'], '/example-project');
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['intents'],
+        appRoot: '/example-project',
+        kotlinPackageHeaderLength: 'WHOLE_FILE',
+      });
 
       expect(result.swiftModuleClassNames).toEqual([]);
       expect(warn).not.toHaveBeenCalled();

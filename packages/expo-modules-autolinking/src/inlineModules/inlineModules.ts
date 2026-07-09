@@ -17,6 +17,26 @@ export interface InlineModulesMirror {
   kotlinClasses: string[];
 }
 
+/**
+ * How much of a Kotlin file to read when looking for its `package` declaration.
+ * A number is the byte length of the header buffer; `'WHOLE_FILE'` reads the entire file.
+ * The user-facing default is provided by the `withInlineModules` config plugin.
+ */
+export type KotlinPackageHeaderLength = number | 'WHOLE_FILE';
+
+/**
+ * Options describing how to scan a project for inline modules.
+ */
+export interface InlineModulesScanOptions {
+  watchedDirectories: string[];
+  appRoot: string;
+  /**
+   * Configure how long the heading of kotlin file is, to check for package declaration.
+   * Only relevant on Android; when omitted (for example on iOS) Kotlin packages are not resolved.
+   */
+  kotlinPackageHeaderLength?: KotlinPackageHeaderLength;
+}
+
 const nativeExtensions = ['.kt', '.swift'];
 // Checks for func definition() -> <anything>ModuleDefinition. <anything> because ExpoModulesCore.ModuleDefinition is a valid usage
 const swiftModuleDefinitionRegex = /\bfunc\s+definition\s*\(\s*\)\s*->\s*[\w.]*ModuleDefinition\b/;
@@ -41,11 +61,9 @@ export function inlineModuleFileNameInformation(fileName: string): {
 }
 
 export async function getKotlinFileNameWithItsPackage(
-  absoluteFilePath: string
+  absoluteFilePath: string,
+  kotlinPackageHeaderLength: KotlinPackageHeaderLength
 ): Promise<string | null> {
-  const HEADER_SIZE = 512;
-  const buffer = Buffer.alloc(HEADER_SIZE);
-
   let fileHandle;
   try {
     fileHandle = await fs.promises.open(absoluteFilePath, 'r');
@@ -54,8 +72,14 @@ export async function getKotlinFileNameWithItsPackage(
     return null;
   }
   try {
-    const { bytesRead } = await fileHandle.read(buffer, 0, HEADER_SIZE, 0);
-    const header = buffer.toString('utf8', 0, bytesRead);
+    let header: string;
+    if (kotlinPackageHeaderLength === 'WHOLE_FILE') {
+      header = await fileHandle.readFile('utf8');
+    } else {
+      const buffer = Buffer.alloc(kotlinPackageHeaderLength);
+      const { bytesRead } = await fileHandle.read(buffer, 0, kotlinPackageHeaderLength, 0);
+      header = buffer.toString('utf8', 0, bytesRead);
+    }
 
     // We want to find `package some.package` and capture the `some.package` from it.
     const pacakgeRegex = /^package\s+([\w.]+)/m;
@@ -102,9 +126,9 @@ export async function hasSwiftModuleDefinition(absoluteFilePath: string): Promis
  * Scans the project and returns information about all of the inline modules inside in an InlineModulesMirror object.
  */
 export async function getMirrorStateObject(
-  watchedDirectories: string[],
-  appRoot: string
+  options: InlineModulesScanOptions
 ): Promise<InlineModulesMirror> {
+  const { watchedDirectories, appRoot, kotlinPackageHeaderLength } = options;
   const inlineModulesMirror: InlineModulesMirror = {
     kotlinClasses: [],
     swiftModuleClassNames: [],
@@ -134,8 +158,13 @@ export async function getMirrorStateObject(
       const hasSwiftDefinition =
         ext === '.swift' && (await hasSwiftModuleDefinition(absoluteFilePath));
 
-      if (hasKotlinDefinition) {
-        const kotlinFileWithPackage = await getKotlinFileNameWithItsPackage(absoluteFilePath);
+      // `kotlinPackageHeaderLength` is only provided on Android; without it we skip resolving
+      // Kotlin packages (for example on iOS, which only consumes the Swift class names).
+      if (hasKotlinDefinition && kotlinPackageHeaderLength !== undefined) {
+        const kotlinFileWithPackage = await getKotlinFileNameWithItsPackage(
+          absoluteFilePath,
+          kotlinPackageHeaderLength
+        );
         if (kotlinFileWithPackage === null) {
           continue;
         }

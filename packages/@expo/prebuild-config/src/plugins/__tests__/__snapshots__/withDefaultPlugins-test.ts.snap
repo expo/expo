@@ -505,6 +505,11 @@ exports[`built-in plugins introspects mods 1`] = `
             "type": "property",
             "value": "[]",
           },
+          {
+            "key": "expo.inlineModules.kotlinPackageHeaderLength",
+            "type": "property",
+            "value": "512",
+          },
         ],
         "manifest": {
           "manifest": {
@@ -1170,6 +1175,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             "key": "expo.inlineModules.watchedDirectories",
             "type": "property",
             "value": "[]",
+          },
+          {
+            "key": "expo.inlineModules.kotlinPackageHeaderLength",
+            "type": "property",
+            "value": "512",
           },
         ],
         "manifest": {

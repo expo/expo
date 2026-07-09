@@ -32,6 +32,11 @@ export const withInlineModules = (config: ExpoConfig, props: any) => {
           return JSON.stringify(conf.experiments?.inlineModules?.watchedDirectories ?? []);
         },
       },
+      {
+        propName: 'expo.inlineModules.kotlinPackageHeaderLength',
+        propValueGetter: (conf) =>
+          String(conf.experiments?.inlineModules?.kotlinPackageHeaderLength ?? 512),
+      },
     ],
     'withAndroidInlineModules'
   )(config);

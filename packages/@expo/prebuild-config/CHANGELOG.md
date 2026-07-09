@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add option to specify targets to use with inline modules, add new option to podfile.properties ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
+- Add `expo.experiments.inlineModules.kotlinPackageHeaderLength` option, forwarded to the Android build as a Gradle property.
 
 ### 🐛 Bug fixes
 

@@ -41,6 +41,13 @@ abstract class GenerateInlineModulesTask : DefaultTask() {
   abstract val watchedDirectoriesSerialized: Property<String>
 
   /**
+   * Number of bytes read from the start of a Kotlin file to find its `package` declaration,
+   * or `WHOLE_FILE` to read the entire file.
+   */
+  @get:Input
+  abstract val kotlinPackageHeaderLength: Property<String>
+
+  /**
    * Output directory (a generated source root) where `ExpoInlineModulesList.kt` is written. Only
    * this directory is wired with `addGeneratedSourceDirectory`.
    */
@@ -66,7 +73,9 @@ abstract class GenerateInlineModulesTask : DefaultTask() {
         "--inline-modules-list-directory",
         outputDirectory.get().asFile.absolutePath,
         "--watched-directories-serialized",
-        watchedDirectoriesSerialized.get()
+        watchedDirectoriesSerialized.get(),
+        "--kotlin-package-header-length",
+        kotlinPackageHeaderLength.get()
       )
     }
   }
