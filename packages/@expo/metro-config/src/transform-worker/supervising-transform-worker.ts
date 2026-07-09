@@ -1,4 +1,3 @@
-import { installEventLogger } from '2g';
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import path from 'path';
 
@@ -6,9 +5,6 @@ import { event } from './events';
 import * as worker from './metro-transform-worker';
 import type { TransformResponse } from './transform-worker';
 import { patchNodeModuleResolver } from './utils/moduleMapper';
-
-installEventLogger();
-event('worker:started', { pid: process.pid });
 
 const defaultTransformer: typeof import('./transform-worker') = require('./transform-worker');
 const defaultTransformerPath = require.resolve('./transform-worker');
