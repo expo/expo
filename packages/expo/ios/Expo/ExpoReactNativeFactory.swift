@@ -1,6 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import React_RCTAppDelegate
+// TODO(spm): revisit — SwiftPM requires importing the sibling ExpoObjC Clang
+// target to reference EXReactNativeFactory (NS_SWIFT_NAME ExpoReactNativeFactoryObjC)
+// and EXReactRootViewFactory. Under CocoaPods there is no such module — the pod
+// builds Swift and ObjC as ONE module — hence the canImport guard.
+#if canImport(ExpoObjC)
+import ExpoObjC
+#endif
 
 public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
