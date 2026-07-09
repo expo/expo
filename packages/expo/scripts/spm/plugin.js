@@ -35,6 +35,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { resolveExpoModules, generateModulesProvider } = require('./cli');
+const { describeFlavoredArtifact } = require('./swap-flavor');
 const {
   collectPrecompiledProducts,
   findModuleRoot,
@@ -47,8 +48,29 @@ const {
   emitPureSwiftSourcePackage,
 } = require('./manifests');
 
+/** Nearest ancestor of `dir` (inclusive) containing a package.json, or `dir` itself. */
+function findAppPackageRoot(dir) {
+  let current = path.resolve(dir);
+  while (true) {
+    if (fs.existsSync(path.join(current, 'package.json'))) {
+      return current;
+    }
+    const parent = path.dirname(current);
+    if (parent === current) {
+      return path.resolve(dir);
+    }
+    current = parent;
+  }
+}
+
 module.exports = function expoSpmPlugin(context) {
-  const { appRoot, flavor, react, outputDir } = context;
+  const { flavor, react, outputDir } = context;
+  // RN passes the Xcode project dir (`<app>/ios`) as appRoot. The autolinking
+  // CLI's --app-root must be the app PACKAGE root: `generate-modules-provider`
+  // filters modules against that dir's package.json dependencies, and with no
+  // package.json the filter matches nothing → a silently EMPTY provider (no
+  // Expo modules register at runtime). Walk up to the nearest package.json.
+  const appRoot = findAppPackageRoot(context.appRoot);
   const modules = resolveExpoModules(appRoot);
   const precompiled = collectPrecompiledProducts(flavor === 'release' ? 'release' : 'debug');
   const outDir = path.join(outputDir, 'expo');
@@ -69,6 +91,7 @@ module.exports = function expoSpmPlugin(context) {
 
   // Pass 1 — precompiled modules (binaryTarget consumption packages).
   const precompiledPkgDirs = new Map();
+  const flavoredArtifacts = [];
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
       const xcframeworkPath = precompiled.get(pod.podName);
@@ -82,6 +105,12 @@ module.exports = function expoSpmPlugin(context) {
         precompiledPkgDirs.set(pod.podName, e.packageDep.path);
         emitted.add(pod.podName);
         if (needsReact) reactWired.push(pod.podName);
+        // Declare the artifact for RN's build-time flavor swap (`flavoredArtifacts`
+        // plugin contract). Until RN consumes it, our own swap-flavor.js repoints
+        // these links from the build phase; the declaration is forward-compatible.
+        flavoredArtifacts.push(
+          describeFlavoredArtifact(pod.podName, e.artifactLink, xcframeworkPath)
+        );
       }
     }
   }
@@ -178,6 +207,15 @@ module.exports = function expoSpmPlugin(context) {
       modules.map((m) => m.packageName)
     );
     if (providerPath != null) {
+      // An empty registry while modules resolved means the allowlist/app-root
+      // filtering broke — the app would launch with NO Expo modules. Loud, not silent.
+      const registered = (fs.readFileSync(providerPath, 'utf8').match(/\.self/g) ?? []).length;
+      if (registered === 0 && modules.length > 0) {
+        console.warn(
+          `[expo-spm-plugin] WARNING: ExpoModulesProvider.swift is EMPTY although ` +
+            `${modules.length} modules resolved (appRoot: ${appRoot}) — no Expo modules will register at runtime.`
+        );
+      }
       generatedSources.push({ path: providerPath });
       console.log(`[expo-spm-plugin] generated ExpoModulesProvider.swift → ${providerPath}`);
     }
@@ -189,5 +227,6 @@ module.exports = function expoSpmPlugin(context) {
     packageDependencies,
     productDependencies,
     generatedSources,
+    flavoredArtifacts,
   };
 };

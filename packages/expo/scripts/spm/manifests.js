@@ -154,6 +154,25 @@ function linkRoot(pkgDir, moduleRoot) {
 }
 
 /**
+ * Point a stable `artifacts/<product>.xcframework` symlink at the flavor-resolved
+ * xcframework and return the package-relative path for the binaryTarget. The
+ * binaryTarget always references this symlink (never the flavor path directly), so
+ * the manifest bytes are flavor-independent and swap-flavor.js can repoint the link
+ * per-build. `ln -sfn` semantics: remove any existing link first. Returns
+ * "artifacts/<product>.xcframework" (binaryTarget paths must be RELATIVE to the pkg root).
+ */
+function linkArtifact(pkgDir, product, xcframeworkPath) {
+  const artifactsDir = path.join(pkgDir, 'artifacts');
+  fs.mkdirSync(artifactsDir, { recursive: true });
+  const link = path.join(artifactsDir, `${product}.xcframework`);
+  try {
+    fs.rmSync(link, { recursive: true, force: true });
+  } catch {}
+  fs.symlinkSync(xcframeworkPath, link);
+  return path.join('artifacts', `${product}.xcframework`);
+}
+
+/**
  * Emit a lean CONSUMPTION Package.swift for a precompiled product: expose the
  * prebuilt xcframework directly as a library product. The importable Swift module
  * is the framework's own name (== product), so no wrapper target is needed. React
@@ -163,9 +182,11 @@ function linkRoot(pkgDir, moduleRoot) {
 function emitPrecompiledPackage(product, xcframeworkPath, outDir) {
   const pkgDir = path.join(outDir, 'expo-precompiled', product);
   fs.mkdirSync(pkgDir, { recursive: true });
-  // SwiftPM requires .binaryTarget(path:) to be RELATIVE to the package root
-  // (unlike .package(path:), which accepts absolute paths).
-  const xcframeworkRelPath = path.relative(pkgDir, xcframeworkPath);
+  // The binaryTarget references a stable `artifacts/` symlink rather than the
+  // flavor path directly: SwiftPM can't branch a binaryTarget on $CONFIGURATION,
+  // so swap-flavor.js repoints this link per-build (Debug⇄Release). SwiftPM
+  // requires .binaryTarget(path:) to be RELATIVE to the package root.
+  const xcframeworkRelPath = linkArtifact(pkgDir, product, xcframeworkPath);
   fs.writeFileSync(
     path.join(pkgDir, 'Package.swift'),
     renderPrecompiledManifest(product, xcframeworkRelPath)
@@ -173,6 +194,7 @@ function emitPrecompiledPackage(product, xcframeworkPath, outDir) {
   return {
     packageDep: { name: product, path: pkgDir },
     productDep: { name: product, package: product },
+    artifactLink: path.join(pkgDir, xcframeworkRelPath),
   };
 }
 
