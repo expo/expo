@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [dom] Wait for the injected host globals instead of throwing, so DOM Components no longer stay permanently blank on Android when `injectedJavaScriptBeforeContentLoaded` is evaluated after the document scripts. ([#47634](https://github.com/expo/expo/pull/47634) by [@yjb94](https://github.com/yjb94))
 - [iOS] Pass the React runtime scheduler to `ExpoModulesCore` through a weak handle, so dispatching onto the JS thread during a reload no longer risks calling into a scheduler the React instance already destroyed. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
 - Fix `expo/fetch` on Android sending a single `0x00` byte instead of an empty body for body-less `POST`/`PUT`/`PATCH` requests. ([#46678](https://github.com/expo/expo/pull/46678) by [@zoontek](https://github.com/zoontek))
 - Fix iOS build against React Native 0.87+ by dropping the legacy architecture (bridge) `RCTRootViewFactoryConfiguration` setup. ([#46641](https://github.com/expo/expo/pull/46641) by [@zoontek](https://github.com/zoontek))
