@@ -494,8 +494,11 @@ describe(getExpoConfigSourcesAsync, () => {
     const configResult = JSON.stringify({
       config,
       loadedModules: [
-        'node_modules/third-party/index.js',
-        'node_modules/third-party/node_modules/transitive-third-party/index.js',
+        { type: 'file', path: 'node_modules/third-party/index.js' },
+        {
+          type: 'file',
+          path: 'node_modules/third-party/node_modules/transitive-third-party/index.js',
+        },
       ],
     });
     mockSpawnWithIpcAsync.mockResolvedValueOnce({
@@ -519,6 +522,39 @@ describe(getExpoConfigSourcesAsync, () => {
       expect.objectContaining({
         type: 'file',
         filePath: 'node_modules/third-party/node_modules/transitive-third-party/index.js',
+      })
+    );
+  });
+
+  it('should map a virtual config-plugin module to a contents source', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    const config = await getConfig('/app', { skipSDKVersionRequirement: true });
+    const mockSpawnWithIpcAsync = spawnWithIpcAsync as jest.MockedFunction<
+      typeof spawnWithIpcAsync
+    >;
+    const configResult = JSON.stringify({
+      config,
+      loadedModules: [
+        { type: 'contents', id: 'plugins/virtual-plugin.js', contents: 'module.exports = () => {};' },
+      ],
+    });
+    mockSpawnWithIpcAsync.mockResolvedValueOnce({
+      output: [],
+      stdout: configResult,
+      message: configResult,
+      stderr: '',
+      signal: null,
+      status: 0,
+    });
+    const options = await normalizeOptionsAsync('/app');
+    const { config: expoConfig, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', expoConfig, loadedModules, options);
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'contents',
+        id: 'plugins/virtual-plugin.js',
+        contents: 'module.exports = () => {};',
+        reasons: ['expoConfigPlugins'],
       })
     );
   });
