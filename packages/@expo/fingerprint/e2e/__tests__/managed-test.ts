@@ -208,18 +208,6 @@ describe('managed project test', () => {
     expect(normalizeAutolinkingVersionsForSnapshot(diff)).toMatchInlineSnapshot(`
       [
         {
-          "addedSource": {
-            "filePath": "node_modules/@react-native-community/netinfo",
-            "hash": "334cd6d4855e7a91245555dab588e11af60b44b8",
-            "reasons": [
-              "rncoreAutolinkingAndroid",
-              "rncoreAutolinkingIos",
-            ],
-            "type": "dir",
-          },
-          "op": "added",
-        },
-        {
           "afterSource": {
             "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"android":{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"libraryName":"RNCNetInfoSpec","componentDescriptors":[],"cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}}",
             "hash": "*",
@@ -261,6 +249,20 @@ describe('managed project test', () => {
           },
           "op": "changed",
         },
+        {
+          "addedSource": {
+            "filePath": "node_modules/@react-native-community/netinfo/package.json",
+            "hash": "82008ba806a67c1485ebda79b9ea3e45e2d06e92",
+            "name": "@react-native-community/netinfo",
+            "reasons": [
+              "rncoreAutolinkingAndroid",
+              "rncoreAutolinkingIos",
+            ],
+            "type": "package",
+            "version": "12.0.1",
+          },
+          "op": "added",
+        },
       ]
     `);
   });
@@ -290,6 +292,35 @@ describe('managed project test', () => {
     } finally {
       await fs.rm(path.dirname(googleServicesPathNew), { recursive: true, force: true });
     }
+  });
+
+  it('should change the fingerprint under the `strict` preset when the app version changes', async () => {
+    const configPath = path.join(projectRoot, 'app.json');
+    const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
+
+    const hash = await createProjectHashAsync(projectRoot, { preset: 'strict' });
+
+    config.expo.version = '2.0.0';
+    await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+    const hash2 = await createProjectHashAsync(projectRoot, { preset: 'strict' });
+
+    // `strict` hashes the whole ExpoConfig, so a version bump changes the fingerprint.
+    expect(hash).not.toBe(hash2);
+  });
+
+  it('should keep the same fingerprint under the `relaxed` preset when the app version and name change', async () => {
+    const configPath = path.join(projectRoot, 'app.json');
+    const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
+
+    const hash = await createProjectHashAsync(projectRoot, { preset: 'relaxed' });
+
+    config.expo.version = '2.0.0';
+    config.expo.name = 'renamed-app';
+    await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+    const hash2 = await createProjectHashAsync(projectRoot, { preset: 'relaxed' });
+
+    // `relaxed` ignores the app version and name, so neither change affects the fingerprint.
+    expect(hash).toBe(hash2);
   });
 });
 
