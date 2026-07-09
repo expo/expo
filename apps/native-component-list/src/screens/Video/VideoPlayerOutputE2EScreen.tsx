@@ -9,10 +9,10 @@ import TitledSwitch from '../../components/TitledSwitch';
 import { localVideoSource, starVideoSource } from './videoSources';
 import { styles } from './videoStyles';
 
-// Dedicated screen for the player-output e2e test (apps/bare-expo/e2e/expo-video/
-// player-output-test.yaml). Like VideoChangePlayerOutputScreen, it moves two players between
-// four views, but it's built for screenshot determinism: bundled video sources, players seeked
-// to a fixed frame, and machine-readable readiness markers.
+// Drives the player-output e2e test (apps/bare-expo/e2e/expo-video/player-output-test.yaml).
+// The screen moves two players between four views and is built for screenshot determinism:
+// bundled video sources, players seeked to a fixed frame, and machine-readable readiness
+// markers.
 
 type ViewsState = {
   viewPlayers: (VideoPlayer | null)[];

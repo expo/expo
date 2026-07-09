@@ -29,14 +29,6 @@ export const VideoScreens = [
     },
   },
   {
-    name: 'Changing VideoPlayer output view',
-    route: 'video/player_prop',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./VideoChangePlayerOutputScreen'));
-    },
-  },
-  {
     name: 'Changing VideoPlayer output view (e2e)',
     route: 'video/player-output-e2e',
     options: {},
