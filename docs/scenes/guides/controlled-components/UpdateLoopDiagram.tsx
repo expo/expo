@@ -5,7 +5,8 @@ import { CODE } from '~/ui/components/Text';
 
 type Step = {
   lane: 'native' | 'js';
-  label: ReactNode;
+  alt: string;
+  label?: ReactNode;
   placement: string;
 };
 
@@ -15,10 +16,11 @@ const LANES = {
 } as const;
 
 const STEPS: Step[] = [
-  { lane: 'native', label: 'Keystroke', placement: 'md:col-start-1 md:row-start-1' },
-  { lane: 'native', label: 'Field shows the raw text', placement: 'md:col-start-2 md:row-start-1' },
+  { lane: 'native', alt: 'Keystroke', placement: 'md:col-start-1 md:row-start-1' },
+  { lane: 'native', alt: 'Field shows the raw text', placement: 'md:col-start-2 md:row-start-1' },
   {
     lane: 'js',
+    alt: 'onChangeText fires with the string',
     label: (
       <>
         <CODE>onChangeText</CODE> fires with the string
@@ -28,11 +30,12 @@ const STEPS: Step[] = [
   },
   {
     lane: 'js',
-    label: 'State update, then re-render',
+    alt: 'State update, then re-render',
     placement: 'md:col-start-4 md:row-start-3',
   },
   {
     lane: 'native',
+    alt: 'value forces the field to match',
     label: (
       <>
         <CODE>value</CODE> forces the field to match
@@ -41,6 +44,13 @@ const STEPS: Step[] = [
     placement: 'md:col-start-5 md:row-start-1',
   },
 ];
+
+const TIMING_NOTE = "Between steps 2 and 5, the field shows text your state doesn't hold yet.";
+
+const DIAGRAM_ALT = [
+  STEPS.map((step, index) => `${index + 1}. ${step.alt} [${LANES[step.lane]}]`).join('\n→ '),
+  TIMING_NOTE,
+].join('\n');
 
 const CONNECTORS = [
   { x1: 10, y1: 19.4, x2: 30, y2: 19.4 },
@@ -51,7 +61,10 @@ const CONNECTORS = [
 
 export function UpdateLoopDiagram() {
   return (
-    <div className="my-5 rounded-lg border border-default bg-default p-4">
+    <div
+      className="my-5 rounded-lg border border-default bg-default p-4"
+      data-md="diagram"
+      data-md-alt={DIAGRAM_ALT}>
       <div className="flex gap-3">
         <div className="hidden w-24 shrink-0 md:grid md:grid-rows-[84px_48px_84px]">
           <span className="row-start-1 self-center text-[10px] font-semibold tracking-wide text-tertiary uppercase">
@@ -93,7 +106,9 @@ export function UpdateLoopDiagram() {
                 <span className="absolute -top-2 -left-2 flex size-5 items-center justify-center rounded-full border border-info bg-info text-[10px] font-semibold text-default">
                   {index + 1}
                 </span>
-                <p className="text-center text-xs leading-snug text-default">{step.label}</p>
+                <p className="text-center text-xs leading-snug text-default">
+                  {step.label ?? step.alt}
+                </p>
                 <span className="mt-1.5 block text-center text-[10px] tracking-wide text-tertiary uppercase md:hidden">
                   {LANES[step.lane]}
                 </span>
@@ -106,7 +121,7 @@ export function UpdateLoopDiagram() {
               'max-md:p-2.5 max-md:text-center',
               'md:col-start-2 md:col-end-6 md:row-start-2 md:self-center md:px-2 md:text-center'
             )}>
-            Between steps 2 and 5, the field shows text your state doesn't hold yet.
+            {TIMING_NOTE}
           </div>
         </div>
       </div>
