@@ -6,7 +6,9 @@
     "27BDE9D743CB351F53154525",
     "3AFDEFB917B01458307FDE0A",
     "3F1E298E4A2D7CA403A328B5",
+    "413C8ED36098982B972D0987",
     "50A8621D202A6CFB97E2C1B5",
+    "50E95CE9435AC128E87E7923",
     "63EFA1BFF3B26ED48191BE19",
     "658A88AFBFD620F8BC6F91BA",
     "7E7D873FB92107759FFD17BD",
@@ -14,9 +16,11 @@
     "947DD5EF3BE079FB7F5AFF87",
     "9F15E21186D6CE992DFCBF93",
     "A700952B9A737913514EB28F",
+    "BC1DE5A479661702E8F409AE",
     "C1EE06F0363A2E45DF7286A5",
     "C2FECF1430FDAAE3BF355839",
     "D6BD17EA9023C9F39246B71F",
+    "D9B1260B8C895208DCA7BD36",
     "F22919FD47E160B1C255059D",
     "F3857EDDA38AFC0011322D6D"
   ],
@@ -25,18 +29,34 @@
     {
       "configUuid": "13B07F941A680F5B00A75B9A",
       "createdArrayKeys": [],
-      "appendedArrayValues": {},
+      "appendedArrayValues": {
+        "OTHER_SWIFT_FLAGS": [
+          "\"-Xcc\"",
+          "\"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap\""
+        ]
+      },
       "createdScalars": [],
       "replacedScalars": {}
     },
     {
       "configUuid": "13B07F951A680F5B00A75B9A",
       "createdArrayKeys": [],
-      "appendedArrayValues": {},
+      "appendedArrayValues": {
+        "OTHER_SWIFT_FLAGS": [
+          "\"-Xcc\"",
+          "\"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap\""
+        ]
+      },
       "createdScalars": [],
       "replacedScalars": {}
     }
   ],
+  "generatedSources": {
+    "build/generated/autolinking/expo/ExpoModulesProvider.swift": [
+      "D9B1260B8C895208DCA7BD36",
+      "50E95CE9435AC128E87E7923"
+    ]
+  },
   "scheme": {
     "file": "minimalswiftpm.xcscheme",
     "created": false
