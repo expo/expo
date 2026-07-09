@@ -107,7 +107,7 @@ private func log(_ message: String) {
             log("Received request: \(String(data: requestData, encoding: .utf8) ?? "invalid UTF8")")
 
             let response = processRequest(requestData)
-            writeToPipe(responsePipePath, data: response)
+            writeToPipe(resolveResponsePipePath(requestData), data: response)
 
             log("Sent response, ready for next request")
         }
@@ -133,13 +133,39 @@ private func log(_ message: String) {
         return Data(buffer.prefix(bytesRead))
     }
 
+    private func resolveResponsePipePath(_ requestData: Data) -> String {
+        // Clients create a unique response pipe per request and pass its path along, so that a
+        // response can never pair with another request's reader (a shared response pipe gets
+        // permanently desynced once a single client times out and abandons its request).
+        // Requests without the field fall back to the shared legacy pipe.
+        guard let json = try? JSONSerialization.jsonObject(with: requestData, options: []) as? [String: Any],
+              let responsePipe = json["responsePipe"] as? String,
+              responsePipe.hasPrefix("/tmp/ios_screen_inspector_response") else {
+            return responsePipePath
+        }
+        return responsePipe
+    }
+
     private func writeToPipe(_ path: String, data: Data) {
         log("Attempting to open pipe for writing")
 
-        let fd = open(path, O_WRONLY)
-        guard fd != -1 else {
-            log("Failed to open pipe for writing")
-            return
+        // The client may have timed out and abandoned this request, in which case no reader
+        // ever opens the other end and a plain blocking open would wedge the server thread
+        // forever, killing the inspector for the rest of the app's lifetime. Poll with
+        // O_NONBLOCK (which fails with ENXIO while there is no reader) and drop the response
+        // if no reader shows up in time; the server then moves on to the next request.
+        let deadline = Date().addingTimeInterval(5)
+        var fd: Int32 = -1
+        while fd == -1 {
+            fd = open(path, O_WRONLY | O_NONBLOCK)
+            if fd == -1 {
+                let openError = errno
+                if openError != ENXIO || Date() >= deadline {
+                    log("Failed to open pipe for writing, errno: \(openError); dropping response")
+                    return
+                }
+                usleep(50_000)
+            }
         }
 
         log("Pipe opened for writing, sending \(data.count) bytes")

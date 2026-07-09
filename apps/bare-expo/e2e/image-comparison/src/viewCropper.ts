@@ -119,7 +119,10 @@ function searchJsonNodes(
 async function getCoordinatesViaDylib(
   testID: string,
   displayScaleFactor: number,
-  timeoutMs: number = 3000
+  // The lookup walks the view hierarchy on the app's main thread, which can be busy for a
+  // few seconds on animation-heavy screens; a too-tight timeout abandons requests that would
+  // have succeeded.
+  timeoutMs: number = 10000
 ): Promise<Bounds | null> {
   const screenInspectorIOS = new ScreenInspectorIOS();
 

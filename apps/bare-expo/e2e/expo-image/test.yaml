@@ -2,9 +2,6 @@ appId: dev.expo.Payments
 jsEngine: graaljs
 ---
 - openLink: bareexpo://components/image/comparison
-- tapOn:
-    text: 'Open'
-    optional: true
 
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml

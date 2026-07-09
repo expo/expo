@@ -7,6 +7,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 import {
+  annotate,
   createMaestroFlowAsync,
   fileExistsAsync,
   getStartMode,
@@ -15,7 +16,7 @@ import {
   printImageComparisonServerLogs,
   setupLogger,
   runCustomMaestroFlowsAsync,
-  MAESTRO_ENV_VARS,
+  runMaestroAsync,
   TEST_DURATION_LABEL,
   startGroup,
   endGroup,
@@ -53,24 +54,46 @@ const __dirname = dirname(__filename);
         );
       }
       const e2eDir = path.join(projectRoot, 'e2e');
-      await runCustomMaestroFlowsAsync(e2eDir, 'android', (maestroFlowFilePath) =>
-        testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath, e2eDir)
+
+      // The app and the maestro driver survive across maestro invocations, so install
+      // everything only once instead of paying for it on every flow and retry.
+      await installAppAsync(adbPath, deviceId, appBinaryPath);
+
+      await runCustomMaestroFlowsAsync(
+        e2eDir,
+        'android',
+        async (flowRelativePaths, { attempt }) => {
+          if (attempt > 1) {
+            // Stop the app to reset any state left over by the failed flows; the next
+            // openLink launches it again.
+            await forceStopAppAsync(adbPath, deviceId);
+          }
+          return await testAsync(flowRelativePaths, deviceId, adbPath, e2eDir);
+        }
       );
 
       const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
         appId: APP_ID,
         e2eDir,
       });
+      const nativeModulesFlowRelativePath = path.relative(e2eDir, maestroNativeModulesFlowFilePath);
 
-      await retryAsync((retryNumber) => {
+      await retryAsync(async (retryNumber) => {
         console.log(`Native modules test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-        return testAsync(
-          maestroNativeModulesFlowFilePath,
+        const failedFlows = await testAsync(
+          [nativeModulesFlowRelativePath],
           deviceId,
-          appBinaryPath,
           adbPath,
           e2eDir
         );
+        if (failedFlows.length > 0) {
+          annotate(
+            retryNumber + 1 >= NUM_OF_RETRIES ? 'error' : 'warning',
+            'Native modules test suite failed',
+            `attempt ${retryNumber + 1} of ${NUM_OF_RETRIES} failed`
+          );
+          throw new Error('Native modules test suite failed.');
+        }
       }, NUM_OF_RETRIES);
     }
   } catch (e) {
@@ -91,55 +114,72 @@ async function buildAsync(projectRoot: string): Promise<void> {
   );
 }
 
-async function testAsync(
-  maestroFlowFilePath: string,
-  deviceId: string,
-  appBinaryPath: string,
+async function installAppAsync(
   adbPath: string,
-  maestroWorkspaceRoot: string
+  deviceId: string,
+  appBinaryPath: string
 ): Promise<void> {
-  startGroup(maestroFlowFilePath);
-  const stopLogCollectionController = new AbortController();
-
   console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
   await spawnAsync(adbPath, ['-s', deviceId, 'install', '-r', appBinaryPath]);
+}
+
+async function forceStopAppAsync(adbPath: string, deviceId: string): Promise<void> {
+  await spawnAsync(adbPath, ['-s', deviceId, 'shell', 'am', 'force-stop', APP_ID]);
+}
+
+// The maestro driver only needs to be installed by the first invocation; later invocations
+// reuse it, which saves about a minute each.
+let reinstallMaestroDriver = true;
+
+async function testAsync(
+  flowRelativePaths: string[],
+  deviceId: string,
+  adbPath: string,
+  e2eDir: string
+): Promise<string[]> {
+  startGroup(flowRelativePaths.join(', '));
+  const stopLogCollectionController = new AbortController();
 
   console.log(
-    `\n📷 Starting Maestro tests - deviceId[${deviceId}] maestroFlowFilePath[${maestroFlowFilePath}]`
+    `\n📷 Starting Maestro tests - deviceId[${deviceId}] flows[${flowRelativePaths.join(', ')}]`
   );
   const getLogs = setupLogger(`adb logcat -e ${APP_ID}`, stopLogCollectionController.signal);
   try {
     console.time(TEST_DURATION_LABEL);
-    await spawnAsync('maestro', ['--platform', 'android', 'test', maestroFlowFilePath], {
-      stdio: 'inherit',
-      cwd: maestroWorkspaceRoot,
-      env: {
-        ...process.env,
-        ...MAESTRO_ENV_VARS,
-      },
-    });
-    console.timeEnd(TEST_DURATION_LABEL);
-  } catch (error: unknown) {
-    stopLogCollectionController.abort();
-    console.timeEnd(TEST_DURATION_LABEL);
-    console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
-    const logs = await getLogs();
-    console.log(prettyPrintTestSuiteLogs(logs));
-    await printImageComparisonServerLogs();
-    if (!(await isAppRunning())) {
-      if (logs.length > 0) {
-        console.warn(
-          '\n\n  ❌ The runner app has probably crashed, here are the recent native error logs:\n\n'
-        );
-        console.log(logs.slice(-30).join('\n'));
-      } else {
-        console.warn(
-          '\n\n  ❌ The runner app has probably crashed, but no native logs were captured.\n\n'
-        );
-      }
+    let failedFlows: string[];
+    try {
+      failedFlows = await runMaestroAsync({
+        deviceArgs: ['--platform', 'android'],
+        flowRelativePaths,
+        e2eDir,
+        reinstallDriver: reinstallMaestroDriver,
+      });
+    } finally {
+      console.timeEnd(TEST_DURATION_LABEL);
     }
-    console.log('\n\n');
-    throw new Error('e2e tests have failed.', { cause: error });
+    reinstallMaestroDriver = false;
+
+    if (failedFlows.length > 0) {
+      stopLogCollectionController.abort();
+      console.warn(`\n⚠️ Maestro flows failed: ${failedFlows.join(', ')}\n\n`);
+      const logs = await getLogs();
+      console.log(prettyPrintTestSuiteLogs(logs));
+      await printImageComparisonServerLogs();
+      if (!(await isAppRunning())) {
+        if (logs.length > 0) {
+          console.warn(
+            '\n\n  ❌ The runner app has probably crashed, here are the recent native error logs:\n\n'
+          );
+          console.log(logs.slice(-30).join('\n'));
+        } else {
+          console.warn(
+            '\n\n  ❌ The runner app has probably crashed, but no native logs were captured.\n\n'
+          );
+        }
+      }
+      console.log('\n\n');
+    }
+    return failedFlows;
   } finally {
     endGroup();
     stopLogCollectionController.abort();
