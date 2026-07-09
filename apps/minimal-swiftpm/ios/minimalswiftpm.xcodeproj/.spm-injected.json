@@ -20,41 +20,20 @@
     "F22919FD47E160B1C255059D",
     "F3857EDDA38AFC0011322D6D"
   ],
-  "createdArrayFields": [
-    {
-      "container": "project",
-      "key": "packageReferences"
-    },
-    {
-      "container": "target",
-      "key": "packageProductDependencies"
-    }
-  ],
+  "createdArrayFields": [],
   "buildSettingChanges": [
     {
       "configUuid": "13B07F941A680F5B00A75B9A",
-      "createdArrayKeys": [
-        "HEADER_SEARCH_PATHS",
-        "OTHER_SWIFT_FLAGS"
-      ],
+      "createdArrayKeys": [],
       "appendedArrayValues": {},
-      "createdScalars": [
-        "CLANG_CXX_LANGUAGE_STANDARD",
-        "REACT_NATIVE_PATH"
-      ],
+      "createdScalars": [],
       "replacedScalars": {}
     },
     {
       "configUuid": "13B07F951A680F5B00A75B9A",
-      "createdArrayKeys": [
-        "HEADER_SEARCH_PATHS",
-        "OTHER_SWIFT_FLAGS"
-      ],
+      "createdArrayKeys": [],
       "appendedArrayValues": {},
-      "createdScalars": [
-        "CLANG_CXX_LANGUAGE_STANDARD",
-        "REACT_NATIVE_PATH"
-      ],
+      "createdScalars": [],
       "replacedScalars": {}
     }
   ],
