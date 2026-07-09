@@ -44,44 +44,8 @@ if [ -n &quot;$NODE_BINARY&quot; ]; then
   RN_DIR=&quot;$(cd &quot;$SRCROOT&quot; &amp;&amp; &quot;$NODE_BINARY&quot; --print &quot;require(&apos;path&apos;).dirname(require.resolve(&apos;react-native/package.json&apos;))&quot; 2&gt;/dev/null || true)&quot;
 fi
 if [ -z &quot;$RN_DIR&quot; ] || [ ! -f &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; ]; then
-  RN_DIR=&quot;../../../node_modules/.pnpm/react-native@0.87.0-nightly-20260709-df8edb7a8ee_@babel+core@7.29.7_@react-native+metro_a26d578b6031aa6c900f84af140977ae/node_modules/react-native&quot;
+  RN_DIR=&quot;../../../node_modules/.pnpm/react-native@0.87.0-nightly-20260709-d189c94d6f5_@babel+core@7.29.7_@react-native+metro_8045ae19808432c6413ed1ee8ad3ca87/node_modules/react-native&quot;
 fi
-
-# ---------------------------------------------------------------------------
-# Flavor swap — defined ONCE, called TWICE (a &quot;swap sandwich&quot;). SwiftPM can&apos;t
-# branch a binaryTarget on $CONFIGURATION, so — mirroring the CocoaPods
-# React-Core-prebuilt swap (replace-rncore-version.js) — swap-flavor.js (1)
-# REPOINTS the app-local + autolinking-plugin slot symlinks, the source Xcode&apos;s
-# implicit Embed step resolves and captures at build-graph-construction time,
-# and (2) overwrites the SPM-copied frameworks in $BUILT_PRODUCTS_DIR with the
-# correct-flavor slices for the Link step. Sets SWAP_OK / SWAP_REASON; the
-# loud-error mismatch fallback is applied only after the FINAL (trailing) call.
-run_swap_flavor() {
-  SWAP_OK=0
-  SWAP_REASON=&quot;&quot;
-  if [ -z &quot;${BUILT_PRODUCTS_DIR:-}&quot; ]; then
-    # Not inside an Xcode build environment — nothing to swap against.
-    SWAP_OK=1
-    return 0
-  fi
-  if [ -z &quot;$NODE_BINARY&quot; ]; then
-    SWAP_REASON=&quot;no node binary found (set NODE_BINARY or add ios/.xcode.env)&quot;
-  elif [ ! -f &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; ]; then
-    SWAP_REASON=&quot;could not locate the react-native package (setup-apple-spm.js)&quot;
-  elif ( cd &quot;$SRCROOT&quot; &amp;&amp; &quot;$NODE_BINARY&quot; &quot;$RN_DIR/scripts/setup-apple-spm.js&quot; swap-flavor ); then
-    SWAP_OK=1
-  else
-    SWAP_REASON=&quot;swap-flavor exited non-zero&quot;
-  fi
-}
-
-# Leading swap — the RACE-WINNING repoint (graph-time embed correctness). Scheme
-# pre-actions do NOT reliably block Xcode&apos;s graph construction: a sub-second
-# pre-action repoints the embed source in time, but a full re-sync (~15s) loses
-# the race. So repoint FIRST — cheap, before the stale check / sync below — to
-# fix the embed source up front. Its result is intentionally not acted on here;
-# the trailing swap owns the authoritative end-state + the loud-error fallback.
-run_swap_flavor
 
 STAMP=&quot;$SRCROOT/build/generated/autolinking/.spm-sync-stamp&quot;
 STALE=0
@@ -199,13 +163,12 @@ if [ ! -f &quot;$STAMP&quot; ]; then
   STALE=1
 fi
 
-# Re-sync (codegen + autolinking), BETWEEN the two swaps. The sync dispatch
-# re-pins the app-local slot symlinks to the add-time (debug) flavor via
-# generate-spm-package linkOne on every re-sync, so the trailing swap below must
-# run AFTER it — it has to be the LAST writer of those symlinks. When inputs are
-# unchanged we skip the re-sync but STILL fall through to the trailing swap: a
-# Debug&lt;-&gt;Release config flip changes no sync input yet must reflip the embedded
-# flavor.
+# Re-sync (codegen + autolinking) when a dependency input changed. In the
+# in-target build phase this runs BETWEEN the leading and trailing flavor swaps;
+# in the scheme pre-action it runs alone (auto-heal). The sync re-pins the
+# app-local slot symlinks to the add-time flavor via generate-spm-package
+# linkOne, which is why the in-target phase&apos;s trailing swap must run AFTER it (it
+# has to be the LAST writer of those symlinks).
 if [ &quot;$STALE&quot; -eq 1 ]; then
   echo &quot;SPM sync inputs changed — re-syncing (codegen + autolinking)...&quot;
 
@@ -246,42 +209,6 @@ if [ &quot;$STALE&quot; -eq 1 ]; then
   fi
 fi
 
-# Trailing swap — the AUTHORITATIVE end-state. Runs LAST because the sync above
-# re-pins the slot symlinks to the add-time (debug) flavor via linkOne; this
-# call restores the requested flavor AND — once BUILT_PRODUCTS_DIR is
-# materialized in the in-target phase — rsyncs the link-step framework copies.
-# The loud-error mismatch fallback is tied to THIS (final) swap.
-run_swap_flavor
-if [ &quot;$SWAP_OK&quot; -eq 0 ]; then
-  # The swap could not run. Determine — in pure shell, mirroring
-  # swap-flavor.js — whether the pinned add-time flavor will ACTUALLY mismatch
-  # this configuration. swap-flavor.js maps CONFIGURATION=Release to the
-  # &apos;release&apos; flavor and everything else (Debug + custom config names) to
-  # &apos;debug&apos;; the pinned flavor is the parent dir of the React.xcframework
-  # symlink target (.../&lt;version&gt;/&lt;flavor&gt;/React.xcframework).
-  DESIRED_FLAVOR=debug
-  if [ &quot;${CONFIGURATION:-}&quot; = &quot;Release&quot; ]; then
-    DESIRED_FLAVOR=release
-  fi
-  PINNED_FLAVOR=&quot;&quot;
-  LINK_TARGET=&quot;$(readlink &quot;$SRCROOT/build/xcframeworks/React.xcframework&quot; 2&gt;/dev/null || true)&quot;
-  if [ -n &quot;$LINK_TARGET&quot; ]; then
-    PINNED_PARENT=&quot;$(basename &quot;$(dirname &quot;$LINK_TARGET&quot;)&quot;)&quot;
-    case &quot;$(printf &apos;%s&apos; &quot;$PINNED_PARENT&quot; | tr &apos;[:upper:]&apos; &apos;[:lower:]&apos;)&quot; in
-      debug) PINNED_FLAVOR=debug ;;
-      release) PINNED_FLAVOR=release ;;
-    esac
-  fi
-  if [ -n &quot;$PINNED_FLAVOR&quot; ] &amp;&amp; [ &quot;$PINNED_FLAVOR&quot; != &quot;$DESIRED_FLAVOR&quot; ]; then
-    # A certain Debug&lt;-&gt;release mix — known-broken, not merely suboptimal (a
-    # Debug app linking release React has RCT_DEV=0, never queries Metro, and
-    # crashes at runtime with &apos;No script URL provided&apos;). Fail the build.
-    echo &quot;error: SwiftPM flavor swap could not run ($SWAP_REASON) and the pinned $PINNED_FLAVOR frameworks do not match the $DESIRED_FLAVOR configuration — the app will misbehave (Debug builds: &apos;No script URL provided&apos;). Put Node on PATH or set NODE_BINARY in ios/.xcode.env, then rebuild; or run &apos;npx react-native spm swap-flavor&apos; from a terminal.&quot;
-    exit 1
-  else
-    echo &quot;warning: SwiftPM flavor swap could not run ($SWAP_REASON); build may link the add-time flavor&quot;
-  fi
-fi
 ">
                <EnvironmentBuildable>
                   <BuildableReference
