@@ -3,7 +3,6 @@ import type { SerializedError } from '2g';
 
 declare module '2g' {
   interface EventRegistry {
-    'transform:worker:started': { pid: number };
     'transform:failed': { file: string; error: SerializedError };
     'transform:custom_transformer:loaded': { path: string };
     'transform:custom_transformer:failed': { path: string; error: SerializedError };

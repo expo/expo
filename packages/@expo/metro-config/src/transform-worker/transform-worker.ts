@@ -28,8 +28,6 @@ import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { transformShim } from './transformShim';
 
-event('worker:started', { pid: process.pid });
-
 export interface TransformResponse {
   readonly dependencies: readonly TransformResultDependency[];
   // `ExpoJsOutput` widens `data.map` to `SerializableSourceMap |
