@@ -175,6 +175,7 @@ const transform: BabelTransformer['transform'] = ({
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
   process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
 
+  const done = debugEvent.span();
   try {
     const { enableBabelRCLookup } = options;
     const { exts, presets } = loadBabelConfig(options);
@@ -235,6 +236,7 @@ const transform: BabelTransformer['transform'] = ({
     assert(result.ast);
     return { ast: result.ast, metadata: result.metadata };
   } finally {
+    done('babel', { file: debugEvent.path(filename) });
     // Restore the old process.env.BABEL_ENV
     if (OLD_BABEL_ENV == null) {
       // We have to treat this as a special case because writing undefined to

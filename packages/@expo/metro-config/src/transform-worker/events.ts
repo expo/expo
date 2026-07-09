@@ -17,6 +17,11 @@ declare module '2g' {
       cached: false;
     };
 
+    // per-file sub-phase spans (nested under transform:file)
+    'transform:babel': { file: string };
+    'transform:collect_dependencies': { file: string; count: number };
+    'transform:minify': { file: string };
+
     // debug keys
     'transform:browserslist:targets': { targets: Record<string, unknown> };
     'transform:collect_deps:magic_comment_ignored': { line: number | string; code: string };

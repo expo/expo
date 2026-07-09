@@ -52,6 +52,7 @@ import type {
 import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from './collect-dependencies';
+import { debugEvent } from './events';
 import { shouldMinify } from './resolveOptions';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
@@ -146,6 +147,7 @@ export const minifyCode = async (
 
   const minify = getMinifier(config.minifierPath);
 
+  const done = debugEvent.span();
   try {
     const minified = await minify({
       code,
@@ -155,6 +157,7 @@ export const minifyCode = async (
       config: config.minifierConfig,
     });
 
+    done('minify', { file: debugEvent.path(filename) });
     return {
       code: minified.code,
       sourceMap: minified.map
@@ -429,6 +432,7 @@ async function transformJS(
         collectOnly: optimize === true,
       };
 
+      const doneDeps = debugEvent.span();
       ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
         ...collectDependenciesOptions,
         // This setting shouldn't be shared with the tree shaking transformer.
@@ -439,6 +443,10 @@ async function transformJS(
             ? (loc: t.SourceLocation) => importDeclarationLocs.has(locToKey(loc))
             : null,
       }));
+      doneDeps('collect_dependencies', {
+        file: debugEvent.path(file.filename),
+        count: dependencies.length,
+      });
 
       // Ensure we use the same name for the second pass of the dependency collection in the serializer.
       collectDependenciesOptions = {
