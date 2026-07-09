@@ -3,21 +3,22 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+		3F1E298E4A2D7CA403A328B5 /* ReactCodegen in Frameworks */ = {isa = PBXBuildFile; productRef = 947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */; };
+		50A8621D202A6CFB97E2C1B5 /* ReactAppDependencyProvider in Frameworks */ = {isa = PBXBuildFile; productRef = F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */; };
+		63EFA1BFF3B26ED48191BE19 /* ReactNative in Frameworks */ = {isa = PBXBuildFile; productRef = F22919FD47E160B1C255059D /* ReactNative */; };
+		875666C3F414E2DEA17AB4C6 /* ReactNativeDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 7E7D873FB92107759FFD17BD /* ReactNativeDependencies */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		C1EE06F0363A2E45DF7286A5 /* hermes-engine in Frameworks */ = {isa = PBXBuildFile; productRef = 9F15E21186D6CE992DFCBF93 /* hermes-engine */; };
+		D6BD17EA9023C9F39246B71F /* Autolinked in Frameworks */ = {isa = PBXBuildFile; productRef = 3AFDEFB917B01458307FDE0A /* Autolinked */; };
+		EE0000000000000000000A01 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0000000000000000000A02 /* ExpoModulesProvider.swift */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 		F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748432D0307B40044C1D9 /* SceneDelegate.swift */; };
-		63EFA1BFF3B26ED48191BE19 /* ReactNative in Frameworks */ = {isa = PBXBuildFile; productRef = F22919FD47E160B1C255059D /* ReactNative */;};
-		875666C3F414E2DEA17AB4C6 /* ReactNativeDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 7E7D873FB92107759FFD17BD /* ReactNativeDependencies */;};
-		C1EE06F0363A2E45DF7286A5 /* hermes-engine in Frameworks */ = {isa = PBXBuildFile; productRef = 9F15E21186D6CE992DFCBF93 /* hermes-engine */;};
-		D6BD17EA9023C9F39246B71F /* Autolinked in Frameworks */ = {isa = PBXBuildFile; productRef = 3AFDEFB917B01458307FDE0A /* Autolinked */;};
-		3F1E298E4A2D7CA403A328B5 /* ReactCodegen in Frameworks */ = {isa = PBXBuildFile; productRef = 947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */;};
-		50A8621D202A6CFB97E2C1B5 /* ReactAppDependencyProvider in Frameworks */ = {isa = PBXBuildFile; productRef = F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */;};
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,7 +27,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = minimalswiftpm/Info.plist; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = minimalswiftpm/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		EE0000000000000000000A02 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = build/generated/autolinking/expo/ExpoModulesProvider.swift; sourceTree = SOURCE_ROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = minimalswiftpm/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748432D0307B40044C1D9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = minimalswiftpm/SceneDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* minimalswiftpm-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "minimalswiftpm-Bridging-Header.h"; path = "minimalswiftpm/minimalswiftpm-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -54,6 +55,7 @@
 			children = (
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
 				F11748432D0307B40044C1D9 /* SceneDelegate.swift */,
+				EE0000000000000000000A02 /* ExpoModulesProvider.swift */,
 				F11748442D0722820044C1D9 /* minimalswiftpm-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -61,14 +63,6 @@
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 			);
 			name = minimalswiftpm;
-			sourceTree = "<group>";
-		};
-		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -84,7 +78,6 @@
 				13B07FAE1A68108700A75B9A /* minimalswiftpm */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
-				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -112,14 +105,6 @@
 
 /* Begin PBXNativeTarget section */
 		13B07F861A680F5B00A75B9A /* minimalswiftpm */ = {
-			packageProductDependencies = (
-				F22919FD47E160B1C255059D /* ReactNative */,
-				7E7D873FB92107759FFD17BD /* ReactNativeDependencies */,
-				9F15E21186D6CE992DFCBF93 /* hermes-engine */,
-				3AFDEFB917B01458307FDE0A /* Autolinked */,
-				947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */,
-				F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */,
-			);
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "minimalswiftpm" */;
 			buildPhases = (
@@ -135,6 +120,14 @@
 			dependencies = (
 			);
 			name = minimalswiftpm;
+			packageProductDependencies = (
+				F22919FD47E160B1C255059D /* ReactNative */,
+				7E7D873FB92107759FFD17BD /* ReactNativeDependencies */,
+				9F15E21186D6CE992DFCBF93 /* hermes-engine */,
+				3AFDEFB917B01458307FDE0A /* Autolinked */,
+				947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */,
+				F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */,
+			);
 			productName = minimalswiftpm;
 			productReference = 13B07F961A680F5B00A75B9A /* minimalswiftpm.app */;
 			productType = "com.apple.product-type.application";
@@ -143,11 +136,6 @@
 
 /* Begin PBXProject section */
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
-			packageReferences = (
-				27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */,
-				C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "build/generated/autolinking" */,
-				A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */,
-			);
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 1130;
@@ -166,6 +154,11 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */,
+				C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "build/generated/autolinking" */,
+				A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -204,21 +197,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
-		};
-		94383382E1D546F3B8D625BF /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo Dev Launcher] Strip Local Network Keys for Release";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Strip dev-launcher-specific local network permission keys from non-Debug builds\n# This only removes _expo._tcp Bonjour services and the dev-launcher usage description.\n# Other Bonjour services and custom descriptions are preserved for production use.\n\nif [ \"$CONFIGURATION\" != \"Debug\" ]; then\n  PLIST_PATH=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n  if [ -f \"$PLIST_PATH\" ]; then\n    # Check if NSBonjourServices exists\n    if /usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" >/dev/null 2>&1; then\n      # Get the count of services\n      COUNT=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n\n      # Remove _expo._tcp\n      for ((i=COUNT-1; i>=0; i--)); do\n        SERVICE=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n        if echo \"$SERVICE\" | grep -q \"_expo._tcp\"; then\n          /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || true\n        fi\n      done\n\n      # If the array is now empty, remove it entirely\n      REMAINING=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n      if [ \"$REMAINING\" -eq \"0\" ]; then\n        /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null || true\n      fi\n    fi\n\n    # Only delete the description if it matches the dev-launcher default text\n    DESC=$(/usr/libexec/PlistBuddy -c \"Print :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n    if echo \"$DESC\" | grep -q \"Expo Dev Launcher\"; then\n      /usr/libexec/PlistBuddy -c \"Delete :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || true\n    fi\n  fi\nfi\n";
+			shellScript = "# SwiftPM app: no CocoaPods, so PODS_ROOT is unset and every\n# `$PODS_ROOT/../.xcode.env` reference below dead-ends (a nonexistent Pods/\n# component also breaks `..` resolution). Source the env files from SRCROOT\n# directly so NODE_BINARY is set; the PODS_ROOT-based blocks below then no-op.\nif [ -f \"$SRCROOT/.xcode.env\" ]; then\n  . \"$SRCROOT/.xcode.env\"\nfi\nif [ -f \"$SRCROOT/.xcode.env.local\" ]; then\n  . \"$SRCROOT/.xcode.env.local\"\nfi\n\nif [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
 		};
 		658A88AFBFD620F8BC6F91BA /* Sync SPM Autolinking */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -236,7 +215,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euo pipefail\n\nSTAMP=\"$SRCROOT/build/generated/autolinking/.spm-sync-stamp\"\nSTALE=0\n\n# Check 0: xcframework artifacts missing (fresh clone)\nif [ ! -f \"$SRCROOT/build/xcframeworks/artifacts.json\" ] || \\\n   [ ! -d \"$SRCROOT/build/xcframeworks/React.xcframework\" ]; then\n  STALE=1\nfi\n\n# Find project root (where package.json lives — may be an ancestor of SRCROOT)\nPROJECT_ROOT=\"$SRCROOT\"\nwhile [ \"$PROJECT_ROOT\" != \"/\" ] && [ ! -f \"$PROJECT_ROOT/package.json\" ]; do\n  PROJECT_ROOT=\"$(dirname \"$PROJECT_ROOT\")\"\ndone\nif [ ! -f \"$PROJECT_ROOT/package.json\" ]; then\n  PROJECT_ROOT=\"$SRCROOT\"\nfi\n\n# Check 1: dependency inputs (covers app projects after any package manager install)\nfor INPUT in \\\n  \"$PROJECT_ROOT/package.json\" \\\n  \"$PROJECT_ROOT/react-native.config.js\"; do\n  if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n    STALE=1\n    break\n  fi\ndone\n\n# Check workspace lockfiles and package-manager metadata. These cover package\n# managers that do not reliably bump node_modules mtimes, and Yarn PnP projects\n# that do not have node_modules at all.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    for INPUT in \\\n      \"$DIR/package-lock.json\" \\\n      \"$DIR/npm-shrinkwrap.json\" \\\n      \"$DIR/yarn.lock\" \\\n      \"$DIR/pnpm-lock.yaml\" \\\n      \"$DIR/bun.lock\" \\\n      \"$DIR/bun.lockb\" \\\n      \"$DIR/.pnp.cjs\" \\\n      \"$DIR/.pnp.loader.mjs\"; do\n      if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n        STALE=1\n        break\n      fi\n    done\n    if [ \"$STALE\" -eq 1 ]; then\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Check node_modules mtime. In monorepos, node_modules may be hoisted to any\n# ancestor between the app package and the workspace root.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    NM_DIR=\"$DIR/node_modules\"\n    if [ -d \"$NM_DIR\" ] && [ \"$NM_DIR\" -nt \"$STAMP\" ]; then\n      STALE=1\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Also check the app root directly when SRCROOT is not the package root.\nif [ \"$STALE\" -eq 0 ] && [ \"$SRCROOT\" != \"$PROJECT_ROOT\" ]; then\n  if [ -d \"$SRCROOT/node_modules\" ] && [ \"$SRCROOT/node_modules\" -nt \"$STAMP\" ]; then\n    STALE=1\n  fi\nfi\n\n# Check 1.5: watched module source dirs (catches add/remove of source files\n# in spm.modules and autolinked deps). Directory mtime updates on both add\n# and remove of children, so a single -newer check covers both cases.\nWATCH_FILE=\"$SRCROOT/build/generated/autolinking/.spm-sync-watch-paths\"\nif [ \"$STALE\" -eq 0 ] && [ -f \"$WATCH_FILE\" ]; then\n  while IFS= read -r DIR; do\n    [ -z \"$DIR\" ] && continue\n    if [ -d \"$DIR\" ] && [ -n \"$(find \"$DIR\" -newer \"$STAMP\" -print -quit 2>/dev/null)\" ]; then\n      STALE=1\n      break\n    fi\n  done < \"$WATCH_FILE\"\nfi\n\n# Check 2: codegen spec files changed via git (covers monorepo after git pull)\nif [ \"$STALE\" -eq 0 ] && [ -f \"$STAMP\" ]; then\n  STAMP_TIME=$(stat -f %m \"$STAMP\" 2>/dev/null || stat -c %Y \"$STAMP\" 2>/dev/null || echo 0)\n  LATEST_SPEC_COMMIT=$(git -C \"$SRCROOT\" log -1 --format=%ct -- '*.js' '*.ts' 2>/dev/null || echo 0)\n  if [ \"$LATEST_SPEC_COMMIT\" -gt \"$STAMP_TIME\" ]; then\n    STALE=1\n  fi\nfi\n\nif [ ! -f \"$STAMP\" ]; then\n  STALE=1\nfi\n\nif [ \"$STALE\" -eq 0 ]; then\n  exit 0\nfi\n\necho \"SPM sync inputs changed — re-syncing (codegen + autolinking)...\"\n\nWITH_ENVIRONMENT=\"../../../node_modules/.pnpm/react-native@http+++127.0.0.1+4873+react-native+-+react-native-0.87.0-nightly-20260706-_ed3573ef0871a8f7f1027d95a2debcf9/node_modules/react-native/scripts/xcode/with-environment.sh\"\n\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  # with-environment.sh references PODS_ROOT and $1, which may be unset.\n  # Temporarily disable nounset to avoid failures when sourcing.\n  export PODS_ROOT=\"${PODS_ROOT:-$SRCROOT}\"\n  set +u\n  . \"$WITH_ENVIRONMENT\"\n  set -u\nfi\n\ncd \"$SRCROOT\"\nif command -v npx >/dev/null 2>&1; then\n  npx react-native spm sync\n  RC=$?\n  if [ \"$RC\" -eq 2 ]; then\n    # Exit 2 = an autolinked community dependency has no Package.swift. The\n    # autolinker already printed an `error:` line per dep (so Xcode shows them\n    # and the fix). Fail the build — the developer must run\n    # `npx react-native spm scaffold` from a terminal to generate the manifest.\n    exit 1\n  elif [ \"$RC\" -ne 0 ]; then\n    echo \"warning: SPM sync failed — build may use stale codegen/autolinking\"\n    exit 0\n  fi\nelse\n  echo \"warning: npx not found — skipping SPM sync\"\n  exit 0\nfi\n";
+			shellScript = "set -euo pipefail\n\n# ---------------------------------------------------------------------------\n# Resolve a node binary and the react-native package dir at BUILD TIME. Both\n# the flavor swap and the sync below dispatch DIRECTLY into react-native's\n# scripts rather than through 'npx react-native' — that CLI requires\n# @react-native-community/cli (absent in e.g. Expo apps), so it would exit\n# non-zero and the failure would be silently swallowed, leaving the build with\n# the wrong-flavor frameworks (Debug builds then hit 'No script URL provided').\n# ---------------------------------------------------------------------------\nNODE_BINARY=\"${NODE_BINARY:-}\"\nif [ -z \"$NODE_BINARY\" ]; then\n  # Source RN's standard app-local node-path files. They reference vars that\n  # may be unset and may return non-zero, so relax nounset AND errexit while\n  # sourcing — a buggy user .xcode.env must degrade to PATH-based node\n  # resolution below, not silently abort every build.\n  set +eu\n  if [ -f \"$SRCROOT/.xcode.env\" ]; then\n    . \"$SRCROOT/.xcode.env\"\n  fi\n  if [ -f \"$SRCROOT/.xcode.env.local\" ]; then\n    . \"$SRCROOT/.xcode.env.local\"\n  fi\n  set -eu\n  NODE_BINARY=\"${NODE_BINARY:-}\"\nfi\nif [ -z \"$NODE_BINARY\" ]; then\n  NODE_BINARY=\"$(command -v node 2>/dev/null || true)\"\nfi\n\n# Resolve react-native's dir FROM THE APP (require.resolve), not a\n# generation-time baked path — the baked path goes stale in pnpm / hoisted\n# stores. Fall back to the baked path if resolution fails or the resolved dir\n# has no setup-apple-spm.js.\nRN_DIR=\"\"\nif [ -n \"$NODE_BINARY\" ]; then\n  RN_DIR=\"$(cd \"$SRCROOT\" && \"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json'))\" 2>/dev/null || true)\"\nfi\nif [ -z \"$RN_DIR\" ] || [ ! -f \"$RN_DIR/scripts/setup-apple-spm.js\" ]; then\n  RN_DIR=\"/Users/chrfalch/repos/expo/expo/node_modules/.pnpm/react-native@0.87.0-nightly-20260709-fb9d5a561_@babel+core@7.29.0_@react-native+metro-c_13b6d96a68b2b968df9615befd5b2183/node_modules/react-native\"\nfi\n\n# Swap the flavored framework binaries (React / ReactNativeDependencies /\n# hermesvm) to match the Xcode build configuration. SwiftPM can't branch a\n# binaryTarget on $CONFIGURATION, so — mirroring the CocoaPods\n# React-Core-prebuilt swap (replace-rncore-version.js) — we overwrite the\n# SPM-copied frameworks in $BUILT_PRODUCTS_DIR/PackageFrameworks with the\n# correct-flavor slices, before Link. Runs on EVERY build (a config flip changes\n# no sync input) and is timing-robust: it operates on the ALREADY-copied\n# frameworks, so it doesn't race SPM package resolution. A no-op in the scheme\n# pre-action ($BUILT_PRODUCTS_DIR unset / nothing copied yet) and when already\n# the right flavor.\nif [ -n \"${BUILT_PRODUCTS_DIR:-}\" ]; then\n  SWAP_OK=0\n  SWAP_REASON=\"\"\n  if [ -z \"$NODE_BINARY\" ]; then\n    SWAP_REASON=\"no node binary found (set NODE_BINARY or add ios/.xcode.env)\"\n  elif [ ! -f \"$RN_DIR/scripts/setup-apple-spm.js\" ]; then\n    SWAP_REASON=\"could not locate the react-native package (setup-apple-spm.js)\"\n  elif ( cd \"$SRCROOT\" && \"$NODE_BINARY\" \"$RN_DIR/scripts/setup-apple-spm.js\" swap-flavor ); then\n    SWAP_OK=1\n  else\n    SWAP_REASON=\"swap-flavor exited non-zero\"\n  fi\n\n  if [ \"$SWAP_OK\" -eq 0 ]; then\n    # The swap could not run. Determine — in pure shell, mirroring\n    # swap-flavor.js — whether the pinned add-time flavor will ACTUALLY mismatch\n    # this configuration. swap-flavor.js maps CONFIGURATION=Release to the\n    # 'release' flavor and everything else (Debug + custom config names) to\n    # 'debug'; the pinned flavor is the parent dir of the React.xcframework\n    # symlink target (.../<version>/<flavor>/React.xcframework).\n    DESIRED_FLAVOR=debug\n    if [ \"${CONFIGURATION:-}\" = \"Release\" ]; then\n      DESIRED_FLAVOR=release\n    fi\n    PINNED_FLAVOR=\"\"\n    LINK_TARGET=\"$(readlink \"$SRCROOT/build/xcframeworks/React.xcframework\" 2>/dev/null || true)\"\n    if [ -n \"$LINK_TARGET\" ]; then\n      PINNED_PARENT=\"$(basename \"$(dirname \"$LINK_TARGET\")\")\"\n      case \"$(printf '%s' \"$PINNED_PARENT\" | tr '[:upper:]' '[:lower:]')\" in\n        debug) PINNED_FLAVOR=debug ;;\n        release) PINNED_FLAVOR=release ;;\n      esac\n    fi\n    if [ -n \"$PINNED_FLAVOR\" ] && [ \"$PINNED_FLAVOR\" != \"$DESIRED_FLAVOR\" ]; then\n      # A certain Debug<->release mix — known-broken, not merely suboptimal (a\n      # Debug app linking release React has RCT_DEV=0, never queries Metro, and\n      # crashes at runtime with 'No script URL provided'). Fail the build.\n      echo \"error: SwiftPM flavor swap could not run ($SWAP_REASON) and the pinned $PINNED_FLAVOR frameworks do not match the $DESIRED_FLAVOR configuration — the app will misbehave (Debug builds: 'No script URL provided'). Put Node on PATH or set NODE_BINARY in ios/.xcode.env, then rebuild; or run 'npx react-native spm swap-flavor' from a terminal.\"\n      exit 1\n    else\n      echo \"warning: SwiftPM flavor swap could not run ($SWAP_REASON); build may link the add-time flavor\"\n    fi\n  fi\nfi\n\n# Expo flavored precompiled xcframeworks: repoint the generated artifacts/\n# symlinks (and products copies) to match $CONFIGURATION. Non-fatal.\nif [ -n \"${BUILT_PRODUCTS_DIR:-}\" ] && [ -n \"${NODE_BINARY:-}\" ]; then\n  EXPO_DIR=\"$(cd \"$SRCROOT\" && \"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('expo/package.json'))\" 2>/dev/null)\" || EXPO_DIR=\"\"\n  if [ -n \"$EXPO_DIR\" ] && [ -f \"$EXPO_DIR/scripts/spm/swap-flavor.js\" ]; then\n    ( cd \"$SRCROOT\" && \"$NODE_BINARY\" \"$EXPO_DIR/scripts/spm/swap-flavor.js\" ) \\\n      || echo \"warning: expo swap-flavor failed; build may link the wrong Expo flavor\"\n  fi\nfi\n\nSTAMP=\"$SRCROOT/build/generated/autolinking/.spm-sync-stamp\"\nSTALE=0\n\n# Check 0: xcframework artifacts missing (fresh clone)\nif [ ! -f \"$SRCROOT/build/xcframeworks/artifacts.json\" ] || \\\n   [ ! -d \"$SRCROOT/build/xcframeworks/React.xcframework\" ]; then\n  STALE=1\nfi\n\n# Find project root (where package.json lives — may be an ancestor of SRCROOT)\nPROJECT_ROOT=\"$SRCROOT\"\nwhile [ \"$PROJECT_ROOT\" != \"/\" ] && [ ! -f \"$PROJECT_ROOT/package.json\" ]; do\n  PROJECT_ROOT=\"$(dirname \"$PROJECT_ROOT\")\"\ndone\nif [ ! -f \"$PROJECT_ROOT/package.json\" ]; then\n  PROJECT_ROOT=\"$SRCROOT\"\nfi\n\n# Check 1: dependency inputs (covers app projects after any package manager install)\nfor INPUT in \\\n  \"$PROJECT_ROOT/package.json\" \\\n  \"$PROJECT_ROOT/react-native.config.js\"; do\n  if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n    STALE=1\n    break\n  fi\ndone\n\n# Check workspace lockfiles and package-manager metadata. These cover package\n# managers that do not reliably bump node_modules mtimes, and Yarn PnP projects\n# that do not have node_modules at all.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    for INPUT in \\\n      \"$DIR/package-lock.json\" \\\n      \"$DIR/npm-shrinkwrap.json\" \\\n      \"$DIR/yarn.lock\" \\\n      \"$DIR/pnpm-lock.yaml\" \\\n      \"$DIR/bun.lock\" \\\n      \"$DIR/bun.lockb\" \\\n      \"$DIR/.pnp.cjs\" \\\n      \"$DIR/.pnp.loader.mjs\"; do\n      if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n        STALE=1\n        break\n      fi\n    done\n    if [ \"$STALE\" -eq 1 ]; then\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Check node_modules mtime. In monorepos, node_modules may be hoisted to any\n# ancestor between the app package and the workspace root.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    NM_DIR=\"$DIR/node_modules\"\n    if [ -d \"$NM_DIR\" ] && [ \"$NM_DIR\" -nt \"$STAMP\" ]; then\n      STALE=1\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Also check the app root directly when SRCROOT is not the package root.\nif [ \"$STALE\" -eq 0 ] && [ \"$SRCROOT\" != \"$PROJECT_ROOT\" ]; then\n  if [ -d \"$SRCROOT/node_modules\" ] && [ \"$SRCROOT/node_modules\" -nt \"$STAMP\" ]; then\n    STALE=1\n  fi\nfi\n\n# Check 1.5: watched module source dirs (catches add/remove of source files\n# in spm.modules and autolinked deps). Directory mtime updates on both add\n# and remove of children, so a single -newer check covers both cases.\nWATCH_FILE=\"$SRCROOT/build/generated/autolinking/.spm-sync-watch-paths\"\nif [ \"$STALE\" -eq 0 ] && [ -f \"$WATCH_FILE\" ]; then\n  while IFS= read -r DIR; do\n    [ -z \"$DIR\" ] && continue\n    if [ -d \"$DIR\" ] && [ -n \"$(find \"$DIR\" -newer \"$STAMP\" -print -quit 2>/dev/null)\" ]; then\n      STALE=1\n      break\n    fi\n  done < \"$WATCH_FILE\"\nfi\n\n# Check 2: codegen spec files changed via git (covers monorepo after git pull)\nif [ \"$STALE\" -eq 0 ] && [ -f \"$STAMP\" ]; then\n  STAMP_TIME=$(stat -f %m \"$STAMP\" 2>/dev/null || stat -c %Y \"$STAMP\" 2>/dev/null || echo 0)\n  LATEST_SPEC_COMMIT=$(git -C \"$SRCROOT\" log -1 --format=%ct -- '*.js' '*.ts' 2>/dev/null || echo 0)\n  if [ \"$LATEST_SPEC_COMMIT\" -gt \"$STAMP_TIME\" ]; then\n    STALE=1\n  fi\nfi\n\nif [ ! -f \"$STAMP\" ]; then\n  STALE=1\nfi\n\nif [ \"$STALE\" -eq 0 ]; then\n  exit 0\nfi\n\necho \"SPM sync inputs changed — re-syncing (codegen + autolinking)...\"\n\nWITH_ENVIRONMENT=\"$RN_DIR/scripts/xcode/with-environment.sh\"\n\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  # with-environment.sh references PODS_ROOT and $1, which may be unset.\n  # Temporarily disable nounset to avoid failures when sourcing.\n  export PODS_ROOT=\"${PODS_ROOT:-$SRCROOT}\"\n  set +u\n  . \"$WITH_ENVIRONMENT\"\n  set -u\nfi\n\ncd \"$SRCROOT\"\n# `|| RC=$?` so a non-zero exit is CAPTURED rather than aborting the phase\n# under `set -e` — the whole point is to branch on the code below (2 = fail\n# the build with a scaffold hint; other non-zero = warn but don't break).\nRC=0\nif [ -n \"$NODE_BINARY\" ] && [ -f \"$RN_DIR/scripts/setup-apple-spm.js\" ]; then\n  # Direct, dependency-free dispatch (no `npx react-native`, which needs\n  # @react-native-community/cli).\n  \"$NODE_BINARY\" \"$RN_DIR/scripts/setup-apple-spm.js\" sync || RC=$?\nelif command -v npx >/dev/null 2>&1; then\n  npx react-native spm sync || RC=$?\nelse\n  echo \"warning: node/npx not found — skipping SPM sync\"\n  exit 0\nfi\nif [ \"$RC\" -eq 2 ]; then\n  # Exit 2 = an autolinked community dependency has no Package.swift. The\n  # autolinker already printed an `error:` line per dep (so Xcode shows them\n  # and the fix). Fail the build — the developer must run\n  # `npx react-native spm scaffold` from a terminal to generate the manifest.\n  exit 1\nelif [ \"$RC\" -ne 0 ]; then\n  echo \"warning: SPM sync failed — build may use stale codegen/autolinking\"\n  exit 0\nfi\n";
+		};
+		94383382E1D546F3B8D625BF /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo Dev Launcher] Strip Local Network Keys for Release";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Strip dev-launcher-specific local network permission keys from non-Debug builds\n# This only removes _expo._tcp Bonjour services and the dev-launcher usage description.\n# Other Bonjour services and custom descriptions are preserved for production use.\n\nif [ \"$CONFIGURATION\" != \"Debug\" ]; then\n  PLIST_PATH=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n  if [ -f \"$PLIST_PATH\" ]; then\n    # Check if NSBonjourServices exists\n    if /usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" >/dev/null 2>&1; then\n      # Get the count of services\n      COUNT=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n\n      # Remove _expo._tcp\n      for ((i=COUNT-1; i>=0; i--)); do\n        SERVICE=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n        if echo \"$SERVICE\" | grep -q \"_expo._tcp\"; then\n          /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || true\n        fi\n      done\n\n      # If the array is now empty, remove it entirely\n      REMAINING=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n      if [ \"$REMAINING\" -eq \"0\" ]; then\n        /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null || true\n      fi\n    fi\n\n    # Only delete the description if it matches the dev-launcher default text\n    DESC=$(/usr/libexec/PlistBuddy -c \"Print :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n    if echo \"$DESC\" | grep -q \"Expo Dev Launcher\"; then\n      /usr/libexec/PlistBuddy -c \"Delete :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || true\n    fi\n  fi\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -247,6 +240,7 @@
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
 				F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */,
+				EE0000000000000000000A01 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,18 +250,8 @@
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				REACT_NATIVE_PATH = "../../../node_modules/.pnpm/react-native@http+++127.0.0.1+4873+react-native+-+react-native-0.87.0-nightly-20260706-_ed3573ef0871a8f7f1027d95a2debcf9/node_modules/react-native";
-				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
-				OTHER_SWIFT_FLAGS = (
-					"$(inherited)",
-					"-Xcc",
-					"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/build/generated/autolinking/headers",
-				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = minimalswiftpm/minimalswiftpm.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
@@ -276,6 +260,11 @@
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/build/generated/autolinking/headers",
+				);
+				HERMES_CLI_PATH = "/Users/chrfalch/repos/expo/expo/node_modules/.pnpm/hermes-compiler@250829098.0.15/node_modules/hermes-compiler/hermesc/osx-bin/hermesc";
 				INFOPLIST_FILE = minimalswiftpm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -289,8 +278,10 @@
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.minimalswiftpm;
 				PRODUCT_NAME = minimalswiftpm;
+				REACT_NATIVE_PATH = "../../../node_modules/.pnpm/react-native@http+++127.0.0.1+4873+react-native+-+react-native-0.87.0-nightly-20260706-_ed3573ef0871a8f7f1027d95a2debcf9/node_modules/react-native";
 				SWIFT_OBJC_BRIDGING_HEADER = "minimalswiftpm/minimalswiftpm-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -302,21 +293,16 @@
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				REACT_NATIVE_PATH = "../../../node_modules/.pnpm/react-native@http+++127.0.0.1+4873+react-native+-+react-native-0.87.0-nightly-20260706-_ed3573ef0871a8f7f1027d95a2debcf9/node_modules/react-native";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
-				OTHER_SWIFT_FLAGS = (
-					"$(inherited)",
-					"-Xcc",
-					"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",
-				);
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = minimalswiftpm/minimalswiftpm.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/build/generated/autolinking/headers",
 				);
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = minimalswiftpm/minimalswiftpm.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				HERMES_CLI_PATH = "/Users/chrfalch/repos/expo/expo/node_modules/.pnpm/hermes-compiler@250829098.0.15/node_modules/hermes-compiler/hermesc/osx-bin/hermesc";
 				INFOPLIST_FILE = minimalswiftpm/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -330,8 +316,10 @@
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.minimalswiftpm;
 				PRODUCT_NAME = minimalswiftpm;
+				REACT_NATIVE_PATH = "../../../node_modules/.pnpm/react-native@http+++127.0.0.1+4873+react-native+-+react-native-0.87.0-nightly-20260706-_ed3573ef0871a8f7f1027d95a2debcf9/node_modules/react-native";
 				SWIFT_OBJC_BRIDGING_HEADER = "minimalswiftpm/minimalswiftpm-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -395,6 +383,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 			};
 			name = Debug;
 		};
@@ -472,21 +461,54 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
 /* Begin XCLocalSwiftPackageReference section */
-		27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/xcframeworks;};
-		C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "build/generated/autolinking" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/generated/autolinking;};
-		A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */ = {isa = XCLocalSwiftPackageReference; relativePath = build/generated/ios;};
+		27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = build/xcframeworks;
+		};
+		A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = build/generated/ios;
+		};
+		C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "build/generated/autolinking" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = build/generated/autolinking;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F22919FD47E160B1C255059D /* ReactNative */ = {isa = XCSwiftPackageProductDependency; package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = ReactNative;};
-		7E7D873FB92107759FFD17BD /* ReactNativeDependencies */ = {isa = XCSwiftPackageProductDependency; package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = ReactNativeDependencies;};
-		9F15E21186D6CE992DFCBF93 /* hermes-engine */ = {isa = XCSwiftPackageProductDependency; package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */; productName = "hermes-engine";};
-		3AFDEFB917B01458307FDE0A /* Autolinked */ = {isa = XCSwiftPackageProductDependency; package = C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "build/generated/autolinking" */; productName = Autolinked;};
-		947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */ = {isa = XCSwiftPackageProductDependency; package = A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */; productName = ReactCodegen;};
-		F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */ = {isa = XCSwiftPackageProductDependency; package = A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */; productName = ReactAppDependencyProvider;};
+		3AFDEFB917B01458307FDE0A /* Autolinked */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "build/generated/autolinking" */;
+			productName = Autolinked;
+		};
+		7E7D873FB92107759FFD17BD /* ReactNativeDependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */;
+			productName = ReactNativeDependencies;
+		};
+		947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */;
+			productName = ReactCodegen;
+		};
+		9F15E21186D6CE992DFCBF93 /* hermes-engine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */;
+			productName = "hermes-engine";
+		};
+		F22919FD47E160B1C255059D /* ReactNative */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */;
+			productName = ReactNative;
+		};
+		F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */;
+			productName = ReactAppDependencyProvider;
+		};
 /* End XCSwiftPackageProductDependency section */
-
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
