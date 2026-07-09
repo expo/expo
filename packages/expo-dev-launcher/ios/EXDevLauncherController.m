@@ -12,7 +12,6 @@
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
 #import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
-#import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
 
 #import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
@@ -22,10 +21,6 @@
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
 #else
 #import <EXDevLauncher-Swift.h>
-#endif
-
-#ifdef RCT_NEW_ARCH_ENABLED
-#import <React/RCTSurfaceView.h>
 #endif
 
 @import EXManifests;
@@ -543,11 +538,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.sourceUrl = bundleUrl;
 
 #if RCT_DEV
-    // Connect to the websocket, ignore downloaded update bundles
-    if (![bundleUrl.scheme isEqualToString:@"file"]) {
-      //[[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
-      RCTLogWarn(@"bundle scheme is file - unable to connect to sharedPackageConnection from EXDevLauncherController.");
-    }
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
