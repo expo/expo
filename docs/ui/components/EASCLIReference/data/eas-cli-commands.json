@@ -1,7 +1,7 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-07-02T09:06:38.547Z",
+    "fetchedAt": "2026-07-09T09:08:12.393Z",
     "cliVersion": "20.5.1"
   },
   "totalCommands": 128,
@@ -614,7 +614,7 @@
     {
       "command": "eas workflow:create [NAME]",
       "description": "create a new workflow configuration YAML file",
-      "usage": "USAGE\n  $ eas workflow:create [NAME] [--skip-validation]\n\nARGUMENTS\n  [NAME]  Name of the workflow file (must end with .yml or .yaml)\n\nFLAGS\n  --skip-validation  If set, the workflow file will not be validated before being created\n\nDESCRIPTION\n  create a new workflow configuration YAML file"
+      "usage": "USAGE\n  $ eas workflow:create [NAME] [--template build|update|deploy|custom] [--skip-validation]\n\nARGUMENTS\n  [NAME]  Name of the workflow file. When provided without --template, a placeholder workflow is created.\n\nFLAGS\n  --skip-validation    If set, the workflow file will not be validated before being created\n  --template=<option>  Template to use for the workflow file\n                       <options: build|update|deploy|custom>\n\nDESCRIPTION\n  create a new workflow configuration YAML file"
     },
     {
       "command": "eas workflow:logs [ID]",
