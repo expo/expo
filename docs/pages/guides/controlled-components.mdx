@@ -7,7 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { UpdateLoopDiagram } from '~/scenes/guides/controlled-components/UpdateLoopDiagram';
 import { WorkletPathDiagram } from '~/scenes/guides/controlled-components/WorkletPathDiagram';
 
-Every input has a current value, such as the text in an input field, the position of a switch, or the selection in a picker. A **controlled component** keeps the value in your component's state. The input displays whatever the state holds and every change the user makes updates that state. That state is the single source of truth.
+Every input has a current value, such as the text in an input field, the position of a switch, or the selection in a picker. A **controlled component** keeps the value in state you manage. The input displays whatever the state holds and every change the user makes updates that state. That state is the single source of truth.
 
 Controlled components pair a prop that sets the value with a callback that reports changes. This page focuses on [`TextInput`](https://reactnative.dev/docs/textinput), React Native's component for entering text, because a text input is where controlling the value is most useful and hardest to get right. For `Switch`, `Checkbox`, and `Picker`, see [Control other components](#control-other-components).
 
@@ -38,7 +38,7 @@ The following diagram shows how a keystroke travels through the update loop:
 
 If you have written [controlled inputs for the web](https://react.dev/reference/react-dom/components/input#controlling-an-input-with-a-state-variable), three things change in React Native:
 
-- The change handler is `onChangeText` and receives the new text directly instead of an event object.
+- The usual change handler is `onChangeText` and receives the new text directly instead of an event object.
 - React Native has no [`preventDefault`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault), so you cannot block a keystroke before it appears. Instead, sanitize the text in `onChangeText` and pass the result back through `value`.
 - The update is asynchronous, so the field reflects your state one round-trip later.
 
@@ -163,9 +163,9 @@ The following example stores a coupon code in uppercase:
 
 Before React Native's [New Architecture](/guides/new-architecture/), reformatting the value inside `onChangeText` snapped the cursor to the end of the field, which made edits in the middle of the input difficult.
 
-In React Native and Expo apps that use the New Architecture, inserting text in the middle of the field keeps the cursor right after the inserted text.
+In React Native and Expo apps that use the New Architecture, typing in the middle of the field keeps the cursor in place as long as `onChangeText` passes the text back unchanged. When it returns transformed text, the native field has to map the old cursor position onto the new string, and that mapping can miss when the transform inserts or removes characters.
 
-If the cursor still ends up in the wrong place (on an older version of React Native, or with a transform that inserts or removes characters before the cursor):
+To keep the cursor stable while formatting:
 
 - Prefer native props such as `maxLength` and `editable` over reimplementing them in JavaScript. See [Restrict what users can type](#restrict-what-users-can-type).
 - Use a mask library that handles the cursor math for you. See [When to use a library](#when-to-use-a-library).
