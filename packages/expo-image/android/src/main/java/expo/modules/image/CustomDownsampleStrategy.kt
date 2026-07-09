@@ -137,7 +137,21 @@ class ContentFitDownsampleStrategy(
     sourceHeight: Int,
     requestedWidth: Int,
     requestedHeight: Int
-  ) = SampleSizeRounding.QUALITY
+  ): SampleSizeRounding {
+    val safeScale = safeStrategy.getScaleFactor(sourceWidth, sourceHeight, requestedWidth, requestedHeight)
+    if (requestedWidth == Target.SIZE_ORIGINAL || requestedHeight == Target.SIZE_ORIGINAL) {
+      if (safeScale < 1f) return SampleSizeRounding.MEMORY
+    } else {
+      val aspectRatio = calculateScaleFactor(
+        sourceWidth.toFloat(),
+        sourceHeight.toFloat(),
+        requestedWidth.toFloat(),
+        requestedHeight.toFloat()
+      )
+      if (safeScale < min(1f, aspectRatio)) return SampleSizeRounding.MEMORY
+    }
+    return SampleSizeRounding.QUALITY
+  }
 }
 
 /**

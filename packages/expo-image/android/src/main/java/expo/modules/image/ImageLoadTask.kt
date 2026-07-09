@@ -1,7 +1,6 @@
 package expo.modules.image
 
 import android.graphics.drawable.BitmapDrawable
-import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.Glide
 import expo.modules.image.records.DecodeFormat
@@ -33,7 +32,7 @@ open class ImageLoadTask(
           .centerInside()
           .downsample(
             if (options.maxWidth <= 0 && options.maxHeight <= 0) {
-              // ARGB_8888 is the default format, but is it safe to hardcode it here?
+              // loadAsync has no configurable decode format; ARGB_8888 is the widest, so its size cap is a safe upper bound.
               SafeDownsampleStrategy(DecodeFormat.ARGB_8888)
             } else {
               NoopDownsampleStrategy
