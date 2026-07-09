@@ -246,7 +246,42 @@ export interface HashSourceContents {
   reasons: string[];
 }
 
-export type HashSource = HashSourceFile | HashSourceDir | HashSourceContents;
+export interface HashSourcePackage {
+  type: 'package';
+
+  /**
+   * Package name from its `package.json`.
+   * Together with `version`, this is the only thing hashed, so unrelated churn inside the package
+   * (or across machines) is ignored.
+   */
+  name: string;
+
+  /**
+   * Package version from its `package.json`.
+   */
+  version: string;
+
+  /**
+   * Path to the package's `package.json`.
+   * Kept for ignore-path matching and debugging only — it is deliberately not part of the hash, so
+   * the fingerprint doesn't depend on where the package resolves on disk (e.g. hoisted vs. isolated
+   * installs).
+   */
+  filePath: string;
+
+  /**
+   * Reasons of this source coming from.
+   */
+  reasons: string[];
+
+  /**
+   * Override key for hashing.
+   * Without this key, the package `name@version` is used as the hash key.
+   */
+  overrideHashKey?: string;
+}
+
+export type HashSource = HashSourceFile | HashSourceDir | HashSourceContents | HashSourcePackage;
 
 export interface DebugInfoFile {
   path: string;
@@ -267,7 +302,14 @@ export interface DebugInfoContents {
   isTransformed?: boolean;
 }
 
-export type DebugInfo = DebugInfoFile | DebugInfoDir | DebugInfoContents;
+export interface DebugInfoPackage {
+  path: string;
+  name: string;
+  version: string;
+  hash: string;
+}
+
+export type DebugInfo = DebugInfoFile | DebugInfoDir | DebugInfoContents | DebugInfoPackage;
 
 export interface HashResultFile {
   type: 'file';
@@ -290,7 +332,14 @@ export interface HashResultContents {
   debugInfo?: DebugInfoContents;
 }
 
-export type HashResult = HashResultFile | HashResultDir | HashResultContents;
+export interface HashResultPackage {
+  type: 'package';
+  id: string;
+  hex: string;
+  debugInfo?: DebugInfoPackage;
+}
+
+export type HashResult = HashResultFile | HashResultDir | HashResultContents | HashResultPackage;
 
 //#region internal types
 
