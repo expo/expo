@@ -13,6 +13,7 @@
 - Record an `expo.memory.warning` log event on iOS when the system delivers a low-memory warning, carrying the memory usage snapshot (`expo.memory.*`) taken at warning time. ([#47108](https://github.com/expo/expo/pull/47108) by [@tsapeta](https://github.com/tsapeta))
 - Add an optional `displayName` to `logEvent` ([#47289](https://github.com/expo/expo/pull/47289) by [@Ubax](https://github.com/Ubax))
 - Capture React render-phase errors via `AppMetricsErrorBoundary`. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
+- Implement `logEvent`, `setGlobalAttributes`, and `clearStoredEntries` on web, storing log events in memory for the page's lifetime and exposing them via `Session.getLogs()`. ([#TBD](https://github.com/expo/expo/pull/TBD) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
