@@ -95,7 +95,12 @@ export function withMetroResolvers(
         //  return context.resolveRequest(context, moduleName, platform);
         // };
         const firstResolver = originalResolveRequest ?? universalContext.resolveRequest;
-        return firstResolver(universalContext, moduleName, platform);
+        const done = event.span();
+        const resolution = firstResolver(universalContext, moduleName, platform);
+        if (resolution) {
+          done('module', { module: moduleName, platform, type: resolution.type });
+        }
+        return resolution;
       },
     },
   };
