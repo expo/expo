@@ -418,6 +418,7 @@ export const general = [
         makePage('guides/store-assets.mdx'),
         makePage('guides/local-first.mdx'),
         makePage('guides/keyboard-handling.mdx'),
+        makePage('guides/controlled-components.mdx'),
       ]),
       makeSection('Expo UI', [
         makePage('guides/expo-ui-swift-ui/index.mdx'),
