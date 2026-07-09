@@ -60,7 +60,6 @@ const __dirname = dirname(__filename);
       const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
         appId: APP_ID,
         e2eDir,
-        confirmFirstRunPromptIOS: false,
       });
 
       await retryAsync((retryNumber) => {
