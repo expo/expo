@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { installEventLogger } from '2g';
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
 import countLines from '@expo/metro/metro/lib/countLines';
@@ -27,6 +28,10 @@ import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { transformShim } from './transformShim';
+
+installEventLogger();
+
+event('worker:started', { pid: process.pid });
 
 export interface TransformResponse {
   readonly dependencies: readonly TransformResultDependency[];
