@@ -204,10 +204,7 @@ export default function BottomSheetScreen() {
       {/* Solid Background Color Sheet */}
       <BottomSheet isPresented={showBackgroundColor} onIsPresentedChange={setShowBackgroundColor}>
         <Group
-          modifiers={[
-            presentationDetents(['medium', 'large']),
-            presentationBackground('#ffffff'),
-          ]}>
+          modifiers={[presentationDetents(['medium', 'large']), presentationBackground('#ffffff')]}>
           <VStack modifiers={[padding({ all: 20 })]}>
             <Text modifiers={[foregroundStyle('#000000')]}>Solid white sheet background</Text>
             <Text modifiers={[foregroundStyle('#666666')]}>
