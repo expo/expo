@@ -1,6 +1,14 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
+// UIResponder/UIApplicationDelegate (and their AppKit counterparts) need the UI
+// framework imported explicitly — under CocoaPods the pod prefix .pch provided it;
+// SwiftPM has no prefix header.
+#if TARGET_OS_OSX
+#import <AppKit/AppKit.h>
+#else
+#import <UIKit/UIKit.h>
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
