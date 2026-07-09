@@ -57,22 +57,6 @@ const __dirname = dirname(__filename);
       await startSimulatorAsync(deviceId);
       await preApproveDeepLinkPromptAsync(deviceId);
       await installAppAsync(deviceId, appBinaryPath);
-
-      if (process.env.CI) {
-        // Approve the first-run deep link confirmation prompt before the actual flows (when
-        // running locally, we assume the app can already open without confirmation). This flow
-        // stops and relaunches the app, so it must run before the inspector launch below;
-        // otherwise the relaunched app would lose the injected dylib and every viewshot lookup
-        // would time out.
-        const confirmFlow = '_nested-flows/confirm-app-open.yaml';
-        await retryAsync(async () => {
-          const failedFlows = await testAsync([confirmFlow], deviceId, e2eDir);
-          if (failedFlows.length > 0) {
-            throw new Error('Failed to approve the deep link confirmation prompt.');
-          }
-        }, 2);
-      }
-
       await launchAppWithInspectorAsync(deviceId);
 
       await runCustomMaestroFlowsAsync(e2eDir, 'ios', async (flowRelativePaths, { attempt }) => {

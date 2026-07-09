@@ -14,17 +14,17 @@ ${testcases}
 describe(getFailedFlowsFromJUnitReport, () => {
   it('returns an empty array when all flows passed', () => {
     const report = makeReport(`
-    <testcase id="confirm-app-open" name="confirm-app-open" classname="confirm-app-open" time="1.0" status="SUCCESS"/>
+    <testcase id="playback-test" name="playback-test" classname="playback-test" time="1.0" status="SUCCESS"/>
     <testcase id="test" name="test" classname="test" time="1.0" status="SUCCESS"/>
 `);
-    const flows = ['_nested-flows/confirm-app-open.yaml', 'expo-image/test.yaml'];
+    const flows = ['expo-video/playback-test.yaml', 'expo-image/test.yaml'];
 
     expect(getFailedFlowsFromJUnitReport(report, flows)).toEqual([]);
   });
 
   it('maps failed testcases back to flow paths', () => {
     const report = makeReport(`
-    <testcase id="confirm-app-open" name="confirm-app-open" classname="confirm-app-open" time="1.0" status="SUCCESS"/>
+    <testcase id="test" name="test" classname="test" time="1.0" status="SUCCESS"/>
     <testcase id="fullscreen-test" name="fullscreen-test" classname="fullscreen-test" time="1.0" status="ERROR">
       <failure>Assertion is false: false is true</failure>
     </testcase>
@@ -33,7 +33,7 @@ describe(getFailedFlowsFromJUnitReport, () => {
     </testcase>
 `);
     const flows = [
-      '_nested-flows/confirm-app-open.yaml',
+      'expo-image/test.yaml',
       'expo-video/fullscreen-test.yaml',
       'expo-video/player-output-test.yaml',
     ];
