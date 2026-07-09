@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import android.app.Application
 import android.graphics.Color
+import android.util.TypedValue
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
@@ -90,15 +91,25 @@ internal class ColorTypeConverterTest {
   }
 
   @Test
-  fun `converts from Android PlatformColor`() {
-    val platformColor = DynamicFromObject(
-      JavaOnlyMap().apply {
-        putArray("resource_paths", JavaOnlyArray().apply { pushString("@android:color/white") })
-      })
+  fun `converts from Android PlatformColor color`() {
+    val platformColor = DynamicFromObject(platformColor("@android:color/white"))
 
     val color = convert<Color>(platformColor, appContext)
 
     Truth.assertThat(color.toArgb()).isEqualTo(Color.WHITE)
+  }
+
+  @Test
+  fun `converts from Android PlatformColor attr`() {
+    val platformColor = DynamicFromObject(platformColor("?android:attr/textColorPrimary"))
+
+    val color = convert<Color>(platformColor, appContext)
+    val expectedColor = TypedValue().let {
+      appContext.reactContext?.theme?.resolveAttribute(android.R.attr.textColorPrimary, it, true)
+      it.data
+    }
+
+    Truth.assertThat(color.toArgb()).isEqualTo(expectedColor)
   }
 
   @Test
@@ -274,15 +285,28 @@ internal class ColorTypeConverterTest {
 
   @Test
   fun `should throw when color components array has fewer than 3 values`() {
-    val shortArrays = listOf(JavaOnlyArray(), JavaOnlyArray().apply { pushDouble(1.0) }, JavaOnlyArray().apply {
-      pushDouble(1.0)
-      pushDouble(0.5)
-    })
+    val shortArrays = listOf(
+      JavaOnlyArray(),
+      JavaOnlyArray().apply { pushDouble(1.0) },
+      JavaOnlyArray().apply {
+        pushDouble(1.0)
+        pushDouble(0.5)
+      }
+    )
 
     for (array in shortArrays) {
       assertThrows<InvalidColorComponentsException> {
         convert<Color>(DynamicFromObject(array))
       }
     }
+  }
+
+  private fun platformColor(vararg resourcePaths: String) = JavaOnlyMap().apply {
+    putArray(
+      "resource_paths",
+      JavaOnlyArray().apply {
+        resourcePaths.forEach(::pushString)
+      }
+    )
   }
 }
