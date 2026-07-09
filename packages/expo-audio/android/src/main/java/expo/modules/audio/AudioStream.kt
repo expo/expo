@@ -233,7 +233,10 @@ class AudioStream(
       // Copy PCM bytes before acquiring the lock so the lock covers only the file write,
       // not the allocation+copy. Write to file before constructing NativeArrayBuffer.
       val pcmBytes = ByteArray(bytesRead).also { buf ->
-        byteBuffer.duplicate().apply { position(0); get(buf) }
+        byteBuffer.duplicate().apply {
+          position(0)
+          get(buf)
+        }
       }
       synchronized(fileWriterLock) {
         fileWriter?.append(pcmBytes)

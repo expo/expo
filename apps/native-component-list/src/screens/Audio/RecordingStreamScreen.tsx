@@ -169,8 +169,6 @@ export default function RecordingStreamScreen() {
     (buffer: AudioStreamBuffer) => {
       const rms = encoding === 'int16' ? computeRMSInt16(buffer) : computeRMS(buffer);
       setAmplitude(rms);
-
-      console.log(`${bufferCount}`);
       setBufferCount((c) => c + 1);
       setStreamInfo({
         sampleRate: buffer.sampleRate,
