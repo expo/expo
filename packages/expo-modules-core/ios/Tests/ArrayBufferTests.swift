@@ -463,6 +463,101 @@ struct ArrayBufferTests {
     }
 
     @Test
+    func `withUnsafeMutableBytes allows reentrant access to the same buffer`() async throws {
+      let buffer = ArrayBuffer(size: 4)
+
+      try await runOffThreadWithTimeout {
+        buffer.withUnsafeMutableBytes { ptr in
+          ptr.initializeMemory(as: UInt8.self, repeating: 7)
+
+          #expect(buffer.byteLength == 4)
+          #expect(Array(buffer.data) == [7, 7, 7, 7])
+        }
+      }
+    }
+
+    @Test
+    func `JS-backed unscoped materialization does not deadlock with JS-thread access`() async throws {
+      let runtime = try runtime
+      let value = try runtime.eval("new Uint8Array([1, 2, 3, 4]).buffer")
+      let buffer = try ArrayBuffer.decode(value, in: runtime)
+
+      async let materialized: [UInt8] = runOffThreadWithTimeout {
+        let copy = buffer.copy()
+        _ = buffer.data
+        return Array(copy.data)
+      }
+
+      #expect(buffer.byteLength == 4)
+      #expect(buffer.isNativeBacked == false)
+      #expect(try await materialized == [1, 2, 3, 4])
+    }
+
+    @Test
+    func `drops JS-backed ArrayBuffer retained value off JavaScript thread`() async throws {
+      let runtime = try runtime
+      let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
+      var buffer: ArrayBuffer? = try ArrayBuffer.decode(value, in: runtime)
+
+      #expect(runtime.longLivedObjects.count == 1)
+
+      let box = ArrayBufferOptionalBox(buffer)
+      buffer = nil
+
+      try await runOffThreadWithTimeout {
+        box.buffer = nil
+      }
+
+      try await runtime.execute {}
+      #expect(runtime.longLivedObjects.count == 0)
+    }
+
+    @Test
+    func `runtime teardown sweep releases outstanding JS-backed ArrayBuffer retained values`() throws {
+      let runtime = try runtime
+      let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
+      let buffer = try ArrayBuffer.decode(value, in: runtime)
+
+      #expect(buffer.isNativeBacked == false)
+      #expect(runtime.longLivedObjects.count == 1)
+
+      runtime.longLivedObjects.clear()
+
+      #expect(runtime.longLivedObjects.count == 0)
+      #expect(Array(buffer.data).isEmpty)
+      #expect(buffer.copy().byteLength == 0)
+    }
+
+    @Test
+    func `encoding full JS-backed ArrayBuffer preserves identity on JavaScript thread`() throws {
+      let runtime = try runtime
+      let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
+      let buffer = try ArrayBuffer.decode(value, in: runtime)
+      let encoded = buffer.asJavaScriptArrayBuffer(runtime: runtime).asValue()
+
+      runtime.global().setProperty("originalBuffer", value: value)
+      runtime.global().setProperty("encodedBuffer", value: encoded)
+
+      #expect(try runtime.eval("originalBuffer === encodedBuffer").asBool() == true)
+    }
+
+    @Test
+    func `encoding partial JS-backed ArrayBuffer view copies visible range`() throws {
+      let runtime = try runtime
+      let value = try runtime.eval([
+        "const buffer = new Uint8Array([1, 2, 3, 4]).buffer",
+        "new Uint8Array(buffer, 1, 2)",
+      ])
+      let buffer = try ArrayBuffer.decode(value, in: runtime)
+      let encoded = buffer.asJavaScriptArrayBuffer(runtime: runtime).asValue()
+
+      runtime.global().setProperty("encodedBuffer", value: encoded)
+      let bytes = try runtime.eval("Array.from(new Uint8Array(encodedBuffer))").asArray().map { try $0.asInt() }
+
+      #expect(bytes == [2, 3])
+    }
+
+    @Test
     func `shares native-backed buffer when using legacy NativeArrayBuffer argument`() throws {
       let processedBuffer = try runtime.eval(
         """
@@ -592,6 +687,62 @@ struct ArrayBufferTests {
       }
 
       #expect(buffer.data.allSatisfy { $0 == pattern } == true)
+    }
+  }
+}
+
+private struct ArrayBufferTestTimeout: Error {}
+
+private final class ArrayBufferOptionalBox: @unchecked Sendable {
+  var buffer: ArrayBuffer?
+
+  init(_ buffer: ArrayBuffer?) {
+    self.buffer = buffer
+  }
+}
+
+private final class ArrayBufferTestContinuationState<R: Sendable>: @unchecked Sendable {
+  private let lock = NSLock()
+  private var continuation: CheckedContinuation<R, any Error>?
+
+  init(_ continuation: CheckedContinuation<R, any Error>) {
+    self.continuation = continuation
+  }
+
+  func resume(_ result: Result<R, any Error>) {
+    lock.lock()
+    defer { lock.unlock() }
+
+    guard let continuation else {
+      return
+    }
+    self.continuation = nil
+
+    switch result {
+    case .success(let value):
+      continuation.resume(returning: value)
+    case .failure(let error):
+      continuation.resume(throwing: error)
+    }
+  }
+}
+
+private func runOffThreadWithTimeout<R: Sendable>(
+  timeout: TimeInterval = 1,
+  _ body: @escaping @Sendable () throws -> R
+) async throws -> R {
+  return try await withCheckedThrowingContinuation { continuation in
+    let state = ArrayBufferTestContinuationState(continuation)
+
+    Thread.detachNewThread {
+      state.resume(
+        Result {
+          try body()
+        })
+    }
+
+    DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
+      state.resume(.failure(ArrayBufferTestTimeout()))
     }
   }
 }

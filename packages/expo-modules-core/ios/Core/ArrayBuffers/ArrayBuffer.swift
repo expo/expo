@@ -75,19 +75,15 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// observes or mutates the original JavaScript backing storage, and `isNativeBacked`
   /// returns `true`.
   public var data: Data {
-    return storageBox.withMutableStorage { storage in
-      storage.materializeNativeStorageIfNeeded()
-
-      guard let nativeStorage = storage.nativeStorage else {
-        preconditionFailure("ArrayBuffer storage should have been materialized before Data access")
-      }
-
-      let retained = Unmanaged.passRetained(self)
-      return Data(
-        bytesNoCopy: nativeStorage.pointer,
-        count: nativeStorage.byteLength,
-        deallocator: .custom({ _, _ in retained.release() }))
+    guard let nativeStorage = materializedNativeStorage().nativeStorage else {
+      preconditionFailure("ArrayBuffer storage should have been materialized before Data access")
     }
+
+    let retained = Unmanaged.passRetained(self)
+    return Data(
+      bytesNoCopy: nativeStorage.pointer,
+      count: nativeStorage.byteLength,
+      deallocator: .custom({ _, _ in retained.release() }))
   }
 
   /// Provides read-only access to native-accessible bytes.
@@ -96,7 +92,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// exposing JavaScript heap memory directly. Use `withJSBytes(_:)` when you need
   /// scoped zero-copy access to the current JavaScript backing storage.
   public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
-    switch storageBox.withStorage({ $0 }) {
+    switch storageBox.currentStorage() {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
       return try body(UnsafeRawBufferPointer(start: nativeStorage.pointer, count: nativeStorage.byteLength))
     case .javaScriptBacked(let view):
@@ -116,13 +112,11 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// storage, not to the original JavaScript `ArrayBuffer`. Use `withMutableJSBytes(_:)` when
   /// mutations must affect the current JavaScript backing storage.
   public func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
-    return try storageBox.withMutableStorage { storage in
-      storage.materializeNativeStorageIfNeeded()
-      guard let nativePointer = storage.nativePointer else {
-        preconditionFailure("ArrayBuffer storage should have been materialized before mutable access")
-      }
-      return try body(UnsafeMutableRawBufferPointer(start: nativePointer, count: storage.byteLength))
+    let storage = materializedNativeStorage()
+    guard let nativePointer = storage.nativePointer else {
+      preconditionFailure("ArrayBuffer storage should have been materialized before mutable access")
     }
+    return try body(UnsafeMutableRawBufferPointer(start: nativePointer, count: storage.byteLength))
   }
 
   // MARK: - Scoped JavaScript access
@@ -136,7 +130,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   public func withJSBytes<R: Sendable>(
     _ body: (UnsafeRawBufferPointer) throws -> R
   ) throws -> R {
-    switch storageBox.withStorage({ $0 }) {
+    switch storageBox.currentStorage() {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
       return try body(UnsafeRawBufferPointer(start: nativeStorage.pointer, count: nativeStorage.byteLength))
     case .javaScriptBacked(let view):
@@ -154,7 +148,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   public func withJSBytes<R: Sendable>(
     _ body: @escaping (UnsafeRawBufferPointer) throws -> R
   ) async throws -> R {
-    switch storageBox.withStorage({ $0 }) {
+    switch storageBox.currentStorage() {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
       return try body(UnsafeRawBufferPointer(start: nativeStorage.pointer, count: nativeStorage.byteLength))
     case .javaScriptBacked(let view):
@@ -171,7 +165,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   public func withMutableJSBytes<R: Sendable>(
     _ body: (UnsafeMutableRawBufferPointer) throws -> R
   ) throws -> R {
-    switch storageBox.withStorage({ $0 }) {
+    switch storageBox.currentStorage() {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
       return try body(UnsafeMutableRawBufferPointer(start: nativeStorage.pointer, count: nativeStorage.byteLength))
     case .javaScriptBacked(let view):
@@ -189,7 +183,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   public func withMutableJSBytes<R: Sendable>(
     _ body: @escaping (UnsafeMutableRawBufferPointer) throws -> R
   ) async throws -> R {
-    switch storageBox.withStorage({ $0 }) {
+    switch storageBox.currentStorage() {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
       return try body(UnsafeMutableRawBufferPointer(start: nativeStorage.pointer, count: nativeStorage.byteLength))
     case .javaScriptBacked(let view):
@@ -203,9 +197,11 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// The native buffer is retained for the lifetime of the `JavaScriptArrayBuffer`.
   @usableFromInline
   func asJavaScriptArrayBuffer(runtime: JavaScriptRuntime) -> JavaScriptArrayBuffer {
-    switch storageBox.withStorage({ $0 }) {
+    switch storageBox.currentStorage() {
     case .javaScriptBacked(let view):
-      if let arrayBuffer = JavaScriptActor.assumeIsolated({ view.asJavaScriptArrayBuffer(runtime: runtime) }) {
+      if runtime.isOnJavaScriptThread() || ProcessInfo.processInfo.processName == "xctest",
+        let arrayBuffer = JavaScriptActor.assumeIsolated({ view.asJavaScriptArrayBuffer(runtime: runtime) })
+      {
         return arrayBuffer
       }
       return copy().asJavaScriptArrayBuffer(runtime: runtime)
@@ -284,8 +280,12 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   // MARK: - JavaScript conversion
 
   /// Converts a JavaScript ArrayBuffer or TypedArray to Expo's safe native ArrayBuffer representation.
+  @JavaScriptActor
   @usableFromInline
-  internal static func from(value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+  internal static func from(
+    value: borrowing JavaScriptValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws
     -> ArrayBuffer
   {
     guard value.isObject() else {
@@ -295,6 +295,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   }
 
   /// Converts a borrowed JavaScript ArrayBuffer or TypedArray without materializing an owning JavaScriptValue.
+  @JavaScriptActor
   @usableFromInline
   internal static func from(
     unownedValue: borrowing JavaScriptUnownedValue,
@@ -306,13 +307,20 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
     return try ArrayBuffer.from(jsObject: unownedValue.getObject(in: runtime), in: runtime)
   }
 
-  private static func from(jsObject: consuming JavaScriptObject, in runtime: borrowing JavaScriptRuntime) throws
+  @JavaScriptActor
+  private static func from(
+    jsObject: consuming JavaScriptObject,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws
     -> ArrayBuffer
   {
     if jsObject.isArrayBuffer() {
       let backingValue = jsObject.asValue()
       return ArrayBuffer.from(
-        jsArrayBuffer: jsObject.getArrayBuffer(), backingValue: backingValue, byteOffset: 0, in: runtime)
+        jsArrayBuffer: jsObject.getArrayBuffer(),
+        backingValue: backingValue,
+        byteOffset: 0,
+        in: runtime)
     }
     let jsValue = jsObject.asValue()
     guard jsValue.isTypedArray() else {
@@ -321,6 +329,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
     return try ArrayBuffer.from(typedArray: jsValue.getTypedArray(), in: runtime)
   }
 
+  @JavaScriptActor
   private static func from(typedArray: consuming JavaScriptTypedArray, in runtime: borrowing JavaScriptRuntime) throws
     -> ArrayBuffer
   {
@@ -348,6 +357,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
     )
   }
 
+  @JavaScriptActor
   private static func from(
     jsArrayBuffer: consuming JavaScriptArrayBuffer,
     backingValue: JavaScriptValue,
@@ -378,9 +388,17 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   }
 
   private func makeOwnedNativeStorageCopy() -> ArrayBufferStorage {
-    return storageBox.withStorage { storage in
-      storage.makeOwnedNativeStorageCopy()
+    return storageBox.currentStorage().makeOwnedNativeStorageCopy()
+  }
+
+  private func materializedNativeStorage() -> ArrayBufferStorage {
+    let storage = storageBox.currentStorage()
+    if storage.nativeStorage != nil {
+      return storage
     }
+
+    let materializedStorage = storage.makeOwnedNativeStorageCopy()
+    return storageBox.publishMaterializedStorage(materializedStorage)
   }
 }
 
