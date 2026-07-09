@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- [iOS] Replace dev-menu swizzling and reflection into React Native internals with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 56.0.15 — 2026-05-26
 
 _This version does not introduce any user-facing changes._
