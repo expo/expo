@@ -19,7 +19,10 @@ declare module '2g' {
 
     // per-file sub-phase spans (nested under transform:file)
     'transform:babel': { file: string };
+    'transform:import_support': { file: string };
+    'transform:constant_folding': { file: string };
     'transform:collect_dependencies': { file: string; count: number };
+    'transform:codegen': { file: string };
     'transform:minify': { file: string };
 
     // debug keys
