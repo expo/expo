@@ -387,9 +387,9 @@ jobs:
         run: ccache -z
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
-      - name: 🧪 Test image comparison utilities
-        run: bun test
-        working-directory: apps/bare-expo/e2e/image-comparison
+      - name: 🧪 Test e2e utilities
+        run: bun test e2e/image-comparison scripts/lib
+        working-directory: apps/bare-expo
       - name: ⚛️ Display React Native config
         run: pnpm expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
