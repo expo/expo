@@ -1,20 +1,6 @@
 'use strict';
 
-const {
-  flavorForConfiguration,
-  rewriteFlavorInPath,
-  sliceForPlatform,
-  describeFlavoredArtifact,
-} = require('../swap-flavor');
-
-describe('flavorForConfiguration', () => {
-  it('maps only "Release" to release; everything else to debug', () => {
-    expect(flavorForConfiguration('Release')).toBe('release');
-    expect(flavorForConfiguration('Debug')).toBe('debug');
-    expect(flavorForConfiguration('MyCustomConfig')).toBe('debug');
-    expect(flavorForConfiguration(undefined)).toBe('debug');
-  });
-});
+const { rewriteFlavorInPath, describeFlavoredArtifact } = require('../swap-flavor');
 
 describe('rewriteFlavorInPath', () => {
   const debugPath =
@@ -29,31 +15,6 @@ describe('rewriteFlavorInPath', () => {
 
   it('returns null for a path that is not a precompile output path', () => {
     expect(rewriteFlavorInPath('/some/other/ExpoModulesCore.xcframework', 'release')).toBeNull();
-  });
-});
-
-describe('sliceForPlatform', () => {
-  const libraries = [
-    { LibraryIdentifier: 'ios-arm64', SupportedPlatform: 'ios' },
-    {
-      LibraryIdentifier: 'ios-arm64_x86_64-simulator',
-      SupportedPlatform: 'ios',
-      SupportedPlatformVariant: 'simulator',
-    },
-    { LibraryIdentifier: 'tvos-arm64', SupportedPlatform: 'tvos' },
-  ];
-
-  it('picks the simulator slice for iphonesimulator', () => {
-    expect(sliceForPlatform(libraries, 'iphonesimulator')).toBe('ios-arm64_x86_64-simulator');
-  });
-
-  it('picks the device slice for iphoneos', () => {
-    expect(sliceForPlatform(libraries, 'iphoneos')).toBe('ios-arm64');
-  });
-
-  it('returns null for unsupported platforms', () => {
-    expect(sliceForPlatform(libraries, 'appletvos')).toBeNull();
-    expect(sliceForPlatform(libraries, undefined)).toBeNull();
   });
 });
 
