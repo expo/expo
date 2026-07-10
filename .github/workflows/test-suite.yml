@@ -470,7 +470,7 @@ jobs:
         with:
           # Pinned to 2.4.0 — 2.5.0+ replaces TCP port forwarding with a direct ADB
           # socket gRPC connection that fails (UNAVAILABLE / tcp:7001 closed) against
-          # the Android emulator in CI.
+          # the Android emulator in CI; verified still broken in 2.6.1.
           version: 2.4.0
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
