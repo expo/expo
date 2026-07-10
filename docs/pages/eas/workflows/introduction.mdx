@@ -14,7 +14,7 @@ import { DownloadSlide } from '~/ui/components/DownloadSlide';
 import { FAQ } from '~/ui/components/FAQ';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-**EAS Workflows** is a CI/CD service from EAS (Expo Application Services) that lets teams automate repeated tasks such as building Android and iOS binaries, publishing over-the-air updates, submitting to app stores, running E2E tests with Maestro, and deploying web apps to EAS Hosting.
+**EAS Workflows** is a CI/CD service from EAS (Expo Application Services) that automates repeated tasks like building Android and iOS binaries, publishing over-the-air updates, submitting to app stores, running E2E tests, and deploying web apps to EAS Hosting.
 
 EAS Workflows run in managed cloud environments with pre-packaged job types designed specifically for mobile app development. When your EAS project is linked to GitHub, teams can trigger workflows from GitHub events (push, pull request, labels) or schedules (cron), or run them manually via the EAS CLI.
 
@@ -28,7 +28,7 @@ EAS Workflows run in managed cloud environments with pre-packaged job types desi
 
 ## Get started
 
-Workflows are defined as YAML files in the **.eas/workflows/** directory at the root of your project. Each file specifies a `name`, optional triggers (`on`), and one or more `jobs` that run in the cloud. The Get started guide walks you through the prerequisites and your first workflow run, with no CI configuration required.
+Workflows are defined as YAML files in the **.eas/workflows/** directory at the root of your project. Each file specifies a `name`, optional triggers (`on`), and one or more `jobs` that run in the cloud. The Get started guide walks you through the prerequisites and your first workflow run:
 
 <BoxLink
   title="Create your first workflow"
@@ -54,8 +54,6 @@ Workflows are defined as YAML files in the **.eas/workflows/** directory at the 
 | Trigger builds and updates from GitHub push or pull request events                   | <YesIcon />    |
 | CI/CD without managing your own infrastructure or macOS machines                     | <YesIcon />    |
 | Highly customized pipelines that depend on non-EAS services (Docker, custom runners) | <NoIcon />     |
-
-See [Limitations](/eas/workflows/limitations) for current constraints, such as matrix builds.
 
 ## Frequently asked questions (FAQ)
 
