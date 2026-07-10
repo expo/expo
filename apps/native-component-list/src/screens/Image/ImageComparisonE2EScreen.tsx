@@ -11,6 +11,8 @@ import AppearanceTests from './tests/appearance';
  */
 export default function ImageComparisonE2EScreen() {
   return (
-    <ImageComparisonBody sections={[{ title: AppearanceTests.name, data: AppearanceTests.tests }]} />
+    <ImageComparisonBody
+      sections={[{ title: AppearanceTests.name, data: AppearanceTests.tests }]}
+    />
   );
 }
