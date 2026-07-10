@@ -182,7 +182,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 - (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
 {
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
+  // Matches the guard on the declaration in React/Base/RCTBundleURLProvider.h.
+  // The function isn't declared in builds without packager support.
   RCTBundleURLProviderAllowPackagerServerAccess(NO);
+#endif
 
   _delegate = delegate;
   _launchOptions = launchOptions;
@@ -389,9 +393,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
       onSuccess:(void (^ _Nullable)(void))onSuccess
         onError:(void (^ _Nullable)(NSError *error))onError
 {
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
   // A dev server has been chosen — re-allow packager access (denied at launcher boot in
   // `start:launchOptions:`). Replaces the RCTBundleURLProvider.guessPackagerHost swizzle.
   RCTBundleURLProviderAllowPackagerServerAccess(YES);
+#endif
 
   EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
   NSURL *expoUrl = devLauncherUrl.url;
