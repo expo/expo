@@ -50,13 +50,16 @@ export default function VideoPlayerOutputE2EScreen() {
   const { status: status1 } = useEvent(player, 'statusChange', { status: player.status });
   const { status: status2 } = useEvent(player2, 'statusChange', { status: player2.status });
   const bothReady = status1 === 'readyToPlay' && status2 === 'readyToPlay';
+  const [playersSeeked, setPlayersSeeked] = useState(false);
 
   // Seek both players to a fixed frame as soon as they load, so every screenshot sees the same
-  // content. The flow waits for the "Players ready" marker below before moving players around.
+  // content. The "Players ready" marker the flow waits for is gated on `playersSeeked` (not just
+  // `bothReady`), so it can't appear in the render that merely schedules this effect.
   useEffect(() => {
     if (bothReady) {
       player.currentTime = 10;
       player2.currentTime = 10;
+      setPlayersSeeked(true);
     }
   }, [bothReady, player, player2]);
 
@@ -156,7 +159,7 @@ export default function VideoPlayerOutputE2EScreen() {
         style={screenStyles.switch}
         titleStyle={styles.switchTitle}
       />
-      {bothReady && <Text>Players ready</Text>}
+      {playersSeeked && <Text>Players ready</Text>}
       {framesSettled && (
         <Text testID={`viewshot-ready-${viewsState.moveCount}`}>Viewshot ready</Text>
       )}
