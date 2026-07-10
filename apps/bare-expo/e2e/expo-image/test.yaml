@@ -1,7 +1,7 @@
 appId: dev.expo.Payments
 jsEngine: graaljs
 ---
-- openLink: bareexpo://components/image/comparison
+- openLink: bareexpo://components/image/comparison-e2e
 
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
