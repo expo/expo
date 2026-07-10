@@ -191,28 +191,25 @@ private func log(_ message: String) {
 
     switch action {
     case "getCoordinates":
-      return getElementCoordinates(accessibilityId: accessibilityId)
+      return runOnMainActor {
+        return self.getElementCoordinates(accessibilityId: accessibilityId)
+      }
 
     case "captureView":
       guard let outputPath = json["outputPath"] as? String else {
         return createErrorResponse("Missing 'outputPath' for captureView")
       }
-      return captureView(accessibilityId: accessibilityId, outputPath: outputPath)
+      return runOnMainActor {
+        return self.captureView(accessibilityId: accessibilityId, outputPath: outputPath)
+      }
 
     default:
       return createErrorResponse("Unknown action: \(action)")
     }
   }
 
+  @MainActor
   private func getElementCoordinates(accessibilityId: String) -> Data {
-    guard Thread.isMainThread else {
-      var result: Data!
-      DispatchQueue.main.sync {
-        result = getElementCoordinates(accessibilityId: accessibilityId)
-      }
-      return result
-    }
-
     guard let element = self.findElementByAccessibilityId(accessibilityId) else {
       return createErrorResponse("Element with accessibilityId '\(accessibilityId)' not found")
     }

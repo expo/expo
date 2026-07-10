@@ -1,7 +1,21 @@
 import UIKit
 
+/// Runs the body isolated to the main actor and blocks the calling thread until it returns.
+/// The pipe server runs on a plain blocking thread, so it cannot `await` a main-actor hop;
+/// a synchronous dispatch to the main queue is the bridge (the main queue is the main
+/// actor's executor, so `assumeIsolated` is sound in both branches).
+func runOnMainActor<T>(_ body: @MainActor () -> T) -> T {
+  if Thread.isMainThread {
+    return MainActor.assumeIsolated(body)
+  }
+  return DispatchQueue.main.sync {
+    return MainActor.assumeIsolated(body)
+  }
+}
+
 extension ScreenInspector {
 
+  @MainActor
   func findElementByAccessibilityId(_ accessibilityId: String) -> UIView? {
     guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) else {
       return nil
@@ -10,15 +24,8 @@ extension ScreenInspector {
     return findElementRecursively(in: window, accessibilityId: accessibilityId)
   }
 
+  @MainActor
   func captureView(accessibilityId: String, outputPath: String) -> Data {
-    guard Thread.isMainThread else {
-      var result: Data!
-      DispatchQueue.main.sync {
-        result = captureView(accessibilityId: accessibilityId, outputPath: outputPath)
-      }
-      return result
-    }
-
     guard let element = findElementByAccessibilityId(accessibilityId) else {
       return createErrorResponse("Element with accessibilityId '\(accessibilityId)' not found")
     }
@@ -62,6 +69,7 @@ extension ScreenInspector {
     }
   }
 
+  @MainActor
   private func findElementRecursively(in view: UIView, accessibilityId: String) -> UIView? {
     // Check current view
     if view.accessibilityIdentifier == accessibilityId {
