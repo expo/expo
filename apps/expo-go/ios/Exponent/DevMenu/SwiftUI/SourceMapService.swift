@@ -2,18 +2,6 @@
 
 import Foundation
 
-/// Response from Snack API
-private struct SnackApiResponse: Codable {
-  let id: String
-  let hashId: String
-  let code: [String: SnackApiFile]
-
-  struct SnackApiFile: Codable {
-    let type: String  // "CODE" or "ASSET"
-    let contents: String
-  }
-}
-
 @MainActor
 class SourceMapService {
   private let devMenuManager = DevMenuManager.shared
@@ -35,16 +23,6 @@ class SourceMapService {
     let channel = components.queryItems?.first(where: { $0.name == "snack-channel" })?.value
 
     return (snackId, channel)
-  }
-
-  /// Detects the Snack API host based on the manifest URL
-  /// Returns staging host if URL contains "staging", otherwise production
-  private func detectSnackApiHost() -> String {
-    if let manifestURL = devMenuManager.currentManifestURL,
-       manifestURL.absoluteString.contains("staging") {
-      return "https://staging.exp.host"
-    }
-    return "https://exp.host"
   }
 
   /// Checks if a URL is an EAS CDN URL (assets.eascdn.net)
@@ -244,27 +222,16 @@ class SourceMapService {
 
   /// Fetches source files from Snack API and builds a SourceMap
   private func fetchSnackSourceMap(snackId: String) async throws -> SourceMap {
-    // Build the API URL - handle both "@snack/xxx" and plain "xxx" formats
-    let cleanId = snackId.hasPrefix("@snack/") ? String(snackId.dropFirst(7)) : snackId
+    let isStaging = devMenuManager.currentManifestURL?.absoluteString.contains("staging") == true
 
-    // Determine API host based on manifest URL (staging vs production)
-    let apiHost = detectSnackApiHost()
-    guard let apiURL = URL(string: "\(apiHost)/--/api/v2/snack/\(cleanId)") else {
-      throw SourceMapError.invalidSnackId(snackId)
+    let snackResponse: SnackAPIResponse
+    do {
+      snackResponse = try await SnackAPIClient.fetch(snackId: snackId, isStaging: isStaging)
+    } catch SnackAPIError.invalidSnackId(let id) {
+      throw SourceMapError.invalidSnackId(id)
+    } catch SnackAPIError.httpError(let code) {
+      throw SourceMapError.httpError(code)
     }
-
-    var request = URLRequest(url: apiURL)
-    request.setValue("3.0.0", forHTTPHeaderField: "Snack-Api-Version")
-    request.setValue("expo-dev-menu/1.0", forHTTPHeaderField: "User-Agent")
-
-    let (data, response) = try await URLSession.shared.data(for: request)
-
-    if let httpResponse = response as? HTTPURLResponse,
-       !(200...299).contains(httpResponse.statusCode) {
-      throw SourceMapError.httpError(httpResponse.statusCode)
-    }
-
-    let snackResponse = try JSONDecoder().decode(SnackApiResponse.self, from: data)
 
     // Build SourceMap from Snack files (excluding assets)
     let codeFiles = snackResponse.code.filter { $0.value.type == "CODE" }

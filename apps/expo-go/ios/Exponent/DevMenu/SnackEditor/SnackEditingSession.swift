@@ -299,7 +299,7 @@ public class SnackEditingSession: ObservableObject {
         allDiffs[path] = ""
         s3urls[path] = file.contents
       } else {
-        allDiffs[path] = SnackSessionClient.generateUnifiedDiff(oldContents: "", newContents: file.contents)
+        allDiffs[path] = SnackDiff.generateUnifiedDiff(oldContents: "", newContents: file.contents)
       }
     }
 
@@ -335,27 +335,7 @@ public class SnackEditingSession: ObservableObject {
 
   /// Fetches snack code from the Snack API
   private func fetchSnackCode(snackId: String, isStaging: Bool) async throws -> (files: [String: SnackSessionClient.SnackFile], dependencies: [String: [String: Any]], name: String?) {
-    let apiHost = isStaging ? "https://staging.exp.host" : "https://exp.host"
-
-    // Handle @snack/ prefix
-    let cleanId = snackId.hasPrefix("@snack/") ? String(snackId.dropFirst(7)) : snackId
-
-    guard let apiURL = URL(string: "\(apiHost)/--/api/v2/snack/\(cleanId)") else {
-      throw SnackEditingSessionError.invalidURL
-    }
-
-    var request = URLRequest(url: apiURL)
-    request.setValue("3.0.0", forHTTPHeaderField: "Snack-Api-Version")
-    request.setValue("expo-go/1.0", forHTTPHeaderField: "User-Agent")
-
-    let (data, response) = try await URLSession.shared.data(for: request)
-
-    if let httpResponse = response as? HTTPURLResponse,
-       !(200...299).contains(httpResponse.statusCode) {
-      throw SnackEditingSessionError.httpError(httpResponse.statusCode)
-    }
-
-    let snackResponse = try JSONDecoder().decode(SnackApiResponse.self, from: data)
+    let snackResponse = try await SnackAPIClient.fetch(snackId: snackId, isStaging: isStaging)
 
     // Convert to SnackFile format
     var files: [String: SnackSessionClient.SnackFile] = [:]
@@ -394,17 +374,11 @@ public class SnackEditingSession: ObservableObject {
 // MARK: - Error Types
 
 enum SnackEditingSessionError: LocalizedError {
-  case invalidURL
-  case httpError(Int)
   case noFilesReceived
   case connectionTimeout
 
   var errorDescription: String? {
     switch self {
-    case .invalidURL:
-      return "Invalid Snack API URL"
-    case .httpError(let code):
-      return "Snack API returned error: \(code)"
     case .noFilesReceived:
       return "No files received from Snack API"
     case .connectionTimeout:
@@ -415,21 +389,3 @@ enum SnackEditingSessionError: LocalizedError {
 
 // MARK: - API Response Types
 
-private struct SnackApiResponse: Codable {
-  let id: String
-  let hashId: String
-  let name: String?
-  let code: [String: SnackApiFile]
-  let dependencies: [String: SnackDependency]?
-
-  struct SnackApiFile: Codable {
-    let type: String  // "CODE" or "ASSET"
-    let contents: String
-  }
-
-  struct SnackDependency: Codable {
-    let version: String
-    let handle: String?
-    let peerDependencies: [String: String]?
-  }
-}
