@@ -366,11 +366,14 @@
 /eas/build/* /build/:splat 301
 /eas/build /build/introduction 301
 /eas/submit/* /submit/:splat 301
-/eas/submit /submit/introduction 301
+/eas/submit /deploy/submit-to-app-stores 301
 /eas/update/* /eas-update/:splat 301
 /eas/update /eas-update/introduction 301
 /eas/insights/* /eas-insights/:splat 301
 /eas/insights /eas-insights/introduction 301
+
+# EAS Submit introduction merged into the Submit to app stores overview
+/submit/introduction /deploy/submit-to-app-stores 301
 
 # MCP server moved out of the EAS section to the top-level /mcp route
 /eas/ai/mcp /mcp 301

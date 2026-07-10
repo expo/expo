@@ -10,12 +10,13 @@ import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStore
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Releasing an app means uploading a signed binary (**.aab** for Android, **.ipa** for iOS) to Google Play Console or App Store Connect. From there, Google and Apple manage review, testing tracks, and production rollout.
 
-You have two options for getting a binary into each store: submit with **EAS Submit**, or upload manually through the store's own tools. EAS Submit is the recommended path — it works from any OS (including Windows and Linux for iOS), integrates with EAS Build and [EAS Workflows](/eas/workflows/introduction/), and can be run from CI. Manual uploads are useful when you aren't using EAS, or when Google requires a first-time manual upload before the Play Store API will accept submissions.
+You have two options for getting a binary into each store: submit with **EAS Submit**, or upload manually through the store's own tools. **EAS Submit is the recommended path** since it works from any OS (including Windows and Linux for iOS), integrates with [EAS Build](/build/introduction/) and [EAS Workflows](/eas/workflows/introduction/), and can be run from a CI/CD service. Manual uploads are useful when you aren't using EAS, or when Google requires a first-time manual upload before the Play Store API will accept submissions.
 
 <VideoBoxLink
   videoId="-KZjr576tuE"
@@ -23,7 +24,7 @@ You have two options for getting a binary into each store: submit with **EAS Sub
   description="EAS Submit makes it easy to publish your apps to the App Store and Play Store with a simple command."
 />
 
-## How submissions work
+## How EAS Submit works
 
 ### Android (Google Play Store)
 
@@ -31,7 +32,7 @@ EAS Submit uploads your **.aab** to Google Play Console and places it in the tra
 
 ### iOS (Apple App Store)
 
-EAS Submit uploads your **.ipa** to App Store Connect, where it becomes available in TestFlight after processing (usually 10-15 minutes). A TestFlight build is not automatically released to the App Store — to ship to production, sign in to App Store Connect, complete the app metadata and screenshots, select the build, and submit it for App Review.
+EAS Submit uploads your **.ipa** to App Store Connect, where it becomes available in TestFlight after processing (usually 10-15 minutes). A TestFlight build is not automatically released to the App Store. To ship it to production, sign in to App Store Connect, complete the app metadata and screenshots, select the build, and submit it for App Review.
 
 ## When to use EAS Submit
 
@@ -77,6 +78,8 @@ EAS Submit uploads your **.ipa** to App Store Connect, where it becomes availabl
 
 ## Frequently asked questions
 
+<FAQ>
+
 <Collapsible summary="Can I submit builds that were not built with EAS Build?">
 
 Yes. EAS Submit accepts any valid **.aab** (Android App Bundle) or **.ipa** (iOS App Archive) file.
@@ -115,3 +118,27 @@ Open the submission details page in the [EAS dashboard](https://expo.dev/account
 - Look for a ["Build Annotations" bubble](https://expo.dev/changelog/2023-12-01-build-annotations) — these highlight common failure reasons and suggested fixes directly in the logs.
 
 </Collapsible>
+
+<Collapsible summary="Can I use EAS Submit inside EAS Workflows or from other CI/CD pipelines?">
+
+Yes. EAS Submit works in CI environments and integrates with [EAS Workflows](/eas/workflows/get-started/). You can add a submit job to your workflow configuration. For example:
+
+```yaml
+jobs:
+  submit_ios_to_store:
+    type: submit
+    params:
+      platform: ios
+    after:
+      - build_ios
+```
+
+For more information, see [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#submit).
+
+For CI pipelines, you can also use the `--non-interactive` flag to skip prompts and `--latest` to automatically select the most recent build:
+
+<Terminal cmd={['$ eas submit --platform android --latest --non-interactive']} />
+
+</Collapsible>
+
+</FAQ>

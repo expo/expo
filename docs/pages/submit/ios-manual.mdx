@@ -4,17 +4,34 @@ sidebar_title: Manual iOS submission
 description: Archive and upload an iOS app to App Store Connect using Xcode on macOS.
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-This guide walks through archiving an iOS app with Xcode and uploading it to [App Store Connect](https://appstoreconnect.apple.com/) — useful if you aren't using EAS, or as a fallback if EAS Submit is temporarily unavailable. For most teams, [EAS Submit](/submit/ios/) is simpler and works from any OS.
+This guide walks through archiving an iOS app with Xcode and uploading it to [App Store Connect](https://appstoreconnect.apple.com/), which is useful if you aren't using EAS, or as a fallback if EAS Submit is temporarily unavailable. For most teams, [EAS Submit](/submit/ios/) is simpler and works from any OS.
 
 ## Prerequisites
 
-- A paid Apple Developer membership
-- [Xcode installed](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-xcode-and-watchman) on a Mac
-- An **ios** directory generated in your project. If you use [CNG](/workflow/continuous-native-generation/), run `npx expo prebuild` to generate it.
-- An app record in [App Store Connect](https://appstoreconnect.apple.com/) with a matching bundle identifier. If you haven't created one, sign in to App Store Connect, click the blue **+** next to **Apps**, and choose **New App**.
+<Prerequisites numberOfRequirements={4}>
+  <Requirement number={1} title="Sign up for an Apple Developer account">
+    A paid Apple Developer membership is required to submit apps to the Apple App Store. Sign up on
+    the [Apple Developer Portal](https://developer.apple.com/account/).
+  </Requirement>
+  <Requirement number={2} title="Install Xcode">
+    Xcode must be installed on a Mac. See [Set up
+    Xcode](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-xcode-and-watchman)
+    for instructions.
+  </Requirement>
+  <Requirement number={3} title="Generate the ios directory">
+    Your project needs an **ios** directory. If you use
+    [CNG](/workflow/continuous-native-generation/), run `npx expo prebuild` to generate it.
+  </Requirement>
+  <Requirement number={4} title="Create an app record in App Store Connect">
+    An app record in [App Store Connect](https://appstoreconnect.apple.com/) with a matching bundle
+    identifier is required. If you haven't created one, sign in to App Store Connect, click the blue
+    **+** next to **Apps**, and choose **New App**.
+  </Requirement>
+</Prerequisites>
 
 <Step label="1">
 
@@ -59,3 +76,8 @@ From the menu bar, open **Product** > **Build**. Xcode will build the release bi
 4. Sign in to [App Store Connect](https://appstoreconnect.apple.com/), select your app, and submit it to TestFlight or for App Review from the App Store Connect dashboard.
 
 </Step>
+
+## Further reading
+
+- [Create store assets](/guides/store-assets/) for your app's store page
+- [Submit to the Apple App Store with EAS Submit](/submit/ios/)

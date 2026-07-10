@@ -12,7 +12,7 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-[EAS Submit](/deploy/submit-to-app-stores/) is the recommended way to upload your Android app to the Google Play Store. The `eas submit` command works the same way on your machine and inside CI/CD — [EAS Workflows](/eas/workflows/introduction/) is the simplest way to run it automatically after a build.
+[EAS Submit](/deploy/submit-to-app-stores/) is the recommended way to upload your Android app to the Google Play Store. The `eas submit` command works the same way on your machine and inside CI/CD. [EAS Workflows](/eas/workflows/introduction/) is the simplest way to run it automatically after a build.
 
 ## Prerequisites
 
@@ -52,7 +52,14 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
   <Requirement number={6} title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and log in with your Expo account:
 
-    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npm install --global eas-cli && eas login'],
+        yarn: ['$ yarn global add eas-cli && eas login'],
+        pnpm: ['$ pnpm add --global eas-cli && eas login'],
+        bun: ['$ bun add --global eas-cli && eas login'],
+      }}
+    />
 
   </Requirement>
 </Prerequisites>
@@ -139,7 +146,7 @@ See the [workflow examples guide](/eas/workflows/examples/introduction/) for mor
 
 ## Use other CI/CD services
 
-You can run `eas submit` from any CI/CD service — GitHub Actions, GitLab CI, and others:
+You can run `eas submit` from any CI/CD service, such as GitHub Actions, GitLab CI, and others:
 
 <Terminal cmd={['$ eas submit --platform android --profile production']} />
 

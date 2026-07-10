@@ -129,69 +129,11 @@ Google Play Store requires manual app submission when submitting the **.aab** fi
 
 ## iOS
 
-To create an iOS release build locally for Apple App Store, you need to use Xcode which handles the signing and submission process via App Store Connect.
-
-<Prerequisites>
-  <Requirement title="Apple Developer membership">
-    A paid Apple Developer membership is required to sign and submit iOS apps.
-  </Requirement>
-  <Requirement title="Xcode installed">
-    [Install
-    Xcode](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-xcode-and-watchman)
-    on your computer.
-  </Requirement>
-  <Requirement title="ios directory generated">
-    If you are using [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/),
-    run `npx expo prebuild` to generate it.
-  </Requirement>
-</Prerequisites>
-
-<Step label="1">
-
-### Open iOS workspace in Xcode
-
-Inside your Expo project directory, run the following command to open `your-project.xcworkspace` in Xcode:
-
-<Terminal cmd={['$ xed ios']} />
-
-After opening the iOS project in Xcode:
-
-1. From the sidebar on the left, select your app's workspace.
-2. Go to **Signing & Capabilities** and select **All** or **Release**.
-3. Under **Signing** > **Team**, ensure your Apple Developer team is selected. Xcode will generate an automatically managed Provisioning Profile and Signing Certificate.
-
-</Step>
-
-<Step label="2">
-
-### Configure a release scheme
-
-To configure your app's release scheme:
-
-1. From the menu bar, open **Product** > **Scheme** > **Edit Scheme**.
-2. Select **Run** from the sidebar, then set the **Build configuration** to **Release** using the dropdown.
-
-</Step>
-
-<Step label="3">
-
-### Build app for release
-
-To build your app for release, From the menu bar, open **Product** > **Build**. This step will build your app binary for release.
-
-</Step>
-
-<Step label="4">
-
-### App submission using App Store Connect
-
-Once the build is complete, you can archive your app and upload it to App Store Connect from Xcode.
+To create an iOS release build locally, you use Xcode, which handles signing and uploading to App Store Connect. Follow the manual submission guide for the complete walkthrough, from configuring a release scheme to archiving and uploading your app:
 
 <BoxLink
   title="Manually submit an iOS app with Xcode"
-  description="Archive and upload an iOS app to App Store Connect using Xcode."
+  description="Configure signing, archive your app with Xcode, and upload it to App Store Connect."
   href="/submit/ios-manual/"
   Icon={AppleAppStoreIcon}
 />
-
-</Step>
