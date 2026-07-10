@@ -280,6 +280,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       Any::class.java to AnyTypeConverter(),
 
+      Color::class.java to ColorTypeConverter(),
+
       // Unit converter doesn't care about nullability.
       // It will always return Unit
       Unit::class.java to UnitTypeConverter(),
@@ -293,22 +295,14 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       ) { it }
     )
 
-    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-      converters + mapOf(
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+      return converters + mapOf(
         Path::class.java to PathTypeConverter(),
-        Color::class.java to ColorTypeConverter(),
         LocalDate::class.java to DateTypeConverter()
       )
-    } else {
-      // Below API 26 the class-based Color API isn't available, so we can't build a real Color.
-      // Register a fallback that resolves every color to null rather than leaving the type
-      // unregistered, which would make Color? args/props throw MissingTypeConverter
-      // https://github.com/expo/expo/issues/47546
-      // TODO: Remove when we drop support for Android 7 (API 24-25).
-      converters + mapOf(
-        Color::class.java to UnavailableColorTypeConverter()
-      )
     }
+
+    return converters
   }
 
   private fun createCachedPrimitiveArrayConverters(): Map<Class<*>, TypeConverter<*>> {

@@ -1,9 +1,6 @@
 package expo.modules.kotlin.types
 
 import android.graphics.Color
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.graphics.toColorInt
 import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.Dynamic
@@ -266,7 +263,7 @@ private fun hslToColor(h: Float, s: Float, l: Float, a: Float): Color {
     g = hueToRgb(p, q, hue)
     b = hueToRgb(p, q, hue - 1f / 3f)
   }
-  return Color.valueOf(r.coerceIn(0f, 1f), g.coerceIn(0f, 1f), b.coerceIn(0f, 1f), a)
+  return ColorCompat.valueOf(r.coerceIn(0f, 1f), g.coerceIn(0f, 1f), b.coerceIn(0f, 1f), a)
 }
 
 private fun hwbToColor(h: Float, w: Float, b: Float, a: Float): Color {
@@ -276,10 +273,10 @@ private fun hwbToColor(h: Float, w: Float, b: Float, a: Float): Color {
   val white = if (sum > 1f) ww / sum else ww
   val black = if (sum > 1f) bb / sum else bb
   val rgb = hslToColor(h, 1f, 0.5f, 1f)
-  val r = rgb.red() * (1f - white - black) + white
-  val g = rgb.green() * (1f - white - black) + white
-  val bl = rgb.blue() * (1f - white - black) + white
-  return Color.valueOf(r.coerceIn(0f, 1f), g.coerceIn(0f, 1f), bl.coerceIn(0f, 1f), a)
+  val r = ColorCompat.red(rgb) * (1f - white - black) + white
+  val g = ColorCompat.green(rgb) * (1f - white - black) + white
+  val bl = ColorCompat.blue(rgb) * (1f - white - black) + white
+  return ColorCompat.valueOf(r.coerceIn(0f, 1f), g.coerceIn(0f, 1f), bl.coerceIn(0f, 1f), a)
 }
 
 /**
@@ -296,7 +293,7 @@ private fun parseHexColor(value: String): Color? {
     val r = match.groupValues[1].repeat(2).toInt(16)
     val g = match.groupValues[2].repeat(2).toInt(16)
     val b = match.groupValues[3].repeat(2).toInt(16)
-    return Color.valueOf(r / 255f, g / 255f, b / 255f, 1f)
+    return ColorCompat.valueOf(r / 255f, g / 255f, b / 255f, 1f)
   }
 
   // #RGBA → #RRGGBBAA
@@ -305,7 +302,7 @@ private fun parseHexColor(value: String): Color? {
     val g = match.groupValues[2].repeat(2).toInt(16)
     val b = match.groupValues[3].repeat(2).toInt(16)
     val a = match.groupValues[4].repeat(2).toInt(16)
-    return Color.valueOf(r / 255f, g / 255f, b / 255f, a / 255f)
+    return ColorCompat.valueOf(r / 255f, g / 255f, b / 255f, a / 255f)
   }
 
   // #RRGGBBAA (CSS byte order: alpha is last, unlike Android's #AARRGGBB)
@@ -315,7 +312,7 @@ private fun parseHexColor(value: String): Color? {
     val g = ((hex shr 16) and 0xFF).toInt()
     val b = ((hex shr 8) and 0xFF).toInt()
     val a = (hex and 0xFF).toInt()
-    return Color.valueOf(r / 255f, g / 255f, b / 255f, a / 255f)
+    return ColorCompat.valueOf(r / 255f, g / 255f, b / 255f, a / 255f)
   }
 
   return null
@@ -333,7 +330,7 @@ private fun parseCssColorFunction(value: String): Color? {
     val g = parseRgbComponent(match.groupValues[2])
     val b = parseRgbComponent(match.groupValues[3])
     val a = parseAlpha(match.groupValues[4].ifEmpty { null })
-    return Color.valueOf(r, g, b, a)
+    return ColorCompat.valueOf(r, g, b, a)
   }
 
   // hsl/hsla
@@ -359,7 +356,6 @@ private fun parseCssColorFunction(value: String): Color? {
 
 // endregion
 
-@RequiresApi(Build.VERSION_CODES.O)
 class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Color {
     return when (value.type) {
@@ -414,18 +410,18 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
       throw InvalidColorComponentsException(value.size)
     }
     val alpha = value.getOrNull(3) ?: 1.0
-    return Color.valueOf(value[0].toFloat(), value[1].toFloat(), value[2].toFloat(), alpha.toFloat())
+    return ColorCompat.valueOf(value[0].toFloat(), value[1].toFloat(), value[2].toFloat(), alpha.toFloat())
   }
 
   private fun colorFromInt(value: Int): Color {
-    return Color.valueOf(value)
+    return ColorCompat.valueOf(value)
   }
 
   private fun colorFromString(value: String): Color {
     val normalizedValue = value.trim().lowercase()
     val colorFromString = namedColors[normalizedValue]
     if (colorFromString != null) {
-      return Color.valueOf(
+      return ColorCompat.valueOf(
         colorFromString[0],
         colorFromString[1],
         colorFromString[2],
@@ -436,12 +432,12 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
     if (normalizedValue.startsWith('#')) {
       parseHexColor(normalizedValue)?.let { return it }
       // Fall through to toColorInt() for standard #RRGGBB / #AARRGGBB
-      return Color.valueOf(normalizedValue.toColorInt())
+      return ColorCompat.valueOf(normalizedValue.toColorInt())
     }
 
     parseCssColorFunction(normalizedValue)?.let { return it }
 
-    return Color.valueOf(normalizedValue.toColorInt())
+    return ColorCompat.valueOf(normalizedValue.toColorInt())
   }
 
   private fun colorFromReadableMap(value: ReadableMap, context: AppContext?): Color {
@@ -460,44 +456,6 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
       ),
       SingleType(
         CppType.READABLE_MAP
-      )
-    )
-
-  override fun isTrivial() = false
-}
-
-/**
- * Fallback [Color] converter for Android below 8.0 (API < 26), where the class-based
- * [Color] API that [ColorTypeConverter] relies on (`Color.valueOf` and the `red()`/`green()`/
- * `blue()` accessors) doesn't exist, so a real [Color] can't be constructed. It accepts the same
- * JS representations but resolves them all to `null`, so callers that already treat a null color
- * as "use the platform default" degrade gracefully. Without it the [Color] type is unregistered
- * on those versions and every `Color?` argument or view prop fails with `MissingTypeConverter`,
- * which makes `@expo/ui` unusable on Android 7 (https://github.com/expo/expo/issues/47546).
- */
-class UnavailableColorTypeConverter : TypeConverter<Color> {
-  private var warned = false
-
-  override fun convert(value: Any?, context: AppContext?, forceConversion: Boolean): Color? {
-    if (!warned) {
-      warned = true
-      Log.w(
-        "expo-modules-core",
-        "Color values are unavailable on Android API < 26, where 'android.graphics.Color' cannot be " +
-          "constructed. Color arguments and props resolve to null, so components fall back to their " +
-          "default colors. To use custom colors on older devices, pass them as `processColor` integers."
-      )
-    }
-    return null
-  }
-
-  override fun getCppRequiredTypes(): ExpectedType =
-    ExpectedType(
-      SingleType(CppType.INT),
-      SingleType(CppType.STRING),
-      SingleType(
-        CppType.PRIMITIVE_ARRAY,
-        arrayOf(ExpectedType(CppType.DOUBLE))
       )
     )
 
