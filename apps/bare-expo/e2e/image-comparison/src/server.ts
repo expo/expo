@@ -7,7 +7,7 @@ import { transformPaths } from './pathUtils';
 import { resizeImage } from './resizeImage';
 import { schema } from './schema';
 import { takeScreenshot } from './takeScreenshot';
-import { cropViewByTestID } from './viewCropper';
+import { captureViewShotInProcess, cropViewByTestID } from './viewCropper';
 
 const PORT = process.env.PORT || 7123;
 const e2eDir = path.resolve(path.join(__dirname, '..', '..'));
@@ -24,7 +24,7 @@ Bun.serve({
         const parsedBody = schema.parse(bodyJson);
         const isNormalizationMode = 'mode' in parsedBody && parsedBody.mode === 'normalize';
 
-        const { similarityThreshold, platform, resizingFactor } = parsedBody;
+        const { similarityThreshold, platform, resizingFactor, captureMode } = parsedBody;
 
         const testID = 'testID' in parsedBody ? parsedBody.testID : undefined;
 
@@ -37,32 +37,51 @@ Bun.serve({
           currentScreenshotArtifactPath,
         } = transformPaths(e2eDir, parsedBody);
 
-        await takeScreenshot({
-          platform,
-          outputFilePath: currentScreenshotPath,
-        });
         await fs.promises.mkdir(path.dirname(currentScreenshotArtifactPath), { recursive: true });
 
         if (testID && viewShotOutputPath) {
-          // TODO get scale factor from simctl
-          const displayScaleFactor = platform === 'android' ? 1 : 3;
-          await cropViewByTestID({
-            testID,
-            currentScreenshotPath,
-            viewShotPath: viewShotOutputPath,
-            platform,
-            displayScaleFactor,
-            resizingFactor,
-          });
-          // we don't care about the full screenshot when taking view shots
-          console.log(
-            `deleting full screenshot: ${currentScreenshotPath} because we have a view shot`
-          );
-          await fs.promises.rm(currentScreenshotPath, { force: true });
+          if (captureMode === 'in-process' && platform === 'ios') {
+            // The inspector dylib renders the view at its exact bounds inside the app, so
+            // there is no full-screen screenshot to take and nothing to crop.
+            await captureViewShotInProcess({
+              testID,
+              viewShotPath: viewShotOutputPath,
+              resizingFactor,
+            });
+          } else {
+            if (captureMode === 'in-process') {
+              console.log(
+                `in-process capture is only available on iOS; falling back to screen capture on ${platform}`
+              );
+            }
+            await takeScreenshot({
+              platform,
+              outputFilePath: currentScreenshotPath,
+            });
+            // TODO get scale factor from simctl
+            const displayScaleFactor = platform === 'android' ? 1 : 3;
+            await cropViewByTestID({
+              testID,
+              currentScreenshotPath,
+              viewShotPath: viewShotOutputPath,
+              platform,
+              displayScaleFactor,
+              resizingFactor,
+            });
+            // we don't care about the full screenshot when taking view shots
+            console.log(
+              `deleting full screenshot: ${currentScreenshotPath} because we have a view shot`
+            );
+            await fs.promises.rm(currentScreenshotPath, { force: true });
+          }
 
           await fs.promises.copyFile(viewShotOutputPath, currentScreenshotArtifactPath);
           console.log(`View shot copied to artifact: ${currentScreenshotArtifactPath}`);
         } else {
+          await takeScreenshot({
+            platform,
+            outputFilePath: currentScreenshotPath,
+          });
           await resizeImage(currentScreenshotPath, resizingFactor);
 
           await fs.promises.copyFile(currentScreenshotPath, currentScreenshotArtifactPath);
