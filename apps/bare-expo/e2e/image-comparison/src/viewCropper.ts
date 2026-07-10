@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import Jimp from 'jimp-compact';
-import fs from 'node:fs';
 
 import { MAESTRO_ENV_VARS } from '../../../scripts/lib/e2e-common';
 import { ScreenInspectorIOS } from '../inspector/ScreenInspectorIOS';
@@ -207,11 +206,9 @@ async function cropImageAsync({
     croppedImage = croppedImage.resize(newWidth, newHeight);
   }
 
-  await croppedImage.write(outputPath);
-
-  // Ensure file is fully written to disk before returning
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  await fs.promises.access(outputPath, fs.constants.F_OK);
+  // write() resolves before the file hits the disk (it awaits the image, not the write);
+  // writeAsync() is the promise-returning variant.
+  await croppedImage.writeAsync(outputPath);
   console.log('wrote cropped image to', outputPath);
 }
 
