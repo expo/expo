@@ -8,17 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		17CA21E30A8FFCB9D0FC1E35 /* ReactNativeHeaders in Frameworks */ = {isa = PBXBuildFile; productRef = 920F69A9DF98D37C8308D020 /* ReactNativeHeaders */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		3F1E298E4A2D7CA403A328B5 /* ReactCodegen in Frameworks */ = {isa = PBXBuildFile; productRef = 947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */; };
 		50A8621D202A6CFB97E2C1B5 /* ReactAppDependencyProvider in Frameworks */ = {isa = PBXBuildFile; productRef = F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */; };
-		63EFA1BFF3B26ED48191BE19 /* ReactNative in Frameworks */ = {isa = PBXBuildFile; productRef = F22919FD47E160B1C255059D /* ReactNative */; };
-		875666C3F414E2DEA17AB4C6 /* ReactNativeDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 7E7D873FB92107759FFD17BD /* ReactNativeDependencies */; };
+		50E95CE9435AC128E87E7923 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B1260B8C895208DCA7BD36 /* ExpoModulesProvider.swift */; };
+		69A7AB74931112BD2779B631 /* ReactNativeDependenciesHeaders in Frameworks */ = {isa = PBXBuildFile; productRef = 8332BE36B9C49BD2E49347C1 /* ReactNativeDependenciesHeaders */; };
+		94F7C9B714A718310DA6BE9C /* ReactHeaders in Frameworks */ = {isa = PBXBuildFile; productRef = 512EBECF5434FD7A6AF7C967 /* ReactHeaders */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		C1EE06F0363A2E45DF7286A5 /* hermes-engine in Frameworks */ = {isa = PBXBuildFile; productRef = 9F15E21186D6CE992DFCBF93 /* hermes-engine */; };
 		D6BD17EA9023C9F39246B71F /* Autolinked in Frameworks */ = {isa = PBXBuildFile; productRef = 3AFDEFB917B01458307FDE0A /* Autolinked */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 		F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748432D0307B40044C1D9 /* SceneDelegate.swift */; };
-		50E95CE9435AC128E87E7923 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B1260B8C895208DCA7BD36 /* ExpoModulesProvider.swift */;};
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,16 +27,10 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = minimalswiftpm/Info.plist; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = minimalswiftpm/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		D9B1260B8C895208DCA7BD36 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = build/generated/autolinking/expo/ExpoModulesProvider.swift; sourceTree = SOURCE_ROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = minimalswiftpm/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748432D0307B40044C1D9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = minimalswiftpm/SceneDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* minimalswiftpm-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "minimalswiftpm-Bridging-Header.h"; path = "minimalswiftpm/minimalswiftpm-Bridging-Header.h"; sourceTree = "<group>"; };
-		D9B1260B8C895208DCA7BD36 /* ExpoModulesProvider.swift */ = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.swift;
-			name = ExpoModulesProvider.swift;
-			path = build/generated/autolinking/expo/ExpoModulesProvider.swift;
-			sourceTree = SOURCE_ROOT;
-		};
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,9 +38,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63EFA1BFF3B26ED48191BE19 /* ReactNative in Frameworks */,
-				875666C3F414E2DEA17AB4C6 /* ReactNativeDependencies in Frameworks */,
-				C1EE06F0363A2E45DF7286A5 /* hermes-engine in Frameworks */,
+				94F7C9B714A718310DA6BE9C /* ReactHeaders in Frameworks */,
+				17CA21E30A8FFCB9D0FC1E35 /* ReactNativeHeaders in Frameworks */,
+				69A7AB74931112BD2779B631 /* ReactNativeDependenciesHeaders in Frameworks */,
 				D6BD17EA9023C9F39246B71F /* Autolinked in Frameworks */,
 				3F1E298E4A2D7CA403A328B5 /* ReactCodegen in Frameworks */,
 				50A8621D202A6CFB97E2C1B5 /* ReactAppDependencyProvider in Frameworks */,
@@ -125,6 +119,7 @@
 				658A88AFBFD620F8BC6F91BA /* Sync SPM Autolinking */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
+				B174F870C259554596A4373B /* Embed React Native Flavored Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				94383382E1D546F3B8D625BF /* [Expo Dev Launcher] Strip Local Network Keys for Release */,
@@ -135,9 +130,9 @@
 			);
 			name = minimalswiftpm;
 			packageProductDependencies = (
-				F22919FD47E160B1C255059D /* ReactNative */,
-				7E7D873FB92107759FFD17BD /* ReactNativeDependencies */,
-				9F15E21186D6CE992DFCBF93 /* hermes-engine */,
+				512EBECF5434FD7A6AF7C967 /* ReactHeaders */,
+				920F69A9DF98D37C8308D020 /* ReactNativeHeaders */,
+				8332BE36B9C49BD2E49347C1 /* ReactNativeDependenciesHeaders */,
 				3AFDEFB917B01458307FDE0A /* Autolinked */,
 				947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */,
 				F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */,
@@ -229,7 +224,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euo pipefail\n\n# ---------------------------------------------------------------------------\n# Resolve a node binary and the react-native package dir at BUILD TIME.\n# ---------------------------------------------------------------------------\nNODE_BINARY=\"${NODE_BINARY:-}\"\nif [ -z \"$NODE_BINARY\" ]; then\n  # Source RN's standard app-local node-path files. They reference vars that\n  # may be unset and may return non-zero, so relax nounset AND errexit while\n  # sourcing — a buggy user .xcode.env must degrade to PATH-based node\n  # resolution below, not silently abort every build.\n  set +eu\n  if [ -f \"$SRCROOT/.xcode.env\" ]; then\n    . \"$SRCROOT/.xcode.env\"\n  fi\n  if [ -f \"$SRCROOT/.xcode.env.local\" ]; then\n    . \"$SRCROOT/.xcode.env.local\"\n  fi\n  set -eu\n  NODE_BINARY=\"${NODE_BINARY:-}\"\nfi\nif [ -z \"$NODE_BINARY\" ]; then\n  NODE_BINARY=\"$(command -v node 2>/dev/null || true)\"\nfi\n\n# Resolve react-native's dir FROM THE APP (require.resolve), not a\n# generation-time baked path — the baked path goes stale in pnpm / hoisted\n# stores. Fall back to the baked path if resolution fails or the resolved dir\n# has no setup-apple-spm.js.\nRN_DIR=\"\"\nif [ -n \"$NODE_BINARY\" ]; then\n  RN_DIR=\"$(cd \"$SRCROOT\" && \"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json'))\" 2>/dev/null || true)\"\nfi\nif [ -z \"$RN_DIR\" ] || [ ! -f \"$RN_DIR/scripts/setup-apple-spm.js\" ]; then\n  RN_DIR=\"../../../node_modules/.pnpm/react-native@0.87.0-nightly-20260709-d189c94d6f5_@babel+core@7.29.7_@react-native+metro_8045ae19808432c6413ed1ee8ad3ca87/node_modules/react-native\"\nfi\n\n# Flavor swap — defined ONCE, called TWICE (a \"swap sandwich\"). Sets SWAP_OK /\n# SWAP_REASON, and SWAP_CORRECTED=1 when the CLI exit code (1) signals it\n# repointed a builtin mismatch this run (a deliberate, distinct signal — genuine\n# swap crashes are swallowed by the CLI and exit 0). The loud can't-run-node\n# fallback is applied only after the FINAL (trailing) call.\nrun_swap_flavor() {\n  SWAP_OK=0\n  SWAP_REASON=\"\"\n  SWAP_CORRECTED=0\n  if [ -z \"${BUILT_PRODUCTS_DIR:-}\" ]; then\n    # Not inside an Xcode build environment — nothing to swap against.\n    SWAP_OK=1\n    return 0\n  fi\n  if [ -z \"$NODE_BINARY\" ]; then\n    SWAP_REASON=\"no node binary found (set NODE_BINARY or add ios/.xcode.env)\"\n    return 0\n  fi\n  if [ ! -f \"$RN_DIR/scripts/setup-apple-spm.js\" ]; then\n    SWAP_REASON=\"could not locate the react-native package (setup-apple-spm.js)\"\n    return 0\n  fi\n  RC=0\n  ( cd \"$SRCROOT\" && \"$NODE_BINARY\" \"$RN_DIR/scripts/setup-apple-spm.js\" swap-flavor ) || RC=$?\n  if [ \"$RC\" -eq 0 ]; then\n    SWAP_OK=1\n  elif [ \"$RC\" -eq 1 ]; then\n    # The swap ran and CORRECTED a mismatched start (the app was pinned to the\n    # wrong flavor for this configuration). State is now correct; the build must\n    # still fail so the embed is redone on the (green) rebuild.\n    SWAP_OK=1\n    SWAP_CORRECTED=1\n  else\n    SWAP_REASON=\"swap-flavor exited non-zero ($RC)\"\n  fi\n}\n\nMISMATCH_PENDING=0\n\n# Leading swap — repoints the embed source up front, BEFORE the stale check /\n# sync below. If it corrected a mismatch, remember it; do NOT abort here (sync +\n# the trailing swap must still run so state is fully converged before we fail).\nrun_swap_flavor\nif [ \"$SWAP_CORRECTED\" -eq 1 ]; then MISMATCH_PENDING=1; fi\n\nSTAMP=\"$SRCROOT/build/generated/autolinking/.spm-sync-stamp\"\nSTALE=0\n\n# Check 0: xcframework artifacts missing (fresh clone)\nif [ ! -f \"$SRCROOT/build/xcframeworks/artifacts.json\" ] || \\\n   [ ! -d \"$SRCROOT/build/xcframeworks/React.xcframework\" ]; then\n  STALE=1\nfi\n\n# Find project root (where package.json lives — may be an ancestor of SRCROOT)\nPROJECT_ROOT=\"$SRCROOT\"\nwhile [ \"$PROJECT_ROOT\" != \"/\" ] && [ ! -f \"$PROJECT_ROOT/package.json\" ]; do\n  PROJECT_ROOT=\"$(dirname \"$PROJECT_ROOT\")\"\ndone\nif [ ! -f \"$PROJECT_ROOT/package.json\" ]; then\n  PROJECT_ROOT=\"$SRCROOT\"\nfi\n\n# Check 1: dependency inputs (covers app projects after any package manager install)\nfor INPUT in \\\n  \"$PROJECT_ROOT/package.json\" \\\n  \"$PROJECT_ROOT/react-native.config.js\"; do\n  if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n    STALE=1\n    break\n  fi\ndone\n\n# Check workspace lockfiles and package-manager metadata. These cover package\n# managers that do not reliably bump node_modules mtimes, and Yarn PnP projects\n# that do not have node_modules at all.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    for INPUT in \\\n      \"$DIR/package-lock.json\" \\\n      \"$DIR/npm-shrinkwrap.json\" \\\n      \"$DIR/yarn.lock\" \\\n      \"$DIR/pnpm-lock.yaml\" \\\n      \"$DIR/bun.lock\" \\\n      \"$DIR/bun.lockb\" \\\n      \"$DIR/.pnp.cjs\" \\\n      \"$DIR/.pnp.loader.mjs\"; do\n      if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n        STALE=1\n        break\n      fi\n    done\n    if [ \"$STALE\" -eq 1 ]; then\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Check node_modules mtime. In monorepos, node_modules may be hoisted to any\n# ancestor between the app package and the workspace root.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    NM_DIR=\"$DIR/node_modules\"\n    if [ -d \"$NM_DIR\" ] && [ \"$NM_DIR\" -nt \"$STAMP\" ]; then\n      STALE=1\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Also check the app root directly when SRCROOT is not the package root.\nif [ \"$STALE\" -eq 0 ] && [ \"$SRCROOT\" != \"$PROJECT_ROOT\" ]; then\n  if [ -d \"$SRCROOT/node_modules\" ] && [ \"$SRCROOT/node_modules\" -nt \"$STAMP\" ]; then\n    STALE=1\n  fi\nfi\n\n# Check 1.5: watched paths (mixed dirs AND files). Dirs catch add/remove of\n# source files in spm.modules and autolinked deps (dir mtime updates on both);\n# files catch edits to a dep's checked-in Package.swift / plugin manifests that\n# would not bump any parent dir mtime. A path that has VANISHED (renamed/moved\n# module root) forces a re-sync so the autolinker surfaces the real, actionable\n# config error rather than the build failing later on dangling-symlink noise.\nWATCH_FILE=\"$SRCROOT/build/generated/autolinking/.spm-sync-watch-paths\"\nif [ \"$STALE\" -eq 0 ] && [ -f \"$WATCH_FILE\" ]; then\n  while IFS= read -r P; do\n    [ -z \"$P\" ] && continue\n    if [ -d \"$P\" ]; then\n      if [ -n \"$(find \"$P\" -newer \"$STAMP\" -print -quit 2>/dev/null)\" ]; then\n        STALE=1\n        break\n      fi\n    elif [ -f \"$P\" ]; then\n      if [ \"$P\" -nt \"$STAMP\" ]; then\n        STALE=1\n        break\n      fi\n    else\n      STALE=1\n      break\n    fi\n  done < \"$WATCH_FILE\"\nfi\n\n# Check 2: codegen spec files changed via git (covers monorepo after git pull)\nif [ \"$STALE\" -eq 0 ] && [ -f \"$STAMP\" ]; then\n  STAMP_TIME=$(stat -f %m \"$STAMP\" 2>/dev/null || stat -c %Y \"$STAMP\" 2>/dev/null || echo 0)\n  LATEST_SPEC_COMMIT=$(git -C \"$SRCROOT\" log -1 --format=%ct -- '*.js' '*.ts' 2>/dev/null || echo 0)\n  if [ \"$LATEST_SPEC_COMMIT\" -gt \"$STAMP_TIME\" ]; then\n    STALE=1\n  fi\nfi\n\nif [ ! -f \"$STAMP\" ]; then\n  STALE=1\nfi\n\n# Re-sync (codegen + autolinking) when a dependency input changed. In the\n# in-target build phase this runs BETWEEN the leading and trailing flavor swaps;\n# in the scheme pre-action it runs alone (auto-heal). The sync re-pins the\n# app-local slot symlinks to the add-time flavor via generate-spm-package\n# linkOne, which is why the in-target phase's trailing swap must run AFTER it (it\n# has to be the LAST writer of those symlinks).\nif [ \"$STALE\" -eq 1 ]; then\n  echo \"SPM sync inputs changed — re-syncing (codegen + autolinking)...\"\n\n  WITH_ENVIRONMENT=\"$RN_DIR/scripts/xcode/with-environment.sh\"\n\n  if [ -f \"$WITH_ENVIRONMENT\" ]; then\n    # with-environment.sh references PODS_ROOT and $1, which may be unset.\n    # Temporarily disable nounset to avoid failures when sourcing.\n    export PODS_ROOT=\"${PODS_ROOT:-$SRCROOT}\"\n    set +u\n    . \"$WITH_ENVIRONMENT\"\n    set -u\n  fi\n\n  cd \"$SRCROOT\"\n  # `|| RC=$?` so a non-zero exit is CAPTURED rather than aborting the phase\n  # under `set -e` — the whole point is to branch on the code below (2 = fail\n  # the build with a scaffold hint; other non-zero = warn but don't break).\n  RC=0\n  if [ -n \"$NODE_BINARY\" ] && [ -f \"$RN_DIR/scripts/setup-apple-spm.js\" ]; then\n    # Direct, dependency-free dispatch (no `npx react-native`, which needs\n    # @react-native-community/cli).\n    \"$NODE_BINARY\" \"$RN_DIR/scripts/setup-apple-spm.js\" sync || RC=$?\n  elif command -v npx >/dev/null 2>&1; then\n    npx react-native spm sync || RC=$?\n  else\n    echo \"warning: node/npx not found — skipping SPM sync\"\n  fi\n  if [ \"$RC\" -eq 2 ]; then\n    # Exit 2 = an autolinked community dependency has no Package.swift. The\n    # autolinker already printed an `error:` line per dep (so Xcode shows them\n    # and the fix). Fail the build — the developer must run\n    # `npx react-native spm scaffold` from a terminal to generate the manifest.\n    exit 1\n  elif [ \"$RC\" -ne 0 ]; then\n    # Don't exit: fall through to the swap so the flavor pin is still corrected.\n    echo \"warning: SPM sync failed — build may use stale codegen/autolinking\"\n  fi\nfi\n\n\n# Trailing swap — the AUTHORITATIVE end-state. Runs LAST because the sync above\n# re-pins the slot symlinks to the add-time flavor via linkOne; this call\n# restores the requested flavor AND rsyncs the link-step framework copies. It is\n# NOT captured into MISMATCH_PENDING: the hard-fail means \"the build STARTED\n# mismatched\", which only the LEADING swap can observe. A trailing repoint just\n# undoes the sync's default re-pin (end-state correction, not a stale start), so\n# flagging it would be a false red.\nrun_swap_flavor\nif [ \"$SWAP_OK\" -eq 0 ]; then\n  # The swap could not run. Determine — in pure shell, mirroring\n  # swap-flavor.js — whether the pinned add-time flavor will ACTUALLY mismatch\n  # this configuration. swap-flavor.js maps CONFIGURATION=Release to the\n  # 'release' flavor and everything else (Debug + custom config names) to\n  # 'debug'; the pinned flavor is the parent dir of the React.xcframework\n  # symlink target (.../<version>/<flavor>/React.xcframework).\n  DESIRED_FLAVOR=debug\n  if [ \"${CONFIGURATION:-}\" = \"Release\" ]; then\n    DESIRED_FLAVOR=release\n  fi\n  PINNED_FLAVOR=\"\"\n  LINK_TARGET=\"$(readlink \"$SRCROOT/build/xcframeworks/React.xcframework\" 2>/dev/null || true)\"\n  if [ -n \"$LINK_TARGET\" ]; then\n    PINNED_PARENT=\"$(basename \"$(dirname \"$LINK_TARGET\")\")\"\n    case \"$(printf '%s' \"$PINNED_PARENT\" | tr '[:upper:]' '[:lower:]')\" in\n      debug) PINNED_FLAVOR=debug ;;\n      release) PINNED_FLAVOR=release ;;\n    esac\n  fi\n  if [ -n \"$PINNED_FLAVOR\" ] && [ \"$PINNED_FLAVOR\" != \"$DESIRED_FLAVOR\" ]; then\n    # A certain Debug<->release mix — known-broken, not merely suboptimal (a\n    # Debug app linking release React has RCT_DEV=0, never queries Metro, and\n    # crashes at runtime with 'No script URL provided'). Fail the build.\n    echo \"error: SwiftPM flavor swap could not run ($SWAP_REASON) and the pinned $PINNED_FLAVOR frameworks do not match the $DESIRED_FLAVOR configuration — the app will misbehave (Debug builds: 'No script URL provided'). Put Node on PATH or set NODE_BINARY in ios/.xcode.env, then rebuild; or run 'npx react-native spm swap-flavor' from a terminal.\"\n    exit 1\n  else\n    echo \"warning: SwiftPM flavor swap could not run ($SWAP_REASON); build may link the add-time flavor\"\n  fi\nfi\n\n# HARD-FAIL + CONVERGE. A build that STARTED on the wrong flavor is failed ONCE,\n# here at the END — after the swaps + sync have fully corrected the pin — so the\n# rebuild is green and nothing stale ever ships. Fires only when the swap ran and\n# actually corrected a mismatch (the CLI already printed the actionable error:).\nif [ \"$MISMATCH_PENDING\" -eq 1 ]; then\n  echo \"error: React Native SwiftPM frameworks were on the wrong flavor for this ${CONFIGURATION:-} build and have been switched — build again (one-time after a configuration change).\"\n  exit 1\nfi\n";
+			shellScript = "set -euo pipefail\n\n# ---------------------------------------------------------------------------\n# Resolve a node binary and the react-native package dir at BUILD TIME.\n# ---------------------------------------------------------------------------\nNODE_BINARY=\"${NODE_BINARY:-}\"\nif [ -z \"$NODE_BINARY\" ]; then\n  # Source RN's standard app-local node-path files. They reference vars that\n  # may be unset and may return non-zero, so relax nounset AND errexit while\n  # sourcing — a buggy user .xcode.env must degrade to PATH-based node\n  # resolution below, not silently abort every build.\n  set +eu\n  if [ -f \"$SRCROOT/.xcode.env\" ]; then\n    . \"$SRCROOT/.xcode.env\"\n  fi\n  if [ -f \"$SRCROOT/.xcode.env.local\" ]; then\n    . \"$SRCROOT/.xcode.env.local\"\n  fi\n  set -eu\n  NODE_BINARY=\"${NODE_BINARY:-}\"\nfi\nif [ -z \"$NODE_BINARY\" ]; then\n  NODE_BINARY=\"$(command -v node 2>/dev/null || true)\"\nfi\n\n# Resolve react-native's dir FROM THE APP (require.resolve), not a\n# generation-time baked path — the baked path goes stale in pnpm / hoisted\n# stores. Fall back to the baked path if resolution fails or the resolved dir\n# has no setup-apple-spm.js.\nRN_DIR=\"\"\nif [ -n \"$NODE_BINARY\" ]; then\n  RN_DIR=\"$(cd \"$SRCROOT\" && \"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json'))\" 2>/dev/null || true)\"\nfi\nif [ -z \"$RN_DIR\" ] || [ ! -f \"$RN_DIR/scripts/setup-apple-spm.js\" ]; then\n  RN_DIR=\"../../../node_modules/.pnpm/react-native@0.87.0-nightly-20260710-b1test_@babel+core@7.29.7_@react-native+metro-conf_626dc81b10760947810fd98c491dd8f1/node_modules/react-native\"\nfi\n\nSTAMP=\"$SRCROOT/build/generated/autolinking/.spm-sync-stamp\"\nSTALE=0\n\n# Find project root (where package.json lives — may be an ancestor of SRCROOT)\nPROJECT_ROOT=\"$SRCROOT\"\nwhile [ \"$PROJECT_ROOT\" != \"/\" ] && [ ! -f \"$PROJECT_ROOT/package.json\" ]; do\n  PROJECT_ROOT=\"$(dirname \"$PROJECT_ROOT\")\"\ndone\nif [ ! -f \"$PROJECT_ROOT/package.json\" ]; then\n  PROJECT_ROOT=\"$SRCROOT\"\nfi\n\n# Check 1: dependency inputs (covers app projects after any package manager install)\nfor INPUT in \\\n  \"$PROJECT_ROOT/package.json\" \\\n  \"$PROJECT_ROOT/react-native.config.js\"; do\n  if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n    STALE=1\n    break\n  fi\ndone\n\n# Check workspace lockfiles and package-manager metadata. These cover package\n# managers that do not reliably bump node_modules mtimes, and Yarn PnP projects\n# that do not have node_modules at all.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    for INPUT in \\\n      \"$DIR/package-lock.json\" \\\n      \"$DIR/npm-shrinkwrap.json\" \\\n      \"$DIR/yarn.lock\" \\\n      \"$DIR/pnpm-lock.yaml\" \\\n      \"$DIR/bun.lock\" \\\n      \"$DIR/bun.lockb\" \\\n      \"$DIR/.pnp.cjs\" \\\n      \"$DIR/.pnp.loader.mjs\"; do\n      if [ -f \"$INPUT\" ] && [ \"$INPUT\" -nt \"$STAMP\" ]; then\n        STALE=1\n        break\n      fi\n    done\n    if [ \"$STALE\" -eq 1 ]; then\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Check node_modules mtime. In monorepos, node_modules may be hoisted to any\n# ancestor between the app package and the workspace root.\nif [ \"$STALE\" -eq 0 ]; then\n  DIR=\"$PROJECT_ROOT\"\n  while [ \"$DIR\" != \"/\" ]; do\n    NM_DIR=\"$DIR/node_modules\"\n    if [ -d \"$NM_DIR\" ] && [ \"$NM_DIR\" -nt \"$STAMP\" ]; then\n      STALE=1\n      break\n    fi\n    DIR=\"$(dirname \"$DIR\")\"\n  done\nfi\n\n# Also check the app root directly when SRCROOT is not the package root.\nif [ \"$STALE\" -eq 0 ] && [ \"$SRCROOT\" != \"$PROJECT_ROOT\" ]; then\n  if [ -d \"$SRCROOT/node_modules\" ] && [ \"$SRCROOT/node_modules\" -nt \"$STAMP\" ]; then\n    STALE=1\n  fi\nfi\n\n# Check 1.5: watched paths (mixed dirs AND files). Dirs catch add/remove of\n# source files in spm.modules and autolinked deps (dir mtime updates on both);\n# files catch edits to a dep's checked-in Package.swift / plugin manifests that\n# would not bump any parent dir mtime. A path that has VANISHED (renamed/moved\n# module root) forces a re-sync so the autolinker surfaces the real, actionable\n# config error rather than the build failing later on dangling-symlink noise.\nWATCH_FILE=\"$SRCROOT/build/generated/autolinking/.spm-sync-watch-paths\"\nif [ \"$STALE\" -eq 0 ] && [ -f \"$WATCH_FILE\" ]; then\n  while IFS= read -r P; do\n    [ -z \"$P\" ] && continue\n    if [ -d \"$P\" ]; then\n      if [ -n \"$(find \"$P\" -newer \"$STAMP\" -print -quit 2>/dev/null)\" ]; then\n        STALE=1\n        break\n      fi\n    elif [ -f \"$P\" ]; then\n      if [ \"$P\" -nt \"$STAMP\" ]; then\n        STALE=1\n        break\n      fi\n    else\n      STALE=1\n      break\n    fi\n  done < \"$WATCH_FILE\"\nfi\n\n# Check 2: codegen spec files changed via git (covers monorepo after git pull)\nif [ \"$STALE\" -eq 0 ] && [ -f \"$STAMP\" ]; then\n  STAMP_TIME=$(stat -f %m \"$STAMP\" 2>/dev/null || stat -c %Y \"$STAMP\" 2>/dev/null || echo 0)\n  LATEST_SPEC_COMMIT=$(git -C \"$SRCROOT\" log -1 --format=%ct -- '*.js' '*.ts' 2>/dev/null || echo 0)\n  if [ \"$LATEST_SPEC_COMMIT\" -gt \"$STAMP_TIME\" ]; then\n    STALE=1\n  fi\nfi\n\nif [ ! -f \"$STAMP\" ]; then\n  STALE=1\nfi\n\n# Re-sync codegen + autolinking when a dependency input changed. Runtime\n# framework slots and Xcode linker settings are only changed by spm update.\nif [ \"$STALE\" -eq 1 ]; then\n  echo \"SPM sync inputs changed — re-syncing (codegen + autolinking)...\"\n\n  WITH_ENVIRONMENT=\"$RN_DIR/scripts/xcode/with-environment.sh\"\n\n  if [ -f \"$WITH_ENVIRONMENT\" ]; then\n    # with-environment.sh references PODS_ROOT and $1, which may be unset.\n    # Temporarily disable nounset to avoid failures when sourcing.\n    export PODS_ROOT=\"${PODS_ROOT:-$SRCROOT}\"\n    set +u\n    . \"$WITH_ENVIRONMENT\"\n    set -u\n  fi\n\n  cd \"$SRCROOT\"\n  # `|| RC=$?` so a non-zero exit is CAPTURED rather than aborting the phase\n  # under `set -e` — the whole point is to branch on the code below (2 = fail\n  # the build with a scaffold hint; other non-zero = warn but don't break).\n  RC=0\n  if [ -n \"$NODE_BINARY\" ] && [ -f \"$RN_DIR/scripts/setup-apple-spm.js\" ]; then\n    # Direct, dependency-free dispatch (no `npx react-native`, which needs\n    # @react-native-community/cli).\n    \"$NODE_BINARY\" \"$RN_DIR/scripts/setup-apple-spm.js\" sync || RC=$?\n  elif command -v npx >/dev/null 2>&1; then\n    npx react-native spm sync || RC=$?\n  else\n    echo \"warning: node/npx not found — skipping SPM sync\"\n  fi\n  if [ \"$RC\" -eq 2 ]; then\n    # Exit 2 = an autolinked community dependency has no Package.swift. The\n    # autolinker already printed an `error:` line per dep (so Xcode shows them\n    # and the fix). Fail the build — the developer must run\n    # `npx react-native spm scaffold` from a terminal to generate the manifest.\n    exit 1\n  elif [ \"$RC\" -ne 0 ]; then\n    echo \"warning: SPM sync failed — build may use stale codegen/autolinking\"\n  fi\nfi\n\n";
 		};
 		94383382E1D546F3B8D625BF /* [Expo Dev Launcher] Strip Local Network Keys for Release */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -244,6 +239,37 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Strip dev-launcher-specific local network permission keys from non-Debug builds\n# This only removes _expo._tcp Bonjour services and the dev-launcher usage description.\n# Other Bonjour services and custom descriptions are preserved for production use.\n\nif [ \"$CONFIGURATION\" != \"Debug\" ]; then\n  PLIST_PATH=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n  if [ -f \"$PLIST_PATH\" ]; then\n    # Check if NSBonjourServices exists\n    if /usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" >/dev/null 2>&1; then\n      # Get the count of services\n      COUNT=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n\n      # Remove _expo._tcp\n      for ((i=COUNT-1; i>=0; i--)); do\n        SERVICE=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n        if echo \"$SERVICE\" | grep -q \"_expo._tcp\"; then\n          /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices:$i\" \"$PLIST_PATH\" 2>/dev/null || true\n        fi\n      done\n\n      # If the array is now empty, remove it entirely\n      REMAINING=$(/usr/libexec/PlistBuddy -c \"Print :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null | grep \"^    \" | wc -l | tr -d ' ')\n      if [ \"$REMAINING\" -eq \"0\" ]; then\n        /usr/libexec/PlistBuddy -c \"Delete :NSBonjourServices\" \"$PLIST_PATH\" 2>/dev/null || true\n      fi\n    fi\n\n    # Only delete the description if it matches the dev-launcher default text\n    DESC=$(/usr/libexec/PlistBuddy -c \"Print :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || echo \"\")\n    if echo \"$DESC\" | grep -q \"Expo Dev Launcher\"; then\n      /usr/libexec/PlistBuddy -c \"Delete :NSLocalNetworkUsageDescription\" \"$PLIST_PATH\" 2>/dev/null || true\n    fi\n  fi\nfi\n";
+		};
+		B174F870C259554596A4373B /* Embed React Native Flavored Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/build/xcframeworks/.artifact-stamp",
+				"$(RN_SPM_REACT_FRAMEWORK)",
+				"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK)",
+				"$(RN_SPM_HERMES_FRAMEWORK)",
+				"$(RN_SPM_EXPO_MODULES_CORE_FRAMEWORK)",
+				"$(RN_SPM_EXPO_MODULES_JSI_FRAMEWORK)",
+				"$(RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK)",
+			);
+			name = "Embed React Native Flavored Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/React.framework",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ReactNativeDependencies.framework",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/hermesvm.framework",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ExpoModulesCore.framework",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ExpoModulesJSI.framework",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ExpoModulesWorklets.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\n\ndestination=\"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\nmkdir -p \"$destination\"\n\nvalidate_framework() {\n  source=\"$1\"\n  name=\"$2\"\n  if [ -z \"$source\" ] || [ ! -d \"$source\" ]; then\n    echo \"error: React Native SwiftPM framework '$name' is unavailable for configuration '$CONFIGURATION' and SDK '$SDK_NAME': $source\"\n    exit 1\n  fi\n  binary=\"${name%.framework}\"\n  if [ ! -e \"$source/$binary\" ] && [ ! -e \"$source/Versions/Current/$binary\" ]; then\n    echo \"error: React Native SwiftPM framework '$name' is invalid for configuration '$CONFIGURATION': expected $source/$binary or $source/Versions/Current/$binary\"\n    exit 1\n  fi\n}\n\ncopy_and_sign() {\n  source=\"$1\"\n  name=\"$2\"\n  /usr/bin/rsync -a --delete \"$source/\" \"$destination/$name/\"\n  if [ \"${CODE_SIGNING_ALLOWED:-YES}\" != \"NO\" ]; then\n    identity=\"${EXPANDED_CODE_SIGN_IDENTITY:--}\"\n    if [ \"$identity\" = \"-\" ]; then\n      /usr/bin/codesign --force --sign - --timestamp=none --preserve-metadata=identifier,entitlements,flags \"$destination/$name\"\n    else\n      /usr/bin/codesign --force --sign \"$identity\" --preserve-metadata=identifier,entitlements,flags \"$destination/$name\"\n    fi\n  fi\n}\n\nvalidate_framework \"${RN_SPM_REACT_FRAMEWORK:-}\" \"React.framework\"\nvalidate_framework \"${RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK:-}\" \"ReactNativeDependencies.framework\"\nvalidate_framework \"${RN_SPM_HERMES_FRAMEWORK:-}\" \"hermesvm.framework\"\nvalidate_framework \"${RN_SPM_EXPO_MODULES_CORE_FRAMEWORK:-}\" \"ExpoModulesCore.framework\"\nvalidate_framework \"${RN_SPM_EXPO_MODULES_JSI_FRAMEWORK:-}\" \"ExpoModulesJSI.framework\"\nvalidate_framework \"${RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK:-}\" \"ExpoModulesWorklets.framework\"\ncopy_and_sign \"${RN_SPM_REACT_FRAMEWORK:-}\" \"React.framework\"\ncopy_and_sign \"${RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK:-}\" \"ReactNativeDependencies.framework\"\ncopy_and_sign \"${RN_SPM_HERMES_FRAMEWORK:-}\" \"hermesvm.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_MODULES_CORE_FRAMEWORK:-}\" \"ExpoModulesCore.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_MODULES_JSI_FRAMEWORK:-}\" \"ExpoModulesJSI.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK:-}\" \"ExpoModulesWorklets.framework\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -269,7 +295,17 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = minimalswiftpm/minimalswiftpm.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7X29G4MCL4;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RN_SPM_REACT_SEARCH_PATH)",
+					"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH)",
+					"$(RN_SPM_HERMES_SEARCH_PATH)",
+					"$(RN_SPM_EXPO_MODULES_CORE_SEARCH_PATH)",
+					"$(RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH)",
+					"$(RN_SPM_EXPO_MODULES_WORKLETS_SEARCH_PATH)",
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
@@ -291,16 +327,95 @@
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
+					"$(RN_SPM_REACT_BINARY)",
+					"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY)",
+					"$(RN_SPM_HERMES_BINARY)",
+					"$(RN_SPM_EXPO_MODULES_CORE_BINARY)",
+					"$(RN_SPM_EXPO_MODULES_JSI_BINARY)",
+					"$(RN_SPM_EXPO_MODULES_WORKLETS_BINARY)",
 				);
-				OTHER_SWIFT_FLAGS = (
-					"$(inherited)",
-					"$(inherited) -Xcc -fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",
-					"-Xcc",
-					"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.minimalswiftpm;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.expo.minimal-swiftpm";
 				PRODUCT_NAME = minimalswiftpm;
 				REACT_NATIVE_PATH = "../../../node_modules/.pnpm/react-native@http+++127.0.0.1+4873+react-native+-+react-native-0.87.0-nightly-20260706-_ed3573ef0871a8f7f1027d95a2debcf9/node_modules/react-native";
+				"RN_SPM_EXPO_MODULES_CORE_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64/ExpoModulesCore.framework/ExpoModulesCore";
+				"RN_SPM_EXPO_MODULES_CORE_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64_x86_64-simulator/ExpoModulesCore.framework/ExpoModulesCore";
+				"RN_SPM_EXPO_MODULES_CORE_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64/ExpoModulesCore.framework";
+				"RN_SPM_EXPO_MODULES_CORE_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64_x86_64-simulator/ExpoModulesCore.framework";
+				"RN_SPM_EXPO_MODULES_CORE_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64";
+				"RN_SPM_EXPO_MODULES_CORE_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64_x86_64-simulator";
+				"RN_SPM_EXPO_MODULES_JSI_BINARY[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64/ExpoModulesJSI.framework/ExpoModulesJSI";
+				"RN_SPM_EXPO_MODULES_JSI_BINARY[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64_x86_64-simulator/ExpoModulesJSI.framework/ExpoModulesJSI";
+				"RN_SPM_EXPO_MODULES_JSI_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64/ExpoModulesJSI.framework/ExpoModulesJSI";
+				"RN_SPM_EXPO_MODULES_JSI_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-simulator/ExpoModulesJSI.framework/ExpoModulesJSI";
+				"RN_SPM_EXPO_MODULES_JSI_BINARY[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-maccatalyst/ExpoModulesJSI.framework/ExpoModulesJSI";
+				"RN_SPM_EXPO_MODULES_JSI_FRAMEWORK[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64/ExpoModulesJSI.framework";
+				"RN_SPM_EXPO_MODULES_JSI_FRAMEWORK[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64_x86_64-simulator/ExpoModulesJSI.framework";
+				"RN_SPM_EXPO_MODULES_JSI_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64/ExpoModulesJSI.framework";
+				"RN_SPM_EXPO_MODULES_JSI_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-simulator/ExpoModulesJSI.framework";
+				"RN_SPM_EXPO_MODULES_JSI_FRAMEWORK[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-maccatalyst/ExpoModulesJSI.framework";
+				"RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64";
+				"RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64_x86_64-simulator";
+				"RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64";
+				"RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-simulator";
+				"RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-maccatalyst";
+				"RN_SPM_EXPO_MODULES_WORKLETS_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64/ExpoModulesWorklets.framework/ExpoModulesWorklets";
+				"RN_SPM_EXPO_MODULES_WORKLETS_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64_x86_64-simulator/ExpoModulesWorklets.framework/ExpoModulesWorklets";
+				"RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64/ExpoModulesWorklets.framework";
+				"RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64_x86_64-simulator/ExpoModulesWorklets.framework";
+				"RN_SPM_EXPO_MODULES_WORKLETS_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64";
+				"RN_SPM_EXPO_MODULES_WORKLETS_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64_x86_64-simulator";
+				RN_SPM_FLAVOR = debug;
+				"RN_SPM_HERMES_BINARY[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64_x86_64-simulator/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-simulator/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-maccatalyst/hermesvm.framework/Versions/1/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64_x86_64-simulator/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64_x86_64-simulator/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-simulator/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-maccatalyst/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64_x86_64-simulator/hermesvm.framework";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64_x86_64-simulator";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-simulator";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-maccatalyst";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64_x86_64-simulator";
+				"RN_SPM_REACT_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64/React.framework/React";
+				"RN_SPM_REACT_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-simulator/React.framework/React";
+				"RN_SPM_REACT_BINARY[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-maccatalyst/React.framework/Versions/A/React";
+				"RN_SPM_REACT_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64/React.framework";
+				"RN_SPM_REACT_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-simulator/React.framework";
+				"RN_SPM_REACT_FRAMEWORK[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-maccatalyst/React.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64_x86_64-simulator/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-simulator/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-maccatalyst/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64_x86_64-simulator/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64_x86_64-simulator/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-simulator/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-maccatalyst/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64_x86_64-simulator/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64_x86_64-simulator";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-simulator";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-maccatalyst";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64_x86_64-simulator";
+				"RN_SPM_REACT_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64";
+				"RN_SPM_REACT_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-simulator";
+				"RN_SPM_REACT_SEARCH_PATH[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-maccatalyst";
 				SWIFT_OBJC_BRIDGING_HEADER = "minimalswiftpm/minimalswiftpm-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -317,6 +432,16 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = minimalswiftpm/minimalswiftpm.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7X29G4MCL4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(RN_SPM_REACT_SEARCH_PATH)",
+					"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH)",
+					"$(RN_SPM_HERMES_SEARCH_PATH)",
+					"$(RN_SPM_EXPO_MODULES_CORE_SEARCH_PATH)",
+					"$(RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH)",
+					"$(RN_SPM_EXPO_MODULES_WORKLETS_SEARCH_PATH)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/build/generated/autolinking/headers",
@@ -334,16 +459,95 @@
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
+					"$(RN_SPM_REACT_BINARY)",
+					"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY)",
+					"$(RN_SPM_HERMES_BINARY)",
+					"$(RN_SPM_EXPO_MODULES_CORE_BINARY)",
+					"$(RN_SPM_EXPO_MODULES_JSI_BINARY)",
+					"$(RN_SPM_EXPO_MODULES_WORKLETS_BINARY)",
 				);
-				OTHER_SWIFT_FLAGS = (
-					"$(inherited)",
-					"$(inherited) -Xcc -fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",
-					"-Xcc",
-					"-fmodule-map-file=$(BUILT_PRODUCTS_DIR)/React.framework/Modules/module.modulemap",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.minimalswiftpm;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.expo.minimal-swiftpm";
 				PRODUCT_NAME = minimalswiftpm;
 				REACT_NATIVE_PATH = "../../../node_modules/.pnpm/react-native@http+++127.0.0.1+4873+react-native+-+react-native-0.87.0-nightly-20260706-_ed3573ef0871a8f7f1027d95a2debcf9/node_modules/react-native";
+				"RN_SPM_EXPO_MODULES_CORE_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64/ExpoModulesCore.framework/ExpoModulesCore";
+				"RN_SPM_EXPO_MODULES_CORE_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64_x86_64-simulator/ExpoModulesCore.framework/ExpoModulesCore";
+				"RN_SPM_EXPO_MODULES_CORE_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64/ExpoModulesCore.framework";
+				"RN_SPM_EXPO_MODULES_CORE_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64_x86_64-simulator/ExpoModulesCore.framework";
+				"RN_SPM_EXPO_MODULES_CORE_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64";
+				"RN_SPM_EXPO_MODULES_CORE_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64_x86_64-simulator";
+				"RN_SPM_EXPO_MODULES_JSI_BINARY[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64/ExpoModulesJSI.framework/ExpoModulesJSI";
+				"RN_SPM_EXPO_MODULES_JSI_BINARY[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64_x86_64-simulator/ExpoModulesJSI.framework/ExpoModulesJSI";
+				"RN_SPM_EXPO_MODULES_JSI_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64/ExpoModulesJSI.framework/ExpoModulesJSI";
+				"RN_SPM_EXPO_MODULES_JSI_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-simulator/ExpoModulesJSI.framework/ExpoModulesJSI";
+				"RN_SPM_EXPO_MODULES_JSI_BINARY[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-maccatalyst/ExpoModulesJSI.framework/ExpoModulesJSI";
+				"RN_SPM_EXPO_MODULES_JSI_FRAMEWORK[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64/ExpoModulesJSI.framework";
+				"RN_SPM_EXPO_MODULES_JSI_FRAMEWORK[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64_x86_64-simulator/ExpoModulesJSI.framework";
+				"RN_SPM_EXPO_MODULES_JSI_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64/ExpoModulesJSI.framework";
+				"RN_SPM_EXPO_MODULES_JSI_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-simulator/ExpoModulesJSI.framework";
+				"RN_SPM_EXPO_MODULES_JSI_FRAMEWORK[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-maccatalyst/ExpoModulesJSI.framework";
+				"RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64";
+				"RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/tvos-arm64_x86_64-simulator";
+				"RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64";
+				"RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-simulator";
+				"RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-jsi.xcframework/ios-arm64_x86_64-maccatalyst";
+				"RN_SPM_EXPO_MODULES_WORKLETS_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64/ExpoModulesWorklets.framework/ExpoModulesWorklets";
+				"RN_SPM_EXPO_MODULES_WORKLETS_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64_x86_64-simulator/ExpoModulesWorklets.framework/ExpoModulesWorklets";
+				"RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64/ExpoModulesWorklets.framework";
+				"RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64_x86_64-simulator/ExpoModulesWorklets.framework";
+				"RN_SPM_EXPO_MODULES_WORKLETS_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64";
+				"RN_SPM_EXPO_MODULES_WORKLETS_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-worklets.xcframework/ios-arm64_x86_64-simulator";
+				RN_SPM_FLAVOR = release;
+				"RN_SPM_HERMES_BINARY[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64_x86_64-simulator/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-simulator/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-maccatalyst/hermesvm.framework/Versions/1/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_BINARY[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64_x86_64-simulator/hermesvm.framework/hermesvm";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64_x86_64-simulator/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-simulator/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-maccatalyst/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64/hermesvm.framework";
+				"RN_SPM_HERMES_FRAMEWORK[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64_x86_64-simulator/hermesvm.framework";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/tvos-arm64_x86_64-simulator";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-simulator";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/ios-arm64_x86_64-maccatalyst";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64";
+				"RN_SPM_HERMES_SEARCH_PATH[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/hermes-engine.xcframework/xros-arm64_x86_64-simulator";
+				"RN_SPM_REACT_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64/React.framework/React";
+				"RN_SPM_REACT_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-simulator/React.framework/React";
+				"RN_SPM_REACT_BINARY[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-maccatalyst/React.framework/Versions/A/React";
+				"RN_SPM_REACT_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64/React.framework";
+				"RN_SPM_REACT_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-simulator/React.framework";
+				"RN_SPM_REACT_FRAMEWORK[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-maccatalyst/React.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64_x86_64-simulator/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-simulator/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-maccatalyst/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64_x86_64-simulator/ReactNativeDependencies.framework/ReactNativeDependencies";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64_x86_64-simulator/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-simulator/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-maccatalyst/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64_x86_64-simulator/ReactNativeDependencies.framework";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=appletvos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=appletvsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/tvos-arm64_x86_64-simulator";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-simulator";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/ios-arm64_x86_64-maccatalyst";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=xros*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64";
+				"RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH[sdk=xrsimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/ReactNativeDependencies.xcframework/xros-arm64_x86_64-simulator";
+				"RN_SPM_REACT_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64";
+				"RN_SPM_REACT_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-simulator";
+				"RN_SPM_REACT_SEARCH_PATH[sdk=macosx*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/React.xcframework/ios-arm64_x86_64-maccatalyst";
 				SWIFT_OBJC_BRIDGING_HEADER = "minimalswiftpm/minimalswiftpm-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -507,25 +711,25 @@
 			package = C2FECF1430FDAAE3BF355839 /* XCLocalSwiftPackageReference "build/generated/autolinking" */;
 			productName = Autolinked;
 		};
-		7E7D873FB92107759FFD17BD /* ReactNativeDependencies */ = {
+		512EBECF5434FD7A6AF7C967 /* ReactHeaders */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */;
-			productName = ReactNativeDependencies;
+			productName = ReactHeaders;
+		};
+		8332BE36B9C49BD2E49347C1 /* ReactNativeDependenciesHeaders */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */;
+			productName = ReactNativeDependenciesHeaders;
+		};
+		920F69A9DF98D37C8308D020 /* ReactNativeHeaders */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */;
+			productName = ReactNativeHeaders;
 		};
 		947DD5EF3BE079FB7F5AFF87 /* ReactCodegen */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A700952B9A737913514EB28F /* XCLocalSwiftPackageReference "build/generated/ios" */;
 			productName = ReactCodegen;
-		};
-		9F15E21186D6CE992DFCBF93 /* hermes-engine */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */;
-			productName = "hermes-engine";
-		};
-		F22919FD47E160B1C255059D /* ReactNative */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 27BDE9D743CB351F53154525 /* XCLocalSwiftPackageReference "build/xcframeworks" */;
-			productName = ReactNative;
 		};
 		F3857EDDA38AFC0011322D6D /* ReactAppDependencyProvider */ = {
 			isa = XCSwiftPackageProductDependency;
