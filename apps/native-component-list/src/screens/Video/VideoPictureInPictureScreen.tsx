@@ -41,7 +41,13 @@ export default function VideoPictureInPictureScreen() {
 
   return (
     <View style={styles.contentContainer}>
-      <E2EViewShotContainer testID="pip-view" screenshotOutputPath="expo-video/screenshots/pip-1">
+      {/* The viewshot wraps only the fixed-size video view. A container spanning the whole
+          screen changes its bounds with the system bar insets, which are still settling right
+          after exiting picture-in-picture, so its screenshot dimensions are nondeterministic. */}
+      <E2EViewShotContainer
+        testID="pip-view"
+        mode="keep-originals"
+        screenshotOutputPath="expo-video/screenshots/pip-1">
         <VideoView
           testID="pip-video-view"
           ref={ref}
@@ -52,33 +58,33 @@ export default function VideoPictureInPictureScreen() {
           startsPictureInPictureAutomatically={autoEnterPiP}
           style={styles.video}
         />
-        <ScrollView style={styles.controlsContainer}>
-          <Button style={styles.button} title="Enter Picture In Picture" onPress={togglePiP} />
-          <View style={styles.row}>
-            <TitledSwitch
-              title="Allow Picture In Picture"
-              value={allowPiP}
-              setValue={setAllowPiP}
-              style={styles.switch}
-              titleStyle={styles.switchTitle}
-            />
-            <TitledSwitch
-              title="Enter Picture In Picture Automatically"
-              value={autoEnterPiP}
-              setValue={setAutoEnterPiP}
-              style={styles.switch}
-              titleStyle={styles.switchTitle}
-            />
-          </View>
-          <Button
-            title="e2e pause"
-            onPress={() => {
-              player.pause();
-              player.currentTime = 10;
-            }}
-          />
-        </ScrollView>
       </E2EViewShotContainer>
+      <ScrollView style={styles.controlsContainer}>
+        <Button style={styles.button} title="Enter Picture In Picture" onPress={togglePiP} />
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Allow Picture In Picture"
+            value={allowPiP}
+            setValue={setAllowPiP}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+          <TitledSwitch
+            title="Enter Picture In Picture Automatically"
+            value={autoEnterPiP}
+            setValue={setAutoEnterPiP}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
+        <Button
+          title="e2e pause"
+          onPress={() => {
+            player.pause();
+            player.currentTime = 10;
+          }}
+        />
+      </ScrollView>
     </View>
   );
 }
