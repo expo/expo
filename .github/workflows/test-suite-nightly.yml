@@ -244,10 +244,10 @@ jobs:
       - name: 🍺 Install Maestro
         uses: ./.github/actions/setup-maestro
         with:
-          # Trying 2.6.1: 2.5.0 replaced TCP port forwarding with a direct ADB socket
-          # gRPC connection that failed (UNAVAILABLE / tcp:7001 closed) against the
-          # Android emulator in CI; checking whether 2.6.x still has the problem.
-          version: 2.6.1
+          # Pinned to 2.4.0 — 2.5.0+ replaces TCP port forwarding with a direct ADB
+          # socket gRPC connection that fails (UNAVAILABLE / tcp:7001 closed) against
+          # the Android emulator in CI.
+          version: 2.4.0
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
         with:
