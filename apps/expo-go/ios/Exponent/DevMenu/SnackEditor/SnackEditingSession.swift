@@ -56,9 +56,6 @@ public class SnackEditingSession: ObservableObject {
   /// Files stored locally for embedded sessions (no SnackSessionClient)
   private var embeddedFiles: [String: SnackSessionClient.SnackFile]?
 
-  /// Original files for embedded sessions (for reset-to-original support)
-  private var originalEmbeddedFiles: [String: SnackSessionClient.SnackFile]?
-
   /// Dependencies stored locally for embedded sessions
   private var embeddedDependencies: [String: [String: Any]] = [:]
 
@@ -145,7 +142,6 @@ public class SnackEditingSession: ObservableObject {
       // Embedded session: store files locally, skip Snackpub WebSocket entirely.
       // The snack runtime will communicate via SnackDirectTransport native module.
       self.isEmbeddedSession = true
-      self.originalEmbeddedFiles = code
       self.embeddedFiles = code
       self.embeddedDependencies = dependencies
       self.isReady = true
@@ -165,24 +161,40 @@ public class SnackEditingSession: ObservableObject {
 
     self.sessionClient = client
 
-    // Connect to Snackpub
-    // Use a flag to ensure the continuation is only resumed once.
-    // Both onReady and onError can fire, and onError can fire after onReady
-    // if the WebSocket disconnects later - we only want the first callback to resume.
+    // Connect to Snackpub. All resume paths hop to the main actor so the
+    // once-only flag has a single-threaded home, and a timeout guarantees the
+    // continuation resumes even if the handshake stalls silently.
+    // onError can fire after onReady if the WebSocket disconnects later -
+    // only the first callback resumes.
     await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
       var hasResumed = false
+
+      let timeoutTask = Task { @MainActor in
+        try? await Task.sleep(nanoseconds: 10_000_000_000)
+        guard !Task.isCancelled, !hasResumed else { return }
+        hasResumed = true
+        self.setupError = SnackEditingSessionError.connectionTimeout
+        continuation.resume()
+      }
+
       client.connectAsHost(
         onReady: {
-          guard !hasResumed else { return }
-          hasResumed = true
-          self.isReady = true
-          continuation.resume()
+          Task { @MainActor in
+            guard !hasResumed else { return }
+            hasResumed = true
+            timeoutTask.cancel()
+            self.isReady = true
+            continuation.resume()
+          }
         },
         onError: { error in
-          guard !hasResumed else { return }
-          hasResumed = true
-          self.setupError = error
-          continuation.resume()
+          Task { @MainActor in
+            guard !hasResumed else { return }
+            hasResumed = true
+            timeoutTask.cancel()
+            self.setupError = error
+            continuation.resume()
+          }
         }
       )
     }
@@ -238,34 +250,6 @@ public class SnackEditingSession: ObservableObject {
            displayName.localizedCaseInsensitiveContains("playground")
   }
 
-  /// Resets files to original (discards edits). Call this on app reload.
-  public func resetFiles() {
-    if isEmbeddedSession {
-      if let originals = originalEmbeddedFiles {
-        embeddedFiles = originals
-      }
-      embeddedHasBeenEdited = false
-      return
-    }
-    sessionClient?.resetToOriginalFiles()
-  }
-
-  /// Resets files to original and broadcasts to the runtime (no reload needed)
-  public func resetAndBroadcast() {
-    if isEmbeddedSession {
-      if let originals = originalEmbeddedFiles {
-        embeddedFiles = originals
-      }
-      embeddedHasBeenEdited = false
-      if let codeMessage = buildCodeMessage() {
-        SnackDirectTransport.shared?.sendCodeUpdate(codeMessage)
-      }
-      NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
-      return
-    }
-    sessionClient?.resetAndBroadcast()
-  }
-
   /// Clears the current session.
   /// Should be called when the snack is closed or a new snack is opened.
   public func clearSession() {
@@ -279,7 +263,6 @@ public class SnackEditingSession: ObservableObject {
     isEmbeddedSession = false
     SnackDirectTransport.isEmbeddedSessionAvailable = false
     embeddedFiles = nil
-    originalEmbeddedFiles = nil
     embeddedDependencies = [:]
     embeddedHasBeenEdited = false
 
@@ -414,6 +397,7 @@ enum SnackEditingSessionError: LocalizedError {
   case invalidURL
   case httpError(Int)
   case noFilesReceived
+  case connectionTimeout
 
   var errorDescription: String? {
     switch self {
@@ -423,6 +407,8 @@ enum SnackEditingSessionError: LocalizedError {
       return "Snack API returned error: \(code)"
     case .noFilesReceived:
       return "No files received from Snack API"
+    case .connectionTimeout:
+      return "Timed out connecting to the Snack session server, so live editing is unavailable for this Snack. Check your network connection and reopen the Snack to retry."
     }
   }
 }

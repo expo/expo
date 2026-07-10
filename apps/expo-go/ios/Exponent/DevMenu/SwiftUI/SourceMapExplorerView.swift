@@ -220,7 +220,6 @@ struct CodeFileView: View {
   let node: FileTreeNode
   let sourceMap: SourceMap?
   @Environment(\.colorScheme) private var colorScheme
-  @State private var highlightedLines: [AttributedString]?
   @State private var isEditing = false
   @State private var displayContent: String = ""
   @State private var showCopiedConfirmation = false
@@ -240,10 +239,6 @@ struct CodeFileView: View {
       return "// Content not available"
     }
     return code
-  }
-
-  private var lines: [String] {
-    displayContent.components(separatedBy: "\n")
   }
 
   private var theme: SyntaxHighlighter.Theme {
@@ -348,17 +343,12 @@ struct CodeFileView: View {
     }
     .onDisappear {
       if isEditing {
-        finishEditing(rehighlight: false)
-      }
-    }
-    .task(id: colorScheme) {
-      if !isImageFile {
-        highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+        finishEditing()
       }
     }
   }
 
-  private func finishEditing(rehighlight: Bool = true) {
+  private func finishEditing() {
     isEditing = false
 
     // If content changed and we have an active Snack session, send the update
@@ -368,12 +358,6 @@ struct CodeFileView: View {
         oldContents: originalContent,
         newContents: displayContent
       )
-    }
-
-    if rehighlight {
-      Task {
-        highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
-      }
     }
   }
 
@@ -411,42 +395,6 @@ struct CodeFileView: View {
       theme: theme,
       isEditable: isEditing
     )
-  }
-}
-
-struct CodeColumn: View {
-  let lines: [String]
-  let highlightedLines: [AttributedString]?
-  let theme: SyntaxHighlighter.Theme
-  var fontSize: CGFloat = 13
-
-  private var lineHeight: CGFloat {
-    fontSize * 1.5
-  }
-
-  var body: some View {
-    codeContent
-      .padding(.vertical, 12)
-  }
-
-  @ViewBuilder
-  private var codeContent: some View {
-    let content = VStack(alignment: .leading, spacing: 0) {
-      ForEach(0..<lines.count, id: \.self) { index in
-        if let highlightedLines, index < highlightedLines.count {
-          Text(highlightedLines[index])
-            .font(.system(size: fontSize, weight: .regular, design: .monospaced))
-            .frame(minHeight: lineHeight, alignment: .leading)
-        } else {
-          Text(lines[index].isEmpty ? " " : lines[index])
-            .font(.system(size: fontSize, weight: .regular, design: .monospaced))
-            .foregroundColor(theme.plain)
-            .frame(minHeight: lineHeight, alignment: .leading)
-        }
-      }
-    }
-
-    content
   }
 }
 

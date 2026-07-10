@@ -72,23 +72,6 @@ public class SnackSessionClient {
     self.currentDependencies = hostedDependencies
   }
 
-  /// Resets currentFiles back to the original hostedFiles (discards edits)
-  func resetToOriginalFiles() {
-    if let hostedFiles = hostedFiles {
-      currentFiles = hostedFiles
-      hasBeenEdited = false
-    }
-  }
-
-  /// Resets currentFiles to original and broadcasts the change to the runtime
-  func resetAndBroadcast() {
-    guard let hostedFiles = hostedFiles else { return }
-    currentFiles = hostedFiles
-    hasBeenEdited = false
-    sendCodeMessage(files: hostedFiles)
-    NotificationCenter.default.post(name: SnackEditingSession.codeDidChangeNotification, object: nil)
-  }
-
   deinit {
     disconnect()
   }
@@ -567,9 +550,10 @@ public class SnackSessionClient {
         // Parse hunk header: @@ -start,count +start,count @@
         // Format: @@ -oldStart,oldCount +newStart,newCount @@
         let regex = try? NSRegularExpression(pattern: "@@ -(\\d+)(?:,(\\d+))? \\+(\\d+)(?:,(\\d+))? @@")
-        if let match = regex?.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)) {
-          let oldStartRange = Range(match.range(at: 1), in: line)!
-          let oldStart = Int(line[oldStartRange])! - 1 // 0-indexed
+        if let match = regex?.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
+           let oldStartRange = Range(match.range(at: 1), in: line),
+           let oldStartValue = Int(line[oldStartRange]) {
+          let oldStart = oldStartValue - 1 // 0-indexed
 
           // Copy any lines before this hunk
           while baseLineIndex < oldStart && baseLineIndex < baseLines.count {
@@ -622,8 +606,12 @@ public class SnackSessionClient {
         continue
       }
 
+      guard let fileURL = URL(string: url) else {
+        continue
+      }
+
       do {
-        let (data, _) = try await URLSession.shared.data(from: URL(string: url)!)
+        let (data, _) = try await URLSession.shared.data(from: fileURL)
 
         if let contents = String(data: data, encoding: .utf8) {
           var finalContents = contents

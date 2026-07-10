@@ -59,6 +59,7 @@ enum SourceMapError: Error, LocalizedError {
   case httpError(Int)
   case noSourceMapFound
   case invalidInlineSourceMap
+  case invalidSnackId(String)
 
   var errorDescription: String? {
     switch self {
@@ -76,6 +77,8 @@ enum SourceMapError: Error, LocalizedError {
       return "No source map found. Enable inline source maps in your Metro config or ensure the bundle is stored locally."
     case .invalidInlineSourceMap:
       return "Found inline source map but failed to decode it."
+    case .invalidSnackId(let id):
+      return "The Snack ID \"\(id)\" from the project link isn't a valid identifier, so its code can't be fetched. Check the link or QR code used to open this Snack."
     }
   }
 }

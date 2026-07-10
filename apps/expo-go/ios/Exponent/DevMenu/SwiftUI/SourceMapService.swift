@@ -22,15 +22,6 @@ class SourceMapService {
   private static var cachedSession: SnackSessionClient?
   private static var cachedSessionChannel: String?
 
-  /// Clears the cached snack session. Call this on app reload.
-  static func clearCache() {
-    cachedSession = nil
-    cachedSessionChannel = nil
-    Task { @MainActor in
-      SnackEditingSession.shared.resetFiles()
-    }
-  }
-
   // MARK: - Snack Detection
 
   /// Parses the manifest URL to extract Snack parameters
@@ -258,7 +249,9 @@ class SourceMapService {
 
     // Determine API host based on manifest URL (staging vs production)
     let apiHost = detectSnackApiHost()
-    let apiURL = URL(string: "\(apiHost)/--/api/v2/snack/\(cleanId)")!
+    guard let apiURL = URL(string: "\(apiHost)/--/api/v2/snack/\(cleanId)") else {
+      throw SourceMapError.invalidSnackId(snackId)
+    }
 
     var request = URLRequest(url: apiURL)
     request.setValue("3.0.0", forHTTPHeaderField: "Snack-Api-Version")

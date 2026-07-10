@@ -58,17 +58,6 @@ class DevMenuViewModel: ObservableObject {
     return isLessonLikeSession
   }
 
-  /// True if there's an active snack editing session (lesson or saved snack)
-  var hasActiveSnackSession: Bool {
-    return SnackEditingSession.shared.isReady
-  }
-
-  /// Resets code to original and broadcasts to the runtime (no reload needed)
-  func resetCode() {
-    SnackEditingSession.shared.resetAndBroadcast()
-    manager.closeMenu()
-  }
-
   private func loadAppInfo() {
     self.appInfo = manager.getAppInfo()
   }
