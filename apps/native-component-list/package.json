@@ -169,6 +169,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
+    "@expo/cli": "workspace:*",
     "@types/fbemitter": "^2.0.32",
     "@types/i18n-js": "^3.0.1",
     "@types/pixi.js": "^4.8.6",

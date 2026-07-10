@@ -14,7 +14,7 @@ const EXPO_PACKAGE_JSON = path.join(EXPO_DIR, 'packages/expo/package.json');
 
 const REVIEW_CONFIG = {
   owner: 'applereview',
-  projectId: 'c7110aa0-424c-11e7-b474-e9583f4ae39c',
+  projectId: 'a47d9b1f-aed5-4012-9c2b-7454f37f9c2c',
 };
 
 type ActionOptions = {
@@ -43,7 +43,9 @@ async function getCurrentUser(): Promise<string | null> {
     const result = await spawnAsync('eas', ['whoami'], {
       cwd: NCL_DIR,
     });
-    return result.stdout.trim();
+    // Recent eas-cli prints the username on the first line and the account
+    // email on the next; only the first line is the username.
+    return result.stdout.trim().split('\n')[0].trim();
   } catch {
     return null;
   }
@@ -69,9 +71,11 @@ async function ensureLoggedInAsAppleReview(): Promise<string | null> {
 }
 
 async function runEASUpdate(): Promise<void> {
-  logger.info('Running eas update --branch main...');
+  logger.info('Running eas update --branch main --no-bytecode --source-maps inline...');
 
-  await spawnAsync('eas', ['update', '--branch', 'main'], {
+  // Plain JS with an inline sourcemap so Expo Go's source code explorer can
+  // show the project's source to App Review (Hermes bytecode carries neither).
+  await spawnAsync('eas', ['update', '--branch', 'main', '--no-bytecode', '--source-maps', 'inline'], {
     cwd: NCL_DIR,
     stdio: 'inherit',
   });

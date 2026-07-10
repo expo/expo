@@ -1172,6 +1172,9 @@ importers:
       '@babel/core':
         specifier: ^7.23.7
         version: 7.29.0
+      '@expo/cli':
+        specifier: workspace:*
+        version: link:../../packages/@expo/cli
       '@types/fbemitter':
         specifier: ^2.0.32
         version: 2.0.35
@@ -4953,6 +4956,9 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-type-information:
         specifier: workspace:^0.1.2
         version: link:../expo-type-information
@@ -18880,7 +18886,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
