@@ -18,23 +18,11 @@ export interface InlineModulesMirror {
 }
 
 /**
- * How much of a Kotlin file to read when looking for its `package` declaration.
- * A number is the byte length of the header buffer; `'WHOLE_FILE'` reads the entire file.
- * The user-facing default is provided by the `withInlineModules` config plugin.
- */
-export type KotlinPackageHeaderLength = number | 'WHOLE_FILE';
-
-/**
  * Options describing how to scan a project for inline modules.
  */
 export interface InlineModulesScanOptions {
   watchedDirectories: string[];
   appRoot: string;
-  /**
-   * Configure how long the heading of kotlin file is, to check for package declaration.
-   * Only relevant on Android; when omitted (for example on iOS) Kotlin packages are not resolved.
-   */
-  kotlinPackageHeaderLength?: KotlinPackageHeaderLength;
 }
 
 const nativeExtensions = ['.kt', '.swift'];
@@ -60,56 +48,52 @@ export function inlineModuleFileNameInformation(fileName: string): {
   return { valid: true, ext };
 }
 
-export async function getKotlinFileNameWithItsPackage(
-  absoluteFilePath: string,
-  kotlinPackageHeaderLength: KotlinPackageHeaderLength
-): Promise<string | null> {
-  let fileHandle;
-  try {
-    fileHandle = await fs.promises.open(absoluteFilePath, 'r');
-  } catch (e) {
-    warn(`Kotlin inline module '${absoluteFilePath}' couldn't be opened.`);
-    return null;
-  }
-  try {
-    let header: string;
-    if (kotlinPackageHeaderLength === 'WHOLE_FILE') {
-      header = await fileHandle.readFile('utf8');
-    } else {
-      const buffer = Buffer.alloc(kotlinPackageHeaderLength);
-      const { bytesRead } = await fileHandle.read(buffer, 0, kotlinPackageHeaderLength, 0);
-      header = buffer.toString('utf8', 0, bytesRead);
-    }
+/**
+ * Information about a Kotlin file relevant to inline module registration.
+ */
+export interface KotlinInlineModuleInfo {
+  /** Whether the file defines an inline module (contains an `override fun definition() = …ModuleDefinition`). */
+  hasModuleDefinition: boolean;
+  /** `<package>.<fileName>` when the file is a module and its `package` was found, otherwise `null`. */
+  classNameWithPackage: string | null;
+}
 
-    // We want to find `package some.package` and capture the `some.package` from it.
-    const pacakgeRegex = /^package\s+([\w.]+)/m;
-    const packageMatch = header.match(pacakgeRegex);
-    if (!packageMatch) {
-      warn(`Package name couldn't be found in ${absoluteFilePath}.`);
-      return null;
-    }
-
-    return `${packageMatch[1]}.${path.basename(absoluteFilePath, path.extname(absoluteFilePath))}`;
-  } catch (e) {
-    console.warn(`Couldn't read inline module '${absoluteFilePath}' package.`);
-    return null;
-  } finally {
-    await fileHandle.close();
+/**
+ * Reads a Kotlin file once and derives both whether it defines an inline module and, if so, its
+ * `<package>.<fileName>` class name.
+ */
+export async function getKotlinInlineModuleInfo(
+  absoluteFilePath: string
+): Promise<KotlinInlineModuleInfo> {
+  let contents: string;
+  try {
+    contents = await fs.promises.readFile(absoluteFilePath, 'utf8');
+  } catch {
+    warn(`Kotlin inline module '${absoluteFilePath}' could not be opened.`);
+    return { hasModuleDefinition: false, classNameWithPackage: null };
   }
+
+  if (!kotlinModuleDefinitionRegex.test(contents)) {
+    return { hasModuleDefinition: false, classNameWithPackage: null };
+  }
+
+  // We want to find `package some.package` and capture the `some.package` from it.
+  const pacakgeRegex = /^package\s+([\w.]+)/m;
+  const packageMatch = contents.match(pacakgeRegex);
+  if (!packageMatch) {
+    warn(`Package name couldn't be found in ${absoluteFilePath}.`);
+    return { hasModuleDefinition: true, classNameWithPackage: null };
+  }
+
+  const classNameWithPackage = `${packageMatch[1]}.${path.basename(
+    absoluteFilePath,
+    path.extname(absoluteFilePath)
+  )}`;
+  return { hasModuleDefinition: true, classNameWithPackage };
 }
 
 export function getSwiftModuleClassName(absoluteFilePath: string): string {
   return path.basename(absoluteFilePath, path.extname(absoluteFilePath));
-}
-
-export async function hasKotlinModuleDefinition(absoluteFilePath: string): Promise<boolean> {
-  try {
-    const contents = await fs.promises.readFile(absoluteFilePath, 'utf8');
-    return kotlinModuleDefinitionRegex.test(contents);
-  } catch {
-    warn(`Kotlin inline module '${absoluteFilePath}' could not be opened.`);
-    return false;
-  }
 }
 
 export async function hasSwiftModuleDefinition(absoluteFilePath: string): Promise<boolean> {
@@ -128,7 +112,7 @@ export async function hasSwiftModuleDefinition(absoluteFilePath: string): Promis
 export async function getMirrorStateObject(
   options: InlineModulesScanOptions
 ): Promise<InlineModulesMirror> {
-  const { watchedDirectories, appRoot, kotlinPackageHeaderLength } = options;
+  const { watchedDirectories, appRoot } = options;
   const inlineModulesMirror: InlineModulesMirror = {
     kotlinClasses: [],
     swiftModuleClassNames: [],
@@ -153,23 +137,16 @@ export async function getMirrorStateObject(
         continue;
       }
 
-      const hasKotlinDefinition =
-        ext === '.kt' && (await hasKotlinModuleDefinition(absoluteFilePath));
-      const hasSwiftDefinition =
-        ext === '.swift' && (await hasSwiftModuleDefinition(absoluteFilePath));
-
-      // `kotlinPackageHeaderLength` is only provided on Android; without it we skip resolving
-      // Kotlin packages (for example on iOS, which only consumes the Swift class names).
-      if (hasKotlinDefinition && kotlinPackageHeaderLength !== undefined) {
-        const kotlinFileWithPackage = await getKotlinFileNameWithItsPackage(
-          absoluteFilePath,
-          kotlinPackageHeaderLength
-        );
-        if (kotlinFileWithPackage === null) {
-          continue;
+      if (ext === '.kt') {
+        const { hasModuleDefinition, classNameWithPackage } =
+          await getKotlinInlineModuleInfo(absoluteFilePath);
+        if (hasModuleDefinition) {
+          if (classNameWithPackage === null) {
+            continue;
+          }
+          inlineModulesMirror.kotlinClasses.push(classNameWithPackage);
         }
-        inlineModulesMirror.kotlinClasses.push(kotlinFileWithPackage);
-      } else if (hasSwiftDefinition) {
+      } else if (ext === '.swift' && (await hasSwiftModuleDefinition(absoluteFilePath))) {
         const swiftClassName = getSwiftModuleClassName(absoluteFilePath);
         inlineModulesMirror.swiftModuleClassNames.push(swiftClassName);
       }

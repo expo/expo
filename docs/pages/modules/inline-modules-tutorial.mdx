@@ -39,8 +39,6 @@ Defining `expo.experiments.inlineModules` enables inline modules functionalities
 In `expo.experiments.inlineModules.watchedDirectories` you can specify in which directories your inline modules live.
 Note that not all directories are allowed. For more information, see the [inline modules reference](/modules/inline-modules-reference).
 
-> **Note:** On Android, only the first `512` bytes of each Kotlin file are scanned for its `package` declaration. If a file has long comments (such as a license header) before its `package` declaration, the module won't be found. Increase `expo.experiments.inlineModules.kotlinPackageHeaderLength` or set it to `"WHOLE_FILE"` to fix this. See the [inline modules reference](/modules/inline-modules-reference) for details.
-
 </Step>
 
 <Step label="2">

@@ -6,7 +6,6 @@ import {
   createSymlinksToKotlinFiles,
   generateInlineModulesListFile,
 } from '../inlineModules/androidInlineModules';
-import type { KotlinPackageHeaderLength } from '../inlineModules/inlineModules';
 import { getMirrorStateObject } from '../inlineModules/inlineModules';
 import type { AutolinkingCommonArguments } from './autolinkingOptions';
 import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
@@ -15,7 +14,6 @@ interface MirrorKotlinInlineModulesCommandArguments extends AutolinkingCommonArg
   kotlinFilesMirrorDirectory: string;
   inlineModulesListDirectory: string;
   watchedDirectoriesSerialized: string;
-  kotlinPackageHeaderLength: string;
 }
 
 /**
@@ -38,26 +36,17 @@ export function mirrorKotlinInlineModulesCommand(cli: commander.CommanderStatic)
       '--watched-directories-serialized <watchedDirectories>',
       'JSON serialized watched directories array'
     )
-    .requiredOption(
-      '--kotlin-package-header-length <kotlinPackageHeaderLength>',
-      "Number of bytes read from the start of a Kotlin file to find its package declaration, or 'WHOLE_FILE'"
-    )
     .action(async (commandArguments: MirrorKotlinInlineModulesCommandArguments) => {
       const {
         kotlinFilesMirrorDirectory,
         inlineModulesListDirectory,
         watchedDirectoriesSerialized,
-        kotlinPackageHeaderLength: kotlinPackageHeaderLengthSerialized,
       } = commandArguments;
       const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
         ...commandArguments,
       });
       const appRoot = await autolinkingOptionsLoader.getAppRoot();
       const watchedDirectories = JSON.parse(watchedDirectoriesSerialized);
-      const kotlinPackageHeaderLength: KotlinPackageHeaderLength =
-        kotlinPackageHeaderLengthSerialized === 'WHOLE_FILE'
-          ? 'WHOLE_FILE'
-          : Number(kotlinPackageHeaderLengthSerialized);
 
       if (
         !/.android./.test(kotlinFilesMirrorDirectory) ||
@@ -75,11 +64,7 @@ export function mirrorKotlinInlineModulesCommand(cli: commander.CommanderStatic)
         );
       }
 
-      const inlineModulesMirror = await getMirrorStateObject({
-        watchedDirectories,
-        appRoot,
-        kotlinPackageHeaderLength,
-      });
+      const inlineModulesMirror = await getMirrorStateObject({ watchedDirectories, appRoot });
 
       const createMirrorStructurePromise = fs.promises
         .rm(kotlinFilesMirrorDirectory, { recursive: true, force: true })

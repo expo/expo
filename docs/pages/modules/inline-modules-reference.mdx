@@ -55,29 +55,6 @@ A directory in `watchedDirectories`:
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="expo.experiments.inlineModules.kotlinPackageHeaderLength">
-Configures how many bytes are read from the beginning of a Kotlin inline module file to find its `package` declaration.
-This is neccessary in the compilation stage, to gather the list of all inline modules with package names.
-Accepts a positive integer (the number of bytes) or `"WHOLE_FILE"` to read the entire file. Defaults to `512`.
-
-```json app.json
-{
-  "expo": {
-    "experiments": {
-      "inlineModules": {
-        "kotlinPackageHeaderLength": 512
-      }
-    }
-  }
-}
-```
-
-> **Note:** Only the beginning of each Kotlin file is read to find the `package` declaration. By default this is the first `512` bytes, so if a file has long comments (for example, a license header) before its `package` declaration, the declaration falls outside the scanned region and the Kotlin inline module is not found. If that happens, increase `kotlinPackageHeaderLength` to cover the comment, or set it to `"WHOLE_FILE"` to always scan the entire file.
-
-This option only affects Android, since `package` declarations are specific to Kotlin.
-
-</PaddedAPIBox>
-
 > **Warning** You need to run `npx expo prebuild` after changing the [app config](/workflow/configuration/), for it to take effect.
 
 ## Naming convention
