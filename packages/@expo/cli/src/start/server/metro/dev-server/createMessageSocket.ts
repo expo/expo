@@ -1,7 +1,11 @@
 import { parse } from 'node:url';
 import { type WebSocket, WebSocketServer, type RawData as WebSocketRawData } from 'ws';
 
-import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
+import {
+  isMatchingOrigin,
+  isTrustedDevServerSocket,
+  type SocketTrustOptions,
+} from '../../../../utils/net';
 import { createBroadcaster } from './utils/createSocketBroadcaster';
 import { createSocketMap, type SocketId } from './utils/createSocketMap';
 import { parseRawMessage, serializeMessage } from './utils/socketMessages';
@@ -11,6 +15,7 @@ type MessageSocketOptions = {
     warn: (message: string) => any;
   };
   serverBaseUrl: string;
+  socketTrustOptions?: SocketTrustOptions;
 };
 
 const debug = require('debug')('expo:metro:devserver:messageSocket') as typeof console.log;
@@ -30,7 +35,8 @@ export function createMessagesSocket(options: MessageSocketOptions) {
   server.on('connection', (socket, req) => {
     const client = clients.registerSocket(socket);
     const isTrustedClient =
-      isLocalSocket(req.socket) && isMatchingOrigin(req, options.serverBaseUrl);
+      isTrustedDevServerSocket(req.socket, options.socketTrustOptions) &&
+      isMatchingOrigin(req, options.serverBaseUrl);
 
     // Assign the query parameters to the socket, used for `getpeers` requests
     // NOTE(cedric): this looks like a legacy feature, might be able to drop it

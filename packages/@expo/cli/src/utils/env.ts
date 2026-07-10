@@ -328,6 +328,15 @@ class Env {
     return boolish('EXPO_UNSTABLE_BONJOUR', !envIsHeadless());
   }
 
+  /**
+   * Trust reverse proxy socket addresses for native development control endpoints.
+   * This enables React Native debugging endpoints when the dev server is intentionally
+   * reached through a local proxy. Values are comma-separated IPv4 or IPv6 CIDRs.
+   */
+  get EXPO_UNSTABLE_DEV_SERVER_TRUSTED_PROXY_CIDRS(): string {
+    return getOriginalEnvValue('EXPO_UNSTABLE_DEV_SERVER_TRUSTED_PROXY_CIDRS') || '';
+  }
+
   /** @internal Configure other environment variables for headless operations */
   get EXPO_UNSTABLE_HEADLESS() {
     return boolish('EXPO_UNSTABLE_HEADLESS', envIsWebcontainer());

@@ -5,9 +5,18 @@ import { promisify } from 'node:util';
 import type { ClientOptions } from 'ws';
 import { WebSocket } from 'ws';
 
+import type { SocketTrustOptions } from '../../../../../utils/net';
 import { createMetroMiddleware } from '../createMetroMiddleware';
 
-export function withMetroServer(projectRoot = '/project'): {
+interface MetroServerTestOptions {
+  socketRemoteAddress?: string;
+  socketTrustOptions?: SocketTrustOptions;
+}
+
+export function withMetroServer(
+  projectRoot = '/project',
+  options: MetroServerTestOptions = {}
+): {
   projectRoot: string;
   metro: ReturnType<typeof createMetroMiddleware>;
   server: ReturnType<typeof createServer> & {
@@ -23,6 +32,7 @@ export function withMetroServer(projectRoot = '/project'): {
           ready: () => Promise.resolve(),
         }) as any,
       serverBaseUrl: 'http://localhost',
+      socketTrustOptions: options.socketTrustOptions,
     }
   );
 
@@ -41,6 +51,13 @@ export function withMetroServer(projectRoot = '/project'): {
 
   // Ensure the websockets can be tested
   server.on('upgrade', (request, socket, head) => {
+    if (options.socketRemoteAddress) {
+      Object.defineProperty(request.socket, 'remoteAddress', {
+        configurable: true,
+        value: options.socketRemoteAddress,
+      });
+    }
+
     const { pathname } = parse(request.url!);
     const endpoint =
       pathname != null
