@@ -8,6 +8,7 @@ on:
       - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
+      - .github/actions/setup-maestro/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
@@ -24,6 +25,7 @@ on:
       - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
+      - .github/actions/setup-maestro/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
@@ -67,6 +69,7 @@ jobs:
           common-paths: >-
             .github/workflows/test-suite.yml,
             .github/actions/use-android-emulator/action.yml,
+            .github/actions/setup-maestro/action.yml,
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/**",
@@ -117,6 +120,7 @@ jobs:
           common-paths: >-
             .github/workflows/test-suite.yml,
             .github/actions/use-android-emulator/action.yml,
+            .github/actions/setup-maestro/action.yml,
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/expo-modules-core/**",

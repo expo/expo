@@ -8,10 +8,12 @@ on:
     branches: [main]
     paths:
       - .github/workflows/test-suite-nightly.yml
+      - .github/actions/setup-maestro/action.yml
       - tools/src/commands/SetupReactNativeNightly.ts
   pull_request:
     paths:
       - .github/workflows/test-suite-nightly.yml
+      - .github/actions/setup-maestro/action.yml
       - tools/src/commands/SetupReactNativeNightly.ts
 
 concurrency:
