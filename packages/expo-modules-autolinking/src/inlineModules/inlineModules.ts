@@ -17,9 +17,6 @@ export interface InlineModulesMirror {
   kotlinClasses: string[];
 }
 
-/**
- * Options describing how to scan a project for inline modules.
- */
 export interface InlineModulesScanOptions {
   watchedDirectories: string[];
   appRoot: string;
@@ -52,7 +49,7 @@ export function inlineModuleFileNameInformation(fileName: string): {
  * Information about a Kotlin file relevant to inline module registration.
  */
 export interface KotlinInlineModuleInfo {
-  /** Whether the file defines an inline module (contains an `override fun definition() = …ModuleDefinition`). */
+  /** Whether the file defines an inline module (contains an `override fun definition() = .*ModuleDefinition`). */
   hasModuleDefinition: boolean;
   /** `<package>.<fileName>` when the file is a module and its `package` was found, otherwise `null`. */
   classNameWithPackage: string | null;

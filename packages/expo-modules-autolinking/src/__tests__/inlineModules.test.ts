@@ -38,7 +38,6 @@ public class SimpleModule : Module() {
 }
 `;
 
-// Has a module definition but no `package` declaration.
 const noPackageKotlinModule = `public class SomeModule : Module() {
   override fun definition() = ModuleDefinition { Name("SomeModule") }
 }
