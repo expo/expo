@@ -1077,7 +1077,6 @@ jobs:
       device_identifier: string | { android?: string, ios?: string } # optional
       output_format: string # optional - defaults to junit
       skip_build_check: boolean # optional - defaults to false
-      use_cuttlefish: boolean # optional - defaults to false
     hooks:
       before_maestro_tests: step[] # optional - steps to run before the tests start.
       after_maestro_tests: step[] # optional - steps to run after the tests complete.
@@ -1102,7 +1101,6 @@ You can pass the following parameters into the `params` list:
 | android_system_image_package | string                                                | Optional. Android Emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`. Note that newer images require more computing resources, for which you may want to use large runners.                                                 |
 | device_identifier            | string or `{ android?: string, ios?: string }` object | Optional. Device identifier to use for the tests. You can also use a single-value expression like `pixel_6`, `iPhone 16 Plus` or `${{ needs.build.outputs.platform == "android" ? "pixel_6" : "iPhone 16 Plus" }}` and an object like `device_identifier: { android: "pixel_6", ios: "iPhone 16 Plus" }`. Note that iOS devices availability differs across runner images. A list of available devices can be found in the jobs logs. |
 | skip_build_check             | boolean                                               | Optional. Skip validation of the build (whether an iOS build is a simulator build). Defaults to false.                                                                                                                                                                                                                                                                                                                                |
-| use_cuttlefish               | boolean                                               | Optional. Use [Cuttlefish](https://source.android.com/docs/devices/cuttlefish) instead of the Android Emulator. Only supported on the latest Android worker image. Does not support multiple shards. The device does not have Google APIs or Play Store, but it may have better performance. No-op on iOS. Defaults to false.                                                                                                         |
 
 #### Hooks
 

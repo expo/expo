@@ -573,22 +573,6 @@ jobs:
         run: yarn --version # should print a concrete version, like 2.4.3
 ```
 
-### `defaults.hooks`
-
-Steps to run at specific points of every job in the workflow that installs node modules:
-
-- `before_install_node_modules`: steps to run before node modules are installed.
-- `after_install_node_modules`: steps to run after node modules are installed.
-
-```yaml
-defaults:
-  hooks:
-    before_install_node_modules:
-      - run: echo "About to install node modules"
-    after_install_node_modules:
-      - run: echo "Node modules installed"
-```
-
 ## `concurrency`
 
 Configuration for concurrency control. Currently only allows setting `cancel_in_progress` for same-branch workflows.
@@ -1421,7 +1405,6 @@ jobs:
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
       output_format: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
       skip_build_check: boolean # optional, defaults to false. Skip validation of the build (whether an iOS build is a simulator build).
-      use_cuttlefish: boolean # optional, defaults to false. Use Cuttlefish instead of the Android Emulator. Only supported on the latest Android worker image. Does not support multiple shards.
     hooks:
       before_maestro_tests: step[] # optional
       after_maestro_tests: step[] # optional
