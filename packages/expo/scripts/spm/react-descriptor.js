@@ -17,12 +17,7 @@ function reactPackageDependency(react) {
 
 /** Render the React product set (ReactDescriptor.products) as target `.product(...)` deps. */
 function reactProductDependencies(react) {
-  const deps = react.products.map((p) => `.product(name: "${p.name}", package: "${p.package}")`);
-  // hermes-engine isn't in the ReactDescriptor's product set, but React-consuming code that pulls
-  // in reacthermes (HermesExecutorFactory) needs <hermes/hermes.h>. It's a product of the same
-  // (ReactNative) package. TODO: fold into RN's reactProducts() so the descriptor carries it.
-  deps.push(`.product(name: "hermes-engine", package: "${react.packageRef.name}")`);
-  return deps;
+  return react.products.map((p) => `.product(name: "${p.name}", package: "${p.package}")`);
 }
 
 /**
