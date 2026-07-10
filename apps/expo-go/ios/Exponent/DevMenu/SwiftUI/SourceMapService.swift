@@ -6,10 +6,6 @@ import Foundation
 class SourceMapService {
   private let devMenuManager = DevMenuManager.shared
 
-  // Cache for Snack session client to keep connection alive
-  private static var cachedSession: SnackSessionClient?
-  private static var cachedSessionChannel: String?
-
   // MARK: - Snack Detection
 
   /// Parses the manifest URL to extract Snack parameters
@@ -74,138 +70,41 @@ class SourceMapService {
     return components.queryItems?.first(where: { $0.name == "snack-channel" })?.value
   }
 
-  /// Sends a file update to the Snack session (if connected)
-  /// - Returns: true if the update was sent, false if no active session
+  /// Sends a file update through the active Snack session
+  /// - Returns: true if a session accepted the edit, false if no active session
   static func sendSnackFileUpdate(path: String, oldContents: String, newContents: String) -> Bool {
-    let currentChannel = getCurrentChannel()
-
-    // First try the SnackEditingSession (for published snacks opened from Expo Go)
-    // Only use if the channel matches the current snack
-    if let editingChannel = SnackEditingSession.shared.channel,
-       editingChannel == currentChannel {
-      // For embedded sessions, use direct transport instead of WebSocket
-      if SnackEditingSession.shared.isEmbeddedSession {
-        SnackEditingSession.shared.updateEmbeddedFile(path: path, oldContents: oldContents, newContents: newContents)
-        return true
-      }
-
-      if let session = SnackEditingSession.shared.sessionClient {
-        session.sendFileUpdate(path: path, oldContents: oldContents, newContents: newContents)
-        return true
-      }
-    }
-
-    // Fall back to cached session (for snacks opened from snack.expo.dev)
-    // Only use if the channel matches the current snack
-    guard let session = cachedSession,
-          let cachedChannel = cachedSessionChannel,
-          cachedChannel == currentChannel else {
+    guard let currentChannel = getCurrentChannel(),
+          SnackEditingSession.shared.channel == currentChannel else {
       return false
     }
-
-    session.sendFileUpdate(path: path, oldContents: oldContents, newContents: newContents)
-    return true
+    return SnackEditingSession.shared.sendFileUpdate(path: path, oldContents: oldContents, newContents: newContents)
   }
 
   /// Checks if there's an active Snack session for the current snack
   static var hasActiveSnackSession: Bool {
-    let currentChannel = getCurrentChannel()
-
-    // Check SnackEditingSession first (for snacks opened from Expo Go)
-    if SnackEditingSession.shared.isReady,
-       (SnackEditingSession.shared.sessionClient != nil || SnackEditingSession.shared.isEmbeddedSession),
-       let editingChannel = SnackEditingSession.shared.channel,
-       editingChannel == currentChannel {
-      return true
+    guard let currentChannel = getCurrentChannel() else {
+      return false
     }
-
-    // Fall back to cached session (for snacks from website)
-    if cachedSession != nil,
-       let cachedChannel = cachedSessionChannel,
-       cachedChannel == currentChannel {
-      return true
-    }
-
-    return false
+    return SnackEditingSession.shared.hasActiveSession(forChannel: currentChannel)
   }
 
   /// Fetches source files from a live Snack session via Snackpub
   private func fetchSnackSourceMapFromSession(channel: String) async throws -> SourceMap {
-    // Check if SnackEditingSession has files for this channel (published snacks from Expo Go)
-    if SnackEditingSession.shared.channel == channel,
-       SnackEditingSession.shared.isReady,
-       let files = SnackEditingSession.shared.currentFiles,
-       !files.isEmpty {
-      // Convert SnackSessionClient.SnackFile to our expected format and build source map
-      var convertedFiles: [String: SnackSessionClient.SnackFile] = [:]
-      for (path, file) in files {
-        convertedFiles[path] = file
-      }
-      return buildSourceMap(from: convertedFiles)
+    let session = SnackEditingSession.shared
+
+    // No session for this channel yet (snack opened via deep link) - join as viewer
+    if !session.hasActiveSession(forChannel: channel) {
+      let isStaging = devMenuManager.currentManifestURL?.absoluteString.contains("staging") == true
+      try await session.setupViewerSession(channel: channel, isStaging: isStaging)
     }
 
-    // Check if we have a cached session for this channel with files
-    // Use currentFiles from the session (not cachedFiles) to preserve any edits made
-    if SourceMapService.cachedSessionChannel == channel,
-       let session = SourceMapService.cachedSession,
-       !session.currentFiles.isEmpty {
-      return buildSourceMap(from: session.currentFiles)
+    guard let files = session.currentFiles, !files.isEmpty else {
+      throw SourceMapError.noSourceMapFound
     }
-
-    let isStaging = devMenuManager.currentManifestURL?.absoluteString.contains("staging") == true
-
-    // Reuse existing session or create new one
-    let client: SnackSessionClient
-    if SourceMapService.cachedSessionChannel == channel,
-       let existingClient = SourceMapService.cachedSession {
-      client = existingClient
-    } else {
-      // Disconnect old session if different channel
-      SourceMapService.cachedSession?.disconnect()
-      client = SnackSessionClient(channel: channel, isStaging: isStaging)
-      SourceMapService.cachedSession = client
-      SourceMapService.cachedSessionChannel = channel
-    }
-
-    return try await withCheckedThrowingContinuation { continuation in
-      var hasResumed = false
-
-      // Timeout after 10 seconds
-      let timeoutTask = Task {
-        try await Task.sleep(nanoseconds: 10_000_000_000)
-        if !hasResumed {
-          hasResumed = true
-          continuation.resume(throwing: SnackSessionError.timeout)
-        }
-      }
-
-      client.connect(
-        onFilesReceived: { [weak self] files in
-          guard !hasResumed else { return }
-          hasResumed = true
-          timeoutTask.cancel()
-
-          let sourceMap = self?.buildSourceMap(from: files) ?? SourceMap(
-            version: 3,
-            sources: [],
-            sourcesContent: [],
-            mappings: "",
-            names: []
-          )
-
-          continuation.resume(returning: sourceMap)
-        },
-        onError: { error in
-          guard !hasResumed else { return }
-          hasResumed = true
-          timeoutTask.cancel()
-          continuation.resume(throwing: error)
-        }
-      )
-    }
+    return buildSourceMap(from: files)
   }
 
-  private func buildSourceMap(from files: [String: SnackSessionClient.SnackFile]) -> SourceMap {
+  private func buildSourceMap(from files: [String: SnackFile]) -> SourceMap {
     let sources = files.keys.sorted()
     let sourcesContent = sources.map { files[$0]?.contents }
 

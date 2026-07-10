@@ -6,6 +6,6 @@ import XCTest
 final class SanityTests: XCTestCase {
   func testHarnessRunsAgainstHostApp() {
     // Constructs an app-module symbol to prove @testable linkage against Expo Go.app
-    XCTAssertNotNil(SnackSessionClient(channel: "sanity-test"))
+    XCTAssertNotNil(SnackFile(path: "sanity.js", contents: "", isAsset: false))
   }
 }

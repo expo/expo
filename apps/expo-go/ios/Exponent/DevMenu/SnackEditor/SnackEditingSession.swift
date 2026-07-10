@@ -44,8 +44,17 @@ public class SnackEditingSession: ObservableObject {
   /// The snack identifier (e.g., @username/snackname)
   public private(set) var snackId: String?
 
-  /// The session client connected to Snackpub
-  public private(set) var sessionClient: SnackSessionClient?
+  /// The transport connected to Snackpub (host or viewer mode)
+  private(set) var transport: SnackpubTransport?
+
+  /// Connection state of the transport, mirrored for synchronous UI reads
+  @Published private(set) var connectionState: SnackpubTransport.ConnectionState = .disconnected
+
+  /// MainActor mirrors of the transport's actor-isolated state
+  private var mirroredFiles: [String: SnackFile]?
+  private var mirroredEdited = false
+  private var transportEventsTask: Task<Void, Never>?
+  private var firstFilesContinuation: CheckedContinuation<Void, Error>?
 
   /// Error if session setup failed
   public private(set) var setupError: Error?
@@ -53,8 +62,8 @@ public class SnackEditingSession: ObservableObject {
   /// Whether this is an embedded session (lessons, playground, demo) that uses direct native transport
   public private(set) var isEmbeddedSession: Bool = false
 
-  /// Files stored locally for embedded sessions (no SnackSessionClient)
-  private var embeddedFiles: [String: SnackSessionClient.SnackFile]?
+  /// Files stored locally for embedded sessions (no Snackpub transport)
+  private var embeddedFiles: [String: SnackFile]?
 
   /// Dependencies stored locally for embedded sessions
   private var embeddedDependencies: [String: [String: Any]] = [:]
@@ -116,7 +125,7 @@ public class SnackEditingSession: ObservableObject {
   ///   - isEmbedded: Whether to use direct native transport instead of Snackpub WebSocket
   public func setupSessionWithCode(
     snackId: String = "new",
-    code: [String: SnackSessionClient.SnackFile],
+    code: [String: SnackFile],
     dependencies: [String: [String: Any]] = [:],
     channel: String,
     isStaging: Bool = false,
@@ -151,61 +160,100 @@ public class SnackEditingSession: ObservableObject {
       return
     }
 
-    // Create session client in host mode with provided code
-    let client = SnackSessionClient(
+    // Create and connect the host-mode transport. Timeout and reconnection
+    // behavior live inside the transport.
+    let transport = SnackpubTransport(
       channel: channel,
       isStaging: isStaging,
-      hostedFiles: code,
-      hostedDependencies: dependencies
+      mode: .host(files: code, dependencies: dependencies)
     )
+    self.transport = transport
+    self.mirroredFiles = code
+    observeTransportEvents(transport)
 
-    self.sessionClient = client
+    do {
+      try await transport.connect()
+      self.isReady = true
+    } catch {
+      self.setupError = error
+    }
+  }
 
-    // Connect to Snackpub. All resume paths hop to the main actor so the
-    // once-only flag has a single-threaded home, and a timeout guarantees the
-    // continuation resumes even if the handshake stalls silently.
-    // onError can fire after onReady if the WebSocket disconnects later -
-    // only the first callback resumes.
-    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-      var hasResumed = false
+  /// Joins an existing snack channel as a viewer (deep-linked snacks opened
+  /// via snack.expo.dev, where Expo Go hosts no session of its own). Waits
+  /// for the first CODE message so callers get files or an error.
+  public func setupViewerSession(channel: String, isStaging: Bool) async throws {
+    clearSession()
+    self.channel = channel
 
-      let timeoutTask = Task { @MainActor in
-        try? await Task.sleep(nanoseconds: 10_000_000_000)
-        guard !Task.isCancelled, !hasResumed else { return }
-        hasResumed = true
-        self.setupError = SnackEditingSessionError.connectionTimeout
-        continuation.resume()
-      }
+    let transport = SnackpubTransport(channel: channel, isStaging: isStaging, mode: .viewer)
+    self.transport = transport
+    observeTransportEvents(transport)
 
-      client.connectAsHost(
-        onReady: {
-          Task { @MainActor in
-            guard !hasResumed else { return }
-            hasResumed = true
-            timeoutTask.cancel()
-            self.isReady = true
-            continuation.resume()
-          }
-        },
-        onError: { error in
-          Task { @MainActor in
-            guard !hasResumed else { return }
-            hasResumed = true
-            timeoutTask.cancel()
-            self.setupError = error
-            continuation.resume()
-          }
+    try await transport.connect()
+
+    if mirroredFiles?.isEmpty == false {
+      isReady = true
+      return
+    }
+
+    let timeoutTask = Task { @MainActor in
+      try? await Task.sleep(nanoseconds: 10_000_000_000)
+      guard !Task.isCancelled else { return }
+      self.firstFilesContinuation?.resume(throwing: SnackpubError.timeout)
+      self.firstFilesContinuation = nil
+    }
+
+    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+      self.firstFilesContinuation = continuation
+    }
+    timeoutTask.cancel()
+    isReady = true
+  }
+
+  /// Sends a file edit through the active session. Returns false only when
+  /// there is no session at all - a disconnected transport queues the edit
+  /// and flushes it after reconnecting.
+  public func sendFileUpdate(path: String, oldContents: String, newContents: String) -> Bool {
+    if isEmbeddedSession {
+      updateEmbeddedFile(path: path, oldContents: oldContents, newContents: newContents)
+      return true
+    }
+    guard let transport else { return false }
+    mirroredFiles?[path] = SnackFile(path: path, contents: newContents, isAsset: false)
+    mirroredEdited = true
+    Task { await transport.sendFileUpdate(path: path, oldContents: oldContents, newContents: newContents) }
+    return true
+  }
+
+  /// Mirrors transport events into MainActor state and reposts the session
+  /// notifications (the transport itself knows nothing about this class).
+  private func observeTransportEvents(_ transport: SnackpubTransport) {
+    transportEventsTask = Task { [weak self] in
+      for await event in transport.events {
+        guard let self else { return }
+        switch event {
+        case .filesUpdated(let files):
+          self.mirroredFiles = files
+          self.firstFilesContinuation?.resume()
+          self.firstFilesContinuation = nil
+          NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
+        case .edited:
+          self.mirroredEdited = true
+          NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
+        case .stateChanged(let state):
+          self.connectionState = state
         }
-      )
+      }
     }
   }
 
   /// Gets the current files in the session
-  public var currentFiles: [String: SnackSessionClient.SnackFile]? {
+  public var currentFiles: [String: SnackFile]? {
     if isEmbeddedSession {
       return embeddedFiles
     }
-    return sessionClient?.currentFiles
+    return mirroredFiles
   }
 
   /// Whether the code has been edited since session started
@@ -213,7 +261,7 @@ public class SnackEditingSession: ObservableObject {
     if isEmbeddedSession {
       return embeddedHasBeenEdited
     }
-    return sessionClient?.hasBeenEdited ?? false
+    return mirroredEdited
   }
 
   private var embeddedHasBeenEdited: Bool = false
@@ -253,8 +301,17 @@ public class SnackEditingSession: ObservableObject {
   /// Clears the current session.
   /// Should be called when the snack is closed or a new snack is opened.
   public func clearSession() {
-    sessionClient?.disconnect()
-    sessionClient = nil
+    transportEventsTask?.cancel()
+    transportEventsTask = nil
+    firstFilesContinuation?.resume(throwing: CancellationError())
+    firstFilesContinuation = nil
+    if let transport {
+      Task { await transport.disconnect() }
+    }
+    transport = nil
+    mirroredFiles = nil
+    mirroredEdited = false
+    connectionState = .disconnected
     channel = nil
     snackId = nil
     setupError = nil
@@ -279,7 +336,7 @@ public class SnackEditingSession: ObservableObject {
 
   /// Checks if there's an active session for the given channel
   func hasActiveSession(forChannel channel: String) -> Bool {
-    return self.channel == channel && isReady && (sessionClient != nil || isEmbeddedSession)
+    return self.channel == channel && isReady && (transport != nil || isEmbeddedSession)
   }
 
   // MARK: - Embedded Session Methods
@@ -317,7 +374,7 @@ public class SnackEditingSession: ObservableObject {
     guard isEmbeddedSession, embeddedFiles != nil else { return }
 
     // Update the stored file
-    embeddedFiles?[path] = SnackSessionClient.SnackFile(path: path, contents: newContents, isAsset: false)
+    embeddedFiles?[path] = SnackFile(path: path, contents: newContents, isAsset: false)
 
     // Build and send updated CODE message via direct transport
     if let codeMessage = buildCodeMessage() {
@@ -334,13 +391,13 @@ public class SnackEditingSession: ObservableObject {
   // MARK: - Private Methods
 
   /// Fetches snack code from the Snack API
-  private func fetchSnackCode(snackId: String, isStaging: Bool) async throws -> (files: [String: SnackSessionClient.SnackFile], dependencies: [String: [String: Any]], name: String?) {
+  private func fetchSnackCode(snackId: String, isStaging: Bool) async throws -> (files: [String: SnackFile], dependencies: [String: [String: Any]], name: String?) {
     let snackResponse = try await SnackAPIClient.fetch(snackId: snackId, isStaging: isStaging)
 
     // Convert to SnackFile format
-    var files: [String: SnackSessionClient.SnackFile] = [:]
+    var files: [String: SnackFile] = [:]
     for (path, file) in snackResponse.code {
-      files[path] = SnackSessionClient.SnackFile(
+      files[path] = SnackFile(
         path: path,
         contents: file.contents,
         isAsset: file.type == "ASSET"
@@ -368,22 +425,6 @@ public class SnackEditingSession: ObservableObject {
     }
 
     return (files, dependencies, snackResponse.name)
-  }
-}
-
-// MARK: - Error Types
-
-enum SnackEditingSessionError: LocalizedError {
-  case noFilesReceived
-  case connectionTimeout
-
-  var errorDescription: String? {
-    switch self {
-    case .noFilesReceived:
-      return "No files received from Snack API"
-    case .connectionTimeout:
-      return "Timed out connecting to the Snack session server, so live editing is unavailable for this Snack. Check your network connection and reopen the Snack to retry."
-    }
   }
 }
 

@@ -114,11 +114,11 @@ import UIKit
 
       if let code = params["code"] as? [String: [String: Any]] {
         // Lesson/playground: code provided directly
-        var snackFiles: [String: SnackSessionClient.SnackFile] = [:]
+        var snackFiles: [String: SnackFile] = [:]
         for (path, fileData) in code {
           let contents = fileData["contents"] as? String ?? ""
           let isAsset = fileData["type"] as? String == "ASSET"
-          snackFiles[path] = SnackSessionClient.SnackFile(path: path, contents: contents, isAsset: isAsset)
+          snackFiles[path] = SnackFile(path: path, contents: contents, isAsset: isAsset)
         }
 
         let dependencies = params["dependencies"] as? [String: [String: Any]] ?? [:]

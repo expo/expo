@@ -4,7 +4,6 @@ import XCTest
 @testable import Expo_Go
 
 final class SnackDiffTests: XCTestCase {
-  // MARK: - generateUnifiedDiff
 
   func testGenerateWithEmptyNewContentsReturnsEmptyString() {
     XCTAssertEqual(SnackDiff.generateUnifiedDiff(oldContents: "anything", newContents: ""), "")
@@ -30,15 +29,10 @@ final class SnackDiffTests: XCTestCase {
   }
 
   func testGenerateIgnoresOldContents() {
-    // Current engine always emits a full-replacement patch; oldContents only
-    // exists for signature compatibility. Pinned so a future real-diff
-    // implementation is a conscious change.
     let a = SnackDiff.generateUnifiedDiff(oldContents: "", newContents: "x\n")
     let b = SnackDiff.generateUnifiedDiff(oldContents: "totally different", newContents: "x\n")
     XCTAssertEqual(a, b)
   }
-
-  // MARK: - apply
 
   func testApplyEmptyPatchReturnsBase() {
     XCTAssertEqual(SnackDiff.apply("", to: "base\n"), "base\n")
@@ -46,9 +40,6 @@ final class SnackDiffTests: XCTestCase {
   }
 
   func testApplyRoundtripOntoEmptyBaseDropsTrailingNewline() {
-    // Pinned quirk: apply() joins added lines without a trailing newline, so
-    // the roundtrip loses it. The JS runtime applies patches itself; Expo Go
-    // only sees this in its local file tracking.
     let diff = SnackDiff.generateUnifiedDiff(oldContents: "", newContents: "line1\nline2\nline3\n")
     XCTAssertEqual(SnackDiff.apply(diff, to: ""), "line1\nline2\nline3")
   }
@@ -60,9 +51,6 @@ final class SnackDiffTests: XCTestCase {
   }
 
   func testApplyRealDiffOntoExistingBase() {
-    // A genuine unified diff (context + remove + add), as produced by the JS
-    // runtime for S3-hosted files - the only production path with a
-    // non-empty base.
     let base = "line1\nline2\nline3\n"
     let patch =
       "Index: code\n" +
@@ -78,8 +66,6 @@ final class SnackDiffTests: XCTestCase {
   }
 
   func testApplyMalformedHunkHeaderDoesNotCrash() {
-    // Int-overflowing hunk start - the guard skips positioning instead of
-    // force-unwrap crashing.
     let patch =
       "Index: code\n" +
       "===================================================================\n" +
