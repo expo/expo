@@ -22,10 +22,10 @@ This page walks you through creating your first EAS Workflows: development build
 
     <Terminal
       cmd={{
-        npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
-        yarn: ['$ yarn create expo-app --template default@sdk-57'],
-        pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
-        bun: ['$ bun create expo --template default@sdk-57'],
+        npm: ['$ npx create-expo-app@latest'],
+        yarn: ['$ yarn create expo-app'],
+        pnpm: ['$ pnpm create expo-app'],
+        bun: ['$ bun create expo'],
       }}
     />
 
@@ -38,43 +38,11 @@ This page walks you through creating your first EAS Workflows: development build
   </Requirement>
 </Prerequisites>
 
-You don't need to link your project to EAS, add an **eas.json** file, or install `expo-dev-client` up front. The `eas workflow:create` command in the next step sets all of that up for you.
-
 <Step label="1">
 
-Instead of writing a workflow file by hand, generate one with EAS CLI. Pass `--template build` to create a workflow that builds development builds for every platform:
+Run the following command to create a workflow that creates development builds for Android and iOS:
 
 <Terminal cmd={['$ eas workflow:create --template build']} />
-
-This command does the setup work for you. It links your project to EAS (prompting you to choose an account if the project isn't linked yet), adds the `development` and `development-ios-simulator` build profiles to your **eas.json**, sets your app identifiers, installs `expo-dev-client` if it's missing, and writes the workflow to **.eas/workflows/build.yml**:
-
-```yaml .eas/workflows/build.yml
-name: Create development builds
-
-jobs:
-  android_development_build:
-    name: Build Android
-    type: build
-    params:
-      platform: android
-      profile: development
-  ios_device_development_build:
-    name: Build iOS device
-    type: build
-    params:
-      platform: ios
-      profile: development
-  ios_simulator_development_build:
-    name: Build iOS Simulator
-    type: build
-    params:
-      platform: ios
-      profile: development-ios-simulator
-```
-
-This workflow creates three development builds in parallel: an Android build for emulators and devices, an iOS device build, and an iOS Simulator build.
-
-The Android and iOS Simulator builds work on a brand new project: EAS generates and stores the Android signing keystore automatically, and iOS Simulator builds don't require code signing. The iOS device build requires an Apple Developer account and a registered device, so EAS CLI prints a **Next steps** list after creating the workflow. To set up iOS device credentials, run the command it suggests (`eas credentials:configure-build -p ios -e development`) and register your device when prompted. You can also do this later, or skip the iOS device build for now by removing the `ios_device_development_build` job.
 
 </Step>
 
