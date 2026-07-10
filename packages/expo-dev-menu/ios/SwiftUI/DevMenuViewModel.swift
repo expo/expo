@@ -132,8 +132,9 @@ class DevMenuViewModel: ObservableObject {
     }
 
     devMenuManager.closeMenu {
-      DevMenuPackagerConnectionHandler.allowRNDevMenuTemporarily()
+      rctDevMenu.devMenuEnabled = true
       rctDevMenu.show()
+      rctDevMenu.devMenuEnabled = false
     }
   }
 

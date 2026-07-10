@@ -187,6 +187,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 - (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
 {
+  RCTBundleURLProviderAllowPackagerServerAccess(NO);
+
   _delegate = delegate;
   _launchOptions = launchOptions;
   NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
@@ -392,6 +394,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
       onSuccess:(void (^ _Nullable)(void))onSuccess
         onError:(void (^ _Nullable)(NSError *error))onError
 {
+  // A dev server has been chosen — re-allow packager access (denied at launcher boot in
+  // `start:launchOptions:`). Replaces the RCTBundleURLProvider.guessPackagerHost swizzle.
+  RCTBundleURLProviderAllowPackagerServerAccess(YES);
+
   EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
   NSURL *expoUrl = devLauncherUrl.url;
   _possibleManifestURL = expoUrl;
