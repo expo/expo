@@ -42,6 +42,7 @@
         ]
       },
       "createdScalars": [
+        "HERMES_CLI_PATH",
         "RN_SPM_FLAVOR",
         "\"RN_SPM_REACT_FRAMEWORK[sdk=iphoneos*]\"",
         "\"RN_SPM_REACT_BINARY[sdk=iphoneos*]\"",
@@ -140,6 +141,7 @@
         ]
       },
       "createdScalars": [
+        "HERMES_CLI_PATH",
         "RN_SPM_FLAVOR",
         "\"RN_SPM_REACT_FRAMEWORK[sdk=iphoneos*]\"",
         "\"RN_SPM_REACT_BINARY[sdk=iphoneos*]\"",
