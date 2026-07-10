@@ -109,6 +109,8 @@ Apps signed with an ad hoc provisioning profile can be installed by an iOS devic
 
   > **info** **Tip**: This command enables device registration at any time. However, only builds created post-registration will work on the newly added device.
 
+  > **warning** **On a new or recently renewed Apple Developer Program membership, a newly registered device may not be immediately installable.** Registering a device with Expo does not register it with Apple. The device is added to Apple only when it's first included in a build or re-sign. For such a membership, Apple can then take [up to 24–72 hours](https://developer.apple.com/help/account/reference/device-registration-updates/) to finish processing the device before it can be added to a provisioning profile. If a build fails right after you register a new device, wait for Apple to finish processing and then run the build again. Learn more about [managing devices](/build/internal-distribution/#managing-devices).
+
 - To create the preview build, we need to use the `preview` profile with the `eas build` command:
 
 <Terminal cmd={['$ eas build --platform ios --profile preview']} />
