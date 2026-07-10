@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-07-09T09:08:12.393Z",
+    "fetchedAt": "2026-07-10T09:08:01.483Z",
     "cliVersion": "20.5.1"
   },
-  "totalCommands": 128,
+  "totalCommands": 125,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -317,11 +317,6 @@
       "usage": "USAGE\n  $ eas init [--id <value>] [--force] [--non-interactive]\n\nFLAGS\n  --force            Whether to create a new project/link an existing project without additional prompts or overwrite\n                     any existing project ID when running with --id flag\n  --id=<value>       ID of the EAS project to link\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create or link an EAS project\n\nALIASES\n  $ eas init"
     },
     {
-      "command": "eas init:onboarding [TARGET_PROJECT_DIRECTORY]",
-      "description": "continue onboarding process started on the https://expo.new website.",
-      "usage": "USAGE\n  $ eas init:onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding"
-    },
-    {
       "command": "eas integrations:asc:connect",
       "description": "connect a project to an App Store Connect app",
       "usage": "USAGE\n  $ eas integrations:asc:connect [--api-key-id <value>] [--asc-app-id <value>] [--bundle-id <value>] [--json]\n    [--non-interactive]\n\nFLAGS\n  --api-key-id=<value>  Apple App Store Connect API Key ID\n  --asc-app-id=<value>  App Store Connect app identifier\n  --bundle-id=<value>   Filter discovered apps by bundle identifier\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n\nDESCRIPTION\n  connect a project to an App Store Connect app"
@@ -447,11 +442,6 @@
       "usage": "USAGE\n  $ eas observe:versions [--platform android|ios] [--start <value> | --days <value>] [--end <value> | ] [--project-id\n    <value>] [--json] [--non-interactive]\n\nFLAGS\n  --days=<value>        Show results from the last N days (mutually exclusive with --start/--end)\n  --end=<value>         End of time range (ISO date)\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n  --platform=<option>   Filter by platform\n                        <options: android|ios>\n  --project-id=<value>  EAS project ID (defaults to the project ID of the current directory)\n  --start=<value>       Start of time range (ISO date)\n\nDESCRIPTION\n  display app versions with build and update details"
     },
     {
-      "command": "eas onboarding [TARGET_PROJECT_DIRECTORY]",
-      "description": "continue onboarding process started on the https://expo.new website.",
-      "usage": "USAGE\n  $ eas onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding"
-    },
-    {
       "command": "eas open",
       "description": "open the project page in a web browser",
       "usage": "USAGE\n  $ eas open\n\nDESCRIPTION\n  open the project page in a web browser"
@@ -470,11 +460,6 @@
       "command": "eas project:new [PATH]",
       "description": "Create a new project configured with Expo Application Services (EAS)",
       "usage": "USAGE\n  $ eas project:new [PATH] [-p bun|npm|pnpm|yarn]\n\nARGUMENTS\n  [PATH]  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=<option>  [default: npm] Package manager to use for installing dependencies\n                                  <options: bun|npm|pnpm|yarn>\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new"
-    },
-    {
-      "command": "eas project:onboarding [TARGET_PROJECT_DIRECTORY]",
-      "description": "continue onboarding process started on the https://expo.new website.",
-      "usage": "USAGE\n  $ eas project:onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding"
     },
     {
       "command": "eas submit",
