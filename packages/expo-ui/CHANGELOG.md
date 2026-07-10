@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `BottomSheet` opening at an unpredictable detent when multiple detents are set without a `selection`. The initial detent now follows the first entry in the array instead of the unordered set. ([#47652](https://github.com/expo/expo/pull/47652) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 57.0.4 — 2026-07-07
