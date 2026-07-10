@@ -22,34 +22,6 @@ function textImportsReact(content) {
   return content.split('\n').some((l) => REACT_IMPORT_RX.test(l));
 }
 
-/** Map product name (e.g. "ExpoModulesCore") → absolute xcframework path under precompile/.build. */
-function collectPrecompiledProducts(flavor) {
-  const precompileBuild = path.resolve(__dirname, '..', '..', '..', 'precompile', '.build');
-  const map = new Map();
-  let pkgDirs = [];
-  try {
-    pkgDirs = fs.readdirSync(precompileBuild, { withFileTypes: true });
-  } catch {
-    return map;
-  }
-  for (const pkg of pkgDirs) {
-    if (!pkg.isDirectory()) continue;
-    const xcfwDir = path.join(precompileBuild, pkg.name, 'output', flavor, 'xcframeworks');
-    let entries = [];
-    try {
-      entries = fs.readdirSync(xcfwDir);
-    } catch {
-      continue;
-    }
-    for (const entry of entries) {
-      if (entry.endsWith('.xcframework')) {
-        map.set(path.basename(entry, '.xcframework'), path.join(xcfwDir, entry));
-      }
-    }
-  }
-  return map;
-}
-
 /** Walk up from a directory to the nearest npm package root (has package.json). */
 function findModuleRoot(startDir) {
   let dir = startDir;
@@ -150,7 +122,6 @@ module.exports = {
   REACT_IMPORT_RX,
   textImportsReact,
   sourceTreeImportsReact,
-  collectPrecompiledProducts,
   collectWatchPaths,
   findModuleRoot,
   moduleNeedsReact,
