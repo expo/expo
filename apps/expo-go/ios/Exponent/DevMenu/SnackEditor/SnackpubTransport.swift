@@ -25,7 +25,7 @@ actor SnackpubTransport {
     case host(files: [String: SnackFile], dependencies: [String: Any])
   }
 
-  enum ConnectionState {
+  enum ConnectionState: Equatable {
     case disconnected, connecting, connected, reconnecting
   }
 

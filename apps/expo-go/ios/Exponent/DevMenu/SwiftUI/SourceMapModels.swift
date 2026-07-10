@@ -49,6 +49,7 @@ enum SourceMapError: Error, LocalizedError {
   case noSourceMapFound
   case invalidInlineSourceMap
   case invalidSnackId(String)
+  case hermesBytecodeBundle
 
   var errorDescription: String? {
     switch self {
@@ -68,6 +69,8 @@ enum SourceMapError: Error, LocalizedError {
       return "Found inline source map but failed to decode it."
     case .invalidSnackId(let id):
       return "The Snack ID \"\(id)\" from the project link isn't a valid identifier, so its code can't be fetched. Check the link or QR code used to open this Snack."
+    case .hermesBytecodeBundle:
+      return "This project is running compiled Hermes bytecode, which has no readable source. Publish the update with plain JavaScript and inline source maps (eas update --no-bytecode --source-maps inline) to view its source here."
     }
   }
 }

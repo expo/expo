@@ -6,72 +6,66 @@ private let toolbarPlacement: ToolbarItemPlacement = .navigationBarTrailing
 
 struct SourceMapExplorerView: View {
   @StateObject private var viewModel = SourceMapExplorerViewModel()
-  @State private var showNavigationBar = false
-  @State private var showContent = false
+  @ObservedObject private var editingSession = SnackEditingSession.shared
+  @ObservedObject private var overlay = ProjectSourceSession.current?.overlay ?? EditOverlay()
 
   private var isSearching: Bool {
     !viewModel.searchText.isEmpty
   }
 
-  private var isLoading: Bool {
-    switch viewModel.loadingState {
-    case .idle, .loading:
-      return true
-    case .loaded, .error:
-      return false
-    }
-  }
-
   var body: some View {
-    contentView
-      .task {
-        await viewModel.loadSource()
-        // Show nav bar first
-        showNavigationBar = true
-        // Wait for layout to settle, then fade in content
-        DispatchQueue.main.async {
-          withAnimation(.easeOut(duration: 0.2)) {
-            showContent = true
+    Group {
+      switch viewModel.loadingState {
+      case .idle, .loading:
+        loadingView
+      case .loaded:
+        loadedView
+      case .error(let error):
+        errorView(error)
+      }
+    }
+    .navigationTitle("Source code explorer")
+    .inlineNavigationBar()
+    .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
+    .toolbar {
+      ToolbarItem(placement: .navigationBarTrailing) {
+        if overlay.hasEdits {
+          Button("Revert all", role: .destructive) {
+            overlay.revertAll()
           }
         }
       }
-  }
-
-  @ViewBuilder
-  private var contentView: some View {
-    ZStack {
-      // Content layer
-      switch viewModel.loadingState {
-      case .idle, .loading:
-        Color.clear
-      case .loaded:
-        loadedView
-          .opacity(showContent ? 1 : 0)
-          .animation(.easeOut(duration: 0.2), value: showContent)
-      case .error(let error):
-        errorView(error)
-          .opacity(showContent ? 1 : 0)
-          .animation(.easeOut(duration: 0.2), value: showContent)
-      }
-
-      // Loading overlay - fades out when showContent becomes true
-      loadingView
-        .opacity(showContent ? 0 : 1)
-        .animation(.easeOut(duration: 0.2).delay(0.2), value: showContent)
-        .allowsHitTesting(!showContent)
     }
-    .navigationTitle(showNavigationBar ? "Source code explorer" : "")
-    .inlineNavigationBar()
-    .navigationBarHidden(!showNavigationBar)
-    .modifier(ConditionalSearchable(isEnabled: showContent, text: $viewModel.searchText))
+    .task {
+      await viewModel.loadSource()
+    }
   }
 
   private var loadedView: some View {
-    FolderListView(
-      title: "Source code explorer",
-      nodes: isSearching ? viewModel.filteredFileTree : viewModel.fileTree,
-      isSearching: isSearching
-    )
+    VStack(spacing: 0) {
+      connectionBanner
+      FolderListView(
+        title: "Source code explorer",
+        nodes: isSearching ? viewModel.filteredFileTree : viewModel.fileTree,
+        isSearching: isSearching
+      )
+    }
+  }
+
+  @ViewBuilder
+  private var connectionBanner: some View {
+    if editingSession.connectionState == .reconnecting {
+      HStack(spacing: 8) {
+        ProgressView().controlSize(.small)
+        Text("Reconnecting to the Snack session… edits will sync when reconnected.")
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.horizontal)
+      .padding(.vertical, 8)
+      .background(Color(uiColor: .secondarySystemBackground))
+    }
   }
 
   private var loadingView: some View {
@@ -83,7 +77,6 @@ struct SourceMapExplorerView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(uiColor: .systemGroupedBackground))
-    .ignoresSafeArea()
   }
 
   private func errorView(_ error: SourceMapError) -> some View {
@@ -92,7 +85,7 @@ struct SourceMapExplorerView: View {
         .font(.system(size: 40))
         .foregroundColor(.orange)
 
-      Text("Failed to load source map")
+      Text("Couldn't load source")
         .font(.headline)
 
       Text(error.errorDescription ?? "Unknown error")
@@ -107,19 +100,6 @@ struct SourceMapExplorerView: View {
     }
     .padding()
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-  }
-}
-
-private struct ConditionalSearchable: ViewModifier {
-  let isEnabled: Bool
-  @Binding var text: String
-
-  func body(content: Content) -> some View {
-    if isEnabled {
-      content.searchable(text: $text, placement: .automatic, prompt: "Search files")
-    } else {
-      content
-    }
   }
 }
 
@@ -603,37 +583,66 @@ struct CodeTextEditor: UIViewRepresentable {
     Coordinator(self)
   }
 
-  /// Apply syntax highlighting using our existing tokenizer
+  /// Apply syntax highlighting. Large or minified files render as plain text
+  /// (skipping the tokenize + whole-document layout that would hang the UI);
+  /// everything else tokenizes off the main actor and applies on main.
   fileprivate func applyHighlighting(to textView: UITextView) {
     let text = textView.text ?? ""
-    let tokens = SyntaxHighlighter.tokenize(text)
 
-    // Match line height with read-only view (fontSize * 1.5)
-    let lineHeight = font.pointSize * 1.5
-    let paragraphStyle = NSMutableParagraphStyle()
-    paragraphStyle.minimumLineHeight = lineHeight
-    paragraphStyle.maximumLineHeight = lineHeight
-    paragraphStyle.lineBreakMode = .byWordWrapping
-
-    let attributed = NSMutableAttributedString()
-    for token in tokens {
-      let attrs: [NSAttributedString.Key: Any] = [
-        .foregroundColor: UIColor(token.type.color(in: theme)),
-        .font: font,
-        .paragraphStyle: paragraphStyle
-      ]
-      attributed.append(NSAttributedString(string: token.text, attributes: attrs))
+    guard HighlightPolicy.shouldHighlight(text) else {
+      setAttributed(plainAttributed(text), on: textView)
+      return
     }
 
-    // Preserve selection
+    Task.detached(priority: .userInitiated) {
+      let tokens = SyntaxHighlighter.tokenize(text)
+      await MainActor.run {
+        // Skip if the buffer changed while we tokenized.
+        guard textView.text == text else { return }
+        setAttributed(highlightedAttributed(tokens), on: textView)
+      }
+    }
+  }
+
+  private func setAttributed(_ attributed: NSAttributedString, on textView: UITextView) {
     let selectedRange = textView.selectedRange
     textView.attributedText = attributed
     if selectedRange.location + selectedRange.length <= attributed.length {
       textView.selectedRange = selectedRange
     }
-
     // Re-apply wrapping — setting attributedText resets text container properties
     configureWrapping(for: textView)
+  }
+
+  private var codeParagraphStyle: NSParagraphStyle {
+    // Match line height with the read-only view (fontSize * 1.5)
+    let lineHeight = font.pointSize * 1.5
+    let style = NSMutableParagraphStyle()
+    style.minimumLineHeight = lineHeight
+    style.maximumLineHeight = lineHeight
+    style.lineBreakMode = .byWordWrapping
+    return style
+  }
+
+  private func highlightedAttributed(_ tokens: [SyntaxHighlighter.Token]) -> NSAttributedString {
+    let paragraphStyle = codeParagraphStyle
+    let attributed = NSMutableAttributedString()
+    for token in tokens {
+      attributed.append(NSAttributedString(string: token.text, attributes: [
+        .foregroundColor: UIColor(token.type.color(in: theme)),
+        .font: font,
+        .paragraphStyle: paragraphStyle
+      ]))
+    }
+    return attributed
+  }
+
+  private func plainAttributed(_ text: String) -> NSAttributedString {
+    NSAttributedString(string: text, attributes: [
+      .foregroundColor: UIColor(theme.plain),
+      .font: font,
+      .paragraphStyle: codeParagraphStyle
+    ])
   }
 
   class Coordinator: NSObject, UITextViewDelegate {

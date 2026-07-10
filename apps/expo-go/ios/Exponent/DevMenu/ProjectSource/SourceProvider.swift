@@ -120,6 +120,11 @@ struct BundleSourceMapProvider: SourceProvider {
   /// Byte-level extraction: no whole-bundle String conversion. Searches
   /// backwards since the marker sits at the end of the bundle.
   static func extractInlineSourceMap(from bundle: Data) throws -> SourceMapDTO {
+    // Hermes bytecode magic number - no readable source to extract.
+    if bundle.starts(with: [0xc6, 0x1f, 0xbc, 0x03]) {
+      throw SourceMapError.hermesBytecodeBundle
+    }
+
     let markers = [
       "//# sourceMappingURL=data:application/json;charset=utf-8;base64,",
       "//# sourceMappingURL=data:application/json;base64,"
