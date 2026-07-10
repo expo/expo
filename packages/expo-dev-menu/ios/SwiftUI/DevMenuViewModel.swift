@@ -127,18 +127,21 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func openRNDevMenu() {
-    // TODO(gabrieldonadel): Remove this once we bump react-native-macos to 0.84
-#if !os(macOS)
     guard let rctDevMenu: RCTDevMenu = devMenuManager.currentAppContext?.nativeModule(named: "RCTDevMenu") else {
       return
     }
 
     devMenuManager.closeMenu {
+      // TODO(gabrieldonadel): Remove this once we bump react-native-macos to 0.84
+#if !os(macOS)
       rctDevMenu.devMenuEnabled = true
       rctDevMenu.show()
       rctDevMenu.devMenuEnabled = false
-    }
+#else
+      // react-native-macos leaves the RN dev menu enabled, so show it directly.
+      rctDevMenu.show()
 #endif
+    }
   }
 
   func copyToClipboard(_ content: String) {
