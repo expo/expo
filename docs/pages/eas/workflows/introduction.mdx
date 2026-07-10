@@ -29,6 +29,8 @@ EAS Workflows run in managed cloud environments with pre-packaged job types desi
 
 ## Quick start
 
+> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+
 To create your first workflow, run the following command and follow the prompts:
 
 <Terminal cmd={['$ eas workflow:create']} />
@@ -46,11 +48,11 @@ Workflows are defined as YAML files in the **.eas/workflows/** directory at the 
 
 ## Key features
 
-- **Pre-packaged jobs**: [ready-to-use jobs](/eas/workflows/pre-packaged-jobs/) that build, submit, and update your app, run Maestro E2E tests, send Slack messages, and more. [Custom jobs](/eas/workflows/syntax/#custom-jobs) run any command you need.
-- **Flexible triggers**: run workflows on [GitHub events](/eas/workflows/syntax/#on) (push, pull request, label, branch or tag deletion), on a cron schedule, on [App Store Connect events](/eas/workflows/syntax/#onapp_store_connect), manually with `eas workflow:run`, or from the [REST API](/eas/workflows/rest-api/).
-- **No infrastructure to manage**: jobs run on EAS-hosted macOS and Linux workers, so you don't need to maintain CI servers or configure Android Studio and Xcode.
-- **Everything on one dashboard**: builds, updates, test results, artifacts, and logs all appear on [expo.dev](https://expo.dev/).
-- **Faster releases**: combine `fingerprint`, `get-build`, and `update` jobs to skip redundant native builds and publish over-the-air updates when possible.
+- **Pre-packaged jobs**: [Ready-to-use jobs](/eas/workflows/pre-packaged-jobs/) that build, submit, and update your app, run Maestro E2E tests, send Slack messages, and more. [Custom jobs](/eas/workflows/syntax/#custom-jobs) run any command you need.
+- **Flexible triggers**: Run workflows on [GitHub events](/eas/workflows/syntax/#on) (push, pull request, label, branch or tag deletion), on a cron schedule, on [App Store Connect events](/eas/workflows/syntax/#onapp_store_connect), manually with `eas workflow:run`, or from the [REST API](/eas/workflows/rest-api/).
+- **No infrastructure to manage**: Jobs run on EAS-hosted macOS and Linux workers, so you don't need to maintain CI servers or configure Android Studio and Xcode.
+- **Everything on one dashboard**: Builds, updates, test results, artifacts, and logs all appear on [expo.dev](https://expo.dev/).
+- **Faster releases**: Combine `fingerprint`, `get-build`, and `update` jobs to skip redundant native builds and publish over-the-air updates when possible.
 
 ## When to use EAS Workflows
 
@@ -136,7 +138,7 @@ Share the following slide in your next team meeting to discuss what EAS Workflow
 
 </FAQ>
 
-## Learn more
+## Additional resources
 
 <BoxLink
   title="Pre-packaged jobs"
