@@ -40,6 +40,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `BottomSheet` opening at an unpredictable detent when multiple detents are set without a `selection`. The initial detent now follows the first entry in the array instead of the unordered set. ([#47652](https://github.com/expo/expo/pull/47652) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the graphical `DatePicker` style (`community/datetime-picker` `display="inline"`) rendering undersized on mount and jumping to its correct size on the first tap. ([#47062](https://github.com/expo/expo/issues/47062) by [@etiennetalbot](https://github.com/etiennetalbot)) ([#47465](https://github.com/expo/expo/pull/47465) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS][android] Fix `community/masked-view` doubling offsets and transforms by re-applying the user-supplied `style` to the inner mask/content `View` wrappers. ([#47067](https://github.com/expo/expo/issues/47067) by [@tsushanth](https://github.com/tsushanth))
 - [iOS] Fix the SwiftUI `TextField` crashing with "String index is out of bounds" on iOS 18 when JS writes new text into a focused field that holds an active text selection. ([#47447](https://github.com/expo/expo/pull/47447) by [@nishan](https://github.com/intergalacticspacehighway))
