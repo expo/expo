@@ -193,6 +193,12 @@ private func log(_ message: String) {
     case "getCoordinates":
       return getElementCoordinates(accessibilityId: accessibilityId)
 
+    case "captureView":
+      guard let outputPath = json["outputPath"] as? String else {
+        return createErrorResponse("Missing 'outputPath' for captureView")
+      }
+      return captureView(accessibilityId: accessibilityId, outputPath: outputPath)
+
     default:
       return createErrorResponse("Unknown action: \(action)")
     }
@@ -233,7 +239,7 @@ private func log(_ message: String) {
     }
   }
 
-  private func createErrorResponse(_ message: String) -> Data {
+  func createErrorResponse(_ message: String) -> Data {
     let response: [String: Any] = [
       "success": false,
       "error": message,
