@@ -356,6 +356,14 @@ export async function runMaestroAsync({
     await maestroProcess;
     return [];
   } catch (error) {
+    if ((error as NodeJS.ErrnoException)?.code === 'ENOENT') {
+      throw new Error(
+        `The maestro binary was not found on PATH, so the flows never ran. The "Install ` +
+          `Maestro" workflow step probably failed to download it; check that step's logs ` +
+          `and re-run the job.`,
+        { cause: error }
+      );
+    }
     const reportContents = await fs.readFile(reportPath, 'utf8').catch(() => null);
     if (reportContents == null) {
       if (killedReason === 'invocation-timeout') {

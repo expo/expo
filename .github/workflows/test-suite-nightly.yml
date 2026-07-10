@@ -8,10 +8,12 @@ on:
     branches: [main]
     paths:
       - .github/workflows/test-suite-nightly.yml
+      - .github/actions/setup-maestro/action.yml
       - tools/src/commands/SetupReactNativeNightly.ts
   pull_request:
     paths:
       - .github/workflows/test-suite-nightly.yml
+      - .github/actions/setup-maestro/action.yml
       - tools/src/commands/SetupReactNativeNightly.ts
 
 concurrency:
@@ -117,9 +119,9 @@ jobs:
           xcrun simctl shutdown all
           sudo xcodebuild -runFirstLaunch
       - name: 🍺 Install Maestro
-        run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
-          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+        uses: ./.github/actions/setup-maestro
+        with:
+          version: 2.6.1
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
@@ -238,12 +240,12 @@ jobs:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
       - name: 🍺 Install Maestro
-        run: |
+        uses: ./.github/actions/setup-maestro
+        with:
           # Pinned to 2.4.0 — 2.5.0+ replaces TCP port forwarding with a direct ADB
           # socket gRPC connection that fails (UNAVAILABLE / tcp:7001 closed) against
           # the Android emulator in CI.
-          curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.4.0 bash
-          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+          version: 2.4.0
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
