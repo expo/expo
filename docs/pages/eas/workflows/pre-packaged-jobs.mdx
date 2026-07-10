@@ -19,9 +19,10 @@ Build jobs can be customized so that you can execute custom commands during the 
 <Prerequisites>
   <Requirement title="A project configured for EAS Build">
     Your project must be set up for EAS Build: **eas.json** must contain the build profile the job
-    uses, and app signing credentials must be configured for the platform. The easiest way to do
-    both is to complete one build with EAS CLI using the same platform and profile as the
-    pre-packaged job. Learn how to [create your first build](/build/setup/) to get started.
+    uses, and app signing credentials must be configured for the platform. Set up credentials
+    without running a build first by running `eas credentials:configure-build -p <platform> -e
+    <profile>` with the same platform and profile the job uses. Learn more about [configuring your
+    project for EAS Build](/build/setup/).
   </Requirement>
 </Prerequisites>
 

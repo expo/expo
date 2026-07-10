@@ -102,14 +102,11 @@ jobs:
       profile: production
 ```
 
-This workflow uses the `production` profile from your **eas.json**. Production builds require app signing credentials. Set them up for each platform with `eas credentials:configure-build`, without running a build first:
+This workflow uses the `production` profile from your **eas.json**. Production builds require app signing credentials. Set them up for each platform with the following commands:
 
-<Terminal
-  cmd={[
-    '$ eas credentials:configure-build -p android -e production',
-    '$ eas credentials:configure-build -p ios -e production',
-  ]}
-/>
+<Terminal cmd={['$ eas credentials:configure-build -p android -e production']} />
+
+<Terminal cmd={['$ eas credentials:configure-build -p ios -e production']} />
 
 Then, run the workflow:
 
