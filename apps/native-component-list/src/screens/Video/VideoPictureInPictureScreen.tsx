@@ -41,9 +41,8 @@ export default function VideoPictureInPictureScreen() {
 
   return (
     <View style={styles.contentContainer}>
-      {/* The viewshot wraps only the fixed-size video view. A container spanning the whole
-          screen changes its bounds with the system bar insets, which are still settling right
-          after exiting picture-in-picture, so its screenshot dimensions are nondeterministic. */}
+      {/* The viewshot wraps only the fixed-size video view: a full-screen container's bounds
+          race the system bar insets that are still settling right after exiting PiP. */}
       <E2EViewShotContainer
         testID="pip-view"
         mode="keep-originals"
