@@ -9,12 +9,14 @@ jsEngine: graaljs
       screenshotOutputPath: expo-image
       testID: 'header-Appearance'
       mode: 'normalize'
+      captureMode: 'in-process'
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:
       screenshotOutputPath: expo-image
       testID: 'image-comparison-list'
       mode: 'keep-originals'
+      captureMode: 'in-process'
 
 - runFlow:
     file: ../_nested-flows/screenshot-comparison.yaml

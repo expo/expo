@@ -212,6 +212,46 @@ async function cropImageAsync({
   console.log('wrote cropped image to', outputPath);
 }
 
+export async function captureViewShotInProcess({
+  testID,
+  viewShotPath,
+  resizingFactor,
+  // The capture renders the view on the app's main thread, which can be busy for a few
+  // seconds on animation-heavy screens; a too-tight timeout abandons requests that would
+  // have succeeded.
+  timeoutMs = 10000,
+}: {
+  testID: string;
+  viewShotPath: string;
+  resizingFactor: number;
+  timeoutMs?: number;
+}): Promise<{ viewShotPath: string }> {
+  const screenInspectorIOS = new ScreenInspectorIOS();
+
+  const label = `Duration of capturing "${testID}" testID in-process via dylib`;
+  console.time(label);
+
+  await Promise.race([
+    screenInspectorIOS.captureView(testID, viewShotPath),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Dylib timeout')), timeoutMs)
+    ),
+  ]);
+  console.timeEnd(label);
+
+  // The dylib writes the view at its exact bounds, so only resizing is left to do here.
+  if (resizingFactor !== 1) {
+    const image = await Jimp.read(viewShotPath);
+    const newWidth = Math.round(image.bitmap.width * resizingFactor);
+    const newHeight = Math.round(image.bitmap.height * resizingFactor);
+    await image.resize(newWidth, newHeight).writeAsync(viewShotPath);
+  }
+
+  return {
+    viewShotPath,
+  };
+}
+
 export async function cropViewByTestID({
   testID,
   currentScreenshotPath,
