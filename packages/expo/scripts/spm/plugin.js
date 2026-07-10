@@ -6,16 +6,17 @@
  * It contributes Expo's native modules into RN's SwiftPM autolinking graph, in
  * two forms:
  *
- *   - PRECOMPILED  — modules with a built xcframework (ExpoModulesCore,
- *     ExpoModulesJSI, ExpoModulesWorklets, …): referenced through a lean,
- *     generated consumption `Package.swift` (binaryTarget → the xcframework).
+ *   - PRECOMPILED  — modules with built Debug + Release xcframeworks
+ *     (ExpoModulesCore, ExpoModulesJSI, ExpoModulesWorklets, …): declared to
+ *     RN as paired dynamic frameworks. RN selects, links, embeds, and signs
+ *     them outside SwiftPM.
  *   - SOURCE-BUILT — modules compiled from source (Expo, EXConstants, …):
  *     emitted as a source `Package.swift`. Pure-Swift modules are a single
  *     target; mixed Swift/ObjC modules need a checked-in Package.swift.
  *
- * The plugin returns DATA (`{packageDependencies, productDependencies,
- * generatedSources}`); RN owns the merge into its generated tree, so this runs
- * cleanly on every autolinking regeneration.
+ * SwiftPM receives only Expo's invariant source products and a compile-only
+ * framework interface tree (headers/module interfaces, never Mach-O binaries).
+ * The plugin returns DATA; RN owns the merge into its generated tree.
  *
  * React is referenced through `context.react` (the ReactDescriptor RN passes):
  * a single source of truth for the React package ref + the product set, so this
@@ -35,19 +36,9 @@ const fs = require('fs');
 const path = require('path');
 
 const { resolveExpoModules, generateModulesProvider } = require('./cli');
-const { describeFlavoredArtifact } = require('./swap-flavor');
-const {
-  collectPrecompiledProducts,
-  collectWatchPaths,
-  findModuleRoot,
-  moduleNeedsReact,
-  isPureSwift,
-} = require('./classify');
-const {
-  emitPrecompiledPackage,
-  emitSourceManifestPackage,
-  emitPureSwiftSourcePackage,
-} = require('./manifests');
+const { collectWatchPaths, findModuleRoot, moduleNeedsReact, isPureSwift } = require('./classify');
+const { prepareCompileInterfaces, resolveFlavoredFramework } = require('./flavored-frameworks');
+const { emitSourceManifestPackage, emitPureSwiftSourcePackage } = require('./manifests');
 
 /** Nearest ancestor of `dir` (inclusive) containing a package.json, or `dir` itself. */
 function findAppPackageRoot(dir) {
@@ -65,7 +56,7 @@ function findAppPackageRoot(dir) {
 }
 
 module.exports = function expoSpmPlugin(context) {
-  const { flavor, react, outputDir } = context;
+  const { react, outputDir } = context;
   // RN passes the Xcode project dir (`<app>/ios`) as appRoot. The autolinking
   // CLI's --app-root must be the app PACKAGE root: `generate-modules-provider`
   // filters modules against that dir's package.json dependencies, and with no
@@ -73,8 +64,12 @@ module.exports = function expoSpmPlugin(context) {
   // Expo modules register at runtime). Walk up to the nearest package.json.
   const appRoot = findAppPackageRoot(context.appRoot);
   const modules = resolveExpoModules(appRoot);
-  const precompiled = collectPrecompiledProducts(flavor === 'release' ? 'release' : 'debug');
   const outDir = path.join(outputDir, 'expo');
+  // The old contract generated mutable binaryTarget packages here. They are
+  // invalid under automatic configuration selection and must never survive a
+  // regeneration as apparent SwiftPM runtime products.
+  fs.rmSync(path.join(outDir, 'expo-precompiled'), { recursive: true, force: true });
+  const artifactCacheDir = path.join(context.appRoot, 'build', 'expo-xcframeworks');
   // The per-app React-GeneratedCode (codegen) package — RN's convention: <outputDir>/../ios.
   // Products like ReactAppHeaders live there, so any manifest wiring them must declare it.
   const codegenCandidate = path.resolve(outputDir, '..', 'ios');
@@ -90,50 +85,52 @@ module.exports = function expoSpmPlugin(context) {
   const pureSwiftSource = []; // packages emitted from a pure-Swift descriptor
   const stillPending = []; // source pods with no manifest and not pure-Swift
 
-  // Pass 1 — precompiled modules (binaryTarget consumption packages).
-  const precompiledPkgDirs = new Map();
-  const flavoredArtifacts = [];
+  // Pass 1 — precompiled runtime frameworks. The declaration is all-or-nothing:
+  // once one flavor exists, the resolver requires and prepares both before RN
+  // receives the plugin result. No runtime binary enters the SwiftPM graph.
+  const precompiledFrameworks = new Map();
+  const flavoredFrameworks = [];
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
-      const xcframeworkPath = precompiled.get(pod.podName);
-      if (xcframeworkPath == null) continue;
+      if (emitted.has(pod.podName)) continue;
       const moduleRoot = findModuleRoot(pod.podspecDir);
       const needsReact = moduleNeedsReact(pod.podName, moduleRoot);
-      const e = emitPrecompiledPackage(pod.podName, xcframeworkPath, outDir);
-      if (e != null) {
-        packageDependencies.push(e.packageDep);
-        productDependencies.push(e.productDep);
-        precompiledPkgDirs.set(pod.podName, e.packageDep.path);
+      const framework = resolveFlavoredFramework({
+        packageName: mod.packageName,
+        moduleRoot,
+        frameworkName: pod.podName,
+        cacheDir: artifactCacheDir,
+      });
+      if (framework != null) {
+        precompiledFrameworks.set(pod.podName, framework);
+        flavoredFrameworks.push(framework);
         emitted.add(pod.podName);
         if (needsReact) reactWired.push(pod.podName);
-        // Declare the artifact for RN's build-time flavor swap (`flavoredArtifacts`
-        // plugin contract). Until RN consumes it, our own swap-flavor.js repoints
-        // these links from the build phase; the declaration is forward-compatible.
-        flavoredArtifacts.push(
-          describeFlavoredArtifact(pod.podName, e.artifactLink, xcframeworkPath)
-        );
       }
     }
   }
-  const expoModulesCorePkgDir = precompiledPkgDirs.get('ExpoModulesCore');
+  flavoredFrameworks.sort((a, b) => a.id.localeCompare(b.id));
+  const frameworkSearchPath =
+    precompiledFrameworks.size > 0
+      ? prepareCompileInterfaces(flavoredFrameworks, path.join(outDir, 'compile-interfaces'))
+      : null;
 
-  // Pass 2 — source modules (need ExpoModulesCore already emitted).
-  if (expoModulesCorePkgDir != null) {
+  // Pass 2 — invariant source modules. They compile against the generated
+  // headers/module-interface tree and leave runtime linking entirely to RN.
+  if (precompiledFrameworks.has('ExpoModulesCore') && frameworkSearchPath != null) {
     for (const mod of modules) {
       const pods = mod.pods ?? [];
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
       const pod = pods[0];
       const moduleRoot = findModuleRoot(pod.podspecDir);
-      const needsReact = moduleNeedsReact(pod.podName, moduleRoot);
 
       if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
         // (A) module ships a checked-in Package.swift → mirror its targets + inject deps.
         const e = emitSourceManifestPackage(
           moduleRoot,
           react,
-          expoModulesCorePkgDir,
+          frameworkSearchPath,
           outDir,
-          needsReact,
           codegenPkgPath
         );
         if (e != null) {
@@ -141,7 +138,7 @@ module.exports = function expoSpmPlugin(context) {
           productDependencies.push(...e.productDeps);
           pods.forEach((p) => emitted.add(p.podName));
           sourceManifest.push(mod.packageName);
-          if (needsReact) reactWired.push(pod.podName);
+          if (react != null) reactWired.push(pod.podName);
         }
       } else if (isPureSwift(moduleRoot)) {
         // Pure-Swift module → single Swift target over its ios sources.
@@ -149,9 +146,8 @@ module.exports = function expoSpmPlugin(context) {
           moduleRoot,
           pod.podName,
           react,
-          expoModulesCorePkgDir,
+          frameworkSearchPath,
           outDir,
-          needsReact,
           codegenPkgPath
         );
         if (e != null) {
@@ -159,7 +155,7 @@ module.exports = function expoSpmPlugin(context) {
           productDependencies.push(e.productDep);
           pods.forEach((p) => emitted.add(p.podName));
           pureSwiftSource.push(pod.podName);
-          if (needsReact) reactWired.push(pod.podName);
+          if (react != null) reactWired.push(pod.podName);
         }
       }
     }
@@ -173,7 +169,7 @@ module.exports = function expoSpmPlugin(context) {
   }
 
   console.log(
-    `[expo-spm-plugin] precompiled (${precompiledPkgDirs.size}): ${[...precompiledPkgDirs.keys()].join(', ') || '—'}`
+    `[expo-spm-plugin] paired runtime frameworks (${precompiledFrameworks.size}): ${[...precompiledFrameworks.keys()].join(', ') || '—'}`
   );
   console.log(
     `[expo-spm-plugin] source via checked-in manifest (${sourceManifest.length}): ${sourceManifest.join(', ') || '—'}`
@@ -240,7 +236,7 @@ module.exports = function expoSpmPlugin(context) {
     packageDependencies,
     productDependencies,
     generatedSources,
-    flavoredArtifacts,
+    flavoredFrameworks,
     watchPaths,
   };
 };

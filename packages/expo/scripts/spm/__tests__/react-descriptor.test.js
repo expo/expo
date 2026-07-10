@@ -9,14 +9,16 @@ const {
 const pathRef = {
   packageRef: { name: 'ReactNative', path: '/abs/react-native' },
   products: [
-    { name: 'React', package: 'ReactNative' },
+    { name: 'ReactHeaders', package: 'ReactNative' },
+    { name: 'ReactNativeHeaders', package: 'ReactNative' },
+    { name: 'ReactNativeDependenciesHeaders', package: 'ReactNative' },
     { name: 'ReactAppHeaders', package: 'React-GeneratedCode' },
   ],
 };
 
 const urlRef = {
   packageRef: { name: 'ReactNative', url: 'https://example/rn.git', version: '0.87.0' },
-  products: [{ name: 'React', package: 'ReactNative' }],
+  products: [{ name: 'ReactHeaders', package: 'ReactNative' }],
 };
 
 describe('reactPackageDependency', () => {
@@ -30,11 +32,12 @@ describe('reactPackageDependency', () => {
 });
 
 describe('reactProductDependencies', () => {
-  it('maps every product and appends hermes-engine from the packageRef package', () => {
+  it('maps exactly the invariant products supplied by RN', () => {
     expect(reactProductDependencies(pathRef)).toEqual([
-      '.product(name: "React", package: "ReactNative")',
+      '.product(name: "ReactHeaders", package: "ReactNative")',
+      '.product(name: "ReactNativeHeaders", package: "ReactNative")',
+      '.product(name: "ReactNativeDependenciesHeaders", package: "ReactNative")',
       '.product(name: "ReactAppHeaders", package: "React-GeneratedCode")',
-      '.product(name: "hermes-engine", package: "ReactNative")',
     ]);
   });
 });
