@@ -9,48 +9,34 @@ class SourceMapExplorerViewModel: ObservableObject {
   @Published var fileTree: [FileTreeNode] = []
   @Published var searchText: String = ""
 
-  private let service = SourceMapService()
-  private(set) var sourceMap: SourceMap?
+  private var flatFiles: [FileTreeNode] = []
 
   var filteredFileTree: [FileTreeNode] {
     guard !searchText.isEmpty else { return fileTree }
-    // When searching, flatten to show matching files directly
-    return findMatchingFiles(in: fileTree, searchText: searchText.lowercased())
+    let needle = searchText.lowercased()
+    return flatFiles.filter {
+      $0.searchableName.contains(needle) || $0.searchablePath.contains(needle)
+    }
   }
 
-  func loadSourceMap() async {
+  func loadSource() async {
     if case .loaded = loadingState { return }
 
+    guard let session = ProjectSourceSession.current else {
+      loadingState = .error(.noBundleURL)
+      return
+    }
     loadingState = .loading
 
     do {
-      let sourceMap = try await service.fetchSourceMap()
-      self.sourceMap = sourceMap
-      self.fileTree = await service.buildFileTree(from: sourceMap)
-      loadingState = .loaded(sourceMap)
+      let tree = try await session.loadSource()
+      self.fileTree = tree.rootNodes
+      self.flatFiles = tree.flatFiles
+      loadingState = .loaded
     } catch let error as SourceMapError {
       loadingState = .error(error)
     } catch {
       loadingState = .error(.networkError(error))
     }
-  }
-
-  /// Finds all matching files and returns them as a flat list with full paths
-  private func findMatchingFiles(in nodes: [FileTreeNode], searchText: String) -> [FileTreeNode] {
-    var results: [FileTreeNode] = []
-
-    for node in nodes {
-      if node.isDirectory {
-        // Recursively search children
-        results.append(contentsOf: findMatchingFiles(in: node.children, searchText: searchText))
-      } else {
-        // Check if file name or path matches
-        if node.searchableName.contains(searchText) || node.searchablePath.contains(searchText) {
-          results.append(node)
-        }
-      }
-    }
-
-    return results
   }
 }

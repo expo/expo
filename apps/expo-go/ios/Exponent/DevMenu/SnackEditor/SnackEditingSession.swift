@@ -13,9 +13,6 @@ import Combine
 public class SnackEditingSession: ObservableObject {
   public static let shared = SnackEditingSession()
 
-  /// Notification posted when session state changes (ready/cleared)
-  public static let sessionDidChangeNotification = Notification.Name("SnackEditingSessionDidChange")
-
   /// Notification posted when code has been edited
   public static let codeDidChangeNotification = Notification.Name("SnackEditingSessionCodeDidChange")
 
@@ -36,6 +33,9 @@ public class SnackEditingSession: ObservableObject {
   /// The lesson description if this is a lesson session
   @Published public private(set) var lessonDescription: String?
 
+  /// Whether the code has been edited since the session started
+  @Published public private(set) var hasBeenEdited: Bool = false
+
   // MARK: - Non-Published Properties (internal state)
 
   /// The current channel ID
@@ -52,7 +52,6 @@ public class SnackEditingSession: ObservableObject {
 
   /// MainActor mirrors of the transport's actor-isolated state
   private var mirroredFiles: [String: SnackFile]?
-  private var mirroredEdited = false
   private var transportEventsTask: Task<Void, Never>?
   private var firstFilesContinuation: CheckedContinuation<Void, Error>?
 
@@ -221,7 +220,7 @@ public class SnackEditingSession: ObservableObject {
     }
     guard let transport else { return false }
     mirroredFiles?[path] = SnackFile(path: path, contents: newContents, isAsset: false)
-    mirroredEdited = true
+    hasBeenEdited = true
     Task { await transport.sendFileUpdate(path: path, oldContents: oldContents, newContents: newContents) }
     return true
   }
@@ -239,7 +238,7 @@ public class SnackEditingSession: ObservableObject {
           self.firstFilesContinuation = nil
           NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
         case .edited:
-          self.mirroredEdited = true
+          self.hasBeenEdited = true
           NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
         case .stateChanged(let state):
           self.connectionState = state
@@ -255,16 +254,6 @@ public class SnackEditingSession: ObservableObject {
     }
     return mirroredFiles
   }
-
-  /// Whether the code has been edited since session started
-  public var hasBeenEdited: Bool {
-    if isEmbeddedSession {
-      return embeddedHasBeenEdited
-    }
-    return mirroredEdited
-  }
-
-  private var embeddedHasBeenEdited: Bool = false
 
   /// The display name for this snack, extracted from snackName or snackId
   public var displayName: String {
@@ -310,7 +299,7 @@ public class SnackEditingSession: ObservableObject {
     }
     transport = nil
     mirroredFiles = nil
-    mirroredEdited = false
+    hasBeenEdited = false
     connectionState = .disconnected
     channel = nil
     snackId = nil
@@ -321,7 +310,6 @@ public class SnackEditingSession: ObservableObject {
     SnackDirectTransport.isEmbeddedSessionAvailable = false
     embeddedFiles = nil
     embeddedDependencies = [:]
-    embeddedHasBeenEdited = false
 
     // Clear @Published properties - SwiftUI will batch these updates
     snackName = nil
@@ -330,8 +318,6 @@ public class SnackEditingSession: ObservableObject {
     lessonId = nil
     lessonDescription = nil
 
-    // Post notification for non-SwiftUI observers
-    NotificationCenter.default.post(name: Self.sessionDidChangeNotification, object: nil)
   }
 
   /// Checks if there's an active session for the given channel
@@ -382,8 +368,8 @@ public class SnackEditingSession: ObservableObject {
     }
 
     // Mark as edited and notify observers
-    if !embeddedHasBeenEdited {
-      embeddedHasBeenEdited = true
+    if !hasBeenEdited {
+      hasBeenEdited = true
       NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
     }
   }

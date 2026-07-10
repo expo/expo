@@ -2,15 +2,6 @@
 
 import Foundation
 
-/// Represents the parsed source map from Metro bundler
-struct SourceMap: Codable {
-  let version: Int
-  let sources: [String]
-  let sourcesContent: [String?]?
-  let mappings: String
-  let names: [String]
-}
-
 /// Represents a node in the file tree (file or directory)
 struct FileTreeNode: Identifiable, Hashable {
   var id: String { path }
@@ -18,17 +9,15 @@ struct FileTreeNode: Identifiable, Hashable {
   let path: String
   let isDirectory: Bool
   var children: [FileTreeNode]
-  let contentIndex: Int?
 
   let searchableName: String
   let searchablePath: String
 
-  init(name: String, path: String, isDirectory: Bool, children: [FileTreeNode] = [], contentIndex: Int? = nil) {
+  init(name: String, path: String, isDirectory: Bool, children: [FileTreeNode] = []) {
     self.name = name
     self.path = path
     self.isDirectory = isDirectory
     self.children = children
-    self.contentIndex = contentIndex
     self.searchableName = name.lowercased()
     self.searchablePath = path.lowercased()
   }
@@ -46,7 +35,7 @@ struct FileTreeNode: Identifiable, Hashable {
 enum SourceMapLoadingState {
   case idle
   case loading
-  case loaded(SourceMap)
+  case loaded
   case error(SourceMapError)
 }
 

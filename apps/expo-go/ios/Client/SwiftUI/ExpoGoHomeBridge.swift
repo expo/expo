@@ -60,6 +60,7 @@ import UIKit
       MainActor.assumeIsolated {
         SnackEditingSession.shared.clearSession()
         DevMenuManager.shared.isLessonLikeSession = false
+        ProjectSourceSession.begin()
       }
       EXKernel.sharedInstance().createNewApp(with: appUrl, initialProps: nil)
       completion(true, nil)
@@ -148,6 +149,7 @@ import UIKit
 
       // 3. Create the new app directly (not through linkingManager to avoid circular call)
       // The linking manager now routes through this bridge, so we call createNewApp directly.
+      ProjectSourceSession.begin()
       EXKernel.sharedInstance().createNewApp(with: appUrl, initialProps: nil)
       completion(true, nil)
     }

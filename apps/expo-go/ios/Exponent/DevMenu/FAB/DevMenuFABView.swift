@@ -182,8 +182,10 @@ struct DevMenuFABView: View {
   @State private var screenHeight: CGFloat = 0
   @State private var currentEdge: SnappedEdge = .right
   @State private var isPositioned = false  // Hide until initial position is set
-  @State private var hasBeenEdited = false  // Updated via notification since sessionClient isn't observable
+  @ObservedObject private var editingSession = SnackEditingSession.shared
   @State private var isLessonCompleted = false  // Updated manually since UserDefaults isn't observable
+
+  private var hasBeenEdited: Bool { editingSession.hasBeenEdited }
 
   // Convenience accessors from config
   private var snackName: String { config?.snackName ?? "" }
@@ -318,7 +320,6 @@ struct DevMenuFABView: View {
         }
 
         // Initialize non-observable state
-        hasBeenEdited = session.hasBeenEdited
         updateLessonCompletedState()
 
         let initialPos: CGPoint
@@ -375,12 +376,6 @@ struct DevMenuFABView: View {
         currentEdge = newPos.x < screenWidth / 2 ? .left : .right
       }
       .animation(isDragging ? dragSpring : FABConstants.snapAnimation, value: position)
-      // Listen for code changes since sessionClient.hasBeenEdited isn't directly observable
-      .onReceive(NotificationCenter.default.publisher(for: SnackEditingSession.codeDidChangeNotification)) { _ in
-        Task { @MainActor in
-          hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
-        }
-      }
     }
     .ignoresSafeArea()
   }

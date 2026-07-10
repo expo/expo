@@ -40,7 +40,6 @@ class DevMenuViewModel: ObservableObject {
     loadDevSettings()
     loadFloatingActionButtonState()
     updateSectionVisibility()
-    hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
   }
 
   /// True when running a lesson (vs a free-form snack)
@@ -200,20 +199,8 @@ class DevMenuViewModel: ObservableObject {
   }
 
   private func observeSnackEditingChanges() {
-    // Update hasBeenEdited when code changes
-    NotificationCenter.default.publisher(for: SnackEditingSession.codeDidChangeNotification)
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] _ in
-        self?.hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
-      }
-      .store(in: &cancellables)
-
-    // Reset hasBeenEdited when session changes (new snack opened)
-    NotificationCenter.default.publisher(for: SnackEditingSession.sessionDidChangeNotification)
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] _ in
-        self?.hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
-      }
-      .store(in: &cancellables)
+    // hasBeenEdited is @Published on the session; republish it directly
+    SnackEditingSession.shared.$hasBeenEdited
+      .assign(to: &$hasBeenEdited)
   }
 }

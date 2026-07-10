@@ -131,6 +131,7 @@ public class DevMenuManager: NSObject {
   @objc func goHome() {
     isNavigatingHome = true
     isLessonLikeSession = false
+    ProjectSourceSession.end()
     fabWindow?.setVisible(false, animated: false)
     EXKernel.sharedInstance().switchTasks()
   }
