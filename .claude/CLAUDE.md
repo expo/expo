@@ -69,7 +69,6 @@ after the existing entries: the order of changes sometimes matters.
 - `🐛 Bug fixes`: bug fixes and documentation clarifications.
 - `⚠️ Notices`: deprecations and corner-case behavior changes that stay backwards compatible.
 - `💡 Others`: internal changes, refactors, build tooling, routine work.
-- `📚 3rd party library updates`: upgrades of libraries shipped in Expo Go (root changelog only).
 
 ### Writing the entry
 
@@ -101,6 +100,11 @@ it: a silent mismatch leaves a dead link.
 ## Creating PRs
 
 Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTING.md and the PR template.
+
+The PR workflow relies on the GitHub CLI (`gh`). If it's not installed or authenticated, stop and
+ask the user to set it up (`gh auth login`); **DON'T** fall back to raw GitHub API requests or ask
+for tokens. As a last resort, the user can create the PR in the web UI and fix the changelog
+entry's PR link afterward.
 
 **Self-review:** before opening a non-trivial PR, and before adding the changelog entry, run
 `/deep-code-review` with no arguments (local mode: it reviews the branch against `main` and
