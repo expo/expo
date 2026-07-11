@@ -1,7 +1,7 @@
 ## Repository layout
 
 This is a pnpm workspace. Use `pnpm` for installing, running scripts, and managing dependencies;
-**NEVER** use `npm` or `yarn`. Run `pnpm install` at the repo root.
+**NEVER** use `npm` or `yarn`. Run `pnpm install` at the repo root (except for `docs/`, see below).
 
 - `packages/`: the Expo SDK packages, most with their own `CHANGELOG.md`.
 - `apps/`: development and test apps: `bare-expo` (manual testing of packages), `native-tests`
