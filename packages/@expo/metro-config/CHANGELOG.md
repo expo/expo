@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Recognize `windows` (react-native-windows) as an out-of-tree platform in the default Metro config, mirroring existing `tvos`/`macos` support: registers the `.windows.*` extension family and resolves the `react-native-windows` host package for `getPolyfills` ([#TBD](https://github.com/expo/expo/pull/TBD) by [@FaithfulAudio](https://github.com/FaithfulAudio))
+- Recognize `windows` (react-native-windows) as an out-of-tree platform in the default Metro config, mirroring existing `tvos`/`macos` support: registers the `.windows.*` extension family and resolves the `react-native-windows` host package for `getPolyfills` ([#47704](https://github.com/expo/expo/pull/47704) by [@FaithfulAudio](https://github.com/FaithfulAudio))
 
 ### 🐛 Bug fixes
 

@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Add experimental `windows` platform (react-native-windows) to the `tvos`/`macos` out-of-tree platform detection gated by `experiments.outOfTreePlatforms` ([#TBD](https://github.com/expo/expo/pull/TBD) by [@FaithfulAudio](https://github.com/FaithfulAudio))
+- Add experimental `windows` platform (react-native-windows) to the `tvos`/`macos` out-of-tree platform detection gated by `experiments.outOfTreePlatforms` ([#47704](https://github.com/expo/expo/pull/47704) by [@FaithfulAudio](https://github.com/FaithfulAudio))
 - Add experimental `tvos` and `macos` platforms gated by `expriments.outOfTreePlatforms` in config ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 - Update for `experiments.outOfTreePlatforms` typing ([#46497](https://github.com/expo/expo/pull/46497) by [@kitten](https://github.com/kitten))
 
