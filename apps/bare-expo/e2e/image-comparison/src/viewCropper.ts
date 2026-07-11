@@ -3,6 +3,7 @@ import Jimp from 'jimp-compact';
 
 import { MAESTRO_ENV_VARS } from '../../../scripts/lib/e2e-common';
 import { ScreenInspectorIOS } from '../inspector/ScreenInspectorIOS';
+import { resizeImage } from './resizeImage';
 
 interface Bounds {
   x: number;
@@ -230,22 +231,11 @@ export async function captureViewShotInProcess({
 
   const label = `Duration of capturing "${testID}" testID in-process via dylib`;
   console.time(label);
-
-  await Promise.race([
-    screenInspectorIOS.captureView(testID, viewShotPath),
-    new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('Dylib timeout')), timeoutMs)
-    ),
-  ]);
+  await screenInspectorIOS.captureView(testID, viewShotPath, timeoutMs);
   console.timeEnd(label);
 
   // The dylib writes the view at its exact bounds, so only resizing is left to do here.
-  if (resizingFactor !== 1) {
-    const image = await Jimp.read(viewShotPath);
-    const newWidth = Math.round(image.bitmap.width * resizingFactor);
-    const newHeight = Math.round(image.bitmap.height * resizingFactor);
-    await image.resize(newWidth, newHeight).writeAsync(viewShotPath);
-  }
+  await resizeImage(viewShotPath, resizingFactor);
 
   return {
     viewShotPath,

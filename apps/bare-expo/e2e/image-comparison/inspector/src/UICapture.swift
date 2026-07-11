@@ -39,6 +39,10 @@ extension ScreenInspector {
     // screenshot cropped to the view bounds shows. UIGraphicsImageRenderer defaults to the
     // screen scale, so the PNG comes out at the same pixel density as that crop too.
     let frameInWindow = element.convert(element.bounds, to: window)
+    guard !frameInWindow.isEmpty else {
+      return createErrorResponse(
+        "Element with accessibilityId '\(accessibilityId)' has a zero-sized frame; is it laid out and visible?")
+    }
     let renderer = UIGraphicsImageRenderer(bounds: frameInWindow)
     let image = renderer.image { _ in
       window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
