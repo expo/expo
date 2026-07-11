@@ -33,11 +33,9 @@ extension ScreenInspector {
       return createErrorResponse("Element with accessibilityId '\(accessibilityId)' is not attached to a window")
     }
 
-    // Render the whole window and let the renderer bounds crop to the element's frame:
-    // rendering the element alone would lose whatever the screen composites behind or over
-    // it (transparent backgrounds turn blank), while this matches what a full-screen
-    // screenshot cropped to the view bounds shows. UIGraphicsImageRenderer defaults to the
-    // screen scale, so the PNG comes out at the same pixel density as that crop too.
+    // Render the whole window cropped to the element's frame: an element-only render loses
+    // whatever the screen composites behind or over it (transparent backgrounds turn blank).
+    // The renderer defaults to the screen scale, so this matches a cropped screenshot.
     let frameInWindow = element.convert(element.bounds, to: window)
     guard !frameInWindow.isEmpty else {
       return createErrorResponse(
