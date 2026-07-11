@@ -42,8 +42,15 @@ extension ScreenInspector {
         "Element with accessibilityId '\(accessibilityId)' has a zero-sized frame; is it laid out and visible?")
     }
     let renderer = UIGraphicsImageRenderer(bounds: frameInWindow)
+    var didDraw = false
     let image = renderer.image { _ in
-      window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+      didDraw = window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+    }
+
+    guard didDraw else {
+      // Failing here beats returning the blank or stale image the renderer produced,
+      // which would only surface much later as an opaque image-diff mismatch.
+      return createErrorResponse("drawHierarchy failed for accessibilityId '\(accessibilityId)'")
     }
 
     guard let pngData = image.pngData() else {
