@@ -41,7 +41,7 @@ one package with `--packages <name>` (e.g. `et native-unit-tests -p ios --packag
 
 Before committing, you may use `turbo run <task>` to run an npm script for a given task on all dependents, for example `build`, `typecheck`, `depscheck`, `test`, and `lint`. This may also be run via `et check-packages <...packages>`, which matches how CI checks packages. Keep the loop fast by scoping it to the packages you changed, e.g. `et check-packages expo-location`, rather than running repo-wide tasks.
 
-The compiled `build/` output is gitignored and is **not** committed. Turborepo regenerates and caches it on demand. Stage only your source edits (and other source files); **NEVER** stage compiled `build/` output.
+The compiled `build/` output is gitignored and is **not** committed. Turborepo regenerates and caches it on demand.
 
 **Commit messages** use the format `[platform][api] Title`, e.g. `[ios][video] Fix black screen
 on older devices`. The API tag drops the `expo-` prefix: `[video]`, not `[expo-video]`.
