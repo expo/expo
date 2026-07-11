@@ -9,7 +9,8 @@ This is a pnpm workspace. Use `pnpm` for installing, running scripts, and managi
   (JS test suite), `expo-go` (the Expo Go app).
 - `tools/`: source of the `expotools` CLI (see the expotools section below).
 - `docs/`: the docs site (docs.expo.dev). It's a standalone pnpm project outside the workspace,
-  with its own lockfile: for docs work, run `pnpm install` inside `docs/` instead of at the root.
+  with its own lockfile: the root `pnpm install` doesn't cover it, so for docs work also run
+  `pnpm install` inside `docs/`.
 - `templates/`: project templates published to npm.
 - `guides/`: contributor guides referenced throughout this file.
 
@@ -30,11 +31,11 @@ Swift/Kotlin unit tests live in `packages/<pkg>/ios/Tests/` and `android/`, and 
 
 On iOS/macOS (Android needs no pod step), install pods before running native tests or building,
 and again after adding or changing an iOS `test_spec`. Run `pod install` directly in the relevant
-`apps/*/ios` or `apps/*/macos` directory rather than `et pod-install` — running it directly is
+`apps/*/ios` or `apps/*/macos` directory rather than `et pod-install`: running it directly is
 faster and avoids installing for apps you aren't working on, like Expo Go.
 
 Running native tests:
-`et native-unit-tests` — run native unit tests for all packages that provide them. Scope to
+`et native-unit-tests` runs native unit tests for all packages that provide them. Scope to
 one package with `--packages <name>` (e.g. `et native-unit-tests -p ios --packages @expo/ui`).
 
 ## Committing
@@ -53,7 +54,7 @@ on older devices`. The API tag drops the `expo-` prefix: `[video]`, not `[expo-v
 Most packages in `packages/` have their own `CHANGELOG.md`, and every PR that changes a package
 should add an entry to it. A PR that changes several packages adds an entry to each changed
 package's changelog. Changelogs exist only for packages: PRs limited to `apps/`, `docs/`,
-`tools/`, or `guides/` don't need an entry anywhere. See
+`templates/`, `tools/`, or `guides/` don't need an entry anywhere. See
 [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md)
 for the full guide.
 
@@ -132,11 +133,11 @@ changes (typo fixes, version bumps, formatting, mechanical renames).
 
 **Title:** same format as commit messages, `[platform][api] Title` (see Committing above).
 
-**PR description** follows the [repo PR template](https://github.com/expo/expo/blob/main/.github/PULL_REQUEST_TEMPLATE) — fill in each section:
+**PR description** follows the [repo PR template](https://github.com/expo/expo/blob/main/.github/PULL_REQUEST_TEMPLATE); fill in each section:
 
 - **Why:** the motivation for the change; link relevant issues, forum posts, or feature requests.
 - **How:** how you built the feature or fixed the bug, and why you took that approach.
-- **Test Plan:** how you tested the change and how a reviewer can reproduce it — include terminal
+- **Test Plan:** how you tested the change and how a reviewer can reproduce it; include terminal
   output or screenshots when there are no automated tests.
 - **Checklist:** added a `CHANGELOG.md` entry (see Changelogs above) and verified the change
   builds, type-checks, lints, and tests via `et check-packages`; confirmed the change works with
@@ -169,9 +170,9 @@ and more) run through it.
 
 Commands you'll reach for during normal development:
 
-- `et check-packages` — verify that packages build and their tests pass. Scope it by listing
+- `et check-packages`: verify that packages build and their tests pass. Scope it by listing
   package names, e.g. `et check-packages expo-location`.
-- `et add-changelog` — add a changelog entry to a package (see Changelogs above).
+- `et add-changelog`: add a changelog entry to a package (see Changelogs above).
 
 Run `et --help` to discover the rest (publishing, changelogs, on-call dashboards, and more).
 
