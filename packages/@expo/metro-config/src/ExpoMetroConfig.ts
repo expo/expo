@@ -65,6 +65,8 @@ function getReactNativeHostPackage(platform?: string | null): string {
       return 'react-native-tvos';
     case 'macos':
       return 'react-native-macos';
+    case 'windows':
+      return 'react-native-windows';
     default:
       return 'react-native';
   }
@@ -305,11 +307,17 @@ export function getDefaultConfig(
         android: ['react-native'],
         tvos: ['react-native'],
         macos: ['react-native'],
+        windows: ['react-native'],
         // This is removed for server platforms.
         web: ['browser'],
       },
       resolverMainFields: ['react-native', 'browser', 'main'],
-      platforms: ['ios', 'android', 'tvos', 'macos'],
+      // NOTE: `windows` (react-native-windows) is an out-of-tree platform, same as
+      // `tvos`/`macos` above -- listing it here only registers the `.windows.*`
+      // extension family with Metro's resolver. It stays inert (nothing to bundle)
+      // unless a project actually targets it; see `getReactNativeHostPackage` above
+      // and the `experiments.outOfTreePlatforms` gate in `@expo/config`.
+      platforms: ['ios', 'android', 'tvos', 'macos', 'windows'],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
           // Add default support for `expo-image` file types.

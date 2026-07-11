@@ -248,6 +248,8 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
  * - Alias `react-native` to `react-native-web` on web.
  * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
+ * - Alias `react-native` (and its submodules) to `react-native-windows` when targeting
+ *   the Windows out-of-tree platform and `react-native-windows` is installed.
  */
 export function withExtendedResolver(
   config: ConfigT,
@@ -280,6 +282,20 @@ export function withExtendedResolver(
   const isExpoRouterInstalled = hasExpoRouterModule(
     config.projectRoot,
     autolinkingModuleResolverInput
+  );
+
+  // react-native-windows is conventionally installed as an ADDITIONAL dependency
+  // alongside a real, un-aliased `react-native` package (unlike react-native-macos
+  // / react-native-tvos, which projects typically install by aliasing the
+  // `react-native` package name itself, e.g. `"react-native": "npm:react-native-
+  // macos@..."` in package.json -- so for those, resolving `react-native` from the
+  // project already resolves into the OOT package and Metro's default resolution
+  // just works). `react-native-windows` therefore needs an explicit bare-specifier
+  // redirect, gated on the package actually being installed so projects that don't
+  // target Windows see no behavior change. See `requestReactNativeWindowsRedirect`.
+  const hasReactNativeWindows = !!resolveFrom(
+    config.projectRoot,
+    'react-native-windows/package.json'
   );
 
   let _universalAliases: [RegExp, string][] | null;
@@ -493,6 +509,40 @@ export function withExtendedResolver(
         };
       }
       return null;
+    },
+
+    // Redirect bare `react-native` / `react-native/*` imports to `react-native-windows`
+    // when targeting the Windows out-of-tree platform. This is re-implementation (for
+    // Expo's resolver pipeline) of `@react-native/community-cli-plugin`'s
+    // `reactNativePlatformResolver`, which a standalone RNW app gets for free from
+    // `@react-native/community-cli-plugin`'s `loadMetroConfig`:
+    // https://github.com/facebook/react-native/blob/main/packages/community-cli-plugin/src/utils/metroPlatformResolver.js
+    // Without it, `import { Platform } from 'react-native'` resolves into RN core,
+    // whose backwards-compat `Libraries/Utilities/Platform.js` does `import Platform
+    // from './Platform'` -- with no `Platform.windows.js` in RN core that's a
+    // self-referencing circular import -> `undefined` -> `Cannot read property 'OS'
+    // of undefined` at boot. See `hasReactNativeWindows` above for why this platform
+    // needs an explicit redirect where `tvos`/`macos` don't.
+    function requestReactNativeWindowsRedirect(
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) {
+      if (
+        platform !== 'windows' ||
+        !hasReactNativeWindows ||
+        (moduleName !== 'react-native' && !moduleName.startsWith('react-native/'))
+      ) {
+        return null;
+      }
+      const hostPackage = getReactNativeHostPackage(platform)!;
+      const redirected =
+        moduleName === 'react-native'
+          ? hostPackage
+          : `${hostPackage}/${moduleName.slice('react-native/'.length)}`;
+      // Fall back to un-redirected resolution (e.g. a react-native submodule
+      // react-native-windows doesn't override) instead of failing outright.
+      return getOptionalResolver(context, platform)(redirected);
     },
 
     isTsconfigPathsEnabled

@@ -39,7 +39,14 @@ const KNOWN_STICKY_DEPENDENCIES = [
   '@react-navigation/native',
 ];
 
-const AUTOLINKING_PLATFORMS: readonly Platform[] = ['android', 'ios', 'web', 'tvos', 'macos'];
+const AUTOLINKING_PLATFORMS: readonly Platform[] = [
+  'android',
+  'ios',
+  'web',
+  'tvos',
+  'macos',
+  'windows',
+];
 
 export type AutolinkingPlatform = Platform;
 

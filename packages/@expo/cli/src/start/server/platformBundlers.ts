@@ -27,5 +27,6 @@ export function getPlatformBundlers(
     web,
     tvos: 'metro',
     macos: 'metro',
+    windows: 'metro',
   };
 }

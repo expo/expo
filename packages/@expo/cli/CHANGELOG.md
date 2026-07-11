@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- Add `windows` (react-native-windows) to the experimental out-of-tree platform resolver: registers the Metro platform, autolinking, and a `react-native` -> `react-native-windows` bare-specifier redirect gated on the package being installed ([#TBD](https://github.com/expo/expo/pull/TBD) by [@FaithfulAudio](https://github.com/FaithfulAudio))
 - Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
 - Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
 - Support Device Hub as Simulator replacement for Xcode 27+ ([#46757](https://github.com/expo/expo/pull/46757) by [@byCedric](https://github.com/byCedric), [@GersonRocha9](https://github.com/GersonRocha9))

@@ -68,6 +68,7 @@ export function getBareExtensions(
 const PLATFORM_EXTENSIONS: Record<string, readonly string[]> = {
   tvos: ['tvos', 'ios', 'native'],
   macos: ['macos', 'ios', 'native'],
+  windows: ['windows', 'native'],
 };
 
 /** Expand `extensions` with OOT platform extensions for platform */
