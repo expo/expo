@@ -86,7 +86,8 @@ after the existing entries: the order of changes sometimes matters.
   ```
 
 The PR number doesn't exist until the PR is opened, so predict it right before creating the PR:
-fetch the most recent issue and PR numbers and take `max + 1`.
+fetch the most recent issue and PR numbers with the GitHub CLI (see Creating PRs below for the
+`gh` requirement) and take `max + 1`.
 
 ```
 gh issue list -R expo/expo -L 1 --state all --json number
