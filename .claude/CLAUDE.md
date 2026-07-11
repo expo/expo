@@ -8,7 +8,8 @@ This is a pnpm workspace. Use `pnpm` for installing, running scripts, and managi
   (host app for native unit tests), `native-component-list` (component demos), `test-suite`
   (JS test suite), `expo-go` (the Expo Go app).
 - `tools/`: source of the `expotools` CLI (see the expotools section below).
-- `docs/`: the docs site (docs.expo.dev).
+- `docs/`: the docs site (docs.expo.dev). It's a standalone pnpm project outside the workspace,
+  with its own lockfile: for docs work, run `pnpm install` inside `docs/` instead of at the root.
 - `templates/`: project templates published to npm.
 - `guides/`: contributor guides referenced throughout this file.
 
