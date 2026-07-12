@@ -98,11 +98,21 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// exposing JavaScript heap memory directly. Use `withJSBytes(_:)` when you need
   /// scoped zero-copy access to the current JavaScript backing storage.
   public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
-    let storage = materializedNativeStorageOrFail()
-    guard let nativePointer = storage.nativePointer else {
-      preconditionFailure("ArrayBuffer storage should have been materialized before unsafe access")
+    switch storageBox.currentStorage() {
+    case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
+      return try body(UnsafeRawBufferPointer(start: nativeStorage.pointer, count: nativeStorage.byteLength))
+    case .javaScriptBacked(let view):
+      do {
+        let storage = try view.makeOwnedNativeStorageCopy()
+        defer { storage.cleanup() }
+        guard let nativePointer = storage.nativePointer else {
+          preconditionFailure("ArrayBuffer storage copy should be native-backed")
+        }
+        return try body(UnsafeRawBufferPointer(start: nativePointer, count: storage.byteLength))
+      } catch {
+        materializationFailure(error)
+      }
     }
-    return try body(UnsafeRawBufferPointer(start: nativePointer, count: storage.byteLength))
   }
 
   /// Provides mutable access to native-accessible bytes.
