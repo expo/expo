@@ -19,6 +19,7 @@
 ### 💡 Others
 
 - [iOS] Replace dev-menu swizzling and reflection into React Native internals with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
+- [macOS] Fix the macOS build breaking on the `RCTDevMenu.devMenuEnabled` and `keyboardShortcutsEnabled` properties, which react-native-macos doesn't yet expose. ([#47715](https://github.com/expo/expo/pull/47715) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.15 — 2026-05-26
 

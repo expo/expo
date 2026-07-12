@@ -132,9 +132,14 @@ class DevMenuViewModel: ObservableObject {
     }
 
     devMenuManager.closeMenu {
+// TODO: Remove the `devMenuEnabled` toggling once we bump react-native-macos to 0.86, which exposes this property.
+#if os(macOS)
+      rctDevMenu.show()
+#else
       rctDevMenu.devMenuEnabled = true
       rctDevMenu.show()
       rctDevMenu.devMenuEnabled = false
+#endif
     }
   }
 

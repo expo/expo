@@ -51,8 +51,11 @@ class DevMenuPackagerConnectionHandler {
 
   private func disableRnDevMenu(_ manager: DevMenuManager) {
     let rctDevMenu: RCTDevMenu? = manager.currentAppContext?.nativeModule(named: "RCTDevMenu")
+// TODO: Remove this once we bump react-native-macos to 0.86, which exposes these properties.
+#if !os(macOS)
     rctDevMenu?.devMenuEnabled = false
     rctDevMenu?.keyboardShortcutsEnabled = false
+#endif
     DevMenuKeyCommandsInterceptor.reinstall()
   }
 
