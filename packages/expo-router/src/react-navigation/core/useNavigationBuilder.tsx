@@ -14,12 +14,12 @@ import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
   type DefaultRouterOptions,
+  type InternalRouter,
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
   type PartialState,
   type Route,
-  type Router,
   type RouterConfigOptions,
   type RouterFactory,
 } from '../routers';
@@ -56,12 +56,10 @@ import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useLazyValue } from './useLazyValue';
 import { useNavigationHelpers } from './useNavigationHelpers';
 import { NavigationStateListenerProvider } from './useNavigationState';
-import { useOnAction } from './useOnAction';
 import { useOnGetState } from './useOnGetState';
-import { shouldPreventRemove } from './useOnPreventRemove';
-import { useOnRouteFocus } from './useOnRouteFocus';
+import { shouldPreventRemove, useOnPreventRemove } from './useOnPreventRemove';
 import { useRegisterNavigator } from './useRegisterNavigator';
-import { useScheduleUpdate } from './useScheduleUpdate';
+import { useStoreSlice } from './useStoreSlice';
 
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -398,7 +396,7 @@ export function useNavigationBuilder<
 
   const routeConfigs = getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(children);
 
-  const router = useLazyValue<Router<State, any>>(() => {
+  const router = useLazyValue<InternalRouter<State, any>>(() => {
     if (
       rest.initialRouteName != null &&
       routeConfigs.every((config) => config.props.name !== rest.initialRouteName)
@@ -408,7 +406,7 @@ export function useNavigationBuilder<
       );
     }
 
-    const original = createRouter(rest as unknown as RouterOptions);
+    const original = createRouter(rest as unknown as RouterOptions) as InternalRouter<State, any>;
 
     if (UNSTABLE_router != null) {
       const overrides = UNSTABLE_router(original);
@@ -635,11 +633,14 @@ export function useNavigationBuilder<
     setUnhandledState(stateBeforeInitialization);
   }
 
-  let state =
+  const contextState =
     // If the state isn't initialized, or stale, use the state we initialized instead
     // The state won't update until there's a change needed in the state we have initialized locally
     // So it'll be `undefined` or stale until the first navigation event happens
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
+
+  const storeSlice = useStoreSlice(contextState?.key);
+  let state = (storeSlice ?? contextState) as State;
 
   let nextState: State = state;
 
@@ -729,9 +730,8 @@ export function useNavigationBuilder<
 
   const shouldUpdate = state !== nextState;
 
-  useScheduleUpdate(() => {
+  useClientLayoutEffect(() => {
     if (shouldUpdate) {
-      // Schedule an update if the state needs to be updated
       setState(nextState);
     }
   });
@@ -776,19 +776,6 @@ export function useNavigationBuilder<
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // In some cases (e.g. route names change), internal state might have changed
-  // But it hasn't been committed yet, so hasn't propagated to the sync external store
-  // During this time, we need to return the internal state in `getState`
-  // Otherwise it can result in inconsistent state during render in children
-  // To avoid this, we use a ref for render phase, and immediately clear it on commit
-  const stateRef = React.useRef<State | null>(state);
-
-  stateRef.current = state;
-
-  useClientLayoutEffect(() => {
-    stateRef.current = null;
-  });
 
   const getState = useLatestCallback((): State => {
     const currentState = getCurrentState();
@@ -1012,22 +999,52 @@ export function useNavigationBuilder<
     }
   });
 
-  const onAction = useOnAction({
-    router,
+  useOnPreventRemove({
     getState,
-    setState,
-    key: route?.key,
-    actionListeners: childListeners.action,
-    beforeRemoveListeners: keyedListeners.beforeRemove,
-    routerConfigOptions,
     emitter,
+    beforeRemoveListeners: keyedListeners.beforeRemove,
   });
 
-  const onRouteFocus = useOnRouteFocus({
-    router,
-    key: route?.key,
-    getState,
-    setState,
+  const onAction = useLatestCallback((action: NavigationAction) => {
+    const handled =
+      dispatchRoot?.(action, {
+        originKey: state.key,
+        suppressUnhandled: true,
+      }) ?? false;
+
+    if (handled) {
+      return true;
+    }
+
+    if (action.type === 'PRELOAD' || action.target == null || action.target === state.key) {
+      const result = router.getStateForAction(state, action, latestConfigRef.current);
+
+      if (result != null && result !== state) {
+        const isPrevented = shouldPreventRemove(
+          emitter,
+          keyedListeners.beforeRemove,
+          state.routes,
+          result.routes,
+          action
+        );
+
+        if (!isPrevented) {
+          setState(result);
+        }
+      }
+
+      return result != null;
+    }
+
+    return false;
+  });
+
+  const onRouteFocus = useLatestCallback((key: string) => {
+    const result = router.getStateForRouteFocus(state, key);
+
+    if (result !== state) {
+      setState(result);
+    }
   });
 
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
@@ -1037,7 +1054,6 @@ export function useNavigationBuilder<
     getState,
     emitter,
     router,
-    stateRef,
     dispatchRoot,
   });
 

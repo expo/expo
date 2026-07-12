@@ -88,11 +88,9 @@ describe('Native Bottom Tabs Navigation', () => {
       hidden: () => <View testID="hidden" />,
       notSpecified: () => <View testID="not-specified" />,
     });
-    // The seeded routeNames include the non-trigger `notSpecified`, so on mount the navigator
-    // repairs to the trigger-only list (getStateForRouteNamesChange, Steps 6/10 boundary),
-    // dropping the preloaded tab; the self-healing preload re-adds it in one extra pass:
-    // 2 visible tabs x 3 passes.
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
+    // The Step 11 committed-slice read path keeps the trigger-only repair before eager preload:
+    // 2 visible tabs x 2 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expectIndexTabFocused();
     TabsScreen.mockClear();
   });

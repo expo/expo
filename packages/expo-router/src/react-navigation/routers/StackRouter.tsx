@@ -10,12 +10,12 @@ import {
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
+  InternalRouter,
   NavigationRoute,
   NavigationState,
   ParamListBase,
   PartialState,
   Route,
-  Router,
 } from './types';
 
 export type StackActionType =
@@ -210,7 +210,7 @@ export function getRoutesForRouteNames(
  * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
  */
 export function StackRouter(options: StackRouterOptions) {
-  const router: Router<
+  const router: InternalRouter<
     StackNavigationState<ParamListBase>,
     CommonNavigationAction | StackActionType
   > = {

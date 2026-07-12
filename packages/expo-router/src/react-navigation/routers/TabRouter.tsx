@@ -10,11 +10,11 @@ import {
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
+  InternalRouter,
   NavigationState,
   ParamListBase,
   PartialState,
   Route,
-  Router,
 } from './types';
 
 export type TabActionType =
@@ -240,7 +240,7 @@ export const pruneReplacedRoute = (
 // TODO(@ubax): unify the logic into single router instead of BaseTabRouter and override
 // TODO(@ubax): add REPLACE action to CommonAction type and handle it in all routers
 function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRouterOptions) {
-  const router: Router<
+  const router: InternalRouter<
     TabNavigationState<ParamListBase>,
     TabActionType | CommonNavigationAction
   > = {
@@ -673,7 +673,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
  */
 export function TabRouter(
   args: TabRouterOptions
-): Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction> {
+): InternalRouter<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction> {
   const base = BaseTabRouter(args);
   return {
     ...base,

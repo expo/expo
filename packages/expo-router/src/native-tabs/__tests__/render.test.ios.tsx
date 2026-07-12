@@ -129,9 +129,9 @@ describe('Tabs visibility', () => {
     expect(screen.queryByTestId('third')).toBeNull();
     expect(screen.queryByTestId('fourth')).toBeNull();
     expect(screen.getByTestId('fifth')).toBeVisible();
-    // Route-name reconciliation now lands through the root reducer before eager preload runs, so
-    // the visible tabs render in the initial pass plus the preload pass: 3 tabs x 2 passes.
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
+    // Store-slice reads add a committed-slice pass before eager preload self-heals hidden triggers:
+    // 3 visible tabs x 3 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(9);
   });
 
   it('does not render tabs, when route does not exist', () => {
@@ -235,8 +235,8 @@ describe('First focused tab', () => {
       expect(screen.getByTestId('first')).toBeVisible();
       expect(screen.getByTestId('second')).toBeVisible();
       expect(screen.queryByTestId('index')).toBeNull();
-      // extra pass: seeded mount re-preloads (self-heal)
-      expect(NativeTabsView).toHaveBeenCalledTimes(3);
+      // The Step 11 committed-slice read path avoids the old seeded re-preload pass here.
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
     });
   });
 

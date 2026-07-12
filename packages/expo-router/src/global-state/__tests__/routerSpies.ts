@@ -1,4 +1,4 @@
-import type { NavigationState, ParamListBase, Router } from '../../react-navigation/routers';
+import type { InternalRouter, NavigationState, ParamListBase } from '../../react-navigation/routers';
 
 // Shared recorder for the router "repair" methods that rebuild a navigator's slice at render time.
 //
@@ -16,7 +16,7 @@ import type { NavigationState, ParamListBase, Router } from '../../react-navigat
 
 type AnyRouterState = NavigationState<ParamListBase>;
 // The concrete router options/actions differ per navigator; the wrapper is agnostic to them.
-type AnyRouter = Router<AnyRouterState, { type: string }>;
+type AnyRouter = InternalRouter<AnyRouterState, { type: string }>;
 type AnyRouterFactory = (options: never) => AnyRouter;
 
 export type MethodCall = {

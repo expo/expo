@@ -137,52 +137,6 @@ export type RouterConfigOptions = {
 
 export type Router<State extends NavigationState, Action extends NavigationAction> = {
   /**
-   * Initialize the navigation state.
-   *
-   * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
-   */
-  getInitialState(options: RouterConfigOptions): State;
-
-  /**
-   * Rehydrate the full navigation state from a given partial state.
-   *
-   * @param partialState Navigation state to rehydrate from.
-   * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
-   */
-  getRehydratedState(
-    partialState: PartialState<State> | State,
-    options: RouterConfigOptions
-  ): State;
-
-  /**
-   * Take the current state and updated list of route names, and return a new state.
-   *
-   * @param state State object to update.
-   * @param options.routeNames New list of route names.
-   * @param options.routeParamsList Object containing params for each route.
-   */
-  getStateForRouteNamesChange(
-    state: State,
-    options: RouterConfigOptions & {
-      /**
-       * List of routes whose key has changed even if they still have the same name.
-       * This allows to remove screens declaratively.
-       */
-      routeKeyChanges: string[];
-    }
-  ): State;
-
-  /**
-   * Take the current state and key of a route, and return a new state with the route focused
-   *
-   * @param state State object to apply the action on.
-   * @param key Key of the route to focus.
-   */
-  getStateForRouteFocus(state: State, key: string): State;
-
-  /**
    * Take the current state and action, and return a new state.
    * If the action cannot be handled, return `null`.
    *
@@ -198,14 +152,45 @@ export type Router<State extends NavigationState, Action extends NavigationActio
   ): State | PartialState<State> | null;
 
   /**
-   * Whether the action should also change focus in parent navigator
-   *
-   * @param action Action object to check.
-   */
-  shouldActionChangeFocus(action: NavigationAction): boolean;
-
-  /**
    * Action creators for the router.
    */
   actionCreators?: ActionCreators<Action>;
+};
+
+export type InternalRouter<State extends NavigationState, Action extends NavigationAction> = Router<
+  State,
+  Action
+> & {
+  /**
+   * Initialize the navigation state.
+   */
+  getInitialState: (options: RouterConfigOptions) => State;
+
+  /**
+   * Rehydrate the full navigation state from a given partial state.
+   */
+  getRehydratedState: (
+    partialState: PartialState<State> | State,
+    options: RouterConfigOptions
+  ) => State;
+
+  /**
+   * Take the current state and updated list of route names, and return a new state.
+   */
+  getStateForRouteNamesChange: (
+    state: State,
+    options: RouterConfigOptions & {
+      routeKeyChanges: string[];
+    }
+  ) => State;
+
+  /**
+   * Take the current state and key of a route, and return a new state with the route focused.
+   */
+  getStateForRouteFocus: (state: State, key: string) => State;
+
+  /**
+   * Whether the action should also change focus in parent navigator.
+   */
+  shouldActionChangeFocus(action: NavigationAction): boolean;
 };

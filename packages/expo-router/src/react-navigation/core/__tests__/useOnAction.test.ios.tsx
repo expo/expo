@@ -5,7 +5,7 @@ import {
   type DefaultRouterOptions,
   type NavigationState,
   type ParamListBase,
-  type Router,
+  type InternalRouter,
   StackActions,
   StackRouter,
 } from '../../routers';
@@ -46,7 +46,7 @@ beforeEach(() => {
 test('does not use local bubbling before the root reducer is initialized', () => {
   function CurrentRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const ParentRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
+    const ParentRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       getStateForAction(state, action, options) {
@@ -114,7 +114,7 @@ test("does not down-bubble actions with navigationInChildEnabled on the root red
 
   function CurrentChildRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const ChildRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
+    const ChildRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       shouldActionChangeFocus() {
@@ -279,7 +279,7 @@ test("does not down-bubble NAVIGATE_DEPRECATED on the root reducer path", () => 
 test('does not use target parent bubbling before the root reducer is initialized', () => {
   function CurrentTestRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const TestRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
+    const TestRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       shouldActionChangeFocus() {
@@ -373,7 +373,7 @@ test('does not use target parent bubbling before the root reducer is initialized
 test('action goes to correct child navigator if target is specified', () => {
   function CurrentTestRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const TestRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
+    const TestRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       shouldActionChangeFocus() {
@@ -491,7 +491,7 @@ test("action doesn't bubble if target is specified", () => {
 
   function CurrentChildRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const ChildRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
+    const ChildRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       shouldActionChangeFocus() {

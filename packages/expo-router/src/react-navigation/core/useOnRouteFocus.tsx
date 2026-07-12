@@ -2,11 +2,11 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import type { NavigationAction, NavigationState, Router } from '../routers';
+import type { InternalRouter, NavigationAction, NavigationState } from '../routers';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 
 type Options<State extends NavigationState, Action extends NavigationAction> = {
-  router: Router<State, Action>;
+  router: InternalRouter<State, Action>;
   getState: () => State;
   setState: (state: State) => void;
   key?: string;

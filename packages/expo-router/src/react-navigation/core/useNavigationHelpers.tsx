@@ -26,7 +26,6 @@ type Options<State extends NavigationState, Action extends NavigationAction> = {
   getState: () => State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
-  stateRef: React.RefObject<State | null>;
   dispatchRoot?: DispatchRoot;
 };
 
@@ -46,7 +45,6 @@ export function useNavigationHelpers<
   getState,
   emitter,
   router,
-  stateRef,
   dispatchRoot,
 }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
@@ -58,9 +56,9 @@ export function useNavigationHelpers<
 
       if (dispatchRoot) {
         // TODO(Step 8): This root-reducer path intentionally does not reproduce the old
-        // `NAVIGATE_DEPRECATED` / `navigationInChildEnabled` down-bubbling fallback from
-        // `useOnAction`. If a real consumer depends on that legacy child search, reintroduce it at
-        // the dispatch boundary deliberately.
+        // `NAVIGATE_DEPRECATED` / `navigationInChildEnabled` down-bubbling fallback. If a real
+        // consumer depends on that legacy child search, reintroduce it at the dispatch boundary
+        // deliberately.
         let isRootNotInitialized = false;
         let isOriginMissing = false;
         const mayFallbackLocally = action.type === 'PRELOAD' || action.target == null;
@@ -169,15 +167,6 @@ export function useNavigationHelpers<
         return parentNavigationHelpers;
       },
       getState: (): State => {
-        // FIXME: Workaround for when the state is read during render
-        // By this time, we haven't committed the new state yet
-        // Without this `useSyncExternalStore` will keep reading the old state
-        // This may result in `useNavigationState` or `useIsFocused` returning wrong values
-        // Apart from `useSyncExternalStore`, `getState` should never be called during render
-        if (stateRef.current != null) {
-          return stateRef.current;
-        }
-
         return getState();
       },
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
@@ -191,7 +180,6 @@ export function useNavigationHelpers<
     onAction,
     onUnhandledAction,
     navigatorId,
-    stateRef,
     dispatchRoot,
   ]);
 }

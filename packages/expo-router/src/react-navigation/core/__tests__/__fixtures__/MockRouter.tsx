@@ -2,9 +2,9 @@ import {
   BaseRouter,
   type CommonNavigationAction,
   type DefaultRouterOptions,
+  type InternalRouter,
   type NavigationState,
   type Route,
-  type Router,
 } from '../../../routers';
 
 export type MockActions = CommonNavigationAction | { type: 'NOOP' | 'UPDATE' };
@@ -12,7 +12,7 @@ export type MockActions = CommonNavigationAction | { type: 'NOOP' | 'UPDATE' };
 export const MockRouterKey = { current: 0 };
 
 export function MockRouter(options: DefaultRouterOptions) {
-  const router: Router<NavigationState, MockActions> = {
+  const router: InternalRouter<NavigationState, MockActions> = {
     getInitialState({ routeNames, routeParamList }) {
       const index =
         options.initialRouteName === undefined ? 0 : routeNames.indexOf(options.initialRouteName);

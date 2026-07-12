@@ -1,7 +1,7 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import type { NavigationState, Router } from '../../routers';
+import type { InternalRouter, NavigationState } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
@@ -293,7 +293,7 @@ test('fires focus and blur events in nested navigator', () => {
 });
 
 test('fires blur event when a route is removed with a delay', async () => {
-  const TestRouter = (options: any): Router<NavigationState, any> => {
+  const TestRouter = (options: any): InternalRouter<NavigationState, any> => {
     const router = MockRouter(options);
 
     return {

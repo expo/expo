@@ -469,7 +469,9 @@ describe('Stack nested in Tabs render counts', () => {
     expect(layoutRender).toHaveBeenCalledTimes(1);
     expect(homeTabRender).toHaveBeenCalledTimes(2);
     expect(indexMount).toHaveBeenCalledTimes(1);
-    expect(indexRender).toHaveBeenCalledTimes(3);
+    // The committed store-slice read adds one render of the active nested stack screen on pathname
+    // changes, while preserving mount stability.
+    expect(indexRender).toHaveBeenCalledTimes(4);
     expect(twoRender).toHaveBeenCalledTimes(2);
     expect(otherRender).toHaveBeenCalledTimes(1);
     expect(router.canGoBack()).toBe(true);

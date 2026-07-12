@@ -5,7 +5,7 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import type { CommonNavigationAction, ParamListBase, Router } from './types';
+import type { CommonNavigationAction, InternalRouter, ParamListBase } from './types';
 
 export type DrawerStatus = 'open' | 'closed';
 
@@ -29,8 +29,8 @@ export type DrawerActionHelpers<ParamList extends ParamListBase> = TabActionHelp
  */
 export function DrawerRouter(
   options: DrawerRouterOptions
-): Router<DrawerNavigationState<ParamListBase>, DrawerActionType | CommonNavigationAction> {
-  return TabRouter(options) as unknown as Router<
+): InternalRouter<DrawerNavigationState<ParamListBase>, DrawerActionType | CommonNavigationAction> {
+  return TabRouter(options) as unknown as InternalRouter<
     DrawerNavigationState<ParamListBase>,
     DrawerActionType | CommonNavigationAction
   >;
