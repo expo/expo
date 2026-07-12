@@ -166,6 +166,15 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       ? api.caller(getBabelRuntimeVersion)
       : platformOptions.enableBabelRuntime;
 
+  // Whether the engine preset selected below already compiles class features (class
+  // properties, private methods): `hermes-v0` and the webview preset do, while the
+  // `hermes-v1` and web presets preserve them natively.
+  const engineSuppliesClassFeatures =
+    isDomComponent ||
+    (!isModernEngine &&
+      platformOptions.unstable_transformProfile !== 'hermes-stable' &&
+      platformOptions.unstable_transformProfile !== 'hermes-canary');
+
   // Compute config fragments from helper modules to compose into the presets below.
   const flowFragment = getFlowConfig({ disableFlowStripTypesTransform: false });
   const tsFragment = getTypeScriptConfig();
@@ -226,6 +235,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           inlineEnvironmentVariables,
           disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
           decorators: platformOptions.decorators,
+          needsClassFeaturesForDecorators: !engineSuppliesClassFeatures,
           reanimated: platformOptions.reanimated,
           worklets: platformOptions.worklets,
           expoUi: platformOptions.expoUi,

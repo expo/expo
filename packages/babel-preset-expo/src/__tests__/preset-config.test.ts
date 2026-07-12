@@ -128,6 +128,9 @@ describe('plugin list snapshots', () => {
         "expo-widgets",
         "expo-import-meta-transform",
         "expo-lazy-decorators",
+        "expo-lazy-class-properties",
+        "expo-lazy-private-methods",
+        "expo-lazy-private-property-in-object",
         "worklets",
         "expo-ui",
         "warn-on-deep-imports",
@@ -177,6 +180,9 @@ describe('plugin list snapshots', () => {
         "expo-widgets",
         "expo-import-meta-transform",
         "expo-lazy-decorators",
+        "expo-lazy-class-properties",
+        "expo-lazy-private-methods",
+        "expo-lazy-private-property-in-object",
         "worklets",
         "expo-ui",
         "transform-react-jsx",
@@ -221,6 +227,9 @@ describe('plugin list snapshots', () => {
         "expo-widgets",
         "expo-import-meta-transform",
         "expo-lazy-decorators",
+        "expo-lazy-class-properties",
+        "expo-lazy-private-methods",
+        "expo-lazy-private-property-in-object",
         "worklets",
         "expo-ui",
         "warn-on-deep-imports",
@@ -237,7 +246,11 @@ describe('plugin list snapshots', () => {
   });
 
   it('web, prod', () => {
-    const keys = getPluginKeys({ name: 'metro', platform: 'web', isDev: false });
+    const keys = getPluginKeys({
+      name: 'metro',
+      platform: 'web',
+      isDev: false,
+    });
     expect(keys).toMatchInlineSnapshot(`
       [
         "syntax-hermes-parser",
@@ -263,6 +276,9 @@ describe('plugin list snapshots', () => {
         "expo-widgets",
         "expo-import-meta-transform",
         "expo-lazy-decorators",
+        "expo-lazy-class-properties",
+        "expo-lazy-private-methods",
+        "expo-lazy-private-property-in-object",
         "worklets",
         "expo-ui",
         "transform-react-jsx",
@@ -307,6 +323,9 @@ describe('plugin list snapshots', () => {
         "expo-widgets",
         "expo-import-meta-transform",
         "expo-lazy-decorators",
+        "expo-lazy-class-properties",
+        "expo-lazy-private-methods",
+        "expo-lazy-private-property-in-object",
         "worklets",
         "expo-ui",
         "warn-on-deep-imports",
@@ -353,6 +372,9 @@ describe('plugin list snapshots', () => {
         "expo-widgets",
         "expo-import-meta-transform",
         "expo-lazy-decorators",
+        "expo-lazy-class-properties",
+        "expo-lazy-private-methods",
+        "expo-lazy-private-property-in-object",
         "worklets",
         "expo-ui",
         "warn-on-deep-imports",
@@ -530,7 +552,11 @@ describe('disableDeepImportWarnings', () => {
   });
 
   it('excludes warn-on-deep-imports in prod', () => {
-    const keys = getPluginKeys({ name: 'metro', platform: 'ios', isDev: false });
+    const keys = getPluginKeys({
+      name: 'metro',
+      platform: 'ios',
+      isDev: false,
+    });
     expect(keys).not.toContain('warn-on-deep-imports');
   });
 });
@@ -549,7 +575,12 @@ describe('engine-driven plugins', () => {
   });
 
   it('does not add transform-object-rest-spread for hermes engine', () => {
-    const keys = getPluginKeys({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true });
+    const keys = getPluginKeys({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: true,
+    });
     expect(keys).not.toContain('transform-object-rest-spread');
   });
 
@@ -559,12 +590,22 @@ describe('engine-driven plugins', () => {
   });
 
   it('does not add transform-parameters for hermes engine (hermes-v1)', () => {
-    const keys = getPluginKeys({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true });
+    const keys = getPluginKeys({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: true,
+    });
     expect(keys).not.toContain('transform-parameters');
   });
 
   it('adds transform-class-static-block for hermes on native', () => {
-    const keys = getPluginKeys({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true });
+    const keys = getPluginKeys({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: true,
+    });
     expect(keys).toContain('transform-class-static-block');
   });
 });
@@ -720,7 +761,11 @@ describe('server environment', () => {
 
 describe('jsx', () => {
   it('uses production jsx transform', () => {
-    const keys = getPluginKeys({ name: 'metro', platform: 'ios', isDev: false });
+    const keys = getPluginKeys({
+      name: 'metro',
+      platform: 'ios',
+      isDev: false,
+    });
     expect(keys).toContain('transform-react-jsx');
     expect(keys).not.toContain('transform-react-jsx/development');
   });
