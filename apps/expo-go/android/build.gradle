@@ -5,11 +5,11 @@ buildscript {
   ext {
     minSdkVersion = 24
     targetSdkVersion = 36
-    compileSdkVersion = 36
+    compileSdkVersion = 37
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '36.0.0'
-    kotlinVersion = "2.1.20"
+    buildToolsVersion = '37.0.0'
+    kotlinVersion = "2.2.0"
     kspVersion = "2.1.20-2.0.1"
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
