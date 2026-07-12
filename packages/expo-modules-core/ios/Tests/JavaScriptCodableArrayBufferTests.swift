@@ -153,12 +153,12 @@ struct JavaScriptCodableArrayBufferTests {
   // MARK: - Empty and wide-element buffers
 
   @Test
-  func `decodes an empty ArrayBuffer`() throws {
-    // A zero-length buffer short-circuits the borrow/copy logic; it must not touch a base address.
+  func `decodes an empty JS ArrayBuffer without materializing it`() throws {
+    // Keep JavaScript backing so a full-range decode/encode round trip preserves JS identity.
     let runtime = try runtime
     let decoded = try ArrayBuffer.decode(runtime.eval("new Uint8Array([]).buffer"), in: runtime)
     #expect(decoded.byteLength == 0)
-    #expect(decoded.isNativeBacked == true)
+    #expect(decoded.isNativeBacked == false)
   }
 
   @Test
