@@ -209,7 +209,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   func asJavaScriptArrayBuffer(runtime: JavaScriptRuntime) -> JavaScriptArrayBuffer {
     switch storageBox.currentStorage() {
     case .javaScriptBacked(let view):
-      if runtime.isOnJavaScriptThread() || ProcessInfo.processInfo.processName == "xctest",
+      if runtime.isOnJavaScriptThread(),
         let arrayBuffer = JavaScriptActor.assumeIsolated({ view.asJavaScriptArrayBuffer(runtime: runtime) })
       {
         return arrayBuffer
