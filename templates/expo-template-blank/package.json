@@ -2,12 +2,7 @@
   "name": "expo-template-blank",
   "description": "The Blank project template includes the minimum dependencies to run and an empty root component.",
   "license": "0BSD",
-  "version": "57.0.11",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "templates/expo-template-blank"
-  },
+  "version": "56.0.19",
   "main": "index.js",
   "scripts": {
     "start": "expo start",
@@ -16,9 +11,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~57.0.9",
-    "expo-status-bar": "~57.0.1",
+    "expo": "~56.0.5",
+    "expo-status-bar": "~56.0.4",
     "react": "19.2.3",
-    "react-native": "0.86.2"
+    "react-native": "0.87.0-rc.0"
   }
 }
