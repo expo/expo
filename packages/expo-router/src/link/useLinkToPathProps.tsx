@@ -39,6 +39,10 @@ type UseLinkToPathPropsOptions = LinkToOptions & {
 
 export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPropsOptions) {
   const onPress = (event?: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
+    if (shouldLinkExternally(href)) {
+      return;
+    }
+
     if (shouldHandleMouseEvent(event)) {
       if (emitDomLinkEvent(href, options)) {
         return;
