@@ -57,15 +57,20 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
 
   @JavaScriptActor
   func call(_ appContext: AppContext, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) async throws -> JavaScriptValue {
+    let argumentsTuple: Args
     do {
-      try validateArgumentsNumber(function: self, received: arguments.count)
+      argumentsTuple = try decodeArguments(appContext: appContext, this: this, arguments: arguments)
+    } catch let error as Exception {
+      throw FunctionCallException(name).causedBy(error)
+    } catch {
+      throw UnexpectedException(error)
+    }
+    return try await call(appContext, argumentsTuple: argumentsTuple)
+  }
 
-      // Arguments must be converted on the JS thread, before we jump to another thread.
-      let nativeArguments = try toNativeClosureArguments(converter: appContext.converter, fn: self, this: this, arguments: arguments)
-
-      guard let argumentsTuple: Args = try Conversions.toTuple(nativeArguments) else {
-        throw ArgumentConversionException()
-      }
+  @JavaScriptActor
+  private func call(_ appContext: AppContext, argumentsTuple: sending Args) async throws -> JavaScriptValue {
+    do {
       // Safe to mark as nonisolated(unsafe) — the tuple contains fully converted native values
       // with no references back to JS objects, so it can safely cross the actor boundary.
       nonisolated(unsafe) let nonisolatedArgumentsTuple = argumentsTuple
@@ -90,15 +95,56 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
 
   @JavaScriptActor
   func build(appContext: AppContext) throws -> JavaScriptObject {
-    return try appContext.runtime.createAsyncFunction(name) { [weak appContext, self] this, arguments in
+    return try appContext.runtime.createFunction(name) { [weak appContext, self] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
-      return try await self.call(appContext, this: this, arguments: arguments)
+
+      let runtime = try appContext.runtime
+      let promise = try JavaScriptPromise(runtime)
+      let argumentsTuple: Args
+
+      do {
+        argumentsTuple = try self.decodeArguments(appContext: appContext, this: this, arguments: arguments)
+      } catch let error as Exception {
+        promise.reject(FunctionCallException(self.name).causedBy(error))
+        return promise.asValue()
+      } catch {
+        promise.reject(UnexpectedException(error))
+        return promise.asValue()
+      }
+
+      runtime.schedule {
+        do {
+          let result = try await self.call(appContext, argumentsTuple: argumentsTuple)
+          promise.resolve(result)
+        } catch {
+          promise.reject(error)
+        }
+      }
+
+      return promise.asValue()
     }.asObject()
   }
 
   // MARK: - Privates
+
+  @JavaScriptActor
+  private func decodeArguments(
+    appContext: AppContext,
+    this: JavaScriptValue,
+    arguments: consuming JavaScriptValuesBuffer
+  ) throws -> Args {
+    try validateArgumentsNumber(function: self, received: arguments.count)
+
+    let nativeArguments = try toNativeClosureArguments(converter: appContext.converter, fn: self, this: this, arguments: arguments)
+
+    guard let argumentsTuple: Args = try Conversions.toTuple(nativeArguments) else {
+      throw ArgumentConversionException()
+    }
+
+    return argumentsTuple
+  }
 
   @MainActor
   private func callBodyOnMainActor(_ args: sending Args) async throws -> sending ReturnType {
