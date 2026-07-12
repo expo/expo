@@ -102,10 +102,9 @@ describe('Tabs visibility', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(screen.queryByTestId('third')).toBeNull();
-    // The seeded routeNames include the non-trigger `third`, so on mount the navigator repairs to
-    // the trigger-only list (getStateForRouteNamesChange, Steps 6/10 boundary), dropping the
-    // preloaded tabs; the self-healing preload re-adds them in one extra pass: 2 tabs x 3 passes.
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
+    // Route-name reconciliation now lands through the root reducer before eager preload runs, so
+    // the visible tabs render in the initial pass plus the preload pass: 2 tabs x 2 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
   });
 
   it('does not render hidden tabs', () => {
@@ -130,10 +129,9 @@ describe('Tabs visibility', () => {
     expect(screen.queryByTestId('third')).toBeNull();
     expect(screen.queryByTestId('fourth')).toBeNull();
     expect(screen.getByTestId('fifth')).toBeVisible();
-    // The seeded routeNames include non-trigger siblings, so on mount the navigator repairs to the
-    // trigger-only list (getStateForRouteNamesChange, Steps 6/10 boundary), dropping the preloaded
-    // tabs; the self-healing preload re-adds them in one extra pass: 3 visible tabs x 3 passes.
-    expect(TabsScreen).toHaveBeenCalledTimes(9);
+    // Route-name reconciliation now lands through the root reducer before eager preload runs, so
+    // the visible tabs render in the initial pass plus the preload pass: 3 tabs x 2 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
   });
 
   it('does not render tabs, when route does not exist', () => {
@@ -194,14 +192,12 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    // The seeded routeNames order differs from the trigger list, so on mount the navigator repairs
-    // (getStateForRouteNamesChange, Steps 6/10 boundary), dropping the preloaded tab; the
-    // self-healing preload re-adds it in one extra pass: 2 tabs x 3 passes. Order is preserved
-    // within each pass.
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
+    // Route-name reconciliation now lands through the root reducer before eager preload runs, so
+    // the visible tabs render in the initial pass plus the preload pass: 2 tabs x 2 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)second:\d+$/);
     expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)index:\d+$/);
-    expect(TabsHost).toHaveBeenCalledTimes(3);
+    expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)index:\d+$/);
   });
 

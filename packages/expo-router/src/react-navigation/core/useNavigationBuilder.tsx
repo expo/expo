@@ -73,6 +73,15 @@ type NavigatorRoute = {
 };
 
 const CONSUMED_PARAMS = Symbol('CONSUMED_PARAMS');
+const RECONCILE_ROUTE_NAMES = '__unsafe_reconcile_route_names__';
+
+type ReconcileRouteNamesAction = NavigationAction & {
+  type: typeof RECONCILE_ROUTE_NAMES;
+  payload: RouterConfigOptions & {
+    routeKeyChanges: string[];
+    unhandledState?: NavigationState | PartialState<NavigationState>;
+  };
+};
 
 const isScreen = (
   child: React.ReactElement<unknown>
@@ -291,6 +300,52 @@ const getStateFromParams = (params: NavigatorRoute['params']) => {
 
   return undefined;
 };
+
+const isReconcileRouteNamesAction = (
+  action: NavigationAction
+): action is ReconcileRouteNamesAction => action.type === RECONCILE_ROUTE_NAMES;
+
+function getStateForRenderableRoutes<State extends NavigationState>(
+  state: State,
+  routeNames: string[],
+  routeKeyChanges: string[]
+): State {
+  const routes = state.routes.filter(
+    (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
+  );
+
+  if (routes.length === state.routes.length && isArrayEqual(state.routeNames, routeNames)) {
+    return state;
+  }
+
+  if (routes.length === 0) {
+    const name = routeNames[0];
+
+    if (name == null) {
+      return state;
+    }
+
+    return {
+      ...state,
+      index: 0,
+      routeNames,
+      routes: [{ key: name, name }] as State['routes'],
+    };
+  }
+
+  return {
+    ...state,
+    index: Math.min(
+      Math.max(
+        routes.findIndex((route) => route.key === state.routes[state.index]?.key),
+        0
+      ),
+      routes.length - 1
+    ),
+    routeNames,
+    routes: routes as State['routes'],
+  };
+}
 
 /**
  * Hook for building navigators.
@@ -555,14 +610,15 @@ export function useNavigationBuilder<
   }, [currentState, router]);
 
   const previousRouteKeyListRef = React.useRef(routeKeyList);
-
-  React.useEffect(() => {
-    previousRouteKeyListRef.current = routeKeyList;
-  });
-
   const previousRouteKeyList = previousRouteKeyListRef.current;
+  const routeKeyChanges = Object.keys(routeKeyList).filter(
+    (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
+  );
 
   const [unhandledState, setUnhandledState] = React.useState<
+    NavigationState | PartialState<NavigationState> | undefined
+  >(stateBeforeInitialization);
+  const unhandledStateRef = React.useRef<
     NavigationState | PartialState<NavigationState> | undefined
   >(stateBeforeInitialization);
 
@@ -575,6 +631,7 @@ export function useNavigationBuilder<
     stateBeforeInitialization &&
     unhandledState !== stateBeforeInitialization
   ) {
+    unhandledStateRef.current = stateBeforeInitialization;
     setUnhandledState(stateBeforeInitialization);
   }
 
@@ -585,37 +642,6 @@ export function useNavigationBuilder<
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
 
   let nextState: State = state;
-  let shouldClearUnhandledState = false;
-
-  // Previously unhandled state is now valid again
-  // And current state no longer has any valid routes
-  // We should reuse the unhandled state instead of re-calculating the state
-  if (
-    unhandledState?.routes.every((r) => routeNames.includes(r.name)) &&
-    state?.routes.every((r) => !routeNames.includes(r.name))
-  ) {
-    shouldClearUnhandledState = true;
-    nextState = router.getRehydratedState(unhandledState as PartialState<State>, {
-      routeNames,
-      parentRouteKey,
-      routeParamList,
-      routeGetIdList,
-    });
-  } else if (
-    !isArrayEqual(state.routeNames, routeNames) ||
-    !isRecordEqual(routeKeyList, previousRouteKeyList)
-  ) {
-    // When the list of route names change, the router should handle it to remove invalid routes
-    nextState = router.getStateForRouteNamesChange(state, {
-      routeNames,
-      parentRouteKey,
-      routeParamList,
-      routeGetIdList,
-      routeKeyChanges: Object.keys(routeKeyList).filter(
-        (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
-      ),
-    });
-  }
 
   let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
 
@@ -634,6 +660,7 @@ export function useNavigationBuilder<
         doesStateHaveOnlyInvalidRoutes(route.params.state)
       ) {
         if (route.params.state !== unhandledState) {
+          unhandledStateRef.current = route.params.state;
           setUnhandledState(route.params.state);
         }
       } else {
@@ -653,6 +680,7 @@ export function useNavigationBuilder<
         const state = getStateFromParams(route.params);
 
         if (state != null && !deepEqual(state, unhandledState)) {
+          unhandledStateRef.current = state;
           setUnhandledState(state);
         }
       } else {
@@ -705,10 +733,6 @@ export function useNavigationBuilder<
     if (shouldUpdate) {
       // Schedule an update if the state needs to be updated
       setState(nextState);
-
-      if (shouldClearUnhandledState) {
-        setUnhandledState(undefined);
-      }
     }
   });
 
@@ -716,6 +740,8 @@ export function useNavigationBuilder<
   // We can't use the outdated state since the screens have changed, which will cause error due to mismatched config
   // So we override the state object we return to use the latest state as soon as possible
   state = nextState;
+  const reconciliationState = state;
+  state = getStateForRenderableRoutes(state, routeNames, routeKeyChanges);
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
@@ -846,6 +872,16 @@ export function useNavigationBuilder<
     latestConfigRef.current = routerConfigOptions;
   });
 
+  const { dispatchRoot } = use(NavigationBuilderContext);
+  const needsRouteNamesReconcile =
+    !isArrayEqual(reconciliationState.routeNames, routeNames) ||
+    !isRecordEqual(routeKeyList, previousRouteKeyList);
+  const pendingUnhandledState = unhandledStateRef.current ?? unhandledState;
+  const shouldRestoreUnhandledState =
+    options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
+    pendingUnhandledState?.routes.every((r) => routeNames.includes(r.name)) &&
+    reconciliationState?.routes.every((r) => !routeNames.includes(r.name));
+
   const onUnhandledActionParent = use(UnhandledActionContext);
   const onUnhandledAction = useLatestCallback((action: NavigationAction) => {
     if (
@@ -874,6 +910,7 @@ export function useNavigationBuilder<
         ],
       };
 
+      unhandledStateRef.current = state;
       setUnhandledState(state);
     }
 
@@ -883,6 +920,22 @@ export function useNavigationBuilder<
   const reducerRegistry = use(ReducerRegistryContext);
   const registryReducer = React.useCallback<NavigationReducer>(
     (state, action) => {
+      if (isReconcileRouteNamesAction(action)) {
+        if (action.target !== state.key) {
+          return null;
+        }
+
+        const config = action.payload;
+        const nextState =
+          config.unhandledState != null &&
+          config.unhandledState.routes.every((r) => config.routeNames.includes(r.name)) &&
+          state.routes.every((r) => !config.routeNames.includes(r.name))
+            ? router.getRehydratedState(config.unhandledState as PartialState<State>, config)
+            : router.getStateForRouteNamesChange(state as State, config);
+
+        return router.getRehydratedState(nextState, config) as ReturnType<NavigationReducer>;
+      }
+
       const nextState = router.getStateForAction(state as State, action, latestConfigRef.current);
 
       if (nextState == null || nextState.stale === false) {
@@ -923,6 +976,42 @@ export function useNavigationBuilder<
     };
   }, [backBehavior, reducerRegistry, registryEntry, state.key]);
 
+  useClientLayoutEffect(() => {
+    if (!needsRouteNamesReconcile && !shouldRestoreUnhandledState) {
+      previousRouteKeyListRef.current = routeKeyList;
+      return;
+    }
+
+    const handled = dispatchRoot?.(
+      {
+        type: RECONCILE_ROUTE_NAMES,
+        target: reconciliationState.key,
+        payload: {
+          routeNames,
+          parentRouteKey,
+          routeParamList,
+          routeGetIdList,
+          routeKeyChanges,
+          unhandledState: shouldRestoreUnhandledState ? pendingUnhandledState : undefined,
+        },
+      },
+      {
+        originKey: reconciliationState.key,
+        skipBeforeRemove: true,
+        suppressUnhandled: true,
+      }
+    );
+
+    if (handled) {
+      previousRouteKeyListRef.current = routeKeyList;
+
+      if (shouldRestoreUnhandledState) {
+        unhandledStateRef.current = undefined;
+        setUnhandledState(undefined);
+      }
+    }
+  });
+
   const onAction = useOnAction({
     router,
     getState,
@@ -940,8 +1029,6 @@ export function useNavigationBuilder<
     getState,
     setState,
   });
-
-  const { dispatchRoot } = use(NavigationBuilderContext);
 
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
     id: options.id,

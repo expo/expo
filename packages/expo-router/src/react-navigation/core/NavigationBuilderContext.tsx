@@ -43,6 +43,7 @@ export type DispatchRoot = (
   options?: {
     originKey?: string;
     suppressUnhandled?: boolean;
+    skipBeforeRemove?: boolean;
     onNotInitialized?: () => void;
     onMissingOrigin?: () => void;
   }

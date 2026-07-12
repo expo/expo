@@ -164,6 +164,7 @@ export function BaseNavigationContainer({
         suppressUnhandled?: boolean;
         onNotInitialized?: () => void;
         onMissingOrigin?: () => void;
+        skipBeforeRemove?: boolean;
       } = {}
     ) => {
       const rootState = (keyedListeners.getState.root?.() ?? getState()) as
@@ -208,8 +209,10 @@ export function BaseNavigationContainer({
           .sort((a, b) => {
             return getStateDepth(result.state, b.key) - getStateDepth(result.state, a.key);
           })
-          .some((slice) =>
-            slice.entry.shouldPreventRemove?.(slice.previousState, slice.nextState, action)
+          .some(
+            (slice) =>
+              !options.skipBeforeRemove &&
+              slice.entry.shouldPreventRemove?.(slice.previousState, slice.nextState, action)
           );
 
         if (isPrevented) {
