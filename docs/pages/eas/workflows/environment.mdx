@@ -1,0 +1,137 @@
+---
+title: Environment variables in EAS Workflows
+sidebar_title: Environment variables
+description: Reference for the environment variables available inside EAS Workflows jobs, including the ${{ env }} context and built-in worker variables.
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+Every workflow job runs on a worker that has a set of environment variables available to it. You can read these variables in two ways:
+
+- With the [`${{ env.NAME }}`](/eas/workflows/syntax/#env) interpolation syntax, anywhere a job interpolates values (for example, in `params`, `if`, `env`, and `run`).
+- As standard shell variables (`$NAME`) or through `process.env.NAME` from inside a [`run`](/eas/workflows/syntax/#jobsjob_idstepssteprun) step.
+
+```yaml .eas/workflows/print-env.yml
+name: Print environment
+
+jobs:
+  print:
+    steps:
+      # Interpolated before the command runs.
+      - run: echo "Project: ${{ env.EAS_BUILD_PROJECT_ID }}"
+      # Read from the shell environment at runtime.
+      - run: echo "Project: $EAS_BUILD_PROJECT_ID"
+```
+
+## Where environment variables come from
+
+The variables available in a job are merged from three sources. When the same name is defined in more than one source, the one higher in this list wins:
+
+| Source                                                                            | Description                                                                                                                             |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [Job `env`](/eas/workflows/syntax/#jobsjob_idenv)                                 | Variables you set on the job with the `env` key. These are plain text and defined directly in your workflow file.                      |
+| [**eas.json** build profile `env`](/build/eas-json/#environment-variables)         | For [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs, the `env` from the profile selected by `params.profile` in **eas.json**.  |
+| [EAS environment variables](/eas/environment-variables/)                          | Variables and secrets stored on EAS for the job's [environment](#the-job-environment) (`production`, `preview`, or `development`).      |
+
+> **info** "Secrets" in EAS Workflows are [EAS environment variables](/eas/environment-variables/). Create and manage them from the project's **Environment Variables** page on the EAS dashboard or with the [`eas env`](/eas/environment-variables/) commands, then reference them by name with `${{ env.NAME }}`.
+
+On top of these, the worker sets a number of [built-in variables](#built-in-environment-variables) such as `EAS_BUILD_ID` and `CI`. Avoid naming your own variables with the `EAS_` prefix so they don't collide with the built-in ones.
+
+## The job environment
+
+Which EAS environment variables a job can read depends on its [environment](/eas/workflows/syntax/#jobsjob_idenvironment): `production` (the default), `preview`, or `development`. Only variables assigned to that environment are exposed to the job.
+
+Each job resolves its environment differently:
+
+- [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs infer it from the build profile's `environment` in **eas.json**.
+- [`submit`](/eas/workflows/pre-packaged-jobs/#submit) jobs inherit it from the submitted build.
+- [`maestro`](/eas/workflows/pre-packaged-jobs/#maestro) and [`maestro-cloud`](/eas/workflows/pre-packaged-jobs/#maestro-cloud) jobs default to `preview`.
+- Other jobs default to `production`.
+
+Set [`jobs.<job_id>.environment`](/eas/workflows/syntax/#jobsjob_idenvironment) explicitly to override the default and keep a job in sync with the build profile it pairs with. For more details on selecting an environment for a job, see [Using environment variables in EAS Workflows](/eas/environment-variables/usage/#using-environment-variables-in-eas-workflows).
+
+## The `${{ env }}` context
+
+The [`${{ env }}` context](/eas/workflows/syntax/#env) is a record of environment variables keyed by name. It is available within a job's context, not at the top level of the workflow. For example, you can use it in a job's `params`, `if`, `env`, `outputs`, and `run`, but not in the top-level `on` triggers.
+
+```yaml
+jobs:
+  notify:
+    type: slack
+    params:
+      # Reads the SLACK_WEBHOOK_URL EAS environment variable.
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: 'Deploy finished'
+```
+
+Interpolation happens in two places, which changes what `${{ env.NAME }}` can resolve:
+
+- **Job configuration** (`params`, `if`, `outputs`, and the value of `env` itself) is interpolated before the job is dispatched to a worker. At this point, `env` contains your [EAS environment variables](/eas/environment-variables/) for the resolved [environment](#the-job-environment). Built-in worker variables and the job's own `env` values are not yet available here.
+- **`run` commands** are interpolated on the worker, where `env` reflects the full runtime environment: EAS environment variables, the job's `env`, and the [built-in variables](#built-in-environment-variables).
+
+Because of this, read built-in variables like `EAS_BUILD_ID` inside a `run` step rather than in a job's `params`. Inside a `run` step, `${{ env.EAS_BUILD_ID }}` and `$EAS_BUILD_ID` are equivalent.
+
+> **info** Values interpolated from EAS environment variables of type secret or sensitive are redacted in workflow logs.
+
+## Built-in environment variables
+
+The worker sets the following variables on every job that runs on a VM. These are read at runtime, so reference them from within a `run` step.
+
+| Variable                | Example value                                     | Description                                                                    |
+| ----------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `CI`                    | `1`                                               | Indicates the job runs in a CI environment.                                    |
+| `EAS_BUILD`             | `true`                                            | Indicates the job runs on an EAS worker.                                       |
+| `EAS_BUILD_RUNNER`      | `eas-build`                                       | The runner executing the job. `eas-build` for EAS cloud workers.               |
+| `EAS_BUILD_ID`          | `019f57e8-f467-723e-a351-7b63c5974f43`            | The unique ID of the current job.                                              |
+| `EAS_BUILD_PROJECT_ID`  | `f486dc93-eb27-4a7c-bc94-755965edce8b`            | The EAS project ID.                                                            |
+| `EAS_BUILD_WORKINGDIR`  | `/home/expo/workingdir/build`                     | The absolute path to your checked-out project on the worker.                   |
+| `EAS_BUILD_NPM_CACHE_URL` | `http://npm.caches.eas-build.internal`          | The URL of the [npm cache](/build-reference/private-npm-packages/).            |
+
+The following variables are populated from build metadata and are available in [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs. They may be empty in other job types:
+
+| Variable                    | Example value                                | Description                                                        |
+| --------------------------- | -------------------------------------------- | ----------------------------------------------------------------- |
+| `EAS_BUILD_PLATFORM`        | `android`                                    | The platform being built, either `android` or `ios`.              |
+| `EAS_BUILD_PROFILE`         | `production`                                 | The name of the build profile from **eas.json**.                  |
+| `EAS_BUILD_GIT_COMMIT_HASH` | `88f28ab5ea39108ade978de2d0d1adeedf0ece76`   | The hash of the Git commit the job is running against.            |
+| `EAS_BUILD_USERNAME`        | `jonexpo`                                     | The username of the user who initiated the run. Empty for bots.   |
+
+Workers also expose standard toolchain variables such as `HOME`, `PATH`, `LANG`, `ANDROID_HOME`, `ANDROID_SDK_ROOT`, and `JAVA_HOME`. Their exact values depend on the worker [image](/eas/workflows/syntax/#jobsjob_idimage) and are subject to change.
+
+> **warning** Variables prefixed with `__` (for example, `__WORKFLOW_JOB_ID`) are internal implementation details. They can change or be removed at any time, so don't depend on them.
+
+## Setting environment variables in a job
+
+To define your own variables, use the [`env` key](/eas/workflows/syntax/#jobsjob_idenv) on a job. Values can reference other context properties.
+
+```yaml
+jobs:
+  my_job:
+    env:
+      APP_VARIANT: staging
+      COMMIT: ${{ github.sha }}
+    steps:
+      - run: echo "Building $APP_VARIANT at $COMMIT"
+```
+
+To set a variable during a job so that later steps can read it, use the `set-env` command, which is available on the worker's `PATH`.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: set-env GENERATED_TAG "v$(date +%Y%m%d)"
+      - run: echo "Tag is $GENERATED_TAG"
+```
+
+<BoxLink
+  title="EAS environment variables"
+  description="Create and manage environment variables and secrets for your project's environments."
+  href="/eas/environment-variables/"
+/>
+
+<BoxLink
+  title="Syntax for EAS Workflows"
+  description="Reference for the full set of interpolation contexts and functions available in workflows."
+  href="/eas/workflows/syntax/#interpolation"
+/>
