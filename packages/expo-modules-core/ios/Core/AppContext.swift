@@ -441,10 +441,11 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    runtime scheduler weakly (see `EXReactSchedulerDispatch.h`).
 
    `dispatch` is a raw pointer to a C function with signature
-   `void (*)(void *scheduler, int priority, void (^callback)())` — cast back
-   to the typed pointer inside `ExpoModulesJSI`. It's typed as `UnsafeRawPointer`
-   here rather than `@convention(c)` so the symbol can cross the Objective-C
-   bridge without needing a Swift-typed entry point.
+   `bool (*)(void *scheduler, int priority, void (^callback)())`. It returns
+   `true` when it accepted the callback and `false` when the scheduler is gone
+   and the callback was dropped. It's cast back to the typed pointer inside
+   `ExpoModulesJSI`, and typed as `UnsafeRawPointer` here so the symbol can
+   cross the Objective-C bridge without needing a Swift-typed entry point.
    */
   @objc
   public func setRuntime(

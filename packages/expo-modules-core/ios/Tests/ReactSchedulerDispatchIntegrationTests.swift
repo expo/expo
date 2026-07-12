@@ -1,4 +1,5 @@
 import ExpoModulesJSI
+import Foundation
 import Testing
 
 @testable import ExpoModulesCore
@@ -49,17 +50,67 @@ struct ReactSchedulerDispatchIntegrationTests {
   }
 
   @Test
-  func `scheduling a closure after scheduler teardown is a safe no-op`() throws {
+  func `blocking execute rejects from an off-thread caller after scheduler teardown`() async {
     let runtime = makeRuntimeWiredToTestScheduler()
     testScheduler.destroy()
 
-    runtime.schedule(priority: .immediate) {
-      Issue.record("The scheduled closure must not run after the scheduler teardown")
+    await #expect(throws: JavaScriptRuntimeSchedulingError.self) {
+      try await runOffThread {
+        try runtime.execute { @JavaScriptActor in
+          return 1
+        }
+      }
     }
 
     #expect(testScheduler.scheduledWorkLoopCount == 0)
-    // The runtime itself remains fully usable.
-    #expect(try runtime.eval("1 + 2").getInt() == 3)
+  }
+
+  @Test
+  func `blocking async execute rejects from an off-thread caller after scheduler teardown`() async {
+    let runtime = makeRuntimeWiredToTestScheduler()
+    testScheduler.destroy()
+
+    await #expect(throws: JavaScriptRuntimeSchedulingError.self) {
+      try await runOffThread {
+        try runtime.execute { @JavaScriptActor () async in
+          return 1
+        }
+      }
+    }
+
+    #expect(testScheduler.scheduledWorkLoopCount == 0)
+  }
+
+  @Test
+  func `async execute rejects from an off-thread caller after scheduler teardown`() async {
+    let runtime = makeRuntimeWiredToTestScheduler()
+    testScheduler.destroy()
+
+    await #expect(throws: JavaScriptRuntimeSchedulingError.self) {
+      try await runAsyncOffThread(runtime: runtime) {
+        try await runtime.execute { @JavaScriptActor in
+          return 1
+        }
+      }
+    }
+
+    #expect(testScheduler.scheduledWorkLoopCount == 0)
+  }
+
+  @Test
+  func `async async execute rejects from an off-thread caller after scheduler teardown`() async {
+    let runtime = makeRuntimeWiredToTestScheduler()
+    testScheduler.destroy()
+
+    await #expect(throws: JavaScriptRuntimeSchedulingError.self) {
+      try await runAsyncOffThread(runtime: runtime) {
+        try await runtime.execute { @JavaScriptActor () async in
+          return 1
+        }
+      }
+    }
+
+    #expect(testScheduler.scheduledWorkLoopCount == 0)
   }
 
   /// Wraps the Hermes runtime in a non-owning `JavaScriptRuntime` that dispatches through
@@ -74,6 +125,80 @@ struct ReactSchedulerDispatchIntegrationTests {
         scheduler: testScheduler.schedulerHandle!,
         dispatch: testScheduler.dispatchFunction
       )
+    }
+  }
+}
+
+private final class SchedulerDispatchTestOperation<R: Sendable>: @unchecked Sendable {
+  private var body: (@Sendable () throws -> R)?
+
+  init(_ body: @escaping @Sendable () throws -> R) {
+    self.body = body
+  }
+
+  func run() -> Result<R, any Error> {
+    let body = body
+    self.body = nil
+
+    guard let body else {
+      fatalError("Scheduler dispatch test operation ran more than once")
+    }
+    return Result { try body() }
+  }
+}
+
+private final class SchedulerDispatchTestAsyncOperation<R: Sendable>: @unchecked Sendable {
+  private var body: (@Sendable () async throws -> R)?
+  private var isOnJavaScriptThread: (@Sendable () -> Bool)?
+
+  init(runtime: JavaScriptRuntime, _ body: @escaping @Sendable () async throws -> R) {
+    self.body = body
+    self.isOnJavaScriptThread = { runtime.isOnJavaScriptThread() }
+  }
+
+  func run() async -> Result<R, any Error> {
+    let body = body
+    let isOnJavaScriptThread = isOnJavaScriptThread
+    self.body = nil
+    self.isOnJavaScriptThread = nil
+
+    guard let body, let isOnJavaScriptThread else {
+      fatalError("Scheduler dispatch test operation ran more than once")
+    }
+    do {
+      guard !isOnJavaScriptThread() else {
+        throw SchedulerDispatchTestExecutedOnJavaScriptThread()
+      }
+      return .success(try await body())
+    } catch {
+      return .failure(error)
+    }
+  }
+}
+
+private struct SchedulerDispatchTestExecutedOnJavaScriptThread: Error {}
+
+private func runOffThread<R: Sendable>(
+  _ body: @escaping @Sendable () throws -> R
+) async throws -> R {
+  return try await withCheckedThrowingContinuation { continuation in
+    let operation = SchedulerDispatchTestOperation(body)
+    Thread.detachNewThread {
+      continuation.resume(with: operation.run())
+    }
+  }
+}
+
+private func runAsyncOffThread<R: Sendable>(
+  runtime: JavaScriptRuntime,
+  _ body: @escaping @Sendable () async throws -> R
+) async throws -> R {
+  return try await withCheckedThrowingContinuation { continuation in
+    let operation = SchedulerDispatchTestAsyncOperation(runtime: runtime, body)
+    Thread.detachNewThread {
+      Task.immediate_polyfill {
+        continuation.resume(with: await operation.run())
+      }
     }
   }
 }

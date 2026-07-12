@@ -22,25 +22,26 @@ void *createReactSchedulerHandle(const std::shared_ptr<facebook::react::RuntimeS
   return new SchedulerHandle{scheduler};
 }
 
-void dispatchOnReactScheduler(void *schedulerHandle, int priority, void (^callback)()) noexcept
+bool dispatchOnReactScheduler(void *schedulerHandle, int priority, void (^callback)()) noexcept
 {
   auto *handle = static_cast<SchedulerHandle *>(schedulerHandle);
   if (handle == nullptr) {
     // `createReactSchedulerHandle` returns null when there was no scheduler to reference.
     // Drop the task so callers don't have to guard the handle/dispatch pair themselves.
-    return;
+    return false;
   }
   // Locking either keeps the scheduler alive for the duration of `scheduleTask` or reports
   // that the React instance already destroyed it, in which case the task is dropped.
   auto scheduler = handle->scheduler.lock();
   if (!scheduler) {
-    return;
+    return false;
   }
   scheduler->scheduleTask(
     static_cast<facebook::react::SchedulerPriority>(priority),
     [callback](facebook::jsi::Runtime &) {
       callback();
     });
+  return true;
 }
 
 } // namespace expo

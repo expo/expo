@@ -4,6 +4,10 @@ internal import ExpoModulesJSI_Cxx
 import Foundation
 internal import jsi
 
+public struct JavaScriptRuntimeSchedulingError: Error, Sendable {
+  public init() {}
+}
+
 /// A Swift wrapper around a JavaScript runtime. Provides access to a JavaScript execution environment, allowing you to evaluate
 /// JavaScript code, create and manipulate JavaScript objects, functions, and values, and bridge between Swift and JavaScript.
 ///
@@ -102,7 +106,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   ///   `ExpoModulesCore`), so dispatching after the React instance tore the
   ///   scheduler down safely drops the task.
   /// - `dispatch`: raw pointer to a C function with signature
-  ///   `void (*)(void *scheduler, int priority, void (^callback)())`.
+  ///   `bool (*)(void *scheduler, int priority, void (^callback)())`.
   public init(
     unsafePointer: UnsafeMutableRawPointer,
     scheduler: UnsafeMutableRawPointer,
@@ -460,7 +464,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> sending Void
   ) {
     let cxxPriority = expo.RuntimeScheduler.Priority(rawValue: priority.rawValue) ?? .NormalPriority
-    scheduler.scheduleTask(cxxPriority) {
+    _ = scheduler.scheduleTask(cxxPriority) {
       JavaScriptActor.assumeIsolated(closure)
     }
   }
@@ -490,7 +494,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     var result: Result<R, any Error>!
     nonisolated(unsafe) let callerRunLoop = CFRunLoopGetCurrent()
 
-    scheduler.scheduleTask(.ImmediatePriority) {
+    let wasScheduled = scheduler.scheduleTask(.ImmediatePriority) {
       do {
         result = .success(try JavaScriptActor.assumeIsolated(closure))
       } catch {
@@ -500,6 +504,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       // instead of waiting out the timeout backstop.
       CFRunLoopPerformBlock(callerRunLoop, CFRunLoopMode.commonModes.rawValue) {}
       CFRunLoopWakeUp(callerRunLoop)
+    }
+    guard wasScheduled else {
+      throw JavaScriptRuntimeSchedulingError()
     }
 
     // Pump the caller's run loop until the task finishes. As opposed to DispatchSemaphore
@@ -545,8 +552,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     }
     if runInline {
       body()
-    } else {
-      scheduler.scheduleTask(.ImmediatePriority, body)
+    } else if !scheduler.scheduleTask(.ImmediatePriority, body) {
+      throw JavaScriptRuntimeSchedulingError()
     }
 
     // Pump the caller's run loop until the task finishes. See the sync overload above for
@@ -567,12 +574,16 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       return try JavaScriptActor.assumeIsolated(closure)
     }
     return try await withUnsafeThrowingContinuation { continuation in
-      scheduler.scheduleTask(.ImmediatePriority) {
+      let wasScheduled = scheduler.scheduleTask(.ImmediatePriority) {
         do {
           continuation.resume(returning: try JavaScriptActor.assumeIsolated(closure))
         } catch {
           continuation.resume(throwing: error)
         }
+      }
+      guard wasScheduled else {
+        continuation.resume(throwing: JavaScriptRuntimeSchedulingError())
+        return
       }
     }
   }
@@ -586,7 +597,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       return try await Task.immediate_polyfill(priority: .high, operation: closure).value
     }
     return try await withUnsafeThrowingContinuation { continuation in
-      scheduler.scheduleTask(.ImmediatePriority) {
+      let wasScheduled = scheduler.scheduleTask(.ImmediatePriority) {
         Task.immediate_polyfill(priority: .high) { @JavaScriptActor in
           do {
             continuation.resume(returning: try await closure())
@@ -594,6 +605,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
             continuation.resume(throwing: error)
           }
         }
+      }
+      guard wasScheduled else {
+        continuation.resume(throwing: JavaScriptRuntimeSchedulingError())
+        return
       }
     }
   }

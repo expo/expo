@@ -52,7 +52,7 @@ void *createReactSchedulerHandle(const std::shared_ptr<facebook::react::RuntimeS
  pass `&expo::dispatchOnReactScheduler` as the `dispatch` argument to
  `AppContext.setRuntime`, with the handle as the `scheduler` argument.
  */
-void dispatchOnReactScheduler(void *schedulerHandle, int priority, void (^callback)()) noexcept;
+bool dispatchOnReactScheduler(void *schedulerHandle, int priority, void (^callback)()) noexcept;
 
 } // namespace expo
 

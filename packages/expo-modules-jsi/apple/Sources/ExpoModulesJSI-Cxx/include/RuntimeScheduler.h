@@ -33,10 +33,11 @@ public:
   /**
    Trampoline implemented by the host. It resolves `nativeScheduler` (an opaque
    host-owned handle) to the real react::RuntimeScheduler and calls scheduleTask
-   on it, or drops the task when the scheduler no longer exists. Keeping it as a
+   on it, or drops the task when the scheduler no longer exists. Returns whether
+   the host accepted the task. Keeping it as a
    function pointer keeps React types out of this header.
    */
-  using ScheduleFn = void (*)(void *nativeScheduler, int priority, ScheduleTaskCallback callback);
+  using ScheduleFn = bool (*)(void *nativeScheduler, int priority, ScheduleTaskCallback callback);
 
 private:
   void *const nativeScheduler{nullptr};
@@ -70,11 +71,12 @@ public:
     return scheduleFn != nullptr;
   }
 
-  void scheduleTask(Priority priority, ScheduleTaskCallback callback) noexcept {
+  bool scheduleTask(Priority priority, ScheduleTaskCallback callback) noexcept {
     if (scheduleFn != nullptr) {
-      scheduleFn(nativeScheduler, static_cast<int>(priority), callback);
+      return scheduleFn(nativeScheduler, static_cast<int>(priority), callback);
     } else {
       callback();
+      return true;
     }
   }
 
