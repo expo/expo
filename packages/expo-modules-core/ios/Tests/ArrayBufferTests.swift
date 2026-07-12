@@ -577,7 +577,9 @@ struct ArrayBufferTests {
 
     @Test
     func `encoding full JS-backed ArrayBuffer preserves identity on JavaScript thread`() throws {
-      let runtime = try runtime
+      // Construct the standalone runtime on this synchronous test thread so its recorded JS
+      // thread is the thread that performs the identity-sensitive encode.
+      let runtime = ExpoRuntime()
       let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
       let buffer = try ArrayBuffer.decode(value, in: runtime)
       let encoded = buffer.asJavaScriptArrayBuffer(runtime: runtime).asValue()
@@ -868,6 +870,25 @@ struct ArrayBufferTests {
 
       #expect(await first == [0, 0, 0, 0])
       #expect(await second == [0, 0, 0, 0])
+    }
+
+    @Test
+    func `mock scheduler preserves full JS-backed identity on the test actor`() throws {
+      let runtime = makeRuntimeWiredToTestScheduler()
+      let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
+      var buffer: ArrayBuffer? = try ArrayBuffer.decode(value, in: runtime)
+
+      #expect(runtime.supportsAsyncScheduling == true)
+      #expect(runtime.isOnJavaScriptThread() == true)
+
+      let encoded = buffer!.asJavaScriptArrayBuffer(runtime: runtime).asValue()
+      runtime.global().setProperty("originalBuffer", value: value)
+      runtime.global().setProperty("encodedBuffer", value: encoded)
+      #expect(try runtime.eval("originalBuffer === encodedBuffer").asBool() == true)
+
+      buffer = nil
+      drainWorkLoops()
+      #expect(testScheduler.scheduledWorkLoopCount == 0)
     }
 
     private func drainWorkLoops() {
