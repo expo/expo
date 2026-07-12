@@ -53,19 +53,19 @@ enum ArrayBufferStorage: Sendable {
     }
   }
 
-  mutating func materializeNativeStorageIfNeeded() {
+  mutating func materializeNativeStorageIfNeeded() throws {
     if nativeStorage == nil {
-      self = makeOwnedNativeStorageCopy()
+      self = try makeOwnedNativeStorageCopy()
     }
   }
 
-  func makeOwnedNativeStorageCopy() -> ArrayBufferStorage {
+  func makeOwnedNativeStorageCopy() throws -> ArrayBufferStorage {
     switch self {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
       return Self.makeOwnedNativeStorageCopy(
         of: UnsafeRawPointer(nativeStorage.pointer), count: nativeStorage.byteLength)
     case .javaScriptBacked(let view):
-      return view.makeOwnedNativeStorageCopy()
+      return try view.makeOwnedNativeStorageCopy()
     }
   }
 
@@ -83,7 +83,7 @@ enum ArrayBufferStorage: Sendable {
       return makeEmptyOwnedNativeStorage()
     }
     guard let pointer else {
-      return makeEmptyOwnedNativeStorage()
+      preconditionFailure("ArrayBuffer storage copy requires a pointer for non-empty data")
     }
     let copy = UnsafeMutablePointer<UInt8>.allocate(capacity: count)
     copy.initialize(from: pointer.assumingMemoryBound(to: UInt8.self), count: count)
@@ -204,13 +204,9 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     }
   }
 
-  func makeOwnedNativeStorageCopy() -> ArrayBufferStorage {
-    do {
-      return try withUnsafeBytes { bytes in
-        return ArrayBufferStorage.makeOwnedNativeStorageCopy(of: bytes.baseAddress, count: bytes.count)
-      }
-    } catch {
-      return ArrayBufferStorage.makeEmptyOwnedNativeStorage()
+  func makeOwnedNativeStorageCopy() throws -> ArrayBufferStorage {
+    return try withUnsafeBytes { bytes in
+      return ArrayBufferStorage.makeOwnedNativeStorageCopy(of: bytes.baseAddress, count: bytes.count)
     }
   }
 
