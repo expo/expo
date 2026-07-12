@@ -164,6 +164,41 @@ struct ArrayBufferTests {
     }
 
     @Test
+    func `round trips an empty ArrayBuffer without losing identity`() throws {
+      let appContext = AppContext.create()
+      appContext.moduleRegistry.register(moduleType: ArrayBufferTestModule.self, name: "ArrayBufferTests")
+      let runtime = try appContext.runtime
+
+      #expect(runtime.isOnJavaScriptThread() == true)
+      let result = try runtime.eval(
+        """
+        const buffer = new ArrayBuffer(0)
+        buffer === expo.modules.ArrayBufferTests.createFromJS(buffer)
+        """
+      ).asBool()
+
+      #expect(result == true)
+    }
+
+    @Test
+    func `round trips an empty full-range typed-array view without losing identity`() throws {
+      let appContext = AppContext.create()
+      appContext.moduleRegistry.register(moduleType: ArrayBufferTestModule.self, name: "ArrayBufferTests")
+      let runtime = try appContext.runtime
+
+      #expect(runtime.isOnJavaScriptThread() == true)
+      let result = try runtime.eval(
+        """
+        const buffer = new ArrayBuffer(0)
+        const view = new Uint8Array(buffer, 0, 0)
+        buffer === expo.modules.ArrayBufferTests.createFromJS(view)
+        """
+      ).asBool()
+
+      #expect(result == true)
+    }
+
+    @Test
     func `ArrayBuffer argument accepts full typed arrays`() throws {
       let result = try runtime.eval(
         """
