@@ -92,7 +92,7 @@
   },
   "dependencies": {
     "@expo/spawn-async": "^1.8.0",
-    "@react-native/jest-preset": "0.86.0",
+    "@react-native/jest-preset": "0.87.0-rc.0",
     "@swc-contrib/mut-cjs-exports": "^14.13.0",
     "@swc/core": "^1.15.18",
     "@swc/jest": "^0.2.39",

@@ -35,7 +35,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "@react-native/normalize-colors": "0.86.0",
+    "@react-native/normalize-colors": "0.87.0-rc.0",
     "debug": "^4.3.2"
   },
   "devDependencies": {
