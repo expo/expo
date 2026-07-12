@@ -64,6 +64,11 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   // MARK: - AnyArrayBuffer
 
   /// Creates a native-owned copy of this ArrayBuffer.
+  ///
+  /// JavaScript-backed storage is permanently materialized before copying, so this instance no
+  /// longer observes JavaScript mutations and `isNativeBacked` becomes `true`. If the JavaScript
+  /// runtime is unavailable or the backing range is invalid, this nonthrowing API terminates with
+  /// a diagnostic instead of substituting an empty buffer.
   public func copy() -> ArrayBuffer {
     let storage = materializedNativeStorageOrFail()
     guard let nativeStorage = storage.nativeStorage else {
@@ -79,7 +84,8 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// If this buffer is JavaScript-backed, this materializes the visible byte range into
   /// native storage first. After materialization, this `ArrayBuffer` instance no longer
   /// observes or mutates the original JavaScript backing storage, and `isNativeBacked`
-  /// returns `true`.
+  /// returns `true`. If materialization fails, this nonthrowing property terminates with a
+  /// diagnostic instead of substituting an empty buffer.
   public var data: Data {
     guard let nativeStorage = materializedNativeStorageOrFail().nativeStorage else {
       preconditionFailure("ArrayBuffer storage should have been materialized before Data access")
@@ -94,9 +100,12 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
 
   /// Provides read-only access to native-accessible bytes.
   ///
-  /// If this buffer is JavaScript-backed, this method reads from a native copy instead of
-  /// exposing JavaScript heap memory directly. Use `withJSBytes(_:)` when you need
-  /// scoped zero-copy access to the current JavaScript backing storage.
+  /// If this buffer is JavaScript-backed, every call creates a fresh full-range transient native
+  /// copy that observes the current JavaScript bytes. The copy is not published: this buffer
+  /// remains JavaScript-backed and later calls observe later JavaScript mutations. Use
+  /// `withJSBytes(_:)` when you need scoped zero-copy access to the current JavaScript backing
+  /// storage. If the transient copy cannot be made, this nonthrowing API terminates with a
+  /// diagnostic instead of substituting an empty buffer.
   public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
     switch storageBox.currentStorage() {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
@@ -120,7 +129,10 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// If this buffer is JavaScript-backed, this method materializes the visible byte range into
   /// native storage before calling `body`. Mutations then apply to the materialized native
   /// storage, not to the original JavaScript `ArrayBuffer`. Use `withMutableJSBytes(_:)` when
-  /// mutations must affect the current JavaScript backing storage.
+  /// mutations must affect the current JavaScript backing storage. Materialization is permanent:
+  /// later access uses the same native storage and `isNativeBacked` becomes `true`. If
+  /// materialization fails, this nonthrowing API terminates with a diagnostic instead of
+  /// substituting an empty buffer.
   public func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
     let storage = materializedNativeStorageOrFail()
     guard let nativePointer = storage.nativePointer else {
@@ -135,7 +147,10 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   ///
   /// Native-backed storage is accessed directly. JavaScript-backed storage is accessed on the
   /// JavaScript runtime without materializing a native copy, so reads observe the current
-  /// JavaScript `ArrayBuffer` contents.
+  /// JavaScript `ArrayBuffer` contents. The pointer is valid only while `body` runs; do not retain
+  /// it or detach, transfer, or resize the JavaScript backing while it is live. This method throws
+  /// `ArrayBufferJSBytesAccessException` if the JavaScript runtime is unavailable or the captured
+  /// byte range is invalid.
   @available(*, noasync)
   public func withJSBytes<R: Sendable>(
     _ body: (UnsafeRawBufferPointer) throws -> R
@@ -154,7 +169,10 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   ///
   /// Native-backed storage is accessed directly. JavaScript-backed storage is accessed on the
   /// JavaScript runtime without materializing a native copy, so reads observe the current
-  /// JavaScript `ArrayBuffer` contents.
+  /// JavaScript `ArrayBuffer` contents. The pointer is valid only while `body` runs; do not retain
+  /// it or detach, transfer, or resize the JavaScript backing while it is live. This method throws
+  /// `ArrayBufferJSBytesAccessException` if the JavaScript runtime is unavailable or the captured
+  /// byte range is invalid.
   public func withJSBytes<R: Sendable>(
     _ body: @escaping (UnsafeRawBufferPointer) throws -> R
   ) async throws -> R {
@@ -170,7 +188,12 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   ///
   /// Native-backed storage is accessed directly. JavaScript-backed storage is accessed on the
   /// JavaScript runtime without materializing a native copy, so mutations affect the original
-  /// JavaScript `ArrayBuffer`.
+  /// JavaScript `ArrayBuffer`. The pointer is valid only while `body` runs; do not retain it or
+  /// detach, transfer, or resize the JavaScript backing while it is live. Callers must externally
+  /// serialize this access with `copy()`, `data`, `withUnsafeBytes(_:)`, and
+  /// `withUnsafeMutableBytes(_:)` on the same buffer. This method throws
+  /// `ArrayBufferJSBytesAccessException` if the JavaScript runtime is unavailable or the captured
+  /// byte range is invalid.
   @available(*, noasync)
   public func withMutableJSBytes<R: Sendable>(
     _ body: (UnsafeMutableRawBufferPointer) throws -> R
@@ -189,7 +212,12 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   ///
   /// Native-backed storage is accessed directly. JavaScript-backed storage is accessed on the
   /// JavaScript runtime without materializing a native copy, so mutations affect the original
-  /// JavaScript `ArrayBuffer`.
+  /// JavaScript `ArrayBuffer`. The pointer is valid only while `body` runs; do not retain it or
+  /// detach, transfer, or resize the JavaScript backing while it is live. Callers must externally
+  /// serialize this access with `copy()`, `data`, `withUnsafeBytes(_:)`, and
+  /// `withUnsafeMutableBytes(_:)` on the same buffer. This method throws
+  /// `ArrayBufferJSBytesAccessException` if the JavaScript runtime is unavailable or the captured
+  /// byte range is invalid.
   public func withMutableJSBytes<R: Sendable>(
     _ body: @escaping (UnsafeMutableRawBufferPointer) throws -> R
   ) async throws -> R {
@@ -344,10 +372,6 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
     -> ArrayBuffer
   {
     let count = typedArray.byteLength
-
-    if count == 0 {
-      return ArrayBuffer(size: 0)
-    }
     let backingBuffer = typedArray.getArrayBuffer()
     if let borrowed = backingBuffer.tryBorrowMutableBuffer() {
       return ArrayBuffer(
@@ -376,9 +400,6 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
     byteLength explicitByteLength: Int? = nil
   ) -> ArrayBuffer {
     let byteLength = explicitByteLength ?? jsArrayBuffer.size
-    if jsArrayBuffer.size == 0 {
-      return ArrayBuffer(size: 0)
-    }
     if let borrowed = jsArrayBuffer.tryBorrowMutableBuffer() {
       return ArrayBuffer(
         borrowing: UnsafeMutableRawPointer(borrowed.data.advanced(by: byteOffset)),
