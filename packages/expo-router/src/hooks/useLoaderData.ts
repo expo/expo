@@ -16,7 +16,10 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
   T extends LoaderFunction<infer R> ? R : unknown;
 
 /**
- * Returns the result of the `loader` function for the calling route.
+ * Returns the data returned by the route's `loader` function. The `loader` runs on the server
+ * during rendering, and its result is serialized and sent to the client, so this hook returns
+ * the same data on the server and after the client hydrates without re-running the loader. Pass
+ * `typeof loader` as the type argument to infer the return type from your `loader`.
  *
  * @example
  * ```tsx app/profile/[user].tsx
@@ -24,7 +27,7 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
  * import { useLoaderData } from 'expo-router';
  *
  * export function loader() {
- *   return Promise.resolve({ foo: 'bar' }};
+ *   return Promise.resolve({ foo: 'bar' });
  * }
  *
  * export default function Route() {
@@ -32,6 +35,7 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
  *
  *  return <Text>Data: {JSON.stringify(data)}</Text>;
  * }
+ * ```
  */
 export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunctionResult<T> {
   const serverDataLoaderContext = use(ServerDataLoaderContext);

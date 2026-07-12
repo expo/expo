@@ -120,15 +120,21 @@ function SlotNavigator(props: NavigatorProps<any>) {
 }
 
 /**
- * Renders the currently selected content.
+ * Renders the child routes of the current layout without any navigation UI or animation.
+ * Use it in a `_layout` file when you want the layout to render its child route directly,
+ * for example to add a shared header or wrapper around every screen in a directory.
  *
- * There are actually two different implementations of `<Slot/>`:
- *  - Used inside a `_layout` as the `Navigator`
- *  - Used inside a `Navigator` as the content
+ * A `Slot` behaves differently depending on where it is used. Inside a `_layout` it acts as
+ * the navigator itself. Inside a custom `Navigator` it renders that navigator's content.
  *
- * Since a custom `Navigator` will set the `NavigatorContext.contextKey` to
- * the current `_layout`, you can use this to determine if you are inside
- * a custom navigator or not.
+ * @example
+ * ```tsx app/_layout.tsx
+ * import { Slot } from 'expo-router';
+ *
+ * export default function Layout() {
+ *   return <Slot />;
+ * }
+ * ```
  */
 export function Slot(props: Omit<NavigatorProps<any>, 'children'>) {
   const contextKey = useContextKey();

@@ -1,0 +1,137 @@
+---
+title: Themes
+description: Learn how to theme navigation UI such as headers and tab bars in Expo Router.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+Expo Router themes control the colors of navigation UI such as headers, tab bars, and the background behind your screens. A theme is an object that defines colors for these surfaces. Wrap your root layout with `ThemeProvider` and pass a theme to apply it across your app.
+
+Expo Router exports `ThemeProvider`, the built-in `DefaultTheme` and `DarkTheme`, and the `useTheme` hook directly, so you do not need to install any additional packages.
+
+## Applying a theme
+
+Wrap your root layout with `ThemeProvider` and pass a theme through the `value` prop. Combine it with the `useColorScheme` hook from React Native to switch between light and dark themes based on the device setting.
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DarkTheme, DefaultTheme, Stack } from 'expo-router';
+import { useColorScheme } from 'react-native';
+
+export default function RootLayout() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack />
+    </ThemeProvider>
+  );
+}
+```
+
+The theme applies to all navigators rendered inside the provider. Headers and tab bars pick up the theme colors automatically, and the background color fills the space behind your screens. Setting the background through the theme also prevents a white flash during screen transitions when your app uses a dark theme.
+
+For an app that is always dark, pass `DarkTheme` directly.
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DarkTheme, Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider value={DarkTheme}>
+      <Stack />
+    </ThemeProvider>
+  );
+}
+```
+
+## Customizing a theme
+
+A theme has a `dark` boolean, a `fonts` object, and a `colors` object. Spread one of the built-in themes and override only the colors you want to change.
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DefaultTheme, Stack } from 'expo-router';
+import type { Theme } from 'expo-router';
+
+const MyTheme: Theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#f4511e',
+    background: '#ffffff',
+  },
+};
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider value={MyTheme}>
+      <Stack />
+    </ThemeProvider>
+  );
+}
+```
+
+The `colors` object includes:
+
+- `primary` — the tint color for interactive elements, such as the header back button and active tab.
+- `background` — the color of the content behind your screens.
+- `card` — the background color of headers and tab bars.
+- `text` — the default text color for navigation UI.
+- `border` — the color of borders, such as the header bottom border.
+- `notification` — the color of tab bar badges.
+
+## Reading the active theme
+
+Use the `useTheme` hook to read the theme that the nearest `ThemeProvider` supplies. This is useful for styling your own components to match the navigation UI.
+
+```tsx app/index.tsx
+import { useTheme } from 'expo-router';
+import { Text, View } from 'react-native';
+
+export default function Route() {
+  const { colors } = useTheme();
+
+  return (
+    <View style={{ backgroundColor: colors.background }}>
+      <Text style={{ color: colors.text }}>Themed text</Text>
+    </View>
+  );
+}
+```
+
+## How themes apply to headers and tab bars
+
+The theme sets the default colors for navigation UI, but you can still override individual options per screen. For example, `headerStyle` and `headerTintColor` on a `Stack.Screen` take precedence over the theme's `card` and `primary` colors for that screen.
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack
+      screenOptions={{
+        // Overrides the theme's card and primary colors for the header.
+        headerStyle: { backgroundColor: '#f4511e' },
+        headerTintColor: '#fff',
+      }}
+    />
+  );
+}
+```
+
+Use themes to set app-wide defaults, and per-screen options for exceptions.
+
+<BoxLink
+  title="Stack"
+  description="Configure headers and screen options for the Stack navigator."
+  href="/router/advanced/stack/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Tabs"
+  description="Configure the tab bar for the Tabs navigator."
+  href="/router/advanced/tabs/"
+  Icon={BookOpen02Icon}
+/>

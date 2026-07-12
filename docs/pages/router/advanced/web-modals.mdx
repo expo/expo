@@ -452,7 +452,9 @@ You can add custom values using the `--expo-router-*` variables in your global C
 
 The video above demonstrates a modal window that appears over the main content of the web page. The background dims to draw focus to the modal, which contains information for the user. This is typical behavior for web modals, where users can interact with the modal or close it to return to the main page.
 
-You can achieve the above web modal behavior by using the [`transparentModal`](https://reactnavigation.org/docs/stack-navigator/#transparent-modals) presentation mode, styling the overlay and modal content, and utilizing [`react-native-reanimated`](/versions/latest/sdk/reanimated/#installation) to animate the modal's presentation.
+You can achieve the above web modal behavior by setting a route's `presentation` option to `'transparentModal'`, styling the overlay and modal content, and utilizing [`react-native-reanimated`](/versions/latest/sdk/reanimated/#installation) to animate the modal's presentation.
+
+With `presentation: 'transparentModal'`, the route is presented over the previous screen instead of replacing it. The previous screen stays mounted and visible underneath, and the modal screen renders with a transparent background so anything it does not paint shows through. This is what enables overlay UI: you render a semi-transparent dimming layer plus the modal content on top of the still-visible page below, rather than a full opaque screen.
 
 Modify your project's root layout (**src/app/\_layout.tsx**) to add an `options` object to the modal route:
 

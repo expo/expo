@@ -168,11 +168,15 @@ export type NativeStackHeaderRightProps = NativeStackHeaderItemProps;
 
 export type NativeStackNavigationOptions = {
   /**
-   * String that can be displayed in the header as a fallback for `headerTitle`.
+   * String to display in the header. Used as a fallback for `headerTitle`.
    */
   title?: string;
   /**
-   * Function that given `HeaderProps` returns a React Element to display as a header.
+   * Function that receives `NativeStackHeaderProps` and returns a React element to render as the
+   * header.
+   *
+   * On iOS and Android a custom header replaces the native header, so native features such as large
+   * titles and the search bar no longer apply.
    */
   header?: (props: NativeStackHeaderProps) => React.ReactNode;
   /**

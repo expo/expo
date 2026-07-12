@@ -108,10 +108,10 @@ export type BottomTabNavigationOptions = HeaderOptions & {
   title?: string;
 
   /**
-   * Title string of a tab displayed in the tab bar
-   * or a function that given { focused: boolean, color: ColorValue, position: 'below-icon' | 'beside-icon', children: string } returns a React.Node to display in tab bar.
+   * Label to show in the tab bar for this tab. Pass a string, or a function that receives
+   * `{ focused, color, position, children }` and returns a React element.
    *
-   * When undefined, scene title is used. Use `tabBarShowLabel` to hide the label.
+   * When undefined, the screen `title` is used. Use `tabBarShowLabel` to hide the label.
    */
   tabBarLabel?:
     | string
@@ -148,7 +148,8 @@ export type BottomTabNavigationOptions = HeaderOptions & {
   tabBarAllowFontScaling?: boolean;
 
   /**
-   * A function that given { focused: boolean, color: ColorValue } returns a React.Node to display in the tab bar.
+   * Function that receives `{ focused, color, size }` and returns a React element to render as the
+   * tab icon.
    */
   tabBarIcon?: (props: { focused: boolean; color: ColorValue; size: number }) => React.ReactNode;
 
@@ -224,7 +225,9 @@ export type BottomTabNavigationOptions = HeaderOptions & {
   };
 
   /**
-   * Variant of the tab bar. Defaults to `uikit`.
+   * Visual variant of the tab bar. Defaults to `uikit`.
+   *
+   * The `material` variant is only supported when `tabBarPosition` is set to `left` or `right`.
    */
   tabBarVariant?: Variant;
 
@@ -248,13 +251,13 @@ export type BottomTabNavigationOptions = HeaderOptions & {
   tabBarPosition?: 'bottom' | 'left' | 'right' | 'top';
 
   /**
-   * Whether this screens should render the first time it's accessed. Defaults to `true`.
-   * Set it to `false` if you want to render the screen on initial render.
+   * Whether the screen is rendered the first time it's accessed rather than on initial render.
+   * Defaults to `true`.
    */
   lazy?: boolean;
 
   /**
-   * Function that given returns a React Element to display as a header.
+   * Function that returns a React element to render as the header.
    */
   header?: (props: BottomTabHeaderProps) => React.ReactNode;
 

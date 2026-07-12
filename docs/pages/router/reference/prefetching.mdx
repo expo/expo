@@ -1,0 +1,113 @@
+---
+title: Prefetching
+description: Learn how to prefetch screens ahead of navigation to make transitions feel faster in Expo Router.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+Prefetching renders a target screen off-screen before the user navigates to it. When the user then opens that screen, its component and data are already prepared, so the transition feels faster. This is most useful for screens the user is likely to visit next, such as a details page linked from a list.
+
+## Prefetching with `router.prefetch`
+
+Call `router.prefetch(href)` to prepare a route imperatively. Pass the same `href` you would pass to `router.navigate`.
+
+```tsx app/index.tsx
+import { router } from 'expo-router';
+import { useEffect } from 'react';
+
+export default function Home() {
+  useEffect(() => {
+    // Prepare the details screen ahead of time.
+    router.prefetch('/details');
+  }, []);
+
+  // ...
+}
+```
+
+## Prefetching with `<Link prefetch>`
+
+Add the `prefetch` prop to a `Link` to prefetch its target when the link is rendered. This is a declarative alternative to `router.prefetch`.
+
+```tsx app/index.tsx
+import { Link } from 'expo-router';
+
+export default function Home() {
+  return (
+    <Link href="/details" prefetch>
+      Details
+    </Link>
+  );
+}
+```
+
+## Lazy versus eager loading
+
+By default, screens load lazily: Expo Router renders a screen only when the user navigates to it. This keeps startup fast and avoids doing work for screens the user may never open.
+
+Prefetching opts a specific screen into eager loading. Expo Router renders the target screen off-screen so it is ready before navigation. Use it selectively for the screens most likely to be visited next, rather than prefetching everything, which would undo the benefit of lazy loading.
+
+The exact behavior depends on the navigator:
+
+- **Expo Router navigators** render the target screen off-screen to enable preloading.
+- **Custom navigators** may implement prefetching differently or not support it at all.
+
+A preloaded screen in a stack navigator has a few limitations until the user navigates to it:
+
+- It cannot use the imperative `router` API.
+- It cannot update options with `useNavigation().setOptions()`.
+- It cannot listen to navigator events such as `focus` or `tabPress`.
+
+The navigation object updates once the screen is navigated to. If you rely on it inside an effect, add it to the dependency array so listeners attach when the screen becomes active.
+
+```tsx
+import { useNavigation } from 'expo-router';
+import { useEffect } from 'react';
+
+const navigation = useNavigation();
+
+useEffect(() => {
+  const unsubscribe = navigation.addListener('focus', () => {
+    // ...
+  });
+
+  return unsubscribe;
+}, [navigation]);
+```
+
+## Keeping prefetched screens ready with `freezeOnBlur`
+
+Once a screen is loaded, the `freezeOnBlur` option controls whether it keeps re-rendering while it is not focused. When `freezeOnBlur` is `true`, an inactive screen is suspended from re-rendering, which saves work for screens the user is not looking at. It defaults to `false`, and to `true` when `enableFreeze()` is called at the top of your app.
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack
+      screenOptions={{
+        // Suspend re-rendering of screens that are not focused.
+        freezeOnBlur: true,
+      }}
+    />
+  );
+}
+```
+
+Freezing inactive screens complements prefetching: prefetching gets a screen ready ahead of time, while `freezeOnBlur` avoids spending render work on it while it stays in the background. The `freezeOnBlur` option is supported on iOS and Android.
+
+<BoxLink
+  title="Navigating between pages"
+  description="Learn the different ways to link to and navigate between pages in Expo Router."
+  href="/router/basics/navigation/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Navigation events"
+  description="React to focus, blur, and other navigation lifecycle events."
+  href="/router/reference/navigation-events/"
+  Icon={BookOpen02Icon}
+/>

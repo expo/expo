@@ -1,5 +1,8 @@
 export { Stack } from '../layouts/Stack';
 
+export type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
+export type { ExtendedStackNavigationOptions } from '../layouts/StackClient';
+
 export type {
   StackHeaderProps,
   StackHeaderItemSharedProps,

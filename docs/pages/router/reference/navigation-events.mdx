@@ -1,0 +1,175 @@
+---
+title: Navigation events
+description: Learn how to respond to focus, blur, and other navigation lifecycle events with the useNavigation hook in Expo Router.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+The `useNavigation` hook returns the navigation object for the current route. Alongside imperative helpers such as `setOptions` and `getParent`, this object exposes an event system you can use to run code when a screen is focused, blurred, or about to be removed.
+
+Most apps read the current location with `usePathname` or navigate with the `router` object. Reach for navigation events when you need to react to the navigation lifecycle itself, such as pausing a video when a screen loses focus or warning the user before they leave a screen with unsaved changes.
+
+## Subscribing to events
+
+Call `navigation.addListener` with an event name and a callback. It returns an unsubscribe function. When you subscribe inside an effect, return that function so the listener is removed when the component unmounts or the dependencies change.
+
+```tsx app/index.tsx
+import { useNavigation } from 'expo-router';
+import { useEffect } from 'react';
+import { Text, View } from 'react-native';
+
+export default function Route() {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // The screen is now focused.
+    });
+
+    // Remove the listener when the effect re-runs or the component unmounts.
+    return unsubscribe;
+  }, [navigation]);
+
+  return (
+    <View>
+      <Text>Home</Text>
+    </View>
+  );
+}
+```
+
+Always add `navigation` to the dependency array. The navigation object can change, and re-subscribing keeps your listener attached to the current object.
+
+## Available events
+
+### `focus`
+
+Fires when the screen comes into focus. Use it to start work that should only run while the screen is visible, such as resuming a subscription.
+
+```tsx
+useEffect(() => {
+  const unsubscribe = navigation.addListener('focus', () => {
+    // Restart a subscription or refetch data.
+  });
+
+  return unsubscribe;
+}, [navigation]);
+```
+
+### `blur`
+
+Fires when the screen goes out of focus. Use it to pause work you started on `focus`.
+
+```tsx
+useEffect(() => {
+  const unsubscribe = navigation.addListener('blur', () => {
+    // Pause a video or stop a subscription.
+  });
+
+  return unsubscribe;
+}, [navigation]);
+```
+
+### `state`
+
+Fires whenever the navigator's state changes, for example when a route is pushed or popped. The event carries the updated navigation state in `event.data.state`.
+
+```tsx
+useEffect(() => {
+  const unsubscribe = navigation.addListener('state', event => {
+    // event.data.state contains the new navigation state.
+  });
+
+  return unsubscribe;
+}, [navigation]);
+```
+
+### `beforeRemove`
+
+Fires when the screen is about to be removed as the result of a navigation action, such as pressing the back button. Call `event.preventDefault()` to stop the screen from being removed. This is useful for confirming that the user wants to discard unsaved changes.
+
+```tsx app/compose.tsx
+import { useNavigation } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
+
+export default function Compose() {
+  const navigation = useNavigation();
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', event => {
+      if (!hasUnsavedChanges) {
+        return;
+      }
+
+      // Prevent the default behavior of leaving the screen.
+      event.preventDefault();
+
+      Alert.alert('Discard changes?', 'You have unsaved changes.', [
+        { text: 'Stay', style: 'cancel' },
+        {
+          text: 'Discard',
+          style: 'destructive',
+          // Dispatch the action that triggered this event to leave the screen.
+          onPress: () => navigation.dispatch(event.data.action),
+        },
+      ]);
+    });
+
+    return unsubscribe;
+  }, [navigation, hasUnsavedChanges]);
+
+  // ...
+}
+```
+
+> **info** The `beforeRemove` event does not fire on web when the user presses the browser's back button, because that navigation happens outside of the app.
+
+## Other navigation object methods
+
+The navigation object also exposes methods for reading and updating navigator state:
+
+- `setOptions(options)` — updates the current screen's options, such as the header title. This is the imperative equivalent of the `<Stack.Screen options={} />` component.
+- `isFocused()` — returns `true` if the screen is currently focused. Use it for a one-time check when you do not need to subscribe to changes.
+- `getParent(id)` — returns the navigation object of a parent navigator. Pass an ID to target a specific parent.
+- `getState()` — returns the navigator's current state object.
+
+```tsx
+const navigation = useNavigation();
+
+// Update the header title imperatively.
+navigation.setOptions({ title: 'Updated title' });
+
+// Run code only while the screen is focused.
+if (navigation.isFocused()) {
+  // ...
+}
+```
+
+You can also access a specific parent layout's navigation object by passing a route to `useNavigation`. For example, `useNavigation('/orders')` returns the navigation object for the `orders` layout.
+
+## When to use navigation events
+
+Choose the right tool for the task:
+
+- Use `useFocusEffect` when you want to run an effect each time a screen is focused and clean it up on blur. It wraps the `focus` and `blur` events in a single hook and is the simplest option for refetching data or resetting screen state.
+- Use `usePathname` or `useGlobalSearchParams` when you only need to read the current location and re-render on changes.
+- Use the `router` object for imperative navigation such as `router.push` or `router.back`.
+- Use `useNavigation` events when you need lower-level control, such as `beforeRemove` to block navigation, `state` to observe navigator changes, or `setOptions` to update options imperatively.
+
+<BoxLink
+  title="useFocusEffect"
+  description="Run an effect every time a screen is focused and clean it up when it loses focus."
+  href="/versions/latest/sdk/router/#usefocuseffect"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Navigation state"
+  description="Understand the shape of the navigation state object returned by the state event and useRootNavigationState."
+  href="/router/reference/navigation-state/"
+  Icon={BookOpen02Icon}
+/>

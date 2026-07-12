@@ -21,8 +21,8 @@ import { useNavigation } from '../react-navigation/native';
  *
  * @returns The current `NavigationState` of the root navigator.
  *
- * @see React Navigation's [navigation state](https://reactnavigation.org/docs/navigation-state/)
- * reference for the shape of the returned object.
+ * @see The [navigation state](/router/reference/navigation-state/) reference for the
+ * shape of the returned object.
  */
 export function useRootNavigationState(): NavigationState {
   const parent =

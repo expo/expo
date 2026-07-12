@@ -80,7 +80,7 @@ export default function StackLayout() {
 
 When you navigate to `/products`, it will first go to the default route, which is **products/index.tsx**. If you navigate to `/products/123`, then that page will be pushed onto the stack. By default, the stack will render a back button in the header that will pop the current page off the stack, returning the user to the previous page. Even when a page isn't visible, if it is still pushed onto the stack, it is still being rendered.
 
-The `Stack` component implements [React Navigation's native stack](https://reactnavigation.org/docs/native-stack-navigator/) and can use the same screen options. However, you do not have to define the pages specifically inside the navigator. The files inside the directory will be automatically treated as eligible routes in the stack. However, if you want to define screen options, you can add a `Stack.Screen` component inside the `Stack` component. The `name` prop should match the route name, but you do not need to supply a `component` prop; Expo Router will map this automatically:
+The `Stack` component is a native stack: each screen is pushed onto the platform's own navigation stack, so you get native transition animations, swipe-back gestures, and header behavior on Android and iOS. You configure it with the [Stack screen options](/versions/latest/sdk/router/stack/). However, you do not have to define the pages specifically inside the navigator. The files inside the directory will be automatically treated as eligible routes in the stack. However, if you want to define screen options, you can add a `Stack.Screen` component inside the `Stack` component. The `name` prop should match the route name, but you do not need to supply a `component` prop; Expo Router will map this automatically:
 
 ```tsx src/app/products/_layout.tsx
 import { Stack } from 'expo-router';
@@ -136,7 +136,7 @@ export default function TabLayout() {
 }
 ```
 
-This will cause the **index.tsx**, **feed.tsx**, and **profile.tsx** files to appear together in the same bottom tabs navigator. This `Tabs` component uses [React Navigation's native bottom tabs](https://reactnavigation.org/docs/bottom-tab-navigator/) and supports the same options.
+This will cause the **index.tsx**, **feed.tsx**, and **profile.tsx** files to appear together in the same bottom tabs navigator. The `Tabs` component renders a bottom tab bar and keeps each tab's screen mounted so switching between them is instant. You configure the tab bar and each tab with the [Tabs screen options](/versions/latest/sdk/router/tabs/).
 
 In the case of `Tabs`, you will likely want to define the tabs in the navigator, as this influences the order in which tabs appear, the title, and the icon inside the tab. The index route will be the default selected tab.
 

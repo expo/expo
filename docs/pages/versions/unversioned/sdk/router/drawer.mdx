@@ -1,0 +1,44 @@
+---
+title: Router Drawer
+sidebar_title: Drawer
+description: An Expo Router API that provides a Drawer navigator and screen components.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-router'
+packageName: 'expo-router'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import APISection from '~/components/plugins/APISection';
+import { BoxLink } from '~/ui/components/BoxLink';
+
+An Expo Router API that provides a Drawer navigator and screen components.
+
+> See the [Expo Router](./index) reference for installation and configuration.
+
+## Usage
+
+```tsx
+import { Drawer } from 'expo-router/drawer';
+
+export default function Layout() {
+  return <Drawer />;
+}
+```
+
+For more information about using the drawer navigator, read the drawer layout guide:
+
+<BoxLink
+  title="Drawer"
+  Icon={BookOpen02Icon}
+  href="/router/advanced/drawer/"
+  description="Learn how to use the Drawer layout in Expo Router."
+/>
+
+## API
+
+```js
+import { Drawer } from 'expo-router/drawer';
+```
+
+<APISection packageName="expo-router/drawer" apiName="Drawer" />

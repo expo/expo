@@ -68,9 +68,11 @@ export type TabNavigationEventMap = {
 };
 
 /**
- * The React Navigation custom navigator.
+ * The value returned by the tabs navigator builder. Holds the navigation state,
+ * descriptors, and navigation helpers used to render a custom tabs navigator.
  *
- * @see [`useNavigationBuilder`](https://reactnavigation.org/docs/custom-navigators/#usenavigationbuilder) hook from React Navigation for more information.
+ * @see [Custom navigators](/router/advanced/custom-navigators/) for how to build your own
+ * navigator on top of this value.
  */
 export type TabsContextValue = ReturnType<
   typeof useNavigationBuilder<

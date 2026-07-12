@@ -16,7 +16,9 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   className="mb-6"
 />
 
-Nesting navigators allow rendering a navigator inside the screen of another navigator. This guide is an extension of [React Navigation: Nesting navigators](https://reactnavigation.org/docs/nesting-navigators) to Expo Router. It provides an example of how nesting navigators work when using Expo Router.
+Nesting navigators allow rendering a navigator inside the screen of another navigator. In file-based routing, you nest navigators by placing a `_layout` file in a nested directory: the parent layout renders the child directory as one of its screens, and the child layout defines its own navigator for the routes inside it. A common pattern is a `Stack` at the root that contains a `Tabs` navigator on one of its screens.
+
+Nesting changes how navigation state, headers, and back behavior work. Each navigator keeps its own history, so navigating within a nested navigator updates that navigator's state without affecting the parent. Headers can stack: a screen inside a nested `Stack` can render its own header underneath the parent navigator's header, so you often hide one of them to avoid a double header. Back behavior follows the innermost navigator first — going back pops the nested navigator until it has no more history, and only then does the parent navigator handle the action. This guide provides an example of how nesting navigators work when using Expo Router.
 
 ## Example
 

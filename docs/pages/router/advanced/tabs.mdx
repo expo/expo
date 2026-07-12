@@ -136,7 +136,16 @@ The tab file named **index.tsx** is the default tab when the app loads. The seco
 
 ## Tab bar options
 
-The JavaScript tabs in Expo Router extend the [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. The specific APIs available depend on your versions. For example, Expo Router v6 extends Bottom Tabs Navigator v7. Check your versions to ensure compatibility, then you can use the same configuration props to customize the bottom tab bar and individual tabs. For example:
+You customize the bottom tab bar and individual tabs through screen options on `Tabs` and `Tabs.Screen`. Some options apply to a single tab and others to the whole tab bar. The most commonly used options are:
+
+- `tabBarIcon`: a function that returns the icon component for a tab. It receives the current `color`, `size`, and `focused` state so you can render the active and inactive states.
+- `tabBarLabel`: the text shown under the icon for a tab. Set it to a string, or a function that returns a custom label component.
+- `tabBarBadge`: a number or string rendered as a badge on the tab's icon, useful for unread counts.
+- `tabBarActiveTintColor`: the color applied to the icon and label of the focused tab.
+- `tabBarStyle`: a style object applied to the tab bar container, for example to change its background color or height.
+- `lazy`: whether each tab screen renders the first time it is focused rather than on mount. It defaults to `true`.
+
+For example:
 
 ```tsx src/app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
@@ -166,7 +175,7 @@ The supported tab bar options are listed below:
 
 <ReactNavigationOptions category="tabBar" />
 
-For additional details and navigator-specific examples, see [React Navigation's Bottom Tabs Navigator documentation](https://reactnavigation.org/docs/bottom-tab-navigator/#options).
+For the full list of options, see the [Tabs API reference](/versions/latest/sdk/router/tabs/).
 
 ## Advanced
 
