@@ -1,5 +1,5 @@
 import { requireNativeModule } from 'expo';
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 
 import type {
   ExpoBrownfieldModuleSpec,
@@ -9,8 +9,7 @@ import type {
 
 const ExpoBrownfieldModule = requireNativeModule<ExpoBrownfieldModuleSpec>('ExpoBrownfieldModule');
 
-// TODO(@kitten): Remove re-export from EMC
-export type { EventSubscription } from 'expo-modules-core';
+export type { EventSubscription } from 'expo';
 export type { MessageEvent };
 
 // SECTION: Navigation API

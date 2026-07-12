@@ -1,9 +1,9 @@
 import send from 'send';
 import { parse } from 'url';
 
+import { getPublicFolderPath } from '../../../export/publicFolder';
 import { parsePlatformHeader } from './resolvePlatform';
 import type { ServerRequest, ServerResponse } from './server.types';
-import { getPublicFolderPath } from '../../../export/publicFolder';
 
 const debug = require('debug')('expo:start:server:middleware:serveStatic') as typeof console.log;
 

@@ -7,7 +7,6 @@
 import type { ExpoConfig, Platform } from '@expo/config';
 import { getPlatformsFromConfig } from '@expo/config';
 import { getPlatformExtensions } from '@expo/config/paths';
-import type Bundler from '@expo/metro/metro/Bundler';
 import type { ConfigT } from '@expo/metro/metro-config';
 import type {
   Resolution,
@@ -16,10 +15,15 @@ import type {
 } from '@expo/metro/metro-resolver';
 import { resolve as resolver } from '@expo/metro/metro-resolver';
 import type { SourceFileResolution } from '@expo/metro/metro-resolver/types';
+import type Bundler from '@expo/metro/metro/Bundler';
 import { resolveFrom } from '@expo/require-utils';
 import fs from 'fs';
 import path from 'path';
 
+import { Log } from '../../../log';
+import { env } from '../../../utils/env';
+import { isServerEnvironment } from '../middleware/metroOptions';
+import type { PlatformBundlers } from '../platformBundlers';
 import type {
   AutolinkingModuleResolverInput,
   AutolinkingPlatform,
@@ -29,6 +33,7 @@ import {
   createAutolinkingModuleResolver,
 } from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
+import { createTypescriptResolver } from './createTypescriptResolver';
 import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
 import { isNodeExternal, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
@@ -36,11 +41,6 @@ import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
 import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTransformWorker';
-import { Log } from '../../../log';
-import { env } from '../../../utils/env';
-import { isServerEnvironment } from '../middleware/metroOptions';
-import type { PlatformBundlers } from '../platformBundlers';
-import { createTypescriptResolver } from './createTypescriptResolver';
 
 export type StrictResolver = (moduleName: string) => Resolution;
 export type StrictResolverFactory = (

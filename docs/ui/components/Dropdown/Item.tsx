@@ -64,6 +64,7 @@ export function Item({
           <div className="flex items-center gap-2">
             {Icon && (
               <Icon
+                aria-hidden="true"
                 className={mergeClasses(
                   'icon-sm text-icon-default transition-colors',
                   destructive

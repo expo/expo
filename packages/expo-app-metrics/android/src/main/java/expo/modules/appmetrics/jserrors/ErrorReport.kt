@@ -19,6 +19,7 @@ data class ErrorReport(
   @Field val type: String? = null,
   @Field val message: String = "",
   @Field val stacktrace: String? = null,
+  @Field val componentStack: String? = null,
   @Field val isFatal: Boolean = false
 ) : Record {
   /** Builds the `exception` log event for the live path. */
@@ -29,12 +30,16 @@ data class ErrorReport(
       type = type,
       message = message,
       stacktrace = stacktrace,
+      componentStack = componentStack,
       isFatal = isFatal
     )
 
   /**
    * Snapshots this report for durable on-disk storage, capturing the session it belongs to and the
    * time it happened, both resolved now since by drain time the main session has rotated.
+   *
+   * Only fatal errors are persisted, and those come from the global handler, which has no React
+   * component stack, so `componentStack` isn't carried through this path.
    */
   fun toPendingError(sessionId: String): PendingErrorStore.PendingError =
     PendingErrorStore.PendingError(
@@ -49,7 +54,8 @@ data class ErrorReport(
 
 /** How the error was captured. A closed set so the `expo.error.source` attribute stays consistent. */
 enum class ErrorSource(val rawValue: String) : Enumerable {
-  GLOBAL("global")
+  GLOBAL("global"),
+  ERROR_BOUNDARY("errorBoundary")
 }
 
 /**
@@ -63,6 +69,7 @@ fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
     type = type,
     message = message,
     stacktrace = stacktrace,
+    componentStack = null,
     isFatal = true,
     timestamp = timestamp
   )
@@ -75,7 +82,9 @@ fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
  * `error`. Shared by the live and ingested-fatal paths so both events keep the same shape.
  *
  * Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted, so every `exception`
- * event carries the same attribute keys.
+ * event carries the same attribute keys. The React component stack only exists for error-boundary
+ * captures, so `expo.error.component_stack` is omitted entirely when absent rather than logged as
+ * `null` on every event.
  */
 private fun makeExceptionLogRecord(
   sessionId: String,
@@ -83,16 +92,20 @@ private fun makeExceptionLogRecord(
   type: String?,
   message: String,
   stacktrace: String?,
+  componentStack: String?,
   isFatal: Boolean,
   timestamp: String = TimeUtils.getCurrentTimestampInISOFormat()
 ): LogRecord {
-  val attributes = mapOf(
-    "expo.error.source" to source,
-    "expo.error.is_fatal" to isFatal,
-    "exception.type" to type,
-    "exception.message" to message,
-    "exception.stacktrace" to stacktrace
-  )
+  val attributes = buildMap {
+    put("expo.error.source", source)
+    put("expo.error.is_fatal", isFatal)
+    put("exception.type", type)
+    put("exception.message", message)
+    put("exception.stacktrace", stacktrace)
+    if (componentStack != null) {
+      put("expo.error.component_stack", componentStack)
+    }
+  }
   return LogRecord(
     sessionId = sessionId,
     timestamp = timestamp,

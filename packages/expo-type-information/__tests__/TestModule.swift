@@ -105,6 +105,12 @@ public class TestModule: Module {
       AsyncFunction("TestAsyncFunction") { (a: Int) async -> String in 
         "string"
       }
+
+      StaticAsyncFunction("TestStaticAsyncFunction") { (a: String) async -> Void in }
+
+      StaticFunction("TestStaticFunction") { () async -> String in 
+        "string"
+      }
     }
 
     Class(TestEmptyClass.self) {
@@ -176,8 +182,17 @@ class TestRecordClass: Record {
   var field2: String
 }
 
-enum TestEnum {
+enum TestEnum: String {
   case simpleCase
   case multipleCases1, multipleCases2
   case caseWithArgs1(Int, Double, String), caseWithArgs2(Double, String, Either<Int, String>)
+}
+
+enum IntBackedEnum1: Int {
+  case simpleCase
+  case multipleCases1, multipleCases2
+}
+
+enum IntBackedEnum2: Something, Int, SomethingElse {
+  case simpleCase
 }

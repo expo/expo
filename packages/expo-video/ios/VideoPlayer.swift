@@ -15,7 +15,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   private var tracksLoadingTask: Task<(), Never>?
 
   var loop = false
-  var audioMixingMode: AudioMixingMode = .doNotMix {
+  var audioMixingMode: AudioMixingMode = .auto {
     didSet {
       if oldValue != audioMixingMode {
         VideoManager.shared.setAppropriateAudioSessionOrWarn()
@@ -181,6 +181,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   deinit {
+    observer?.notifyPlayerDeinit(player: self)
     observer?.cleanup()
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)

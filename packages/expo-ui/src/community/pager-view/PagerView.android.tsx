@@ -10,12 +10,12 @@ import {
 } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { wrapNativeEvent, type PagerViewProps } from './types';
 import { worklets } from '../../State';
 import { HorizontalPager, type HorizontalPagerHandle } from '../../jetpack-compose/HorizontalPager';
 import { Host } from '../../jetpack-compose/Host';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
 import { type BuiltinShape, Shapes, clip, fillMaxSize } from '../../jetpack-compose/modifiers';
+import { wrapNativeEvent, type PagerViewProps } from './types';
 
 /**
  * Drop-in replacement for `react-native-pager-view` on Android.

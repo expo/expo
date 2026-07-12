@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import { glob as globAsync } from 'glob';
 import path from 'path';
 
+import { addAllToGitIndexAsync, commitAsync, diffAsync, initializeGitRepoAsync } from '../gitPatch';
 import { moveAsync } from './dir';
 import { generateNativeProjectsAsync, platformSanityCheckAsync } from './generateNativeProjects';
 import * as logger from './logger';
@@ -14,7 +15,6 @@ import {
 } from './normalizeNativeProjects';
 import { resolveFromExpoCli } from './resolveFromExpoCli';
 import { createWorkingDirectoriesAsync, type WorkingDirectories } from './workingDirectories';
-import { addAllToGitIndexAsync, commitAsync, diffAsync, initializeGitRepoAsync } from '../gitPatch';
 
 const debug = require('debug')('patch-project') as typeof console.log;
 

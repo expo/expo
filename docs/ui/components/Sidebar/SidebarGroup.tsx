@@ -22,14 +22,21 @@ import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 import { useRouter } from 'next/compat/router';
+import { useIntl } from 'react-intl';
 
+import {
+  buildLocalePath,
+  getCanonicalPath,
+  getLocaleFromPath,
+  hasJapaneseTranslation,
+} from '~/common/i18n';
 import { isRouteActive } from '~/common/routes';
 import { reportEasTutorialCompleted } from '~/providers/Analytics';
 import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
 import { NavigationRoute } from '~/types/common';
 import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 import { CircularProgressBar } from '~/ui/components/ProgressTracker/CircularProgressBar';
-import { Chapter } from '~/ui/components/ProgressTracker/TutorialData';
+import { type TutorialName } from '~/ui/components/ProgressTracker/TutorialData';
 
 import { SidebarLink } from './SidebarLink';
 import { SidebarSection } from './SidebarSection';
@@ -37,15 +44,9 @@ import { SidebarTitle } from './SidebarTitle';
 import { SidebarNodeProps } from './types';
 
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
-  const {
-    chapters,
-    setChapters,
-    getStartedChapters,
-    setGetStartedChapters,
-    buildWithAiChapters,
-    setBuildWithAiChapters,
-  } = useTutorialChapterCompletion();
+  const { getChapters, isCompleted, resetTutorial } = useTutorialChapterCompletion();
   const router = useRouter();
+  const intl = useIntl();
 
   const title = route.sidebarTitle ?? route.name;
   const Icon = route.hideIcon ? undefined : getIconElement(route.name);
@@ -53,36 +54,44 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const tutorialTracks: Record<
     string,
     {
-      trackChapters: Chapter[];
-      setTrackChapters: (chapters: Chapter[]) => void;
+      name: TutorialName;
       resetHref: string;
       onAllCompleted?: () => void;
     }
   > = {
     'EAS tutorial': {
-      trackChapters: chapters,
-      setTrackChapters: setChapters,
+      name: 'EAS_TUTORIAL',
       resetHref: '/tutorial/eas/introduction/',
       onAllCompleted: reportEasTutorialCompleted,
     },
     'Expo tutorial': {
-      trackChapters: getStartedChapters,
-      setTrackChapters: setGetStartedChapters,
+      name: 'GET_STARTED',
       resetHref: '/tutorial/introduction/',
     },
     'Build with AI tutorial': {
-      trackChapters: buildWithAiChapters,
-      setTrackChapters: setBuildWithAiChapters,
+      name: 'BUILD_WITH_AI',
       resetHref: '/tutorial/build-with-ai/introduction/',
     },
+    'CI/CD tutorial': {
+      name: 'CICD_TUTORIAL',
+      resetHref: '/tutorial/cicd/introduction/',
+    },
   };
-  const tutorialTrack = tutorialTracks[route.children?.[0]?.section ?? ''];
+  const tutorialTrack = tutorialTracks[route.name ?? ''];
 
   if (tutorialTrack && route.children) {
-    const { trackChapters, setTrackChapters, resetHref, onAllCompleted } = tutorialTrack;
-    const allChaptersCompleted = trackChapters.every(chapter => chapter.completed);
-    const completedChaptersCount = trackChapters.filter(chapter => chapter.completed).length;
+    const { name, resetHref, onAllCompleted } = tutorialTrack;
+    const locale = getLocaleFromPath(router?.asPath ?? '/');
+    const localizedResetHref =
+      locale === 'ja' && hasJapaneseTranslation(resetHref)
+        ? buildLocalePath(resetHref, 'ja')
+        : resetHref;
+    const trackChapters = getChapters(name);
     const totalChapters = trackChapters.length;
+    const completedChaptersCount = trackChapters.filter(chapter =>
+      isCompleted(name, chapter.slug)
+    ).length;
+    const allChaptersCompleted = completedChaptersCount === totalChapters;
     const progressPercentage = (completedChaptersCount / totalChapters) * 100;
 
     if (allChaptersCompleted) {
@@ -90,13 +99,12 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
     }
 
     const isChapterCompleted = (childSlug: string) => {
-      return trackChapters.some(chapter => chapter.slug === childSlug && chapter.completed);
+      return isCompleted(name, getCanonicalPath(childSlug));
     };
 
-    const resetTutorial = () => {
+    const handleResetTutorial = () => {
       if (allChaptersCompleted) {
-        const resetChapters = trackChapters.map(chapter => ({ ...chapter, completed: false }));
-        setTrackChapters(resetChapters);
+        resetTutorial(name);
       }
     };
 
@@ -109,7 +117,12 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             </SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="ml-2 text-sm text-tertiary">{`${completedChaptersCount} of ${totalChapters}`}</p>
+              <p className="ml-2 text-sm text-tertiary">
+                {intl.formatMessage(
+                  { id: 'sidebarTutorialProgress' },
+                  { completed: completedChaptersCount, total: totalChapters }
+                )}
+              </p>
             </div>
           </div>
         )}
@@ -127,22 +140,28 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
                 {child.sidebarTitle ?? child.name}
                 {child.hasVideoLink &&
                   (!isSelected ? (
-                    <PlaySquareIcon className="ml-1 inline icon-xs text-icon-secondary" />
+                    <PlaySquareIcon
+                      aria-hidden="true"
+                      className="ml-1 inline icon-xs text-icon-secondary"
+                    />
                   ) : (
-                    <PlaySquareDuotoneIcon className="ml-1 inline icon-xs text-palette-blue11" />
+                    <PlaySquareDuotoneIcon
+                      aria-hidden="true"
+                      className="ml-1 inline icon-xs text-palette-blue11"
+                    />
                   ))}
               </span>
-              {completed && <CheckIcon className="ml-auto icon-sm" />}
+              {completed && <CheckIcon aria-hidden="true" className="ml-auto icon-sm" />}
             </SidebarLink>
           );
         })}
         {allChaptersCompleted && (
           <Button
-            onClick={resetTutorial}
+            onClick={handleResetTutorial}
             theme="secondary"
             className="flex w-full items-center justify-center"
-            href={resetHref}>
-            Reset tutorial
+            href={localizedResetHref}>
+            {intl.formatMessage({ id: 'sidebarResetTutorial' })}
           </Button>
         )}
       </div>
@@ -243,6 +262,8 @@ function getIconElement(iconName?: string) {
       return Star06Icon;
     case 'EAS tutorial':
       return PlanEnterpriseIcon;
+    case 'CI/CD tutorial':
+      return Dataflow03Icon;
     default:
       return undefined;
   }

@@ -1,10 +1,17 @@
 package expo.modules.kotlin.types
 
+import android.app.Application
 import android.graphics.Color
+import android.util.TypedValue
+import androidx.test.core.app.ApplicationProvider
 import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
+import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
 import expo.modules.assertThrows
+import expo.modules.kotlin.AppContext
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -13,6 +20,10 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [30])
 internal class ColorTypeConverterTest {
+  private val appContext = mockk<AppContext> {
+    every { reactContext } returns ApplicationProvider.getApplicationContext<Application>()
+  }
+
   @Test
   fun `converts from CSS named color`() {
     val colorString = DynamicFromObject("papayawhip")
@@ -77,6 +88,28 @@ internal class ColorTypeConverterTest {
     Truth.assertThat(color.red()).isEqualTo(expectedColor[0])
     Truth.assertThat(color.green()).isEqualTo(expectedColor[1])
     Truth.assertThat(color.blue()).isEqualTo(expectedColor[2])
+  }
+
+  @Test
+  fun `converts from Android PlatformColor color`() {
+    val platformColor = DynamicFromObject(platformColor("@android:color/white"))
+
+    val color = convert<Color>(platformColor, appContext)
+
+    Truth.assertThat(color.toArgb()).isEqualTo(Color.WHITE)
+  }
+
+  @Test
+  fun `converts from Android PlatformColor attr`() {
+    val platformColor = DynamicFromObject(platformColor("?android:attr/textColorPrimary"))
+
+    val color = convert<Color>(platformColor, appContext)
+    val expectedColor = TypedValue().let {
+      appContext.reactContext?.theme?.resolveAttribute(android.R.attr.textColorPrimary, it, true)
+      it.data
+    }
+
+    Truth.assertThat(color.toArgb()).isEqualTo(expectedColor)
   }
 
   @Test
@@ -266,5 +299,14 @@ internal class ColorTypeConverterTest {
         convert<Color>(DynamicFromObject(array))
       }
     }
+  }
+
+  private fun platformColor(vararg resourcePaths: String) = JavaOnlyMap().apply {
+    putArray(
+      "resource_paths",
+      JavaOnlyArray().apply {
+        resourcePaths.forEach(::pushString)
+      }
+    )
   }
 }

@@ -1,7 +1,10 @@
 import { PropsWithChildren } from 'react';
 
+import { usePageApiVersion } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
+import versions from '~/public/static/constants/versions.json';
 import { Terminal, type PackageManagerCommandSet } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 import { A, P, CODE } from '~/ui/components/Text';
 
 type InstallSectionProps = PropsWithChildren<{
@@ -58,7 +61,40 @@ export default function InstallSection({
   );
 }
 
-export const APIInstallSection = (props: InstallSectionProps) => {
-  const { packageName } = usePageMetadata();
-  return <InstallSection {...props} packageName={props.packageName ?? packageName} />;
+type APIInstallSectionProps = Omit<InstallSectionProps, 'packageName'> & { packageName?: string };
+
+export const APIInstallSection = (props: APIInstallSectionProps) => {
+  const { packageName, exampleName } = usePageMetadata();
+  const { version } = usePageApiVersion();
+  const resolvedPackageName = props.packageName ?? packageName ?? '';
+  const isLatestVersion = version === 'latest' || version === versions.LATEST_VERSION;
+
+  if (!exampleName || !isLatestVersion) {
+    return <InstallSection {...props} packageName={resolvedPackageName} />;
+  }
+
+  return (
+    <Tabs>
+      <Tab label="Install library">
+        <InstallSection {...props} packageName={resolvedPackageName} />
+      </Tab>
+      <Tab label="Start with an example">
+        <P className="mb-4">
+          The{' '}
+          <A href={`https://github.com/expo/examples/tree/master/${exampleName}`}>
+            <CODE>{exampleName}</CODE>
+          </A>{' '}
+          example comes with <CODE>{resolvedPackageName}</CODE> already installed and configured:
+        </P>
+        <Terminal
+          cmd={{
+            npm: [`$ npx create-expo-app --example ${exampleName}`],
+            yarn: [`$ yarn create expo-app --example ${exampleName}`],
+            pnpm: [`$ pnpm create expo-app --example ${exampleName}`],
+            bun: [`$ bun create expo --example ${exampleName}`],
+          }}
+        />
+      </Tab>
+    </Tabs>
+  );
 };

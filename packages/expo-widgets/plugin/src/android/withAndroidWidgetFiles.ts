@@ -105,7 +105,7 @@ const createWidgetInfoXml = (widget: WidgetConfig): string => {
   android:targetCellWidth="${android.targetCellWidth}"
   android:targetCellHeight="${android.targetCellHeight}"
   android:updatePeriodMillis="0"
-  android:initialLayout="@layout/glance_default_loading_layout"
+  android:initialLayout="@layout/expo_widgets_initial_layout"
   android:description="@string/${getWidgetDescriptionResourceName(widget)}"
   android:resizeMode="${getWidgetResizeMode(widget)}"
   android:widgetCategory="home_screen" />

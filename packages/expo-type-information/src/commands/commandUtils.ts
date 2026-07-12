@@ -59,9 +59,8 @@ export function addCommonOptions(command: commander.Command): commander.Command 
     )
     .option(
       '-t, --type-inference <typeInference>',
-      // TODO(@HubertBer) Fix the PREPROCESS_AND_INFERENCE option.
       'Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`.',
-      'SIMPLE_INFERENCE'
+      'PREPROCESS_AND_INFERENCE'
     )
     .option(
       '-s, --skip-unicode-character-mapping',

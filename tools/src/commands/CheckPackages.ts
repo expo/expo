@@ -10,6 +10,8 @@ type CheckOptions = {
   test: boolean;
   lint: boolean;
   fixLint: boolean;
+  format: boolean;
+  fixFormat: boolean;
   dependencyCheck: boolean;
 };
 
@@ -29,6 +31,8 @@ export default (program: Command) => {
     .option('--no-test', 'Whether to skip the `test` task.', false)
     .option('--no-lint', 'Whether to skip the `lint` task.', false)
     .option('--fix-lint', 'Whether to run `lint` with `--fix`.', false)
+    .option('--no-format', 'Whether to skip the `format` task.', false)
+    .option('--fix-format', 'Whether to run the `format` task with `--write`.', false)
     .option('--no-dependency-check', 'Whether to skip the `depscheck` task.', false)
     .description('Checks if packages build successfully and their tests pass (via Turborepo).')
     .asyncAction(main);
@@ -79,6 +83,17 @@ async function main(packageNames: string[], options: CheckOptions): Promise<void
         affected,
         scmBase,
         passthroughArgs: ['--fix'],
+      });
+    }
+
+    // Run `format` alone so its passthrough isn't forwarded to the other tasks.
+    if (options.format) {
+      await runTurboTasksAsync(['format'], {
+        filters,
+        affected,
+        scmBase,
+        passthroughArgs: options.fixFormat ? [] : ['--check'],
+        continueOnError: true,
       });
     }
   } catch (error: any) {

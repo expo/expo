@@ -10,7 +10,6 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll create our example app's production version and submit it for testing using TestFlight. After that, we'll submit them for App Store review to get it on the App Store.
@@ -171,15 +170,7 @@ For future releases, we can streamline the process by combining build creation a
 
 ## Summary
 
-<ProgressTracker
-  currentChapterIndex={8}
-  name="EAS_TUTORIAL"
-  summary={
-    <>
-      We successfully created a production-ready iOS build, discussed distribution using TestFlight
-      and Apple App Store using <CODE>eas submit</CODE>, and automated the release process with the{' '}
-      <CODE>--auto-submit</CODE>.
-    </>
+<ProgressTracker name="EAS_TUTORIAL" currentChapterSlug="/tutorial/eas/ios-production-build" />
   }
   nextChapterDescription="In the next chapter, learn how to use the EAS Update to send OTA updates and share previews with our team."
   nextChapterTitle="Share previews with your team"

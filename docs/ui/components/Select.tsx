@@ -58,6 +58,7 @@ export function Select({
           aria-label={ariaLabel}
           rightSlot={
             <ChevronDownIcon
+              aria-hidden="true"
               className={mergeClasses('icon-sm text-icon-secondary', size === 'lg' && 'icon-md')}
             />
           }
@@ -87,7 +88,7 @@ export function Select({
           )}
           data-orientation="horizontal">
           <SelectPrimitive.ScrollUpButton className="flex h-7 items-center justify-center rounded-t-md bg-element">
-            <ChevronUpIcon className="icon-sm text-icon-secondary" />
+            <ChevronUpIcon aria-hidden="true" className="icon-sm text-icon-secondary" />
           </SelectPrimitive.ScrollUpButton>
           <SelectPrimitive.Viewport>
             <SelectPrimitive.Group>
@@ -114,7 +115,10 @@ export function Select({
                       {leftSlot}
                       {Icon && (
                         <SelectPrimitive.Icon>
-                          <Icon className={mergeClasses('icon-sm', size === 'lg' && 'icon-md')} />
+                          <Icon
+                            aria-hidden="true"
+                            className={mergeClasses('icon-sm', size === 'lg' && 'icon-md')}
+                          />
                         </SelectPrimitive.Icon>
                       )}
                       {imageUrl && (
@@ -126,6 +130,7 @@ export function Select({
                   </SelectPrimitive.ItemText>
                   <SelectPrimitive.ItemIndicator>
                     <CheckIcon
+                      aria-hidden="true"
                       className={mergeClasses(
                         'icon-sm shrink-0 text-icon-secondary',
                         size === 'lg' && 'icon-md'
@@ -137,7 +142,7 @@ export function Select({
             </SelectPrimitive.Group>
           </SelectPrimitive.Viewport>
           <SelectPrimitive.ScrollDownButton className="flex h-7 items-center justify-center rounded-b-md bg-element">
-            <ChevronDownIcon className="icon-sm text-icon-secondary" />
+            <ChevronDownIcon aria-hidden="true" className="icon-sm text-icon-secondary" />
           </SelectPrimitive.ScrollDownButton>
         </SelectPrimitive.Content>
       </SelectPrimitive.Portal>

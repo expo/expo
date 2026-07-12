@@ -216,7 +216,10 @@ const renderType = (
               'mt-3.5 flex flex-row items-start gap-2'
             )}>
             <div className="flex flex-row items-center gap-2">
-              <CornerDownRightIcon className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary" />
+              <CornerDownRightIcon
+                aria-hidden="true"
+                className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
+              />
               <span className={STYLES_SECONDARY}>Returns:</span>
             </div>
             <CALLOUT>

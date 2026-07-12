@@ -1,9 +1,9 @@
 import { ThemeProvider } from 'ThemeProvider';
 import BenchmarkHelper from 'benchmark-helper';
+import * as DevMenu from 'expo-dev-menu';
 import { Observe, ObserveRoot } from 'expo-observe';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
-import * as DevMenu from 'expo-dev-menu';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
 
@@ -70,7 +70,7 @@ Observe.configure({
   dispatchingEnabled: true,
   sampleRate: 0.9,
   integrations: {
-    'react-navigation': true,
+    'react-navigation': { filteredParams: ['accountId', 'firstName'] },
   },
 });
 

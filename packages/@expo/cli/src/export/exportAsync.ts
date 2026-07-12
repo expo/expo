@@ -1,14 +1,14 @@
 import chalk from 'chalk';
 import path from 'path';
 
-import { exportAppAsync } from './exportApp';
-import type { Options } from './resolveOptions';
 import * as Log from '../log';
 import { waitUntilAtlasExportIsReadyAsync } from '../start/server/metro/debugging/attachAtlas';
 import { FileNotifier } from '../utils/FileNotifier';
 import { ensureDirectoryAsync, removeAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { ensureProcessExitsAfterDelay } from '../utils/exit';
+import { exportAppAsync } from './exportApp';
+import type { Options } from './resolveOptions';
 
 export async function exportAsync(projectRoot: string, options: Options) {
   // Ensure the output directory is created

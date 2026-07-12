@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Extended `SourceSkips.ExpoConfigVersions` to also strip the platform-specific version overrides `ios.version` and `android.version` (which take precedence over the top-level `version`). Projects already setting this flag will see their fingerprint hash change after upgrading.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -11,6 +13,8 @@
 - Fixed unstable fingerprint for iOS precompiled modules. ([#46466](https://github.com/expo/expo/pull/46466) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Added more default `getConfig` exclusion packages. ([#47503](https://github.com/expo/expo/pull/47503) by [@kudo](https://github.com/kudo))
 
 ## 0.19.3 — 2026-05-26
 

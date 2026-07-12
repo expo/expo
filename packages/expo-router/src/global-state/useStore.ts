@@ -5,15 +5,6 @@ import type { ComponentType } from 'react';
 import { Fragment, useEffect } from 'react';
 import { Platform } from 'react-native';
 
-import { getRouteInfoFromState } from './getRouteInfoFromState';
-import { getCachedRouteInfo, setCachedRouteInfo } from './routeInfoCache';
-import {
-  store,
-  storeRef,
-  getSplashScreenAnimationFrame,
-  setSplashScreenAnimationFrame,
-} from './store';
-import type { ReactNavigationState, StoreRedirects } from './types';
 import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
 import { routePatternToRegex } from '../fork/getStateFromPath-forks';
 import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
@@ -24,6 +15,15 @@ import { useNavigationContainerRef } from '../react-navigation/native';
 import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
+import { getRouteInfoFromState } from './getRouteInfoFromState';
+import { getCachedRouteInfo, setCachedRouteInfo } from './routeInfoCache';
+import {
+  store,
+  storeRef,
+  getSplashScreenAnimationFrame,
+  setSplashScreenAnimationFrame,
+} from './store';
+import type { ReactNavigationState, StoreRedirects } from './types';
 
 export function useStore(
   context: RequireContext,
@@ -92,10 +92,6 @@ export function useStore(
     rootComponent = Fragment;
   }
 
-  if (Platform.OS === 'android' && storeRef.current.state && storeRef.current.context === context) {
-    initialState = storeRef.current.state;
-  }
-
   storeRef.current = {
     navigationRef,
     routeNode,
@@ -104,7 +100,6 @@ export function useStore(
     linking,
     redirects,
     state: initialState,
-    context,
   };
 
   if (initialState) {

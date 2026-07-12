@@ -24,10 +24,7 @@ const appBundlePath = join(outputDir, 'app.bundle');
 const indexHtmlPath = join(outputDir, defaultDomComponentsBundle, 'index.html');
 
 const forceArgvIdx = argv.findIndex((item) => item === '-f' || item === '--force');
-if (
-  forceArgvIdx === -1 &&
-  existsSync(join(outputDir, outputLogBoxBundle))
-) {
+if (forceArgvIdx === -1 && existsSync(join(outputDir, outputLogBoxBundle))) {
   process.exit(0);
 } else if (forceArgvIdx !== -1) {
   argv.splice(forceArgvIdx, 1);

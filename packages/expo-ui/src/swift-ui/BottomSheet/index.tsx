@@ -5,7 +5,7 @@ import { type NativeSyntheticEvent } from 'react-native';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type BottomSheetProps = {
+export interface BottomSheetProps extends CommonViewModifierProps {
   /**
    * The children of the `BottomSheet` component.
    * Use `Group` to wrap your content and apply presentation modifiers
@@ -31,7 +31,7 @@ export type BottomSheetProps = {
    * @default false
    */
   fitToContents?: boolean;
-} & CommonViewModifierProps;
+}
 
 type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsPresentedChange' | 'onDismiss'> & {
   onIsPresentedChange: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;

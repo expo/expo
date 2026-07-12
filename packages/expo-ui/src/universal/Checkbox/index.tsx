@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { CheckboxProps } from './types';
 import { useFocusVisible } from '../hooks';
 import { colors, createWebComponent, durations, easings, shadows } from '../webUtils';
+import type { CheckboxProps } from './types';
 
 const Input = createWebComponent('input');
 

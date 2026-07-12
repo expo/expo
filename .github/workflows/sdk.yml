@@ -68,7 +68,7 @@ jobs:
         if: github.event_name == 'schedule' ||
           github.event.inputs.checkAll == 'check-all'
         run: |
-          pnpm turbo run build typecheck depscheck test lint \
+          pnpm turbo run build typecheck depscheck test lint format \
             --filter="./packages/**" \
             --continue=dependencies-successful
 
@@ -83,13 +83,13 @@ jobs:
             --filter="./packages/**" \
             --continue=dependencies-successful
 
-      - name: ✨ Lint changed packages
+      - name: ✨ Lint & format changed packages
         if: github.event_name != 'schedule' &&
           github.event.inputs.checkAll != 'check-all'
         env:
           TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
         run: |
-          pnpm turbo run depscheck lint \
+          pnpm turbo run depscheck lint format \
             --filter="{./packages/**}[$TURBO_SCM_BASE...HEAD]" \
             --continue
 

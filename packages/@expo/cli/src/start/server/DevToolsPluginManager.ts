@@ -1,8 +1,8 @@
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
 
-import { DevToolsPlugin } from './DevToolsPlugin';
 import { events } from '../../events';
 import { Log } from '../../log';
+import { DevToolsPlugin } from './DevToolsPlugin';
 
 const debug = require('debug')('expo:start:server:devtools');
 

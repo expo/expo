@@ -4,8 +4,6 @@ import fs from 'fs/promises';
 import path from 'path';
 import { pipeline, type Readable } from 'stream';
 
-import { FileHookTransform } from './FileHookTransform';
-import { ReactImportsPatchTransform } from './ReactImportsPatcher';
 import type {
   DebugInfoDir,
   DebugInfoFile,
@@ -23,6 +21,8 @@ import { createLimiter, type Limiter } from '../utils/Concurrency';
 import { isIgnoredPathWithMatchObjects, toPosixPath } from '../utils/Path';
 import { nonNullish } from '../utils/Predicates';
 import { profile } from '../utils/Profile';
+import { FileHookTransform } from './FileHookTransform';
+import { ReactImportsPatchTransform } from './ReactImportsPatcher';
 
 /**
  * Create a `Fingerprint` from `HashSources` array

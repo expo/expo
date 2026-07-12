@@ -77,9 +77,9 @@ class AesCryptoModule : Module() {
       }
 
       StaticFunction("fromParts", this@AesCryptoModule::sealedDataFromParts)
-      StaticFunction("fromCombined") { combined: ByteArray, config: SealedDataConfig? ->
+      StaticFunction("fromCombined") { combined: BinaryInput, config: SealedDataConfig? ->
         val config = config ?: SealedDataConfig()
-        SealedData(config, content = combined)
+        SealedData(config, content = combined.toBytes())
       }
 
       AsyncFunction("iv") { sealedData: SealedData, format: DataFormat? ->

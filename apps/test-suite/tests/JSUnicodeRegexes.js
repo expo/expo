@@ -316,7 +316,7 @@ export function test({ describe, it, xit, expect }) {
 
     describe('case-insensitive with /u (ui flags)', () => {
       it('basic ASCII case insensitive', () => {
-        const re = /^[a-z]+$/ui;
+        const re = /^[a-z]+$/iu;
         expect(re.test('hello')).toBe(true);
         expect(re.test('HELLO')).toBe(true);
         expect(re.test('Hello')).toBe(true);
@@ -324,7 +324,7 @@ export function test({ describe, it, xit, expect }) {
 
       it('Unicode case equivalence: K (U+212A) matches k', () => {
         // U+212A is KELVIN SIGN, which case-folds to 'k'
-        const re = /k/ui;
+        const re = /k/iu;
         expect(re.test('k')).toBe(true);
         expect(re.test('K')).toBe(true);
         expect(re.test('\u212A')).toBe(true); // Kelvin sign
@@ -332,20 +332,20 @@ export function test({ describe, it, xit, expect }) {
 
       it('Unicode case equivalence: long s (U+017F) matches s', () => {
         // U+017F is LATIN SMALL LETTER LONG S, which case-folds to 's'
-        const re = /s/ui;
+        const re = /s/iu;
         expect(re.test('s')).toBe(true);
         expect(re.test('S')).toBe(true);
         expect(re.test('\u017F')).toBe(true); // ſ (long s)
       });
 
       it('case insensitive match for accented characters', () => {
-        const re = /é/ui;
+        const re = /é/iu;
         expect(re.test('\u00E9')).toBe(true); // é
         expect(re.test('\u00C9')).toBe(true); // É
       });
 
       it('case insensitive with character class range', () => {
-        const re = /^[a-z]$/ui;
+        const re = /^[a-z]$/iu;
         expect(re.test('A')).toBe(true);
         expect(re.test('z')).toBe(true);
         expect(re.test('Z')).toBe(true);
@@ -357,18 +357,18 @@ export function test({ describe, it, xit, expect }) {
       it('case insensitive with astral characters', () => {
         // Most astral characters don't have case variants
         // But the flag combination should still work
-        const re = /\u{1F600}/ui;
+        const re = /\u{1F600}/iu;
         expect(re.test('\u{1F600}')).toBe(true);
       });
 
       it('Greek case insensitive', () => {
-        const re = /α/ui;
+        const re = /α/iu;
         expect(re.test('α')).toBe(true); // lowercase alpha
         expect(re.test('Α')).toBe(true); // uppercase Alpha
       });
 
       it('Cyrillic case insensitive', () => {
-        const re = /б/ui;
+        const re = /б/iu;
         expect(re.test('б')).toBe(true); // lowercase
         expect(re.test('Б')).toBe(true); // uppercase
       });
@@ -604,13 +604,13 @@ export function test({ describe, it, xit, expect }) {
       });
 
       it('/siu dotAll case-insensitive unicode', () => {
-        const re = /^.$/siu;
+        const re = /^.$/isu;
         expect(re.test('\n')).toBe(true);
         expect(re.test('😀')).toBe(true);
       });
 
       it('/yu sticky unicode', () => {
-        const re = /./yu;
+        const re = /./uy;
         re.lastIndex = 0;
         const match = re.exec('😀A');
         expect(match[0]).toBe('😀');
@@ -737,7 +737,7 @@ export function test({ describe, it, xit, expect }) {
       });
 
       it('validate hex color with /u', () => {
-        const re = /^#[0-9a-f]{6}$/ui;
+        const re = /^#[0-9a-f]{6}$/iu;
         expect(re.test('#FF8800')).toBe(true);
         expect(re.test('#ff8800')).toBe(true);
         expect(re.test('#GGGGGG')).toBe(false);

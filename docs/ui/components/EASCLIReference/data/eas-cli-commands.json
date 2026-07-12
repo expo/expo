@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-06-19T11:22:00.287Z",
-    "cliVersion": "20.3.0"
+    "fetchedAt": "2026-07-10T09:08:01.483Z",
+    "cliVersion": "20.5.1"
   },
-  "totalCommands": 127,
+  "totalCommands": 125,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -317,11 +317,6 @@
       "usage": "USAGE\n  $ eas init [--id <value>] [--force] [--non-interactive]\n\nFLAGS\n  --force            Whether to create a new project/link an existing project without additional prompts or overwrite\n                     any existing project ID when running with --id flag\n  --id=<value>       ID of the EAS project to link\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create or link an EAS project\n\nALIASES\n  $ eas init"
     },
     {
-      "command": "eas init:onboarding [TARGET_PROJECT_DIRECTORY]",
-      "description": "continue onboarding process started on the https://expo.new website.",
-      "usage": "USAGE\n  $ eas init:onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding"
-    },
-    {
       "command": "eas integrations:asc:connect",
       "description": "connect a project to an App Store Connect app",
       "usage": "USAGE\n  $ eas integrations:asc:connect [--api-key-id <value>] [--asc-app-id <value>] [--bundle-id <value>] [--json]\n    [--non-interactive]\n\nFLAGS\n  --api-key-id=<value>  Apple App Store Connect API Key ID\n  --asc-app-id=<value>  App Store Connect app identifier\n  --bundle-id=<value>   Filter discovered apps by bundle identifier\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n\nDESCRIPTION\n  connect a project to an App Store Connect app"
@@ -437,14 +432,14 @@
       "usage": "USAGE\n  $ eas observe:routes [--platform android|ios] [--metric cold_ttr|warm_ttr|nav_tti...] [--stat\n    median|med|p90|count|event_count|eventCount...] [--after <value>] [--limit <value>] [--start <value> | --days\n    <value>] [--end <value> | ] [--app-version <value>] [--update-id <value>] [--build-number <value>] [--route-name\n    <value>...] [--project-id <value>] [--json] [--non-interactive]\n\nFLAGS\n  --after=<value>          Cursor for pagination. Use the endCursor from a previous query to fetch the next page.\n  --app-version=<value>    Filter by app version\n  --build-number=<value>   Filter by app build number\n  --days=<value>           Show results from the last N days (mutually exclusive with --start/--end)\n  --end=<value>            End of time range (ISO date)\n  --json                   Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --limit=<value>          The number of items to fetch each query. Defaults to 50 and is capped at 200.\n  --metric=<option>...     Navigation metric to display (can be specified multiple times). Defaults to all three.\n                           <options: cold_ttr|warm_ttr|nav_tti>\n  --non-interactive        Run the command in non-interactive mode.\n  --platform=<option>      Filter by platform\n                           <options: android|ios>\n  --project-id=<value>     EAS project ID (defaults to the project ID of the current directory)\n  --route-name=<value>...  Filter by route name (can be specified multiple times to include several routes)\n  --start=<value>          Start of time range (ISO date)\n  --stat=<option>...       Statistic to display per metric (can be specified multiple times)\n                           <options: median|med|p90|count|event_count|eventCount>\n  --update-id=<value>      Filter by EAS update ID\n\nDESCRIPTION\n  display app navigation route metrics (Cold TTR, Warm TTR, TTI) grouped by route name"
     },
     {
+      "command": "eas observe:session SESSIONID",
+      "description": "display the timeline of metric and log events for a specific session",
+      "usage": "USAGE\n  $ eas observe:session SESSIONID [--project-id <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  SESSIONID  Session ID to inspect\n\nFLAGS\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n  --project-id=<value>  EAS project ID (defaults to the project ID of the current directory)\n\nDESCRIPTION\n  display the timeline of metric and log events for a specific session"
+    },
+    {
       "command": "eas observe:versions",
       "description": "display app versions with build and update details",
       "usage": "USAGE\n  $ eas observe:versions [--platform android|ios] [--start <value> | --days <value>] [--end <value> | ] [--project-id\n    <value>] [--json] [--non-interactive]\n\nFLAGS\n  --days=<value>        Show results from the last N days (mutually exclusive with --start/--end)\n  --end=<value>         End of time range (ISO date)\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n  --platform=<option>   Filter by platform\n                        <options: android|ios>\n  --project-id=<value>  EAS project ID (defaults to the project ID of the current directory)\n  --start=<value>       Start of time range (ISO date)\n\nDESCRIPTION\n  display app versions with build and update details"
-    },
-    {
-      "command": "eas onboarding [TARGET_PROJECT_DIRECTORY]",
-      "description": "continue onboarding process started on the https://expo.new website.",
-      "usage": "USAGE\n  $ eas onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding"
     },
     {
       "command": "eas open",
@@ -465,11 +460,6 @@
       "command": "eas project:new [PATH]",
       "description": "Create a new project configured with Expo Application Services (EAS)",
       "usage": "USAGE\n  $ eas project:new [PATH] [-p bun|npm|pnpm|yarn]\n\nARGUMENTS\n  [PATH]  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=<option>  [default: npm] Package manager to use for installing dependencies\n                                  <options: bun|npm|pnpm|yarn>\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new"
-    },
-    {
-      "command": "eas project:onboarding [TARGET_PROJECT_DIRECTORY]",
-      "description": "continue onboarding process started on the https://expo.new website.",
-      "usage": "USAGE\n  $ eas project:onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding"
     },
     {
       "command": "eas submit",
@@ -609,7 +599,7 @@
     {
       "command": "eas workflow:create [NAME]",
       "description": "create a new workflow configuration YAML file",
-      "usage": "USAGE\n  $ eas workflow:create [NAME] [--skip-validation]\n\nARGUMENTS\n  [NAME]  Name of the workflow file (must end with .yml or .yaml)\n\nFLAGS\n  --skip-validation  If set, the workflow file will not be validated before being created\n\nDESCRIPTION\n  create a new workflow configuration YAML file"
+      "usage": "USAGE\n  $ eas workflow:create [NAME] [--template build|update|deploy|custom] [--skip-validation]\n\nARGUMENTS\n  [NAME]  Name of the workflow file. When provided without --template, a placeholder workflow is created.\n\nFLAGS\n  --skip-validation    If set, the workflow file will not be validated before being created\n  --template=<option>  Template to use for the workflow file\n                       <options: build|update|deploy|custom>\n\nDESCRIPTION\n  create a new workflow configuration YAML file"
     },
     {
       "command": "eas workflow:logs [ID]",

@@ -3,17 +3,20 @@ package expo.modules.kotlin.types
 import android.graphics.Color
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.toColorInt
+import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.Dynamic
+import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.DynamicCastException
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.SingleType
-import androidx.core.graphics.toColorInt
-import com.facebook.react.bridge.ReadableArray
 
 /**
  * Color components for named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color)
@@ -360,11 +363,25 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Color {
     return when (value.type) {
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())
-      ReadableType.String -> colorFromString(value.asString() ?: throw DynamicCastException(String::class))
+      ReadableType.String -> colorFromString(
+        value.asString() ?: throw DynamicCastException(String::class)
+      )
+
       ReadableType.Array -> {
-        val colorsArray = (value.asArray() ?: throw DynamicCastException(ReadableArray::class)).toArrayList().map { it as Double }.toDoubleArray()
+        val rawArray = value.asArray()
+          ?: throw DynamicCastException(ReadableArray::class)
+        val colorsArray = rawArray
+          .toArrayList()
+          .map { it as Double }
+          .toDoubleArray()
         colorFromDoubleArray(colorsArray)
       }
+
+      ReadableType.Map -> {
+        val colorMap = value.asMap() ?: throw DynamicCastException(ReadableMap::class)
+        colorFromReadableMap(colorMap, context)
+      }
+
       else -> throw UnexpectedException("Unknown argument type: ${value.type}")
     }
   }
@@ -374,12 +391,19 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
       is Int -> {
         colorFromInt(value)
       }
+
       is String -> {
         colorFromString(value)
       }
+
       is DoubleArray -> {
         colorFromDoubleArray(value)
       }
+
+      is ReadableMap -> {
+        colorFromReadableMap(value, context)
+      }
+
       else -> throw UnexpectedException("Unknown argument type: ${value::class}")
     }
   }
@@ -419,6 +443,12 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
     return Color.valueOf(normalizedValue.toColorInt())
   }
 
+  private fun colorFromReadableMap(value: ReadableMap, context: AppContext?): Color {
+    val reactContext = context?.reactContext ?: throw Exceptions.ReactContextLost()
+    return ColorPropConverter.getColorInstance(value, reactContext)
+      ?: throw UnexpectedException("ColorPropConverter returned null for a non-null color value.")
+  }
+
   override fun getCppRequiredTypes(): ExpectedType =
     ExpectedType(
       SingleType(CppType.INT),
@@ -426,6 +456,9 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
       SingleType(
         CppType.PRIMITIVE_ARRAY,
         arrayOf(ExpectedType(CppType.DOUBLE))
+      ),
+      SingleType(
+        CppType.READABLE_MAP
       )
     )
 

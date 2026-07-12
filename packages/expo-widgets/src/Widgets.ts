@@ -1,4 +1,4 @@
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 import { Platform } from 'react-native';
 
 import ExpoWidgetsModule from './ExpoWidgets';
@@ -10,6 +10,7 @@ import type {
   NativeLiveActivityFactory,
   NativeWidgetObject,
   PushTokenEvent,
+  WidgetConfigurationEnum,
   WidgetEnvironment,
   WidgetTimelineEntry,
 } from './Widgets.types';
@@ -79,6 +80,17 @@ export class Widget<
       props: entry.props as PropsType,
     }));
   }
+
+  /**
+   * Replaces the runtime options for a dynamic enum configuration parameter.
+   * The app config values remain the fallback when no runtime options are set.
+   */
+  setConfigurationParameterEnum(
+    parameterName: keyof ConfigurationType & string,
+    options?: WidgetConfigurationEnum[]
+  ) {
+    this.nativeWidgetObject.setConfigurationParameterEnum(parameterName, options);
+  }
 }
 
 /**
@@ -94,9 +106,10 @@ export class LiveActivity<T extends object = object> {
   /**
    * Updates the Live Activity's content. The UI reflects the new properties immediately.
    * @param props The updated content properties.
+   * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
    */
-  update(props: T): Promise<void> {
-    return this.nativeLiveActivity.update(JSON.stringify(props));
+  update(props: T, staleDate?: Date): Promise<void> {
+    return this.nativeLiveActivity.update(JSON.stringify(props), staleDate?.getTime());
   }
 
   /**
@@ -164,10 +177,13 @@ export class LiveActivityFactory<T extends object = object> {
    * Starts a new Live Activity with the given properties.
    * @param props The initial content properties for the Live Activity.
    * @param url An optional URL to associate with the Live Activity, used for deep linking.
+   * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
    * @returns The new Live Activity instance.
    */
-  start(props: T, url?: string) {
-    return new LiveActivity<T>(this.nativeLiveActivityFactory.start(JSON.stringify(props), url));
+  start(props: T, url?: string, staleDate?: Date) {
+    return new LiveActivity<T>(
+      this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime())
+    );
   }
 
   /**

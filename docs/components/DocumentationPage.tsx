@@ -1,6 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
+import dynamic from 'next/dynamic';
 import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
 import { getLocaleFromPath } from '~/common/i18n';
@@ -21,7 +22,7 @@ import { buildBreadcrumbListSchema, buildTechArticleSchema } from '~/constants/s
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
-import { AskPageAIOverlay } from '~/ui/components/AskPageAI';
+import { AskPageAILoading } from '~/ui/components/AskPageAI/AskPageAILoading';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { InlineHelp } from '~/ui/components/InlineHelp';
@@ -36,6 +37,11 @@ import {
 import { A } from '~/ui/components/Text';
 
 const { LATEST_VERSION } = versions;
+
+const AskPageAILazyMount = dynamic(() => import('~/ui/components/AskPageAI/AskPageAILazyMount'), {
+  ssr: false,
+  loading: () => <AskPageAILoading />,
+});
 
 export type DocPageProps = PropsWithChildren<PageMetadata>;
 
@@ -56,6 +62,7 @@ export default function DocumentationPage({
 }: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const [isAskAIVisible, setAskAIVisible] = useState(false);
+  const [hasActivatedAskAI, setHasActivatedAskAI] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isAskAIExpanded, setAskAIExpanded] = useState(false);
   const [didChatForceSidebarCollapse, setDidChatForceSidebarCollapse] = useState(false);
@@ -186,6 +193,12 @@ export default function DocumentationPage({
       return;
     }
     window.sessionStorage.setItem('expo-docs-ask-ai-visible', String(isAskAIVisible));
+  }, [isAskAIVisible]);
+
+  useEffect(() => {
+    if (isAskAIVisible) {
+      setHasActivatedAskAI(true);
+    }
   }, [isAskAIVisible]);
 
   useEffect(() => {
@@ -358,6 +371,13 @@ export default function DocumentationPage({
           )}
         />
         <main className={mergeClasses('mx-auto px-14 pt-10', 'max-lg:px-4 max-lg:pt-5')}>
+          <p className="sr-only">
+            This documentation is available as Markdown for AI agents and LLMs. See the{' '}
+            <A openInNewTab href="/llms.txt">
+              full Markdown index
+            </A>{' '}
+            or append .md to any documentation URL.
+          </p>
           {version && version === 'unversioned' && (
             <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
               This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
@@ -392,8 +412,8 @@ export default function DocumentationPage({
           modificationDate={modificationDate}
         />
       </DocumentationNestedScrollLayout>
-      {isAskAIEligiblePage && (
-        <AskPageAIOverlay
+      {isAskAIEligiblePage && hasActivatedAskAI && (
+        <AskPageAILazyMount
           onClose={handleAskAIChatClose}
           onMinimize={handleAskAIMinimize}
           pageTitle={title}

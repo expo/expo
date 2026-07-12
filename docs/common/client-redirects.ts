@@ -247,6 +247,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
   '/introduction/walkthrough/': '/tutorial/introduction/',
 
+  // Redirects and rewrites guide was consolidated into the reference page
+  '/router/advanced/redirects/': '/router/reference/redirects/',
+
   // Redirects after Expo Router docs reorganization from Home to Guides
   '/routing/next-steps/': '/router/introduction/',
   '/routing/introduction/': '/router/introduction/',

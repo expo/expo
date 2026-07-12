@@ -21,10 +21,10 @@ To create a new project, use the default template which includes base TypeScript
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
-    yarn: ['$ yarn create expo-app --template default@sdk-56'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
-    bun: ['$ bun create expo --template default@sdk-56'],
+    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
+    yarn: ['$ yarn create expo-app --template default@sdk-57'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
+    bun: ['$ bun create expo --template default@sdk-57'],
   }}
 />
 
@@ -176,7 +176,7 @@ When using path aliases, consider the following:
 - If not using TypeScript, **jsconfig.json** can serve as an alternative to **tsconfig.json**.
 - Path aliases add additional resolution time when defined.
 - Path aliases are only supported by Metro (including Metro web) and not by the deprecated `@expo/webpack-config`.
-- Bare projects require additional setup for this feature. See the [Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
+- [Existing React Native projects](/bare/overview/) require additional setup for this feature. See the [Metro setup guide](/versions/latest/config/metro#existing-react-native-apps) for more information.
 
 </Step>
 
@@ -210,7 +210,7 @@ When using absolute imports, consider the following:
 - Restarting Expo CLI is necessary to update [`compilerOptions.baseUrl`](https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url) after modifying the **tsconfig.json**.
 - If you're not using TypeScript, **jsconfig.json** can serve as an alternative to **tsconfig.json**.
 - Absolute imports are only supported by Metro (including Metro web) and not by `@expo/webpack-config`.
-- Bare projects require additional setup for this feature. See the [versioned Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
+- Existing React Native projects require additional setup for this feature. See the [versioned Metro setup guide](/versions/latest/config/metro#existing-react-native-apps) for more information.
 
 </Step>
 

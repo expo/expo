@@ -3,11 +3,11 @@ import { convertRequest, respond } from 'expo-server/adapter/http';
 import type * as http from 'http';
 import send from 'send';
 
-import { ExpoMiddleware } from './ExpoMiddleware';
-import type { ServerRequest, ServerResponse } from './server.types';
 import type { DevToolsPlugin } from '../DevToolsPlugin';
 import type DevToolsPluginManager from '../DevToolsPluginManager';
 import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import { ExpoMiddleware } from './ExpoMiddleware';
+import type { ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:devToolsPlugin') as typeof console.log;
 
@@ -77,9 +77,10 @@ export class DevToolsPluginMiddleware extends ExpoMiddleware {
     urlInPluginRoot: string
   ): Promise<boolean> {
     const originalUrl = req.url;
+    let request: Request | undefined;
     try {
       req.url = urlInPluginRoot;
-      const request = convertRequest(req as http.IncomingMessage, res as http.ServerResponse);
+      request = convertRequest(req as http.IncomingMessage, res as http.ServerResponse);
       const handler = await plugin.getRequestHandlerAsync();
       const response = await handler?.(request);
       if (response == null) {
@@ -89,6 +90,9 @@ export class DevToolsPluginMiddleware extends ExpoMiddleware {
       return true;
     } catch (error: any) {
       debug('DevTools plugin server request failed: %O', error);
+      if (res.headersSent || res.writableEnded || res.destroyed || request?.signal.aborted) {
+        return true;
+      }
       res.statusCode = 500;
       res.setHeader('Content-Type', 'text/plain');
       res.end(

@@ -2,6 +2,28 @@
   "name": "@expo/devtools",
   "version": "56.0.2",
   "description": "DevTools plugin helpers for Expo",
+  "keywords": [
+    "cli-extensions",
+    "dev-plugins",
+    "devtools",
+    "expo",
+    "plugins",
+    "react",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/devtools#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/devtools"
+  },
+  "files": [
+    "build"
+  ],
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -18,34 +40,13 @@
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/devtools"
-  },
-  "keywords": [
-    "expo",
-    "react-native",
-    "react",
-    "devtools",
-    "plugins",
-    "dev-plugins",
-    "cli-extensions"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/devtools#readme",
-  "files": [
-    "build"
-  ],
   "dependencies": {
     "chalk": "^4.1.2"
   },

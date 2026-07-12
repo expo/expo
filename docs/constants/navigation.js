@@ -212,6 +212,8 @@ export const general = [
         makePage('workflow/web.mdx'),
         makePage('guides/publishing-websites.mdx'),
         makePage('guides/dom-components.mdx'),
+        makePage('guides/server-components.mdx'),
+        makePage('guides/testing-rsc.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
         makePage('guides/tailwind.mdx'),
         makePage('guides/local-https-development.mdx'),
@@ -416,6 +418,7 @@ export const general = [
         makePage('guides/store-assets.mdx'),
         makePage('guides/local-first.mdx'),
         makePage('guides/keyboard-handling.mdx'),
+        makePage('guides/controlled-components.mdx'),
       ]),
       makeSection('Expo UI', [
         makePage('guides/expo-ui-swift-ui/index.mdx'),
@@ -565,6 +568,7 @@ export const eas = [
     makePage('eas-update/getting-started.mdx'),
     makeGroup('Preview', [
       makePage('eas-update/preview.mdx'),
+      makePage('eas-update/channel-surfing.mdx'),
       makePage('eas-update/override.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/github-actions.mdx'),
@@ -704,6 +708,21 @@ export const learn = [
       makePage('tutorial/eas/team-development.mdx'),
       makePage('tutorial/eas/using-github.mdx'),
       makePage('tutorial/eas/next-steps.mdx'),
+    ],
+    { expanded: true }
+  ),
+  makeSection(
+    'CI/CD tutorial',
+    [
+      makePage('tutorial/cicd/introduction.mdx'),
+      makePage('tutorial/cicd/first-workflow.mdx'),
+      makePage('tutorial/cicd/development-builds.mdx'),
+      makePage('tutorial/cicd/preview-builds.mdx'),
+      makePage('tutorial/cicd/e2e-tests.mdx'),
+      makePage('tutorial/cicd/production.mdx'),
+      makePage('tutorial/cicd/tag-based-releases.mdx'),
+      makePage('tutorial/cicd/web-deployments.mdx'),
+      makePage('tutorial/cicd/next-steps.mdx'),
     ],
     { expanded: true }
   ),

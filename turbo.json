@@ -3,6 +3,8 @@
   "dangerouslyDisablePackageManagerCheck": true,
   "noUpdateNotifier": true,
   "concurrency": "90%",
+  "cacheMaxAge": "10d",
+  "cacheMaxSize": "10GB",
   "tasks": {
     "build": {
       "outputs": [
@@ -35,6 +37,12 @@
     },
     "lint": {
       "cache": false
+    },
+    "format": {
+      "cache": false,
+      "dependsOn": [
+        "lint"
+      ]
     },
     "test": {
       "cache": false,

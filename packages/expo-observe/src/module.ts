@@ -39,9 +39,9 @@ const Observe: ObserveModule = new Proxy(native, {
         }
 
         if (shouldInitRouterIntegration) {
-          initRouterIntegration();
+          initRouterIntegration(config.integrations?.['expo-router']);
         } else if (shouldInitReactNavigationIntegration) {
-          initReactNavigationIntegration();
+          initReactNavigationIntegration(config.integrations?.['react-navigation']);
         }
         return target.configure(config);
       };

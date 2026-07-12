@@ -42,11 +42,15 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
       let validatedBody = validateEventBody(options?.body)
       let sanitized = sanitizeLogEventAttributes(options?.attributes)
+      let attributes = withDisplayNameAttribute(
+        sanitized.attributes,
+        displayName: validateDisplayName(options?.displayName)
+      )
       // Globals merge happens in `LogRow.from` so every persistence path picks them up.
       let record = LogRecord(
         name: validatedName,
         body: validatedBody,
-        attributes: sanitized.attributes,
+        attributes: attributes,
         droppedAttributesCount: sanitized.droppedCount,
         severity: options?.severity ?? .info
       )

@@ -68,7 +68,11 @@ export default function RootLayout() {
 
 プロジェクト内の **assets/images** ディレクトリに **icon.png** ファイルがあります。これがアプリアイコンです。1024px × 1024px の画像で、見た目は次のとおりです。
 
-<ContentSpotlight src="/static/images/tutorial/icon.webp" className="max-w-[150px]" />
+<ContentSpotlight
+  alt="デフォルトのアプリアイコン。濃い色の角丸の四角形に、白い画像のアイコンと黄色いスマイリーフェイスが表示されています。"
+  src="/static/images/tutorial/icon.webp"
+  className="max-w-[150px]"
+/>
 
 スプラッシュスクリーン画像と同様に、**app.json** ファイルの `"icon"` プロパティでアプリアイコンのパスを設定します。デフォルトでは、新しい Expo プロジェクトには `"./assets/images/icon.png"` という正しいパスが設定されているため、何も変更する必要はありません。
 
@@ -119,7 +123,7 @@ export default function RootLayout() {
 ## まとめ
 
 <ProgressTracker
-  currentChapterIndex={8}
+  currentChapterSlug="/tutorial/configuration"
   name="GET_STARTED"
   chapterTitle="第 9 章：ステータスバー、スプラッシュスクリーン、アプリアイコンを設定する"
   summary="おつかれさまでした！同じコードベースから Android、iOS、web で動作するアプリを作り上げました。"

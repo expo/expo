@@ -32,6 +32,7 @@ import {
   findMarkdownPages,
   findMdxSource,
 } from './generate-markdown-pages-utils.ts';
+import { isUpgradePairMarkdownPath } from './generate-upgrade-diff-pages.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
 const PAGES_DIR = path.join(process.cwd(), 'pages');
@@ -57,10 +58,10 @@ function tabPanelHeadingDeficit(markdown: string, htmlPath: string): number {
     return 0;
   }
   const html = fs.readFileSync(htmlPath, 'utf-8');
-  if (!html.includes('data-reach-tab')) {
+  if (!html.includes('data-md="tabs"')) {
     return 0;
   }
-  const panels = cheerio.load(html)('[data-reach-tab-panel]').length;
+  const panels = cheerio.load(html)('[role="tabpanel"]').length;
   if (panels === 0) {
     return 0;
   }
@@ -72,7 +73,9 @@ function tabPanelHeadingDeficit(markdown: string, htmlPath: string): number {
 
 if (fs.existsSync(OUT_DIR)) {
   const htmlFiles = findHtmlPages(OUT_DIR);
-  const mdFiles = findMarkdownPages(OUT_DIR);
+  const mdFiles = findMarkdownPages(OUT_DIR).filter(
+    mdPath => !isUpgradePairMarkdownPath(path.relative(OUT_DIR, mdPath))
+  );
 
   if (mdFiles.length === 0) {
     console.error('No markdown files found in out/. Did generate-markdown-pages run?');
