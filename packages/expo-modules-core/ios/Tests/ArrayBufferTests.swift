@@ -524,8 +524,39 @@ struct ArrayBufferTests {
       runtime.longLivedObjects.clear()
 
       #expect(runtime.longLivedObjects.count == 0)
-      #expect(Array(buffer.data).isEmpty)
-      #expect(buffer.copy().byteLength == 0)
+      #expect(throws: ArrayBufferJSBytesAccessException.self) {
+        try buffer.withJSBytes { bytes in
+          Array(bytes)
+        }
+      }
+      #expect(throws: ArrayBufferJSBytesAccessException.self) {
+        _ = try buffer.makeOwnedNativeStorageCopy()
+      }
+    }
+
+    @Test
+    func `JS-backed ArrayBuffer view throws when its captured range exceeds the backing buffer`() throws {
+      let runtime = try runtime
+      let backingValue = try runtime.eval("new ArrayBuffer(0)")
+
+      // This Hermes test runtime has no `structuredClone`, `ArrayBuffer#transfer`, or
+      // `HermesInternal.detachArrayBuffer`. A transferred buffer presents this same stale
+      // captured-range condition, so construct it directly to exercise `validateBounds()`.
+      let view = JavaScriptBackedArrayBufferView(
+        runtime: runtime,
+        backingValue: backingValue,
+        byteOffset: 0,
+        byteLength: 3
+      )
+
+      #expect(throws: ArrayBufferJSBytesAccessException.self) {
+        try view.withUnsafeBytes { bytes in
+          Array(bytes)
+        }
+      }
+      #expect(throws: ArrayBufferJSBytesAccessException.self) {
+        _ = try view.makeOwnedNativeStorageCopy()
+      }
     }
 
     @Test
