@@ -452,6 +452,19 @@ export function getDefaultConfig(
     expoMetroConfig
   );
 
+  // NOTE: Metro's default config enables `resolver.useWatchman`, while Expo CLI's
+  // `@expo/metro-file-map` fork coalesces a nullish `useWatchman` to `false`, making the Node
+  // watcher the default watcher. Neutralize Metro's default here, so that only an explicit
+  // `useWatchman: true` set in a user config re-enables Watchman. This must happen here rather
+  // than after the user config is merged, because the typical `metro.config.js` passes this
+  // default config through, which would otherwise re-introduce Metro's `true` as an apparent
+  // user setting. `null` (rather than `undefined`) keeps Watchman enabled for consumers on
+  // upstream Metro's file map, where `null` still opts into Watchman but bypasses the slower
+  // "native find" crawler codepath. The value is assigned at runtime instead of typed as a
+  // property to keep the inferred config type unchanged (see expo/expo#43319).
+  // See: https://github.com/expo/expo/issues/47662
+  (metroConfig.resolver as { useWatchman?: boolean | null }).useWatchman = null;
+
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
 
