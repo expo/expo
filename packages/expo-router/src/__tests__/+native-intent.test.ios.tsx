@@ -63,3 +63,45 @@ it('legacy_subscribe', () => {
   act(() => listener('/apple'));
   expect(screen.getByTestId('apple')).toBeVisible();
 });
+
+it('navigates to deep links received while the app is running', () => {
+  let listener: (url: string) => void = () => {};
+
+  renderRouter({
+    index: () => <View testID="index" />,
+    'fruit/[name]': () => <View testID="fruit" />,
+    '+native-intent': {
+      legacy_subscribe(listenerFn) {
+        listener = listenerFn;
+        return () => {};
+      },
+    },
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+
+  act(() => listener('/fruit/apple?color=red'));
+
+  expect(screen.getByTestId('fruit')).toBeVisible();
+  expect(screen).toHavePathnameWithParams('/fruit/apple?color=red');
+});
+
+it('applies redirectSystemPath to the initial deep link', () => {
+  renderRouter(
+    {
+      index: () => <View testID="index" />,
+      rewritten: () => <View testID="rewritten" />,
+      '+native-intent': {
+        redirectSystemPath({ path }) {
+          if (path === '/incoming') {
+            return '/rewritten';
+          }
+          return path;
+        },
+      },
+    },
+    { initialUrl: '/incoming' }
+  );
+
+  expect(screen.getByTestId('rewritten')).toBeVisible();
+});
