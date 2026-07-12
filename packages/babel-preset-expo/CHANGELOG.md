@@ -12,6 +12,7 @@
 
 - Inline `EXPO_PUBLIC_USE_RN_FETCH` inside `node_modules` so the `expo/fetch` opt-out works in production builds. ([#46986](https://github.com/expo/expo/pull/46986) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - Bump `babel-plugin-syntax-hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+- Fix legacy decorators on class properties throwing `Decorating class property failed` at runtime on transform profiles that preserve class fields (`hermes-stable`, `hermes-canary` and web), which broke WatermelonDB models and MobX 5. The class-feature transforms are now applied to files that contain decorators. ([#47724](https://github.com/expo/expo/pull/47724) by [@Gitarcitano](https://github.com/Gitarcitano))
 
 ### 💡 Others
 
