@@ -101,14 +101,14 @@ private fun Project.disableLintVitalAnalysis() {
 
 fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
   // Android related
-  val buildTools = extra.setIfNotExist("buildToolsVersion") { versionCatalogs.getVersionOrDefault("buildTools", "35.0.0") }
+  val buildTools = extra.setIfNotExist("buildToolsVersion") { versionCatalogs.getVersionOrDefault("buildTools", "37.0.0") }
   val minSdk = extra.setIfNotExist("minSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("minSdk", "24")) }
-  val compileSdk = extra.setIfNotExist("compileSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("compileSdk", "35")) }
-  val targetSdk = extra.setIfNotExist("targetSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("targetSdk", "35")) }
+  val compileSdk = extra.setIfNotExist("compileSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("compileSdk", "37")) }
+  val targetSdk = extra.setIfNotExist("targetSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("targetSdk", "36")) }
   val ndk = extra.setIfNotExist("ndkVersion") { versionCatalogs.getVersionOrDefault("ndkVersion", "27.1.12297006") }
 
   // Kotlin related
-  val kotlin = extra.setIfNotExist("kotlinVersion") { versionCatalogs.getVersionOrDefault("kotlin", "2.0.21") }
+  val kotlin = extra.setIfNotExist("kotlinVersion") { versionCatalogs.getVersionOrDefault("kotlin", "2.2.0") }
   val ksp = extra.setIfNotExist("kspVersion") {
     versionCatalogs.getVersionOrDefault("ksp") {
       val kotlinVersion = extra.get("kotlinVersion") as String

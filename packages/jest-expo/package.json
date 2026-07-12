@@ -51,12 +51,12 @@
     "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
-    "@react-native/jest-preset": "0.86.0",
+    "@react-native/jest-preset": "0.87.0-rc.0",
     "@types/react": "~19.2.0",
     "react-server-dom-webpack": "~19.0.6"
   },
   "peerDependencies": {
-    "@react-native/jest-preset": "^0.85.0",
+    "@react-native/jest-preset": "^0.87.0-rc.0",
     "expo": "*",
     "react-native": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
