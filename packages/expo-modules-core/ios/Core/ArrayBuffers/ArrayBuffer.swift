@@ -65,7 +65,13 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
 
   /// Creates a native-owned copy of this ArrayBuffer.
   public func copy() -> ArrayBuffer {
-    return ArrayBuffer(storage: makeOwnedNativeStorageCopy())
+    let storage = materializedNativeStorageOrFail()
+    guard let nativeStorage = storage.nativeStorage else {
+      preconditionFailure("ArrayBuffer storage should have been materialized before copying")
+    }
+    return ArrayBuffer(
+      storage: ArrayBufferStorage.makeOwnedNativeStorageCopy(
+        of: UnsafeRawPointer(nativeStorage.pointer), count: nativeStorage.byteLength))
   }
 
   /// Wraps native-backed storage in a `Data` instance without copying.
@@ -75,7 +81,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// observes or mutates the original JavaScript backing storage, and `isNativeBacked`
   /// returns `true`.
   public var data: Data {
-    guard let nativeStorage = materializedNativeStorage().nativeStorage else {
+    guard let nativeStorage = materializedNativeStorageOrFail().nativeStorage else {
       preconditionFailure("ArrayBuffer storage should have been materialized before Data access")
     }
 
@@ -92,17 +98,11 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// exposing JavaScript heap memory directly. Use `withJSBytes(_:)` when you need
   /// scoped zero-copy access to the current JavaScript backing storage.
   public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
-    switch storageBox.currentStorage() {
-    case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
-      return try body(UnsafeRawBufferPointer(start: nativeStorage.pointer, count: nativeStorage.byteLength))
-    case .javaScriptBacked(let view):
-      let storage = view.makeOwnedNativeStorageCopy()
-      defer { storage.cleanup() }
-      guard let nativePointer = storage.nativePointer else {
-        preconditionFailure("ArrayBuffer storage copy should be native-backed")
-      }
-      return try body(UnsafeRawBufferPointer(start: nativePointer, count: storage.byteLength))
+    let storage = materializedNativeStorageOrFail()
+    guard let nativePointer = storage.nativePointer else {
+      preconditionFailure("ArrayBuffer storage should have been materialized before unsafe access")
     }
+    return try body(UnsafeRawBufferPointer(start: nativePointer, count: storage.byteLength))
   }
 
   /// Provides mutable access to native-accessible bytes.
@@ -112,7 +112,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// storage, not to the original JavaScript `ArrayBuffer`. Use `withMutableJSBytes(_:)` when
   /// mutations must affect the current JavaScript backing storage.
   public func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
-    let storage = materializedNativeStorage()
+    let storage = materializedNativeStorageOrFail()
     guard let nativePointer = storage.nativePointer else {
       preconditionFailure("ArrayBuffer storage should have been materialized before mutable access")
     }
@@ -387,18 +387,30 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
         )))
   }
 
-  private func makeOwnedNativeStorageCopy() -> ArrayBufferStorage {
-    return storageBox.currentStorage().makeOwnedNativeStorageCopy()
+  func makeOwnedNativeStorageCopy() throws -> ArrayBufferStorage {
+    return try storageBox.currentStorage().makeOwnedNativeStorageCopy()
   }
 
-  private func materializedNativeStorage() -> ArrayBufferStorage {
+  private func materializedNativeStorage() throws -> ArrayBufferStorage {
     let storage = storageBox.currentStorage()
     if storage.nativeStorage != nil {
       return storage
     }
 
-    let materializedStorage = storage.makeOwnedNativeStorageCopy()
+    let materializedStorage = try storage.makeOwnedNativeStorageCopy()
     return storageBox.publishMaterializedStorage(materializedStorage)
+  }
+
+  private func materializationFailure(_ error: any Error) -> Never {
+    preconditionFailure("ArrayBuffer materialization failed: \(error)")
+  }
+
+  private func materializedNativeStorageOrFail() -> ArrayBufferStorage {
+    do {
+      return try materializedNativeStorage()
+    } catch {
+      materializationFailure(error)
+    }
   }
 }
 
