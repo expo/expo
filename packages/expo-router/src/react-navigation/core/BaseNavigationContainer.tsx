@@ -4,7 +4,11 @@ import { use } from 'react';
 
 import { rootReducer } from '../../global-state/rootReducer';
 import { getSeedState } from '../../global-state/seedState';
-import { ReducerRegistryContext, createReducerRegistry } from '../../global-state/storeContext';
+import {
+  NavigationSyncStateContext,
+  ReducerRegistryContext,
+  createReducerRegistry,
+} from '../../global-state/storeContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -80,7 +84,7 @@ export function BaseNavigationContainer({
   // future persistence) still wins and is likewise seeded as-is. Navigators render their slice
   // directly (their init/rehydrate branches become identity on a complete state).
   // TODO(@ubax): re-add a state-seeding entry point for persistence (Step 8's validate-or-recompile model)
-  const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(
+  const { state, store, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(
     () => (initialState == null ? getSeedState() : initialState) as State
   );
   const reducerRegistry = React.useMemo(() => createReducerRegistry(), []);
@@ -503,22 +507,24 @@ export function BaseNavigationContainer({
 
   return (
     <NavigationIndependentTreeContext.Provider value={false}>
-      <ReducerRegistryContext.Provider value={reducerRegistry}>
-        <NavigationContainerRefContext.Provider value={navigation}>
-          <NavigationBuilderContext.Provider value={builderContext}>
-            <NavigationStateContext.Provider value={context}>
-              <UnhandledActionContext.Provider
-                value={onUnhandledAction ?? defaultOnUnhandledAction}>
-                <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
-                  <EnsureSingleNavigator>
-                    <ThemeProvider value={theme}>{children}</ThemeProvider>
-                  </EnsureSingleNavigator>
-                </DeprecatedNavigationInChildContext.Provider>
-              </UnhandledActionContext.Provider>
-            </NavigationStateContext.Provider>
-          </NavigationBuilderContext.Provider>
-        </NavigationContainerRefContext.Provider>
-      </ReducerRegistryContext.Provider>
+      <NavigationSyncStateContext.Provider value={store}>
+        <ReducerRegistryContext.Provider value={reducerRegistry}>
+          <NavigationContainerRefContext.Provider value={navigation}>
+            <NavigationBuilderContext.Provider value={builderContext}>
+              <NavigationStateContext.Provider value={context}>
+                <UnhandledActionContext.Provider
+                  value={onUnhandledAction ?? defaultOnUnhandledAction}>
+                  <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
+                    <EnsureSingleNavigator>
+                      <ThemeProvider value={theme}>{children}</ThemeProvider>
+                    </EnsureSingleNavigator>
+                  </DeprecatedNavigationInChildContext.Provider>
+                </UnhandledActionContext.Provider>
+              </NavigationStateContext.Provider>
+            </NavigationBuilderContext.Provider>
+          </NavigationContainerRefContext.Provider>
+        </ReducerRegistryContext.Provider>
+      </NavigationSyncStateContext.Provider>
     </NavigationIndependentTreeContext.Provider>
   );
 }

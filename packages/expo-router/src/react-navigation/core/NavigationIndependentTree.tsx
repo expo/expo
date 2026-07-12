@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 
+import { NavigationSyncStateContext } from '../../global-state/storeContext';
 import { NavigationContext } from './NavigationContext';
 import { NavigationIndependentTreeContext } from './NavigationIndependentTreeContext';
 import { NavigationRouteContext } from './NavigationProvider';
@@ -14,11 +15,13 @@ export function NavigationIndependentTree({ children }: { children: React.ReactN
     // We need to clear any existing contexts for nested independent container to work correctly
     <NavigationRouteContext.Provider value={undefined}>
       <NavigationContext.Provider value={undefined}>
-        <IsFocusedContext.Provider value={undefined}>
-          <NavigationIndependentTreeContext.Provider value>
-            {children}
-          </NavigationIndependentTreeContext.Provider>
-        </IsFocusedContext.Provider>
+        <NavigationSyncStateContext.Provider value={null}>
+          <IsFocusedContext.Provider value={undefined}>
+            <NavigationIndependentTreeContext.Provider value>
+              {children}
+            </NavigationIndependentTreeContext.Provider>
+          </IsFocusedContext.Provider>
+        </NavigationSyncStateContext.Provider>
       </NavigationContext.Provider>
     </NavigationRouteContext.Provider>
   );
