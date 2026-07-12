@@ -232,7 +232,7 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
   @JavaScriptActor
   func asJavaScriptArrayBuffer(runtime targetRuntime: JavaScriptRuntime) -> JavaScriptArrayBuffer? {
     guard runtime?.id == targetRuntime.id,
-      targetRuntime.isOnJavaScriptThread() || ProcessInfo.processInfo.processName == "xctest"
+      targetRuntime.isOnJavaScriptThread()
     else {
       return nil
     }
@@ -274,12 +274,6 @@ final class SynchronizedArrayBufferStorage: @unchecked Sendable {
   func withStorage<R>(_ body: (ArrayBufferStorage) throws -> R) rethrows -> R {
     return try storage.withLock { storage in
       try body(storage)
-    }
-  }
-
-  func withMutableStorage<R>(_ body: (inout ArrayBufferStorage) throws -> R) rethrows -> R {
-    return try storage.withLock { storage in
-      try body(&storage)
     }
   }
 
