@@ -47,6 +47,27 @@ describe('package', () => {
     expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
   });
 
+  it(`returns the applicationId when defined with Gradle assignment syntax (applicationId = '...')`, () => {
+    const projectRoot = '/';
+    // Recent React Native Android templates define the applicationId using the
+    // Gradle assignment form rather than the legacy method-call form.
+    vol.fromJSON(
+      {
+        'android/app/build.gradle': [
+          'android {',
+          '    namespace = "com.helloworld"',
+          '    defaultConfig {',
+          '        applicationId = "com.helloworld"',
+          '    }',
+          '}',
+        ].join('\n'),
+      },
+      projectRoot
+    );
+
+    expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
+  });
+
   it(`sets the applicationId in build.gradle if package is given`, () => {
     expect(
       setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)

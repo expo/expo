@@ -248,7 +248,10 @@ export async function getApplicationIdAsync(projectRoot: string): Promise<string
     return null;
   }
   const buildGradle = await fs.promises.readFile(buildGradlePath, 'utf8');
-  const matchResult = buildGradle.match(/applicationId ['"](.*)['"]/);
+  // Match both the legacy method-call form (`applicationId "com.app"`) and the
+  // Gradle assignment form (`applicationId = "com.app"`) emitted by recent
+  // React Native Android templates.
+  const matchResult = buildGradle.match(/applicationId\s*=?\s*['"](.*)['"]/);
   // TODO add fallback for legacy cases to read from AndroidManifest.xml
   return matchResult?.[1] ?? null;
 }
