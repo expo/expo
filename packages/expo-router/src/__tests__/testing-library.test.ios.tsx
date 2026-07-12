@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
 import { renderRouter } from '../testing-library';
+import { Slot } from '../views/Navigator';
 
 function getThrownMessage(fn: () => void): string {
   try {
@@ -140,6 +141,43 @@ describe('toHaveRouterState', () => {
     expect(message).toMatchSnapshot();
   });
 });
+
+describe('MockContextConfig variants', () => {
+  it('renders routes from a string array config', () => {
+    renderRouter(['index', 'profile/[id]'], { initialUrl: '/profile/evan' });
+
+    expect(screen).toHavePathname('/profile/evan');
+    expect(screen).toHaveSegments(['profile', '[id]']);
+  });
+
+  it('renders object configs with layouts', () => {
+    renderRouter(
+      {
+        _layout: () => <Text testID="layout">Layout</Text>,
+        index: () => <Text testID="index">Index</Text>,
+      },
+      { initialUrl: '/' }
+    );
+
+    expect(screen.getByTestId('layout')).toBeVisible();
+  });
+
+  it('renders file-system contexts with in-memory overrides', () => {
+    renderRouter(
+      {
+        appDir: 'src/__tests__/fixtures/context-stubs',
+        overrides: {
+          _layout: () => <Slot />,
+          index: () => <Text testID="override">Override</Text>,
+        },
+      },
+      { initialUrl: '/' }
+    );
+
+    expect(screen.getByTestId('override')).toBeVisible();
+  });
+});
+
 // https://github.com/expo/expo/issues/46864
 describe('fake timers', () => {
   afterEach(() => {
