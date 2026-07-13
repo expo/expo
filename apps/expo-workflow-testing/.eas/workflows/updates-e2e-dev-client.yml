@@ -47,6 +47,8 @@ jobs:
       - uses: eas/install_maestro
       - uses: eas/checkout
       - uses: eas/use_npm_token
+      - name: Pin pnpm 10
+        run: npm install -g pnpm@10
       - uses: eas/install_node_modules
       - name: Set up Updates E2E disabled project
         id: setup
@@ -85,6 +87,8 @@ jobs:
       - uses: eas/install_maestro
       - uses: eas/checkout
       - uses: eas/use_npm_token
+      - name: Pin pnpm 10
+        run: npm install -g pnpm@10
       - uses: eas/install_node_modules
       - name: Set up Updates E2E disabled project
         id: setup

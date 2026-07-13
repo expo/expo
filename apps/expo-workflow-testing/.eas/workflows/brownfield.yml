@@ -65,6 +65,8 @@ jobs:
     steps:
       - uses: eas/checkout
       - uses: eas/use_npm_token
+      - name: Pin pnpm 10
+        run: npm install -g pnpm@10
       - uses: eas/install_node_modules
       - name: Build and publish Android brownfield artifacts
         working_directory: ../brownfield-tester/expo-app
@@ -83,6 +85,8 @@ jobs:
     steps:
       - uses: eas/checkout
       - uses: eas/use_npm_token
+      - name: Pin pnpm 10
+        run: npm install -g pnpm@10
       - uses: eas/install_node_modules
       - uses: eas/restore_build_cache
         with:

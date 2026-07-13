@@ -46,6 +46,8 @@ jobs:
     steps:
       - uses: eas/checkout
       - uses: eas/use_npm_token
+      - name: Pin pnpm 10
+        run: npm install -g pnpm@10
       - uses: eas/install_node_modules
       - name: Install CocoaPods
         working_directory: ../brownfield-tester/integrated
@@ -75,6 +77,8 @@ jobs:
     steps:
       - uses: eas/checkout
       - uses: eas/use_npm_token
+      - name: Pin pnpm 10
+        run: npm install -g pnpm@10
       - uses: eas/install_node_modules
       - name: Build Android (Debug)
         working_directory: ../brownfield-tester/integrated/android

@@ -37,6 +37,9 @@ jobs:
       - if: ${{ steps.detect.outputs.packages != 'none' }}
         uses: eas/use_npm_token
       - if: ${{ steps.detect.outputs.packages != 'none' }}
+        name: Pin pnpm 10
+        run: npm install -g pnpm@10
+      - if: ${{ steps.detect.outputs.packages != 'none' }}
         uses: eas/install_node_modules
       - if: ${{ steps.detect.outputs.packages != 'none' }}
         name: Prebuild XCFrameworks
