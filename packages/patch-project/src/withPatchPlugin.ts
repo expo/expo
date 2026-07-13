@@ -9,7 +9,7 @@ import { glob as globAsync } from 'glob';
 import path from 'path';
 
 import * as env from './env';
-import { applyPatchAsync, getPatchChangedLinesAsync } from './gitPatch';
+import { applyPatchAsync, getPatchChangedLinesAsync, isPatchAppliedAsync } from './gitPatch';
 
 const DEFAULT_PATCH_ROOT = 'cng-patches';
 const DEFAULT_CHANGED_LINES_LIMIT = 300;
@@ -45,6 +45,15 @@ const withPatchMod: ConfigPlugin<{ platform: ModPlatform; props: PatchPluginProp
         props
       );
       if (patchFilePath != null) {
+        // When prebuilding with `--no-clean`, the native project may already contain the patch
+        // from a previous run. Reapplying it would make `git apply` fail, so skip it.
+        if (await isPatchAppliedAsync(projectRoot, patchFilePath)) {
+          if (env.EXPO_DEBUG) {
+            console.log(`[withPatchPlugin] Patch is already applied, skipping: ${patchFilePath}`);
+          }
+          return config;
+        }
+
         const changedLines = await getPatchChangedLinesAsync(patchFilePath);
         const changedLinesLimit = props?.changedLinesLimit ?? DEFAULT_CHANGED_LINES_LIMIT;
         if (changedLines > changedLinesLimit) {
