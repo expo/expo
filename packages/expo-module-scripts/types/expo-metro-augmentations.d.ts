@@ -46,6 +46,8 @@ declare module '@expo/metro/metro-babel-transformer' {
     performConstantFolding?: boolean;
     /** @privateRemarks Augmentation used in babel-preset-expo/src/server-data-loaders-plugin.ts */
     loaderReference?: string;
+    /** @privateRemarks Augmentation used in babel-preset-expo/src/cache-vary.ts */
+    cacheVary?: { scheme: string; name: string }[];
   }
 
   // NOTE(@kitten): Compare to `customTransformOptions` in `src/start/server/middleware/metroOptions.ts`
