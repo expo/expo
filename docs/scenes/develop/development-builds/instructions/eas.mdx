@@ -1,0 +1,168 @@
+import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon } from '~/ui/components/DocIcons';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+## Create a development build with EAS
+
+The easiest way to build your native app is to use [EAS Build](/eas/build/introduction/). The app compilation happens on EAS serves and produces a build that you can install on your device or Android Emulator/iOS Simulator.
+
+EAS Build also makes it possible to trigger iOS builds from non-macOS platforms.
+
+<VideoBoxLink
+  videoId="uQCE9zl3dXU"
+  title="How to create a development build"
+  description="Configure and create a development build for your Expo project using EAS Build."
+/>
+
+### Host platform support
+
+|             | Android    | iOS Simulator | iPhone device   |
+| ----------- | ---------- | ------------- | --------------- |
+| **macOS**   | <YesIcon/> | <YesIcon/>    | <YesIcon/> (\*) |
+| **Windows** | <YesIcon/> | <YesIcon/>    | <YesIcon/> (\*) |
+| **Linux**   | <YesIcon/> | <YesIcon/>    | <YesIcon/> (\*) |
+
+> (\*) All builds that run on an iPhone device require a paid [Apple Developer](https://developer.apple.com) account for build signing.
+
+<Prerequisites>
+  <Requirement title="Expo account">
+    Sign up for an [Expo](https://expo.dev/signup) account, if you haven't already.
+  </Requirement>
+  <Requirement title="EAS CLI">
+    The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
+    <Terminal
+      cmd={{
+        npm: ['$ npm install --global eas-cli && eas login'],
+        yarn: ['$ yarn global add eas-cli && eas login'],
+        pnpm: ['$ pnpm add --global eas-cli && eas login'],
+        bun: ['$ bun add --global eas-cli && eas login'],
+      }}
+    />
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+### Install expo-dev-client
+
+Run the following command in your project's root directory:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
+
+<Collapsible summary="Are you using this library in an existing React Native project?">
+
+Apps that don't use [Continuous Native Generation](/workflow/continuous-native-generation/) or are created with `npx react-native`, require further configuration after installing this library. See steps 1 and 2 from [Install `expo-dev-client` in an existing React Native project](/bare/install-dev-builds-in-bare/).
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+### Build the native app
+
+<Tabs>
+
+<Tab label="Android">
+
+<Prerequisites>
+  <Requirement title="An Android Emulator (optional)">
+    An [Android Emulator](/workflow/android-studio-emulator/) is optional if you want to test your
+    app on an emulator.
+  </Requirement>
+</Prerequisites>
+
+<Terminal cmd={['$ eas build --platform android --profile development']} />
+
+If your project doesn't have an **eas.json** yet, the EAS CLI will prompt you to create one with a default `development` profile.
+
+</Tab>
+
+<Tab label="iOS Simulator">
+
+<Prerequisites>
+  <Requirement title="macOS with iOS Simulator installed">
+    iOS Simulators are available only on macOS. Make sure you have the [iOS
+    Simulator](/workflow/ios-simulator/) installed.
+  </Requirement>
+</Prerequisites>
+
+Edit the `development` profile in **eas.json** and set the [`simulator`](/eas/json/#simulator) option to `true` (you have to create a separate profile for simulator builds if you also want to create iOS device builds for this project).
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      /* @info */
+      "ios": {
+        "simulator": true
+      }
+      /* @end */
+    }
+  }
+}
+```
+
+<Terminal cmd={['$ eas build --platform ios --profile development']} />
+
+iOS Simulator builds can only be installed on simulators and not on real devices.
+
+</Tab>
+
+<Tab label="iOS device">
+
+<Prerequisites>
+  <Requirement title="Apple Developer account">
+    A paid [Apple Developer](https://developer.apple.com/) account for creating [signing
+    credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) so the app
+    could be installed on an iOS device.
+  </Requirement>
+</Prerequisites>
+
+<Terminal cmd={['$ eas build --platform ios --profile development']} />
+
+iOS device builds can only be installed on iPhone devices and not on iOS Simulators. After installing the build, enable [iOS developer mode](/guides/ios-developer-mode/) on your device to run it.
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+### Install the app
+
+After the build completes, the CLI will prompt you to install the app: press <kbd>Y</kbd> to install it on Android Emulator or iOS Simulator, or scan the QR code with your device. You can also install any build from the [expo.dev](https://expo.dev/) dashboard or with [Expo Orbit](https://expo.dev/orbit).
+
+</Step>
+
+<Step label="4">
+
+### Start the bundler
+
+Start the JavaScript bundler with:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+Since your project has `expo-dev-client` installed, this command targets your development build instead of Expo Go.
+
+</Step>

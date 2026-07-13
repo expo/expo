@@ -1,20 +1,76 @@
 ---
 title: Introduction to development builds
 sidebar_title: Introduction
-description: Why use development builds and how to get started.
+description: Learn how to create a development build in your Expo project and why use a development build instead of Expo Go.
 searchRank: 98
 searchPosition: 1
 hideTOC: true
 hasVideoLink: true
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { VideoRecorderIcon } from '@expo/styleguide-icons/outline/VideoRecorderIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { BuildMethodForm } from '~/scenes/develop/development-builds/BuildMethodForm';
+import { DevelopmentBuildInstructions } from '~/scenes/develop/development-builds/DevelopmentBuildInstructions';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { FAQ } from '~/ui/components/FAQ';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-**Development build** is the term that we use for a "Debug" build of an app that includes the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library. This library augments the built-in React Native development tooling with additional capabilities, such as support for inspecting network requests and a "launcher" UI that lets you switch between different development servers (such as between a server running on your machine or a teammate's machine) and deployments of your app (such as published updates with EAS Update).
+When you create a new Expo app with [`create-expo-app`](/get-started/create-a-project/), you start with a project where you update TypeScript/JavaScript code on your local machine and view the changes in Expo Go app. A **development build** is essentially **your own version of Expo Go** where you are free to use any native libraries and change any native configuration.
+
+A **development build is recommended when you want to create your own app and release to app stores**. It includes the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which augments the built-in React Native development tooling. The tooling also includes support for inspecting network requests and a ["launcher" UI](#after-you-install-the-app) that lets you switch between different development servers (such as between a server running on your machine or a teammate's machine) and deployments of your app (such as published updates with [EAS Update](/eas-update/introduction/)).
+
+<VideoBoxLink
+  videoId="FdjczjkwQKE"
+  title="Expo Go & Development Builds: which should you use?"
+  description="In this tutorial video, Beto explains what each of them is and when to choose a development build."
+/>
+
+## How would you like to build your development build?
+
+All three methods produce the same development build. They differ in where the app compiles and what you need to have installed on your machine.
+
+<BuildMethodForm />
+
+---
+
+<DevelopmentBuildInstructions />
+
+---
+
+## After you install the app
+
+Launch the development build from your device's Home screen and you will see the launcher screen:
+
+<ContentSpotlight
+  alt="The launcher screen of a development build running on an iOS Simulator, showing the Home tab with a development server on the local network and the Updates tab with published EAS Updates"
+  src="/static/images/dev-client/launcher-screen-simulator.webp"
+  className="max-w-[480px]"
+/>
+
+If a development server is running on your local network, or if you have signed in to the same Expo account in both Expo CLI and your development build, you can connect to it directly from this screen. Otherwise, scan the QR code displayed by the Expo CLI. To learn how to work with your new build, including rebuilding and debugging it, see [Use a development build](/develop/development-builds/use-development-builds/).
+
+## Video walkthroughs
+
+<BoxLink
+  title={`"EAS Tutorial Series"`}
+  description="A course on YouTube: learn how to speed up your development with Expo Application Services."
+  href="https://www.youtube.com/playlist?list=PLsXDmrmFV_AS14tZCBin6m9NIS_VCUKe2"
+  Icon={VideoRecorderIcon}
+/>
+
+<BoxLink
+  title={`"Async Office Hours: How to make a development build with EAS Build"`}
+  description="Learn how to make a development build with EAS Build in this video tutorial hosted by Developer Success Engineer: Keith Kurak."
+  href="https://www.youtube.com/watch?v=LUFHXsBcW6w"
+  Icon={VideoRecorderIcon}
+/>
+
+## Learn more about development builds and Expo Go
+
+<FAQ>
 
 <Collapsible summary="Difference between Expo Go and development builds">
 
@@ -26,15 +82,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 The **native app** is what you install on your device. Expo Go is a pre-built native app that works like a playground — it can't be changed after you install it. To add new native libraries or change things like your app name and icon, you need to build your own native app (a development build).
 
-The **JavaScript bundle (`npx expo start`)** is where your app's UI code and business logic are. In production apps, there is one **main.js** bundle that is shipped with the app itself. In development, this JS bundle is live reloaded from your local machine. The main role of React Native is to provide a way for the JavaScript code to access the native APIs (Image, Camera, Notifications, and more). However, only APIs and libraries that were bundled in the **native app** can be used.
+The **JavaScript bundler (`expo start`)** is where your app's UI code and business logic are. In production apps, there is one **main.js** bundle that is shipped with the app itself. In development, this JS bundle is live reloaded from your local machine. The main role of React Native is to provide a way for the JavaScript code to access the native APIs (Image, Camera, Notifications, and more). However, only APIs and libraries that were bundled in the **native app** can be used.
 
 </Collapsible>
 
-<VideoBoxLink
-  videoId="FdjczjkwQKE"
-  title="Expo Go & Development Builds: which should you use?"
-  description="In this tutorial video Beto explains what each of them is, and when to choose a development build."
-/>
+</FAQ>
 
 ## Why use a development build (a.k.a what _can't_ you do in Expo Go and why)
 
@@ -75,24 +127,3 @@ Expo Go can only support one SDK version at a time. When a new SDK version is re
 If you're developing on an Android Device, Android Emulator, or iOS Simulator, a compatible version of Expo Go can be [downloaded and installed](https://expo.dev/go). The only platform where this is impossible is iPhone devices because Apple does not support side-loading older versions of apps.
 
 </Collapsible>
-
-<BoxLink
-  title="Expo Go to development build"
-  description="Learn how to migrate an existing Expo Go project to using development builds."
-  href="/develop/development-builds/expo-go-to-dev-build/"
-  Icon={BookOpen02Icon}
-/>
-
-<BoxLink
-  title="Local app development"
-  description="How to build a development client on your local machine."
-  href="/guides/local-app-development"
-  Icon={BookOpen02Icon}
-/>
-
-<BoxLink
-  title="Development builds on EAS"
-  description="How to build a development client on EAS."
-  href="/develop/development-builds/create-a-build/"
-  Icon={BookOpen02Icon}
-/>
