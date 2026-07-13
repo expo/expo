@@ -27,6 +27,7 @@ concurrency:
 defaults:
   tools:
     node: 22.14.0
+    pnpm: '10.34.5'
 
 jobs:
   detect_platform:
