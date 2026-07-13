@@ -11,6 +11,7 @@ export interface SceneVariant {
 export interface ScenePage {
   htmlPath: string;
   variants: SceneVariant[];
+  endHeading?: string;
 }
 
 const INSTRUCTIONS_DIR = 'scenes/get-started/set-up-your-environment/instructions';
@@ -19,6 +20,7 @@ const DEV_BUILDS_INSTRUCTIONS_DIR = 'scenes/develop/development-builds/instructi
 export const SCENE_PAGES: ScenePage[] = [
   {
     htmlPath: 'develop/development-builds/introduction/index.html',
+    endHeading: '## After you install the development build',
     variants: [
       {
         heading: 'Switch from Expo Go to a development build',
