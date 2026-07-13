@@ -7,242 +7,247 @@ private let LOG_TAG = "ScreenInspector"
 
 // Helper to log with proper string conversion
 private func log(_ message: String) {
-    logger.log("[\(LOG_TAG)] \(message)")
+  logger.log("[\(LOG_TAG)] \(message)")
 }
 
 @objc public class ScreenInspector: NSObject {
-    private var isRunning = false
-    private var serverQueue: DispatchQueue
-    private let requestPipePath = "/tmp/ios_screen_inspector_request"
-    private let responsePipePath = "/tmp/ios_screen_inspector_response"
+  private var isRunning = false
+  private var serverQueue: DispatchQueue
+  private let requestPipePath = "/tmp/ios_screen_inspector_request"
+  private let responsePipePath = "/tmp/ios_screen_inspector_response"
 
-    public override init() {
-        self.serverQueue = DispatchQueue(label: "screenInspector.server", qos: .userInitiated)
-        super.init()
+  public override init() {
+    self.serverQueue = DispatchQueue(label: "screenInspector.server", qos: .userInitiated)
+    super.init()
+  }
+
+  @objc public func start() {
+    guard !isRunning else {
+      log("Server already running")
+      return
+    }
+    isRunning = true
+
+    log("Starting screenInspector server...")
+
+    createPipes()
+
+    // Start server in background thread using lower-level threading
+    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+      self?.runServer()
     }
 
-    @objc public func start() {
-        guard !isRunning else {
-            log("Server already running")
-            return
-        }
-        isRunning = true
+    log("server started successfully")
+  }
 
-        log("Starting screenInspector server...")
+  @objc public func stop() {
+    isRunning = false
+    // Clean up pipes
+    unlink(requestPipePath)
+    unlink(responsePipePath)
+  }
 
-        createPipes()
+  private func createPipes() {
+    log("Creating named pipes...")
 
-        // Start server in background thread using lower-level threading
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.runServer()
-        }
+    // Remove existing pipes
+    unlink(requestPipePath)
+    unlink(responsePipePath)
 
-        log("server started successfully")
+    // Create new pipes with more permissive permissions
+    let requestResult = mkfifo(requestPipePath, 0o777)
+    let responseResult = mkfifo(responsePipePath, 0o777)
+
+    if requestResult != 0 {
+      let error = errno
+      log("Failed to create request pipe, errno: \(error)")
+    } else {
+      log("Created request pipe successfully")
     }
 
-    @objc public func stop() {
-        isRunning = false
-        // Clean up pipes
-        unlink(requestPipePath)
-        unlink(responsePipePath)
+    if responseResult != 0 {
+      let error = errno
+      log("Failed to create response pipe, errno: \(error)")
+    } else {
+      log("Created response pipe successfully")
     }
 
-    private func createPipes() {
-        log("Creating named pipes...")
+    // Verify pipes exist on filesystem
+    let requestExists = access(requestPipePath, F_OK) == 0
+    let responseExists = access(responsePipePath, F_OK) == 0
+    log("Request pipe exists on filesystem: \(requestExists)")
+    log("Response pipe exists on filesystem: \(responseExists)")
+  }
 
-        // Remove existing pipes
-        unlink(requestPipePath)
-        unlink(responsePipePath)
+  private func runServer() {
+    log("Server loop started, waiting for requests...")
 
-        // Create new pipes with more permissive permissions
-        let requestResult = mkfifo(requestPipePath, 0o777)
-        let responseResult = mkfifo(responsePipePath, 0o777)
+    while isRunning {
+      // Open request pipe - blocks until a writer connects
+      log("Opening request pipe...")
+      let requestFd = open(requestPipePath, O_RDONLY)
+      guard requestFd != -1 else {
+        let error = errno
+        log("Failed to open request pipe, errno: \(error)")
+        usleep(100000)  // Wait before retrying
+        continue
+      }
 
-        if requestResult != 0 {
-            let error = errno
-            log("Failed to create request pipe, errno: \(error)")
-        } else {
-            log("Created request pipe successfully")
-        }
+      log("Request pipe opened, reading request...")
 
-        if responseResult != 0 {
-            let error = errno
-            log("Failed to create response pipe, errno: \(error)")
-        } else {
-            log("Created response pipe successfully")
-        }
+      // Read request - blocks until data arrives
+      guard let requestData = readFromPipe(fd: requestFd) else {
+        log("Read failed or EOF, closing pipe")
+        close(requestFd)
+        continue
+      }
 
-        // Verify pipes exist on filesystem
-        let requestExists = access(requestPipePath, F_OK) == 0
-        let responseExists = access(responsePipePath, F_OK) == 0
-        log("Request pipe exists on filesystem: \(requestExists)")
-        log("Response pipe exists on filesystem: \(responseExists)")
+      close(requestFd)
+
+      log("Received request: \(String(data: requestData, encoding: .utf8) ?? "invalid UTF8")")
+
+      let response = processRequest(requestData)
+      writeToPipe(resolveResponsePipePath(requestData), data: response)
+
+      log("Sent response, ready for next request")
     }
 
-    private func runServer() {
-        log("Server loop started, waiting for requests...")
+    log("Server loop ended")
+  }
 
-        while isRunning {
-            // Open request pipe - blocks until a writer connects
-            log("Opening request pipe...")
-            let requestFd = open(requestPipePath, O_RDONLY)
-            guard requestFd != -1 else {
-                let error = errno
-                log("Failed to open request pipe, errno: \(error)")
-                usleep(100000) // Wait before retrying
-                continue
-            }
+  private func readFromPipe(fd: Int32) -> Data? {
+    var buffer = [UInt8](repeating: 0, count: 4096)
+    let bytesRead = read(fd, &buffer, buffer.count)
 
-            log("Request pipe opened, reading request...")
-
-            // Read request - blocks until data arrives
-            guard let requestData = readFromPipe(fd: requestFd) else {
-                log("Read failed or EOF, closing pipe")
-                close(requestFd)
-                continue
-            }
-
-            close(requestFd)
-
-            log("Received request: \(String(data: requestData, encoding: .utf8) ?? "invalid UTF8")")
-
-            let response = processRequest(requestData)
-            writeToPipe(resolveResponsePipePath(requestData), data: response)
-
-            log("Sent response, ready for next request")
-        }
-
-        log("Server loop ended")
+    guard bytesRead > 0 else {
+      if bytesRead == 0 {
+        log("EOF on pipe")
+      } else {
+        let error = errno
+        log("Read error, errno: \(error)")
+      }
+      return nil
     }
 
-    private func readFromPipe(fd: Int32) -> Data? {
-        var buffer = [UInt8](repeating: 0, count: 4096)
-        let bytesRead = read(fd, &buffer, buffer.count)
+    log("Read \(bytesRead) bytes from pipe")
+    return Data(buffer.prefix(bytesRead))
+  }
 
-        guard bytesRead > 0 else {
-            if bytesRead == 0 {
-                log("EOF on pipe")
-            } else {
-                let error = errno
-                log("Read error, errno: \(error)")
-            }
-            return nil
+  private func resolveResponsePipePath(_ requestData: Data) -> String {
+    // Clients create a unique response pipe per request and pass its path along, so that a
+    // response can never pair with another request's reader (a shared response pipe gets
+    // permanently desynced once a single client times out and abandons its request).
+    // Requests without the field fall back to the shared legacy pipe.
+    guard let json = try? JSONSerialization.jsonObject(with: requestData, options: []) as? [String: Any],
+      let responsePipe = json["responsePipe"] as? String,
+      responsePipe.hasPrefix("/tmp/ios_screen_inspector_response")
+    else {
+      return responsePipePath
+    }
+    return responsePipe
+  }
+
+  private func writeToPipe(_ path: String, data: Data) {
+    log("Attempting to open pipe for writing")
+
+    // The client may have timed out and abandoned this request, in which case no reader
+    // ever opens the other end and a plain blocking open would wedge the server thread
+    // forever, killing the inspector for the rest of the app's lifetime. Poll with
+    // O_NONBLOCK (which fails with ENXIO while there is no reader) and drop the response
+    // if no reader shows up in time; the server then moves on to the next request.
+    let deadline = Date().addingTimeInterval(5)
+    var fd: Int32 = -1
+    while fd == -1 {
+      fd = open(path, O_WRONLY | O_NONBLOCK)
+      if fd == -1 {
+        let openError = errno
+        if openError != ENXIO || Date() >= deadline {
+          log("Failed to open pipe for writing, errno: \(openError); dropping response")
+          return
         }
-
-        log("Read \(bytesRead) bytes from pipe")
-        return Data(buffer.prefix(bytesRead))
+        usleep(50_000)
+      }
     }
 
-    private func resolveResponsePipePath(_ requestData: Data) -> String {
-        // Clients create a unique response pipe per request and pass its path along, so that a
-        // response can never pair with another request's reader (a shared response pipe gets
-        // permanently desynced once a single client times out and abandons its request).
-        // Requests without the field fall back to the shared legacy pipe.
-        guard let json = try? JSONSerialization.jsonObject(with: requestData, options: []) as? [String: Any],
-              let responsePipe = json["responsePipe"] as? String,
-              responsePipe.hasPrefix("/tmp/ios_screen_inspector_response") else {
-            return responsePipePath
-        }
-        return responsePipe
+    log("Pipe opened for writing, sending \(data.count) bytes")
+    defer {
+      close(fd)
+      log("Write pipe closed")
     }
 
-    private func writeToPipe(_ path: String, data: Data) {
-        log("Attempting to open pipe for writing")
+    data.withUnsafeBytes { bytes in
+      let written = write(fd, bytes.bindMemory(to: UInt8.self).baseAddress, data.count)
+      log("Wrote \(written) bytes to pipe")
+    }
+  }
 
-        // The client may have timed out and abandoned this request, in which case no reader
-        // ever opens the other end and a plain blocking open would wedge the server thread
-        // forever, killing the inspector for the rest of the app's lifetime. Poll with
-        // O_NONBLOCK (which fails with ENXIO while there is no reader) and drop the response
-        // if no reader shows up in time; the server then moves on to the next request.
-        let deadline = Date().addingTimeInterval(5)
-        var fd: Int32 = -1
-        while fd == -1 {
-            fd = open(path, O_WRONLY | O_NONBLOCK)
-            if fd == -1 {
-                let openError = errno
-                if openError != ENXIO || Date() >= deadline {
-                    log("Failed to open pipe for writing, errno: \(openError); dropping response")
-                    return
-                }
-                usleep(50_000)
-            }
-        }
-
-        log("Pipe opened for writing, sending \(data.count) bytes")
-        defer {
-            close(fd)
-            log("Write pipe closed")
-        }
-
-        data.withUnsafeBytes { bytes in
-            let written = write(fd, bytes.bindMemory(to: UInt8.self).baseAddress, data.count)
-            log("Wrote \(written) bytes to pipe")
-        }
+  private func processRequest(_ requestData: Data) -> Data {
+    guard let json = try? JSONSerialization.jsonObject(with: requestData, options: []) as? [String: Any],
+      let action = json["action"] as? String,
+      let accessibilityId = json["accessibilityId"] as? String
+    else {
+      return createErrorResponse("Invalid request format")
     }
 
-    private func processRequest(_ requestData: Data) -> Data {
-        guard let json = try? JSONSerialization.jsonObject(with: requestData, options: []) as? [String: Any],
-              let action = json["action"] as? String,
-              let accessibilityId = json["accessibilityId"] as? String else {
-            return createErrorResponse("Invalid request format")
-        }
+    switch action {
+    case "getCoordinates":
+      return runOnMainActor {
+        return self.getElementCoordinates(accessibilityId: accessibilityId)
+      }
 
-        switch action {
-        case "getCoordinates":
-            return getElementCoordinates(accessibilityId: accessibilityId)
+    case "captureView":
+      guard let outputPath = json["outputPath"] as? String else {
+        return createErrorResponse("Missing 'outputPath' for captureView")
+      }
+      return runOnMainActor {
+        return self.captureView(accessibilityId: accessibilityId, outputPath: outputPath)
+      }
 
-        default:
-            return createErrorResponse("Unknown action: \(action)")
-        }
+    default:
+      return createErrorResponse("Unknown action: \(action)")
+    }
+  }
+
+  @MainActor
+  private func getElementCoordinates(accessibilityId: String) -> Data {
+    guard let element = self.findElementByAccessibilityId(accessibilityId) else {
+      return createErrorResponse("Element with accessibilityId '\(accessibilityId)' not found")
     }
 
-    private func getElementCoordinates(accessibilityId: String) -> Data {
-        guard Thread.isMainThread else {
-            var result: Data!
-            DispatchQueue.main.sync {
-                result = getElementCoordinates(accessibilityId: accessibilityId)
-            }
-            return result
-        }
+    // Convert element bounds to window coordinates (**visible portion only!**)
+    let frameInWindow = element.convert(element.bounds, to: nil)
 
-        guard let element = self.findElementByAccessibilityId(accessibilityId) else {
-            return createErrorResponse("Element with accessibilityId '\(accessibilityId)' not found")
-        }
+    let response: [String: Any] = [
+      "success": true,
+      "description": element.description,
+      "bounds": [
+        "x": Int(frameInWindow.origin.x),
+        "y": Int(frameInWindow.origin.y),
+        "width": Int(frameInWindow.size.width),
+        "height": Int(frameInWindow.size.height),
+      ],
+      "error": "",
+    ]
 
-        // Convert element bounds to window coordinates (**visible portion only!**)
-        let frameInWindow = element.convert(element.bounds, to: nil)
-
-        let response: [String: Any] = [
-            "success": true,
-            "description": element.description,
-            "bounds": [
-                "x": Int(frameInWindow.origin.x),
-                "y": Int(frameInWindow.origin.y),
-                "width": Int(frameInWindow.size.width),
-                "height": Int(frameInWindow.size.height),
-            ],
-            "error": ""
-        ]
-
-        do {
-            return try JSONSerialization.data(withJSONObject: response, options: [])
-        } catch {
-            return createErrorResponse("Failed to serialize coordinates: \(error.localizedDescription)")
-        }
+    do {
+      return try JSONSerialization.data(withJSONObject: response, options: [])
+    } catch {
+      return createErrorResponse("Failed to serialize coordinates: \(error.localizedDescription)")
     }
+  }
 
-    private func createErrorResponse(_ message: String) -> Data {
-        let response: [String: Any] = [
-            "success": false,
-            "error": message
-        ]
+  func createErrorResponse(_ message: String) -> Data {
+    let response: [String: Any] = [
+      "success": false,
+      "error": message,
+    ]
 
-        do {
-            return try JSONSerialization.data(withJSONObject: response, options: [])
-        } catch {
-            return Data("{\"success\": false, \"error\": \"JSON serialization failed\"}".utf8)
-        }
+    do {
+      return try JSONSerialization.data(withJSONObject: response, options: [])
+    } catch {
+      return Data("{\"success\": false, \"error\": \"JSON serialization failed\"}".utf8)
     }
+  }
 }
 
 private let screenInspector = ScreenInspector()
@@ -250,5 +255,5 @@ private let screenInspector = ScreenInspector()
 // Declare C function
 @_cdecl("screen_inspector_dylib_init")
 public func screen_inspector_dylib_init() {
-    screenInspector.start()
+  screenInspector.start()
 }

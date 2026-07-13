@@ -118,9 +118,10 @@ export async function getFilesToExportFromServerAsync(
 ): Promise<ExportAssetMap> {
   if (!exportServer && serverManifest) {
     // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
-    // EAS Hosting to recognize the `headers` and `redirects` configs
+    // EAS Hosting to recognize the `headers`, `pageHeaders`, and `redirects` configs
     const subsetServerManifest = {
       headers: serverManifest.headers,
+      pageHeaders: serverManifest.pageHeaders,
       redirects: serverManifest.redirects,
     };
     files.set('_expo/.routes.json', {
