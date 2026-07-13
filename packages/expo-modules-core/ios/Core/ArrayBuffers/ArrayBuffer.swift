@@ -65,18 +65,17 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
 
   /// Creates a native-owned copy of this ArrayBuffer.
   ///
-  /// JavaScript-backed storage is permanently materialized before copying, so this instance no
-  /// longer observes JavaScript mutations and `isNativeBacked` becomes `true`. If the JavaScript
-  /// runtime is unavailable or the backing range is invalid, this nonthrowing API terminates with
-  /// a diagnostic instead of substituting an empty buffer.
+  /// JavaScript-backed storage is copied from its current bytes without materializing this
+  /// instance, so the source remains JavaScript-backed and observes later JavaScript mutations.
+  /// Native-backed storage is copied into new native storage. If the JavaScript runtime is
+  /// unavailable or the backing range is invalid, this nonthrowing API terminates with a
+  /// diagnostic instead of substituting an empty buffer.
   public func copy() -> ArrayBuffer {
-    let storage = materializedNativeStorageOrFail()
-    guard let nativeStorage = storage.nativeStorage else {
-      preconditionFailure("ArrayBuffer storage should have been materialized before copying")
+    do {
+      return ArrayBuffer(storage: try storageBox.currentStorage().makeOwnedNativeStorageCopy())
+    } catch {
+      materializationFailure(error)
     }
-    return ArrayBuffer(
-      storage: ArrayBufferStorage.makeOwnedNativeStorageCopy(
-        of: UnsafeRawPointer(nativeStorage.pointer), count: nativeStorage.byteLength))
   }
 
   /// Wraps native-backed storage in a `Data` instance without copying.

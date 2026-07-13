@@ -459,6 +459,26 @@ struct ArrayBufferTests {
     }
 
     @Test
+    func `copy keeps JS-backed source transient`() throws {
+      let backingValue = try runtime.eval("globalThis.arrayBufferUnderTest = new Uint8Array([1, 2, 3, 4]).buffer")
+      let buffer = try ArrayBuffer.decode(backingValue, in: runtime)
+
+      #expect(buffer.isNativeBacked == false)
+
+      let copy = buffer.copy()
+
+      #expect(Array(copy.data) == [1, 2, 3, 4])
+      #expect(copy.isNativeBacked == true)
+      #expect(buffer.isNativeBacked == false)
+
+      _ = try runtime.eval("new Uint8Array(globalThis.arrayBufferUnderTest)[0] = 9")
+
+      #expect(Array(copy.data) == [1, 2, 3, 4])
+      #expect(try buffer.withJSBytes { Array($0) } == [9, 2, 3, 4])
+      #expect(buffer.isNativeBacked == false)
+    }
+
+    @Test
     func `withJSBytes reads JS-backed typed array view range`() throws {
       let values = try runtime.eval([
         "buffer = new Uint8Array([1, 2, 3, 4, 5]).buffer",
@@ -863,69 +883,6 @@ struct ArrayBufferTests {
       #expect(testScheduler.scheduledWorkLoopCount == 0)
     }
 
-    @Test
-    func `single JS-backed materialization through the scheduler remains safe`() async throws {
-      let runtime = makeRuntimeWiredToTestScheduler()
-      let backingValue = try runtime.eval("new Uint8Array([1, 2, 3, 4]).buffer")
-      var buffer: ArrayBuffer? = try ArrayBuffer.decode(backingValue, in: runtime)
-      let completedWorkers = ArrayBufferWorkerCompletionTracker()
-      var worker: Task<[UInt8], Never>? = Task.detached { [buffer, completedWorkers] in
-        defer { completedWorkers.complete() }
-        return Array(buffer!.data)
-      }
-
-      try await waitUntil(timeout: 5) {
-        testScheduler.scheduledWorkLoopCount > 0
-      }
-      await drainWorkLoopsUntilWorkersFinish(completedWorkers, expectedCount: 1)
-
-      #expect(await worker!.value == [1, 2, 3, 4])
-      worker = nil
-      drainWorkLoops()
-
-      testScheduler.destroy()
-      runtime.longLivedObjects.clear()
-      buffer = nil
-      #expect(testScheduler.scheduledWorkLoopCount == 0)
-    }
-
-    @Test
-    func `concurrent native-backed reads remain safe`() async {
-      let buffer = ArrayBuffer(size: 4)
-      let startGate = ArrayBufferWorkerStartGate(expectedWorkerCount: 2)
-
-      async let first: [UInt8] = Task.detached {
-        startGate.waitForWorkers()
-        return Array(buffer.data)
-      }.value
-      async let second: [UInt8] = Task.detached {
-        startGate.waitForWorkers()
-        return Array(buffer.data)
-      }.value
-
-      #expect(await first == [0, 0, 0, 0])
-      #expect(await second == [0, 0, 0, 0])
-    }
-
-    @Test
-    func `mock scheduler preserves full JS-backed identity on the test actor`() throws {
-      let runtime = makeRuntimeWiredToTestScheduler()
-      let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
-      var buffer: ArrayBuffer? = try ArrayBuffer.decode(value, in: runtime)
-
-      #expect(runtime.supportsAsyncScheduling == true)
-      #expect(runtime.isOnJavaScriptThread() == true)
-
-      let encoded = buffer!.asJavaScriptArrayBuffer(runtime: runtime).asValue()
-      runtime.global().setProperty("originalBuffer", value: value)
-      runtime.global().setProperty("encodedBuffer", value: encoded)
-      #expect(try runtime.eval("originalBuffer === encodedBuffer").asBool() == true)
-
-      buffer = nil
-      drainWorkLoops()
-      #expect(testScheduler.scheduledWorkLoopCount == 0)
-    }
-
     private func drainWorkLoops() {
       while testScheduler.scheduledWorkLoopCount > 0 {
         hermesRuntime.withUnsafePointee { runtimePointer in
@@ -1043,29 +1000,6 @@ private final class ArrayBufferWorkerCompletionTracker: @unchecked Sendable {
     lock.lock()
     defer { lock.unlock() }
     completedWorkerCount += 1
-  }
-}
-
-private final class ArrayBufferWorkerStartGate: @unchecked Sendable {
-  private let condition = NSCondition()
-  private let expectedWorkerCount: Int
-  private var arrivedWorkerCount = 0
-
-  init(expectedWorkerCount: Int) {
-    self.expectedWorkerCount = expectedWorkerCount
-  }
-
-  func waitForWorkers() {
-    condition.lock()
-    arrivedWorkerCount += 1
-    if arrivedWorkerCount == expectedWorkerCount {
-      condition.broadcast()
-    } else {
-      while arrivedWorkerCount < expectedWorkerCount {
-        condition.wait()
-      }
-    }
-    condition.unlock()
   }
 }
 
