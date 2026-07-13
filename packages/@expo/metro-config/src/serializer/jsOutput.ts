@@ -8,6 +8,7 @@ import type { types as t } from '@babel/core';
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
 
+import type { EmbeddedVaryDim } from '../cache-vary/ambient';
 import type { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
 import type { PackedMap, SerializableSourceMap } from './packedMap';
 
@@ -69,7 +70,7 @@ export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
       duration: number;
     };
     css?: CSSMetadata;
-    expoCacheVary?: { scheme: string; name: string; fp: string }[];
+    expoCacheVary?: EmbeddedVaryDim[];
   };
 };
 
