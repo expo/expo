@@ -8,8 +8,10 @@ class SourceMapExplorerViewModel: ObservableObject {
   @Published var loadingState: SourceMapLoadingState = .idle
   @Published var fileTree: [FileTreeNode] = []
   @Published var searchText: String = ""
+  @Published var publishedEditError: String?
 
   private var flatFiles: [FileTreeNode] = []
+  private var errorCancellable: AnyCancellable?
 
   var filteredFileTree: [FileTreeNode] {
     guard !searchText.isEmpty else { return fileTree }
@@ -38,5 +40,11 @@ class SourceMapExplorerViewModel: ObservableObject {
     } catch {
       loadingState = .error(.networkError(error))
     }
+  }
+
+  func observeSession() {
+    errorCancellable = ProjectSourceSession.current?.$publishedEditError
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] message in self?.publishedEditError = message }
   }
 }

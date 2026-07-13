@@ -17,10 +17,15 @@ final class ProjectSourceSession: ObservableObject {
 
   static func end() {
     current = nil
+    PatchedBundleRegistry.clear()
   }
 
   let overlay = EditOverlay()
   @Published private(set) var tree: SourceTree?
+
+  /// Human-readable reason the last published-project apply was refused;
+  /// nil while idle or after a successful apply.
+  @Published private(set) var publishedEditError: String?
 
   private var loadTask: Task<SourceTree, Error>?
   private var cancellables: Set<AnyCancellable> = []
@@ -68,29 +73,54 @@ final class ProjectSourceSession: ObservableObject {
     overlay.currentContents(forPath: path) ?? tree?.contents(forPath: path)
   }
 
-  /// True when edits actually apply somewhere (an active snack session for
-  /// the current project's channel). Published projects gain this in a later
-  /// phase.
+  private var editApplier: EditApplier?
+
+  private func currentEditApplier() -> EditApplier? {
+    if let editApplier {
+      return editApplier
+    }
+    let manifestURL = DevMenuManager.shared.currentManifestURL
+    if let channel = SourceProviderSelector.snackParams(from: manifestURL).channel {
+      editApplier = SnackEditApplier(channel: channel)
+    } else if SourceProviderSelector.isPublishedBundle(
+      manifestURL: manifestURL, bundleURL: DevMenuManager.shared.currentBundleURL) {
+      editApplier = PublishedEditApplier(
+        overlay: overlay,
+        environment: .init(
+          scopeKey: { EXKernel.sharedInstance().visibleApp.scopeKey },
+          makeApplier: {
+            guard let bundleData = await MainActor.run(body: {
+              EXKernel.sharedInstance().visibleApp.appLoader.bundle as Data?
+            }) else {
+              throw SourceMapError.noSourceMapFound
+            }
+            return try PublishedBundleApplier(bundleData: bundleData, transformer: try OnDeviceTransformer())
+          },
+          reload: { DevMenuManager.shared.reload() },
+          onError: { [weak self] message in self?.publishedEditError = message }
+        ))
+    }
+    return editApplier
+  }
+
+  /// True when edits actually apply somewhere: an active snack session for
+  /// the current project's channel, or a published bundle we can patch.
   var canEdit: Bool {
-    guard let channel = Self.currentChannel() else { return false }
-    return SnackEditingSession.shared.hasActiveSession(forChannel: channel)
+    currentEditApplier()?.canEdit ?? false
   }
 
   @discardableResult
   func submitEdit(path: String, newContents: String) -> Bool {
     guard let original = tree?.contents(forPath: path) else { return false }
     let previous = content(forPath: path) ?? original
-    guard canEdit else { return false }
+    guard let applier = currentEditApplier(), applier.canEdit else { return false }
 
     overlay.recordEdit(path: path, original: original, newContents: newContents)
-    return SnackEditingSession.shared.sendFileUpdate(
-      path: path,
-      oldContents: previous,
-      newContents: newContents
-    )
+    return applier.submit(path: path, original: original, previous: previous, newContents: newContents)
   }
 
-  private static func currentChannel() -> String? {
-    SourceProviderSelector.snackParams(from: DevMenuManager.shared.currentManifestURL).channel
+  func revertAllEdits() {
+    overlay.revertAll()
+    currentEditApplier()?.revertAll()
   }
 }

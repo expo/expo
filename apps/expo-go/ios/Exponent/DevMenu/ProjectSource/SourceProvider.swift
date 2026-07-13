@@ -50,6 +50,20 @@ enum SourceProviderSelector {
     return BundleSourceMapProvider(loadBundleData: loadBundleData)
   }
 
+  /// True when the project's source is the loaded bundle itself (the
+  /// BundleSourceMapProvider branch above): published Expo-Go-hosted apps,
+  /// not snacks and not Metro dev servers.
+  static func isPublishedBundle(manifestURL: URL?, bundleURL: URL?) -> Bool {
+    let (snackId, channel) = snackParams(from: manifestURL)
+    if snackId != nil || channel != nil {
+      return false
+    }
+    if let bundleURL, !bundleURL.isFileURL, bundleURL.host != "assets.eascdn.net" {
+      return false
+    }
+    return true
+  }
+
   static func snackParams(from manifestURL: URL?) -> (snackId: String?, channel: String?) {
     guard let manifestURL,
           let components = URLComponents(url: manifestURL, resolvingAgainstBaseURL: false) else {

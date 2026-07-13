@@ -31,12 +31,13 @@ struct SourceMapExplorerView: View {
       ToolbarItem(placement: .navigationBarTrailing) {
         if overlay.hasEdits {
           Button("Revert all", role: .destructive) {
-            overlay.revertAll()
+            ProjectSourceSession.current?.revertAllEdits()
           }
         }
       }
     }
     .task {
+      viewModel.observeSession()
       await viewModel.loadSource()
     }
   }
@@ -44,6 +45,7 @@ struct SourceMapExplorerView: View {
   private var loadedView: some View {
     VStack(spacing: 0) {
       connectionBanner
+      publishedEditBanner
       FolderListView(
         title: "Source code explorer",
         nodes: isSearching ? viewModel.filteredFileTree : viewModel.fileTree,
@@ -65,6 +67,21 @@ struct SourceMapExplorerView: View {
       .padding(.horizontal)
       .padding(.vertical, 8)
       .background(Color(uiColor: .secondarySystemBackground))
+    }
+  }
+
+  @ViewBuilder
+  private var publishedEditBanner: some View {
+    if let message = viewModel.publishedEditError {
+      HStack(alignment: .top, spacing: 8) {
+        Image(systemName: "exclamationmark.triangle.fill")
+          .foregroundColor(.orange)
+        Text(message)
+          .font(.footnote)
+        Spacer(minLength: 0)
+      }
+      .padding(10)
+      .background(Color.orange.opacity(0.12))
     }
   }
 

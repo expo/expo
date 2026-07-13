@@ -71,8 +71,10 @@ enum SourceTreeBuilder {
     return SourceTree(rootNodes: collapsed, flatFiles: flat, contentsByPath: contentsByPath)
   }
 
-  /// Inserts a source path, returning its display path (nil when skipped).
-  private static func insert(_ path: String, into root: Node) -> String? {
+  /// Display-path components for a sourcemap source path (nil when the
+  /// source should be skipped). Shared with anything that needs to key
+  /// data by the same display paths the tree uses.
+  static func displayComponents(forSourcePath path: String) -> [String]? {
     var components = path.split(separator: "/").map(String.init)
     guard !components.isEmpty else {
       return nil
@@ -87,6 +89,14 @@ enum SourceTreeBuilder {
     // node_modules stay in place under their parent package.
     if let first = components.firstIndex(of: "node_modules") {
       components.replaceSubrange(first...first, with: ["..", "modules"])
+    }
+
+    return components
+  }
+
+  private static func insert(_ path: String, into root: Node) -> String? {
+    guard let components = displayComponents(forSourcePath: path) else {
+      return nil
     }
 
     var current = root
