@@ -3527,7 +3527,7 @@ DEPENDENCIES:
   - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@8.0.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native_0180b0ed6046964ee33d8459d53b43aa/node_modules/react-native-pager-view`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react_4597956df5772f7c92a8134220d636ac/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.87.0-rc.0_@babel_9ae56cadb36b20399e5495cbe55c3117/node_modules/@react-native-segmented-control/segmented-control`)"
-  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=ba884424a75156115606f768b005e5af9a39e9836f1_fdcce57925ed98df14d03b937bc50069/node_modules/@shopify/react-native-skia`)"
+  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=e00eb5ce5f70273dd31f4b4259f1979f02fd808b962_63fd653ddb812123f7f948471dbaecef/node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.1.2/node_modules/@react-native-community/slider`)"
   - "react-native-view-shot (from `../../../node_modules/.pnpm/react-native-view-shot@4.0.3_patch_hash=c493165ff680241f9c0432f4619a8f581420b9f8dd9c6e8_73ebfbd57889219ecefe463d64f44a24/node_modules/react-native-view-shot`)"
   - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@13.16.1_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+_df04747bc7a484c7e6489d4982b851c5/node_modules/react-native-webview`)"
@@ -3571,7 +3571,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_5f1cd43ac95e4cb2f4253c55092074e3/node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-n_ee3b10c8fc5ffb74e796ad3ecb031b31/node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@8.6.0_expo@packages+expo_react-native@0.87.0-rc._3714ccb4a3880f4713f655aea01e5a69/node_modules/@react-native-community/datetimepicker`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-_2d9b385922eea3a0cc919921afcbec4c/node_modules/react-native-gesture-handler`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_patch_hash=5fe1a8d96067433327408eeb5b58783eef4713a2_5ef8aca7bdfa674ae1a6511d2897d6ad/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_6572ea9d58ce76972961dd96f2780789/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_react-native@0.87.0-rc.0_@babel+_37dbec40f0746e87d063b66cdd40044e/node_modules/react-native-screens`)"
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest_9365ec1d4e2a0d08f8e75b22b7eb9535/node_modules/react-native-svg`)"
@@ -3956,7 +3956,7 @@ EXTERNAL SOURCES:
   react-native-segmented-control:
     :path: "../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.87.0-rc.0_@babel_9ae56cadb36b20399e5495cbe55c3117/node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
-    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=ba884424a75156115606f768b005e5af9a39e9836f1_fdcce57925ed98df14d03b937bc50069/node_modules/@shopify/react-native-skia"
+    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=e00eb5ce5f70273dd31f4b4259f1979f02fd808b962_63fd653ddb812123f7f948471dbaecef/node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "../../../node_modules/.pnpm/@react-native-community+slider@5.1.2/node_modules/@react-native-community/slider"
   react-native-view-shot:
@@ -4044,7 +4044,7 @@ EXTERNAL SOURCES:
   RNDateTimePicker:
     :path: "../../../node_modules/.pnpm/@react-native-community+datetimepicker@8.6.0_expo@packages+expo_react-native@0.87.0-rc._3714ccb4a3880f4713f655aea01e5a69/node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-_2d9b385922eea3a0cc919921afcbec4c/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_patch_hash=5fe1a8d96067433327408eeb5b58783eef4713a2_5ef8aca7bdfa674ae1a6511d2897d6ad/node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_6572ea9d58ce76972961dd96f2780789/node_modules/react-native-reanimated"
   RNScreens:
