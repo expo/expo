@@ -357,6 +357,54 @@ it('should remove guarded routes from history when a guard flips false', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('should not restore pruned guarded history when a guard flips true->false->true', () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <Stack id={undefined}>
+          <Stack.Protected guard={guard}>
+            <Stack.Screen name="secret" />
+          </Stack.Protected>
+          <Stack.Screen name="other" />
+        </Stack>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+    other: () => <Text testID="other">other</Text>,
+  });
+
+  act(() => router.push('/secret'));
+  expect(screen.getByTestId('secret')).toBeVisible();
+  expect(screen).toHavePathname('/secret');
+
+  act(() => router.push('/other'));
+  expect(screen.getByTestId('other')).toBeVisible();
+  expect(screen).toHavePathname('/other');
+
+  // Revoke access: the guarded /secret history entry is pruned.
+  act(() => {
+    setGuard(false);
+  });
+
+  // Re-grant access while still on /other.
+  act(() => {
+    setGuard(true);
+  });
+
+  // Flipping the guard back to true must not resurrect the pruned /secret entry.
+  act(() => router.back());
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(router.canGoBack()).toBe(false);
 });
 
 it('should use the anchor when a focused route guard flips false', () => {
