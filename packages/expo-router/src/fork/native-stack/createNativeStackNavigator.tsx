@@ -64,7 +64,6 @@ function NativeStackNavigator({
     UNSTABLE_router,
   });
 
-  // Let this navigator clear its own guarded routes from history, based on the guard context.
   useClearGuardedRoutes(state, navigation);
 
   React.useEffect(
