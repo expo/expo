@@ -307,6 +307,8 @@ After developing a feature, run these commands in `packages/expo-router`:
 3. `pnpm test:types` - Verify type correctness in tests
 4. `pnpm lint` - Run last to find linting issues
 
+**Required:** before committing, run `et check-packages expo-router` to build, type-check, lint, and test the package the same way CI does. See the repo root [`.claude/CLAUDE.md`](../../.claude/CLAUDE.md) for how to use `et` (expotools) and other repo tooling.
+
 Then test the feature on the simulator using one of the `apps/router-e2e/__e2e__/` projects. For android, use the `/android-e2e-testing` skill for testing on emulators.
 
 Lastly, span a new fresh senior engineer agent to challenge the implementation, how it fits into general expo-router architecture and find edge cases.
