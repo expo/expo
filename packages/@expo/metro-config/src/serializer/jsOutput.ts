@@ -61,6 +61,7 @@ export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
       duration: number;
     };
     css?: CSSMetadata;
+    expoCacheVary?: { scheme: string; name: string; fp: string }[];
   };
 };
 
