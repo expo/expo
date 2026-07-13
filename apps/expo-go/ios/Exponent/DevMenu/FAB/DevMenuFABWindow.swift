@@ -38,6 +38,9 @@ class DevMenuFABWindow: UIWindow {
       onOpenMenu: { [weak self] in
         self?.manager?.openMenu()
       },
+      onOpenSourceExplorer: { [weak self] in
+        self?.manager?.openSourceExplorer()
+      },
       onFrameChange: { [weak self] frame in
         self?.fabFrame = frame
       }

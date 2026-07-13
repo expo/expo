@@ -47,7 +47,7 @@ class DevMenuViewModel: ObservableObject {
     return SnackEditingSession.shared.isLesson
   }
 
-  /// True for lessons or snacks with "lesson"/"learn" in name
+  /// True for lessons and embedded playground/demo sessions.
   var isLessonLikeSession: Bool {
     return SnackEditingSession.shared.isLessonLikeSession
   }

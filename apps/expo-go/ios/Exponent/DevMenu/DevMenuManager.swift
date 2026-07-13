@@ -14,6 +14,11 @@ public class DevMenuManager: NSObject {
     menuWillShowSubject.eraseToAnyPublisher()
   }
 
+  private let sourceExplorerPresentationSubject = CurrentValueSubject<Bool, Never>(false)
+  var sourceExplorerPresentationPublisher: AnyPublisher<Bool, Never> {
+    sourceExplorerPresentationSubject.eraseToAnyPublisher()
+  }
+
   private let manifestSubject = PassthroughSubject<Void, Never>()
   var manifestPublisher: AnyPublisher<Void, Never> {
     manifestSubject.eraseToAnyPublisher()
@@ -32,7 +37,7 @@ public class DevMenuManager: NSObject {
     super.init()
     self.window = DevMenuWindow(manager: self)
     DevMenuPreferences.setup()
-    
+
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(handleContentDidAppear),
@@ -77,6 +82,19 @@ public class DevMenuManager: NSObject {
     return setVisibility(true)
   }
 
+  @discardableResult
+  func openSourceExplorer() -> Bool {
+    guard openMenu() else { return false }
+    DispatchQueue.main.async {
+      self.sourceExplorerPresentationSubject.send(true)
+    }
+    return true
+  }
+
+  func sourceExplorerDidPresent() {
+    sourceExplorerPresentationSubject.send(false)
+  }
+
   @objc
   @discardableResult
   func closeMenu(completion: (() -> Void)? = nil) -> Bool {
@@ -104,6 +122,7 @@ public class DevMenuManager: NSObject {
     if visible && !hasActiveApp { return false }
 
     if visible {
+      sourceExplorerPresentationSubject.send(false)
       menuWillShowSubject.send()
       DispatchQueue.main.async {
         self.updateFABVisibility()
