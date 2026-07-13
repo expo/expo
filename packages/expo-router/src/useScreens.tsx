@@ -22,7 +22,6 @@ import {
 import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
-  CommonActions,
   useStateForPath,
   type EventConsumer,
   type EventMapBase,
@@ -370,40 +369,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         }
       });
     }, [navigation]);
-
-    useEffect(() => {
-      if (!guardRedirect || isFocused || !route?.key) {
-        return;
-      }
-
-      const state = navigation.getState();
-      if (!state) {
-        return;
-      }
-
-      const routeIndex = state.routes.findIndex((stateRoute) => stateRoute.key === route.key);
-
-      if (routeIndex < 0 || state.routes.length <= 1) {
-        return;
-      }
-
-      const routes = state.routes.filter((stateRoute) => stateRoute.key !== route.key);
-      const preloadedRoutes =
-        'preloadedRoutes' in state && Array.isArray(state.preloadedRoutes)
-          ? state.preloadedRoutes.filter((stateRoute) => stateRoute.key !== route.key)
-          : undefined;
-      const index = routeIndex < state.index ? state.index - 1 : state.index;
-
-      navigation.dispatch({
-        ...CommonActions.reset({
-          ...(state as any),
-          index: Math.min(index, routes.length - 1),
-          routes,
-          ...(preloadedRoutes ? { preloadedRoutes } : null),
-        }),
-        target: state.key,
-      });
-    }, [guardRedirect, isFocused, navigation, route?.key]);
 
     const isRouteType = value.type === 'route';
     const hasRouteKey = !!route?.key;
