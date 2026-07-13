@@ -72,6 +72,8 @@ Apps that don't use [Continuous Native Generation](/workflow/continuous-native-g
 
 ### Build the native app
 
+If your project doesn't have an **eas.json** yet, the EAS CLI will prompt you to create one with a default `development` profile.
+
 <Tabs>
 
 <Tab label="Android">
@@ -84,8 +86,6 @@ Apps that don't use [Continuous Native Generation](/workflow/continuous-native-g
 </Prerequisites>
 
 <Terminal cmd={['$ eas build --platform android --profile development']} />
-
-If your project doesn't have an **eas.json** yet, the EAS CLI will prompt you to create one with a default `development` profile.
 
 </Tab>
 

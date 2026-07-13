@@ -1,3 +1,4 @@
+import { Collapsible } from '~/ui/components/Collapsible';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
@@ -10,7 +11,7 @@ Any EAS Build can run on your own machine by adding the `--local` flag: EAS prov
 
 This requires your local development environment to be set up with the necessary native build tools. Read more about [running EAS Build locally](/build-reference/local-builds/).
 
-#### Host platform support
+### Host platform support
 
 |             | Android           | iOS Simulator | iPhone device   |
 | ----------- | ----------------- | ------------- | --------------- |
@@ -58,11 +59,19 @@ Run the following command in your project's root directory:
   }}
 />
 
+<Collapsible summary="Are you using this library in an existing React Native project?">
+
+Apps that don't use [Continuous Native Generation](/workflow/continuous-native-generation/) or are created with `npx react-native`, require further configuration after installing this library. See steps 1 and 2 from [Install `expo-dev-client` in an existing React Native project](/bare/install-dev-builds-in-bare/).
+
+</Collapsible>
+
 </Step>
 
 <Step label="2">
 
 ### Build the native app on your machine
+
+If your project doesn't have an **eas.json** yet, the EAS CLI will prompt you to create one with a default `development` profile.
 
 <Tabs>
 

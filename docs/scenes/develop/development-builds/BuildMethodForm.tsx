@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { EasCliLogo } from './EasCliLogo';
 import { MethodSelectCard } from './MethodSelectCard';
 
-type BuildMethod = 'eas' | 'eas-cli-local' | 'expo-go-to-dev-build';
+type BuildMethod = 'expo-go-to-dev-build' | 'build-with-eas' | 'eas-cli-local';
 
 export function BuildMethodForm() {
   const router = useRouter();
@@ -16,10 +16,10 @@ export function BuildMethodForm() {
   useEffect(
     function queryDidUpdate() {
       if (isReady) {
-        if (query.buildenv === 'eas-cli-local' || query.buildenv === 'expo-go-to-dev-build') {
+        if (query.buildenv === 'build-with-eas' || query.buildenv === 'eas-cli-local') {
           setMethod(query.buildenv);
         } else {
-          setMethod('eas');
+          setMethod('expo-go-to-dev-build');
         }
       }
     },
@@ -30,7 +30,7 @@ export function BuildMethodForm() {
     setMethod(method);
 
     const newQuery = { ...query };
-    if (method === 'eas') {
+    if (method === 'expo-go-to-dev-build') {
       delete newQuery.buildenv;
     } else {
       newQuery.buildenv = method;
@@ -48,12 +48,21 @@ export function BuildMethodForm() {
   return (
     <div className="flex flex-wrap gap-4">
       <MethodSelectCard
+        Icon={TerminalSquareIcon}
+        title="Switch from Expo Go"
+        description="Compile with Android Studio and Xcode using Expo CLI. No Expo account needed."
+        isSelected={method === 'expo-go-to-dev-build'}
+        onClick={() => {
+          onRadioChange('expo-go-to-dev-build');
+        }}
+      />
+      <MethodSelectCard
         Icon={PlanEnterpriseIcon}
         title="Build with EAS"
         description="Compile in the cloud on EAS servers. No native build tools needed and you can also create iOS builds from any operating system."
-        isSelected={method === 'eas'}
+        isSelected={method === 'build-with-eas'}
         onClick={() => {
-          onRadioChange('eas');
+          onRadioChange('build-with-eas');
         }}
       />
       <MethodSelectCard
@@ -63,15 +72,6 @@ export function BuildMethodForm() {
         isSelected={method === 'eas-cli-local'}
         onClick={() => {
           onRadioChange('eas-cli-local');
-        }}
-      />
-      <MethodSelectCard
-        Icon={TerminalSquareIcon}
-        title="Switch from Expo Go"
-        description="Compile with Android Studio and Xcode using Expo CLI. No Expo account needed."
-        isSelected={method === 'expo-go-to-dev-build'}
-        onClick={() => {
-          onRadioChange('expo-go-to-dev-build');
         }}
       />
     </div>

@@ -8,13 +8,13 @@ export function DevelopmentBuildInstructions() {
   const router = useRouter();
   const { query } = router;
 
+  if (query.buildenv === 'build-with-eas') {
+    return <Eas />;
+  }
+
   if (query.buildenv === 'eas-cli-local') {
     return <EasCliLocal />;
   }
 
-  if (query.buildenv === 'expo-go-to-dev-build') {
-    return <ExpoGoToDevBuild />;
-  }
-
-  return <Eas />;
+  return <ExpoGoToDevBuild />;
 }
