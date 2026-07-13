@@ -82,40 +82,44 @@ struct SettingsTabView: View {
 
         if shouldShowTrackingSection {
           VStack(alignment: .leading, spacing: 16) {
-          Text("Tracking")
-            .font(.headline)
-            .foregroundColor(.primary)
+            Text("Tracking")
+              .font(.headline)
+              .foregroundColor(.primary)
 
-          VStack(spacing: 0) {
-            Button {
-              requestTrackingPermission()
-            } label: {
-              HStack {
-                Text("Allow access to app-related data for tracking")
-                  .font(.body)
-                  .foregroundColor(.primary)
-                  .multilineTextAlignment(.leading)
+            Text("The system prompt lets you choose whether to allow tracking.")
+              .font(.subheadline)
+              .foregroundColor(.secondary)
 
-                Spacer()
+            VStack(spacing: 0) {
+              Button {
+                requestTrackingPermission()
+              } label: {
+                HStack {
+                  Text("Show prompt")
+                    .font(.body)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
 
-                if isTrackingRequestInFlight {
-                  ProgressView()
+                  Spacer()
+
+                  if isTrackingRequestInFlight {
+                    ProgressView()
+                  }
                 }
+                .padding()
               }
-              .padding()
+              .disabled(isTrackingRequestInFlight)
+              .buttonStyle(PlainButtonStyle())
             }
-            .disabled(isTrackingRequestInFlight)
-            .buttonStyle(PlainButtonStyle())
-          }
-          .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+            .background(Color.expoSecondarySystemBackground)
+            .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
 
-          if let destination = URL(string: "https://expo.dev/privacy") {
-            Link("Learn more about what data Expo collects and why.", destination: destination)
-              .font(.caption)
-              .foregroundColor(.expoBlue)
+            if let destination = URL(string: "https://expo.dev/privacy") {
+              Link("Learn more about what data Expo collects and why.", destination: destination)
+                .font(.caption)
+                .foregroundColor(.expoBlue)
+            }
           }
-        }
         }
         VStack(alignment: .leading, spacing: 16) {
           Text("App Info")
