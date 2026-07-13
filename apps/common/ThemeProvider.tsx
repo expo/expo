@@ -19,7 +19,7 @@ export const ThemeContext = createContext<ThemeContextType>({
 
 export function ThemeProvider({ children }: PropsWithChildren) {
   const systemColorScheme = useColorScheme();
-  const currentThemeName = systemColorScheme !== 'unspecified' ? systemColorScheme : 'light';
+  const currentThemeName = systemColorScheme ?? 'light';
   const currentTheme = currentThemeName === 'dark' ? darkTheme : lightTheme;
 
   return (
