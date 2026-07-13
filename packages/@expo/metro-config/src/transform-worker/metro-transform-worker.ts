@@ -31,7 +31,7 @@ import {
 import assert from 'node:assert';
 
 import type { ExpoBabelTransformer as ExpoBabelTransformerWithCacheKey } from '../babel-transformer';
-import { currentFingerprint, type CacheVaryDim } from '../cache-vary/ambient';
+import { embedCurrentFingerprints, type CacheVaryDim } from '../cache-vary/ambient';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import {
   composeSourceMaps,
@@ -651,14 +651,7 @@ async function transformJS(
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
         loaderReference: file.loaderReference,
-        expoCacheVary: file.cacheVary?.length
-          ? await Promise.all(
-              file.cacheVary.map(async (d) => ({
-                ...d,
-                fp: (await currentFingerprint(d.scheme, d.name))!,
-              }))
-            )
-          : undefined,
+        expoCacheVary: await embedCurrentFingerprints(file.cacheVary),
         ...(possibleReconcile
           ? {
               ast: wrappedAst,

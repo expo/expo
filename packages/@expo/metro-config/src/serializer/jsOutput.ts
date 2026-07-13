@@ -12,6 +12,7 @@ import type {
 } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
 
+import type { EmbeddedVaryDim } from '../cache-vary/ambient';
 import type { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
 
 export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
@@ -61,7 +62,7 @@ export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
       duration: number;
     };
     css?: CSSMetadata;
-    expoCacheVary?: { scheme: string; name: string; fp: string }[];
+    expoCacheVary?: EmbeddedVaryDim[];
   };
 };
 

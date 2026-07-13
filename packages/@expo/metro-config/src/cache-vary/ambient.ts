@@ -25,6 +25,18 @@ export async function currentFingerprint(scheme: string, name: string): Promise<
   return sha1(fingerprintInput(readAmbientVaryValue(scheme, name)));
 }
 
+export async function embedCurrentFingerprints(
+  dims: readonly CacheVaryDim[] | undefined
+): Promise<EmbeddedVaryDim[] | undefined> {
+  if (!dims?.length) return undefined;
+  return await Promise.all(
+    dims.map(async (dim) => ({
+      ...dim,
+      fp: (await currentFingerprint(dim.scheme, dim.name))!,
+    }))
+  );
+}
+
 export const dimId = (dim: CacheVaryDim): string => `${dim.scheme}:${dim.name}`;
 
 export function canonicalDimNames(dims: readonly CacheVaryDim[]): string {
