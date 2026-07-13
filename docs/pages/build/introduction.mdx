@@ -1,161 +1,318 @@
----
-title: EAS Build
-sidebar_title: Introduction
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+import React, { useState, useEffect } from "react";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  FlatList,
+  ScrollView,
+  TextInput,
+  Button,
+  TouchableOpacity,
+  Dimensions,
+  StyleSheet,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { LineChart } from "react-native-chart-kit";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+// === CONFIG ===
+const ALPHA_KEY = "demo"; // ganti dengan API key Alpha Vantage kamu
+const NEWS_KEY = "demo";  // ganti dengan API key NewsAPI kamu
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { FAQ } from '~/ui/components/FAQ';
-import { Terminal } from '~/ui/components/Snippet';
+const Tab = createBottomTabNavigator();
+const screenWidth = Dimensions.get("window").width;
 
-**EAS Build** is a hosted Expo Application Services (EAS) service that builds app binaries (also called [standalone apps](/more/glossary-of-terms/#standalone-app)) for your Expo and React Native projects.
+/* =================== MARKET SCREEN =================== */
+function MarketScreen() {
+  const [markets, setMarkets] = useState([]);
+  const [offline, setOffline] = useState(false);
 
-EAS Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+  const symbols = [
+    { name: "Dow Jones", code: "DJI" },
+    { name: "NASDAQ", code: "IXIC" },
+    { name: "S&P 500", code: "GSPC" },
+    { name: "Hang Seng", code: "HSI" },
+    { name: "Nikkei 225", code: "N225" },
+    { name: "IHSG", code: "JKSE" },
+  ];
 
-EAS Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+  const fetchMarkets = async () => {
+    try {
+      const results = [];
+      for (let s of symbols) {
+        const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${s.code}&apikey=${ALPHA_KEY}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const ts = data["Time Series (Daily)"];
+        if (ts) {
+          const last = Object.values(ts)[0];
+          const price = parseFloat(last["4. close"]);
+          results.push({ ...s, price });
+        }
+      }
+      setMarkets(results);
+      await AsyncStorage.setItem("markets", JSON.stringify(results));
+    } catch (e) {
+      console.log("No internet, loading cache...");
+      const cache = await AsyncStorage.getItem("markets");
+      if (cache) {
+        setMarkets(JSON.parse(cache));
+        setOffline(true);
+      }
+    }
+  };
 
-## Quick start
+  useEffect(() => {
+    fetchMarkets();
+  }, []);
 
-> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>🌍 Global Markets</Text>
+      {offline && <Text style={styles.offline}>📴 Offline Mode</Text>}
+      <FlatList
+        data={markets}
+        keyExtractor={(item) => item.code}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.title}>{item.name}</Text>
+            <Text style={styles.text}>{item.price || "--"}</Text>
+          </View>
+        )}
+      />
+    </SafeAreaView>
+  );
+}
 
-To build your app, run the following command:
+/* =================== STOCKS SCREEN =================== */
+function StocksScreen() {
+  const [symbol, setSymbol] = useState("AAPL");
+  const [prices, setPrices] = useState([]);
+  const [offline, setOffline] = useState(false);
 
-<Terminal cmd={['$ eas build --platform all']} />
+  const fetchStock = async () => {
+    try {
+      const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${ALPHA_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const ts = data["Time Series (Daily)"];
+      if (ts) {
+        const close = Object.values(ts).map((d) => parseFloat(d["4. close"])).slice(0, 7).reverse();
+        setPrices(close);
+        await AsyncStorage.setItem("stock_" + symbol, JSON.stringify(close));
+      }
+    } catch (e) {
+      const cache = await AsyncStorage.getItem("stock_" + symbol);
+      if (cache) {
+        setPrices(JSON.parse(cache));
+        setOffline(true);
+      }
+    }
+  };
 
-This command sends your project to EAS Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
+  useEffect(() => {
+    fetchStock();
+  }, [symbol]);
 
-## Key features
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>📈 Stock Detail</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter symbol (ex: AAPL)"
+        value={symbol}
+        onChangeText={setSymbol}
+      />
+      {offline && <Text style={styles.offline}>📴 Offline Mode</Text>}
+      {prices.length > 0 && (
+        <LineChart
+          data={{
+            labels: ["Day1", "2", "3", "4", "5", "6", "7"],
+            datasets: [{ data: prices }],
+          }}
+          width={screenWidth - 20}
+          height={220}
+          yAxisLabel="$"
+          chartConfig={{
+            backgroundColor: "#000",
+            backgroundGradientFrom: "#1e1e1e",
+            backgroundGradientTo: "#1e1e1e",
+            decimalPlaces: 2,
+            color: () => `#00ff00`,
+            labelColor: () => `#fff`,
+          }}
+          style={styles.chart}
+        />
+      )}
+    </ScrollView>
+  );
+}
 
-- Cloud builds for Android and iOS with consistent environments
-- Automatically provision and manage app signing credentials or use your own
-- Share [internal distribution](/build/internal-distribution/) builds with a URL
-- Automate builds with [build profiles](/build/eas-json/#build-profiles) in **eas.json** (named sets of build settings) and integrations with [EAS Workflows](/eas/workflows/get-started/) or [CI pipelines](/build/building-on-ci/)
-- Auto-submit successful builds to app stores via [`--auto-submit`](/build/automate-submissions/) and EAS Submit
-- First-class [`expo-updates` integration](/build/updates/) with per-profile channels and [runtime version](/eas-update/runtime-versions/) guidance
-- Reuse [development builds](/develop/development-builds/introduction/) across your team. When two team members run `eas build:dev` and the project fingerprint matches, the existing build is downloaded from EAS instead of creating a new one
-- Faster builds via [dependency caching and custom cache paths](/build-reference/caching/)
-- Install builds and updates on devices with [Expo Orbit](https://expo.dev/orbit)
+/* =================== CRYPTO SCREEN =================== */
+function CryptoScreen() {
+  const [cryptos, setCryptos] = useState([]);
+  const fetchCrypto = async () => {
+    try {
+      const list = ["BTC", "ETH", "XRP"];
+      const results = [];
+      for (let c of list) {
+        const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${c}&to_currency=USD&apikey=${ALPHA_KEY}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const price = data["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
+        results.push({ symbol: c, price });
+      }
+      setCryptos(results);
+    } catch (e) {
+      console.log("Crypto error:", e);
+    }
+  };
+  useEffect(() => {
+    fetchCrypto();
+  }, []);
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>₿ Crypto Prices</Text>
+      <FlatList
+        data={cryptos}
+        keyExtractor={(i) => i.symbol}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.title}>{item.symbol}</Text>
+            <Text style={styles.text}>${parseFloat(item.price).toFixed(2)}</Text>
+          </View>
+        )}
+      />
+    </SafeAreaView>
+  );
+}
 
-## When to use EAS Build
+/* =================== FOREX SCREEN =================== */
+function ForexScreen() {
+  const [fx, setFx] = useState([]);
+  const pairs = [
+    { from: "USD", to: "IDR" },
+    { from: "EUR", to: "USD" },
+    { from: "JPY", to: "USD" },
+  ];
+  const fetchFX = async () => {
+    try {
+      const results = [];
+      for (let p of pairs) {
+        const url = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${p.from}&to_currency=${p.to}&apikey=${ALPHA_KEY}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const rate = data["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
+        results.push({ pair: `${p.from}/${p.to}`, rate });
+      }
+      setFx(results);
+    } catch (e) {
+      console.log("FX error:", e);
+    }
+  };
+  useEffect(() => {
+    fetchFX();
+  }, []);
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>💱 Forex Rates</Text>
+      <FlatList
+        data={fx}
+        keyExtractor={(i) => i.pair}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.title}>{item.pair}</Text>
+            <Text style={styles.text}>{parseFloat(item.rate).toFixed(2)}</Text>
+          </View>
+        )}
+      />
+    </SafeAreaView>
+  );
+}
 
-| Scenario                                                                             | Recommendation |
-| ------------------------------------------------------------------------------------ | -------------- |
-| Build production-ready binaries for app stores                                       | <YesIcon />    |
-| Share builds with testers via [internal distribution](/build/internal-distribution/) | <YesIcon />    |
-| Consistent builds across team members without local environment setup                | <YesIcon />    |
-| Automate builds from CI or [EAS Workflows](/eas/workflows/get-started/)              | <YesIcon />    |
-| Managed app signing credentials                                                      | <YesIcon />    |
-| Debugging native code locally                                                        | <NoIcon />     |
+/* =================== NEWS SCREEN =================== */
+function NewsScreen() {
+  const [news, setNews] = useState([]);
+  const fetchNews = async () => {
+    try {
+      const url = `https://newsapi.org/v2/top-headlines?category=business&apiKey=${NEWS_KEY}&language=en`;
+      const res = await fetch(url);
+      const data = await res.json();
+      setNews(data.articles || []);
+    } catch (e) {
+      console.log("News error:", e);
+    }
+  };
+  useEffect(() => {
+    fetchNews();
+  }, []);
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>📰 Financial News</Text>
+      {news.map((n, i) => (
+        <View key={i} style={styles.card}>
+          <Text style={styles.title}>{n.title}</Text>
+          <Text style={styles.text}>{n.source?.name}</Text>
+        </View>
+      ))}
+    </ScrollView>
+  );
+}
 
-## Frequently asked questions
+/* =================== SETTINGS SCREEN =================== */
+function SettingsScreen({ toggleTheme, darkMode }) {
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>⚙️ Settings</Text>
+      <Button title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"} onPress={toggleTheme} />
+      <Text style={styles.text}>API Keys are set in code. Replace ALPHA_KEY & NEWS_KEY.</Text>
+    </SafeAreaView>
+  );
+}
 
-<FAQ>
+/* =================== APP MAIN =================== */
+export default function App() {
+  const [darkMode, setDarkMode] = useState(false);
 
-<Collapsible summary="How do I share builds with my team before submitting to app stores?">
+  return (
+    <NavigationContainer theme={darkMode ? DarkTheme : DefaultTheme}>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ color, size }) => {
+            let icon = "home";
+            if (route.name === "Markets") icon = "show-chart";
+            else if (route.name === "Stocks") icon = "trending-up";
+            else if (route.name === "Crypto") icon = "currency-bitcoin";
+            else if (route.name === "Forex") icon = "attach-money";
+            else if (route.name === "News") icon = "article";
+            else if (route.name === "Settings") icon = "settings";
+            return <Icon name={icon} size={size} color={color} />;
+          },
+        })}
+      >
+        <Tab.Screen name="Markets" component={MarketScreen} />
+        <Tab.Screen name="Stocks" component={StocksScreen} />
+        <Tab.Screen name="Crypto" component={CryptoScreen} />
+        <Tab.Screen name="Forex" component={ForexScreen} />
+        <Tab.Screen name="News" component={NewsScreen} />
+        <Tab.Screen name="Settings">
+          {() => <SettingsScreen toggleTheme={() => setDarkMode(!darkMode)} darkMode={darkMode} />}
+        </Tab.Screen>
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
 
-Use [internal distribution](/build/internal-distribution/) to share builds with a URL. Set `"distribution": "internal"` in your [build profile](/build/eas-json/#build-profiles) in **eas.json** to generate installable Android Package (APK) files for Android or [ad hoc builds](/build/internal-distribution/) for iOS.
-
-</Collapsible>
-
-<Collapsible summary="Can I use EAS Build with existing React Native projects?">
-
-Yes. EAS Build works with existing React Native projects created with `npx react-native init` or similar tools. See [Overview of using Expo with existing React Native apps](/bare/overview/) for more information.
-
-</Collapsible>
-
-<Collapsible summary="Does EAS Build handle app signing credentials?">
-
-Yes. EAS Build can generate and manage Android [keystores](/app-signing/app-credentials/#android), iOS [provisioning profiles](/app-signing/app-credentials/#ios) and [distribution certificates](/app-signing/app-credentials/#ios), or use credentials you provide. See [App signing credentials](/app-signing/app-credentials/) for more information.
-
-</Collapsible>
-
-<Collapsible summary="Can I run builds locally instead of in the cloud?">
-
-Yes. Use [local builds](/build-reference/local-builds/) with `eas build --local` to run builds on your machine. This is useful for debugging or for security policies that require local builds.
-
-</Collapsible>
-
-<Collapsible summary="Can I use EAS Build with EAS Workflows or CI pipelines?">
-
-Yes. EAS Build integrates with [EAS Workflows](/eas/workflows/get-started/) using the `build` job type. Add a build job to your workflow configuration, for example:
-
-```yaml
-jobs:
-  build_ios:
-    type: build
-    params:
-      platform: ios
-```
-
-The build job supports builds for both platforms or conditional builds based on the branch:
-
-```yaml
-jobs:
-  build:
-    type: build
-    params:
-      platform: all
-      profile: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
-```
-
-For more information and other usage examples, see the [EAS Workflows build job](/eas/workflows/pre-packaged-jobs#build).
-
-EAS Build supports [builds from GitHub](/build/building-from-github/) and [building on CI](/build/building-on-ci/) with any provider.
-
-</Collapsible>
-
-<Collapsible summary="What build server infrastructure does EAS Build use?">
-
-Android builds run on Linux runners hosted in Google Cloud Platform, and iOS builds run on macOS runners hosted in Expo's macOS cloud. See [Build server infrastructure](/build-reference/infrastructure/).
-
-</Collapsible>
-
-</FAQ>
-
-## Get started
-
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Automate submissions"
-  description="Learn how EAS Build can take your successful builds and handle uploading them to app stores automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+/* =================== STYLES =================== */
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 10 },
+  header: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
+  card: { padding: 12, marginVertical: 6, backgroundColor: "#222", borderRadius: 10 },
+  title: { fontSize: 16, fontWeight: "600", color: "#fff" },
+  text: { fontSize: 14, color: "#ccc" },
+  chart: { marginVertical: 8, borderRadius: 10 },
+  input: { borderWidth: 1, borderColor: "#888", padding: 8, marginBottom: 10, borderRadius: 6, backgroundColor: "#fff" },
+  offline: { color: "orange", fontWeight: "bold" },
+});
