@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - Fall back to AGP's `output-metadata.json` when resolving APK filenames to support projects that override `outputFileName` in `applicationVariants` ([#47083](https://github.com/expo/expo/pull/47083) by [@NikhilVashistha](https://github.com/NikhilVashistha))
+- Surface the real `xcodebuild` error on `run:ios` failure instead of printing "0 error(s)" when the build formatter parsed none. ([#47748](https://github.com/expo/expo/pull/47748) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ## 57.0.5 — 2026-07-07
 
