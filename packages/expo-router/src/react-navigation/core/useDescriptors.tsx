@@ -75,7 +75,6 @@ type Options<
   setState: (state: State) => void;
   addListener: AddListener;
   addKeyedListener: AddKeyedListener;
-  onRouteFocus: (key: string) => void;
   router: Router<State, NavigationAction>;
   emitter: NavigationEventEmitter<EventMap>;
 };
@@ -105,7 +104,6 @@ export function useDescriptors<
   setState,
   addListener,
   addKeyedListener,
-  onRouteFocus,
   router,
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
@@ -126,7 +124,6 @@ export function useDescriptors<
       onAction,
       addListener,
       addKeyedListener,
-      onRouteFocus,
       dispatchRoot,
       onDispatchAction,
       onOptionsChange,
@@ -139,7 +136,6 @@ export function useDescriptors<
       onAction,
       addListener,
       addKeyedListener,
-      onRouteFocus,
       dispatchRoot,
       onDispatchAction,
       onOptionsChange,

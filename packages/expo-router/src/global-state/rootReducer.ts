@@ -10,20 +10,37 @@ export type RootReducerResult = {
   handled: boolean;
   noop: boolean;
   changedSlices: RootReducerChangedSlice[];
+  // Set only when a NAVIGATE/RESET carried a nested `screen`/`state` intent that could not be
+  // applied in this pass: `deferred` when the destination child navigator is not yet committed and
+  // registered (the container replays it after bootstrap), `rejected` when a registered child
+  // refused it (eligible for `lastUnhandled` capture). Absent means the parent had no nested intent
+  // or a registered child consumed it.
+  nestedBoundary?: RootReducerNestedBoundary;
 };
+
+export type RootReducerNestedBoundary =
+  | {
+      type: 'deferred';
+      // Route in the committed parent whose child navigator must exist before the action can drain.
+      parentRouteKey: string;
+      // Expected child state key when the parent already carries a (stale/absent) slice.
+      childStateKey: string | undefined;
+      action: NavigationAction;
+      // Stored route params after the parent reducer ran — used for consumption identity, since a
+      // router may clone params while merging `initialParams`.
+      routeParams: object | undefined;
+    }
+  | {
+      type: 'rejected';
+      parentRouteKey: string;
+      action: NavigationAction;
+    };
 
 export type RootReducerChangedSlice = {
   key: string;
   previousState: NavigationState;
   nextState: NavigationState;
   entry: NavigatorRegistryEntry;
-};
-
-export type RootReducerShadowMismatch = {
-  message: string;
-  action: NavigationAction;
-  predictedState: NavigationState;
-  committedState: NavigationState;
 };
 
 type PathEntry = {
@@ -52,13 +69,17 @@ export function rootReducer(
   const changedSlices: RootReducerChangedSlice[] = [];
   const reducedKeys = new Set<string>();
   let currentAction = getReducerAction(action);
+  let nestedBoundary: RootReducerNestedBoundary | undefined;
+  // Set once the loop switches to a decoded nested action, so a later `null` reduction can be
+  // captured as a `rejected` boundary and attributed to the route it descended through.
+  let nestedParentRouteKey: string | undefined;
 
   while (pathIndex >= 0) {
     const state = currentPath[pathIndex]!.state;
 
     if (reducedKeys.has(state.key)) {
       return handled
-        ? { state: currentTree, handled: true, noop: !changed, changedSlices }
+        ? { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary }
         : { state: tree, handled: false, noop: true, changedSlices };
     }
 
@@ -66,15 +87,23 @@ export function rootReducer(
 
     if (entry == null) {
       return handled
-        ? { state: currentTree, handled: true, noop: !changed, changedSlices }
+        ? { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary }
         : { state: tree, handled: false, noop: true, changedSlices };
     }
 
     const reduced = entry.reduce(state, currentAction);
 
     if (reduced === null) {
+      if (nestedParentRouteKey != null && nestedBoundary == null) {
+        nestedBoundary = {
+          type: 'rejected',
+          parentRouteKey: nestedParentRouteKey,
+          action: currentAction,
+        };
+      }
+
       if (currentAction.target === state.key) {
-        return { state: currentTree, handled: true, noop: !changed, changedSlices };
+        return { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary };
       }
 
       if (currentAction.target == null) {
@@ -83,7 +112,7 @@ export function rootReducer(
       }
 
       return handled
-        ? { state: currentTree, handled: true, noop: !changed, changedSlices }
+        ? { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary }
         : { state: tree, handled: false, noop: true, changedSlices };
     }
 
@@ -120,54 +149,46 @@ export function rootReducer(
     }
 
     if (currentAction.type === 'GO_BACK') {
-      return { state: currentTree, handled: true, noop: !changed, changedSlices };
+      return { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary };
     }
 
     const focusedRoute = nextState.routes[nextState.index];
     const nestedAction = getNestedActionFromAction(currentAction);
+    const childState = focusedRoute?.state;
+    const childReady =
+      childState != null && childState.stale === false && registry.hasReducer(childState.key);
 
-    if (
-      focusedRoute?.state == null ||
-      focusedRoute.state.stale !== false ||
-      !registry.hasReducer(focusedRoute.state.key) ||
-      (nestedAction == null && reducedKeys.has(focusedRoute.state.key))
-    ) {
-      return { state: currentTree, handled: true, noop: !changed, changedSlices };
+    if (!childReady) {
+      // A nested intent that can't descend yet: the container replays it once the destination
+      // navigator is committed and registered.
+      if (nestedAction != null && focusedRoute != null) {
+        nestedBoundary = {
+          type: 'deferred',
+          parentRouteKey: focusedRoute.key,
+          childStateKey: childState?.key,
+          action: nestedAction,
+          routeParams: focusedRoute.params,
+        };
+      }
+
+      return { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary };
+    }
+
+    if (nestedAction == null && reducedKeys.has(childState.key)) {
+      return { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary };
     }
 
     if (nestedAction != null) {
       currentAction = nestedAction;
+      nestedParentRouteKey = focusedRoute!.key;
     }
-    currentPath = findStatePath(currentTree, focusedRoute.state.key)!;
+    currentPath = findStatePath(currentTree, childState.key)!;
     pathIndex = currentPath.length - 1;
   }
 
   return handled
-    ? { state: currentTree, handled: true, noop: !changed, changedSlices }
+    ? { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary }
     : { state: tree, handled: false, noop: true, changedSlices };
-}
-
-export function getRootReducerShadowMismatch({
-  action,
-  predictedState,
-  committedState,
-}: {
-  action: NavigationAction;
-  predictedState: NavigationState;
-  committedState: NavigationState;
-}): RootReducerShadowMismatch | null {
-  if (isEqual(predictedState, committedState)) {
-    return null;
-  }
-
-  const target = action.target == null ? 'none' : action.target;
-
-  return {
-    message: `Root reducer shadow mismatch for ${action.type} (target: ${target})`,
-    action,
-    predictedState,
-    committedState,
-  };
 }
 
 function findStatePath(state: NavigationState, key: string): PathEntry[] | null {

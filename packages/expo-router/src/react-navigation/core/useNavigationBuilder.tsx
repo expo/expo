@@ -1064,14 +1064,6 @@ export function useNavigationBuilder<
     return false;
   });
 
-  const onRouteFocus = useLatestCallback((key: string) => {
-    const result = router.getStateForRouteFocus(state, key);
-
-    if (result !== state) {
-      setState(result);
-    }
-  });
-
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
     id: options.id,
     onAction,
@@ -1101,7 +1093,6 @@ export function useNavigationBuilder<
     onAction,
     getState,
     setState,
-    onRouteFocus,
     addListener,
     addKeyedListener,
     router,

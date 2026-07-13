@@ -5,7 +5,7 @@ import {
   type NavigationState,
 } from '../../react-navigation/routers';
 import { createReducerRegistry } from '../storeContext';
-import { getRootReducerShadowMismatch, rootReducer } from '../rootReducer';
+import { rootReducer } from '../rootReducer';
 
 const rootState: NavigationState = {
   stale: false,
@@ -364,6 +364,85 @@ describe(rootReducer, () => {
     expect(result.state.routes[0]!.params).toEqual({ username: 'alice' });
   });
 
+  it('records a deferred nested action when the focused child is not yet registered', () => {
+    const registry = createReducerRegistry();
+    const params = { screen: 'profile', params: { id: 7 } };
+    const action: NavigationAction = {
+      type: 'NAVIGATE',
+      target: 'root-state',
+      payload: { name: 'settings', params },
+    };
+    const reducedRoot: NavigationState = {
+      ...rootState,
+      index: 1,
+      routes: [rootState.routes[0]!, { ...rootState.routes[1]!, params }],
+    };
+
+    registry.addEntry('root-state', { reduce: jest.fn(() => reducedRoot) });
+
+    const result = rootReducer(rootState, action, registry);
+
+    expect(result.handled).toBe(true);
+    expect(result.nestedBoundary).toEqual({
+      type: 'deferred',
+      parentRouteKey: 'settings-route',
+      childStateKey: undefined,
+      action: {
+        type: 'NAVIGATE',
+        payload: { name: 'profile', params: { id: 7 }, path: undefined, merge: undefined, pop: undefined },
+      },
+      routeParams: params,
+    });
+  });
+
+  it('records a rejected nested action when a registered child cannot handle it', () => {
+    const registry = createReducerRegistry();
+    const action: NavigationAction = {
+      type: 'NAVIGATE',
+      target: 'root-state',
+      payload: { name: 'home', params: { screen: 'invalid' } },
+    };
+
+    registry.addEntry('root-state', { reduce: jest.fn(() => rootState) });
+    registry.addEntry('home-state', {
+      reduce: jest.fn((state, nested) => (nested.type === 'NAVIGATE' ? null : state)),
+    });
+
+    const result = rootReducer(rootState, action, registry);
+
+    expect(result.handled).toBe(true);
+    expect(result.nestedBoundary).toEqual({
+      type: 'rejected',
+      parentRouteKey: 'home-route',
+      action: {
+        type: 'NAVIGATE',
+        payload: { name: 'invalid', params: undefined, path: undefined, merge: undefined, pop: undefined },
+      },
+    });
+  });
+
+  it('leaves no nested boundary when a registered child consumes the nested action', () => {
+    const registry = createReducerRegistry();
+    const action: NavigationAction = {
+      type: 'NAVIGATE',
+      target: 'root-state',
+      payload: { name: 'home', params: { screen: 'details' } },
+    };
+    const childState = rootState.routes[0]!.state as NavigationState;
+
+    registry.addEntry('root-state', { reduce: jest.fn(() => rootState) });
+    registry.addEntry('home-state', {
+      reduce: jest.fn((state, nested) => (nested.type === 'NAVIGATE' ? { ...state, index: 1 } : state)),
+    });
+
+    const result = rootReducer(rootState, action, registry);
+
+    expect(result.handled).toBe(true);
+    expect(result.nestedBoundary).toBeUndefined();
+    expect((result.state.routes[0]!.state as NavigationState).index).toBe(1);
+    expect(childState.index).toBe(0);
+  });
+
   it('path-copies without cloning untouched non-serializable params', () => {
     const callback = () => undefined;
     const tree: NavigationState = {
@@ -400,31 +479,4 @@ describe(rootReducer, () => {
     expect((tree.routes[0]!.state as NavigationState).routes[0]!.params).toEqual({ callback });
   });
 
-  it('reports diagnostic shadow mismatches', () => {
-    const action: NavigationAction = { type: 'NAVIGATE', target: 'root-state' };
-    const committedState = { ...rootState, index: 1 };
-
-    const mismatch = getRootReducerShadowMismatch({
-      action,
-      predictedState: rootState,
-      committedState,
-    });
-
-    expect(mismatch).toEqual({
-      message: 'Root reducer shadow mismatch for NAVIGATE (target: root-state)',
-      action,
-      predictedState: rootState,
-      committedState,
-    });
-  });
-
-  it('does not report shadow mismatches for equal states', () => {
-    expect(
-      getRootReducerShadowMismatch({
-        action: { type: 'NAVIGATE' },
-        predictedState: rootState,
-        committedState: rootState,
-      })
-    ).toBeNull();
-  });
 });

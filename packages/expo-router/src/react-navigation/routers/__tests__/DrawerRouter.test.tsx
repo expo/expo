@@ -421,6 +421,82 @@ test('getStateForRouteFocus focuses the route in place', () => {
   });
 });
 
+// Compiler-seeded complete states omit `drawerStatus` because navigator kind lives only in React,
+// so the router must treat an absent field as the effective default rather than a distinct value.
+describe('missing drawerStatus (compiler-seeded state)', () => {
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  test('GO_BACK with no status delegates straight to positional tab back', () => {
+    const router = DrawerRouter({ backBehavior: 'history' });
+    const state = {
+      stale: false as const,
+      key: 'root',
+      index: 1,
+      routeNames: ['bar', 'baz'],
+      routes: [
+        { key: 'bar-0', name: 'bar' },
+        { key: 'baz-0', name: 'baz' },
+      ],
+    } as unknown as DrawerNavigationState<ParamListBase>;
+
+    expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
+      ...state,
+      drawerStatus: 'closed',
+      index: 0,
+    });
+  });
+
+  test('CLOSE_DRAWER at the effective default is a no-op', () => {
+    const router = DrawerRouter({});
+    const state = {
+      stale: false as const,
+      key: 'root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'bar-0', name: 'bar' }],
+    } as unknown as DrawerNavigationState<ParamListBase>;
+
+    expect(router.getStateForAction(state, { type: 'CLOSE_DRAWER' }, options)).toBe(state);
+  });
+
+  test('TOGGLE_DRAWER flips from the effective default', () => {
+    const closedDefault = DrawerRouter({});
+    const openDefault = DrawerRouter({ defaultStatus: 'open' });
+    const state = {
+      stale: false as const,
+      key: 'root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'bar-0', name: 'bar' }],
+    } as unknown as DrawerNavigationState<ParamListBase>;
+
+    expect(closedDefault.getStateForAction(state, { type: 'TOGGLE_DRAWER' }, options)!.drawerStatus).toBe(
+      'open'
+    );
+    expect(openDefault.getStateForAction(state, { type: 'TOGGLE_DRAWER' }, options)!.drawerStatus).toBe(
+      'closed'
+    );
+  });
+
+  test('OPEN_DRAWER at the effective open default is a no-op', () => {
+    const router = DrawerRouter({ defaultStatus: 'open' });
+    const state = {
+      stale: false as const,
+      key: 'root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'bar-0', name: 'bar' }],
+    } as unknown as DrawerNavigationState<ParamListBase>;
+
+    expect(router.getStateForAction(state, { type: 'OPEN_DRAWER' }, options)).toBe(state);
+  });
+});
+
 test('front-preloads the implicit anchor at the front (delegating to the tab router)', () => {
   const router = DrawerRouter({});
   const options: RouterConfigOptions = {

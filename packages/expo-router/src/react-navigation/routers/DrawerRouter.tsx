@@ -97,15 +97,21 @@ export function DrawerRouter({
         return null;
       }
 
+      // Compiler-seeded complete states omit `drawerStatus` (navigator kind lives only in React), so
+      // treat an absent field as the default. Without this the first GO_BACK on a compiled drawer
+      // state would be swallowed merely to materialize the default, and CLOSE/OPEN at the default
+      // would spuriously report a change.
+      const effectiveStatus = state.drawerStatus ?? defaultStatus;
+
       switch (action.type) {
         case 'OPEN_DRAWER':
-          return state.drawerStatus === 'open' ? state : { ...state, drawerStatus: 'open' };
+          return effectiveStatus === 'open' ? state : { ...state, drawerStatus: 'open' };
         case 'CLOSE_DRAWER':
-          return state.drawerStatus === 'closed' ? state : { ...state, drawerStatus: 'closed' };
+          return effectiveStatus === 'closed' ? state : { ...state, drawerStatus: 'closed' };
         case 'TOGGLE_DRAWER':
-          return { ...state, drawerStatus: state.drawerStatus === 'open' ? 'closed' : 'open' };
+          return { ...state, drawerStatus: effectiveStatus === 'open' ? 'closed' : 'open' };
         case 'GO_BACK':
-          if (state.drawerStatus !== defaultStatus) {
+          if (effectiveStatus !== defaultStatus) {
             return { ...state, drawerStatus: defaultStatus };
           }
           break;

@@ -56,7 +56,6 @@ export const NavigationBuilderContext = React.createContext<{
   onAction?: (action: NavigationAction, visitedNavigators?: Set<string>) => boolean;
   addListener?: AddListener;
   addKeyedListener?: AddKeyedListener;
-  onRouteFocus?: (key: string) => void;
   dispatchRoot?: DispatchRoot;
   onDispatchAction: (action: NavigationAction, noop: boolean) => void;
   onOptionsChange: (options: object) => void;
