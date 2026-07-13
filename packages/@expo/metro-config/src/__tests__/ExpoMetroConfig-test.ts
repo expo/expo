@@ -52,10 +52,6 @@ describe(getDefaultConfig, () => {
     );
   });
 
-  // Metro's default is `useWatchman: true`, but the `@expo/metro-file-map` fork coalesces a
-  // nullish value to `false`, so `null` makes the Node watcher the default watcher while an
-  // explicit `useWatchman: true` in a user config can still re-enable Watchman.
-  // See: https://github.com/expo/expo/issues/47662
   it("neutralizes Metro's `useWatchman` default so the Node watcher is used by default", () => {
     expect(getDefaultConfig(projectRoot).resolver?.useWatchman).toBeNull();
   });
