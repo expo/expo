@@ -38,6 +38,11 @@ import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
+import {
+  patchGetDeltaForCacheVary,
+  patchTransformFileForCacheVary,
+  withMetroCacheVary,
+} from './withMetroCacheVary';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
 declare module '2g' {
@@ -327,6 +332,9 @@ export async function loadMetroConfigAsync(
     getMetroBundler,
   });
 
+  // Post-resolution: `loadUserConfig` has already resolved function-form `cacheStores` to an array.
+  config = withMetroCacheVary(config);
+
   event('config', {
     serverRoot: event.path(serverRoot),
     projectRoot: event.path(projectRoot),
@@ -535,6 +543,10 @@ export async function instantiateMetroAsync(
   // here covers both.
   patchTransformFileForPackedMaps(metro.getBundler().getBundler());
   patchMetroSourceMapStringForPackedMaps();
+
+  // Make ambient-value (cache-vary) staleness visible to the graph and delta layers.
+  patchTransformFileForCacheVary(metro.getBundler().getBundler());
+  patchGetDeltaForCacheVary();
 
   // Warm the transform worker pool during the idle window before the first bundle request
   if (!isExporting) {
