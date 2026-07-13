@@ -10,7 +10,7 @@ File-based routing library for React Native and web applications. It provides au
 │   ├── exports.ts             # Public API exports
 │   ├── ExpoRoot.tsx           # Root component wrapper
 │   ├── Route.tsx              # Route node definitions and context
-│   ├── hooks.ts               # Navigation hooks (useRouter, usePathname, etc.)
+│   ├── hooks/                 # Navigation hooks (useRouter, usePathname, useSegments, useLocalSearchParams, etc.)
 │   ├── imperative-api.tsx     # router object for imperative navigation
 │   ├── types.ts               # TypeScript type definitions
 │   │
@@ -23,7 +23,7 @@ File-based routing library for React Native and web applications. It provides au
 │   ├── global-state/          # State management
 │   │   ├── router-store.tsx   # Zustand store for router state
 │   │   ├── routing.ts         # Navigation queue and routing functions
-│   │   ├── routeInfo.ts       # Current route information context
+│   │   ├── getRouteInfoFromState.ts, routeInfoCache.ts, useRouteInfo.ts  # Current route information
 │   │   └── serverLocationContext.ts  # Server-side location context
 │   │
 │   ├── layouts/               # Navigation layouts
@@ -34,7 +34,7 @@ File-based routing library for React Native and web applications. It provides au
 │   │   ├── Drawer.tsx         # Drawer navigator
 │   │   ├── withLayoutContext.tsx  # Layout context HOC
 │   │   └── stack-utils/       # Stack utilities
-│   │       ├── Agents.md  # Read this file before modifying components in this directory
+│   │       ├── AGENTS.md  # Read this file before modifying components in this directory
 │   │       ├── StackScreen.tsx, StackSearchBar.tsx  # Screen and search bar components
 │   │       ├── StackTitle.tsx # Stack.Title
 │   │       ├── screen/        # BackButton (StackScreenBackButton);
@@ -88,6 +88,10 @@ File-based routing library for React Native and web applications. It provides au
 │   │   ├── getPathFromState.ts      # Navigation state → URL
 │   │   └── native-stack/            # Native stack navigator fork
 │   │
+│   ├── split-view/            # Split view layout (backs expo-router/unstable-split-view)
+│   ├── toolbar/               # Native toolbar components (iOS/Android platform variants)
+│   ├── standard-navigation/   # Shared navigation state/actions/emitter hooks
+│   ├── navigationEvents/      # Navigation event emitter and types
 │   ├── color/                 # Platform color utilities
 │   ├── primitives/            # UI components (Icon, Label, Badge)
 │   ├── loaders/               # Data loader support (SSG and SSR)
@@ -224,7 +228,7 @@ Use `beforeEach`/`afterEach` with `mockRestore()`:
 ```ts
 let spy: jest.SpyInstance;
 beforeEach(() => {
-  spy = jest.spyOn(Module, "fn");
+  spy = jest.spyOn(Module, 'fn');
 }); // or jest.spyOn(console, 'warn').mockImplementation(() => {})
 afterEach(() => {
   spy.mockRestore();
