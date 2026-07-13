@@ -10,13 +10,13 @@
 /module-config /modules/module-config 301
 
 # Development builds
-/development/build /develop/development-builds/create-a-build 301
-/development/getting-started /develop/development-builds/create-a-build 301
+/development/build /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
+/development/getting-started /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
 /development/troubleshooting /develop/development-builds/introduction 301
 /development/upgrading /develop/development-builds/introduction 301
 /development/extensions /develop/development-builds/development-workflows 301
 /development/develop-your-project /develop/development-builds/use-development-builds 301
-/develop/development-builds/installation /develop/development-builds/create-a-build 301
+/develop/development-builds/installation /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
 
 # Guides that have been deleted
 /guides/web-performance /guides/analyzing-bundles 301
@@ -32,7 +32,7 @@
 /guides/app-icons /develop/user-interface/app-icons 301
 /guides/color-schemes /develop/user-interface/color-themes 301
 /development/introduction /develop/development-builds/introduction 301
-/development/create-development-builds /develop/development-builds/create-a-build 301
+/development/create-development-builds /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
 /development/use-development-builds /develop/development-builds/use-development-builds 301
 /development/development-workflows /develop/development-builds/development-workflows 301
 /debugging /debugging/runtime-issues 301
@@ -60,7 +60,7 @@
 /versions/latest/sdk/admob /versions/latest 301
 /workflow/publishing /archive/classic-updates/publishing 301
 /workflow/already-used-react-native /workflow/overview 301
-/development/installation /develop/development-builds/create-a-build 301
+/development/installation /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
 /bare/updating-your-app /eas-update/getting-started 301
 /technical-specs/expo-updates-0 /technical-specs/expo-updates-1 301
 /archive/expokit/eject /archive/glossary 301
@@ -378,6 +378,14 @@
 
 # After archiving Configure JS engines guide
 /guides/configuring-js-engines/ /archive/configuring-js-engines/ 301
+
+# After merging development build pages into the introduction (guided paths)
+/develop/development-builds/create-a-build /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
+/develop/development-builds/create-a-build/index.md /develop/development-builds/introduction/index.md 301
+/develop/development-builds/create-a-build.md /develop/development-builds/introduction/index.md 301
+/develop/development-builds/expo-go-to-dev-build /develop/development-builds/introduction/#switch-from-expo-go-to-a-development-build 301
+/develop/development-builds/expo-go-to-dev-build/index.md /develop/development-builds/introduction/index.md 301
+/develop/development-builds/expo-go-to-dev-build.md /develop/development-builds/introduction/index.md 301
 
 # Serve markdown at the sibling /<slug>.md path that AI agents typically request,
 # rewriting to the canonical /<slug>/index.md the build script writes.

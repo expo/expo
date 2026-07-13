@@ -14,8 +14,26 @@ export interface ScenePage {
 }
 
 const INSTRUCTIONS_DIR = 'scenes/get-started/set-up-your-environment/instructions';
+const DEV_BUILDS_INSTRUCTIONS_DIR = 'scenes/develop/development-builds/instructions';
 
 export const SCENE_PAGES: ScenePage[] = [
+  {
+    htmlPath: 'develop/development-builds/introduction/index.html',
+    variants: [
+      {
+        heading: 'Switch from Expo Go to a development build',
+        mdxPath: `${DEV_BUILDS_INSTRUCTIONS_DIR}/expo-go-to-dev-build.mdx`,
+      },
+      {
+        heading: 'Create a development build with EAS',
+        mdxPath: `${DEV_BUILDS_INSTRUCTIONS_DIR}/eas.mdx`,
+      },
+      {
+        heading: 'Create a development build locally with EAS CLI',
+        mdxPath: `${DEV_BUILDS_INSTRUCTIONS_DIR}/eas-cli-local.mdx`,
+      },
+    ],
+  },
   {
     htmlPath: 'get-started/set-up-your-environment/index.html',
     variants: [

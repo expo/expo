@@ -297,6 +297,55 @@ async function testUpgradePairNegotiationAsync(): Promise<void> {
   console.log('✓ Direct pair index.md request serves content correctly');
 }
 
+async function testDeletedPageRedirectsAsync(): Promise<void> {
+  console.log('\n--- Testing deleted development build page redirects ---');
+
+  const easRedirect = await fetch(`${BASE_URL}/develop/development-builds/create-a-build`, {
+    redirect: 'manual',
+  });
+  const easLocation = easRedirect.headers.get('location') ?? '';
+
+  if (
+    easRedirect.status !== 301 ||
+    !easLocation.includes('?buildenv=build-with-eas#create-a-development-build-with-eas')
+  ) {
+    throw new Error(
+      `Expected 301 to the introduction EAS path, got: HTTP ${easRedirect.status} -> ${easLocation}`
+    );
+  }
+  console.log('✓ create-a-build redirects to the introduction EAS path');
+
+  const goRedirect = await fetch(`${BASE_URL}/develop/development-builds/expo-go-to-dev-build`, {
+    redirect: 'manual',
+  });
+  const goLocation = goRedirect.headers.get('location') ?? '';
+
+  if (
+    goRedirect.status !== 301 ||
+    !goLocation.includes('switch-from-expo-go-to-a-development-build')
+  ) {
+    throw new Error(
+      `Expected 301 to the introduction switch section, got: HTTP ${goRedirect.status} -> ${goLocation}`
+    );
+  }
+  console.log('✓ expo-go-to-dev-build redirects to the introduction switch section');
+
+  const mdRedirect = await fetch(`${BASE_URL}/develop/development-builds/create-a-build.md`, {
+    redirect: 'manual',
+  });
+  const mdLocation = mdRedirect.headers.get('location') ?? '';
+
+  if (
+    mdRedirect.status !== 301 ||
+    !mdLocation.includes('/develop/development-builds/introduction/index.md')
+  ) {
+    throw new Error(
+      `Expected 301 to the introduction index.md, got: HTTP ${mdRedirect.status} -> ${mdLocation}`
+    );
+  }
+  console.log('✓ create-a-build.md redirects to the introduction markdown');
+}
+
 async function testHtmlNotFoundAsync(): Promise<void> {
   console.log('\n--- Testing HTML 404 responses ---');
 
@@ -320,6 +369,7 @@ async function mainAsync(): Promise<void> {
     await testMarkdownContentNegotiationAsync();
     await testMarkdownNotFoundAsync();
     await testUpgradePairNegotiationAsync();
+    await testDeletedPageRedirectsAsync();
     await testHtmlNotFoundAsync();
 
     console.log('\n=== All tests passed! ===');
