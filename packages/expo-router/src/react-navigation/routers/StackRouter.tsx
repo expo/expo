@@ -157,11 +157,6 @@ export const StackActions = {
   },
 };
 
-/**
- * Filters a stack's routes down to `routeNames`, recomputing the index and falling back to the
- * initial route when nothing remains. Shared by `getStateForRouteNamesChange` and guard-based
- * pruning so both prune history the same way.
- */
 export function getRoutesForRouteNames(
   state: StackNavigationState<ParamListBase>,
   routeNames: string[],
