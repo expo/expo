@@ -27,11 +27,11 @@ jobs:
 
 The variables available in a job are merged from three sources. When the same name is defined in more than one source, the one higher in this list wins:
 
-| Source                                                                            | Description                                                                                                                             |
-| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| [Job `env`](/eas/workflows/syntax/#jobsjob_idenv)                                 | Variables you set on the job with the `env` key. These are plain text and defined directly in your workflow file.                      |
-| [**eas.json** build profile `env`](/build/eas-json/#environment-variables)         | For [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs, the `env` from the profile selected by `params.profile` in **eas.json**.  |
-| [EAS environment variables](/eas/environment-variables/)                          | Variables and secrets stored on EAS for the job's [environment](#the-job-environment) (`production`, `preview`, or `development`).      |
+| Source                                                                     | Description                                                                                                                           |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [Job `env`](/eas/workflows/syntax/#jobsjob_idenv)                          | Variables you set on the job with the `env` key. These are plain text and defined directly in your workflow file.                     |
+| [**eas.json** build profile `env`](/build/eas-json/#environment-variables) | For [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs, the `env` from the profile selected by `params.profile` in **eas.json**. |
+| [EAS environment variables](/eas/environment-variables/)                   | Variables and secrets stored on EAS for the job's [environment](#the-job-environment) (`production`, `preview`, or `development`).    |
 
 > **info** "Secrets" in EAS Workflows are [EAS environment variables](/eas/environment-variables/). Create and manage them from the project's **Environment Variables** page on the EAS dashboard or with the [`eas env`](/eas/environment-variables/) commands, then reference them by name with `${{ env.NAME }}`.
 
@@ -77,24 +77,24 @@ Because of this, read built-in variables like `EAS_BUILD_ID` inside a `run` step
 
 The worker sets the following variables on every job that runs on a VM. These are read at runtime, so reference them from within a `run` step.
 
-| Variable                | Example value                                     | Description                                                                    |
-| ----------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `CI`                    | `1`                                               | Indicates the job runs in a CI environment.                                    |
-| `EAS_BUILD`             | `true`                                            | Indicates the job runs on an EAS worker.                                       |
-| `EAS_BUILD_RUNNER`      | `eas-build`                                       | The runner executing the job. `eas-build` for EAS cloud workers.               |
-| `EAS_BUILD_ID`          | `019f57e8-f467-723e-a351-7b63c5974f43`            | The unique ID of the current job.                                              |
-| `EAS_BUILD_PROJECT_ID`  | `f486dc93-eb27-4a7c-bc94-755965edce8b`            | The EAS project ID.                                                            |
-| `EAS_BUILD_WORKINGDIR`  | `/home/expo/workingdir/build`                     | The absolute path to your checked-out project on the worker.                   |
-| `EAS_BUILD_NPM_CACHE_URL` | `http://npm.caches.eas-build.internal`          | The URL of the [npm cache](/build-reference/private-npm-packages/).            |
+| Variable                  | Example value                          | Description                                                         |
+| ------------------------- | -------------------------------------- | ------------------------------------------------------------------- |
+| `CI`                      | `1`                                    | Indicates the job runs in a CI environment.                         |
+| `EAS_BUILD`               | `true`                                 | Indicates the job runs on an EAS worker.                            |
+| `EAS_BUILD_RUNNER`        | `eas-build`                            | The runner executing the job. `eas-build` for EAS cloud workers.    |
+| `EAS_BUILD_ID`            | `019f57e8-f467-723e-a351-7b63c5974f43` | The unique ID of the current job.                                   |
+| `EAS_BUILD_PROJECT_ID`    | `f486dc93-eb27-4a7c-bc94-755965edce8b` | The EAS project ID.                                                 |
+| `EAS_BUILD_WORKINGDIR`    | `/home/expo/workingdir/build`          | The absolute path to your checked-out project on the worker.        |
+| `EAS_BUILD_NPM_CACHE_URL` | `http://npm.caches.eas-build.internal` | The URL of the [npm cache](/build-reference/private-npm-packages/). |
 
 The following variables are populated from build metadata and are available in [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs. They may be empty in other job types:
 
-| Variable                    | Example value                                | Description                                                        |
-| --------------------------- | -------------------------------------------- | ----------------------------------------------------------------- |
-| `EAS_BUILD_PLATFORM`        | `android`                                    | The platform being built, either `android` or `ios`.              |
-| `EAS_BUILD_PROFILE`         | `production`                                 | The name of the build profile from **eas.json**.                  |
-| `EAS_BUILD_GIT_COMMIT_HASH` | `88f28ab5ea39108ade978de2d0d1adeedf0ece76`   | The hash of the Git commit the job is running against.            |
-| `EAS_BUILD_USERNAME`        | `jonexpo`                                     | The username of the user who initiated the run. Empty for bots.   |
+| Variable                    | Example value                              | Description                                                     |
+| --------------------------- | ------------------------------------------ | --------------------------------------------------------------- |
+| `EAS_BUILD_PLATFORM`        | `android`                                  | The platform being built, either `android` or `ios`.            |
+| `EAS_BUILD_PROFILE`         | `production`                               | The name of the build profile from **eas.json**.                |
+| `EAS_BUILD_GIT_COMMIT_HASH` | `88f28ab5ea39108ade978de2d0d1adeedf0ece76` | The hash of the Git commit the job is running against.          |
+| `EAS_BUILD_USERNAME`        | `jonexpo`                                  | The username of the user who initiated the run. Empty for bots. |
 
 Workers also expose standard toolchain variables such as `HOME`, `PATH`, `LANG`, `ANDROID_HOME`, `ANDROID_SDK_ROOT`, and `JAVA_HOME`. Their exact values depend on the worker [image](/eas/workflows/syntax/#jobsjob_idimage) and are subject to change.
 
