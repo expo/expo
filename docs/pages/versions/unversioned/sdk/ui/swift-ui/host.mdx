@@ -122,9 +122,7 @@ export default function IgnoreKeyboardExample() {
 
 ### Ignoring the container safe area
 
-Use `ignoreSafeArea="container"` when the `Host` sizes to its content with `matchContents` and sits against a screen edge, such as a custom header pinned to the top. It ignores the safe area insets defined by the device and containers (notch, home indicator, status and navigation bars) while still avoiding the keyboard. Add any leading spacing yourself, for example with `react-native-safe-area-context`.
-
-> **Note:** When a `matchContents` `Host` sits at a screen edge, the device safe area inset offsets its SwiftUI content below the host's measured bounds. The content is still drawn, but taps that land outside those bounds are not delivered to it, so controls appear without responding. Ignoring the container safe area removes that offset, keeping the content inside the host and interactive.
+Use `ignoreSafeArea="container"` to remove only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
 
 ```tsx IgnoreContainerSafeAreaExample.tsx
 import { Button, Host, HStack, Spacer } from '@expo/ui/swift-ui';
@@ -154,7 +152,7 @@ export default function IgnoreContainerSafeAreaExample() {
 
 ### Ignoring all safe areas
 
-Use `ignoreSafeArea="all"` when you want SwiftUI content to extend behind the status bar and the keyboard, useful for full-screen overlays or backgrounds. To keep the keyboard avoided while ignoring the device and container insets, use `ignoreSafeArea="container"` instead.
+Use `ignoreSafeArea="all"` when you want SwiftUI content to extend behind the status bar and the keyboard, useful for full-screen overlays or backgrounds.
 
 ```tsx IgnoreAllSafeAreasExample.tsx
 import { Host, Text, VStack } from '@expo/ui/swift-ui';

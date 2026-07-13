@@ -46,7 +46,7 @@ export interface HostProps extends CommonViewModifierProps {
   /**
    * Controls which safe area regions the SwiftUI hosting view should ignore.
    * - `'all'` - ignores all safe area insets, including the keyboard.
-   * - `'container'` - ignores the safe area insets defined by the device and containers (notch, home indicator, status and navigation bars) while still avoiding the keyboard. Useful to keep a `matchContents` host pinned to a screen edge interactive, since the safe area inset would otherwise offset its content outside the host's tappable bounds.
+   * - `'container'` - ignores only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
    * - `'keyboard'` - ignores only the keyboard safe area.
    */
   ignoreSafeArea?: 'all' | 'container' | 'keyboard';
