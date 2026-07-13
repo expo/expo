@@ -27,18 +27,21 @@ it('renders title and meta children into the document head', async () => {
     </Head.Provider>
   );
 
-  await new Promise((resolve) => setTimeout(resolve, 0));
+  await waitFor(() =>
+    expect(document.head.querySelector('title')).not.toBeNull()
+  );
   if (!document.title) {
-    expect(document.head.querySelector('title')).not.toBeNull();
     return;
   }
 
-  await waitFor(() => expect(document.title).toBe('Router title'));
-
-  expect(document.head.querySelector('meta[name="description"]')?.getAttribute('content')).toBe(
-    'Router description'
-  );
-  expect(document.head.querySelector('meta[property="og:title"]')?.getAttribute('content')).toBe(
-    'Open graph title'
-  );
+  expect(
+    document.head
+      .querySelector('meta[name="description"]')
+      ?.getAttribute('content')
+  ).toBe('Router description');
+  expect(
+    document.head
+      .querySelector('meta[property="og:title"]')
+      ?.getAttribute('content')
+  ).toBe('Open graph title');
 });

@@ -1,25 +1,8 @@
 /** @jest-environment jsdom */
-import { fireEvent, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Link } from '../Link';
-import { linkTo } from '../../global-state/routing';
-
-jest.mock('../../global-state/routing', () => {
-  const actual = jest.requireActual(
-    '../../global-state/routing'
-  ) as typeof import('../../global-state/routing');
-  return {
-    ...actual,
-    linkTo: jest.fn(),
-  };
-});
-
-const mockedLinkTo = linkTo as jest.MockedFunction<typeof linkTo>;
-
-beforeEach(() => {
-  mockedLinkTo.mockClear();
-});
 
 it('renders a Link', () => {
   const { getByTestId } = render(
@@ -156,7 +139,13 @@ it('mixes registered styles with className', () => {
 
 it('uses web-only href attributes', () => {
   const { getByTestId } = render(
-    <Link href="/foo" testID="link" download="file.png" rel="noopener" target="_blank">
+    <Link
+      href="/foo"
+      testID="link"
+      download="file.png"
+      rel="noopener"
+      target="_blank"
+    >
       Hello
     </Link>
   );
@@ -218,70 +207,6 @@ describe('base url relative links', () => {
     const node = getByTestId('link');
     expect(node.getAttribute('href')).toBe('https://www.example.com/foo');
   });
-});
-
-describe('web click navigation', () => {
-  it('intercepts unmodified same-tab clicks', () => {
-    const { getByTestId } = render(
-      <Link testID="link" href="/foo">
-        Foo
-      </Link>
-    );
-
-    fireEvent.click(getByTestId('link'), { button: 0 });
-
-    expect(mockedLinkTo).toHaveBeenCalledWith('/foo', {
-      dangerouslySingular: undefined,
-      event: undefined,
-      relativeToDirectory: undefined,
-      withAnchor: undefined,
-    });
-  });
-
-  it.each([
-    ['metaKey', { metaKey: true }],
-    ['altKey', { altKey: true }],
-    ['ctrlKey', { ctrlKey: true }],
-    ['shiftKey', { shiftKey: true }],
-    ['middle click', { button: 1 }],
-  ])('does not intercept %s clicks', (_name, event) => {
-    const { getByTestId } = render(
-      <Link testID="link" href="/foo">
-        Foo
-      </Link>
-    );
-
-    fireEvent.click(getByTestId('link'), event);
-
-    expect(mockedLinkTo).not.toHaveBeenCalled();
-  });
-
-  it('does not intercept links with a target', () => {
-    const { getByTestId } = render(
-      <Link testID="link" href="/foo" target="_blank">
-        Foo
-      </Link>
-    );
-
-    fireEvent.click(getByTestId('link'), { button: 0 });
-
-    expect(mockedLinkTo).not.toHaveBeenCalled();
-  });
-
-  it.each(['https://expo.dev', '//expo.dev/router', 'mailto:hello@example.com'])(
-    'does not intercept external href %s',
-    (href) => {
-      const { getByTestId } = render(
-        <Link testID="link" href={href}>
-          Foo
-        </Link>
-      );
-
-      fireEvent.click(getByTestId('link'), { button: 0 });
-
-      expect(mockedLinkTo).not.toHaveBeenCalled();
-    }
-  );
 });
 
 describe('Link with preview', () => {

@@ -15,14 +15,15 @@ describe('head URL helpers', () => {
       },
     }));
 
-    const { getStaticUrlFromExpoRouter } = require('../url') as typeof import('../url');
+    const { getStaticUrlFromExpoRouter } =
+      require('../url') as typeof import('../url');
 
     expect(getStaticUrlFromExpoRouter('/profile/evan?tab=posts')).toBe(
       'https://example.com/profile/evan?tab=posts'
     );
   });
 
-  it('falls back to the router origin when headOrigin is absent', () => {
+  it('builds static URLs from the router origin when headOrigin is absent', () => {
     jest.doMock('expo-constants', () => ({
       expoConfig: {
         extra: {
@@ -33,12 +34,15 @@ describe('head URL helpers', () => {
       },
     }));
 
-    const { getOriginFromConstants } = require('../url') as typeof import('../url');
+    const { getStaticUrlFromExpoRouter } =
+      require('../url') as typeof import('../url');
 
-    expect(getOriginFromConstants()).toBe('https://router.example.com');
+    expect(getStaticUrlFromExpoRouter('/profile/evan?tab=posts')).toBe(
+      'https://router.example.com/profile/evan?tab=posts'
+    );
   });
 
-  it('uses the generated origin when explicit origins are absent', () => {
+  it('builds static URLs from the generated origin when explicit origins are absent', () => {
     jest.doMock('expo-constants', () => ({
       expoConfig: {
         extra: {
@@ -49,9 +53,12 @@ describe('head URL helpers', () => {
       },
     }));
 
-    const { getOriginFromConstants } = require('../url') as typeof import('../url');
+    const { getStaticUrlFromExpoRouter } =
+      require('../url') as typeof import('../url');
 
-    expect(getOriginFromConstants()).toBe('https://generated.example.com');
+    expect(getStaticUrlFromExpoRouter('/profile/evan?tab=posts')).toBe(
+      'https://generated.example.com/profile/evan?tab=posts'
+    );
   });
 
   it('throws when no origin is configured', () => {
@@ -63,7 +70,8 @@ describe('head URL helpers', () => {
       },
     }));
 
-    const { getStaticUrlFromExpoRouter } = require('../url') as typeof import('../url');
+    const { getStaticUrlFromExpoRouter } =
+      require('../url') as typeof import('../url');
 
     expect(() => getStaticUrlFromExpoRouter('/missing')).toThrow(
       'Expo Head: Add the handoff origin'
@@ -81,7 +89,8 @@ describe('head URL helpers', () => {
       },
     }));
 
-    const { getStaticUrlFromExpoRouter } = require('../url') as typeof import('../url');
+    const { getStaticUrlFromExpoRouter } =
+      require('../url') as typeof import('../url');
 
     expect(() => getStaticUrlFromExpoRouter('/invalid')).toThrow(
       'Expo Head: Native origin has invalid protocol'

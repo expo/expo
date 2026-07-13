@@ -1,8 +1,13 @@
-import { screen } from '@testing-library/react-native';
+import { render, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-import { useLocalSearchParams, usePathname, useUnstableGlobalHref } from '../exports';
-import { renderRouter } from '../testing-library';
+import { ExpoRoot } from '../ExpoRoot';
+import {
+  useLocalSearchParams,
+  usePathname,
+  useUnstableGlobalHref,
+} from '../exports';
+import { getMockContext } from '../testing-library';
 
 function LocationProbe() {
   const pathname = usePathname();
@@ -18,30 +23,30 @@ function LocationProbe() {
   );
 }
 
-it('uses a string location prop to initialize SSR route state', () => {
-  renderRouter(
-    {
-      'profile/[id]': LocationProbe,
-    },
-    {
-      initialUrl: 'https://example.com/profile/evan?query=hello#section',
-    }
+function renderExpoRoot(location: string | URL) {
+  render(
+    <ExpoRoot
+      context={getMockContext({
+        'profile/[id]': LocationProbe,
+        docs: LocationProbe,
+      })}
+      location={location}
+    />
   );
+}
+
+it('uses a string location prop to initialize SSR route state', () => {
+  renderExpoRoot('https://example.com/profile/evan?query=hello#section');
 
   expect(screen.getByTestId('pathname')).toHaveTextContent('/profile/evan');
-  expect(screen.getByTestId('href')).toHaveTextContent('/profile/evan?query=hello#section');
+  expect(screen.getByTestId('href')).toHaveTextContent(
+    '/profile/evan?query=hello#section'
+  );
   expect(screen.getByTestId('query')).toHaveTextContent('hello');
 });
 
 it('uses a URL location prop to initialize SSR route state', () => {
-  renderRouter(
-    {
-      docs: LocationProbe,
-    },
-    {
-      initialUrl: new URL('https://example.com/docs?query=world'),
-    }
-  );
+  renderExpoRoot(new URL('https://example.com/docs?query=world'));
 
   expect(screen.getByTestId('pathname')).toHaveTextContent('/docs');
   expect(screen.getByTestId('href')).toHaveTextContent('/docs?query=world');

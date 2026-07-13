@@ -1,12 +1,26 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import {
+  render,
+  screen,
+  userEvent,
+  waitFor,
+} from '@testing-library/react-native';
 import { Text, Pressable } from 'react-native';
 
 import type { ErrorBoundaryProps } from '../../exports';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { renderRouter } from '../../testing-library';
 
+let consoleError: jest.SpiedFunction<typeof console.error>;
+
+beforeEach(() => {
+  consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  consoleError.mockRestore();
+});
+
 it('renders the route ErrorBoundary with error and retry props', async () => {
-  const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
   let shouldThrow = true;
   const errors: string[] = [];
 
@@ -37,23 +51,30 @@ it('renders the route ErrorBoundary with error and retry props', async () => {
   });
 
   expect(screen.getByTestId('boundary')).toHaveTextContent('route failed');
-  expect(errors).toContain('route failed');
+  expect(screen.queryByTestId('route')).toBeNull();
+  expect(errors[0]).toBe('route failed');
+  consoleError.mockClear();
 
-  fireEvent.press(screen.getByTestId('retry'));
+  await userEvent.press(screen.getByTestId('retry'));
 
-  await waitFor(() => expect(screen.getByTestId('route')).toHaveTextContent('Recovered route'));
-
-  consoleError.mockRestore();
+  await waitFor(() =>
+    expect(screen.getByTestId('route')).toHaveTextContent('Recovered route')
+  );
+  expect(screen.queryByTestId('boundary')).toBeNull();
+  expect(consoleError).not.toHaveBeenCalled();
 });
 
-it('renders the public ErrorBoundary retry action', () => {
+it('renders the public ErrorBoundary retry action', async () => {
   const retry = jest.fn();
 
   render(<ErrorBoundary error={new Error('public failure')} retry={retry} />);
 
-  expect(screen.getByTestId('router_error_message')).toHaveTextContent('Error: public failure');
+  expect(screen.getByTestId('router_error_message')).toHaveTextContent(
+    'Error: public failure'
+  );
 
-  fireEvent.press(screen.getByTestId('router_error_retry'));
+  await userEvent.press(screen.getByTestId('router_error_retry'));
 
   expect(retry).toHaveBeenCalledTimes(1);
+  expect(consoleError).not.toHaveBeenCalled();
 });
