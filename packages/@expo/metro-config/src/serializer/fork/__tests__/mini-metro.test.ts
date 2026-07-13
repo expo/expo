@@ -62,6 +62,7 @@ it(`can create a micro Metro graph fixture`, async () => {
       var _foo = _$$_REQUIRE(_dependencyMap[0], "./foo");
       console.log(_foo.foo);
     });",
+                  "expoCacheVary": undefined,
                   "expoDomComponentReference": undefined,
                   "functionMap": {
                     "mappings": "AAA",
@@ -207,6 +208,7 @@ it(`can create a micro Metro graph fixture`, async () => {
       });
       const foo = 'foo';
     });",
+                  "expoCacheVary": undefined,
                   "expoDomComponentReference": undefined,
                   "functionMap": {
                     "mappings": "AAA",
