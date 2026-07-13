@@ -23,6 +23,10 @@ import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { replaceMetroFileMap } from '../../start/server/metro/createFileMap-fork';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
+import {
+  patchGetDeltaForCacheVary,
+  patchTransformFileForCacheVary,
+} from '../../start/server/metro/withMetroCacheVary';
 import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
@@ -393,6 +397,10 @@ export async function createMetroServerAndBundleRequestAsync(
   // would otherwise reach Metro's readers in the unwrapped wire shape.
   patchTransformFileForPackedMaps(metro.getBundler().getBundler());
   patchMetroSourceMapStringForPackedMaps();
+
+  // Make ambient-value (cache-vary) staleness visible to the graph and delta layers.
+  patchTransformFileForCacheVary(metro.getBundler().getBundler());
+  patchGetDeltaForCacheVary();
 
   return { server: metro, bundleRequest };
 }
