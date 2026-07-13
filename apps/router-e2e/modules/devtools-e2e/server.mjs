@@ -3,7 +3,7 @@
 // require of esm in modern Node works(*)
 await undefined;
 
-export default async function handler(request) {
+export default async function handler(request, context) {
   const url = new URL(request.url);
 
   if (url.pathname === '/api/hello') {
@@ -14,6 +14,27 @@ export default async function handler(request) {
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
+  }
+
+  // Dynamic WebSocket routes: the channel name is part of the path, so it cannot be
+  // mounted statically through `webSocketHandlers`.
+  const dynamicChannel = url.pathname.match(/^\/ws\/dynamic\/([^/]+)$/)?.[1];
+  if (dynamicChannel) {
+    const response = context.upgrade({
+      onopen(peer) {
+        peer.send({
+          type: 'welcome',
+          message: `Connected to dynamic channel "${dynamicChannel}".`,
+          pathname: url.pathname,
+          search: url.search,
+        });
+      },
+      onmessage(peer, message) {
+        peer.send({ type: 'echo', channel: dynamicChannel, message: message.text() });
+      },
+    });
+    response.headers.set('x-devtools-channel', dynamicChannel);
+    return response;
   }
 
   // Fallback to static plugin page

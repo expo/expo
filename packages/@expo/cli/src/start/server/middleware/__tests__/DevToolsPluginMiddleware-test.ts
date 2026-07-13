@@ -246,6 +246,30 @@ describe(DevToolsPluginMiddleware, () => {
       expect(requestHandler).toHaveBeenCalledTimes(1);
     });
 
+    it('should pass a context whose upgrade() throws for plain HTTP requests', async () => {
+      const requestHandler = jest.fn(async (request: Request, context: any) => {
+        expect(() => context.upgrade({})).toThrow(/regular HTTP request/);
+        return new Response('ok', { status: 200 });
+      });
+      const middleware = createMiddleware(
+        createPluginManager({
+          packageName: 'hello-plugin',
+          packageRoot: '/root/packages/hello-plugin',
+          serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
+          getRequestHandlerAsync: async () => requestHandler,
+        })
+      );
+
+      const response = createStreamingResponse();
+      await middleware.handleRequestAsync(
+        createServerRequest('http://localhost:8081/_expo/plugins/hello-plugin/api/hello'),
+        response
+      );
+
+      expect(response.statusCode).toBe(200);
+      expect(requestHandler).toHaveBeenCalledTimes(1);
+    });
+
     it('should fall back to static serving when the handler returns null', async () => {
       const requestHandler = jest.fn(async () => null);
       const middleware = createMiddleware(

@@ -6,6 +6,7 @@ import send from 'send';
 import type { DevToolsPlugin } from '../DevToolsPlugin';
 import type DevToolsPluginManager from '../DevToolsPluginManager';
 import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import { createHttpRequestContext, parsePluginName } from '../DevToolsPluginServerHelpers';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import type { ServerRequest, ServerResponse } from './server.types';
 
@@ -31,9 +32,7 @@ export class DevToolsPluginMiddleware extends ExpoMiddleware {
   async handleRequestAsync(req: ServerRequest, res: ServerResponse): Promise<void> {
     assert(req.headers.host, 'Request headers must include host');
     const { pathname, search } = new URL(req.url ?? '/', `http://${req.headers.host}`);
-    const pluginName = this.queryPossiblePluginName(
-      pathname.substring(DevToolsPluginEndpoint.length + 1)
-    );
+    const pluginName = parsePluginName(pathname.substring(DevToolsPluginEndpoint.length + 1));
     const plugin = await this.pluginManager.queryPluginAsync(pluginName);
     if (!plugin) {
       res.statusCode = 404;
@@ -82,7 +81,7 @@ export class DevToolsPluginMiddleware extends ExpoMiddleware {
       req.url = urlInPluginRoot;
       request = convertRequest(req as http.IncomingMessage, res as http.ServerResponse);
       const handler = await plugin.getRequestHandlerAsync();
-      const response = await handler?.(request);
+      const response = await handler?.(request, createHttpRequestContext());
       if (response == null) {
         return false;
       }
@@ -104,14 +103,5 @@ export class DevToolsPluginMiddleware extends ExpoMiddleware {
     } finally {
       req.url = originalUrl;
     }
-  }
-
-  private queryPossiblePluginName(pathname: string): string {
-    const parts = pathname.split('/');
-    if (parts[0]![0] === '@' && parts.length > 1) {
-      // Scoped package name
-      return `${parts[0]}/${parts[1]}`;
-    }
-    return parts[0]!;
   }
 }

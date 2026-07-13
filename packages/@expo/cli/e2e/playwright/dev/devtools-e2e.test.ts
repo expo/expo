@@ -82,4 +82,19 @@ test.describe('devtools-e2e', () => {
       'message: {"type":"echo","message":"Hello from the webpage!"}'
     );
   });
+
+  test('connects and responds over a dynamic WebSocket route from the request handler', async ({
+    page,
+  }) => {
+    await page.goto(new URL(pluginPath, expoStart.url).href);
+
+    await page.getByRole('button', { name: 'Open Dynamic WebSocket' }).click();
+
+    await expect(page.locator('#dynamic-socket-log')).toContainText(
+      'message: {"type":"welcome","message":"Connected to dynamic channel \\"e2e-channel\\".","pathname":"/ws/dynamic/e2e-channel","search":"?source=webpage"}'
+    );
+    await expect(page.locator('#dynamic-socket-log')).toContainText(
+      'message: {"type":"echo","channel":"e2e-channel","message":"Hello from the dynamic webpage!"}'
+    );
+  });
 });
