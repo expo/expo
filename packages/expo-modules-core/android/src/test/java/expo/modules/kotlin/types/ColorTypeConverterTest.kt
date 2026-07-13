@@ -110,20 +110,17 @@ internal class ColorTypeConverterTest {
     Truth.assertThat(ColorCompat.blue(color)).isEqualTo(expectedColor[2])
   }
 
-  // PlatformColor resolves through React Native's ColorPropConverter, which only constructs a
-  // Color on API 26+; below that it is unsupported, so this runs on API 30 only.
+  // PlatformColor resolves through React Native's ColorPropConverter.
   @Test
-  @Config(sdk = [30])
   fun `converts from Android PlatformColor color`() {
     val platformColor = DynamicFromObject(platformColor("@android:color/white"))
 
     val color = convert<Color>(platformColor, appContext)
 
-    Truth.assertThat(color.toArgb()).isEqualTo(Color.WHITE)
+    Truth.assertThat(ColorCompat.toArgb(color)).isEqualTo(Color.WHITE)
   }
 
   @Test
-  @Config(sdk = [30])
   fun `converts from Android PlatformColor attr`() {
     val platformColor = DynamicFromObject(platformColor("?android:attr/textColorPrimary"))
 
@@ -133,7 +130,7 @@ internal class ColorTypeConverterTest {
       it.data
     }
 
-    Truth.assertThat(color.toArgb()).isEqualTo(expectedColor)
+    Truth.assertThat(ColorCompat.toArgb(color)).isEqualTo(expectedColor)
   }
 
   @Test

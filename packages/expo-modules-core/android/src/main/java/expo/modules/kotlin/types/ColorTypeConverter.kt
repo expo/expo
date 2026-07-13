@@ -1,6 +1,7 @@
 package expo.modules.kotlin.types
 
 import android.graphics.Color
+import android.os.Build
 import androidx.core.graphics.toColorInt
 import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.Dynamic
@@ -442,8 +443,13 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
 
   private fun colorFromReadableMap(value: ReadableMap, context: AppContext?): Color {
     val reactContext = context?.reactContext ?: throw Exceptions.ReactContextLost()
-    return ColorPropConverter.getColorInstance(value, reactContext)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return ColorPropConverter.getColorInstance(value, reactContext)
+        ?: throw UnexpectedException("ColorPropConverter returned null for a non-null color value.")
+    }
+    val colorInt = ColorPropConverter.getColor(value, reactContext)
       ?: throw UnexpectedException("ColorPropConverter returned null for a non-null color value.")
+    return ColorCompat.valueOf(colorInt)
   }
 
   override fun getCppRequiredTypes(): ExpectedType =
