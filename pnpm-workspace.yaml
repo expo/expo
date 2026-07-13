@@ -33,6 +33,7 @@ onlyBuiltDependencies:
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
   '@shopify/react-native-skia@2.6.2': patches/@shopify__react-native-skia@2.6.2.patch
+  react-native-gesture-handler@2.32.0: patches/react-native-gesture-handler@2.32.0.patch
   react-native-reanimated: patches/react-native-reanimated.patch
   react-native-view-shot: patches/react-native-view-shot.patch
   react-native-worklets: patches/react-native-worklets.patch
