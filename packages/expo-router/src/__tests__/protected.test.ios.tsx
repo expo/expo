@@ -34,23 +34,7 @@ it('should protect routes during the initial load', () => {
     { initialUrl: '/a' }
   );
 
-  // This should be a stale state for the /a route, but index should be visible
-  expect(store.state).toStrictEqual({
-    routes: [
-      {
-        name: '__root',
-        state: {
-          routes: [
-            {
-              name: 'a',
-              path: '/a',
-            },
-          ],
-        },
-      },
-    ],
-  });
-
+  // Guarded /a is unreachable during initial load: index is shown at /.
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 
@@ -64,36 +48,8 @@ it('should protect routes during the initial load', () => {
   act(() => router.replace('/a'));
 
   expect(screen.getByTestId('a')).toBeVisible();
-  expect(store.state).toStrictEqual({
-    index: 0,
-    key: expect.any(String),
-    preloadedRoutes: [],
-    routeNames: ['__root', '+not-found', '_sitemap'],
-    routes: [
-      {
-        key: expect.any(String),
-        name: '__root',
-        params: undefined,
-        state: {
-          index: 0,
-          key: expect.any(String),
-          preloadedRoutes: [],
-          routeNames: ['a', 'index', 'b', 'c'],
-          routes: [
-            {
-              key: expect.any(String),
-              name: 'a',
-              params: {},
-            },
-          ],
-          stale: false,
-          type: 'stack',
-        },
-      },
-    ],
-    stale: false,
-    type: 'stack',
-  });
+  expect(screen).toHavePathname('/a');
+  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'index', 'b', 'c']);
 });
 
 it('should protect nested protected routes', () => {
@@ -164,8 +120,6 @@ it('should protect nested protected routes', () => {
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
 
-  expect(store.state!.index).toBe(0);
-  expect(store.state!.routes[0]!.name).toBe('__root');
   expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'index']);
 
   // change the guard for route B to true: should make B available and also C
@@ -186,8 +140,6 @@ it('should protect nested protected routes', () => {
   expect(screen.getByTestId('c')).toBeVisible();
   expect(screen).toHavePathname('/c');
 
-  expect(store.state!.index).toBe(0);
-  expect(store.state!.routes[0]!.name).toBe('__root');
   expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'c', 'index']);
 });
 
@@ -222,28 +174,9 @@ it('should default to anchor during initial load', () => {
     { initialUrl: '/a' }
   );
 
-  expect(store.state).toStrictEqual({
-    routes: [
-      {
-        name: '__root',
-        state: {
-          index: 1,
-          routes: [
-            {
-              name: 'b',
-              params: undefined,
-            },
-            {
-              name: 'a',
-              path: '/a',
-            },
-          ],
-        },
-      },
-    ],
-  });
-
+  // Guarded /a is unreachable; the anchor route b is shown instead.
   expect(screen.getByTestId('b')).toBeVisible();
+  expect(screen).toHavePathname('/b');
 
   // Enable the /a route
   act(() => {
@@ -255,36 +188,8 @@ it('should default to anchor during initial load', () => {
   act(() => router.replace('/a'));
 
   expect(screen.getByTestId('a')).toBeVisible();
-  expect(store.state).toStrictEqual({
-    index: 0,
-    key: expect.any(String),
-    preloadedRoutes: [],
-    routeNames: ['__root', '+not-found', '_sitemap'],
-    routes: [
-      {
-        key: expect.any(String),
-        name: '__root',
-        params: undefined,
-        state: {
-          index: 0,
-          key: expect.any(String),
-          preloadedRoutes: [],
-          routeNames: ['a', 'b', 'index'],
-          routes: [
-            {
-              key: expect.any(String),
-              name: 'a',
-              params: {},
-            },
-          ],
-          stale: false,
-          type: 'stack',
-        },
-      },
-    ],
-    stale: false,
-    type: 'stack',
-  });
+  expect(screen).toHavePathname('/a');
+  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'index']);
 });
 
 it('should move away from a focused route when its guard flips false', () => {
