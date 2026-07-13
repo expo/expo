@@ -75,6 +75,14 @@ function loadRemapping(): Remapping {
   return _remapping!;
 }
 
+let _sourcemapCodec: typeof import('@jridgewell/sourcemap-codec') | undefined;
+function loadSourcemapCodec(): typeof import('@jridgewell/sourcemap-codec') {
+  if (!_sourcemapCodec) {
+    _sourcemapCodec = require('@jridgewell/sourcemap-codec');
+  }
+  return _sourcemapCodec!;
+}
+
 // NOTE(@kitten): @jridgewell/gen-mapping has no streaming encoder — its
 // `addSegment` buffers every segment into `_mappings` until
 // `toEncodedMap` runs VLQ encoding at the end (~100 MB transient on a
@@ -330,6 +338,24 @@ export function patchMetroSourceMapStringForPackedMaps(): void {
   stock.sourceMapStringNonBlocking = sourceMapStringNonBlocking;
 }
 
+function repairInvalidNegativeIndices(map: ComposableSourceMap): ComposableSourceMap {
+  const { decode, encode } = loadSourcemapCodec();
+  const decoded = decode(map.mappings);
+
+  let changed = false;
+  for (const line of decoded) {
+    for (let i = 0; i < line.length; i++) {
+      const segment = line[i];
+      // If we have a `[genCol, srcIdx, srcLine, ...]` segment, check if `srcLine` is negative
+      if (segment != null && segment.length > 1 && segment[2]! < 0) {
+        line[i] = [segment[0]!];
+        changed = true;
+      }
+    }
+  }
+  return changed ? { ...map, mappings: encode(decoded) } : map;
+}
+
 // `maps[0]` is the original-most transform; `maps[maps.length - 1]` is
 // the most recent. Built on `@jridgewell/remapping` instead of mozilla's
 // `SourceMapConsumer`-based composer.
@@ -359,9 +385,36 @@ export function composeSourceMaps(maps: readonly ComposableSourceMap[]): Composa
   });
 
   // Metro convention is original-first; remapping is most-recent first.
-  const reversed = normalized.slice().reverse();
+  let input = normalized.slice().reverse();
+  const remap = loadRemapping();
 
-  const composed = loadRemapping()(reversed, () => null);
+  let composed: RemappingResult;
+
+  try {
+    composed = remap(input, () => null);
+  } catch (error) {
+    // `@jridgewell/trace-mapping` (through `@jridgewell/remapping`) crashes
+    // on any mapping where original line/column is negative. Hermes may emit
+    // such segments and we should gracefully recover from this on a crash.
+    // See:
+    // - https://github.com/jridgewell/sourcemaps/issues/54
+    // - https://github.com/expo/expo/issues/46843
+    let didRepair = false;
+    try {
+      input = input.map((map) => {
+        const fixed = repairInvalidNegativeIndices(map);
+        didRepair ||= fixed !== map;
+        return fixed;
+      });
+    } catch {
+      throw error;
+    }
+    if (!didRepair) {
+      throw error;
+    } else {
+      composed = remap(input, () => null);
+    }
+  }
 
   // Re-emit as a plain object — remapping returns a `SourceMap` class
   // instance, which doesn't round-trip JSON cleanly.
