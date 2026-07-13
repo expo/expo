@@ -137,12 +137,6 @@ pnpm test
 pnpm test src/__tests__/navigation.test.ios.tsx
 ```
 
-To verify if the types used in tests are correct, run:
-
-```bash
-pnpm test:types
-```
-
 ### Swift Tests (iOS)
 
 Native Swift tests live in `ios/Tests/` and use Apple's Swift Testing framework (`import Testing`).
@@ -162,9 +156,9 @@ et native-unit-tests --packages expo-router -p ios
 - Inner structs for grouping related tests within a `@Suite`
 - `#expect` / `#require` for assertions
 
-### Testing Patterns
+### Router TypeScript Testing Patterns
 
-Tests use the custom `renderRouter` testing utility:
+Tests can use the custom `renderRouter` testing utility to test predefined route structure:
 
 ```typescript
 import { renderRouter, screen } from '../testing-library';
@@ -201,10 +195,13 @@ it('can navigate between routes', () => {
 
 - `.test.ios.tsx` - iOS tests
 - `.test.android.tsx` - Android tests
+- `.test.native.tsx` - Native - ios and android tests
 - `.test.web.tsx` - Web tests
 - `.test.node.ts` - Node.js tests
 
 **RSC tests:** When adding new components, add RSC tests in `__rsc_tests__/` directories to verify they render correctly in React Server Components environment.
+
+### Native code in jest unit tests
 
 When testing native primitives, mock them in tests using `jest.mock()`. When adding mocks use `typeof import('module-name')` to preserve types and ensure path correctness. Example:
 
@@ -220,12 +217,14 @@ jest.mock('react-native-screens', () => {
 });
 ```
 
-**Spies and console mocks:** Use `beforeEach`/`afterEach` with `mockRestore()`:
+### Spies and console mocks
+
+Use `beforeEach`/`afterEach` with `mockRestore()`:
 
 ```ts
 let spy: jest.SpyInstance;
 beforeEach(() => {
-  spy = jest.spyOn(Module, 'fn');
+  spy = jest.spyOn(Module, "fn");
 }); // or jest.spyOn(console, 'warn').mockImplementation(() => {})
 afterEach(() => {
   spy.mockRestore();
@@ -277,17 +276,6 @@ Use file extensions for platform variants:
 
 Examples: `ExpoHead.ios.tsx`, `NativeTabsView.web.tsx`, `useBackButton.native.ts`
 
-### Native Tabs
-
-Native tabs (`expo-router/unstable-native-tabs`) provide native bottom tab navigation using iOS UITabBar and Android Material BottomNavigation via `react-native-screens`.
-
-- `NativeTabs` - Layout component using `useNavigationBuilder` with custom `NativeBottomTabsRouter`
-- `NativeTabs.Trigger` - Tab configuration (icon, label, badge) via declarative children
-- `NativeTabs.BottomAccessory` - iOS 26+ bottom accessory with `usePlacement` hook for inline/regular modes
-- Icons: `sf` (SF Symbols), `drawable` (Android resources), `md` (Material icons), `src` (images)
-- iOS-specific: blur effects, scroll edge transparency, sidebar adaptable (iPadOS 18+), minimize behaviors (iOS 26+)
-- Android-specific: Material Design 3 dynamic colors, ripple effects, indicator customization
-
 ### E2E Testing (router-e2e)
 
 **Running tests/apps:**
@@ -304,8 +292,7 @@ After developing a feature, run these commands in `packages/expo-router`:
 
 1. `CI=1 pnpm test` - Run all tests, including the RSC `__rsc_tests__` (they run as the `rsc/<platform>` Jest projects). During development use `pnpm test [test file]` for efficiency, or `pnpm test --selectProjects rsc/web` to run only RSC tests.
 2. `pnpm build` - Build and verify TypeScript correctness. If you moved or deleted files, run `pnpm clean` first.
-3. `pnpm test:types` - Verify type correctness in tests
-4. `pnpm lint` - Run last to find linting issues
+3. `pnpm lint` - Run last to find linting issues
 
 **Required:** before committing, run `et check-packages expo-router` to build, type-check, lint, and test the package the same way CI does. See the repo root [`.claude/CLAUDE.md`](../../.claude/CLAUDE.md) for how to use `et` (expotools) and other repo tooling.
 
