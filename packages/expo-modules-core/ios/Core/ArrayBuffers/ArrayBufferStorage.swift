@@ -53,12 +53,6 @@ enum ArrayBufferStorage: Sendable {
     }
   }
 
-  mutating func materializeNativeStorageIfNeeded() throws {
-    if nativeStorage == nil {
-      self = try makeOwnedNativeStorageCopy()
-    }
-  }
-
   func makeOwnedNativeStorageCopy() throws -> ArrayBufferStorage {
     switch self {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
