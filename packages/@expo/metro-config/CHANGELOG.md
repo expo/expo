@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `resolver.useWatchman: true` not re-enabling watchman as intended ([#47662](https://github.com/expo/expo/issues/47662) by [@isaka1022](https://github.com/isaka1022))
+
 ### 💡 Others
 
 ## 57.0.3 — 2026-07-03
