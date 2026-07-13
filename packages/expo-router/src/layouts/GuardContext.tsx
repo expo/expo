@@ -21,11 +21,20 @@ function matchesRouteName(route: string, name: string) {
   return route === name || route === `${name}/index` || route.replace(/\/index$/, '') === name;
 }
 
-function routeNodeToHref(route: RouteNode): Href {
+function routeNodeToHref(route: Pick<RouteNode, 'contextKey'>): Href {
   return (stripInvisibleSegmentsFromPath(getContextKey(route.contextKey)) || '/') as Href;
 }
 
-function resolveDefaultHref(node: RouteNode, guardedRedirects: Map<string, Href | undefined>) {
+function serializeGuardedRedirects(guardedRedirects: Map<string, Href | undefined>): string {
+  return Array.from(guardedRedirects.entries())
+    .map(([name, href]) => `${name}=${href ?? ''}`)
+    .join('|');
+}
+
+function resolveDefaultHref(
+  node: Pick<RouteNode, 'children' | 'initialRouteName'>,
+  guardedRedirects: Map<string, Href | undefined>
+) {
   const children = [...node.children].sort(sortRoutesWithInitial(node.initialRouteName));
   const anchor = node.initialRouteName
     ? children.find((child) => matchesRouteName(child.route, node.initialRouteName!))
@@ -57,30 +66,23 @@ export function GuardContextProvider({
   guardedRedirects: Map<string, Href | undefined>;
   children: ReactNode;
 }) {
-  const signature = useMemo(
-    () =>
-      `${node?.contextKey ?? ''}:${node?.initialRouteName ?? ''}:` +
-      Array.from(guardedRedirects.entries())
-        .map(([name, href]) => `${name}=${href ?? ''}`)
-        .join('|'),
-    [guardedRedirects, node?.contextKey, node?.initialRouteName]
-  );
+  const signature = useMemo(() => serializeGuardedRedirects(guardedRedirects), [guardedRedirects]);
 
   const resolved = useMemo(() => {
-    const map = new Map<string, Href>();
-    const defaultHref = node ? resolveDefaultHref(node, guardedRedirects) : '/';
+    const defaultHref = node
+      ? resolveDefaultHref(
+          { children: node.children, initialRouteName: node.initialRouteName },
+          guardedRedirects
+        )
+      : '/';
 
-    guardedRedirects.forEach((redirectTo, name) => {
-      const href = redirectTo ?? defaultHref;
-      if (href != null) {
-        map.set(name, href);
-      }
-    });
-
-    return map;
-    // `signature` captures the guarded map content and navigator identity.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signature]);
+    return new Map<string, Href>(
+      Array.from(
+        guardedRedirects,
+        ([name, redirectTo]) => [name, redirectTo ?? defaultHref] as const
+      ).filter((entry): entry is [string, Href] => entry[1] != null)
+    );
+  }, [signature, node?.children, node?.initialRouteName]);
 
   return <GuardContext value={resolved}>{children}</GuardContext>;
 }
