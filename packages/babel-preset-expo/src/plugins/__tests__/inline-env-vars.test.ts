@@ -197,7 +197,7 @@ const useRnFetch =
   expect(normalized).toContain('var useRnFetch = true || false;');
 });
 
-it(`leaves EXPO_PUBLIC_USE_RN_FETCH untouched inside node modules when the flag is unset`, () => {
+it(`inlines EXPO_PUBLIC_USE_RN_FETCH as undefined inside node modules when the flag is unset`, () => {
   delete process.env.EXPO_PUBLIC_USE_RN_FETCH;
 
   const options = {
@@ -216,9 +216,10 @@ const useRnFetch =
   process.env.EXPO_PUBLIC_USE_RN_FETCH === '1' || process.env.EXPO_PUBLIC_USE_RN_FETCH === 'true';
 `;
 
-  const contents = babel.transform(sourceCode, options)!.code;
+  const normalized = babel.transform(sourceCode, options)!.code!.replace(/\s+/g, ' ');
 
-  expect(contents).toMatch('process.env.EXPO_PUBLIC_USE_RN_FETCH');
+  expect(normalized).not.toMatch('process.env.EXPO_PUBLIC_USE_RN_FETCH');
+  expect(normalized).toContain('var useRnFetch = false || false;');
 });
 
 function transformTest(
