@@ -56,6 +56,7 @@ describe('evalModule', () => {
     );
 
     expect(mod).toEqual({
+      __esModule: true,
       default: {
         mjs: { test: 'test' },
         cjs: { test: 'test' },
@@ -73,6 +74,7 @@ describe('evalModule', () => {
     );
 
     expect(mod).toEqual({
+      __esModule: true,
       default: 'test',
     });
   });
