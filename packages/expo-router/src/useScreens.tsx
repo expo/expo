@@ -337,7 +337,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
 
-    if (isFocused && guardRedirect == null) {
+    if (isFocused && !guardRedirect) {
       const state = navigation.getState();
       const isLeaf = !(state && 'state' in state.routes[state.index]!);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
@@ -352,7 +352,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           // if the component itself didn’t rerender and the route info changed.
           // Otherwise, the update from the `if` above will handle it,
           // and this won’t cause a redundant second update.
-          if (isLeaf && stateForPath && guardRedirect == null) store.setFocusedState(stateForPath);
+          if (isLeaf && stateForPath && !guardRedirect) store.setFocusedState(stateForPath);
         }),
       [navigation, guardRedirect]
     );
@@ -372,7 +372,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     }, [navigation]);
 
     useEffect(() => {
-      if (guardRedirect == null || isFocused || !route?.key) {
+      if (!guardRedirect || isFocused || !route?.key) {
         return;
       }
 
@@ -408,7 +408,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isRouteType = value.type === 'route';
     const hasRouteKey = !!route?.key;
 
-    if (guardRedirect != null) {
+    if (guardRedirect) {
       return (
         <Route node={value} params={route?.params}>
           <Redirect href={guardRedirect} />
