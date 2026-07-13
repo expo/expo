@@ -270,6 +270,61 @@ it('uses the innermost failing guard redirectTo for a nested guarded route', () 
   expect(screen).toHavePathname('/inner');
 });
 
+it('applies the parent guard redirectTo to a route nested in a passing child guard', () => {
+  renderRouter(
+    {
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false} redirectTo="/login">
+              <Stack.Protected guard>
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack.Protected>
+            <Stack.Screen name="login" />
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      login: () => <Text testID="login">login</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  // The child guard passes, but the parent guard fails, so its redirectTo applies.
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/login');
+});
+
+it('does not apply the parent guard redirectTo to a route nested in a passing child guard when parent guard is true', () => {
+  renderRouter(
+    {
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard redirectTo="/login">
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack.Protected>
+            <Stack.Screen name="login" />
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      login: () => <Text testID="login">login</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  // The child guard passes, but the parent guard fails, so its redirectTo applies.
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+});
+
+
 it('should move away from a focused route when its guard flips false', () => {
   let setGuard: Dispatch<SetStateAction<boolean>>;
 
