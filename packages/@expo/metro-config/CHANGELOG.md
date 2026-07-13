@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Add `VaryingCacheStore` and embed `expoCacheVary` fingerprints into transform results so a cache output never holds on to stale values inline ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
 - Depend on `@react-native/js-polyfills` directly for `getPolyfills` instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.88. ([#48034](https://github.com/expo/expo/pull/48034) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix source line counts after environment serializer plugins modify virtual modules ([#48835](https://github.com/expo/expo/pull/48835) by [@kitten](https://github.com/kitten))
 - Seal web worker chunks to prevent common chunk splitting from applying to them ([#49227](https://github.com/expo/expo/pull/49227) by [@kitten](https://github.com/kitten))
