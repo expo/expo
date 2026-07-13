@@ -9,29 +9,133 @@ import type { CommonNavigationAction, InternalRouter, ParamListBase } from './ty
 
 export type DrawerStatus = 'open' | 'closed';
 
-export type DrawerActionType = TabActionType;
+export type DrawerActionType =
+  | TabActionType
+  | {
+      type: 'OPEN_DRAWER' | 'CLOSE_DRAWER' | 'TOGGLE_DRAWER';
+      source?: string;
+      target?: string;
+    };
 
 export type DrawerRouterOptions = TabRouterOptions & {
   defaultStatus?: DrawerStatus;
 };
 
-// Drawer state has the same shape as tab state. The drawer's open/closed status is owned by the
-// drawer navigator's local React state, not stored in navigation state.
-export type DrawerNavigationState<ParamList extends ParamListBase> = TabNavigationState<ParamList>;
+export type DrawerNavigationState<ParamList extends ParamListBase> =
+  TabNavigationState<ParamList> & {
+    drawerStatus: DrawerStatus;
+  };
 
-export type DrawerActionHelpers<ParamList extends ParamListBase> = TabActionHelpers<ParamList>;
+export type DrawerActionHelpers<ParamList extends ParamListBase> = TabActionHelpers<ParamList> & {
+  openDrawer(): void;
+  closeDrawer(): void;
+  toggleDrawer(): void;
+};
+
+export const DrawerActions = {
+  openDrawer() {
+    return { type: 'OPEN_DRAWER' } as const;
+  },
+  closeDrawer() {
+    return { type: 'CLOSE_DRAWER' } as const;
+  },
+  toggleDrawer() {
+    return { type: 'TOGGLE_DRAWER' } as const;
+  },
+};
+
+function withDrawerStatus<State extends TabNavigationState<ParamListBase>>(
+  state: State,
+  defaultStatus: DrawerStatus
+): State & { drawerStatus: DrawerStatus } {
+  if ((state as State & { drawerStatus?: DrawerStatus }).drawerStatus != null) {
+    return state as State & { drawerStatus: DrawerStatus };
+  }
+
+  return {
+    ...state,
+    drawerStatus: defaultStatus,
+  };
+}
 
 /**
  * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version.
- *
- * Keys are kind-free (derived structurally from the parent route key), so the drawer needs no
- * behavior of its own — it is exactly a TabRouter.
  */
-export function DrawerRouter(
-  options: DrawerRouterOptions
-): InternalRouter<DrawerNavigationState<ParamListBase>, DrawerActionType | CommonNavigationAction> {
-  return TabRouter(options) as unknown as InternalRouter<
-    DrawerNavigationState<ParamListBase>,
-    DrawerActionType | CommonNavigationAction
-  >;
+export function DrawerRouter({
+  defaultStatus = 'closed',
+  ...options
+}: DrawerRouterOptions): InternalRouter<
+  DrawerNavigationState<ParamListBase>,
+  DrawerActionType | CommonNavigationAction
+> {
+  const tabRouter = TabRouter(options);
+
+  return {
+    ...tabRouter,
+
+    getInitialState(config) {
+      return withDrawerStatus(tabRouter.getInitialState(config), defaultStatus);
+    },
+
+    getRehydratedState(partialState, config) {
+      const drawerStatus =
+        (partialState as Partial<DrawerNavigationState<ParamListBase>>).drawerStatus ??
+        defaultStatus;
+      return withDrawerStatus(tabRouter.getRehydratedState(partialState, config), drawerStatus);
+    },
+
+    getStateForRouteNamesChange(state, config) {
+      return withDrawerStatus(tabRouter.getStateForRouteNamesChange(state, config), defaultStatus);
+    },
+
+    getStateForRouteFocus(state, key) {
+      return withDrawerStatus(tabRouter.getStateForRouteFocus(state, key), defaultStatus);
+    },
+
+    getStateForAction(state, action, config) {
+      if (action.target && action.target !== state.key) {
+        return null;
+      }
+
+      switch (action.type) {
+        case 'OPEN_DRAWER':
+          return state.drawerStatus === 'open' ? state : { ...state, drawerStatus: 'open' };
+        case 'CLOSE_DRAWER':
+          return state.drawerStatus === 'closed' ? state : { ...state, drawerStatus: 'closed' };
+        case 'TOGGLE_DRAWER':
+          return { ...state, drawerStatus: state.drawerStatus === 'open' ? 'closed' : 'open' };
+        case 'GO_BACK':
+          if (state.drawerStatus !== defaultStatus) {
+            return { ...state, drawerStatus: defaultStatus };
+          }
+          break;
+      }
+
+      const nextState = tabRouter.getStateForAction(state, action, config);
+
+      if (nextState == null) {
+        return nextState;
+      }
+
+      const nextDrawerState = withDrawerStatus(
+        nextState as DrawerNavigationState<ParamListBase>,
+        defaultStatus
+      );
+
+      const focusedRouteChanged =
+        nextDrawerState.index !== state.index ||
+        nextDrawerState.routes[nextDrawerState.index]?.key !== state.routes[state.index]?.key;
+
+      if (action.type !== 'GO_BACK' && focusedRouteChanged) {
+        return { ...nextDrawerState, drawerStatus: defaultStatus };
+      }
+
+      return nextDrawerState;
+    },
+
+    actionCreators: {
+      ...tabRouter.actionCreators,
+      ...DrawerActions,
+    },
+  };
 }

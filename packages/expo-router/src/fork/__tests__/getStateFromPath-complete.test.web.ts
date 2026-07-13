@@ -123,6 +123,36 @@ describe('declared anchors', () => {
     expect(feed.state!.routes.map((r) => r.name)).toEqual(['FeedList']);
     expect(feed.state!.routes[0]!.key).toBe(getRouteKey({ stateKey: feed.state!.key, name: 'FeedList' }));
   });
+
+  it('does not leak focused deep-link params into the declared anchor subtree', () => {
+    const state = getStateFromPath('/profile/5', {
+      initialRouteName: 'home',
+      screens: {
+        home: {
+          screens: {
+            'home/index': '',
+          },
+        },
+        profile: {
+          path: 'profile',
+          screens: {
+            '[id]': ':id',
+          },
+        },
+      },
+    } as any);
+
+    expectComplete(state);
+
+    const home = state!.routes[0]!;
+    expect(home.name).toBe('home');
+    expect(home.params).toBeUndefined();
+    expect(home.state!.routes[0]!.params).toBeUndefined();
+
+    const profile = state!.routes[1]!;
+    expect(profile.name).toBe('profile');
+    expect(profile.state!.routes[0]!.params).toEqual({ id: '5' });
+  });
 });
 
 describe('route groups and current segments', () => {

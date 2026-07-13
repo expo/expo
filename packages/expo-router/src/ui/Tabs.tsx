@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useRouteNode, useContextKey } from '../Route';
 import { useRouteInfo } from '../hooks';
+import { GuardContextProvider } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
 import {
   NavigatorTypeContext,
@@ -236,12 +237,15 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   );
 
   const navigatorTypeValue = useNavigatorTypeContextValue('tab', state.key);
+  const emptyGuardRedirects = useMemo(() => new Map(), []);
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
     <NavigatorTypeContext value={navigatorTypeValue}>
       <TabTriggerMapContext.Provider value={triggerMap}>
         <NavigatorContext.Provider value={navigatorContextValue}>
-          <RNNavigationContent>{children}</RNNavigationContent>
+          <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardRedirects}>
+            <RNNavigationContent>{children}</RNNavigationContent>
+          </GuardContextProvider>
         </NavigatorContext.Provider>
       </TabTriggerMapContext.Provider>
     </NavigatorTypeContext>

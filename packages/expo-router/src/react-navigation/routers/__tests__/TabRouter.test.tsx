@@ -1602,6 +1602,59 @@ test('drops the replaced route so back skips it with history', () => {
   expect(back.index).toBe(0);
 });
 
+test('replace preserves the firstRoute back-stack anchor', () => {
+  const router = TabRouter({ backBehavior: 'firstRoute' });
+  const options: RouterConfigOptions = {
+    routeNames: ['one', 'two', 'three'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    key: 'root',
+    index: 1,
+    routeNames: ['one', 'two', 'three'],
+    routes: [
+      { key: 'one', name: 'one' },
+      { key: 'two', name: 'two' },
+    ],
+  };
+
+  const replaced = router.getStateForAction(
+    state,
+    StackActions.replace('three') as unknown as Parameters<typeof router.getStateForAction>[1],
+    options
+  ) as TabNavigationState<ParamListBase>;
+  expect(names(replaced)).toEqual(['one', 'three', 'two']);
+  expect(replaced.index).toBe(1);
+
+  const back = router.getStateForAction(
+    replaced,
+    CommonActions.goBack(),
+    options
+  ) as TabNavigationState<ParamListBase>;
+  expect(back.routes[back.index]!.name).toBe('one');
+});
+
+test('warns and falls back to history for removed fullHistory back behavior', () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const router = TabRouter({ backBehavior: 'fullHistory' });
+  const options: RouterConfigOptions = {
+    routeNames: ['one', 'two'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const state = router.getInitialState(options);
+
+  expect(warn).toHaveBeenCalledTimes(1);
+  expect(names(state)).toEqual(['one']);
+  warn.mockRestore();
+});
+
 // --- getStateForRouteFocus ---------------------------------------------------
 
 test('focuses a route arranging [anchor, focused, ...] with firstRoute', () => {

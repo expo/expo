@@ -23,6 +23,7 @@ import {
   type RouterConfigOptions,
   type RouterFactory,
 } from '../routers';
+import { getRouteKey } from '../routers/getRouteKey';
 import { Group } from './Group';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationHelpersContext } from './NavigationHelpersContext';
@@ -44,6 +45,7 @@ import {
   type RouteConfig,
 } from './types';
 import { useChildListeners } from './useChildListeners';
+import { useClientInsertionEffect } from './useClientInsertionEffect';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
 import { useComponent } from './useComponent';
 import { useCurrentRender } from './useCurrentRender';
@@ -306,7 +308,9 @@ const isReconcileRouteNamesAction = (
 function getStateForRenderableRoutes<State extends NavigationState>(
   state: State,
   routeNames: string[],
-  routeKeyChanges: string[]
+  routeKeyChanges: string[],
+  initialRouteName: string | undefined,
+  routeParamList: Record<string, object | undefined>
 ): State {
   const routes = state.routes.filter(
     (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
@@ -317,17 +321,32 @@ function getStateForRenderableRoutes<State extends NavigationState>(
   }
 
   if (routes.length === 0) {
-    const name = routeNames[0];
+    const name =
+      initialRouteName !== undefined && routeNames.includes(initialRouteName)
+        ? initialRouteName
+        : routeNames[0];
 
     if (name == null) {
       return state;
     }
 
+    const route: Route<string> =
+      routeParamList[name] !== undefined
+        ? {
+            key: getRouteKey({ stateKey: state.key, name }),
+            name,
+            params: routeParamList[name],
+          }
+        : {
+            key: getRouteKey({ stateKey: state.key, name }),
+            name,
+          };
+
     return {
       ...state,
       index: 0,
       routeNames,
-      routes: [{ key: name, name }] as State['routes'],
+      routes: [route] as State['routes'],
     };
   }
 
@@ -741,7 +760,13 @@ export function useNavigationBuilder<
   // So we override the state object we return to use the latest state as soon as possible
   state = nextState;
   const reconciliationState = state;
-  state = getStateForRenderableRoutes(state, routeNames, routeKeyChanges);
+  state = getStateForRenderableRoutes(
+    state,
+    routeNames,
+    routeKeyChanges,
+    rest.initialRouteName,
+    routeParamList
+  );
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
@@ -955,7 +980,7 @@ export function useNavigationBuilder<
   );
   const backBehavior = (rest as { backBehavior?: unknown }).backBehavior;
 
-  useClientLayoutEffect(() => {
+  useClientInsertionEffect(() => {
     reducerRegistry?.addEntry(state.key, registryEntry);
 
     return () => {

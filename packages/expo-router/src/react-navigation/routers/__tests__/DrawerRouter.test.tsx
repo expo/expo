@@ -31,6 +31,7 @@ test('gets initial state materializing the anchor and the initial route with ini
       routeGetIdList: {},
     })
   ).toEqual({
+    drawerStatus: 'closed',
     index: 1,
     key: '@',
     routeNames: ['bar', 'baz', 'qux'],
@@ -56,6 +57,7 @@ test('gets initial state materializing only the focused route without initialRou
       routeGetIdList: {},
     })
   ).toEqual({
+    drawerStatus: 'closed',
     index: 0,
     key: '@',
     routeNames: ['bar', 'baz', 'qux'],
@@ -64,7 +66,7 @@ test('gets initial state materializing only the focused route without initialRou
   });
 });
 
-test('defaultStatus does not affect navigation state', () => {
+test('defaultStatus seeds drawerStatus', () => {
   const router = DrawerRouter({ defaultStatus: 'open' });
 
   expect(
@@ -75,6 +77,7 @@ test('defaultStatus does not affect navigation state', () => {
       routeGetIdList: {},
     })
   ).toEqual({
+    drawerStatus: 'open',
     index: 0,
     key: '@',
     routeNames: ['bar', 'baz'],
@@ -110,6 +113,7 @@ test('rehydrates preserving the persisted subset and appending the anchor', () =
       options
     )
   ).toEqual({
+    drawerStatus: 'closed',
     index: 1,
     key: '@',
     routeNames: ['bar', 'baz', 'qux'],
@@ -144,6 +148,7 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
       options
     )
   ).toEqual({
+    drawerStatus: 'closed',
     index: 1,
     key: '@',
     routeNames: ['bar', 'baz', 'qux'],
@@ -164,6 +169,7 @@ test('rehydrates focusing the previously-focused route and falling back to 0', (
       options
     )
   ).toEqual({
+    drawerStatus: 'closed',
     index: 0,
     key: '@',
     routeNames: ['bar', 'baz', 'qux'],
@@ -184,6 +190,7 @@ test("doesn't rehydrate state if it's not stale", () => {
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
     ],
+    drawerStatus: 'closed',
     stale: false as const,
   };
 
@@ -212,6 +219,7 @@ test('handles navigate action by focusing the target route in place', () => {
     router.getStateForAction(
       {
         stale: false,
+        drawerStatus: 'closed',
         key: 'root',
         index: 2,
         routeNames: ['baz', 'bar', 'qux'],
@@ -226,6 +234,7 @@ test('handles navigate action by focusing the target route in place', () => {
     )
   ).toEqual({
     stale: false,
+    drawerStatus: 'closed',
     key: 'root',
     index: 0,
     routeNames: ['baz', 'bar', 'qux'],
@@ -252,6 +261,7 @@ test('GO_BACK delegates to the tab router', () => {
     router.getStateForAction(
       {
         stale: false,
+        drawerStatus: 'closed',
         key: 'root',
         index: 2,
         routeNames: ['bar', 'baz', 'qux'],
@@ -266,6 +276,7 @@ test('GO_BACK delegates to the tab router', () => {
     )
   ).toEqual({
     stale: false,
+    drawerStatus: 'closed',
     key: 'root',
     index: 1,
     routeNames: ['bar', 'baz', 'qux'],
@@ -275,6 +286,69 @@ test('GO_BACK delegates to the tab router', () => {
       { key: 'qux-0', name: 'qux' },
     ],
   });
+});
+
+test('GO_BACK closes an open drawer before delegating to tab history', () => {
+  const router = DrawerRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+  const state: DrawerNavigationState<ParamListBase> = {
+    stale: false,
+    drawerStatus: 'open',
+    key: 'root',
+    index: 1,
+    routeNames: ['bar', 'baz'],
+    routes: [
+      { key: 'bar-0', name: 'bar' },
+      { key: 'baz-0', name: 'baz' },
+    ],
+  };
+
+  const closed = router.getStateForAction(
+    state,
+    CommonActions.goBack(),
+    options
+  ) as DrawerNavigationState<ParamListBase>;
+
+  expect(closed).toEqual({ ...state, drawerStatus: 'closed' });
+  expect(router.getStateForAction(closed!, CommonActions.goBack(), options)).toEqual({
+    ...state,
+    drawerStatus: 'closed',
+    index: 0,
+  });
+});
+
+test('handles drawer open, close, and toggle actions', () => {
+  const router = DrawerRouter({});
+  const state = router.getInitialState({
+    routeNames: ['bar'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
+
+  const open = router.getStateForAction(
+    state,
+    { type: 'OPEN_DRAWER' },
+    options
+  )! as DrawerNavigationState<ParamListBase>;
+  expect(open.drawerStatus).toBe('open');
+  expect(router.getStateForAction(open, { type: 'TOGGLE_DRAWER' }, options)!.drawerStatus).toBe(
+    'closed'
+  );
+  expect(router.getStateForAction(open, { type: 'CLOSE_DRAWER' }, options)!.drawerStatus).toBe(
+    'closed'
+  );
 });
 
 test('REPLACE drops the replaced route from the back stack (inherited from the tab router)', () => {
@@ -297,6 +371,7 @@ test('REPLACE drops the replaced route from the back stack (inherited from the t
       { key: 'one', name: 'one' },
       { key: 'two', name: 'two' },
     ],
+    drawerStatus: 'closed',
   };
 
   const replaced = router.getStateForAction(
@@ -320,6 +395,7 @@ test('getStateForRouteFocus focuses the route in place', () => {
     router.getStateForRouteFocus(
       {
         index: 0,
+        drawerStatus: 'closed',
         key: 'drawer-test',
         routeNames: ['bar', 'baz', 'qux'],
         routes: [
@@ -333,6 +409,7 @@ test('getStateForRouteFocus focuses the route in place', () => {
     )
   ).toEqual({
     index: 1,
+    drawerStatus: 'closed',
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
@@ -359,6 +436,7 @@ test('front-preloads the implicit anchor at the front (delegating to the tab rou
     router.getStateForAction(
       {
         stale: false,
+        drawerStatus: 'closed',
         key: 'drawer-test',
         index: 0,
         routeNames: ['bar', 'baz', 'qux'],
@@ -369,6 +447,7 @@ test('front-preloads the implicit anchor at the front (delegating to the tab rou
     )
   ).toEqual({
     stale: false,
+    drawerStatus: 'closed',
     key: 'drawer-test',
     index: 1,
     routeNames: ['bar', 'baz', 'qux'],

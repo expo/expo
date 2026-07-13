@@ -27,10 +27,7 @@ export function useStoreSlice(key: string | undefined): NavigationState | undefi
   return React.useSyncExternalStore(store.subscribe, getSnapshot, getSnapshot);
 }
 
-export function getCachedSlice(
-  rootState: State,
-  key: string
-): NavigationState | undefined {
+export function getCachedSlice(rootState: State, key: string): NavigationState | undefined {
   if (rootState == null || rootState.stale !== false) {
     return undefined;
   }

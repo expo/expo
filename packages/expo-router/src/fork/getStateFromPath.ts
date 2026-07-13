@@ -690,6 +690,17 @@ function pickDefaultChild(screens: ScreenConfigMap, ownInitialRouteName?: string
   return Object.keys(screens)[0]!;
 }
 
+function shouldInheritDefaultSubtreeParams(
+  name: string,
+  screens: ScreenConfigMap | undefined
+): boolean {
+  const childScreens = getChildScreens(screens, name);
+  return (
+    !name.includes('/') &&
+    !Object.keys(childScreens ?? {}).some((childName) => childName.includes('/'))
+  );
+}
+
 // Build a route entry, and — when it is a navigator — its complete default subtree down to a leaf.
 // Used for declared anchors: back (index--) must never land on a hollow route. `stateKey` is the
 // key of the navigator this route lives in; the route's own key is minted from it, and its child
@@ -760,7 +771,12 @@ const buildStateForChain = (
   let index: number;
   if (initialRouteName) {
     routes = [
-      buildRouteWithDefaultSubtree(initialRouteName, screens, stateKey, focused.params),
+      buildRouteWithDefaultSubtree(
+        initialRouteName,
+        screens,
+        stateKey,
+        shouldInheritDefaultSubtreeParams(initialRouteName, screens) ? focused.params : undefined
+      ),
       focusedRoute,
     ];
     index = 1;

@@ -114,6 +114,41 @@ describe(rootReducer, () => {
     expect(reducedRoot.routes[1]!.state).toBeUndefined();
   });
 
+  it('inserts PRELOAD payload.state on the preloaded route instead of the focused route', () => {
+    const registry = createReducerRegistry();
+    const payloadState: NavigationState = {
+      stale: false,
+      key: 'settings-route',
+      index: 0,
+      routeNames: ['profile'],
+      routes: [{ key: 'profile-route', name: 'profile' }],
+    };
+    const action: NavigationAction = {
+      type: 'PRELOAD',
+      target: 'root-state',
+      payload: { name: 'settings', state: payloadState },
+    };
+    const reducedRoot: NavigationState = {
+      ...rootState,
+      routes: [
+        rootState.routes[0]!,
+        {
+          key: 'settings-route',
+          name: 'settings',
+        },
+      ],
+    };
+
+    registry.addEntry('root-state', { reduce: jest.fn(() => reducedRoot) });
+    registry.addEntry('home-state', { reduce: jest.fn(() => rootState.routes[0]!.state!) });
+
+    const result = rootReducer(rootState, action, registry);
+
+    expect(result.handled).toBe(true);
+    expect(result.state.routes[0]!.state).toBe(rootState.routes[0]!.state);
+    expect(result.state.routes[1]!.state).toBe(payloadState);
+  });
+
   it('does not overwrite an existing child state with payload.state', () => {
     const registry = createReducerRegistry();
     const payloadState: NavigationState = {

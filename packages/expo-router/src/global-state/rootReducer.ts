@@ -268,16 +268,63 @@ function insertPayloadStateAtBoundary(
     return state;
   }
 
-  const route = state.routes[state.index ?? 0];
+  const routeIndex = getPayloadBoundaryRouteIndex(state, action, payloadState);
+  if (routeIndex == null) {
+    return state;
+  }
+
+  const route = state.routes[routeIndex];
 
   if (route == null || route.state != null || registry.hasReducer(payloadState.key ?? '')) {
     return state;
   }
 
   const routes = state.routes.slice();
-  routes[state.index ?? 0] = { ...route, state: payloadState };
+  routes[routeIndex] = { ...route, state: payloadState };
 
   return { ...state, routes };
+}
+
+function getPayloadBoundaryRouteIndex(
+  state: NavigationState,
+  action: NavigationAction,
+  payloadState: PayloadState
+): number | undefined {
+  if (payloadState.key != null) {
+    const stateKeyIndex = state.routes.findIndex((route) => route.state?.key === payloadState.key);
+
+    if (stateKeyIndex !== -1) {
+      return stateKeyIndex;
+    }
+
+    const routeKeyIndex = state.routes.findIndex((route) => route.key === payloadState.key);
+
+    if (routeKeyIndex !== -1) {
+      return routeKeyIndex;
+    }
+  }
+
+  const payload = action.payload;
+
+  if (payload != null && typeof payload === 'object') {
+    if ('key' in payload && typeof payload.key === 'string') {
+      const keyIndex = state.routes.findIndex((route) => route.key === payload.key);
+
+      if (keyIndex !== -1) {
+        return keyIndex;
+      }
+    }
+
+    if ('name' in payload && typeof payload.name === 'string') {
+      const nameIndex = state.routes.findIndex((route) => route.name === payload.name);
+
+      if (nameIndex !== -1) {
+        return nameIndex;
+      }
+    }
+  }
+
+  return action.type === 'PRELOAD' ? undefined : (state.index ?? 0);
 }
 
 function getPayloadState(action: NavigationAction): PayloadState | undefined {

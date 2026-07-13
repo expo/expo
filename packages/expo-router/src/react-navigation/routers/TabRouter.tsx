@@ -39,7 +39,13 @@ export type TabActionType =
       target?: string;
     };
 
-export type BackBehavior = 'firstRoute' | 'initialRoute' | 'order' | 'history' | 'none';
+export type BackBehavior =
+  | 'firstRoute'
+  | 'initialRoute'
+  | 'order'
+  | 'history'
+  | 'fullHistory'
+  | 'none';
 
 export type TabRouterOptions = DefaultRouterOptions & {
   /**
@@ -178,7 +184,7 @@ const buildInitialSubset = (
  * (`unstable_settings.anchor`), so tab navigators keep this implicit anchor loaded via
  * `usePreloadAnchor`, which front-preloads it (see the FRONT_PRELOAD case below).
  *
- * Must agree with `arrangeBackStack`/`buildInitialSubset`: `order`/`history`/`none` have no anchor;
+ * Must agree with `arrangeBackStack`/`buildInitialSubset`: `order`/`history`/`fullHistory`/`none` have no anchor;
  * `initialRoute` anchors on `initialRouteName` when declared, otherwise (like `firstRoute`) on the
  * first declared route — which is where the router's own back logic lands too.
  */
@@ -187,7 +193,12 @@ export function getBackStackAnchorName(
   backBehavior: BackBehavior = 'firstRoute',
   initialRouteName?: string
 ): string | undefined {
-  if (backBehavior === 'order' || backBehavior === 'history' || backBehavior === 'none') {
+  if (
+    backBehavior === 'order' ||
+    backBehavior === 'history' ||
+    backBehavior === 'fullHistory' ||
+    backBehavior === 'none'
+  ) {
     return undefined;
   }
   if (
@@ -223,23 +234,39 @@ const focusRoute = (
 };
 
 export const pruneReplacedRoute = (
-  state: TabNavigationState<ParamListBase>
+  state: TabNavigationState<ParamListBase>,
+  replacedKey: string | undefined = state.routes[state.index - 1]?.key
 ): TabNavigationState<ParamListBase> => {
-  if (state.index <= 0) {
+  if (replacedKey == null) {
     return state;
   }
 
-  const replacedIndex = state.index - 1;
+  const replacedIndex = state.routes.findIndex((route) => route.key === replacedKey);
+
+  if (replacedIndex === -1 || replacedIndex === state.index) {
+    return state;
+  }
+
   const replaced = state.routes[replacedIndex]!;
   const routes = state.routes.filter((_, i) => i !== replacedIndex);
-  routes.splice(state.index, 0, replaced);
+  const focusedIndex = replacedIndex < state.index ? state.index - 1 : state.index;
+  routes.splice(focusedIndex + 1, 0, replaced);
 
-  return { ...state, routes, index: state.index - 1 };
+  return { ...state, routes, index: focusedIndex };
 };
 
 // TODO(@ubax): unify the logic into single router instead of BaseTabRouter and override
 // TODO(@ubax): add REPLACE action to CommonAction type and handle it in all routers
 function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRouterOptions) {
+  if (backBehavior === 'fullHistory') {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        'TabRouter backBehavior="fullHistory" is no longer supported and will behave like "history".'
+      );
+    }
+    backBehavior = 'history';
+  }
+
   const router: InternalRouter<
     TabNavigationState<ParamListBase>,
     TabActionType | CommonNavigationAction
@@ -684,6 +711,7 @@ export function TabRouter(
 
       if ((action.type as string) === 'REPLACE') {
         const replaceAction = action as unknown as Extract<StackActionType, { type: 'REPLACE' }>;
+        const replacedKey = state.routes[state.index]?.key;
         const nextState = base.getStateForAction(
           state,
           {
@@ -697,7 +725,7 @@ export function TabRouter(
           return null;
         }
 
-        return pruneReplacedRoute(nextState as TabNavigationState<ParamListBase>);
+        return pruneReplacedRoute(nextState as TabNavigationState<ParamListBase>, replacedKey);
       }
 
       return base.getStateForAction(state, action, options);

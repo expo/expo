@@ -65,7 +65,6 @@ it('prefetch a sibling route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -137,7 +136,6 @@ it('will prefetch the correct route within a group', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -449,7 +447,6 @@ it('ignores the current route', () => {
             {
               key: expect.any(String),
               name: 'directory',
-              params: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -458,7 +455,6 @@ it('ignores the current route', () => {
                   {
                     key: expect.any(String),
                     name: 'index',
-                    params: undefined,
                     path: '/directory',
                   },
                   {
@@ -568,7 +564,6 @@ it('can prefetch a deeply nested route', () => {
             {
               key: expect.any(String),
               name: 'directory',
-              params: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -577,7 +572,6 @@ it('can prefetch a deeply nested route', () => {
                   {
                     key: expect.any(String),
                     name: 'index',
-                    params: undefined,
                     path: '/directory',
                   },
                   {
@@ -600,10 +594,7 @@ it('can prefetch a deeply nested route', () => {
                         {
                           key: expect.any(String),
                           name: 'banana',
-                          params: {
-                            params: {},
-                            screen: 'index',
-                          },
+                          params: {},
                           path: undefined,
                           state: {
                             index: 0,

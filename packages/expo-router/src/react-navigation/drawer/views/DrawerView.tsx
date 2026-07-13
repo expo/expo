@@ -19,6 +19,7 @@ import {
   useLocale,
   useTheme,
 } from '../../native';
+import { DrawerActions as DrawerRouterActions } from '../../routers';
 import type {
   DrawerContentComponentProps,
   DrawerDescriptorMap,
@@ -62,22 +63,16 @@ function DrawerViewBase({
 
   const focusedRouteKey = state.routes[state.index]!.key;
 
-  const [drawerStatus, setStatus] = React.useState<DrawerStatus>(defaultStatus);
+  const drawerStatus = state.drawerStatus ?? defaultStatus;
 
   const drawerActions = React.useMemo<DrawerActions>(
     () => ({
-      openDrawer: () => setStatus('open'),
-      closeDrawer: () => setStatus('closed'),
-      toggleDrawer: () => setStatus((current) => (current === 'open' ? 'closed' : 'open')),
+      openDrawer: () => navigation.dispatch(DrawerRouterActions.openDrawer()),
+      closeDrawer: () => navigation.dispatch(DrawerRouterActions.closeDrawer()),
+      toggleDrawer: () => navigation.dispatch(DrawerRouterActions.toggleDrawer()),
     }),
-    []
+    [navigation]
   );
-
-  // Navigating to another route returns the drawer to its default status. Keyed on the focused
-  // route, so it's a no-op on mount and while the drawer is opened/closed in place.
-  React.useEffect(() => {
-    setStatus(defaultStatus);
-  }, [focusedRouteKey, defaultStatus]);
 
   const {
     drawerHideStatusBarOnOpen,

@@ -1,8 +1,8 @@
 'use client';
 import { createContext, use } from 'react';
 
-import type { NavigationAction, NavigationState, PartialState } from '../react-navigation/routers';
 import type { SyncStateStore } from '../react-navigation/core/useSyncState';
+import type { NavigationAction, NavigationState, PartialState } from '../react-navigation/routers';
 import type { RouterStore } from './store';
 
 export const StoreContext = createContext<RouterStore | null>(null);
@@ -77,7 +77,6 @@ export function createReducerRegistry(): ReducerRegistry {
 
 export const ReducerRegistryContext = createContext<ReducerRegistry | null>(null);
 
-export const NavigationSyncStateContext =
-  createContext<SyncStateStore<NavigationState | PartialState<NavigationState> | undefined> | null>(
-    null
-  );
+export const NavigationSyncStateContext = createContext<SyncStateStore<
+  NavigationState | PartialState<NavigationState> | undefined
+> | null>(null);

@@ -1,17 +1,24 @@
 import type { CompleteResultState } from '../fork/getStateFromPath';
 import { matchDynamicName } from '../matchers';
-import type { PartialRoute, NavigationState, PartialState } from '../react-navigation/native';
+import type {
+  PartialRoute,
+  NavigationState,
+  PartialState,
+  Route,
+} from '../react-navigation/native';
 import { getNextRouteKeyFromState, getRouteKey } from '../react-navigation/routers/getRouteKey';
 
 /**
  * React Navigation uses params to store information about the screens, rather then create new state for each level.
  * This function traverses the action state that will not be part of state and returns a payload that can be used in action.
  */
-export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
+type AnyPartialRoute = Partial<PartialRoute<Route<string>>>;
+
+export function getPayloadFromStateRoute(_actionStateRoute: AnyPartialRoute) {
   const rootPayload: Record<string, any> = { params: {} };
   let payload = rootPayload;
   let params = payload.params;
-  let actionStateRoute: PartialRoute<any> | undefined = _actionStateRoute;
+  let actionStateRoute: AnyPartialRoute | undefined = _actionStateRoute;
 
   while (actionStateRoute) {
     Object.assign(params, { ...payload.params, ...actionStateRoute.params });
@@ -39,7 +46,7 @@ type NavigationPayload = {
   state?: NavigationState | PartialState<NavigationState>;
 };
 
-type NavigationPayloadRoute = Omit<PartialRoute<any>, 'state'> & {
+type NavigationPayloadRoute = Omit<AnyPartialRoute, 'state'> & {
   state?: NavigationState | PartialState<NavigationState>;
 };
 
@@ -68,7 +75,7 @@ export function getNavigationPayloadFromStateRoute(
 }
 
 function getRouteParams(
-  params: PartialRoute<any>['params'],
+  params: AnyPartialRoute['params'],
   extraParams?: Record<string, unknown>
 ): Record<string, unknown> | undefined {
   const result = params ? { ...(params as Record<string, unknown>) } : {};
@@ -115,7 +122,7 @@ function rekeyState(
 
 function getMergedParams(
   inheritedParams: Record<string, unknown> | undefined,
-  params: PartialRoute<any>['params']
+  params: AnyPartialRoute['params']
 ): Record<string, unknown> | undefined {
   const routeParams = getRouteParams(params);
   const shouldKeepParams = inheritedParams !== undefined || params !== undefined;
@@ -154,7 +161,7 @@ export function findDivergentState(
     | PartialState<NavigationState>
     | undefined;
   let navigationState: NavigationState | undefined = _navigationState;
-  let actionStateRoute: PartialRoute<any> | undefined;
+  let actionStateRoute: AnyPartialRoute | undefined;
   const navigationRoutes = [];
   while (actionState && navigationState) {
     // TODO(@kitten): Review invalid indexed access into undefined
@@ -168,14 +175,16 @@ export function findDivergentState(
     const childState: PartialState<NavigationState> | undefined = actionStateRoute.state;
     const nextNavigationState = stateRoute.state;
 
-    const dynamicName = matchDynamicName(actionStateRoute!.name);
+    const dynamicName =
+      actionStateRoute?.name == null ? undefined : matchDynamicName(actionStateRoute.name);
+    const actionStateRouteParams = actionStateRoute?.params as Record<string, unknown> | undefined;
 
     const didActionAndCurrentStateDiverge =
       actionStateRoute.name !== stateRoute.name ||
       !childState ||
       !nextNavigationState ||
       (dynamicName &&
-        actionStateRoute.params?.[dynamicName.name] !==
+        actionStateRouteParams?.[dynamicName.name] !==
           (stateRoute.params as Record<string, any> | undefined)?.[dynamicName.name]);
 
     if (didActionAndCurrentStateDiverge) {
