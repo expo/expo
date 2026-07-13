@@ -355,6 +355,11 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     // nor InputConfigT which is inexact and partial. Instead, we want an exact type combination of
     // the default config and Expo's config
     metroDefaultValues, expoMetroConfig);
+    // NOTE(@kitten): `useWatchman` is currently defaulting to `false`
+    // However, in standard Metro, it defaults to `true`, and we must override this to `null` to disable the slow "native find" codepath
+    // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro-file-map/src/index.js#L326
+    // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
+    metroConfig.resolver.useWatchman = null;
     return (0, withExpoSerializers_1.withExpoSerializers)(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
 /** Use to access the Expo Metro transformer path */
