@@ -153,11 +153,11 @@ PostHog's CLI authenticates with the `POSTHOG_CLI_*` environment variables that 
 
 **On EAS Build**, the `posthog-react-native/expo` config plugin uploads source maps automatically during the Android (Gradle) and iOS (Xcode) build phases, so there's no extra command to run.
 
-**On EAS Update**, over-the-air updates ship only JavaScript, so upload just their source maps after each update (native symbols are fixed at build time). [Install PostHog's CLI](https://posthog.com/docs/error-tracking/upload-source-maps/cli), then:
+**On EAS Update**, over-the-air updates ship only JavaScript, so upload just their source maps after each update (native symbols are fixed at build time). [Install PostHog's CLI](https://posthog.com/docs/error-tracking/upload-source-maps/cli), then export one platform at a time and upload its maps:
 
-<Terminal cmd={['$ eas update', '', '$ posthog-cli hermes upload --directory dist']} />
+<Terminal cmd={['$ eas update --platform ios', '', '$ posthog-cli hermes upload --directory dist']} />
 
-**dist** is the default EAS Update output directory.
+**dist** is the default EAS Update output directory. Export one platform per upload: PostHog uploads native (Hermes) source maps, so a web bundle in **dist** would not process.
 
 <Collapsible summary="Automate uploads with EAS Workflows">
 

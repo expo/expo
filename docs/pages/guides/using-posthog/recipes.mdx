@@ -112,7 +112,7 @@ jobs:
       profile: production
 ```
 
-An update ships JavaScript only, so you upload its source maps after publishing. The [`update`](/eas/workflows/pre-packaged-jobs#update) job can't run an extra step, and the source maps have to be on disk in the job that uploads them. So publish with `eas update` in a custom job and add the upload step there:
+An update ships JavaScript only, so you upload its source maps after publishing. The [`update`](/eas/workflows/pre-packaged-jobs#update) job can't run an extra step, and the source maps have to be on disk in the job that uploads them. So publish with `eas update` for one platform in a custom job and add the upload step there:
 
 ```yaml .eas/workflows/update-with-sourcemaps.yml
 name: Publish update with source maps
@@ -126,7 +126,7 @@ jobs:
     steps:
       - uses: eas/checkout
       - uses: eas/install_node_modules
-      - run: npx eas-cli@latest update --branch main --auto --non-interactive
+      - run: npx eas-cli@latest update --branch main --platform ios --auto --non-interactive
       - uses: eas/posthog_upload_sourcemaps
         with:
           directory: dist
@@ -134,7 +134,7 @@ jobs:
 
 ### How it works
 
-1. `eas update` bundles the app, publishes it, and leaves the export, source maps included, in the **dist** directory.
+1. `eas update --platform ios` bundles the app, publishes it, and leaves the export, source maps included, in the **dist** directory. Scope it to one platform: source maps are per platform, and PostHog only uploads native (Hermes) source maps, so exporting every platform at once would put a web bundle in **dist** that the upload can't process. Add a second job with `--platform android` to cover Android.
 2. [`eas/posthog_upload_sourcemaps`](/eas/workflows/syntax/#easposthog_upload_sourcemaps) uploads those maps to PostHog error tracking, so stack traces from the update symbolicate back to your original code. It uses the [PostHog Metro config](/guides/using-posthog/#source-maps), which gives each bundle the chunk IDs that match it to its source maps. See [error tracking](/guides/using-posthog/#error-tracking) for how symbolication works.
 
 ## Release a feature behind a flag
