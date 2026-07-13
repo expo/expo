@@ -292,7 +292,6 @@ it('applies the parent guard redirectTo to a route nested in a passing child gua
     { initialUrl: '/secret' }
   );
 
-  // The child guard passes, but the parent guard fails, so its redirectTo applies.
   expect(screen.getByTestId('login')).toBeVisible();
   expect(screen).toHavePathname('/login');
 });
@@ -319,7 +318,6 @@ it('does not apply the parent guard redirectTo to a route nested in a passing ch
     { initialUrl: '/secret' }
   );
 
-  // The child guard passes, but the parent guard fails, so its redirectTo applies.
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 });
