@@ -606,3 +606,57 @@ describe('headers', () => {
     });
   });
 });
+
+describe('pageHeaders', () => {
+  it('applies custom `pageHeaders` to manifest', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']), {
+      pageHeaders: [
+        { source: '/blog', headers: { 'Cache-Control': 'public, max-age=3600' } },
+        { source: '/blog/[slug]', headers: { 'X-Test': 'a' } },
+        { source: '/admin/[...rest]', headers: { 'X-Frame-Options': 'DENY' } },
+        { source: '/array-header', headers: { 'Set-Cookie': ['a=1', 'b=2'] } }
+      ],
+    });
+    expect(manifest.pageHeaders).toEqual([
+      {
+        namedRegex: '^/blog(?:/)?$',
+        headers: { 'Cache-Control': 'public, max-age=3600' },
+      },
+      {
+        namedRegex: '^/blog/(?<slug>[^/]+?)(?:/)?$',
+        headers: { 'X-Test': 'a' },
+      },
+      {
+        namedRegex: '^/admin(?:/(?<rest>.+?))?(?:/)?$',
+        headers: { 'X-Frame-Options': 'DENY' },
+      },
+      {
+        namedRegex: '^/array\\-header(?:/)?$',
+        headers: { 'Set-Cookie': ['a=1', 'b=2'] },
+      }
+    ]);
+  });
+
+  it('normalizes a trailing `/index` in `pageHeaders` sources', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']), {
+      pageHeaders: [
+        { source: '/index', headers: { 'X-Index': '1' } },
+        { source: '/blog/index', headers: { 'X-Blog': '2' } },
+      ],
+    });
+    expect(manifest.pageHeaders).toEqual([
+      { namedRegex: '^/(?:/)?$', headers: { 'X-Index': '1' } },
+      { namedRegex: '^/blog(?:/)?$', headers: { 'X-Blog': '2' } },
+    ]);
+  });
+
+  it('omits `pageHeaders` from the manifest when none are configured', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']));
+    expect(manifest.pageHeaders).toBeUndefined();
+  });
+
+  it('omits `pageHeaders` from the manifest when the list is empty', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']), { pageHeaders: [] });
+    expect(manifest.pageHeaders).toBeUndefined();
+  });
+});

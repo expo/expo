@@ -18,6 +18,7 @@ function getParams() {
     platform,
     mode,
     resizingFactor,
+    captureMode,
   };
   /* eslint-enable no-undef */
 }

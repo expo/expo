@@ -8,6 +8,7 @@ on:
       - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
+      - .github/actions/setup-maestro/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
@@ -24,6 +25,7 @@ on:
       - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
+      - .github/actions/setup-maestro/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
@@ -67,6 +69,7 @@ jobs:
           common-paths: >-
             .github/workflows/test-suite.yml,
             .github/actions/use-android-emulator/action.yml,
+            .github/actions/setup-maestro/action.yml,
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/**",
@@ -117,6 +120,7 @@ jobs:
           common-paths: >-
             .github/workflows/test-suite.yml,
             .github/actions/use-android-emulator/action.yml,
+            .github/actions/setup-maestro/action.yml,
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/expo-modules-core/**",
@@ -268,9 +272,9 @@ jobs:
           xcrun simctl shutdown all
           sudo xcodebuild -runFirstLaunch
       - name: 🍺 Install Maestro
-        run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
-          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+        uses: ./.github/actions/setup-maestro
+        with:
+          version: 2.6.1
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
         with:
@@ -395,9 +399,9 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
-      - name: 🧪 Test image comparison utilities
-        run: bun test
-        working-directory: apps/bare-expo/e2e/image-comparison
+      - name: 🧪 Test e2e utilities
+        run: bun test e2e/image-comparison scripts/lib
+        working-directory: apps/bare-expo
       - name: ⚛️ Display React Native config
         run: pnpm expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
@@ -465,12 +469,12 @@ jobs:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk/release
       - name: 🍺 Install Maestro
-        run: |
+        uses: ./.github/actions/setup-maestro
+        with:
           # Pinned to 2.4.0 — 2.5.0+ replaces TCP port forwarding with a direct ADB
           # socket gRPC connection that fails (UNAVAILABLE / tcp:7001 closed) against
           # the Android emulator in CI.
-          curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.4.0 bash
-          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+          version: 2.4.0
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
         with:

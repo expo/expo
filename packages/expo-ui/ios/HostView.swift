@@ -49,6 +49,8 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   var body: some View {
     let layoutDirection = props.layoutDirection.toLayoutDirection()
     let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
+    let fillHorizontal = !props.useViewportSizeMeasurement && !props.matchContentsHorizontal
+    let fillVertical = !props.useViewportSizeMeasurement && !props.matchContentsVertical
 
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       // swiftlint:disable:next identifier_name
@@ -68,6 +70,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         globalEventDispatcher: props.globalEventDispatcher
       )
       .modifier(GeometryChangeModifier(props: props))
+      .modifier(FillAlignmentModifier(alignment: alignment, fillHorizontal: fillHorizontal, fillVertical: fillVertical))
     } else {
       ZStack(alignment: alignment) {
         Children()
@@ -82,6 +85,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         globalEventDispatcher: props.globalEventDispatcher
       )
       .modifier(GeometryChangeModifier(props: props))
+      .modifier(FillAlignmentModifier(alignment: alignment, fillHorizontal: fillHorizontal, fillVertical: fillVertical))
     }
   }
 
@@ -199,6 +203,26 @@ private struct GeometryChangeModifier: ViewModifier {
             .onChange(of: geometry.size) { dispatchOnLayoutContent($0) }
         }
       }
+    }
+  }
+}
+
+private struct FillAlignmentModifier: ViewModifier {
+  let alignment: Alignment
+  let fillHorizontal: Bool
+  let fillVertical: Bool
+
+  func body(content: Content) -> some View {
+    if fillHorizontal || fillVertical {
+      content.frame(
+        maxWidth: fillHorizontal ? .infinity : nil,
+        maxHeight: fillVertical ? .infinity : nil,
+        alignment: alignment
+      )
+    } else {
+      // Leave the view untouched (e.g. useViewportSizeMeasurement / full matchContents) so the
+      // layout proposal reaches the content's own layout unmodified.
+      content
     }
   }
 }
