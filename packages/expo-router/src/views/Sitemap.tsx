@@ -54,11 +54,6 @@ export function getNavOptions(): NativeStackNavigationOptions {
   };
 }
 
-/**
- * The built-in route listing screen. It renders every route in the app so you can navigate
- * to any of them during development. Expo Router mounts it automatically at `/_sitemap`;
- * you do not render it yourself.
- */
 export const Sitemap: React.FC = () => {
   // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L38
   // we need to ensure that the Sitemap component is not rendered on the server.

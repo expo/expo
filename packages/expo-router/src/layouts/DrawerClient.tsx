@@ -9,8 +9,7 @@ const DrawerNavigator = createDrawerNavigator().Navigator;
 
 /**
  * A layout that renders its child routes inside a side drawer navigator. Use it in a `_layout`
- * file and declare each drawer entry with a nested `Drawer.Screen`. Open the drawer imperatively
- * with `navigation.openDrawer()` from `useNavigation`, or swipe from the screen edge.
+ * file and declare each drawer entry with a nested `Drawer.Screen`.
  *
  * @example
  * ```tsx app/_layout.tsx

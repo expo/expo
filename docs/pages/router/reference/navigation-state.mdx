@@ -25,7 +25,7 @@ export default function Route() {
 
 ## Shape of the state object
 
-The hook returns a `NavigationState` object with the following fields:
+The hook returns a `NavigationState` object. The exact shape is defined by the `NavigationState` type of your installed `expo-router` version — see [`useRootNavigationState`](/versions/latest/sdk/router/#userootnavigationstate) in the versioned API reference. It contains the following fields:
 
 - `key` — a unique string that identifies this navigation state.
 - `index` — the index of the currently focused route in the `routes` array.

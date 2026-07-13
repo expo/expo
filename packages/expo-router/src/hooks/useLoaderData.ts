@@ -16,10 +16,7 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
   T extends LoaderFunction<infer R> ? R : unknown;
 
 /**
- * Returns the data returned by the route's `loader` function. The `loader` runs on the server
- * during rendering, and its result is serialized and sent to the client, so this hook returns
- * the same data on the server and after the client hydrates without re-running the loader. Pass
- * `typeof loader` as the type argument to infer the return type from your `loader`.
+ * Returns the result of the `loader` function for the calling route.
  *
  * @example
  * ```tsx app/profile/[user].tsx

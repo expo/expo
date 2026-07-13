@@ -30,7 +30,7 @@ We recommend making the following modifications to your codebase before beginnin
 
 ### Refactor search parameters
 
-Refactor screens to use serializable top-level query parameters. In React Navigation, route params are the object you pass when navigating to a screen. We recommend restricting these to serializable values in React Navigation as well.
+Refactor screens to [use serializable top-level query parameters](https://reactnavigation.org/docs/params/#what-should-be-in-params). We recommend this in React Navigation as well.
 
 In Expo Router, search parameters can only serialize top-level values such as `number`, `boolean`, and `string`. React Navigation doesn't have the same restrictions, so users can sometimes pass invalid parameters like Functions, Objects, Maps, and so on.
 
@@ -205,13 +205,13 @@ Similarly, migrate from the `route` prop to the [`useLocalSearchParams`](/versio
 
 <DiffBlock source="/static/diffs/router/migrate-from-react-navigation/use-local-search-params.diff" />
 
-React Navigation's `navigation.navigate` moves to a screen by its name. To access the equivalent `navigation` object in Expo Router, import it from the [`useNavigation`](/versions/latest/sdk/router/#usenavigation) hook.
+To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-object/#navigate), import the `navigation` prop from [`useNavigation`](/versions/latest/sdk/router/#usenavigation) hook.
 
 <DiffBlock source="/static/diffs/router/migrate-from-react-navigation/use-navigation-hook.diff" />
 
 ### Migrate the Link component
 
-React Navigation and Expo Router both provide Link components. However, Expo's Link component uses an `href` URL instead of React Navigation's `to` prop, which takes a screen name.
+React Navigation and Expo Router both provide Link components. However, Expo's Link component uses `href` instead of [`to`](https://reactnavigation.org/docs/use-link-props/#to).
 
 ```jsx
 // React Navigation
@@ -233,7 +233,7 @@ When you use groups or shared routes, you can navigate to specific tabs by using
 
 ### Migrate screen tracking events
 
-You may have screen tracking set up with React Navigation's `onReady` and `onStateChange` callbacks on the navigation container. Update it according to the [Expo Router screen tracking guide](/router/reference/screen-tracking).
+You may have your screen tracking setup according to our [React Navigation screen tracking guide](https://reactnavigation.org/docs/screen-tracking/), update it according to the [Expo Router screen tracking guide](/router/reference/screen-tracking).
 
 ### Use platform-specific components for screens
 
@@ -241,7 +241,7 @@ Refer to the [platform-specific modules](/router/advanced/platform-specific-modu
 
 ### Replace the `NavigationContainer`
 
-The global React Navigation `<NavigationContainer />` — the root component that wraps a React Navigation app and holds its navigation state — is completely managed in Expo Router. Expo Router provides systems for achieving the same functionality as the `NavigationContainer` without needing to use it directly.
+The global React Navigation [`<NavigationContainer />`](https://reactnavigation.org/docs/navigation-container/) is completely managed in Expo Router. Expo Router provides systems for achieving the same functionality as the `NavigationContainer` without needing to use it directly.
 
 <Collapsible summary="API substitutions">
 
@@ -310,30 +310,47 @@ Avoid using this pattern in favor of deep linking (for example, a user opens you
 Use the [`usePathname()`](/versions/latest/sdk/router/#usepathname), [`useSegments()`](/versions/latest/sdk/router/#usesegments), and [`useGlobalSearchParams()`](/versions/latest/sdk/router/#useglobalsearchparams) hooks to identify the current route state. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
 
 - If you're attempting to track screen changes, follow the [Screen Tracking guide](/router/reference/screen-tracking/).
-- `onStateChange` is a navigation container callback that fires on every navigation state change. React Navigation recommends avoiding it.
+- React Navigation recommends avoiding [`onStateChange`](https://reactnavigation.org/docs/navigation-container/#onstatechange).
 
 #### `onReady`
 
-In React Navigation, `onReady` is a navigation container callback that fires once the navigation tree is mounted. It is most often used to determine when the splash screen should hide or when to track screens using analytics. Expo Router has special handling for both of these use cases. Assume the navigation is always ready for navigation events in the Expo Router.
+In React Navigation, [`onReady`](https://reactnavigation.org/docs/navigation-container/#onready) is most often used to determine when the splash screen should hide or when to track screens using analytics. Expo Router has special handling for both of these use cases. Assume the navigation is always ready for navigation events in the Expo Router.
 
 - See the [Screen Tracking guide](/router/reference/screen-tracking/) for info on migrating analytics from React Navigation.
 - See the [Splash Screen feature](/develop/user-interface/splash-screen-and-app-icon/) for info on handling the splash screen.
 
 #### `onUnhandledAction`
 
-Actions are always handled in Expo Router. React Navigation's `onUnhandledAction` is a navigation container callback for actions that no navigator handled. Use [dynamic routes](/router/basics/notation/#square-brackets) and [404 screens](/router/error-handling/#unmatched-routes) instead.
+Actions are always handled in Expo Router. Use [dynamic routes](/router/basics/notation/#square-brackets) and [404 screens](/router/error-handling/#unmatched-routes) in favor of [`onUnhandledAction`](https://reactnavigation.org/docs/navigation-container/#onunhandledaction).
 
 #### `linking`
 
-React Navigation's `linking` prop configures how URLs map to navigation state. In Expo Router, it is automatically constructed based on the files in the **app** directory.
+The [`linking`](https://reactnavigation.org/docs/navigation-container/#linking) prop is automatically constructed based on the files to the **app** directory.
 
 #### `fallback`
 
-React Navigation's `fallback` prop renders an element while the navigation tree is loading. It is automatically handled by Expo Router. Learn more in the [Splash Screen](/versions/latest/sdk/splash-screen/) reference.
+The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router. Learn more in the [Splash Screen](/versions/latest/sdk/splash-screen/) reference.
 
 #### `theme`
 
-In React Navigation, you set the theme for the entire app using the `theme` prop on `<NavigationContainer />`. Expo Router manages the root container for you, so instead you set the theme using the `ThemeProvider` directly. See the [themes reference](/router/reference/themes/) for details.
+In React Navigation, you set the theme for the entire app using the [`<NavigationContainer />`](https://reactnavigation.org/docs/navigation-container/#theme) component. Expo Router manages the root container for you, so instead you should set the theme using the `ThemeProvider` directly.
+
+```tsx src/app/_layout.tsx
+import { ThemeProvider, DarkTheme, DefaultTheme, useTheme } from 'expo-router/react-navigation';
+import { Slot } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    /* @info All layouts inside this provider will use the dark theme. */
+    <ThemeProvider value={DarkTheme}>
+      /* @end */
+      <Slot />
+    </ThemeProvider>
+  );
+}
+```
+
+You can use this technique at any layer of the app to set the theme for a specific layout. The current theme can be accessed with the `useTheme` hook from `expo-router/react-navigation`.
 
 #### `children`
 
@@ -341,7 +358,7 @@ The `children` prop is automatically populated based on the files in the **app**
 
 #### `independent`
 
-React Navigation's `independent` prop lets you nest a second, self-contained navigation container. Expo Router does not support independent containers, because the router is responsible for managing the single `<NavigationContainer />`. Any additional containers will not be automatically managed by Expo Router.
+Expo Router does not support [`independent`](https://reactnavigation.org/docs/navigation-container/#independent) containers. This is because the router is responsible for managing the single `<NavigationContainer />`. Any additional containers will not be automatically managed by Expo Router.
 
 #### `documentTitle`
 
@@ -365,7 +382,7 @@ import { createCustomNavigator } from './my-navigator';
 export const CustomNavigator = withLayoutContext(createCustomNavigator().Navigator);
 ```
 
-To rewrite, use the `Navigator` component, which wraps the `useNavigationBuilder` hook — the React Navigation hook that builds a navigator's state and descriptors from a router. See the [custom navigators guide](/router/advanced/custom-navigators/) for a full walkthrough.
+To rewrite, use the `Navigator` component, which wraps the [`useNavigationBuilder`](https://reactnavigation.org/docs/custom-navigators#usenavigationbuilder) hook from React Navigation.
 
 The return value of `useNavigationBuilder` can be accessed with the `Navigator.useContext()` hook from inside the `<Navigator />` component. Properties can be passed to `useNavigationBuilder` using the props of the `<Navigator />` component, this includes `initialRouteName`, `screenOptions`, `router`.
 
@@ -421,7 +438,7 @@ If you're observing the navigation state directly, migrate to the [`usePathname`
 
 ### Pass params to nested screens
 
-In React Navigation, you pass params to a screen in a nested navigator by navigating to the parent and passing a nested `screen` and `params` object. In Expo Router, use a qualified href:
+Instead of using the [nested screen navigation events](https://reactnavigation.org/docs/params/#passing-params-to-nested-navigators), use a qualified href:
 
 ```js
 // React Navigation
@@ -440,7 +457,7 @@ In React Navigation, you can use the `initialRouteName` property of the linking 
 
 ### Reset navigation state
 
-You can use the `reset` action from React Navigation, which replaces the entire navigation state with a new one, to reset the navigation state. It is dispatched using the [`useNavigation`](/versions/latest/sdk/router/#usenavigation) hook from Expo Router to access the `navigation` prop.
+You can use the [`reset`](https://reactnavigation.org/docs/navigation-actions/#reset) action from the React Navigation library to reset the navigation state. It is dispatched using the [`useNavigation`](/versions/latest/sdk/router/#usenavigation) hook from Expo Router to access the `navigation` prop.
 
 In the below example, the `navigation` prop is accessible from the `useNavigation` hook and the `CommonActions.reset` action from `expo-router/react-navigation`. The object specified in the `reset` action replaces the existing navigation state with the new one.
 
@@ -498,7 +515,7 @@ You can use this technique at any layer of the app to set the theme for a specif
 
 ### React Navigation Elements
 
-The React Navigation Elements library provides a set of UI elements and helpers that can be used to build a navigation UI, such as headers and back buttons. These components are designed to be composable and customizable. You can reuse the default functionality from the library or build your navigator's UI on top of it.
+The [React Navigation Elements](https://reactnavigation.org/docs/elements/) library provides a set of UI elements and helpers that can be used to build a navigation UI. These components are designed to be composable and customizable. You can reuse the default functionality from the library or build your navigator's UI on top of it.
 
 In SDK 56 and later, this library is re-exported from `expo-router/react-navigation` and there is no separate package to install:
 
@@ -506,4 +523,4 @@ In SDK 56 and later, this library is re-exported from `expo-router/react-navigat
 import { Header, HeaderBackButton } from 'expo-router/react-navigation';
 ```
 
-These components, such as `Header` and `HeaderBackButton`, are re-exported from `expo-router/react-navigation`, so you import them from there rather than a separate package.
+To learn more about the components and utilities the library provides, see [Elements library](https://reactnavigation.org/docs/elements/) documentation.

@@ -45,13 +45,13 @@ export type DrawerNavigationOptions = HeaderOptions & {
   title?: string;
 
   /**
-   * Whether the screen is rendered the first time it's accessed rather than on initial render.
-   * Defaults to `true`.
+   * Whether this screens should render the first time it's accessed. Defaults to `true`.
+   * Set it to `false` if you want to render the screen on initial render.
    */
   lazy?: boolean;
 
   /**
-   * Function that returns a React element to render as the header.
+   * Function that returns a React Element to display as a header.
    */
   header?: (props: DrawerHeaderProps) => React.ReactNode;
 
@@ -62,16 +62,14 @@ export type DrawerNavigationOptions = HeaderOptions & {
   headerShown?: boolean;
 
   /**
-   * Label to show for this screen in the drawer. Pass a string, or a function that receives
-   * `{ color, focused }` and returns a React element.
-   *
-   * When undefined, the screen `title` is used.
+   * Title string of a screen displayed in the drawer
+   * or a function that given { focused: boolean, color: ColorValue } returns a React.Node
+   * When undefined, scene title is used.
    */
   drawerLabel?: string | ((props: { color: ColorValue; focused: boolean }) => React.ReactNode);
 
   /**
-   * Function that receives `{ color, size, focused }` and returns a React element to render as the
-   * drawer item icon.
+   * A function that given { focused: boolean, color: ColorValue } returns a React.Node to display an icon the drawer.
    */
   drawerIcon?: (props: { color: ColorValue; size: number; focused: boolean }) => React.ReactNode;
 
@@ -143,18 +141,12 @@ export type DrawerNavigationOptions = HeaderOptions & {
   drawerType?: 'front' | 'back' | 'slide' | 'permanent';
 
   /**
-   * Whether the status bar should be hidden when the drawer is pulled or opens.
-   *
-   * @platform android
-   * @platform ios
+   * Whether the statusbar should be hidden when the drawer is pulled or opens,
    */
   drawerHideStatusBarOnOpen?: boolean;
 
   /**
-   * Animation of the status bar when hiding it. Use in combination with `drawerHideStatusBarOnOpen`.
-   *
-   * @platform android
-   * @platform ios
+   * Animation of the statusbar when hiding it. use in combination with `drawerHideStatusBarOnOpen`.
    */
   drawerStatusBarAnimation?: 'slide' | 'none' | 'fade';
 
