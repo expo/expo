@@ -1,9 +1,13 @@
 ---
 title: Using PostHog
+sidebar_title: Overview
 description: A guide on installing and configuring PostHog for product analytics, session replay, and error tracking.
 platforms: ['android', 'ios']
 ---
 
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
@@ -153,37 +157,18 @@ PostHog's CLI authenticates with the `POSTHOG_CLI_*` environment variables that 
 
 <Terminal cmd={['$ eas update', '', '$ posthog-cli hermes upload --directory dist']} />
 
-`dist` is the default EAS Update output directory.
+**dist** is the default EAS Update output directory.
 
 <Collapsible summary="Automate uploads with EAS Workflows">
 
-EAS Build uploads source maps as part of the native build, so a build workflow needs nothing extra. For updates, add a job that re-exports and uploads after publishing:
+EAS Build uploads source maps as part of the native build, so a build workflow needs nothing extra. For updates, publish with `eas update`, then run the [`eas/posthog_upload_sourcemaps`](/eas/workflows/syntax/#easposthog_upload_sourcemaps) function on the **dist** directory the update exported.
 
-```yaml .eas/workflows/publish-update.yml
-name: Publish update
-on:
-  push:
-    branches: ['main']
-jobs:
-  publish_update:
-    name: Publish update
-    type: update
-    params:
-      channel: production
-  upload_update_sourcemaps:
-    name: Upload OTA source maps to PostHog
-    needs: [publish_update]
-    environment: production
-    steps:
-      - uses: eas/checkout
-      - uses: eas/install_node_modules
-      - name: Export JS bundle and source maps
-        run: npx expo export --dump-sourcemap --output-dir dist
-      - name: Upload source maps to PostHog
-        run: npx --yes @posthog/cli@latest hermes upload --directory dist
-```
-
-`environment: production` gives the job the `POSTHOG_CLI_*` variables that `connect` stored. The chunk IDs injected by `getPostHogExpoConfig` let the re-exported source maps match the bundle the update published. For external CI, set the `POSTHOG_CLI_*` variables yourself.
+<BoxLink
+  title="Upload source maps for error tracking"
+  description="A complete workflow that publishes an update and uploads the source maps from the same export."
+  href="/guides/using-posthog/recipes#upload-source-maps-for-error-tracking"
+  Icon={Dataflow03Icon}
+/>
 
 </Collapsible>
 
@@ -230,6 +215,17 @@ Render `<ReleaseTagger />` inside `<PostHogProvider>`. Every subsequent `capture
 ## Feature flags
 
 Once the provider is set up, feature flags work with no extra configuration. See [PostHog's feature flags for React Native](https://posthog.com/docs/feature-flags/installation/react-native) and [bootstrapping](https://posthog.com/docs/feature-flags/bootstrapping) to avoid a network round-trip on app start.
+
+## Usage with EAS Workflows
+
+[EAS Workflows](/eas/workflows/get-started/) can talk to PostHog from your CI pipeline. You can send events, create annotations, roll out feature flags, gate a rollout on a live metric, and upload source maps as workflow steps. These steps automatically read the `EXPO_PUBLIC_POSTHOG_*` and `POSTHOG_CLI_*` environment variables that `connect` sets. For the full input reference of each step, see [PostHog functions in the EAS Workflows syntax reference](/eas/workflows/syntax/#easposthog_capture_event).
+
+<BoxLink
+  title="Progressive delivery with PostHog"
+  description="Go from marking a deploy to gated rollouts, automatic kill switches, and approval-gated releases, with a recipe reference for quick lookup."
+  href="/guides/using-posthog/recipes"
+  Icon={Dataflow03Icon}
+/>
 
 ## Manage the integration
 
