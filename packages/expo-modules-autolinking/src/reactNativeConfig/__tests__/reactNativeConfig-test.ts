@@ -516,13 +516,19 @@ describe(resolveReactNativeModule, () => {
   });
 
   itWithMemoize(
-    'should preserve library config when project config sets platform to null (deep merge)',
+    'should honor project config null platform overrides when library config has platform data',
     async () => {
+      const androidResolver = require('../androidResolver');
+      const mockPlatformResolverAndroid = jest.spyOn(
+        androidResolver,
+        'resolveDependencyConfigImplAndroidAsync'
+      );
+      mockPlatformResolverAndroid.mockResolvedValueOnce(null);
       const projectConfig: RNConfigReactNativeProjectConfig = {
         dependencies: {
           'react-native-test': {
             platforms: {
-              ios: null,
+              android: null,
             },
           },
         },
@@ -530,9 +536,9 @@ describe(resolveReactNativeModule, () => {
       const libraryConfig: RNConfigReactNativeLibraryConfig = {
         dependency: {
           platforms: {
-            ios: {
-              configurations: ['Debug'],
-              scriptPhases: [{ name: 'test', path: './test.js' }],
+            android: {
+              sourceDir: './android',
+              cmakeListsPath: './src/main/jni/CMakeLists.txt',
             },
           },
         },
@@ -550,20 +556,16 @@ describe(resolveReactNativeModule, () => {
           depth: 0,
         },
         projectConfig,
-        'ios',
+        'android',
         new Set()
       );
 
-      // Deep merge preserves the target object when the source is null,
-      // so the library's ios config is kept.
-      expect(mockPlatformResolverIos).toHaveBeenCalledWith(
-        expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
-        {
-          configurations: ['Debug'],
-          scriptPhases: [{ name: 'test', path: './test.js' }],
-        },
+      expect(mockPlatformResolverAndroid).toHaveBeenCalledWith(
+        '/app/node_modules/react-native-test',
+        null,
         undefined
       );
+      mockPlatformResolverAndroid.mockRestore();
     }
   );
 
