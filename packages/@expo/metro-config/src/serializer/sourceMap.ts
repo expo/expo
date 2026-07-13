@@ -346,8 +346,10 @@ function repairInvalidNegativeIndices(map: ComposableSourceMap): ComposableSourc
   for (const line of decoded) {
     for (let i = 0; i < line.length; i++) {
       const segment = line[i];
-      // If we have a `[genCol, srcIdx, srcLine, ...]` segment, check if `srcLine` is negative
-      if (segment != null && segment.length > 1 && segment[2]! < 0) {
+      // A `[genCol, srcIdx, srcLine, ...]` segment crashes `trace-mapping`
+      // when either the source index or the source line is negative
+      // (Hermes' no-location sentinel)
+      if (segment != null && segment.length > 1 && (segment[1]! < 0 || segment[2]! < 0)) {
         line[i] = [segment[0]!];
         changed = true;
       }
