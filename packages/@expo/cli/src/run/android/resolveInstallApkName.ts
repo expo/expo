@@ -44,7 +44,10 @@ function resolveApkFromOutputMetadata(
         e?.filters?.some((f) => f.filterType === 'ABI' && f.value === cpu)
       );
       const outputFile = match?.outputFile;
-      if (typeof outputFile === 'string' && fs.existsSync(path.join(apkVariantDirectory, outputFile))) {
+      if (
+        typeof outputFile === 'string' &&
+        fs.existsSync(path.join(apkVariantDirectory, outputFile))
+      ) {
         debug('Resolved ABI-split APK from output-metadata.json:', outputFile);
         return outputFile;
       }
@@ -54,7 +57,10 @@ function resolveApkFromOutputMetadata(
 
   if (elements.length === 1) {
     const outputFile = elements[0]?.outputFile;
-    if (typeof outputFile === 'string' && fs.existsSync(path.join(apkVariantDirectory, outputFile))) {
+    if (
+      typeof outputFile === 'string' &&
+      fs.existsSync(path.join(apkVariantDirectory, outputFile))
+    ) {
       debug('Resolved APK from output-metadata.json:', outputFile);
       return outputFile;
     }
