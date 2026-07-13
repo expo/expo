@@ -30,6 +30,7 @@ import {
 } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import assert from 'node:assert';
 
+import { currentFingerprint, type CacheVaryDim } from '../cache-vary/ambient';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import {
   countLinesAndTerminateSourceMap,
@@ -81,6 +82,7 @@ interface JSFile extends BaseFile {
   readonly loaderReference?: string;
   readonly hasCjsExports?: boolean;
   readonly performConstantFolding?: boolean;
+  readonly cacheVary?: readonly CacheVaryDim[];
 }
 
 interface JSONFile extends BaseFile {
@@ -586,6 +588,14 @@ async function transformJS(
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
         loaderReference: file.loaderReference,
+        expoCacheVary: file.cacheVary?.length
+          ? await Promise.all(
+              file.cacheVary.map(async (d) => ({
+                ...d,
+                fp: (await currentFingerprint(d.scheme, d.name))!,
+              }))
+            )
+          : undefined,
         ...(possibleReconcile
           ? {
               ast: wrappedAst,
@@ -702,6 +712,7 @@ async function transformJSWithBabel(
     expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
     loaderReference: transformResult.metadata?.loaderReference,
     performConstantFolding: transformResult.metadata?.performConstantFolding,
+    cacheVary: transformResult.metadata?.cacheVary,
   };
 
   return await transformJS(jsFile, context);
@@ -839,7 +850,8 @@ export async function transform(
 
 // NOTE: Increment if cache becomes incompatible (original value would be '')
 // 1. Added new packed source map format
-const CACHE_VERSION = '1';
+// 2. `expoCacheVary` is embedded in cached transform results
+const CACHE_VERSION = '2';
 
 export function getCacheKey(
   config: JsTransformerConfig,
