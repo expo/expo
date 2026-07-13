@@ -12,10 +12,13 @@ final class ProjectSourceSession: ObservableObject {
   static private(set) var current: ProjectSourceSession?
 
   static func begin() {
+    current?.invalidate()
+    PatchedBundleRegistry.clear()
     current = ProjectSourceSession()
   }
 
   static func end() {
+    current?.invalidate()
     current = nil
     PatchedBundleRegistry.clear()
   }
@@ -83,7 +86,9 @@ final class ProjectSourceSession: ObservableObject {
     if let channel = SourceProviderSelector.snackParams(from: manifestURL).channel {
       editApplier = SnackEditApplier(channel: channel)
     } else if SourceProviderSelector.isPublishedBundle(
-      manifestURL: manifestURL, bundleURL: DevMenuManager.shared.currentBundleURL) {
+      manifestURL: manifestURL, bundleURL: DevMenuManager.shared.currentBundleURL),
+      let bundleData = EXKernel.sharedInstance().visibleApp.appLoader.bundle as Data?,
+      BundleSourceMapProvider.supportsPublishedEditing(bundle: bundleData) {
       editApplier = PublishedEditApplier(
         overlay: overlay,
         environment: .init(
@@ -122,5 +127,10 @@ final class ProjectSourceSession: ObservableObject {
   func revertAllEdits() {
     overlay.revertAll()
     currentEditApplier()?.revertAll()
+  }
+
+  private func invalidate() {
+    loadTask?.cancel()
+    editApplier?.invalidate()
   }
 }

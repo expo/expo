@@ -57,10 +57,10 @@ final class PublishedBundleApplier: @unchecked Sendable {
     index.moduleIdByDisplayPath[displayPath] != nil
   }
 
-  /// Regenerates the patched bundle from the full set of session edits and
-  /// registers it for the next reload. Throws without side effects when any
-  /// edit can't be applied.
-  func apply(edits: [SourceEdit], scopeKey: String) throws -> URL {
+  /// Regenerates the patched bundle from the full set of session edits. The
+  /// caller registers the returned file only after confirming its session is
+  /// still current. Throws without changing the active bundle.
+  func prepare(edits: [SourceEdit]) throws -> URL {
     var factories: [(moduleId: Int, factory: String)] = []
     for edit in edits {
       factories.append(try makeFactory(for: edit))
@@ -72,7 +72,6 @@ final class PublishedBundleApplier: @unchecked Sendable {
     let url = FileManager.default.temporaryDirectory
       .appendingPathComponent("expo-source-explorer-\(UUID().uuidString).js")
     try patched.write(to: url, options: .atomic)
-    PatchedBundleRegistry.setPatchedBundleURL(url, forScopeKey: scopeKey)
     return url
   }
 

@@ -33,4 +33,12 @@ final class PatchedBundleRegistryTests: XCTestCase {
     XCTAssertFalse(FileManager.default.fileExists(atPath: url.path))
     XCTAssertNil(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "scope"))
   }
+
+  func testPatchedBundleDataReadsRegisteredFile() throws {
+    let url = try makeTempFile()
+    PatchedBundleRegistry.setPatchedBundleURL(url, forScopeKey: "scope")
+
+    XCTAssertEqual(PatchedBundleRegistry.patchedBundleData(forScopeKey: "scope"), Data("x".utf8))
+    XCTAssertNil(PatchedBundleRegistry.patchedBundleData(forScopeKey: "other"))
+  }
 }

@@ -18,6 +18,15 @@ public final class PatchedBundleRegistry: NSObject {
     return patchedBundleURLsByScopeKey[scopeKey]
   }
 
+  /// Reads while holding the registry lock so a concurrent replacement can't
+  /// delete the file between URL lookup and the loader's disk read.
+  @objc public static func patchedBundleData(forScopeKey scopeKey: String) -> Data? {
+    lock.lock()
+    defer { lock.unlock() }
+    guard let url = patchedBundleURLsByScopeKey[scopeKey] else { return nil }
+    return try? Data(contentsOf: url)
+  }
+
   static func setPatchedBundleURL(_ url: URL, forScopeKey scopeKey: String) {
     lock.lock()
     let previous = patchedBundleURLsByScopeKey[scopeKey]

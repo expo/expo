@@ -11,6 +11,7 @@
 namespace jsi = facebook::jsi;
 
 static NSString *const EXOnDeviceTransformerErrorDomain = @"EXOnDeviceTransformer";
+static const void *EXOnDeviceTransformerQueueKey = &EXOnDeviceTransformerQueueKey;
 
 typedef NS_ENUM(NSInteger, EXOnDeviceTransformerErrorCode) {
   EXOnDeviceTransformerErrorPayloadMissing = 1,
@@ -71,6 +72,7 @@ static NSError *EXMakeError(EXOnDeviceTransformerErrorCode code, NSString *messa
   }
 
   _queue = dispatch_queue_create("host.exp.exponent.OnDeviceTransformer", DISPATCH_QUEUE_SERIAL);
+  dispatch_queue_set_specific(_queue, EXOnDeviceTransformerQueueKey, &_runtime, NULL);
 
   __block NSError *loadError = nil;
   dispatch_sync(_queue, ^{
@@ -114,6 +116,23 @@ static NSError *EXMakeError(EXOnDeviceTransformerErrorCode code, NSString *messa
     *error = transformError;
   }
   return result;
+}
+
+- (void)dealloc
+{
+  if (_runtime && _queue) {
+    // Capture the ivar address rather than self: retaining an object while it
+    // is deallocating is invalid, but the runtime must still be destroyed on
+    // the same serialized executor used for all of its calls.
+    std::shared_ptr<jsi::Runtime> *runtime = &_runtime;
+    if (dispatch_get_specific(EXOnDeviceTransformerQueueKey) == runtime) {
+      runtime->reset();
+    } else {
+      dispatch_sync(_queue, ^{
+        runtime->reset();
+      });
+    }
+  }
 }
 
 // Must run on _queue (jsi::Runtime is single-threaded).

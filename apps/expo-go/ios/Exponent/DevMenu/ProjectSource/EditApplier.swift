@@ -10,6 +10,11 @@ protocol EditApplier: AnyObject {
   var canEdit: Bool { get }
   func submit(path: String, original: String, previous: String, newContents: String) -> Bool
   func revertAll()
+  func invalidate()
+}
+
+extension EditApplier {
+  func invalidate() {}
 }
 
 @MainActor
@@ -50,6 +55,8 @@ final class PublishedEditApplier: EditApplier {
   private let overlay: EditOverlay
   private let environment: Environment
   private var applierTask: Task<PublishedBundleApplier, Error>?
+  private var applyTask: Task<Void, Never>?
+  private var generation = 0
 
   init(overlay: EditOverlay, environment: Environment) {
     self.overlay = overlay
@@ -67,17 +74,30 @@ final class PublishedEditApplier: EditApplier {
     applyAllEdits()
   }
 
+  func invalidate() {
+    generation += 1
+    applyTask?.cancel()
+    applyTask = nil
+    applierTask?.cancel()
+    applierTask = nil
+  }
+
   /// Rebuilds the patched bundle from the overlay's full edit set. An empty
   /// set drops the patch and relaunches the pristine bundle.
   private func applyAllEdits() {
-    guard let scopeKey = environment.scopeKey() else { return }
     environment.onError(nil)
+    guard let scopeKey = environment.scopeKey() else { return }
+    generation += 1
+    let requestGeneration = generation
+    applyTask?.cancel()
+
     let edits = overlay.edits.map {
       PublishedBundleApplier.SourceEdit(
         displayPath: $0.key, contents: $0.value.current, originalContents: $0.value.original)
     }
 
     guard !edits.isEmpty else {
+      applyTask = nil
       PatchedBundleRegistry.clear()
       environment.reload()
       return
@@ -85,14 +105,36 @@ final class PublishedEditApplier: EditApplier {
 
     let applierTask = ensureApplier()
     let environment = self.environment
-    Task.detached(priority: .userInitiated) {
+    applyTask = Task.detached(priority: .userInitiated) { [weak self] in
       do {
         let applier = try await applierTask.value
-        _ = try applier.apply(edits: edits, scopeKey: scopeKey)
-        await MainActor.run { environment.reload() }
+        try Task.checkCancellation()
+        let url = try applier.prepare(edits: edits)
+        guard !Task.isCancelled else {
+          try? FileManager.default.removeItem(at: url)
+          return
+        }
+        await MainActor.run {
+          guard let self,
+                self.generation == requestGeneration,
+                environment.scopeKey() == scopeKey else {
+            try? FileManager.default.removeItem(at: url)
+            return
+          }
+          PatchedBundleRegistry.setPatchedBundleURL(url, forScopeKey: scopeKey)
+          self.applyTask = nil
+          environment.reload()
+        }
+      } catch is CancellationError {
+        return
       } catch {
         let message = error.localizedDescription
-        await MainActor.run { environment.onError(message) }
+        await MainActor.run {
+          guard let self, self.generation == requestGeneration else { return }
+          self.applyTask = nil
+          self.applierTask = nil
+          environment.onError(message)
+        }
       }
     }
   }

@@ -119,6 +119,11 @@ struct MetroSourceProvider: SourceProvider {
 // MARK: - Inline sourcemap from the loaded bundle
 
 struct BundleSourceMapProvider: SourceProvider {
+  private static let inlineSourceMapMarkers = [
+    "//# sourceMappingURL=data:application/json;charset=utf-8;base64,",
+    "//# sourceMappingURL=data:application/json;base64,"
+  ]
+
   /// Injected so the provider stays testable; production reads the kernel's
   /// loaded bundle on the main actor.
   let loadBundleData: @Sendable () async -> Data?
@@ -139,12 +144,7 @@ struct BundleSourceMapProvider: SourceProvider {
       throw SourceMapError.hermesBytecodeBundle
     }
 
-    let markers = [
-      "//# sourceMappingURL=data:application/json;charset=utf-8;base64,",
-      "//# sourceMappingURL=data:application/json;base64,"
-    ]
-
-    for marker in markers {
+    for marker in inlineSourceMapMarkers {
       guard let markerRange = bundle.range(of: Data(marker.utf8), options: [.backwards]) else {
         continue
       }
@@ -163,6 +163,18 @@ struct BundleSourceMapProvider: SourceProvider {
     }
 
     throw SourceMapError.noSourceMapFound
+  }
+
+  /// Cheap capability check used before showing editing UI. Full decoding and
+  /// module indexing still happen when the explorer loads.
+  static func supportsPublishedEditing(bundle: Data) -> Bool {
+    guard !bundle.starts(with: [0xc6, 0x1f, 0xbc, 0x03]),
+          bundle.range(of: Data("__d(".utf8)) != nil else {
+      return false
+    }
+    return inlineSourceMapMarkers.contains {
+      bundle.range(of: Data($0.utf8), options: [.backwards]) != nil
+    }
   }
 }
 

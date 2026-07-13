@@ -13,17 +13,16 @@ to transpile edited files for **published** projects. It bundles `@babel/core`
 
 ### Regenerating (on `@babel/core` / `babel-preset-expo` / SDK bumps)
 
-The build tooling lives outside this repo at `~/Developer/device-transformer/`
-(point it at a different checkout with `EXPO_DIR=…`):
+The build tooling lives in this repo:
 
 ```bash
-cd ~/Developer/device-transformer
+cd apps/expo-go/tools/device-transformer
 node build-slim.js        # bundles + applies Hermes-safety passes, copies the
                           # payload back into this Resources/ dir
 node baseline-slim.js     # Node fidelity check (expected depNames)
 node test-extraction.js   # AST require-extraction + unsupported-construct refusal
 ```
 
-`build-slim.js` copies the minified result here automatically. See that
-directory's `README.md` for the three Hermes-safety passes and how to verify
-the payload in a real Hermes VM.
+`build-slim.js` copies the minified result here automatically. See the tool's
+`README.md` for the three Hermes-safety passes and how to verify the payload
+in a real Hermes VM.

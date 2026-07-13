@@ -37,7 +37,7 @@ final class PublishedBundleApplierTests: XCTestCase {
     super.tearDown()
   }
 
-  func testApplyWritesPatchedBundleAndRegisters() throws {
+  func testPrepareWritesPatchedBundleWithoutRegistering() throws {
     let transformer = FakeTransformer { _, _, _, _ in
       ModuleTransformResult(
         moduleCode: "exports.default = require('./a');",
@@ -46,11 +46,11 @@ final class PublishedBundleApplierTests: XCTestCase {
     let applier = try PublishedBundleApplier(
       bundleData: Data(Self.bundleText.utf8), transformer: transformer)
 
-    let url = try applier.apply(
-      edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")],
-      scopeKey: "test-scope")
+    let url = try applier.prepare(
+      edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")])
+    defer { try? FileManager.default.removeItem(at: url) }
 
-    XCTAssertEqual(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "test-scope"), url)
+    XCTAssertNil(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "test-scope"))
     let patched = try String(contentsOf: url, encoding: .utf8)
     XCTAssertTrue(patched.hasPrefix(BundlePatch.startMarker))
     XCTAssertTrue(patched.contains("overrides[0] ="))
@@ -65,9 +65,8 @@ final class PublishedBundleApplierTests: XCTestCase {
     }
     let applier = try PublishedBundleApplier(
       bundleData: Data(Self.bundleText.utf8), transformer: transformer)
-    XCTAssertThrowsError(try applier.apply(
-      edits: [.init(displayPath: "app/Missing.tsx", contents: "x", originalContents: "x")],
-      scopeKey: "test-scope"))
+    XCTAssertThrowsError(try applier.prepare(
+      edits: [.init(displayPath: "app/Missing.tsx", contents: "x", originalContents: "x")]))
   }
 
   func testAddedImportIsRefusedWithPreciseError() throws {
@@ -78,9 +77,8 @@ final class PublishedBundleApplierTests: XCTestCase {
     }
     let applier = try PublishedBundleApplier(
       bundleData: Data(Self.bundleText.utf8), transformer: transformer)
-    XCTAssertThrowsError(try applier.apply(
-      edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")],
-      scopeKey: "test-scope")
+    XCTAssertThrowsError(try applier.prepare(
+      edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")])
     ) { error in
       guard case .importsChanged(_, let added, let removed) = error as? PublishedBundleApplier.ApplyError else {
         return XCTFail("expected .importsChanged, got \(error)")
@@ -98,9 +96,8 @@ final class PublishedBundleApplierTests: XCTestCase {
     }
     let applier = try PublishedBundleApplier(
       bundleData: Data(Self.bundleText.utf8), transformer: transformer)
-    XCTAssertThrowsError(try applier.apply(
-      edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")],
-      scopeKey: "test-scope")
+    XCTAssertThrowsError(try applier.prepare(
+      edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")])
     ) { error in
       guard case .cannotVerify = error as? PublishedBundleApplier.ApplyError else {
         return XCTFail("expected .cannotVerify, got \(error)")
@@ -117,8 +114,9 @@ final class PublishedBundleApplierTests: XCTestCase {
     }
     let applier = try PublishedBundleApplier(
       bundleData: Data(Self.bundleText.utf8), transformer: transformer)
-    XCTAssertNoThrow(try applier.apply(
-      edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")],
-      scopeKey: "test-scope"))
+    let url = try applier.prepare(
+      edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")])
+    defer { try? FileManager.default.removeItem(at: url) }
+    XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
   }
 }

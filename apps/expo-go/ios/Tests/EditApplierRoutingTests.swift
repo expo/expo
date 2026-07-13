@@ -49,4 +49,37 @@ final class EditApplierRoutingTests: XCTestCase {
     XCTAssertTrue(reloaded)
     XCTAssertNil(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "scope"))
   }
+
+  func testInvalidationSuppressesPendingPublishedEditFailure() async throws {
+    let overlay = EditOverlay()
+    var reloaded = false
+    var publishedError: String?
+    let lateFailure = expectation(description: "late edit failure is ignored")
+    lateFailure.isInverted = true
+    let applier = PublishedEditApplier(
+      overlay: overlay,
+      environment: .init(
+        scopeKey: { "scope" },
+        makeApplier: {
+          try await Task.sleep(nanoseconds: 100_000_000)
+          throw PublishedBundleApplier.ApplyError.moduleNotFound("app/App.tsx")
+        },
+        reload: { reloaded = true },
+        onError: {
+          publishedError = $0
+          if $0 != nil {
+            lateFailure.fulfill()
+          }
+        }
+      ))
+
+    overlay.recordEdit(path: "app/App.tsx", original: "a", newContents: "b")
+    XCTAssertTrue(applier.submit(path: "app/App.tsx", original: "a", previous: "a", newContents: "b"))
+    applier.invalidate()
+
+    await fulfillment(of: [lateFailure], timeout: 0.25)
+    XCTAssertNil(publishedError)
+    XCTAssertFalse(reloaded)
+    XCTAssertNil(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "scope"))
+  }
 }

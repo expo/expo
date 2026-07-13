@@ -319,12 +319,9 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
   }
 
   NSString *scopeKey = _confirmedManifest.scopeKey;
-  NSURL *patchedBundleUrl = scopeKey ? [EXPatchedBundleRegistry patchedBundleURLForScopeKey:scopeKey] : nil;
-  if (patchedBundleUrl) {
-    NSData *patchedBundle = [NSData dataWithContentsOfURL:patchedBundleUrl];
-    if (patchedBundle) {
-      _bundle = patchedBundle;
-    }
+  NSData *patchedBundle = scopeKey ? [EXPatchedBundleRegistry patchedBundleDataForScopeKey:scopeKey] : nil;
+  if (patchedBundle) {
+    _bundle = patchedBundle;
   }
   if (self.delegate) {
     [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
