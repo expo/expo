@@ -452,8 +452,10 @@ export function getDefaultConfig(
     expoMetroConfig
   );
 
-  // Neutralize Metro's `useWatchman: true` default to `null` so the `@expo/metro-file-map` fork
-  // keeps the Node watcher by default while an explicit `useWatchman: true` can re-enable Watchman.
+  // NOTE(@kitten): `useWatchman` is currently defaulting to `false`
+  // However, in standard Metro, it defaults to `true`, and we must override this to `null` to disable the slow "native find" codepath
+  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro-file-map/src/index.js#L326
+  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
   (metroConfig.resolver as { useWatchman?: boolean | null }).useWatchman = null;
 
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
