@@ -11,6 +11,7 @@
 - [iOS] Fix RN `Modal`s (and other presented view controllers) becoming untappable and missing from the accessibility tree after a `community/bottom-sheet` `BottomSheet` is dismissed. `RNHostView` attached an `RCTSurfaceTouchHandler` to the hosted RN view but never detached it, so it rode the recycled Fabric component view into the next surface and terminated that surface's touch responder. The handler is now detached when the host disappears. ([#47708](https://github.com/expo/expo/issues/47708) by [@oeddyo](https://github.com/oeddyo)) ([#47713](https://github.com/expo/expo/pull/47713) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 - [iOS] Fix `BottomSheet` opening at an unpredictable detent when multiple detents are set without a `selection`. The initial detent now follows the first entry in the array instead of the unordered set. ([#47652](https://github.com/expo/expo/pull/47652) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix components crashing on Android 7 (API 24/25), where `android.graphics.Color` props had no type converter below API 26. `Color` props and the seeded Material color palette now work on those versions. ([#47546](https://github.com/expo/expo/issues/47546) by [@anasvemmully](https://github.com/anasvemmully)) ([#47575](https://github.com/expo/expo/pull/47575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

@@ -275,6 +275,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       Any::class.java to AnyTypeConverter(),
 
+      Color::class.java to ColorTypeConverter(),
+
       // Unit converter doesn't care about nullability.
       // It will always return Unit
       Unit::class.java to UnitTypeConverter(),
@@ -285,7 +287,6 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
       return converters + mapOf(
         Path::class.java to PathTypeConverter(),
-        Color::class.java to ColorTypeConverter(),
         LocalDate::class.java to DateTypeConverter()
       )
     }
