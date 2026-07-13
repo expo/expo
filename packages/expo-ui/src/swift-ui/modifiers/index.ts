@@ -25,6 +25,13 @@ import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
 import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
 
+export {
+  searchable,
+  type SearchableNavigationBarDrawerDisplayMode,
+  type SearchableOptions,
+  type SearchablePlacement,
+} from './searchable';
+
 const ExpoUI = requireNativeModule('ExpoUI');
 
 // =============================================================================

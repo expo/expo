@@ -79,11 +79,51 @@ function ModifiersExample() {
 
 > **info** You can also create custom modifiers that work with any Expo UI component. See the [Extending with SwiftUI](/guides/expo-ui-swift-ui/extending/) guide for details.
 
+## Searchable
+
+Use the `searchable` modifier to attach a native SwiftUI search field to a view. The search text is backed by `useNativeState`, matching SwiftUI's `Binding<String>`. Provide `onChange` to update your data as the search text changes.
+
+```tsx
+import { Host, List, Text, useNativeState } from '@expo/ui/swift-ui';
+import { searchable } from '@expo/ui/swift-ui/modifiers';
+import { useState } from 'react';
+
+const settings = ['Wi-Fi', 'Bluetooth', 'Cellular', 'Notifications', 'Privacy & Security'];
+
+export default function SearchableExample() {
+  const searchText = useNativeState('');
+  const [query, setQuery] = useState('');
+  const filteredSettings = settings.filter(setting =>
+    setting.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())
+  );
+
+  return (
+    <Host style={{ height: 360 }}>
+      <List
+        modifiers={[
+          searchable(searchText, {
+            placement: {
+              kind: 'navigationBarDrawer',
+              displayMode: 'always',
+            },
+            prompt: 'Search settings',
+            onChange: setQuery,
+          }),
+        ]}>
+        {filteredSettings.map(setting => (
+          <Text key={setting}>{setting}</Text>
+        ))}
+      </List>
+    </Host>
+  );
+}
+```
+
 ## API
 
 {/* prettier-ignore */}
 ```tsx
-import { background, cornerRadius, padding, shadow, foregroundColor, onTapGesture } from '@expo/ui/swift-ui/modifiers';
+import { background, cornerRadius, padding, shadow, foregroundColor, onTapGesture, searchable } from '@expo/ui/swift-ui/modifiers';
 ```
 
 <APISection packageName="expo-ui/swift-ui/modifiers" />
