@@ -6,8 +6,8 @@ import { relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SYNCS = [
-  { label: '@expo/ui component tables', script: 'generate-ui-component-tables', match: 'ExpoUI' },
-  { label: 'App config schema', script: 'schema-sync', match: 'schemas/' },
+  { label: '@expo/ui component tables', script: 'generate-ui-component-tables', match: 'sdk/ui' },
+  { label: 'App config schema', script: 'schema-sync unversioned', match: 'schemas/' },
   { label: 'Expo Skills', script: 'expo-skills-sync', match: 'ExpoSkillsTable' },
   { label: 'EAS CLI reference', script: 'eas-cli-sync', match: 'EASCLIReference' },
   { label: 'Android permissions', script: 'permissions-sync-android', match: 'permissions' },
@@ -37,13 +37,20 @@ if (status().length) {
   process.exit(1);
 }
 
-const failed: string[] = [];
+const failures = new Map<string, string>();
 for (const { label, script } of SYNCS) {
   console.error(`Running ${script}`);
   try {
     execSync(`pnpm ${script}`, { cwd: docsDir, stdio: 'pipe' });
-  } catch {
-    failed.push(label);
+  } catch (error) {
+    const { stdout, stderr } = error as { stdout?: Buffer; stderr?: Buffer };
+    const output =
+      [stdout, stderr]
+        .map(stream => (stream ? String(stream).trim() : ''))
+        .filter(Boolean)
+        .join('\n') || String(error);
+    console.error(`${label} failed:\n${output}`);
+    failures.set(label, output);
   }
 }
 
@@ -68,13 +75,45 @@ const sources = [
 const title = sources.length
   ? `[docs] Sync upstream reference content (${sources.join(', ')})`
   : '[docs] Sync upstream reference content';
+
+const statusOf = (label: string) =>
+  failures.has(label) ? '❌ Failed' : sources.includes(label) ? '✅ Synced' : '➖ No changes';
+
+// Keep only the tail of a failure log so the PR body stays within GitHub's size limits.
+const excerpt = (text: string) => text.split('\n').slice(-30).join('\n').slice(-2000);
+
 const body = [
   'Automated upstream sync of generated reference content.',
-  ...(sources.length ? ['', '## Synced', ...sources.map(s => `- ${s}`)] : []),
+  '',
+  '| Generator | Status |',
+  '| --- | --- |',
+  ...SYNCS.map(({ label }) => `| ${label} | ${statusOf(label)} |`),
   ...(changed.length ? ['', '## Files', ...changed.map(f => `- \`${f}\``)] : []),
-  ...(failed.length ? ['', '## Generators that failed', ...failed.map(f => `- ${f}`)] : []),
+  ...(failures.size
+    ? [
+        '',
+        '## Failures',
+        ...[...failures].flatMap(([label, output]) => [
+          '',
+          '<details>',
+          `<summary>${label}</summary>`,
+          '',
+          '```',
+          excerpt(output),
+          '```',
+          '',
+          '</details>',
+        ]),
+      ]
+    : []),
 ].join('\n');
 
 process.stdout.write(
-  JSON.stringify({ hasChanged: changed.length > 0, title, commitMessage: title, body })
+  JSON.stringify({
+    hasChanged: changed.length > 0,
+    failedCount: failures.size,
+    title,
+    commitMessage: title,
+    body,
+  })
 );
