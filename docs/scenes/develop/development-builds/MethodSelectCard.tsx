@@ -16,7 +16,7 @@ export function MethodSelectCard({ Icon, title, description, isSelected, onClick
     <ButtonBase onClick={onClick}>
       <div
         className={mergeClasses(
-          'flex h-full w-62.5 flex-col overflow-hidden rounded-lg border border-default shadow-xs transition-all',
+          'flex h-full w-68 flex-col overflow-hidden rounded-lg border border-default shadow-xs transition-all',
           'hocus:scale-[102%] hocus:shadow-sm'
         )}>
         <div

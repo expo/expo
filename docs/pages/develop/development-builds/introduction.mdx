@@ -55,14 +55,14 @@ If a development server is running on your local network, or if you have signed 
 ## Video walkthroughs
 
 <BoxLink
-  title={`"EAS Tutorial Series"`}
+  title="EAS Tutorial Series"
   description="A course on YouTube: learn how to speed up your development with Expo Application Services."
   href="https://www.youtube.com/playlist?list=PLsXDmrmFV_AS14tZCBin6m9NIS_VCUKe2"
   Icon={VideoRecorderIcon}
 />
 
 <BoxLink
-  title={`"Async Office Hours: How to make a development build with EAS Build"`}
+  title="Async Office Hours: How to make a development build with EAS Build"
   description="Learn how to make a development build with EAS Build in this video tutorial hosted by Developer Success Engineer: Keith Kurak."
   href="https://www.youtube.com/watch?v=LUFHXsBcW6w"
   Icon={VideoRecorderIcon}
@@ -91,6 +91,8 @@ The **JavaScript bundler (`expo start`)** is where your app's UI code and busine
 ## Why use a development build (a.k.a what _can't_ you do in Expo Go and why)
 
 Expo Go is a playground for students and learners to understand the basics of React Native. It's limited and not useful for building production-grade projects, so most apps will convert to using development builds. It helps to know exactly what is _impossible_ in Expo Go and _why_, so you can make an informed decision on when and why to make this move.
+
+<FAQ>
 
 <Collapsible summary="Use libraries with native code that aren't in Expo Go">
 
@@ -127,3 +129,5 @@ Expo Go can only support one SDK version at a time. When a new SDK version is re
 If you're developing on an Android Device, Android Emulator, or iOS Simulator, a compatible version of Expo Go can be [downloaded and installed](https://expo.dev/go). The only platform where this is impossible is iPhone devices because Apple does not support side-loading older versions of apps.
 
 </Collapsible>
+
+</FAQ>

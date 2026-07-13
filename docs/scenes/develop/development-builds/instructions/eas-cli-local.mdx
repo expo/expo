@@ -6,7 +6,9 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 ## Create a development build locally with EAS CLI
 
-Any EAS build can run on your own machine by adding the `--local` flag: EAS provides credentials, signing, and build profiles, while compilation happens on your computer with your native toolchain. Read more about [local builds](/build-reference/local-builds/).
+Any EAS Build can run on your own machine by adding the `--local` flag: EAS provides credentials, signing, and build profiles, while compilation happens on your computer with your native toolchain.
+
+This requires your local development environment to be set up with the necessary native build tools. Read more about [running EAS Build locally](/build-reference/local-builds/).
 
 #### Host platform support
 
@@ -16,9 +18,8 @@ Any EAS build can run on your own machine by adding the `--local` flag: EAS prov
 | **Windows** | <YesIcon/> (\*\*) | <NoIcon />    | <NoIcon />      |
 | **Linux**   | <YesIcon/>        | <NoIcon />    | <NoIcon />      |
 
-(\*) All builds that run on an iPhone device require a paid [Apple Developer](https://developer.apple.com) account for build signing.
-
-(\*\*) No first-class support, but possible with [WSL](https://expo.fyi/wsl.md).
+> (\*) All builds that run on an iPhone device require a paid [Apple Developer](https://developer.apple.com) account for build signing. <br />
+> (\*\*) No first-class support, but possible with [WSL](https://expo.fyi/wsl.md).
 
 <Prerequisites>
   <Requirement title="Expo account">
@@ -93,7 +94,7 @@ The output of a local build is an archive (**.apk** for Android, or an **.app**/
 
 <Step label="4">
 
-### Start the bundler
+### Start the JavaScript bundler
 
 <Terminal
   cmd={{

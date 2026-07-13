@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { EasCliLogo } from './EasCliLogo';
 import { MethodSelectCard } from './MethodSelectCard';
 
-type BuildMethod = 'eas' | 'eas-local' | 'local';
+type BuildMethod = 'eas' | 'eas-cli-local' | 'expo-go-to-dev-build';
 
 export function BuildMethodForm() {
   const router = useRouter();
@@ -16,14 +16,14 @@ export function BuildMethodForm() {
   useEffect(
     function queryDidUpdate() {
       if (isReady) {
-        if (query.buildEnv === 'eas-local' || query.buildEnv === 'local') {
-          setMethod(query.buildEnv);
+        if (query.buildenv === 'eas-cli-local' || query.buildenv === 'expo-go-to-dev-build') {
+          setMethod(query.buildenv);
         } else {
           setMethod('eas');
         }
       }
     },
-    [query.buildEnv, isReady]
+    [query.buildenv, isReady]
   );
 
   function onRadioChange(method: BuildMethod) {
@@ -31,9 +31,9 @@ export function BuildMethodForm() {
 
     const newQuery = { ...query };
     if (method === 'eas') {
-      delete newQuery.buildEnv;
+      delete newQuery.buildenv;
     } else {
-      newQuery.buildEnv = method;
+      newQuery.buildenv = method;
     }
 
     void router.push(
@@ -59,19 +59,19 @@ export function BuildMethodForm() {
       <MethodSelectCard
         Icon={EasCliLogo}
         title="Build locally with EAS CLI"
-        description='Run the same EAS build on your own machine with the "--local" flag. EAS still manages signing and profiles.'
-        isSelected={method === 'eas-local'}
+        description='Run the same EAS Build on your own machine with the "--local" flag. EAS still manages signing and profiles.'
+        isSelected={method === 'eas-cli-local'}
         onClick={() => {
-          onRadioChange('eas-local');
+          onRadioChange('eas-cli-local');
         }}
       />
       <MethodSelectCard
         Icon={TerminalSquareIcon}
-        title="Build locally without EAS"
+        title="Switch from Expo Go"
         description="Compile with Android Studio and Xcode using Expo CLI. No Expo account needed."
-        isSelected={method === 'local'}
+        isSelected={method === 'expo-go-to-dev-build'}
         onClick={() => {
-          onRadioChange('local');
+          onRadioChange('expo-go-to-dev-build');
         }}
       />
     </div>

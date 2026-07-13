@@ -1,19 +1,19 @@
 import { useRouter } from 'next/router';
 
+import EasCliLocal from './instructions/eas-cli-local.mdx';
 import Eas from './instructions/eas.mdx';
-import EasLocal from './instructions/easLocal.mdx';
-import Local from './instructions/local.mdx';
+import ExpoGoToDevBuild from './instructions/expo-go-to-dev-build.mdx';
 
 export function DevelopmentBuildInstructions() {
   const router = useRouter();
   const { query } = router;
 
-  if (query.buildEnv === 'eas-local') {
-    return <EasLocal />;
+  if (query.buildenv === 'eas-cli-local') {
+    return <EasCliLocal />;
   }
 
-  if (query.buildEnv === 'local') {
-    return <Local />;
+  if (query.buildenv === 'expo-go-to-dev-build') {
+    return <ExpoGoToDevBuild />;
   }
 
   return <Eas />;
