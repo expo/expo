@@ -17,6 +17,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve the Metro asset registry to `react-native` core on native platforms so Metro-registered assets and React Native's own `<Image>` share one registry instance on React Native 0.87. Web keeps the virtual registry, and imports of the removed `@react-native/assets-registry` package are redirected. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 - Avoid writing a 500 response when a DevTools plugin server request has already started or aborted. ([#47192](https://github.com/expo/expo/pull/47192) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Pass a fetch API `Request` to DevTools plugin WebSocket handlers instead of `IncomingMessage`. ([#47410](https://github.com/expo/expo/pull/47410) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Use `loadModule` for MCP and DevTools plugin server module loading. ([#47139](https://github.com/expo/expo/pull/47139) by [@krystofwoldrich](https://github.com/krystofwoldrich))
