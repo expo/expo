@@ -22,7 +22,7 @@ jest.mock('agent-cli-detector', () => ({
 }));
 
 function createTempDir(): string {
-  return mkdtemp(path.join(tmpdir(), 'expo-feedback-test-'));
+  return mkdtemp(path.join(tmpdir(), 'submit-expo-feedback-test-'));
 }
 
 function mkdtemp(prefix: string): string {
@@ -179,7 +179,7 @@ describe('feedback submission', () => {
       method: 'POST',
       headers: expect.objectContaining({
         'Content-Type': 'application/json',
-        'User-Agent': 'expo-feedback/0.0.0',
+        'User-Agent': 'submit-expo-feedback/0.0.0',
         'expo-session': 'session-secret',
       }),
       body: JSON.stringify({

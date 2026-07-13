@@ -1,5 +1,5 @@
 {
-  "name": "expo-feedback",
+  "name": "submit-expo-feedback",
   "version": "0.0.0",
   "description": "Send feedback to the Expo team",
   "keywords": [
@@ -12,9 +12,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-feedback"
+    "directory": "packages/submit-expo-feedback"
   },
-  "bin": "./bin/expo-feedback.js",
+  "bin": "./bin/submit-expo-feedback.js",
   "files": [
     "bin",
     "build"

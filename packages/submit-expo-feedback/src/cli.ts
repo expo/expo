@@ -10,7 +10,7 @@ import path from 'path';
 import prompts from 'prompts';
 
 const NODE_MIN = [22, 13, 0] as const;
-const CLI_NAME = 'expo-feedback';
+const CLI_NAME = 'submit-expo-feedback';
 
 type UserSession = {
   sessionSecret?: string;
@@ -409,7 +409,7 @@ function checkNodeVersion(): void {
 function printHelp(): void {
   console.log(chalk`
   {bold Usage}
-    {dim $} npx expo-feedback {dim <message>}
+    {dim $} npx submit-expo-feedback {dim <message>}
 
   {bold Info}
     Send feedback to the Expo team. If no message is provided, you will be prompted.
