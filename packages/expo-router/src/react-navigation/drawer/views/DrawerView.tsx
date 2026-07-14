@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { Drawer } from 'react-native-drawer-layout';
-import type { NavigatorState } from 'standard-navigation';
 
 import useLatestCallback from '../../../utils/useLatestCallback';
 import {
@@ -12,39 +11,37 @@ import {
   Screen,
   useFrameSize,
 } from '../../elements';
-import { type DrawerStatus, type ParamListBase, useLocale, useTheme } from '../../native';
+import {
+  DrawerActions,
+  type DrawerNavigationState,
+  type DrawerStatus,
+  type ParamListBase,
+  StackActions,
+  useLocale,
+  useTheme,
+} from '../../native';
 import type {
   DrawerContentComponentProps,
   DrawerDescriptorMap,
-  DrawerEmit,
   DrawerHeaderProps,
-  DrawerNavigationActions,
   DrawerNavigationConfig,
+  DrawerNavigationHelpers,
   DrawerNavigationProp,
 } from '../types';
 import { DrawerPositionContext } from '../utils/DrawerPositionContext';
 import { DrawerStatusContext } from '../utils/DrawerStatusContext';
 import { addCancelListener } from '../utils/addCancelListener';
+import { getDrawerStatusFromState } from '../utils/getDrawerStatusFromState';
 import { DrawerContent } from './DrawerContent';
 import { DrawerToggleButton } from './DrawerToggleButton';
 import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
 
-type Props = DrawerNavigationConfig &
-  DrawerNavigationActions & {
-    defaultStatus: DrawerStatus;
-    state: NavigatorState;
-    descriptors: DrawerDescriptorMap;
-    /** Current drawer status, derived from the navigator state in `createProps`. */
-    drawerStatus: DrawerStatus;
-    /** Keys of routes that have been preloaded, derived from the navigator state in `createProps`. */
-    preloadedRouteKeys: readonly string[];
-    /** The navigator's state key, used as the target for emitted navigator-level events. */
-    navigatorKey: string;
-    isFocused: () => boolean;
-    emit: DrawerEmit;
-    /** Pops the previous route's nested stack to top on blur (needs raw nested state, lives in `createProps`). */
-    handlePopToTopOnBlur: (routeKey: string) => void;
-  };
+type Props = DrawerNavigationConfig & {
+  defaultStatus: DrawerStatus;
+  state: DrawerNavigationState<ParamListBase>;
+  navigation: DrawerNavigationHelpers;
+  descriptors: DrawerDescriptorMap;
+};
 
 const DRAWER_BORDER_RADIUS = 16;
 
@@ -54,19 +51,9 @@ const renderDrawerContentDefault = (props: DrawerContentComponentProps) => (
 
 function DrawerViewBase({
   state,
+  navigation,
   descriptors,
   defaultStatus,
-  drawerStatus,
-  preloadedRouteKeys,
-  navigatorKey,
-  isFocused,
-  emit,
-  navigate,
-  goBack,
-  openDrawer: openDrawerAction,
-  closeDrawer: closeDrawerAction,
-  toggleDrawer,
-  handlePopToTopOnBlur,
   drawerContent = renderDrawerContentDefault,
   detachInactiveScreens = Platform.OS === 'web' ||
     Platform.OS === 'android' ||
@@ -105,58 +92,73 @@ function DrawerViewBase({
       previousRouteKey !== focusedRouteKey &&
       descriptors[previousRouteKey]?.options.popToTopOnBlur
     ) {
-      handlePopToTopOnBlur(previousRouteKey);
+      const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
+
+      if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
+        navigation.dispatch({
+          ...StackActions.popToTop(),
+          target: prevRoute.state.key,
+        });
+      }
     }
 
     previousRouteKeyRef.current = focusedRouteKey;
-  }, [descriptors, focusedRouteKey, handlePopToTopOnBlur]);
+  }, [descriptors, focusedRouteKey, navigation, state.routes]);
 
   const dimensions = useFrameSize((size) => size, true);
 
   const { colors } = useTheme();
 
+  const drawerStatus = getDrawerStatusFromState(state);
+
   const handleDrawerOpen = useLatestCallback(() => {
-    openDrawerAction();
+    navigation.dispatch({
+      ...DrawerActions.openDrawer(),
+      target: state.key,
+    });
   });
 
   const handleDrawerClose = useLatestCallback(() => {
-    closeDrawerAction();
+    navigation.dispatch({
+      ...DrawerActions.closeDrawer(),
+      target: state.key,
+    });
   });
 
   const handleGestureStart = useLatestCallback(() => {
-    emit({
+    navigation.emit({
       type: 'gestureStart',
-      target: navigatorKey,
+      target: state.key,
     });
   });
 
   const handleGestureEnd = useLatestCallback(() => {
-    emit({
+    navigation.emit({
       type: 'gestureEnd',
-      target: navigatorKey,
+      target: state.key,
     });
   });
 
   const handleGestureCancel = useLatestCallback(() => {
-    emit({
+    navigation.emit({
       type: 'gestureCancel',
-      target: navigatorKey,
+      target: state.key,
     });
   });
 
   const handleTransitionStart = useLatestCallback((closing: boolean) => {
-    emit({
+    navigation.emit({
       type: 'transitionStart',
       data: { closing },
-      target: navigatorKey,
+      target: state.key,
     });
   });
 
   const handleTransitionEnd = useLatestCallback((closing: boolean) => {
-    emit({
+    navigation.emit({
       type: 'transitionEnd',
       data: { closing },
-      target: navigatorKey,
+      target: state.key,
     });
   });
 
@@ -168,7 +170,7 @@ function DrawerViewBase({
     const handleHardwareBack = () => {
       // We shouldn't handle the back button if the parent screen isn't focused
       // This will avoid the drawer overriding event listeners from a focused screen
-      if (!isFocused()) {
+      if (!navigation.isFocused()) {
         return false;
       }
 
@@ -185,21 +187,15 @@ function DrawerViewBase({
     // This way we can make sure that the listener is added as late as possible
     // This will make sure that our handler will run first when back button is pressed
     return addCancelListener(handleHardwareBack);
-  }, [defaultStatus, drawerStatus, drawerType, handleDrawerClose, handleDrawerOpen, isFocused]);
+  }, [defaultStatus, drawerStatus, drawerType, handleDrawerClose, handleDrawerOpen, navigation]);
 
   const renderDrawerContent = () => {
     return (
       <DrawerPositionContext.Provider value={drawerPosition}>
         {drawerContent({
           state,
+          navigation,
           descriptors,
-          isFocused,
-          emit,
-          navigate,
-          goBack,
-          openDrawer: openDrawerAction,
-          closeDrawer: closeDrawerAction,
-          toggleDrawer,
         })}
       </DrawerPositionContext.Provider>
     );
@@ -211,10 +207,10 @@ function DrawerViewBase({
         {state.routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const { lazy = true } = descriptor.options;
-          const isFocusedRoute = state.index === index;
-          const isPreloaded = preloadedRouteKeys.includes(route.key);
+          const isFocused = state.index === index;
+          const isPreloaded = state.preloadedRouteKeys.includes(route.key);
 
-          if (lazy && !loaded.includes(route.key) && !isFocusedRoute && !isPreloaded) {
+          if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
             // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
             return null;
           }
@@ -247,13 +243,13 @@ function DrawerViewBase({
           return (
             <MaybeScreen
               key={route.key}
-              style={[StyleSheet.absoluteFill, { zIndex: isFocusedRoute ? 0 : -1 }]}
-              visible={isFocusedRoute}
+              style={[StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]}
+              visible={isFocused}
               enabled={detachInactiveScreens}
               freezeOnBlur={freezeOnBlur}
-              shouldFreeze={!isFocusedRoute && !isPreloaded}>
+              shouldFreeze={!isFocused && !isPreloaded}>
               <Screen
-                focused={isFocusedRoute}
+                focused={isFocused}
                 route={descriptor.route}
                 navigation={descriptor.navigation}
                 headerShown={headerShown}
@@ -336,10 +332,10 @@ function DrawerViewBase({
   );
 }
 
-export function DrawerView(props: Props) {
+export function DrawerView({ navigation, ...rest }: Props) {
   return (
     <SafeAreaProviderCompat>
-      <DrawerViewBase {...props} />
+      <DrawerViewBase navigation={navigation} {...rest} />
     </SafeAreaProviderCompat>
   );
 }

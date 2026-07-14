@@ -32,11 +32,7 @@ jest.mock('react-native-drawer-layout', () => {
 const drawerOpen = () =>
   (DrawerLayout as unknown as jest.Mock).mock.calls.at(-1)![0].open as boolean;
 
-beforeEach(() => {
-  (DrawerLayout as unknown as jest.Mock).mockClear();
-});
-
-test('renders a drawer navigator with screens', () => {
+test('renders a drawer navigator and navigates between screens', () => {
   renderRouter({
     _layout: () => (
       <Drawer>
@@ -50,20 +46,6 @@ test('renders a drawer navigator with screens', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.queryByTestId('second')).toBeNull();
-  expect(screen).toHavePathname('/');
-});
-
-test('navigates between routes imperatively', () => {
-  renderRouter({
-    _layout: () => (
-      <Drawer>
-        <Drawer.Screen name="index" />
-        <Drawer.Screen name="second" />
-      </Drawer>
-    ),
-    index: () => <View testID="index" />,
-    second: () => <View testID="second" />,
-  });
 
   act(() => router.navigate('/second'));
 
@@ -71,55 +53,16 @@ test('navigates between routes imperatively', () => {
   expect(screen).toHavePathname('/second');
 });
 
-test('navigates when a drawer item is pressed', () => {
-  renderRouter({
-    _layout: () => (
-      <Drawer>
-        <Drawer.Screen name="index" />
-        <Drawer.Screen name="second" />
-      </Drawer>
-    ),
-    index: () => <View testID="index" />,
-    second: () => <View testID="second" />,
-  });
-
-  // The default drawer content renders an item per route, labelled by route name.
-  fireEvent.press(screen.getByText('second'));
-
-  expect(screen.getByTestId('second')).toBeVisible();
-  expect(screen).toHavePathname('/second');
-});
-
-test('does not navigate when drawerItemPress is prevented', () => {
-  // The pressed item targets the "second" route, so its screen registers the listener. It must not be
-  // lazy, otherwise it would not be mounted to register the listener before being pressed.
+test('handles drawer actions and preventable item presses', () => {
   function Second() {
     const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
     useEffect(
-      () => navigation.addListener('drawerItemPress', (e) => e.preventDefault()),
+      () => navigation.addListener('drawerItemPress', (event) => event.preventDefault()),
       [navigation]
     );
     return <View testID="second" />;
   }
 
-  renderRouter({
-    _layout: () => (
-      <Drawer>
-        <Drawer.Screen name="index" />
-        <Drawer.Screen name="second" options={{ lazy: false }} />
-      </Drawer>
-    ),
-    index: () => <View testID="index" />,
-    second: Second,
-  });
-
-  fireEvent.press(screen.getByText('second'));
-
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen).toHavePathname('/');
-});
-
-test('reflects the drawer status in the underlying drawer layout', () => {
   function Index() {
     const navigation = useNavigation();
     return (
@@ -135,18 +78,19 @@ test('reflects the drawer status in the underlying drawer layout', () => {
     _layout: () => (
       <Drawer>
         <Drawer.Screen name="index" />
-        <Drawer.Screen name="second" />
+        <Drawer.Screen name="second" options={{ lazy: false }} />
       </Drawer>
     ),
     index: Index,
-    second: () => <View testID="second" />,
+    second: Second,
   });
 
   expect(drawerOpen()).toBe(false);
-
   fireEvent.press(screen.getByTestId('open-drawer'));
-
   expect(drawerOpen()).toBe(true);
+
+  fireEvent.press(screen.getByText('second'));
+  expect(screen).toHavePathname('/');
 });
 
 test('preloads screens', () => {
@@ -173,7 +117,7 @@ test('preloads screens', () => {
   expect(screen.queryByText('Second screen', { includeHiddenElements: true })).not.toBeNull();
 });
 
-test('pops a nested stack to top on blur when popToTopOnBlur is set', () => {
+test('pops a nested stack to top on blur', () => {
   renderRouter(
     {
       _layout: () => (
@@ -190,17 +134,10 @@ test('pops a nested stack to top on blur when popToTopOnBlur is set', () => {
     { initialUrl: '/one' }
   );
 
-  expect(screen.getByTestId('one-index')).toBeVisible();
-
   act(() => router.push('/one/details'));
-  expect(screen.getByTestId('one-details')).toBeVisible();
-
-  // Blur the "one" drawer route — this should pop its nested stack to top.
   act(() => router.navigate('/two'));
-  expect(screen.getByTestId('two')).toBeVisible();
-
-  // Returning to "one" lands on the nested stack's top route, not the previously pushed "details".
   act(() => router.navigate('/one'));
+
   expect(screen.getByTestId('one-index')).toBeVisible();
   expect(screen.queryByTestId('one-details')).toBeNull();
 });

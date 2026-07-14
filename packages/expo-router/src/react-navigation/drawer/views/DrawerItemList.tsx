@@ -1,20 +1,26 @@
 'use client';
 import * as React from 'react';
 
-import { useLinkBuilder } from '../../native';
-import type { DrawerContentComponentProps } from '../types';
+import {
+  CommonActions,
+  DrawerActions,
+  type DrawerNavigationState,
+  type ParamListBase,
+  useLinkBuilder,
+} from '../../native';
+import type { DrawerDescriptorMap, DrawerNavigationHelpers } from '../types';
 import { DrawerItem } from './DrawerItem';
+
+type Props = {
+  state: DrawerNavigationState<ParamListBase>;
+  navigation: DrawerNavigationHelpers;
+  descriptors: DrawerDescriptorMap;
+};
 
 /**
  * Component that renders the navigation list in the drawer.
  */
-export function DrawerItemList({
-  state,
-  descriptors,
-  emit,
-  navigate,
-  closeDrawer,
-}: DrawerContentComponentProps) {
+export function DrawerItemList({ state, navigation, descriptors }: Props) {
   const { buildHref } = useLinkBuilder();
 
   const focusedRoute = state.routes[state.index]!;
@@ -32,18 +38,17 @@ export function DrawerItemList({
     const focused = i === state.index;
 
     const onPress = () => {
-      const event = emit({
+      const event = navigation.emit({
         type: 'drawerItemPress',
         target: route.key,
         canPreventDefault: true,
       });
 
       if (!event.defaultPrevented) {
-        if (focused) {
-          closeDrawer();
-        } else {
-          navigate(route.name, route.params);
-        }
+        navigation.dispatch({
+          ...(focused ? DrawerActions.closeDrawer() : CommonActions.navigate(route)),
+          target: state.key,
+        });
       }
     };
 

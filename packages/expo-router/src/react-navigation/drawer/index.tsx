@@ -27,7 +27,6 @@ export { DrawerProgressContext, useDrawerProgress } from 'react-native-drawer-la
 export type {
   DrawerContentComponentProps,
   DrawerHeaderProps,
-  DrawerNavigationActions,
   DrawerNavigationEventMap,
   DrawerNavigationOptions,
   DrawerNavigationProp,
