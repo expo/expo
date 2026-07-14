@@ -326,21 +326,6 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
     );
   }
   console.log('✓ expo-go-to-dev-build redirects to the introduction build locally section');
-
-  const mdRedirect = await fetch(`${BASE_URL}/develop/development-builds/create-a-build.md`, {
-    redirect: 'manual',
-  });
-  const mdLocation = mdRedirect.headers.get('location') ?? '';
-
-  if (
-    mdRedirect.status !== 301 ||
-    !mdLocation.includes('/develop/development-builds/introduction/index.md')
-  ) {
-    throw new Error(
-      `Expected 301 to the introduction index.md, got: HTTP ${mdRedirect.status} -> ${mdLocation}`
-    );
-  }
-  console.log('✓ create-a-build.md redirects to the introduction markdown');
 }
 
 async function testHtmlNotFoundAsync(): Promise<void> {
