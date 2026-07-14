@@ -92,7 +92,7 @@ describe(choosePortAsync, () => {
     expect(port).toBe(null);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
-  it(`chooses the next free port without prompting in non-interactive mode`, async () => {
+  it(`chooses the next free port without prompting for a default port in non-interactive mode`, async () => {
     jest.mocked(isInteractive).mockReturnValueOnce(false);
     jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
     jest.mocked(getRunningProcess).mockResolvedValueOnce({
@@ -102,6 +102,19 @@ describe(choosePortAsync, () => {
     });
     const port = await choosePortAsync('/', { defaultPort: 8081, reuseExistingPort: false });
     expect(port).toBe(8082);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`hard-fails for an explicitly requested busy port in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
+      pid: 1,
+      directory: '/other/project',
+      command: 'npx expo',
+    });
+    await expect(
+      choosePortAsync('/', { defaultPort: 8081, explicitPort: true, reuseExistingPort: false })
+    ).rejects.toThrow(/Port 8081 is unavailable/);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
   it(`still reuses the same-process port in non-interactive mode`, async () => {
@@ -131,6 +144,21 @@ describe(resolvePortAsync, () => {
     const port = await resolvePortAsync('/', { defaultPort: 0, fallbackPort: 8081 });
     expect(port).toBe(8082);
     expect(freePortAsync).toHaveBeenCalledWith(8081, [null, 'localhost']);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`rolls over to the next free port when the default port is busy in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    const port = await resolvePortAsync('/', { fallbackPort: 8081 });
+    expect(port).toBe(8082);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`hard-fails when an explicit --port is busy in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    await expect(resolvePortAsync('/', { defaultPort: 8081 })).rejects.toThrow(
+      /Port 8081 is unavailable/
+    );
     expect(confirmAsync).not.toHaveBeenCalled();
   });
 });

@@ -86,6 +86,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       const port = await choosePortAsync(this.projectRoot, {
         defaultPort,
         host: env.WEB_HOST,
+        explicitPort: options?.defaultPort != null,
       });
       if (!port) {
         throw new CommandError('NO_PORT_FOUND', `Port ${defaultPort} not available.`);

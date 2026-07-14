@@ -71,10 +71,13 @@ export async function choosePortAsync(
     defaultPort,
     host,
     reuseExistingPort,
+    explicitPort,
   }: {
     defaultPort: number;
     host?: string;
     reuseExistingPort?: boolean;
+    /** Whether the port was explicitly requested (e.g. via `--port`) rather than a default. */
+    explicitPort?: boolean;
   }
 ): Promise<number | null> {
   try {
@@ -111,8 +114,16 @@ export async function choosePortAsync(
     Log.log(`\u203A ${message}`);
 
     if (!isInteractive()) {
-      Log.log(`\u203A Using port ${port} instead`);
-      return port;
+      // An explicitly requested port is a hard requirement
+      if (explicitPort) {
+        throw new CommandError(
+          'PORT_IN_USE',
+          `Port ${defaultPort} is unavailable and 'npx expo' is running in non-interactive mode, so it can't prompt to use another port. Free port ${defaultPort} by stopping the process using it, or re-run with an available '--port'.`
+        );
+      } else {
+        Log.log(`\u203A Using port ${port} instead`);
+        return port;
+      }
     }
 
     const { confirmAsync } = require('./prompts') as typeof import('./prompts');
@@ -169,6 +180,7 @@ export async function resolvePortAsync(
   const resolvedPort = await choosePortAsync(projectRoot, {
     defaultPort: port,
     reuseExistingPort,
+    explicitPort: defaultPort != null,
   });
   if (resolvedPort == null) {
     Log.log('\u203A Skipping dev server');
