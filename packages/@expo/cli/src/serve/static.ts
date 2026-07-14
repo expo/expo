@@ -1,3 +1,4 @@
+import { mergeHeaderInputs } from 'expo-server/private';
 import fs from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
@@ -16,11 +17,29 @@ export async function loadStaticManifestAsync(
 
   return {
     ...json,
+    pageHeaders: json.pageHeaders?.map((rule) => ({
+      ...rule,
+      namedRegex: new RegExp(rule.namedRegex),
+    })),
     redirects: json.redirects?.map((rule) => ({
       ...rule,
       namedRegex: new RegExp(rule.namedRegex),
     })),
   };
+}
+
+/** Mirrors `resolveRouteHeaders()` in `expo-server/src/vendor/abstract.ts`. */
+export function resolveStaticHeaders(
+  manifest: StaticManifest<RegExp>,
+  pathname: string
+): Record<string, string | string[]> {
+  let mergedHeaders = manifest.headers ?? {};
+  for (const rule of manifest.pageHeaders ?? []) {
+    if (rule.namedRegex.test(pathname)) {
+      mergedHeaders = mergeHeaderInputs(mergedHeaders, rule.headers);
+    }
+  }
+  return mergedHeaders;
 }
 
 /**
