@@ -22,6 +22,13 @@ import type { PlatformBundlers } from './platformBundlers';
 
 declare module '2g' {
   interface EventRegistry {
+    'devserver:url': {
+      bundler: string;
+      url: string;
+      runtimeUrl: string | null;
+      hostType: 'localhost' | 'lan' | 'tunnel' | null;
+      port: number;
+    };
     'devserver:stop': { bundler: string; ms: number };
   }
 }
@@ -182,6 +189,18 @@ export abstract class BundlerDevServer {
 
     this.setInstance(instance);
     await this.postStartAsync(options);
+    const url =
+      this.getTunnelUrl() ??
+      this.getUrlCreator().constructUrl({
+        scheme: instance.location.protocol,
+      });
+    event('url', {
+      bundler: this.name,
+      url,
+      runtimeUrl: this.getNativeRuntimeUrl(),
+      hostType: options.location.hostType ?? null,
+      port: instance.location.port,
+    });
     return instance;
   }
 
