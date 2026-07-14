@@ -1965,7 +1965,7 @@ build:
 
 #### `eas/posthog_capture_event`
 
-Sends an analytics event to [PostHog](https://posthog.com/). Use it to mark builds, releases, and other milestones on your PostHog timeline. Run `eas integrations:posthog:connect` to link a PostHog project and set the environment variables these functions read. `eas/posthog_capture_event` uses your public project API key; the other PostHog functions use a personal API key with the scope noted for each one. When you do not provide a `distinct_id`, the event is sent anonymously and does not create a PostHog [person profile](https://posthog.com/docs/data/persons).
+Sends an analytics event to [PostHog](https://posthog.com/). Use it to mark builds, releases, and other milestones on your PostHog timeline. Run `eas integrations:posthog:connect` to link a PostHog project and set the environment variables these functions read. `eas/posthog_capture_event` uses your public project API key. The other PostHog functions use a personal API key with the scope noted for each one. When you do not provide a `distinct_id`, the event is sent anonymously and does not create a PostHog [person profile](https://posthog.com/docs/data/persons).
 
 ```yaml posthog-capture-event.yml
 build:
@@ -2012,16 +2012,16 @@ build:
           rollout_percentage: 25
 ```
 
-| Input                | Type      | Description                                                                                                                                                                                                                                         |
-| -------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `flag`               | `string`  | Required. The key of the feature flag to update.                                                                                                                                                                                                    |
-| `active`             | `boolean` | Whether the flag is enabled.                                                                                                                                                                                                                        |
-| `rollout_percentage` | `number`  | Percentage of users the flag rolls out to, as an integer from `0` to `100`. It is applied to the flag's catch-all release condition and preserves other conditions. When the flag has no catch-all condition, it is applied to the first condition. |
-| `payload`            | `json`    | Payload to attach to the flag.                                                                                                                                                                                                                      |
-| `variant`            | `string`  | Variant key to store the `payload` under on a multivariate flag. Defaults to the flag's `true` payload.                                                                                                                                             |
-| `api_key`            | `string`  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `feature_flag:read` and `feature_flag:write` scopes.                                                                                             |
-| `project_id`         | `string`  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                                                                                                                  |
-| `ignore_error`       | `boolean` | When `true`, a network error, a missing flag, or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error, or invalid input such as an out-of-range `rollout_percentage`, always fails the step.       |
+| Input                | Type      | Description                                                                                                                                                                                                                                                             |
+| -------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flag`               | `string`  | Required. The key of the feature flag to update.                                                                                                                                                                                                                        |
+| `active`             | `boolean` | Whether the flag is enabled.                                                                                                                                                                                                                                            |
+| `rollout_percentage` | `number`  | Percentage of users the flag rolls out to, as an integer from `0` to `100`. The function applies it to the flag's catch-all release condition and preserves other conditions. When the flag has no catch-all condition, the function applies it to the first condition. |
+| `payload`            | `json`    | Payload to attach to the flag.                                                                                                                                                                                                                                          |
+| `variant`            | `string`  | Variant key to store the `payload` under on a multivariate flag. Defaults to the flag's `true` payload.                                                                                                                                                                 |
+| `api_key`            | `string`  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `feature_flag:read` and `feature_flag:write` scopes.                                                                                                                 |
+| `project_id`         | `string`  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                                                                                                                                      |
+| `ignore_error`       | `boolean` | When `true`, a network error, a missing flag, or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error, or invalid input such as an out-of-range `rollout_percentage`, always fails the step.                           |
 
 <BoxLink
   title="eas/posthog_flag_rollout source code"
@@ -2034,7 +2034,7 @@ build:
 
 Pauses the build until a [HogQL](https://posthog.com/docs/hogql) query returns a number that satisfies a comparison. Use it to gate on a metric, such as holding until the error count over the last few minutes stays low. The function runs the query every `interval_seconds` until the comparison is true or `timeout_seconds` elapses.
 
-> **info** This step has no `ignore_error` input. A gate you ignore is not a gate, so a timeout or an unreadable query always fails the step.
+> **info** This step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
 
 ```yaml posthog-wait-for-metric.yml
 build:
@@ -2133,7 +2133,7 @@ build:
 
 #### `eas/posthog_upload_sourcemaps`
 
-Uploads JavaScript source maps to PostHog so that stack traces in [error tracking](/guides/using-posthog/#error-tracking) are symbolicated. Run it after the step that produces your bundle, in the same job, so the bundle and source maps are on disk. Configure the PostHog Metro config from the [Source maps guide](/guides/using-posthog/#source-maps) so bundles carry the chunk IDs that match them to their source maps.
+Uploads JavaScript source maps to PostHog so that PostHog symbolicates stack traces in [error tracking](/guides/using-posthog/#error-tracking). Run it after the step that produces your bundle, in the same job, so the bundle and source maps are on disk. Configure the PostHog Metro config from the [Source maps guide](/guides/using-posthog/#source-maps) so bundles carry the chunk IDs that match them to their source maps.
 
 > **warning** This step runs the PostHog CLI, which cannot tell a permissions error apart from any other failure. Unlike the other PostHog functions, setting `ignore_error: true` also hides authentication and scope errors.
 
