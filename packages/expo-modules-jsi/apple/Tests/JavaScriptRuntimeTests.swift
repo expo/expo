@@ -693,53 +693,6 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
-  func `legacy async function receives owned arguments and resolves`() async throws {
-    // The transitional overload for the current `expo-modules-macros` output: the closure runs in
-    // asynchronous context and owns `this` and the arguments.
-    let fn = runtime.createAsyncFunction("add") {
-      (this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) in
-      let a = arguments[0].getInt()
-      let b = arguments[1].getInt()
-      return JavaScriptValue(self.runtime, a + b)
-    }
-
-    let result = try await fn.call(arguments: 20, 22).getPromise().await()
-    #expect(result.getInt() == 42)
-    // The pending-call box deregisters when the task runs, so a stream of calls doesn't pin their
-    // arguments until teardown. Only never-run tasks stay registered.
-    #expect(runtime.longLivedObjects.count == 0)
-  }
-
-  @Test
-  func `legacy async function call dropped by a dying scheduler does not touch a freed runtime`() throws {
-    // Same scenario as the test below, through the transitional owned-values overload: its copies
-    // of `this` and the arguments are owned by the runtime's long-lived object collection, so the
-    // teardown sweep releases them and the dropped task has nothing to destroy against freed memory.
-    heldSchedulerTasks.removeAll()
-    do {
-      let baseRuntime = JavaScriptRuntime()
-      let schedulerRuntime = baseRuntime.withUnsafePointee { pointer in
-        JavaScriptRuntime(
-          unsafePointer: pointer,
-          scheduler: UnsafeMutableRawPointer(bitPattern: 0x1)!,
-          dispatch: unsafeBitCast(holdSchedulerTask, to: UnsafeRawPointer.self)
-        )
-      }
-      let fn = schedulerRuntime.createAsyncFunction("asyncFn") {
-        (this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) in
-        return .undefined
-      }
-      _ = try fn.call(arguments: schedulerRuntime.createObject().asValue())
-      #expect(heldSchedulerTasks.count == 1)
-    }
-    do {
-      let droppedTasks = heldSchedulerTasks
-      heldSchedulerTasks.removeAll()
-      _ = consume droppedTasks
-    }
-  }
-
-  @Test
   func `async function call dropped by a dying scheduler does not touch a freed runtime`() throws {
     // Regression test for the reload crash (#47716): the React runtime scheduler tears down with
     // async host function tasks still queued, and the dropped task closures used to own a copy of
