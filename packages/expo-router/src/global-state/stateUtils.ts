@@ -74,6 +74,27 @@ export function getNavigationPayloadFromStateRoute(
   return { name, params, state };
 }
 
+// Reduces a compiled subtree to just its focused path, dropping any materialized `initialRouteName`
+// anchor at every level. A plain `push` must not load the anchor (`initial !== false`), and with the
+// render-time param bridge gone the action itself has to carry the anchorless target subtree — the
+// container installs it verbatim. Keys are preserved, so the installed slice needs no rehydration.
+export function collapseToFocusedPath<T extends NavigationState | PartialState<NavigationState>>(
+  state: T
+): T {
+  const index = state.index ?? state.routes.length - 1;
+  const focusedRoute = state.routes[index];
+
+  if (focusedRoute == null) {
+    return state;
+  }
+
+  const nextFocused = focusedRoute.state
+    ? { ...focusedRoute, state: collapseToFocusedPath(focusedRoute.state) }
+    : focusedRoute;
+
+  return { ...state, index: 0, routes: [nextFocused] };
+}
+
 function getRouteParams(
   params: AnyPartialRoute['params'],
   extraParams?: Record<string, unknown>

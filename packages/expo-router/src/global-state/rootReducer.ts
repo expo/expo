@@ -359,7 +359,11 @@ function getPayloadState(action: NavigationAction): PayloadState | undefined {
 }
 
 function getNestedActionFromAction(action: NavigationAction): NavigationAction | undefined {
-  if (action.type !== 'NAVIGATE' && action.type !== 'NAVIGATE_DEPRECATED') {
+  if (
+    action.type !== 'NAVIGATE' &&
+    action.type !== 'NAVIGATE_DEPRECATED' &&
+    action.type !== 'PUSH'
+  ) {
     return undefined;
   }
 

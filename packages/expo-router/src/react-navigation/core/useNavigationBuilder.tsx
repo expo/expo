@@ -1,5 +1,4 @@
 'use client';
-import deepEqual from 'fast-deep-equal';
 import * as React from 'react';
 import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
@@ -12,7 +11,6 @@ import {
 } from '../../global-state/storeContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
-  CommonActions,
   type DefaultRouterOptions,
   type InternalRouter,
   type NavigationAction,
@@ -72,7 +70,6 @@ type NavigatorRoute = {
   params?: NavigatorScreenParams<ParamListBase>;
 };
 
-const CONSUMED_PARAMS = Symbol('CONSUMED_PARAMS');
 const RECONCILE_ROUTE_NAMES = '__unsafe_reconcile_route_names__';
 
 type ReconcileRouteNamesAction = NavigationAction & {
@@ -283,24 +280,6 @@ const getRouteConfigsFromChildren = <
   return configs;
 };
 
-const getStateFromParams = (params: NavigatorRoute['params']) => {
-  if (params?.state != null) {
-    return params.state;
-  } else if (typeof params?.screen === 'string' && params?.initial !== false) {
-    return {
-      routes: [
-        {
-          name: params.screen,
-          params: params.params,
-          path: params.path,
-        },
-      ],
-    };
-  }
-
-  return undefined;
-};
-
 const isReconcileRouteNamesAction = (
   action: NavigationAction
 ): action is ReconcileRouteNamesAction => action.type === RECONCILE_ROUTE_NAMES;
@@ -398,11 +377,6 @@ export function useNavigationBuilder<
   // `undefined` at the root container, which yields the `navigator` sentinel state key.
   const parentRouteKey = route?.key;
 
-  const isNestedParamsConsumed =
-    typeof route?.params === 'object' && route.params != null
-      ? CONSUMED_PARAMS in route.params && route.params[CONSUMED_PARAMS] === route.params
-      : false;
-
   const {
     children,
     layout,
@@ -482,12 +456,6 @@ export function useNavigationBuilder<
     []
   );
 
-  const doesStateHaveOnlyInvalidRoutes = React.useCallback(
-    (state: NavigationState | PartialState<NavigationState>) =>
-      state.routes.every((r) => !routeNames.includes(r.name)),
-    [routeNames]
-  );
-
   const {
     state: currentState,
     getState: getCurrentState,
@@ -514,17 +482,7 @@ export function useNavigationBuilder<
     setCurrentState(state);
   });
 
-  const [
-    stateBeforeInitialization,
-    initializedState,
-    isFirstStateInitialization,
-    paramsUsedForInitialization,
-  ] = React.useMemo((): [
-    PartialState<State> | undefined,
-    State | undefined,
-    boolean,
-    object | undefined,
-  ] => {
+  const initializedState = React.useMemo((): State | undefined => {
     // If the state was already cleaned up, but we have it stored in ref,
     // It likely got cleaned up due to `<Activity mode="hidden">`
     // We should reuse this state to avoid remounting screens
@@ -538,26 +496,13 @@ export function useNavigationBuilder<
             routeGetIdList,
           });
 
-      return [undefined, state, false, undefined];
+      return state;
     }
 
     const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
       (acc, curr) => {
         const { initialParams } = screens[curr]!.props;
-        const initialParamsFromParams =
-          route?.params?.state == null &&
-          route?.params?.initial !== false &&
-          route?.params?.screen === curr
-            ? route.params.params
-            : undefined;
-
-        acc[curr] =
-          initialParams !== undefined || initialParamsFromParams !== undefined
-            ? {
-                ...initialParams,
-                ...initialParamsFromParams,
-              }
-            : undefined;
+        acc[curr] = initialParams;
 
         return acc;
       },
@@ -568,55 +513,29 @@ export function useNavigationBuilder<
     // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
     // Otherwise assume that the state was provided as initial state
     // So we need to rehydrate it to make it usable
-    if (
-      currentState === undefined &&
-      route?.params?.state == null &&
-      !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
-      !isNestedParamsConsumed
-    ) {
-      return [
-        undefined,
-        router.getInitialState({
-          routeNames,
-          parentRouteKey,
-          routeParamList: initialRouteParamList,
-          routeGetIdList,
-        }),
-        true,
-        undefined,
-      ];
+    if (currentState === undefined) {
+      return router.getInitialState({
+        routeNames,
+        parentRouteKey,
+        routeParamList: initialRouteParamList,
+        routeGetIdList,
+      });
     } else {
-      const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
-      const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
+      const stateToHydrate = currentState as PartialState<State> | undefined;
 
-      const stateBeforeInitialization = (stateFromParams ?? currentState) as
-        | PartialState<State>
-        | undefined;
-
-      const hydratedState =
-        stateBeforeInitialization == null
-          ? router.getInitialState({
-              routeNames,
-              parentRouteKey,
-              routeParamList: initialRouteParamList,
-              routeGetIdList,
-            })
-          : router.getRehydratedState(stateBeforeInitialization, {
-              routeNames,
-              parentRouteKey,
-              routeParamList: initialRouteParamList,
-              routeGetIdList,
-            });
-
-      if (
-        stateBeforeInitialization != null &&
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        doesStateHaveOnlyInvalidRoutes(stateBeforeInitialization)
-      ) {
-        return [stateBeforeInitialization, hydratedState, true, paramsForState];
-      }
-
-      return [undefined, hydratedState, false, paramsForState];
+      return stateToHydrate == null
+        ? router.getInitialState({
+            routeNames,
+            parentRouteKey,
+            routeParamList: initialRouteParamList,
+            routeGetIdList,
+          })
+        : router.getRehydratedState(stateToHydrate, {
+            routeNames,
+            parentRouteKey,
+            routeParamList: initialRouteParamList,
+            routeGetIdList,
+          });
     }
     // We explicitly don't include routeNames, route.params etc. in the dep list
     // below. We want to avoid forcing a new state to be calculated in those cases
@@ -632,25 +551,15 @@ export function useNavigationBuilder<
     (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
   );
 
+  // An unhandled state is a captured NAVIGATE/RESET target whose routes were all invalid for this
+  // navigator (see `onUnhandledAction` below). We store it so `lastUnhandled` can restore it once
+  // the route names change to include those routes.
   const [unhandledState, setUnhandledState] = React.useState<
     NavigationState | PartialState<NavigationState> | undefined
-  >(stateBeforeInitialization);
+  >(undefined);
   const unhandledStateRef = React.useRef<
     NavigationState | PartialState<NavigationState> | undefined
-  >(stateBeforeInitialization);
-
-  // An unhandled state is state that didn't have any valid routes
-  // So it was unhandled, i.e. not used for initializing the state
-  // It's possible that they were absent due to conditional render
-  // Store this state so we can reuse it if the routes change later
-  if (
-    options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-    stateBeforeInitialization &&
-    unhandledState !== stateBeforeInitialization
-  ) {
-    unhandledStateRef.current = stateBeforeInitialization;
-    setUnhandledState(stateBeforeInitialization);
-  }
+  >(undefined);
 
   const contextState =
     // If the state isn't initialized, or stale, use the state we initialized instead
@@ -661,104 +570,6 @@ export function useNavigationBuilder<
   const storeSlice = useStoreSlice(contextState?.key);
   let state = (storeSlice ?? contextState) as State;
 
-  let nextState: State = state;
-
-  let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
-
-  if (route?.params && !didConsumeNestedParams) {
-    let action: CommonActions.Action | undefined;
-
-    if (
-      typeof route.params.state === 'object' &&
-      route.params.state != null &&
-      !isNestedParamsConsumed
-    ) {
-      didConsumeNestedParams = true;
-
-      if (
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        doesStateHaveOnlyInvalidRoutes(route.params.state)
-      ) {
-        if (route.params.state !== unhandledState) {
-          unhandledStateRef.current = route.params.state;
-          setUnhandledState(route.params.state);
-        }
-      } else {
-        // If the route was updated with new state, we should reset to it
-        action = CommonActions.reset(route.params.state);
-      }
-    } else if (
-      typeof route.params.screen === 'string' &&
-      ((route.params.initial === false && isFirstStateInitialization) || !isNestedParamsConsumed)
-    ) {
-      didConsumeNestedParams = true;
-
-      if (
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        !routeNames.includes(route.params.screen)
-      ) {
-        const state = getStateFromParams(route.params);
-
-        if (state != null && !deepEqual(state, unhandledState)) {
-          unhandledStateRef.current = state;
-          setUnhandledState(state);
-        }
-      } else {
-        // If the route was updated with new screen name and/or params, we should navigate there
-        action = CommonActions.navigate({
-          name: route.params.screen,
-          params: route.params.params,
-          path: route.params.path,
-          merge: route.params.merge,
-          pop: route.params.pop,
-        });
-      }
-    }
-
-    // The update should be limited to current navigator only, so we call the router manually
-    const updatedState = action
-      ? router.getStateForAction(nextState, action, {
-          routeNames,
-          parentRouteKey,
-          routeParamList,
-          routeGetIdList,
-        })
-      : null;
-
-    nextState =
-      updatedState !== null
-        ? router.getRehydratedState(updatedState, {
-            routeNames,
-            parentRouteKey,
-            routeParamList,
-            routeGetIdList,
-          })
-        : nextState;
-  }
-
-  React.useEffect(() => {
-    if (didConsumeNestedParams && typeof route?.params === 'object' && route.params != null) {
-      // Track whether the params have been already consumed
-      // Set it to the same object, so merged params can be handled again
-      Object.defineProperty(route.params, CONSUMED_PARAMS, {
-        value: route.params,
-        enumerable: false,
-      });
-    }
-  }, [didConsumeNestedParams, route?.params]);
-
-  const shouldUpdate = state !== nextState;
-
-  useClientLayoutEffect(() => {
-    if (shouldUpdate) {
-      setState(nextState);
-    }
-  });
-
-  // The up-to-date state will come in next render, but we don't need to wait for it
-  // We can't use the outdated state since the screens have changed, which will cause error due to mismatched config
-  // So we override the state object we return to use the latest state as soon as possible
-  state = nextState;
   const reconciliationState = state;
   state = getStateForRenderableRoutes(
     state,

@@ -62,4 +62,17 @@ describe('global-state Step 11-b cleanup', () => {
     expect(readCoreFile('useDescriptors.tsx')).not.toContain('onRouteFocus');
     expect(readCoreFile('NavigationBuilderContext.tsx')).not.toContain('onRouteFocus');
   });
+
+  it('removes the render-time nested structural-param bridge from the builder', () => {
+    const navigationBuilder = readCoreFile('useNavigationBuilder.tsx');
+
+    // The container's root dispatch is now the only interpreter of nested `screen`/`state`/`initial`
+    // params; the builder must not decode or consume them during render.
+    expect(navigationBuilder).not.toContain('CONSUMED_PARAMS');
+    expect(navigationBuilder).not.toContain('getStateFromParams');
+    expect(navigationBuilder).not.toContain('initialParamsFromParams');
+
+    // No direct structural reads of the nested-navigation params object.
+    expect(navigationBuilder).not.toMatch(/params\??\.(screen|state|initial)\b/);
+  });
 });

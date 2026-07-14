@@ -8,6 +8,7 @@ import {
 } from '../navigationParams';
 import type { SingularOptions } from '../useScreens';
 import {
+  collapseToFocusedPath,
   findDivergentState,
   getNavigationPayloadFromStateRoute,
   getPayloadFromStateRoute,
@@ -121,11 +122,19 @@ export function getNavigateAction(
 
   const params = appendInternalExpoRouterParams(rootPayload.params, expoParams);
 
+  // A plain `push` must skip a nested navigator's `initialRouteName` anchor (`initial !== false`).
+  // Collapse the compiled subtree to its focused path so the created navigator contains only the
+  // pushed target; `withAnchor` (`initial: false`) keeps the full subtree so the anchor loads.
+  const payloadState =
+    type === 'PUSH' && subtreePayload.state != null && rootPayload.params.initial !== false
+      ? collapseToFocusedPath(subtreePayload.state)
+      : subtreePayload.state;
+
   const payload = {
     name: rootPayload.screen,
     params,
     singular,
-    ...(subtreePayload.state ? { state: subtreePayload.state } : null),
+    ...(payloadState ? { state: payloadState } : null),
   };
 
   return {
