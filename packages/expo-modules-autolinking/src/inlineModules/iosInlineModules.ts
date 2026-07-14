@@ -5,7 +5,7 @@ import { getMirrorStateObject } from './inlineModules';
 export async function getIosInlineModulesClassNames(
   options: InlineModulesScanOptions
 ): Promise<ModuleIosConfig[]> {
-	const stateObject = await getMirrorStateObject(options);
+  const stateObject = await getMirrorStateObject(options);
   return stateObject.swiftModuleClassNames.map((className: string) => {
     return {
       class: className,
