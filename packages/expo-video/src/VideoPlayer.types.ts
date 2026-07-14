@@ -230,7 +230,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    *
    * Set this property to `null` to remove the limit and allow all available resolutions.
    *
-   * > On Android this is applied through ExoPlayer's `TrackSelectionParameters.Builder.setMaxVideoSize`. On iOS it maps to [`AVPlayerItem.preferredMaximumResolution`](https://developer.apple.com/documentation/avfoundation/avplayeritem/preferredmaximumresolution).
+   * > Note: on iOS this property only applies to HTTP Live Streaming (HLS) sources.
    *
    * @default null
    * @platform android
