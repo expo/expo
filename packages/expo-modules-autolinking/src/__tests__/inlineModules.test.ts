@@ -10,9 +10,8 @@ import {
 import type { InlineModulesMirror } from '../inlineModules/inlineModules';
 import {
   getMirrorStateObject,
-  hasKotlinModuleDefinition,
+  getKotlinInlineModuleInfo,
   hasSwiftModuleDefinition,
-  getKotlinFileNameWithItsPackage,
   inlineModuleFileNameInformation,
 } from '../inlineModules/inlineModules';
 import { isTargetInInlineModulesTargets } from '../inlineModules/iosInlineModules';
@@ -39,10 +38,9 @@ public class SimpleModule : Module() {
 }
 `;
 
-const noPackageKotlinModule = `
-
-public class SomeModule : Module() {
-  override fun definition() = ModuleDef
+const noPackageKotlinModule = `public class SomeModule : Module() {
+  override fun definition() = ModuleDefinition { Name("SomeModule") }
+}
 `;
 
 describe('inlineModules.ts', () => {
@@ -96,40 +94,6 @@ describe('inlineModules.ts', () => {
     });
   });
 
-  describe('hasKotlinModuleDefinition', () => {
-    it('detects an inline module returning ModuleDefinition', async () => {
-      vol.fromJSON({
-        '/example-project/SimpleModule.kt':
-          'class SimpleModule : Module() {\n  override fun definition() = ModuleDefinition { Name("SimpleModule") }\n}',
-      });
-
-      await expect(hasKotlinModuleDefinition('/example-project/SimpleModule.kt')).resolves.toBe(
-        true
-      );
-    });
-
-    it('detects an inline module returning a fully-qualified ModuleDefinition', async () => {
-      vol.fromJSON({
-        '/example-project/SimpleModule.kt':
-          'class SimpleModule : Module() {\n  override fun definition() = expo.modules.kotlin.modules.ModuleDefinition { Name("SimpleModule") }\n}',
-      });
-
-      await expect(hasKotlinModuleDefinition('/example-project/SimpleModule.kt')).resolves.toBe(
-        true
-      );
-    });
-
-    it('does not treat supporting kotlin files as modules', async () => {
-      vol.fromJSON({
-        '/example-project/Helper.compile.kt': 'package some.pkg\nclass Helper',
-      });
-
-      await expect(hasKotlinModuleDefinition('/example-project/Helper.compile.kt')).resolves.toBe(
-        false
-      );
-    });
-  });
-
   describe('hasSwiftModuleDefinition', () => {
     it('detects an inline module returning ModuleDefinition', async () => {
       vol.fromJSON({
@@ -164,28 +128,66 @@ describe('inlineModules.ts', () => {
     });
   });
 
-  describe('getKotlinFileNameWithItsPackage', () => {
-    it('extracts the package name and appends the file name', async () => {
+  describe('getKotlinInlineModuleInfo', () => {
+    it('detects a module definition and resolves its package-qualified class name', async () => {
       vol.fromJSON({
         '/example-project/SimpleModule.kt': properKotlinModule,
       });
 
-      const result = await getKotlinFileNameWithItsPackage('/example-project/SimpleModule.kt');
-      expect(result).toBe(properKotlinModuleNameWithPackage);
+      const result = await getKotlinInlineModuleInfo('/example-project/SimpleModule.kt');
+      expect(result).toEqual({
+        hasModuleDefinition: true,
+        classNameWithPackage: properKotlinModuleNameWithPackage,
+      });
     });
 
-    it('returns null if the package regex fails', async () => {
+    it('detects a fully-qualified ModuleDefinition', async () => {
+      vol.fromJSON({
+        '/example-project/SimpleModule.kt':
+          'package some.pkg\nclass SimpleModule : Module() {\n  override fun definition() = expo.modules.kotlin.modules.ModuleDefinition { Name("SimpleModule") }\n}',
+      });
+
+      const result = await getKotlinInlineModuleInfo('/example-project/SimpleModule.kt');
+      expect(result).toEqual({
+        hasModuleDefinition: true,
+        classNameWithPackage: 'some.pkg.SimpleModule',
+      });
+    });
+
+    it('does not treat supporting kotlin files as modules', async () => {
+      vol.fromJSON({
+        '/example-project/Helper.compile.kt': 'package some.pkg\nclass Helper',
+      });
+
+      const result = await getKotlinInlineModuleInfo('/example-project/Helper.compile.kt');
+      expect(result).toEqual({ hasModuleDefinition: false, classNameWithPackage: null });
+    });
+
+    it('reports the module but a null class name when the package regex fails', async () => {
       vol.fromJSON({
         '/example-project/NoPackageModule.kt': noPackageKotlinModule,
       });
 
-      const result = await getKotlinFileNameWithItsPackage('/example-project/NoPackageModule.kt');
-      expect(result).toBeNull();
+      const result = await getKotlinInlineModuleInfo('/example-project/NoPackageModule.kt');
+      expect(result).toEqual({ hasModuleDefinition: true, classNameWithPackage: null });
     });
 
-    it("returns null if the file doesn't exists", async () => {
-      const result = await getKotlinFileNameWithItsPackage('/example-project/NonExistentModule.kt');
-      expect(result).toBeNull();
+    it("returns no module when the file doesn't exist", async () => {
+      const result = await getKotlinInlineModuleInfo('/example-project/NonExistentModule.kt');
+      expect(result).toEqual({ hasModuleDefinition: false, classNameWithPackage: null });
+    });
+
+    it('finds the package even when a long comment precedes the declaration', async () => {
+      const longComment = `// ${'x'.repeat(2000)}\n`;
+      vol.fromJSON({
+        '/example-project/CommentedModule.kt': `${longComment}${properKotlinModule}`,
+      });
+
+      const result = await getKotlinInlineModuleInfo('/example-project/CommentedModule.kt');
+      expect(result).toEqual({
+        hasModuleDefinition: true,
+        classNameWithPackage: 'some.package.inlineModulesExamples.CommentedModule',
+      });
     });
   });
 
@@ -208,10 +210,10 @@ describe('inlineModules.ts', () => {
           'package app.valid\nclass ValidAndroid2 : Module() {\n  override fun definition() = ModuleDefinition { Name("ValidAndroid2") }\n}',
       });
 
-      const result = await getMirrorStateObject(
-        ['app', 'src/nested/', '../other-project/src'],
-        '/example-project'
-      );
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['app', 'src/nested/', '../other-project/src'],
+        appRoot: '/example-project',
+      });
 
       expect(result.swiftModuleClassNames).toEqual(['ValidApple1', 'ValidApple2']);
       expect(result.kotlinClasses).toEqual(['app.valid.ValidAndroid1', 'app.valid.ValidAndroid2']);
@@ -260,7 +262,10 @@ describe('inlineModules.ts', () => {
         '/example-project/intents/Helper.compile.kt': 'package some.pkg',
       });
 
-      const result = await getMirrorStateObject(['intents'], '/example-project');
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['intents'],
+        appRoot: '/example-project',
+      });
 
       expect(result.swiftModuleClassNames).toEqual(['MyModule']);
       expect(result.kotlinClasses).toEqual([]);
@@ -270,6 +275,7 @@ describe('inlineModules.ts', () => {
         '/example-project/intents/MyModule.swift',
       ]);
     });
+
   });
 
   describe('module filenames with dots', () => {
@@ -281,7 +287,10 @@ describe('inlineModules.ts', () => {
           'package some.pkg\nclass MyModule : Module() {\n  override fun definition() = ModuleDefinition { Name("MyModule") }\n}',
       });
 
-      const result = await getMirrorStateObject(['modules'], '/example-project');
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['modules'],
+        appRoot: '/example-project',
+      });
 
       expect(result.kotlinClasses).toEqual(['some.pkg.My.Module']);
       expect(result.files.map((file) => file.filePath)).toEqual([
@@ -298,7 +307,10 @@ describe('inlineModules.ts', () => {
           'import ExpoModulesCore\nfunc definition() -> ModuleDefinition',
       });
 
-      const result = await getMirrorStateObject(['intents'], '/example-project');
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['intents'],
+        appRoot: '/example-project',
+      });
 
       expect(result.swiftModuleClassNames).toEqual(['My.Module']);
       expect(result.files.map((file) => file.filePath)).toEqual([
@@ -315,7 +327,10 @@ describe('inlineModules.ts', () => {
           'internal import ExpoModulesCore\npublic final class MyModule: Module {}',
       });
 
-      const result = await getMirrorStateObject(['intents'], '/example-project');
+      const result = await getMirrorStateObject({
+        watchedDirectories: ['intents'],
+        appRoot: '/example-project',
+      });
 
       expect(result.swiftModuleClassNames).toEqual([]);
       expect(warn).not.toHaveBeenCalled();
