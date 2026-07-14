@@ -67,7 +67,11 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // The React Native build scripts always enable the cache reset but we shouldn't need this in CI environments.
   // By disabling it, we can eagerly bundle code before the build and reuse the cached artifacts in subsequent builds.
-  if (env.CI && options.resetCache) {
+  // Local EAS production builds are excluded: `eas build --local` reuses a persistent machine where a stale Metro
+  // cache survives across builds, so cached transforms can reference generated files (e.g. worklets bundle-mode
+  // `.worklets/<hash>.js`) that a fresh checkout never regenerated.
+  const isLocalEasProductionBuild = !options.dev && env.EAS_BUILD_RUNNER === 'local-build-plugin';
+  if (env.CI && !isLocalEasProductionBuild && options.resetCache) {
     debug('CI environment detected, disabling automatic cache reset');
     options.resetCache = false;
   }
