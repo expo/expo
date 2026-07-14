@@ -123,6 +123,21 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoObserveScreen'));
+    },
+    name: 'ExpoObserve',
+    options: { headerShown: false, title: 'Expo Observe' },
+    route: 'expo-observe',
+    linking: {
+      path: 'expo-observe',
+      screens: {
+        index: '',
+        filteredParams: 'filtered/:userId/:accountId',
+      },
+    },
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/AsyncStorageScreen'));
     },
     name: 'AsyncStorage',

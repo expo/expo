@@ -1,6 +1,8 @@
 package expo.modules.camera
 
 import android.Manifest
+import android.app.Activity
+import android.content.IntentSender
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -8,11 +10,18 @@ import android.util.Base64
 import android.util.Log
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import expo.modules.camera.analyzers.BarCodeScannerResultSerializer
 import expo.modules.camera.analyzers.MLKitBarCodeScanner
+import expo.modules.camera.documentscanner.DocumentScannerActivityResult
+import expo.modules.camera.documentscanner.DocumentScannerContract
+import expo.modules.camera.documentscanner.DocumentScannerContractInput
+import expo.modules.camera.documentscanner.DocumentScannerResultParser
 import expo.modules.camera.records.BarcodeSettings
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraMode
+import expo.modules.camera.records.DocumentScannerOptions
 import expo.modules.camera.records.CameraRatio
 import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
@@ -29,6 +38,7 @@ import expo.modules.core.utilities.VRUtilities
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
@@ -38,6 +48,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 
@@ -62,6 +73,11 @@ val cameraPermissions = if (VRUtilities.isQuest()) {
 
 class CameraViewModule : Module() {
   private val moduleScope = CoroutineScope(Dispatchers.Main)
+
+  private var pendingDocumentScanIntentSender: IntentSender? = null
+  private var documentScanPromise: Promise? = null
+  private lateinit var documentScannerLauncher:
+    AppContextActivityResultLauncher<DocumentScannerContractInput, DocumentScannerActivityResult>
 
   override fun definition() = ModuleDefinition {
     Name("ExpoCamera")
@@ -197,6 +213,43 @@ class CameraViewModule : Module() {
 
     AsyncFunction("dismissScanner") {
       // Aligned with iOS, this function is a no-op on Android since the scanner is dismissed automatically
+    }
+
+    Property("isDocumentScannerAvailable") {
+      CameraUtils.isMLKitDocumentScannerAvailable() && CameraUtils.hasGooglePlayServices(appContext.reactContext)
+    }
+
+    RegisterActivityContracts {
+      documentScannerLauncher = registerForActivityResult(
+        DocumentScannerContract { pendingDocumentScanIntentSender }
+      ) { _, _ ->
+        pendingDocumentScanIntentSender = null
+        documentScanPromise?.reject(
+          CameraExceptions.DocumentScanningFailedException("the document scan was interrupted because the screen was recreated")
+        )
+        documentScanPromise = null
+      }
+    }
+
+    AsyncFunction("scanDocumentAsync") { options: DocumentScannerOptions?, promise: Promise ->
+      if (!CameraUtils.isMLKitDocumentScannerAvailable()) {
+        promise.reject(CameraExceptions.DocumentScannerUnavailableException())
+        return@AsyncFunction
+      }
+      if (!CameraUtils.hasGooglePlayServices(appContext.reactContext)) {
+        promise.reject(CameraExceptions.GooglePlayServicesUnavailableException())
+        return@AsyncFunction
+      }
+      val activity = appContext.currentActivity
+      if (activity == null) {
+        promise.reject(Exceptions.MissingActivity())
+        return@AsyncFunction
+      }
+      if (documentScanPromise != null) {
+        promise.reject(CameraExceptions.DocumentScanningFailedException("a document scan is already in progress"))
+        return@AsyncFunction
+      }
+      launchDocumentScanner(activity, options, promise)
     }
 
     OnDestroy {
@@ -482,6 +535,66 @@ class CameraViewModule : Module() {
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
+
+  private fun launchDocumentScanner(activity: Activity, options: DocumentScannerOptions?, promise: Promise) {
+    documentScanPromise = promise
+    try {
+      GmsDocumentScanning.getClient(buildDocumentScannerOptions(options))
+        .getStartScanIntent(activity)
+        .addOnSuccessListener { intentSender ->
+          pendingDocumentScanIntentSender = intentSender
+          documentScannerLauncher.launch(DocumentScannerContractInput()) { result ->
+            handleDocumentScanResult(result)
+          }
+        }
+        .addOnFailureListener { e ->
+          documentScanPromise = null
+          promise.reject(CameraExceptions.DocumentScanningFailedException(e.message))
+        }
+    } catch (e: Exception) {
+      documentScanPromise = null
+      promise.reject(CameraExceptions.DocumentScanningFailedException(e.message))
+    }
+  }
+
+  private fun buildDocumentScannerOptions(options: DocumentScannerOptions?): GmsDocumentScannerOptions {
+    val builder = GmsDocumentScannerOptions.Builder()
+      .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
+    if (options?.requestPdf == true) {
+      builder.setResultFormats(
+        GmsDocumentScannerOptions.RESULT_FORMAT_JPEG,
+        GmsDocumentScannerOptions.RESULT_FORMAT_PDF
+      )
+    } else {
+      builder.setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
+    }
+    return builder.build()
+  }
+
+  private fun handleDocumentScanResult(activityResult: DocumentScannerActivityResult) {
+    pendingDocumentScanIntentSender = null
+    val promise = documentScanPromise ?: return
+    documentScanPromise = null
+    if (activityResult.cancelled || activityResult.result == null) {
+      promise.resolve(null)
+      return
+    }
+    val reactContext = appContext.reactContext
+    if (reactContext == null) {
+      promise.reject(Exceptions.ReactContextLost())
+      return
+    }
+    moduleScope.launch {
+      try {
+        val bundle = withContext(Dispatchers.IO) {
+          DocumentScannerResultParser.parse(reactContext, activityResult.result, cacheDirectory)
+        }
+        promise.resolve(bundle)
+      } catch (e: Exception) {
+        promise.reject(CameraExceptions.DocumentScanningFailedException(e.message))
+      }
+    }
+  }
 
   companion object {
     internal val TAG = CameraViewModule::class.java.simpleName

@@ -1,5 +1,9 @@
 name: E2E Test Suite for Expo Brownfield
 
+defaults:
+  tools:
+    pnpm: '10.34.5'
+
 on:
   workflow_dispatch: {}
   push:

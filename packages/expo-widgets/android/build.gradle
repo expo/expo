@@ -3,7 +3,6 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
   id 'com.android.library'
   id 'expo-module-gradle-plugin'
-  id 'org.jetbrains.kotlin.plugin.compose' version "$kotlinVersion"
 }
 
 group = 'expo.modules.widgets'
@@ -64,7 +63,6 @@ android {
 
   buildFeatures {
     prefab true
-    compose true
   }
 
   packagingOptions {
@@ -145,8 +143,5 @@ dependencies {
   implementation 'com.facebook.react:react-android'
   implementation 'com.facebook.react:hermes-android'
   implementation expoModule.getExpoDependency("expo-ui")
-  implementation 'androidx.compose.foundation:foundation-android:1.10.6'
-  implementation 'androidx.compose.ui:ui-android:1.10.6'
-  api 'androidx.glance:glance:1.2.0-rc01'
-  api 'androidx.glance:glance-appwidget:1.2.0-rc01'
+  api 'io.github.jakex7.peek:peek-emittables:0.1.0'
 }

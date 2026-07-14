@@ -464,7 +464,7 @@ jobs:
 
 ### `jobs.<job_id>.env`
 
-Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `require-approval`, `doc`, `get-build`, and `slack` jobs).
+Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `branch-delete`, `doc`, `get-build`, `github-comment`, `require-approval`, and `slack` jobs).
 
 ```yaml
 jobs:
@@ -516,6 +516,15 @@ jobs:
 ## `defaults`
 
 Parameters to use as defaults for all jobs defined in the workflow configuration.
+
+### `defaults.image`
+
+Default VM image to use for all jobs in the workflow. Using an `sdk-XX` image tag is recommended. See [Infrastructure](/build-reference/infrastructure/) for available images. Individual jobs can override this value with [`jobs.<job_id>.image`](#jobsjob_idimage).
+
+```yaml
+defaults:
+  image: sdk-57
+```
 
 ### `defaults.run.working_directory`
 
@@ -1161,6 +1170,7 @@ jobs:
     params:
       alias: string # optional
       prod: boolean # optional
+      source_maps: boolean # optional
 ```
 
 This job outputs the following properties:
@@ -1379,7 +1389,8 @@ jobs:
     type: maestro
     # @end #
     environment: production | preview | development # optional, defaults to preview
-    image: string # optional. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on  for a list of available images.
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    runs_on: string # optional. Use a linux-*-nested-virtualization worker for Android Emulator tests. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on for available options.
     params:
       build_id: string # required
       flow_path: string | string[] # required
@@ -1392,7 +1403,8 @@ jobs:
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
       android_system_image_package: string # optional. Android Emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
-      output_format?: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+      output_format: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+      skip_build_check: boolean # optional, defaults to false. Skip validation of the build (whether an iOS build is a simulator build).
     hooks:
       before_maestro_tests: step[] # optional
       after_maestro_tests: step[] # optional
@@ -1411,7 +1423,7 @@ jobs:
     type: maestro-cloud
     # @end #
     environment: production | preview | development # optional, defaults to preview
-    image: string # optional. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on  for a list of available images.
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
     params:
       build_id: string # required. ID of the build to test.
       maestro_project_id: string # required. Maestro Cloud project ID. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`.
@@ -1424,6 +1436,7 @@ jobs:
       device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`.
       device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro list-cloud-devices` for a list of supported values.
       device_os: string # optional. OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro list-cloud-devices` for a list of supported values.
+      skip_build_check: boolean # optional, defaults to false. Skip validation of the build (whether an iOS build is a simulator build).
       name: string # optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
       branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, *not* whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
@@ -1532,8 +1545,12 @@ jobs:
       build_id: string # required
       profile: string # optional
       embed_bundle_assets: boolean # optional
+      js_bundle_only: boolean # optional
+      ios_signing_use_source_app_entitlements: boolean # optional
+      ios_signing_app_entitlements_path: string # optional
       message: string # optional
       repack_version: string # optional
+      repack_package: string # optional
     # @end #
 ```
 
@@ -1610,7 +1627,7 @@ jobs:
 
 ### `jobs.<job_id>.runs_on`
 
-Specifies the worker that will execute the job. Available only on custom jobs.
+Specifies the worker that will execute the job. Available on custom jobs and on the `build`, `maestro`, `maestro-cloud`, and `repack` pre-packaged jobs.
 
 ```yaml
 jobs:

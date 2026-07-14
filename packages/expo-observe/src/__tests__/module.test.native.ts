@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 export {};
 
-const mockNative = {
+const mockNativeTarget = {
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
 };
+// The real native module is a JSI host object.
+// Mirror that here so the AppMetrics-fallback tests exercise the actual on-device bug — a fallback
+// gated on `in`/`hasOwnProperty` would wrongly treat every prop as native and never forward.
+const mockNative = new Proxy(mockNativeTarget, {
+  has: () => true,
+});
 
 const mockAppMetrics = {
   logEvent: jest.fn(),
@@ -31,6 +37,7 @@ jest.mock('../integrations/expo-router/router', () => ({
 jest.mock('../integrations/expo-router/init', () => ({
   initRouterIntegration: jest.fn(),
   isInitialized: jest.fn(() => false),
+  getRouterIntegrationConfig: jest.fn(() => undefined),
   initListeners: jest.fn(() => () => {}),
 }));
 
@@ -42,6 +49,7 @@ jest.mock('../integrations/react-navigation/reactNavigation', () => ({
 jest.mock('../integrations/react-navigation/init', () => ({
   initReactNavigationIntegration: jest.fn(),
   isInitialized: jest.fn(() => false),
+  getReactNavigationIntegrationConfig: jest.fn(() => undefined),
 }));
 
 let warnSpy: jest.SpyInstance;
@@ -59,6 +67,7 @@ beforeEach(() => {
   jest.doMock('../integrations/expo-router/init', () => ({
     initRouterIntegration: jest.fn(),
     isInitialized: jest.fn(() => false),
+    getRouterIntegrationConfig: jest.fn(() => undefined),
     initListeners: jest.fn(() => () => {}),
   }));
   jest.doMock('../integrations/react-navigation/reactNavigation', () => ({
@@ -68,6 +77,7 @@ beforeEach(() => {
   jest.doMock('../integrations/react-navigation/init', () => ({
     initReactNavigationIntegration: jest.fn(),
     isInitialized: jest.fn(() => false),
+    getReactNavigationIntegrationConfig: jest.fn(() => undefined),
   }));
 });
 
@@ -100,6 +110,31 @@ describe('module Proxy', () => {
     }
   );
 
+  it('forwards object integration config to native unchanged', () => {
+    const Observe = loadModule();
+    const { initRouterIntegration } = loadInit();
+    const { initReactNavigationIntegration } = loadReactNavigationInit();
+    const routerConfig = { filteredParams: ['userId', 'token'] };
+    const reactNavigationConfig = { filteredParams: ['userIdRN', 'Rtoken'] };
+    Observe.configure({
+      environment: 'test',
+      integrations: {
+        'expo-router': routerConfig,
+        'react-navigation': reactNavigationConfig,
+      },
+    });
+
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+      integrations: {
+        'expo-router': routerConfig,
+        'react-navigation': reactNavigationConfig,
+      },
+    });
+    expect(initRouterIntegration).toHaveBeenCalledWith(routerConfig);
+    expect(initReactNavigationIntegration).not.toHaveBeenCalled();
+  });
+
   it("calls initRouterIntegration when router is installed and integrations['expo-router'] is true", () => {
     const Observe = loadModule();
     const { initRouterIntegration } = loadInit();
@@ -108,6 +143,7 @@ describe('module Proxy', () => {
       integrations: { 'expo-router': true },
     });
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
+    expect(initRouterIntegration).toHaveBeenCalledWith(true);
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
@@ -221,6 +257,20 @@ describe('module Proxy', () => {
       integrations: { 'react-navigation': true },
     });
     expect(initReactNavigationIntegration).toHaveBeenCalledTimes(1);
+    expect(initReactNavigationIntegration).toHaveBeenCalledWith(true);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("passes integrations['react-navigation'] object config to initReactNavigationIntegration", () => {
+    const Observe = loadModule();
+    const { initReactNavigationIntegration } = loadReactNavigationInit();
+    const config = { filteredParams: ['userId', 'token'] };
+    Observe.configure({
+      environment: 'test',
+      integrations: { 'react-navigation': config },
+    });
+    expect(initReactNavigationIntegration).toHaveBeenCalledTimes(1);
+    expect(initReactNavigationIntegration).toHaveBeenCalledWith(config);
     expect(warnSpy).not.toHaveBeenCalled();
   });
 

@@ -7,7 +7,9 @@ description: Solutions for common EAS Observe issues.
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
+
+<TabsGroup>
 
 ## Common issues
 
@@ -59,7 +61,7 @@ This metric requires manual instrumentation. Verify that:
 
 <Tabs>
 
-<Tab label="SDK 56">
+<Tab label="SDK 56 and later">
 
 1. You are calling `markInteractive()` (from `useObserve()`) after your splash screen is hidden.
 2. The call is actually being executed (add a `console.log` to verify).
@@ -170,3 +172,5 @@ After completing the migration, create a new build of your app:
 </Step>
 
 </Collapsible>
+
+</TabsGroup>

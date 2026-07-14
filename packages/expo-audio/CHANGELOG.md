@@ -8,6 +8,8 @@
 
 - Added support for storing recordings in the app document directory on Android and iOS. ([#46189](https://github.com/expo/expo/pull/46189) by [@shubh73](https://github.com/shubh73))
 - Support lockscreen controls with playlists. ([#46020](https://github.com/expo/expo/pull/46020) by [@alanjhughes](https://github.com/alanjhughes))
+- Added a `fileSize` field to `RecorderState` reporting the current size of the recording file in bytes. ([#46808](https://github.com/expo/expo/pull/46808) by [@behenate](https://github.com/behenate))
+- Added `startFileRecordingAsync` and `stopFileRecordingAsync` methods to `AudioStream` for continuous WAV and PCM file recording alongside buffer streaming. ([#46771](https://github.com/expo/expo/pull/46771) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 

@@ -19,6 +19,8 @@
 - [iOS] Respect an explicit `ios.usePrecompiledModules: false` even when `EXPO_USE_PRECOMPILED_MODULES` is already set in the environment (e.g. EAS Build). ([#46983](https://github.com/expo/expo/pull/46983) by [@ryanda9910](https://github.com/ryanda9910))
 - [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.5.0`'s generated component and native view sources. ([#47201](https://github.com/expo/expo/pull/47201) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Add the missing `ENABLE_CROSS_RUNTIME_STACK_TRACES` flag to the `react-native-worklets` precompile config so its prebuilt XCFramework matches the package's `staticFlags.json`. ([#47478](https://github.com/expo/expo/pull/47478) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Under precompiled modules, preserve a dynamic-framework subgraph set up by an earlier `pre_install` hook (e.g. `@rnmapbox/maps`) — both the dynamic frameworks and the pods that link against them — instead of forcing them back to static libraries. ([#47500](https://github.com/expo/expo/pull/47500) by [@kudo](https://github.com/kudo))
+- [iOS] Raise resource bundle targets to their pod's effective deployment target, fixing builds failing on Xcode 27 for pods whose podspec declares a deployment target below iOS 15.0 (e.g. `ReachabilitySwift`). ([#47562](https://github.com/expo/expo/pull/47562) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
