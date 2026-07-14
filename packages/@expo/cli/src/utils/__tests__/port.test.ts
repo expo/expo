@@ -1,5 +1,6 @@
 import { freePortAsync, testPortAsync } from '../freeport';
 import { getRunningProcess } from '../getRunningProcess';
+import { isInteractive } from '../interactive';
 import { choosePortAsync, ensurePortAvailabilityAsync, resolvePortAsync } from '../port';
 import { confirmAsync } from '../prompts';
 
@@ -10,6 +11,9 @@ jest.mock('../freeport', () => ({
 
 jest.mock('../../log');
 jest.mock('../prompts');
+jest.mock('../interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 jest.mock('../getRunningProcess', () => ({
   getRunningProcess: jest.fn(() => null),
 }));
@@ -84,6 +88,30 @@ describe(choosePortAsync, () => {
       command: 'npx expo',
     });
     jest.mocked(confirmAsync).mockResolvedValueOnce(false);
+    const port = await choosePortAsync('/me', { defaultPort: 8081, reuseExistingPort: true });
+    expect(port).toBe(null);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`chooses the next free port without prompting in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
+      pid: 1,
+      directory: '/other/project',
+      command: 'npx expo',
+    });
+    const port = await choosePortAsync('/', { defaultPort: 8081, reuseExistingPort: false });
+    expect(port).toBe(8082);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`still reuses the same-process port in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
+      pid: 1,
+      directory: '/me',
+      command: 'npx expo',
+    });
     const port = await choosePortAsync('/me', { defaultPort: 8081, reuseExistingPort: true });
     expect(port).toBe(null);
     expect(confirmAsync).not.toHaveBeenCalled();
