@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 export {};
 
-const mockNative = {
+const mockNativeTarget = {
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
 };
+// The real native module is a JSI host object.
+// Mirror that here so the AppMetrics-fallback tests exercise the actual on-device bug — a fallback
+// gated on `in`/`hasOwnProperty` would wrongly treat every prop as native and never forward.
+const mockNative = new Proxy(mockNativeTarget, {
+  has: () => true,
+});
 
 const mockAppMetrics = {
   logEvent: jest.fn(),
