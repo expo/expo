@@ -11,7 +11,7 @@ import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
-import type { RoutesManifest } from 'expo-server/private';
+import type { PageHeaderInfo, RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
@@ -85,6 +85,12 @@ export function injectScriptTags(html: string, scriptTags: ExtraScriptTag[]): st
 function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
 }
+
+/**
+ * An allowlist of loader `Response` headers that are written to the export manifest when
+ * pre-rendering.
+ */
+const LOADER_DECLARED_HEADERS = ['Cache-Control'];
 
 export async function getFilesToExportFromServerAsync(
   projectRoot: string,
@@ -239,6 +245,11 @@ export async function exportFromServerAsync(
     withLoaders: loaderReferenceCount,
   });
 
+  // Group variations prerender several pathnames from one loader file, so these maps can differ
+  // in size.
+  const loaderHeadersByPage = new Map<string, Record<string, string>>();
+  const loaderHeadersByFile = new Map<string, Record<string, string>>();
+
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
     manifest,
@@ -265,6 +276,18 @@ export async function exportFromServerAsync(
             targetDomain: 'client',
             loaderId: loaderKey,
           });
+
+          const declaredHeaders: Record<string, string> = {};
+          for (const name of LOADER_DECLARED_HEADERS) {
+            const value = loaderResponse.headers.get(name);
+            if (value) {
+              declaredHeaders[name] = value;
+            }
+          }
+          if (Object.keys(declaredHeaders).length) {
+            loaderHeadersByPage.set(normalizedPathname, declaredHeaders);
+            loaderHeadersByFile.set(`/${fileSystemPath}`, declaredHeaders);
+          }
 
           renderOpts.loader = { data, key: loaderKey };
         }
@@ -293,6 +316,16 @@ export async function exportFromServerAsync(
       return html;
     },
   });
+
+  const loaderHeaderRules = [
+    ...toLoaderRules(loaderHeadersByPage),
+    ...toLoaderRules(loaderHeadersByFile),
+  ];
+
+  // Appended after any pre-existing rules so the loader-declared values win.
+  if (loaderHeaderRules.length) {
+    serverManifest.pageHeaders = [...(serverManifest.pageHeaders ?? []), ...loaderHeaderRules];
+  }
 
   if (!exportServer) {
     // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
@@ -338,6 +371,16 @@ export async function exportFromServerAsync(
     // Add the api routes to the files to export.
     for (const [route, contents] of apiRoutes) {
       files.set(route, contents);
+    }
+
+    // Add any loader-declared headers
+    if (loaderHeaderRules.length) {
+      updateExportManifestInFiles({
+        files,
+        callback: (manifest) => {
+          manifest.pageHeaders = [...(manifest.pageHeaders ?? []), ...loaderHeaderRules];
+        },
+      });
     }
 
     // Export SSR render module and add SSR configuration to routes manifest
@@ -795,4 +838,28 @@ function updateExportManifestInFiles({
       contents: JSON.stringify(manifest, null, 2),
     });
   }
+}
+
+/**
+ * Compiles a concrete pathname into an exact-match `namedRegex`. Exported pathnames are literal,
+ * so route syntax like `[param]` or `(group)` is escaped rather than parameterized.
+ *
+ * @see @expo/router-server/src/getNamedParametrizedRoute.ts
+ */
+export function getExactPathNamedRegex(pathname: string): string {
+  const escaped = pathname.replace(/[|\\{}()[\]^$+*?.-]/g, '\\$&');
+  return `^${escaped}(?:/)?$`;
+}
+
+/**
+ * Converts headers keyed by pathname into exact-match `pageHeaders` rules, sorted for
+ * deterministic manifest output.
+ */
+function toLoaderRules(rulesByPath: Map<string, Record<string, string>>): PageHeaderInfo<string>[] {
+  return [...rulesByPath.entries()]
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([pathname, headers]) => ({
+      namedRegex: getExactPathNamedRegex(pathname),
+      headers,
+    }));
 }
