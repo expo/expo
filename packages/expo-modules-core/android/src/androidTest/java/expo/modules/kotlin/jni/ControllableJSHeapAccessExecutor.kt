@@ -28,8 +28,8 @@ internal class ControllableJSHeapAccessExecutor private constructor(
   val executedTaskCount: Int
     get() = executedTasks.get()
 
-  override fun runOnQueue(runnable: Runnable): Boolean {
-    val task = enqueue(runnable, ::releaseAsyncWork) ?: return false
+  override fun runOnQueue(runnable: Runnable, onCancellation: Runnable): Boolean {
+    val task = enqueue(runnable, onCancellation) ?: return false
     if (mode == Mode.SAME_THREAD) {
       lifecycleHooks.beforeSameThreadExecution()
       tasks.remove(task)
@@ -47,18 +47,24 @@ internal class ControllableJSHeapAccessExecutor private constructor(
 
     val completed = CountDownLatch(1)
     val failure = AtomicReference<Throwable?>()
-    val task = enqueue(Runnable {
-      try {
-        runnable.run()
-      } catch (throwable: Throwable) {
-        failure.set(throwable)
-      } finally {
+    val task = enqueue(
+      Runnable {
+        try {
+          runnable.run()
+        } catch (throwable: Throwable) {
+          failure.set(throwable)
+        } finally {
+          completed.countDown()
+        }
+      },
+      Runnable {
+        failure.compareAndSet(
+          null,
+          IllegalStateException("JavaScript heap work was cancelled before it could run.")
+        )
         completed.countDown()
       }
-    }) {
-      failure.set(IllegalStateException("JavaScript heap work was cancelled before it could run."))
-      completed.countDown()
-    } ?: throw IllegalStateException("Cannot schedule work after the executor has been invalidated.")
+    ) ?: throw IllegalStateException("Cannot schedule work after the executor has been invalidated.")
 
     if (mode == Mode.SAME_THREAD) {
       lifecycleHooks.beforeSameThreadExecution()
@@ -78,6 +84,12 @@ internal class ControllableJSHeapAccessExecutor private constructor(
 
   fun runNext(): Boolean {
     val task = tasks.pollFirst() ?: return false
+    execute(task)
+    return true
+  }
+
+  fun runLast(): Boolean {
+    val task = tasks.pollLast() ?: return false
     execute(task)
     return true
   }
@@ -105,13 +117,15 @@ internal class ControllableJSHeapAccessExecutor private constructor(
       } catch (throwable: Throwable) {
         if (firstFailure == null) {
           firstFailure = throwable
+        } else {
+          firstFailure.addSuppressed(throwable)
         }
       }
     }
     firstFailure?.let { throw it }
   }
 
-  fun invalidate() {
+  override fun invalidate() {
     rejectNewWork()
     dropAcceptedWork()
   }
@@ -120,40 +134,48 @@ internal class ControllableJSHeapAccessExecutor private constructor(
     if (!closed.compareAndSet(false, true)) {
       return
     }
-    invalidate()
+    var failure: Throwable? = null
+    try {
+      invalidate()
+    } catch (throwable: Throwable) {
+      failure = throwable
+    }
     worker?.let { worker ->
       worker.interrupt()
       if (worker !== Thread.currentThread()) {
         worker.join()
       }
     }
+    failure?.let { throw it }
   }
 
-  private fun enqueue(runnable: Runnable, onCancelled: (Runnable) -> Unit): Task? {
-    synchronized(admissionLock) {
+  private fun enqueue(runnable: Runnable, onCancellation: Runnable): Task? {
+    val task = Task(runnable, onCancellation)
+    val accepted = synchronized(admissionLock) {
       if (!acceptingWork.get()) {
-        return null
-      }
-      return Task(runnable, onCancelled, lifecycleHooks.beforeTaskCancellation).also {
-        tasks.addLast(it)
+        false
+      } else {
+        tasks.addLast(task)
         lifecycleHooks.afterTaskQueued()
+        true
       }
     }
-  }
-
-  private fun releaseAsyncWork(runnable: Runnable) {
-    (runnable as? AutoCloseable)?.close()
+    if (!accepted) {
+      onCancellation.run()
+      return null
+    }
+    return task
   }
 
   private fun execute(task: Task) {
-    if (!task.state.compareAndSet(TaskState.QUEUED, TaskState.RUNNING)) {
+    if (!task.start()) {
       return
     }
     try {
       executedTasks.incrementAndGet()
       task.run()
     } finally {
-      task.state.set(TaskState.FINISHED)
+      task.finish()
     }
   }
 
@@ -175,38 +197,44 @@ internal class ControllableJSHeapAccessExecutor private constructor(
     }
   }
 
-  private class Task(
-    runnable: Runnable,
-    private val onCancelled: (Runnable) -> Unit,
-    private val beforeCancellation: () -> Unit
+  private inner class Task(
+    private val runnable: Runnable,
+    private val onCancellation: Runnable
   ) {
-    val state = AtomicReference(TaskState.QUEUED)
-    private val runnable = AtomicReference<Runnable?>(runnable)
+    private val state = AtomicReference(TaskState.QUEUED)
+
+    fun start(): Boolean = state.compareAndSet(TaskState.QUEUED, TaskState.RUNNING)
 
     fun run() {
-      runnable.getAndSet(null)?.run()
+      runnable.run()
     }
 
-    fun cancel() {
-      if (state.compareAndSet(TaskState.QUEUED, TaskState.CANCELLED)) {
-        val cancelledRunnable = runnable.getAndSet(null)
-        var firstFailure: Throwable? = null
-        try {
-          beforeCancellation()
-        } catch (throwable: Throwable) {
-          firstFailure = throwable
-        }
-        try {
-          cancelledRunnable?.let(onCancelled)
-        } catch (throwable: Throwable) {
-          if (firstFailure == null) {
-            firstFailure = throwable
-          } else {
-            firstFailure.addSuppressed(throwable)
-          }
-        }
-        firstFailure?.let { throw it }
+    fun finish() {
+      state.set(TaskState.FINISHED)
+    }
+
+    fun cancel(): Boolean {
+      if (!state.compareAndSet(TaskState.QUEUED, TaskState.CANCELLED)) {
+        return false
       }
+      tasks.remove(this)
+      var firstFailure: Throwable? = null
+      try {
+        lifecycleHooks.beforeTaskCancellation()
+      } catch (throwable: Throwable) {
+        firstFailure = throwable
+      }
+      try {
+        onCancellation.run()
+      } catch (throwable: Throwable) {
+        if (firstFailure == null) {
+          firstFailure = throwable
+        } else {
+          firstFailure.addSuppressed(throwable)
+        }
+      }
+      firstFailure?.let { throw it }
+      return true
     }
   }
 

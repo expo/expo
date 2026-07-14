@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ExpoHeader.pch"
+#include "JSHeapAccessExecutorHolder.h"
 
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
@@ -28,6 +29,10 @@ public:
   void release();
 
   jni::local_ref<react::CallInvokerHolder::javaobject> createCallInvoker();
+
+  void accessExpiredJavaScriptBackedArrayBuffer(
+    jni::alias_ref<JSHeapAccessExecutorJavaClass::javaobject> executor
+  );
 
 private:
   friend HybridBase;

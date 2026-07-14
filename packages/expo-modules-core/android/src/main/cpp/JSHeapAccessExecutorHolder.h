@@ -17,9 +17,12 @@ public:
 
   ~JSHeapAccessExecutorHolder();
 
-  void runSync(std::function<void()> &&body);
+  void runSync(std::function<void()> body);
 
-  bool runAsync(std::function<void()> &&body);
+  void runAsync(
+    std::function<void()> body,
+    std::function<void()> onCancellation
+  );
 
 private:
   jni::global_ref<jni::JObject> _executor;

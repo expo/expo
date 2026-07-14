@@ -20,6 +20,8 @@ namespace react = facebook::react;
 
 namespace expo {
 
+class JSHeapAccessExecutorHolder;
+
 /**
  * A JNI wrapper to initialize CPP part of modules and access all data from the module registry.
  */
@@ -114,6 +116,7 @@ public:
   std::shared_ptr<JavaScriptRuntime> runtimeHolder;
   std::unique_ptr<JSReferencesCache> jsRegistry;
   jni::global_ref<JNIDeallocator::javaobject> jniDeallocator;
+  std::shared_ptr<JSHeapAccessExecutorHolder> jsHeapAccessExecutor;
 
   void registerClass(jni::local_ref<jclass> native,
                      jni::local_ref<JavaScriptObject::javaobject> jsClass);

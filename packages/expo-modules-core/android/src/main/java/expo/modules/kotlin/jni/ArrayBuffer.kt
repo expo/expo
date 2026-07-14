@@ -5,14 +5,29 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.Exceptions
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 @DoNotStrip
 internal fun interface ArrayBufferScopedAccessAsyncCallback {
   @DoNotStrip
   fun invoke(result: Any?, error: Throwable?)
+}
+
+@DoNotStrip
+internal fun interface ArrayBufferScopedAccessAsyncQueueFailureCallback {
+  @DoNotStrip
+  fun invoke(error: Throwable)
+}
+
+private enum class ScopedAccessState {
+  QUEUED,
+  RUNNING,
+  CANCELLED,
+  FINISHED
 }
 
 /**
@@ -58,9 +73,10 @@ class ArrayBuffer : Destructible {
   /**
    * Returns a direct [ByteBuffer] for this ArrayBuffer's underlying data.
    *
-   * When native-owned, the returned buffer wraps the same backing memory (zero-copy).
-   * When JavaScript-backed, the data is copied and the ArrayBuffer is detached from the
-   * JS heap — prefer [withJSBytes] or [withJSBytesAsync] for scoped zero-copy access.
+   * Native-owned `ByteBufferArrayBufferStorage` returns a zero-copy direct buffer.
+   * Native-retained typed-array views return an owned copy so the result may outlive this wrapper.
+   * JavaScript-backed storage materializes once, may throw on runtime loss, timeout, or bounds
+   * failure, and then returns native storage.
    */
   external fun toDirectBuffer(): ByteBuffer
 
@@ -70,11 +86,19 @@ class ArrayBuffer : Destructible {
    */
   external fun isNativeBacked(): Boolean
 
+  @DoNotStrip
+  @JvmName("makeJavaScriptBackedStorageOutOfBoundsForTest")
+  @Suppress("unused")
+  internal external fun makeJavaScriptBackedStorageOutOfBoundsForTest()
+
   /**
    * Provides scoped access to this buffer's visible bytes.
    *
    * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
-   * Do not store it, return it, or access it after [body] returns.
+   * The body must not retain it, detach, transfer, or resize the JavaScript backing while it is live.
+   * Callers must externally serialize scoped mutable access with `read*`, `data()`,
+   * `toDirectBuffer()`, `jsiMutableBuffer()`, or `copy()` on the same instance. Unscoped access
+   * to JavaScript-backed storage may throw during first materialization.
    */
   @Throws(Throwable::class)
   fun <R> withJSBytes(body: (ByteBuffer) -> R): R {
@@ -94,7 +118,10 @@ class ArrayBuffer : Destructible {
    * JavaScript-backed storage hops to the JavaScript thread.
    *
    * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
-   * Do not store it, return it, or access it after [body] returns.
+   * The body must not retain it, detach, transfer, or resize the JavaScript backing while it is live.
+   * Callers must externally serialize scoped mutable access with `read*`, `data()`,
+   * `toDirectBuffer()`, `jsiMutableBuffer()`, or `copy()` on the same instance. Unscoped access
+   * to JavaScript-backed storage may throw during first materialization.
    */
   @Throws(Throwable::class)
   suspend fun <R> withJSBytesAsync(body: (ByteBuffer) -> R): R {
@@ -102,8 +129,8 @@ class ArrayBuffer : Destructible {
       return withJSBytes(body)
     }
     return withScopedJSBytesAsync(
-      schedule = { jniBody, callback ->
-        withJSBytesAsync(jniBody, callback)
+      schedule = { jniBody, callback, queueFailureCallback ->
+        withJSBytesAsync(jniBody, callback, queueFailureCallback)
       },
       body = { buffer -> body(buffer.asScopedReadOnlyBuffer()) }
     )
@@ -111,15 +138,19 @@ class ArrayBuffer : Destructible {
 
   private external fun withJSBytesAsync(
     body: JNIFunctionBody,
-    callback: ArrayBufferScopedAccessAsyncCallback
+    callback: ArrayBufferScopedAccessAsyncCallback,
+    queueFailureCallback: ArrayBufferScopedAccessAsyncQueueFailureCallback
   )
 
   /**
    * Provides scoped mutable access to this buffer's visible bytes.
    *
    * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
-   * Do not store it, return it, or access it after [body] returns. JavaScript-backed
-   * buffers require real zero-copy access and never fall back to a mutable temporary copy.
+   * The body must not retain it, detach, transfer, or resize the JavaScript backing while it is live.
+   * Callers must externally serialize scoped mutable access with `read*`, `data()`,
+   * `toDirectBuffer()`, `jsiMutableBuffer()`, or `copy()` on the same instance. Unscoped access
+   * to JavaScript-backed storage may throw during first materialization. JavaScript-backed buffers
+   * require real zero-copy access and never fall back to a mutable temporary copy.
    */
   @Throws(Throwable::class)
   fun <R> withMutableJSBytes(body: (ByteBuffer) -> R): R {
@@ -136,8 +167,11 @@ class ArrayBuffer : Destructible {
    * JavaScript-backed storage hops to the JavaScript thread.
    *
    * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
-   * Do not store it, return it, or access it after [body] returns. JavaScript-backed
-   * buffers require real zero-copy access and never fall back to a mutable temporary copy.
+   * The body must not retain it, detach, transfer, or resize the JavaScript backing while it is live.
+   * Callers must externally serialize scoped mutable access with `read*`, `data()`,
+   * `toDirectBuffer()`, `jsiMutableBuffer()`, or `copy()` on the same instance. Unscoped access
+   * to JavaScript-backed storage may throw during first materialization. JavaScript-backed buffers
+   * require real zero-copy access and never fall back to a mutable temporary copy.
    */
   @Throws(Throwable::class)
   suspend fun <R> withMutableJSBytesAsync(body: (ByteBuffer) -> R): R {
@@ -145,19 +179,39 @@ class ArrayBuffer : Destructible {
       return withMutableJSBytes(body)
     }
     return withScopedJSBytesAsync(
-      schedule = { jniBody, callback ->
-        withJSBytesAsync(jniBody, callback)
+      schedule = { jniBody, callback, queueFailureCallback ->
+        withJSBytesAsync(jniBody, callback, queueFailureCallback)
       },
       body = body
     )
   }
 
   private suspend fun <R> withScopedJSBytesAsync(
-    schedule: (JNIFunctionBody, ArrayBufferScopedAccessAsyncCallback) -> Unit,
+    schedule: (
+      JNIFunctionBody,
+      ArrayBufferScopedAccessAsyncCallback,
+      ArrayBufferScopedAccessAsyncQueueFailureCallback
+    ) -> Unit,
     body: (ByteBuffer) -> R
   ): R = suspendCancellableCoroutine { continuation ->
+    val state = AtomicReference(ScopedAccessState.QUEUED)
+    continuation.invokeOnCancellation {
+      state.compareAndSet(ScopedAccessState.QUEUED, ScopedAccessState.CANCELLED)
+    }
+
+    fun resolveQueuedFailure(error: Throwable) {
+      if (
+        state.compareAndSet(ScopedAccessState.QUEUED, ScopedAccessState.CANCELLED) &&
+        continuation.isActive
+      ) {
+        continuation.resumeWithException(error)
+      }
+    }
     val callback = ArrayBufferScopedAccessAsyncCallback { result, error ->
-      if (!continuation.isActive) {
+      if (!state.compareAndSet(
+        ScopedAccessState.RUNNING,
+        ScopedAccessState.FINISHED
+      ) || !continuation.isActive) {
         return@ArrayBufferScopedAccessAsyncCallback
       }
       if (error != null) {
@@ -168,17 +222,21 @@ class ArrayBuffer : Destructible {
       }
     }
 
+    val queueFailureCallback = ArrayBufferScopedAccessAsyncQueueFailureCallback(::resolveQueuedFailure)
+
     try {
       schedule(
         JNIFunctionBody { args ->
+          if (!state.compareAndSet(ScopedAccessState.QUEUED, ScopedAccessState.RUNNING)) {
+            throw CancellationException("ArrayBuffer scoped access was cancelled before it could run.")
+          }
           body(args[0] as ByteBuffer)
         },
-        callback
+        callback,
+        queueFailureCallback
       )
     } catch (error: Throwable) {
-      if (continuation.isActive) {
-        continuation.resumeWithException(error)
-      }
+      resolveQueuedFailure(error)
     }
   }
 
@@ -222,7 +280,9 @@ class ArrayBuffer : Destructible {
      * Copy given [ArrayBuffer] into a new native-owned `ArrayBuffer`.
      */
     fun copyOf(other: ArrayBuffer): ArrayBuffer =
-      copyOf(other.toDirectBuffer())
+      other.withJSBytes<ArrayBuffer> { scopedBytes ->
+        copyOf(scopedBytes)
+      }
 
     /**
      * Copy given [JavaScriptArrayBuffer] into a new native-owned `ArrayBuffer`.

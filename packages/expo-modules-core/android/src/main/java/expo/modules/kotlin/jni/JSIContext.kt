@@ -185,6 +185,8 @@ class JSIContext @DoNotStrip internal constructor(
   }
 
   override fun close() {
+    jsHeapAccessExecutor?.invalidate()
+    jsHeapAccessExecutor = null
     mHybridData.resetNative()
   }
 

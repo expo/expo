@@ -1,12 +1,27 @@
 #include "ArrayBuffer.h"
 
 #include "Exceptions.h"
+#include "JavaReferencesCache.h"
 #include "JavaScriptRuntime.h"
 #include "JSIContext.h"
+
+#include <atomic>
+#include <limits>
 
 namespace expo {
 
 namespace {
+
+struct JavaScriptArrayBufferReleaseState {
+  explicit JavaScriptArrayBufferReleaseState(std::shared_ptr<jsi::ArrayBuffer> arrayBuffer)
+    : arrayBuffer(new std::shared_ptr<jsi::ArrayBuffer>(std::move(arrayBuffer))) {}
+
+  ~JavaScriptArrayBufferReleaseState() {
+    // The raw pointer is either deleted on the JS thread or intentionally leaked.
+  }
+
+  std::atomic<std::shared_ptr<jsi::ArrayBuffer> *> arrayBuffer;
+};
 
 [[noreturn]] void throwArrayBufferAccessException(const std::string &message) {
   throwNewJavaException(CodedException::create(message).get());
@@ -32,10 +47,7 @@ jni::local_ref<jni::JObject> invokeBodyWithByteBuffer(
   jni::local_ref<jni::JByteBuffer> byteBuffer
 ) {
   JNIEnv *env = jni::Environment::current();
-  auto objectClass = env->FindClass("java/lang/Object");
-  throwPendingJniExceptionAsCppException();
-
-  auto args = env->NewObjectArray(1, objectClass, nullptr);
+  auto args = env->NewObjectArray(1, JCacheHolder::get().jObject, nullptr);
   throwPendingJniExceptionAsCppException();
 
   env->SetObjectArrayElement(args, 0, byteBuffer.get());
@@ -52,6 +64,16 @@ void invokeScopedAccessAsyncCallback(
   ArrayBufferScopedAccessAsyncCallback::invoke(
     callback.get(),
     result ? result.get() : nullptr,
+    error ? error.get() : nullptr
+  );
+}
+
+void invokeScopedAccessAsyncQueueFailureCallback(
+  jni::alias_ref<ArrayBufferScopedAccessAsyncQueueFailureCallback::javaobject> callback,
+  jni::local_ref<jni::JThrowable> error
+) {
+  ArrayBufferScopedAccessAsyncQueueFailureCallback::invoke(
+    callback.get(),
     error ? error.get() : nullptr
   );
 }
@@ -141,13 +163,17 @@ jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferObject(
 }
 
 std::shared_ptr<JSHeapAccessExecutorHolder> getJSHeapAccessExecutor(JSIContext *jsiContext) {
+  if (jsiContext->jsHeapAccessExecutor) {
+    return jsiContext->jsHeapAccessExecutor;
+  }
   static const auto method = JSIContext::javaClassStatic()
     ->getMethod<jni::local_ref<JSHeapAccessExecutorJavaClass::javaobject>()>("getJSHeapAccessExecutor");
   auto executor = method(jsiContext->javaPart_);
   if (!executor) {
     return nullptr;
   }
-  return std::make_shared<JSHeapAccessExecutorHolder>(executor);
+  jsiContext->jsHeapAccessExecutor = std::make_shared<JSHeapAccessExecutorHolder>(executor);
+  return jsiContext->jsHeapAccessExecutor;
 }
 
 jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferFromJSIArrayBuffer(
@@ -171,7 +197,7 @@ jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferFromJSIArrayBuffer(
   }
 
   auto executor = getJSHeapAccessExecutor(jsiContext);
-  if (length > 0 && executor) {
+  if (executor) {
     return makeArrayBufferObject(
       jsiContext,
       std::make_shared<JavaScriptBackedArrayBufferStorage>(
@@ -204,6 +230,22 @@ void ArrayBufferScopedAccessAsyncCallback::invoke(
   jvalue args[2];
   args[0].l = result;
   args[1].l = error;
+  jni::Environment::current()->CallVoidMethodA(self, method.getId(), args);
+  throwPendingJniExceptionAsCppException();
+}
+
+void ArrayBufferScopedAccessAsyncQueueFailureCallback::invoke(
+  jobject self,
+  jthrowable error
+) {
+  static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/ArrayBufferScopedAccessAsyncQueueFailureCallback")
+    ->getMethod<void(jthrowable)>(
+      "invoke",
+      "(Ljava/lang/Throwable;)V"
+    );
+
+  jvalue args[1];
+  args[0].l = error;
   jni::Environment::current()->CallVoidMethodA(self, method.getId(), args);
   throwPendingJniExceptionAsCppException();
 }
@@ -278,9 +320,7 @@ void MutableBufferViewArrayBufferStorage::readBytes(size_t position, void *desti
 }
 
 jni::local_ref<jni::JByteBuffer> MutableBufferViewArrayBufferStorage::toDirectBuffer() {
-  auto byteBuffer = jni::JByteBuffer::wrapBytes(data(), _length);
-  byteBuffer->order(jni::JByteOrder::nativeOrder());
-  return byteBuffer;
+  return copyToDirectBuffer(data(), _length);
 }
 
 std::shared_ptr<jsi::MutableBuffer> MutableBufferViewArrayBufferStorage::jsiMutableBuffer() {
@@ -294,7 +334,9 @@ jsi::Value MutableBufferViewArrayBufferStorage::toJSIValue(jsi::Runtime &runtime
 jni::local_ref<jni::JObject> MutableBufferViewArrayBufferStorage::withJSBytes(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
-  return invokeBodyWithByteBuffer(body, toDirectBuffer());
+  auto byteBuffer = jni::JByteBuffer::wrapBytes(data(), _length);
+  byteBuffer->order(jni::JByteOrder::nativeOrder());
+  return invokeBodyWithByteBuffer(body, byteBuffer);
 }
 
 JavaScriptBackedArrayBufferStorage::JavaScriptBackedArrayBufferStorage(
@@ -310,14 +352,24 @@ JavaScriptBackedArrayBufferStorage::JavaScriptBackedArrayBufferStorage(
     _length(length) {}
 
 JavaScriptBackedArrayBufferStorage::~JavaScriptBackedArrayBufferStorage() {
-  auto arrayBuffer = new std::shared_ptr<jsi::ArrayBuffer>(std::move(_arrayBuffer));
+  auto releaseState = std::make_shared<JavaScriptArrayBufferReleaseState>(std::move(_arrayBuffer));
+  auto weakRuntime = _runtime;
   try {
-    _executor->runSync([arrayBuffer]() {
-      delete arrayBuffer;
-    });
+    _executor->runAsync(
+      [releaseState, weakRuntime] {
+        auto arrayBuffer = releaseState->arrayBuffer.exchange(nullptr);
+        if (auto runtime = weakRuntime.lock()) {
+          delete arrayBuffer;
+        }
+      },
+      [releaseState] {
+        // Cancellation can happen after runtime loss, so this handle must leak safely.
+        releaseState->arrayBuffer.exchange(nullptr);
+      }
+    );
   } catch (...) {
-    // If the JS queue is no longer available, intentionally leak the retained JS handle
-    // instead of destroying it from a non-JS thread.
+    // Queue loss can happen before the cancellation callback is invoked.
+    releaseState->arrayBuffer.exchange(nullptr);
   }
 }
 
@@ -352,55 +404,32 @@ void JavaScriptBackedArrayBufferStorage::validateBounds(jsi::Runtime &runtime) {
 
 void JavaScriptBackedArrayBufferStorage::readBytes(size_t position, void *destination, size_t length) {
   validateByteRange(size(), position, length);
-  auto runtime = runtimeOrThrow();
-  (void)runtime;
-  std::exception_ptr exception;
-
-  try {
-    _executor->runSync([this, runtime, position, destination, length, &exception]() {
-      try {
-        jsi::Runtime &rt = runtime->get();
-        validateBounds(rt);
-        memcpy(destination, _arrayBuffer->data(rt) + _offset + position, length);
-      } catch (...) {
-        exception = std::current_exception();
-      }
-    });
-  } catch (...) {
-    exception = std::current_exception();
-  }
-
-  if (exception) {
-    std::rethrow_exception(exception);
+  auto self = std::static_pointer_cast<JavaScriptBackedArrayBufferStorage>(shared_from_this());
+  auto result = std::make_shared<std::vector<uint8_t>>(length);
+  _executor->runSync([self, result, position, length] {
+    auto runtime = self->runtimeOrThrow();
+    jsi::Runtime &rt = runtime->get();
+    self->validateBounds(rt);
+    if (length > 0) {
+      memcpy(result->data(), self->_arrayBuffer->data(rt) + self->_offset + position, length);
+    }
+  });
+  if (length > 0) {
+    memcpy(destination, result->data(), length);
   }
 }
 
 jni::local_ref<jni::JByteBuffer> JavaScriptBackedArrayBufferStorage::toDirectBuffer() {
-  auto runtime = runtimeOrThrow();
-  (void)runtime;
-  jni::global_ref<jni::JByteBuffer> result;
-  std::exception_ptr exception;
-
-  try {
-    _executor->runSync([this, runtime, &result, &exception]() {
-      try {
-        jsi::Runtime &rt = runtime->get();
-        validateBounds(rt);
-        auto byteBuffer = copyToDirectBuffer(_arrayBuffer->data(rt) + _offset, _length);
-        result = jni::make_global(byteBuffer);
-      } catch (...) {
-        exception = std::current_exception();
-      }
-    });
-  } catch (...) {
-    exception = std::current_exception();
-  }
-
-  if (exception) {
-    std::rethrow_exception(exception);
-  }
-
-  return jni::make_local(result);
+  auto self = std::static_pointer_cast<JavaScriptBackedArrayBufferStorage>(shared_from_this());
+  auto result = std::make_shared<jni::global_ref<jni::JByteBuffer>>();
+  _executor->runSync([self, result] {
+    auto runtime = self->runtimeOrThrow();
+    jsi::Runtime &rt = runtime->get();
+    self->validateBounds(rt);
+    auto byteBuffer = copyToDirectBuffer(self->_arrayBuffer->data(rt) + self->_offset, self->_length);
+    *result = jni::make_global(byteBuffer);
+  });
+  return jni::make_local(*result);
 }
 
 std::shared_ptr<jsi::MutableBuffer> JavaScriptBackedArrayBufferStorage::jsiMutableBuffer() {
@@ -427,77 +456,58 @@ jsi::Value JavaScriptBackedArrayBufferStorage::toJSIValue(jsi::Runtime &runtime)
 jni::local_ref<jni::JObject> JavaScriptBackedArrayBufferStorage::withJSBytes(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
-  auto runtime = runtimeOrThrow();
-  (void)runtime;
-  auto bodyRef = jni::make_global(body);
-  jni::global_ref<jni::JObject> result;
-  bool hasResult = false;
-  std::exception_ptr exception;
-
-  try {
-    _executor->runSync([this, runtime, &bodyRef, &result, &hasResult, &exception]() {
-      try {
-        jsi::Runtime &rt = runtime->get();
-        validateBounds(rt);
-        auto byteBuffer = jni::JByteBuffer::wrapBytes(_arrayBuffer->data(rt) + _offset, _length);
-        byteBuffer->order(jni::JByteOrder::nativeOrder());
-        auto localBody = jni::static_ref_cast<JNIFunctionBody>(bodyRef);
-        auto localResult = invokeBodyWithByteBuffer(localBody, std::move(byteBuffer));
-        hasResult = true;
-        if (localResult) {
-          result = jni::make_global(localResult);
-        }
-      } catch (...) {
-        exception = std::current_exception();
-      }
-    });
-  } catch (...) {
-    exception = std::current_exception();
-  }
-
-  if (exception) {
-    std::rethrow_exception(exception);
-  }
-
-  if (!hasResult || !result) {
-    return nullptr;
-  }
-  return jni::make_local(result);
+  auto self = std::static_pointer_cast<JavaScriptBackedArrayBufferStorage>(shared_from_this());
+  auto bodyRef = std::make_shared<jni::global_ref<JNIFunctionBody>>(jni::make_global(body));
+  auto result = std::make_shared<jni::global_ref<jni::JObject>>();
+  _executor->runSync([self, bodyRef, result] {
+    auto runtime = self->runtimeOrThrow();
+    jsi::Runtime &rt = runtime->get();
+    self->validateBounds(rt);
+    auto byteBuffer = jni::JByteBuffer::wrapBytes(self->_arrayBuffer->data(rt) + self->_offset, self->_length);
+    byteBuffer->order(jni::JByteOrder::nativeOrder());
+    auto localBody = jni::static_ref_cast<JNIFunctionBody>(jni::make_local(*bodyRef));
+    auto localResult = invokeBodyWithByteBuffer(localBody, std::move(byteBuffer));
+    if (localResult) {
+      *result = jni::make_global(localResult);
+    }
+  });
+  return jni::make_local(*result);
 }
 
 void JavaScriptBackedArrayBufferStorage::withJSBytesAsync(
   jni::alias_ref<JNIFunctionBody::javaobject> body,
-  jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback
+  jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback,
+  jni::alias_ref<ArrayBufferScopedAccessAsyncQueueFailureCallback::javaobject> queueFailureCallback
 ) {
-  auto runtime = runtimeOrThrow();
   auto self = std::static_pointer_cast<JavaScriptBackedArrayBufferStorage>(shared_from_this());
-  auto bodyRef = jni::make_global(body);
-  auto callbackRef = jni::make_global(callback);
+  auto bodyRef = std::make_shared<jni::global_ref<JNIFunctionBody>>(jni::make_global(body));
+  auto callbackRef = std::make_shared<jni::global_ref<ArrayBufferScopedAccessAsyncCallback>>(jni::make_global(callback));
+  auto queueFailureCallbackRef = std::make_shared<jni::global_ref<ArrayBufferScopedAccessAsyncQueueFailureCallback>>(
+    jni::make_global(queueFailureCallback)
+  );
 
-  bool wasQueued = _executor->runAsync([
-    self = std::move(self),
-    runtime = std::move(runtime),
-    bodyRef = std::move(bodyRef),
-    callbackRef = std::move(callbackRef)
-  ]() mutable {
-    auto localCallback = jni::static_ref_cast<ArrayBufferScopedAccessAsyncCallback>(callbackRef);
+  _executor->runAsync([self, bodyRef, callbackRef]() mutable {
+    auto runtime = self->runtimeOrThrow();
+    auto localCallback = jni::static_ref_cast<ArrayBufferScopedAccessAsyncCallback>(jni::make_local(*callbackRef));
     invokeScopedAccessBodyAsync(localCallback, [&]() {
       jsi::Runtime &rt = runtime->get();
       self->validateBounds(rt);
       auto byteBuffer = jni::JByteBuffer::wrapBytes(self->_arrayBuffer->data(rt) + self->_offset, self->_length);
       byteBuffer->order(jni::JByteOrder::nativeOrder());
-      auto localBody = jni::static_ref_cast<JNIFunctionBody>(bodyRef);
+      auto localBody = jni::static_ref_cast<JNIFunctionBody>(jni::make_local(*bodyRef));
       return invokeBodyWithByteBuffer(localBody, std::move(byteBuffer));
     });
-    self.reset();
-  });
-  if (!wasQueued) {
-    invokeScopedAccessAsyncCallback(
-      callback,
-      nullptr,
-      UnexpectedException::create("Cannot schedule ArrayBuffer access on the JavaScript queue.")
+  }, [queueFailureCallbackRef]() mutable {
+    auto localQueueFailureCallback = jni::static_ref_cast<ArrayBufferScopedAccessAsyncQueueFailureCallback>(
+      jni::make_local(*queueFailureCallbackRef)
     );
-  }
+    invokeScopedAccessAsyncQueueFailureCallback(
+      localQueueFailureCallback,
+      UnexpectedException::create(
+        "Cannot execute ArrayBuffer access because the JavaScript runtime is shutting down."
+      )
+    );
+  });
 }
 
 void ArrayBuffer::registerNatives() {
@@ -512,6 +522,9 @@ void ArrayBuffer::registerNatives() {
                    makeNativeMethod("readDouble", ArrayBuffer::read<double>),
                    makeNativeMethod("toDirectBuffer", ArrayBuffer::toDirectBuffer),
                    makeNativeMethod("isNativeBacked", ArrayBuffer::isNativeBacked),
+#if UNIT_TEST
+                   makeNativeMethod("makeJavaScriptBackedStorageOutOfBoundsForTest", ArrayBuffer::makeJavaScriptBackedStorageOutOfBoundsForTest),
+#endif
                    makeNativeMethod("withJSBytes", ArrayBuffer::withJSBytes),
                    makeNativeMethod("withJSBytesAsync", ArrayBuffer::withJSBytesAsync),
                  });
@@ -567,56 +580,88 @@ ArrayBuffer::ArrayBuffer(const jni::alias_ref<jni::JByteBuffer> &byteBuffer)
 ArrayBuffer::ArrayBuffer(std::shared_ptr<ArrayBufferStorage> storage)
   : storage(std::move(storage)) { }
 
+std::shared_ptr<ArrayBufferStorage> ArrayBuffer::snapshotStorage() {
+  std::lock_guard<std::mutex> lock(storageMutex_);
+  return storage;
+}
+
+std::shared_ptr<ArrayBufferStorage> ArrayBuffer::materializedNativeStorage() {
+  for (;;) {
+    auto source = snapshotStorage();
+    if (source->isNativeBacked()) {
+      return source;
+    }
+
+    auto byteBuffer = source->toDirectBuffer();
+    auto materialized = std::make_shared<ByteBufferArrayBufferStorage>(byteBuffer);
+
+    std::lock_guard<std::mutex> lock(storageMutex_);
+    if (storage == source) {
+      storage = materialized;
+      return materialized;
+    }
+    if (storage->isNativeBacked()) {
+      return storage;
+    }
+  }
+}
+
 int ArrayBuffer::size() {
-  return (int) storage->size();
+  return (int) snapshotStorage()->size();
 }
 
 std::shared_ptr<jsi::MutableBuffer> ArrayBuffer::jsiMutableBuffer() {
-  return storage->jsiMutableBuffer();
+  return materializedNativeStorage()->jsiMutableBuffer();
 }
 
 jsi::Value ArrayBuffer::toJSIValue(jsi::Runtime &runtime) {
-  return storage->toJSIValue(runtime);
+  return snapshotStorage()->toJSIValue(runtime);
 }
 
 jni::local_ref<jni::JByteBuffer> ArrayBuffer::toDirectBuffer() {
-  auto byteBuffer = storage->toDirectBuffer();
-  if (!storage->isNativeBacked()) {
-    storage = std::make_shared<ByteBufferArrayBufferStorage>(byteBuffer);
-  }
-  return byteBuffer;
+  return materializedNativeStorage()->toDirectBuffer();
 }
 
 bool ArrayBuffer::isNativeBacked() {
-  return storage->isNativeBacked();
+  return snapshotStorage()->isNativeBacked();
 }
+
+#if UNIT_TEST
+void ArrayBuffer::makeJavaScriptBackedStorageOutOfBoundsForTest() {
+  std::lock_guard<std::mutex> lock(storageMutex_);
+  auto jsStorage = std::dynamic_pointer_cast<JavaScriptBackedArrayBufferStorage>(storage);
+  if (!jsStorage) {
+    throw std::logic_error("Only JavaScript-backed ArrayBuffer storage can be made out of bounds.");
+  }
+  jsStorage->_length = std::numeric_limits<size_t>::max();
+}
+#endif
 
 jni::local_ref<jni::JObject> ArrayBuffer::withJSBytes(
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
-  return storage->withJSBytes(body);
+  return snapshotStorage()->withJSBytes(body);
 }
 
 void ArrayBuffer::withJSBytesAsync(
   jni::alias_ref<JNIFunctionBody::javaobject> body,
-  jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback
+  jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback,
+  jni::alias_ref<ArrayBufferScopedAccessAsyncQueueFailureCallback::javaobject> queueFailureCallback
 ) {
-  if (auto jsStorage = std::dynamic_pointer_cast<JavaScriptBackedArrayBufferStorage>(storage)) {
-    jsStorage->withJSBytesAsync(body, callback);
+  auto localStorage = snapshotStorage();
+
+  if (auto jsStorage = std::dynamic_pointer_cast<JavaScriptBackedArrayBufferStorage>(localStorage)) {
+    jsStorage->withJSBytesAsync(body, callback, queueFailureCallback);
     return;
   }
 
   invokeScopedAccessBodyAsync(callback, [&]() {
-    return storage->withJSBytes(body);
+    return localStorage->withJSBytes(body);
   });
 }
 
 uint8_t *ArrayBuffer::data() {
-  if (!storage->isNativeBacked()) {
-    auto byteBuffer = storage->toDirectBuffer();
-    storage = std::make_shared<ByteBufferArrayBufferStorage>(byteBuffer);
-  }
-  return storage->data();
+  return materializedNativeStorage()->data();
 }
 
 }

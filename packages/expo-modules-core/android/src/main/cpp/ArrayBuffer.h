@@ -8,6 +8,7 @@
 #include "TypedArray.h"
 
 #include <fbjni/ByteBuffer.h>
+#include <mutex>
 
 namespace expo {
 
@@ -23,6 +24,16 @@ public:
   static void invoke(
     jobject self,
     jobject result,
+    jthrowable error
+  );
+};
+
+class ArrayBufferScopedAccessAsyncQueueFailureCallback : public jni::JavaClass<ArrayBufferScopedAccessAsyncQueueFailureCallback> {
+public:
+  static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/jni/ArrayBufferScopedAccessAsyncQueueFailureCallback;";
+
+  static void invoke(
+    jobject self,
     jthrowable error
   );
 };
@@ -142,10 +153,13 @@ public:
 
   void withJSBytesAsync(
     jni::alias_ref<JNIFunctionBody::javaobject> body,
-    jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback
+    jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback,
+    jni::alias_ref<ArrayBufferScopedAccessAsyncQueueFailureCallback::javaobject> queueFailureCallback
   );
 
 private:
+  friend class ArrayBuffer;
+
   [[nodiscard]] std::shared_ptr<JavaScriptRuntime> runtimeOrThrow();
 
   void validateBounds(jsi::Runtime &runtime);
@@ -196,13 +210,18 @@ public:
 
   [[nodiscard]] bool isNativeBacked();
 
+#if UNIT_TEST
+  void makeJavaScriptBackedStorageOutOfBoundsForTest();
+#endif
+
   [[nodiscard]] jni::local_ref<jni::JObject> withJSBytes(
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
   void withJSBytesAsync(
     jni::alias_ref<JNIFunctionBody::javaobject> body,
-    jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback
+    jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback,
+    jni::alias_ref<ArrayBufferScopedAccessAsyncQueueFailureCallback::javaobject> queueFailureCallback
   );
 
   [[nodiscard]] uint8_t* data();
@@ -210,12 +229,17 @@ public:
   template<class T>
   T read(int position) {
     T result;
-    storage->readBytes(position, &result, sizeof(T));
+    materializedNativeStorage()->readBytes(position, &result, sizeof(T));
     return result;
   }
 
 private:
+  [[nodiscard]] std::shared_ptr<ArrayBufferStorage> snapshotStorage();
+
+  [[nodiscard]] std::shared_ptr<ArrayBufferStorage> materializedNativeStorage();
+
   std::shared_ptr<ArrayBufferStorage> storage;
+  std::mutex storageMutex_;
 };
 
 } // namespace expo

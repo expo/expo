@@ -4,6 +4,9 @@
 
 #if UNIT_TEST
 
+#include "ArrayBuffer.h"
+#include "JavaScriptRuntime.h"
+#include "JSHeapAccessExecutorHolder.h"
 #include "TestingSyncJSCallInvoker.h"
 
 #if USE_HERMES
@@ -27,6 +30,10 @@ void RuntimeHolder::registerNatives() {
                    makeNativeMethod("initHybrid", RuntimeHolder::initHybrid),
                    makeNativeMethod("createRuntime", RuntimeHolder::createRuntime),
                    makeNativeMethod("createCallInvoker", RuntimeHolder::createCallInvoker),
+                   makeNativeMethod(
+                     "accessExpiredJavaScriptBackedArrayBuffer",
+                     RuntimeHolder::accessExpiredJavaScriptBackedArrayBuffer
+                   ),
                    makeNativeMethod("release", RuntimeHolder::release),
                  });
 }
@@ -105,6 +112,25 @@ jni::local_ref<react::CallInvokerHolder::javaobject> RuntimeHolder::createCallIn
     "The RuntimeHolder::createCallInvoker is only available when UNIT_TEST is defined.");
 #else
   return react::CallInvokerHolder::newObjectCxxArgs(std::make_shared<TestingSyncJSCallInvoker>(runtime));
+#endif
+}
+
+void RuntimeHolder::accessExpiredJavaScriptBackedArrayBuffer(
+  jni::alias_ref<JSHeapAccessExecutorJavaClass::javaobject> executor
+) {
+#if !UNIT_TEST
+  throw std::logic_error(
+    "Expired JavaScript-backed ArrayBuffer access is only available when UNIT_TEST is defined."
+  );
+#else
+  auto storage = std::make_shared<JavaScriptBackedArrayBufferStorage>(
+    std::weak_ptr<JavaScriptRuntime>{},
+    std::make_shared<JSHeapAccessExecutorHolder>(executor),
+    nullptr,
+    0,
+    0
+  );
+  storage->readBytes(0, nullptr, 0);
 #endif
 }
 
