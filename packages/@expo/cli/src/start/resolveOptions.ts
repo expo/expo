@@ -159,34 +159,16 @@ export function resolveHostType(options: {
 /** Resolve the port options for all supported bundlers. */
 export async function resolvePortsAsync(
   projectRoot: string,
-  options: Partial<Pick<Options, 'port' | 'devClient'>>,
-  settings: { webOnly?: boolean }
+  options: Partial<Pick<Options, 'port' | 'devClient'>>
 ) {
-  const multiBundlerSettings: { webpackPort?: number; metroPort?: number } = {};
-
-  if (settings.webOnly) {
-    const webpackPort = await resolvePortAsync(projectRoot, {
-      defaultPort: options.port,
-      // Default web port
-      fallbackPort: 19006,
-    });
-    if (webpackPort == null) {
-      throw new AbortCommandError();
-    }
-    multiBundlerSettings.webpackPort = webpackPort;
-  } else {
-    const fallbackPort = process.env.RCT_METRO_PORT
-      ? parseInt(process.env.RCT_METRO_PORT, 10)
-      : 8081;
-    const metroPort = await resolvePortAsync(projectRoot, {
-      defaultPort: options.port,
-      fallbackPort,
-    });
-    if (metroPort == null) {
-      throw new AbortCommandError();
-    }
-    multiBundlerSettings.metroPort = metroPort;
+  const fallbackPort = process.env.RCT_METRO_PORT ? parseInt(process.env.RCT_METRO_PORT, 10) : 8081;
+  const metroPort = await resolvePortAsync(projectRoot, {
+    defaultPort: options.port,
+    fallbackPort,
+  });
+  if (metroPort == null) {
+    throw new AbortCommandError();
   }
 
-  return multiBundlerSettings;
+  return { metroPort };
 }
