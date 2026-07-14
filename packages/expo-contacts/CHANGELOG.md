@@ -11,6 +11,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `ContactField.THUMBNAIL` crash in bulk `getAllDetails` by reading `thumbnailImageData` instead of `imageData`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 - Fix `getDetails` throwing NPE on malformed label ([#46405](https://github.com/expo/expo/pull/46405) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
