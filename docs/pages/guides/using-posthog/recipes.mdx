@@ -89,7 +89,7 @@ jobs:
 ### How it works
 
 1. The [`update`](/eas/workflows/pre-packaged-jobs#update) job publishes the update.
-2. [`eas/posthog_annotation`](/eas/workflows/syntax/#easposthog_annotation) pins an annotation to the current time, which appears on every PostHog chart for the project. The runtime version in the content tells you which release each marker is. The update job's [outputs](/eas/workflows/pre-packaged-jobs#update) also expose the update group ID and, through [`fromJSON`](/eas/workflows/syntax/#fromjsonvalue) on `updates_json`, the message and git commit hash.
+2. [`eas/posthog_annotation`](/eas/workflows/syntax/#easposthog_annotation) pins the annotation to the current time, and the runtime version in the content identifies the release.
 
 ## Upload source maps for error tracking
 
@@ -134,7 +134,7 @@ jobs:
 
 ### How it works
 
-1. `eas update --platform ios` bundles the app, publishes it, and leaves the export, source maps included, in the **dist** directory. Scope it to one platform. Source maps are per platform, and PostHog uploads only native (Hermes) source maps. Exporting every platform at once would put a web bundle in **dist** that the upload can't process. Add a second job with `--platform android` to cover Android.
+1. `eas update --platform ios` publishes the update and leaves the export, source maps included, in the **dist** directory. Export one native platform per job: a full export also includes a web bundle, which PostHog's Hermes upload rejects.
 2. [`eas/posthog_upload_sourcemaps`](/eas/workflows/syntax/#easposthog_upload_sourcemaps) uploads those maps to PostHog error tracking, so stack traces from the update symbolicate back to your original code. It uses the [PostHog Metro config](/guides/using-posthog/#source-maps), which gives each bundle the chunk IDs that match it to its source maps. See [error tracking](/guides/using-posthog/#error-tracking) for how symbolication works.
 
 ## Release a feature behind a flag
@@ -252,7 +252,7 @@ jobs:
 
 ## Roll out an EAS Update channel, or revert on failure
 
-The rollout above controls exposure with a PostHog feature flag. If you roll out with [EAS Update channel percentages](/eas-update/rollouts/) instead, the same gate drives `eas channel:rollout`: publish an update, send a fraction of users to it, watch the error rate, then widen the rollout to everyone or revert it. This is the most hands-off recipe here, and it touches the most of EAS: the update job, channel rollouts, the metric gate, and an event to record the outcome.
+The rollout above controls exposure with a PostHog feature flag. If you roll out with [EAS Update channel percentages](/eas-update/rollouts/) instead, the same gate drives `eas channel:rollout`: publish an update, send a fraction of users to it, watch the error rate, then widen the rollout to everyone or revert it. It touches more of EAS than any other recipe here: the update job, channel rollouts, the metric gate, and an outcome event.
 
 ```yaml .eas/workflows/channel-rollout.yml
 name: Channel rollout that widens or reverts
@@ -306,7 +306,7 @@ jobs:
 1. The [`update`](/eas/workflows/pre-packaged-jobs#update) job publishes to the `rollout` branch, then `eas channel:rollout` starts a rollout on the `production` channel that sends 10% of users to the new update. The `--runtime-version` value must match the published update's runtime version.
 2. [`eas/posthog_wait_for_metric`](/eas/workflows/syntax/#easposthog_wait_for_metric) holds until the exception count over the last 15 minutes stays under 10, then records the count that cleared the gate through the step's `value` output.
 3. When the gate clears, `widen` ends the rollout with `--outcome republish-and-revert`, which publishes the new update to everyone.
-4. When the gate fails, `revert` ends the rollout with `--outcome revert`, which sends users back to the previous update. It uses [`after`](/eas/workflows/syntax/#jobsjob_idafter) with [`if: ${{ failure() }}`](/eas/workflows/syntax/#jobsjob_idif), the same pattern as the flag rollback above, because a `needs` dependency would skip it before its `if` is evaluated.
+4. When the gate fails, `revert` ends the rollout with `--outcome revert`, which sends users back to the previous update. It uses the same [`after`](/eas/workflows/syntax/#jobsjob_idafter) plus [`if: ${{ failure() }}`](/eas/workflows/syntax/#jobsjob_idif) pattern as the [flag rollback](#roll-out-or-roll-back-on-your-error-rate).
 
 ## Take a flag to full rollout with human approval
 
@@ -372,15 +372,15 @@ jobs:
 
 ### How it works
 
-1. Start it during an incident with:
+1. Run it with:
 
    <Terminal cmd={['$ eas workflow:run kill-switch.yml']} />
 
-2. [`eas/posthog_flag_rollout`](/eas/workflows/syntax/#easposthog_flag_rollout) turns the flag off for everyone, and the follow-up event records when the kill switch was pulled and for which flag.
+2. [`eas/posthog_flag_rollout`](/eas/workflows/syntax/#easposthog_flag_rollout) turns the flag off, and the follow-up event records that it happened.
 
 ## Turn a feature off automatically on an error spike
 
-Turn a feature off automatically when the error rate spikes after a deploy. This is the kill switch from the previous recipe wired to an error gate, so it fires without anyone watching a dashboard.
+This is the kill switch from the previous recipe wired to an error gate, so it turns the feature off on its own when the error rate spikes after a deploy.
 
 ```yaml .eas/workflows/auto-kill-switch.yml
 name: Turn off new-checkout automatically on an error spike
@@ -424,8 +424,8 @@ jobs:
 ### How it works
 
 1. The [`update`](/eas/workflows/pre-packaged-jobs#update) job publishes the update, and [`eas/posthog_wait_for_metric`](/eas/workflows/syntax/#easposthog_wait_for_metric) waits until the exception count over the last 10 minutes is under 20. If a bad update keeps the count elevated, the gate times out and fails.
-2. The `auto_kill_switch` job uses the same `after` plus `if: ${{ failure() }}` pattern as the rollback in [Roll out or roll back on your error rate](#roll-out-or-roll-back-on-your-error-rate): `after` instead of `needs`, because a failed `needs` dependency skips the job before its `if` condition is evaluated.
-3. [`eas/posthog_flag_rollout`](/eas/workflows/syntax/#easposthog_flag_rollout) turns the flag off, the same action as the manual kill switch, and the follow-up event records that it happened automatically.
+2. The `auto_kill_switch` job uses the same [`after`](/eas/workflows/syntax/#jobsjob_idafter) plus [`if: ${{ failure() }}`](/eas/workflows/syntax/#jobsjob_idif) pattern as the [flag rollback](#roll-out-or-roll-back-on-your-error-rate).
+3. [`eas/posthog_flag_rollout`](/eas/workflows/syntax/#easposthog_flag_rollout) turns the flag off, the same action as the manual kill switch, and records that it fired automatically.
 
 ## Announce a release once users adopt it
 
@@ -472,7 +472,7 @@ jobs:
 
 ## More recipes
 
-These recipes cover narrower needs. Each is a complete workflow you can copy as-is.
+Shorter recipes for narrower needs.
 
 ### Wait for a specific event
 
