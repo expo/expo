@@ -109,13 +109,6 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AppMetricsScreen'));
-    },
-    name: 'AppMetrics',
-    options: { title: 'App Metrics' },
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/ExpoObserveScreen'));
     },
     name: 'ExpoObserve',
