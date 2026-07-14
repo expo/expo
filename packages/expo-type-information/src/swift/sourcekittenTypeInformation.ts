@@ -47,6 +47,8 @@ const swiftDeclarationKind = {
   varParameter: 'source.lang.swift.decl.var.parameter',
   closure: 'source.lang.swift.expr.closure',
   enumcase: 'source.lang.swift.decl.enumcase',
+  varStatic: 'source.lang.swift.decl.var.static',
+  varGlobal: 'source.lang.swift.decl.var.global',
 };
 
 function isSwiftDictionary(type: string): boolean {
@@ -80,6 +82,14 @@ function isEitherTypeIdentifier(typeIdentifier: string): boolean {
 
 function isEnumStructure(structure: Structure): boolean {
   return structure['key.kind'] === swiftDeclarationKind.enum;
+}
+
+function isClassStructure(structure: Structure): boolean {
+  return structure['key.kind'] === swiftDeclarationKind.class;
+}
+
+function isStructStructure(structure: Structure): boolean {
+  return structure['key.kind'] === swiftDeclarationKind.struct;
 }
 
 function isRecordStructure(structure: Structure): boolean {
@@ -254,6 +264,66 @@ function getIdentifierFromOffsetObject(offsetObject: Structure, file: FileType) 
   const startIndex = offsetObject['key.offset'];
   const endIndex = offsetObject['key.offset'] + offsetObject['key.length'];
   return file.content.substring(startIndex, endIndex).replaceAll('"', '');
+}
+
+function getLiteralOrResolvedIdentifier(offsetObject: Structure, ctx: ParseContext): string {
+  const { namespaces, file } = ctx;
+  const startIndex = offsetObject['key.offset'];
+  const endIndex = offsetObject['key.offset'] + offsetObject['key.length'];
+  const literalOrIdentifier = file.content.substring(startIndex, endIndex);
+
+  if (literalOrIdentifier.startsWith('"')) {
+    return literalOrIdentifier.replaceAll('"', '');
+  }
+
+  const parts = literalOrIdentifier.split('.');
+
+  const traverse = (baseObj: namespace | string | null, keys: string[]) => {
+    let current = baseObj;
+    for (const key of keys) {
+      if (typeof current === 'string' || current === null) {
+        return undefined;
+      }
+      const subNamespace = current[key];
+      if (subNamespace === undefined) {
+        return undefined;
+      }
+      current = subNamespace;
+    }
+    return current;
+  };
+
+  const n0 = traverse(namespaces, parts);
+  if (typeof n0 === 'string') {
+    return n0.replaceAll('"', '');
+  }
+
+  const n1 = traverse(namespaces[''] || {}, parts);
+  if (typeof n1 === 'string') {
+    return n1.replaceAll('"', '');
+  }
+
+  return parts[parts.length - 1] ?? literalOrIdentifier;
+}
+
+function isStringLiteral(str: string): boolean {
+  return str.length > 1 && str[0] == '"' && str[str.length - 1] == '"';
+}
+
+function getInitializerValue(structure: Structure, file: FileType): string | null {
+  const nameEnd = structure['key.nameoffset'] + structure['key.namelength'];
+  const declarationEnd = structure['key.offset'] + structure['key.length'];
+  if (!nameEnd || !declarationEnd) {
+    return null;
+  }
+  const valueSubstring = file.content.substring(nameEnd, declarationEnd);
+  const indexOfInitializerStart = valueSubstring.indexOf('=');
+  const initializer = valueSubstring.slice(indexOfInitializerStart + 1).trim();
+
+  if (!isStringLiteral(initializer)) {
+    return null;
+  }
+  return initializer;
 }
 
 function hasSubstructure(structure: Structure) {
@@ -518,9 +588,10 @@ function getClosureBodyStructure(structure: Structure): Structure | null {
 
 async function parseModuleClassStructure(
   structure: Structure,
-  file: FileType,
-  options: SwiftFileTypeInformationOptions
+  options: SwiftFileTypeInformationOptions,
+  ctx: ParseContext
 ): Promise<ClassDeclaration> {
+  const { file } = ctx;
   const nestedModuleSubstructure = getClosureBodyStructure(structure)?.['key.substructure'];
   const nameSubstrucutre = structure['key.substructure']?.[0];
   const name = nameSubstrucutre
@@ -542,10 +613,10 @@ async function parseModuleClassStructure(
   // `parseModuleStructure` returns `ModuleClassDeclaration` with a found name or with the provided 'UNUSED_NAME', we don't need it here.
   const classTypeInfo = await parseModuleStructure(
     nestedModuleSubstructure,
-    file,
     'UNUSED_NAME',
     structure['key.offset'],
-    options
+    options,
+    ctx
   );
   return {
     name,
@@ -615,9 +686,10 @@ async function parseModulePropDeclaration(
 
 async function parseModuleViewDeclaration(
   substructure: Structure,
-  file: FileType,
-  options: SwiftFileTypeInformationOptions
+  options: SwiftFileTypeInformationOptions,
+  ctx: ParseContext
 ): Promise<ViewDeclaration | null> {
+  const { file } = ctx;
   // The View arguments is a.self for some class a we want.
   const suffixLength = 5;
   const nameSubstrucutre = substructure['key.substructure']?.[0];
@@ -634,17 +706,20 @@ async function parseModuleViewDeclaration(
 
   return await parseModuleStructure(
     viewSubstructure,
-    file,
     name,
     viewStructure['key.offset'],
-    options
+    options,
+    ctx
   );
 }
 
-function parseModuleEventDeclaration(structure: Structure, file: FileType, events: string[]) {
-  structure['key.substructure'].forEach((substructure) =>
-    events.push(getIdentifierFromOffsetObject(substructure, file))
-  );
+function parseModuleEventDeclaration(structure: Structure, events: string[], ctx: ParseContext) {
+  structure['key.substructure'].forEach((substructure) => {
+    const eventName = getLiteralOrResolvedIdentifier(substructure, ctx);
+    if (eventName) {
+      events.push(eventName);
+    }
+  });
 }
 
 function hasFieldAttribute(attributes: Attribute[] | null, file: FileType): boolean {
@@ -740,13 +815,23 @@ function parsePropertyString(
   };
 }
 
+type namespace = {
+  [key: string]: namespace | string | null;
+};
+
+type ParseContext = {
+  file: FileType;
+  namespaces: { [key: string]: namespace };
+};
+
 async function parseModuleStructure(
   moduleStructure: Structure[],
-  file: FileType,
   name: string,
   definitionOffset: number,
-  options: SwiftFileTypeInformationOptions
+  options: SwiftFileTypeInformationOptions,
+  ctx: ParseContext
 ): Promise<ModuleClassDeclaration> {
+  const { file } = ctx;
   const moduleClassDeclaration: ModuleClassDeclaration = {
     name,
     constants: [],
@@ -797,7 +882,7 @@ async function parseModuleStructure(
       }
       case 'Class':
         moduleClassDeclaration.classes.push(
-          await parseModuleClassStructure(structure, file, options)
+          await parseModuleClassStructure(structure, options, ctx)
         );
         break;
       case 'Property': {
@@ -835,14 +920,14 @@ async function parseModuleStructure(
         );
         break;
       case 'View': {
-        const viewDeclaration = await parseModuleViewDeclaration(structure, file, options);
+        const viewDeclaration = await parseModuleViewDeclaration(structure, options, ctx);
         if (viewDeclaration) {
           moduleClassDeclaration.views.push(viewDeclaration);
         }
         break;
       }
       case 'Events':
-        parseModuleEventDeclaration(structure, file, moduleClassDeclaration.events);
+        parseModuleEventDeclaration(structure, moduleClassDeclaration.events, ctx);
         break;
       default:
         console.warn(`Module substructure not supported. ${structure['key.name']}`);
@@ -993,6 +1078,41 @@ function collectModuleTypeIdentifiers(
   });
 }
 
+function parseNamespaces(
+  structure: Structure,
+  namespaces: { [key: string]: namespace },
+  file: FileType,
+  currentNamespace: namespace
+) {
+  if (
+    isModuleStructure(structure) ||
+    isRecordStructure(structure) ||
+    isStructStructure(structure) ||
+    isEnumStructure(structure) ||
+    isClassStructure(structure)
+  ) {
+    const moduleName = structure['key.name'];
+    namespaces[moduleName] = namespaces[moduleName] || {};
+    const ns: namespace = namespaces[moduleName];
+    currentNamespace[moduleName] = ns;
+    structure['key.substructure'].forEach((substructure) => {
+      parseNamespaces(substructure, namespaces, file, ns);
+    });
+    return;
+  }
+  if (
+    structure['key.kind'] === swiftDeclarationKind.varStatic ||
+    structure['key.kind'] === swiftDeclarationKind.varGlobal
+  ) {
+    currentNamespace[structure['key.name']] = getInitializerValue(structure, file);
+    return;
+  }
+  const substructures = structure['key.substructure'];
+  substructures?.forEach((substructure) =>
+    parseNamespaces(substructure, namespaces, file, currentNamespace)
+  );
+}
+
 export type SwiftFileTypeInformationOptions = {
   typeInference: boolean;
 };
@@ -1006,13 +1126,12 @@ export async function getSwiftFileTypeInformation(
   const modulesStructures: { name: string; structure: Structure }[] = [];
   const recordsStructures: Structure[] = [];
   const enumsStructures: Structure[] = [];
-  parseStructure(
-    getStructureFromFile(file),
-    '',
-    modulesStructures,
-    recordsStructures,
-    enumsStructures
-  );
+  const fileStructure = getStructureFromFile(file);
+  parseStructure(fileStructure, '', modulesStructures, recordsStructures, enumsStructures);
+
+  const namespaces: { [key: string]: namespace } = {};
+  namespaces[''] = {};
+  parseNamespaces(fileStructure, namespaces, file, namespaces['']);
 
   const inferredTypeParametersCount = new Map<string, number>();
   const moduleClasses: ModuleClassDeclaration[] = [];
@@ -1034,14 +1153,16 @@ export async function getSwiftFileTypeInformation(
   const recordsPromise = taskAll(recordsStructures, recordMap);
   const moduleClassDeclarationsPromise = taskAll(
     modulesStructures.filter(({ structure }) => hasSubstructure(structure)),
-    ({ structure, name }) =>
-      parseModuleStructure(
+    ({ structure, name }) => {
+      namespaces[name] = namespaces[name] || {};
+      return parseModuleStructure(
         structure['key.substructure'],
-        file,
         name,
         structure['key.offset'],
-        options
-      )
+        options,
+        { namespaces, file }
+      );
+    }
   );
 
   const [records, moduleClassDeclarations] = await Promise.all([
