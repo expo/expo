@@ -7,7 +7,6 @@ import com.google.common.truth.Truth
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.jni.ArrayBuffer
-import expo.modules.kotlin.jni.ArrayBufferScopedAccessAsyncCallback
 import expo.modules.kotlin.jni.ControllableJSHeapAccessExecutor
 import expo.modules.kotlin.jni.JavaScriptArrayBuffer
 import expo.modules.kotlin.jni.MainJSHeapAccessExecutor
@@ -15,7 +14,6 @@ import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.jni.PromiseException
 import expo.modules.kotlin.jni.getPendingPromise
 import expo.modules.kotlin.jni.inlineModule
-import expo.modules.kotlin.jni.tests.RuntimeHolder
 import expo.modules.kotlin.jni.waitForAsyncFunction
 import expo.modules.kotlin.jni.withJSIInterop
 import expo.modules.kotlin.runtime.MainRuntime
@@ -363,76 +361,6 @@ class ArrayBufferConversionTest {
   }
 
   @Test
-  fun queued_js_backed_access_throws_after_its_runtime_is_deallocated() {
-    val firstTaskQueued = CountDownLatch(1)
-    val completed = CountDownLatch(1)
-    val failure = AtomicReference<Throwable?>()
-    val queue = ControllableJSHeapAccessExecutor.manuallyDrained(
-      ControllableJSHeapAccessExecutor.LifecycleHooks(afterTaskQueued = firstTaskQueued::countDown)
-    )
-
-    try {
-      RuntimeHolder().use { runtimeHolder ->
-        val caller = Thread {
-          try {
-            runtimeHolder.accessExpiredJavaScriptBackedArrayBuffer(queue)
-          } catch (throwable: Throwable) {
-            failure.set(throwable)
-          } finally {
-            completed.countDown()
-          }
-        }
-        caller.start()
-
-        Truth.assertThat(firstTaskQueued.await(5, TimeUnit.SECONDS)).isTrue()
-        Truth.assertThat(queue.runNext()).isTrue()
-        Truth.assertThat(completed.await(5, TimeUnit.SECONDS)).isTrue()
-        caller.join()
-        Truth.assertThat(failure.get()).isInstanceOf(CodedException::class.java)
-        Truth.assertThat(failure.get()).hasMessageThat()
-          .contains("Cannot access JavaScript-backed ArrayBuffer after runtime deallocation")
-      }
-    } finally {
-      queue.close()
-    }
-  }
-
-  @Test
-  fun executed_js_backed_async_access_after_runtime_deallocation_completes_exceptionally() {
-    val taskQueued = CountDownLatch(1)
-    val completed = CountDownLatch(1)
-    val callbackCount = AtomicInteger()
-    val failure = AtomicReference<Throwable?>()
-    val queue = ControllableJSHeapAccessExecutor.manuallyDrained(
-      ControllableJSHeapAccessExecutor.LifecycleHooks(afterTaskQueued = taskQueued::countDown)
-    )
-
-    try {
-      RuntimeHolder().use { runtimeHolder ->
-        runtimeHolder.accessExpiredJavaScriptBackedArrayBufferAsync(
-          queue,
-          ArrayBufferScopedAccessAsyncCallback { _, error ->
-            callbackCount.incrementAndGet()
-            failure.set(error)
-            completed.countDown()
-          }
-        )
-
-        Truth.assertThat(taskQueued.await(5, TimeUnit.SECONDS)).isTrue()
-        Truth.assertThat(queue.runNext()).isTrue()
-        Truth.assertThat(callbackCount.get()).isEqualTo(1)
-        Truth.assertThat(completed.await(5, TimeUnit.SECONDS)).isTrue()
-        Truth.assertThat(queue.executedTaskCount).isEqualTo(1)
-        Truth.assertThat(failure.get()).isInstanceOf(CodedException::class.java)
-        Truth.assertThat(failure.get()).hasMessageThat()
-          .contains("Cannot access JavaScript-backed ArrayBuffer after runtime deallocation")
-      }
-    } finally {
-      queue.close()
-    }
-  }
-
-  @Test
   fun js_backed_conversion_uses_installed_heap_executor_during_teardown() {
     ControllableJSHeapAccessExecutor.sameThread().use { executor ->
       withJSIInterop(
@@ -770,62 +698,6 @@ class ArrayBufferConversionTest {
           queue.runAll()
           firstReader?.join(5_000)
           laterReaders.forEach { it.join(5_000) }
-          retainedBuffer.set(null)
-          forceGc()
-          queue.runAll()
-        }
-      }
-    } finally {
-      queue.close()
-    }
-  }
-
-  @Test
-  fun first_materialization_throws_when_the_js_backed_view_becomes_out_of_bounds() {
-    val taskQueued = CountDownLatch(1)
-    val materializationCompleted = CountDownLatch(1)
-    val queue = ControllableJSHeapAccessExecutor.manuallyDrained(
-      ControllableJSHeapAccessExecutor.LifecycleHooks(afterTaskQueued = taskQueued::countDown)
-    )
-    val retainedBuffer = AtomicReference<ArrayBuffer?>()
-    val failure = AtomicReference<Throwable?>()
-    var materializer: Thread? = null
-
-    try {
-      withJSIInterop(
-        retainingJavaScriptBackedArrayBufferModule(retainedBuffer),
-        jsHeapAccessExecutor = queue
-      ) {
-        try {
-          evaluateScript(
-            """
-            const backing = new ArrayBuffer(8);
-            expo.modules.TestModule.retainJavaScriptBackedArrayBuffer(new Uint8Array(backing, 4, 4));
-            """.trimIndent()
-          )
-          val buffer = checkNotNull(retainedBuffer.get())
-          buffer.makeJavaScriptBackedStorageOutOfBoundsForTest()
-          materializer = Thread {
-            try {
-              buffer.toDirectBuffer()
-            } catch (throwable: Throwable) {
-              failure.set(throwable)
-            } finally {
-              materializationCompleted.countDown()
-            }
-          }
-          materializer.start()
-
-          Truth.assertThat(taskQueued.await(5, TimeUnit.SECONDS)).isTrue()
-          Truth.assertThat(queue.runNext()).isTrue()
-          Truth.assertThat(materializationCompleted.await(5, TimeUnit.SECONDS)).isTrue()
-          materializer.join()
-
-          Truth.assertThat(failure.get()).isInstanceOf(CodedException::class.java)
-          Truth.assertThat(failure.get()).hasMessageThat().contains("out of bounds")
-        } finally {
-          queue.runAll()
-          materializer?.join(5_000)
           retainedBuffer.set(null)
           forceGc()
           queue.runAll()

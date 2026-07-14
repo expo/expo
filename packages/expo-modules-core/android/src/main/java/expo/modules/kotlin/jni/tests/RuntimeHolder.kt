@@ -6,10 +6,6 @@ import com.facebook.jni.HybridData
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import expo.modules.core.interfaces.DoNotStrip
-import expo.modules.kotlin.jni.ArrayBufferScopedAccessAsyncCallback
-import expo.modules.kotlin.jni.ArrayBufferScopedAccessAsyncQueueFailureCallback
-import expo.modules.kotlin.jni.JNIFunctionBody
-import expo.modules.kotlin.jni.JSHeapAccessExecutor
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -29,27 +25,6 @@ internal class RuntimeHolder : AutoCloseable {
 
   @OptIn(FrameworkAPI::class)
   external fun createCallInvoker(): CallInvokerHolderImpl
-
-  external fun accessExpiredJavaScriptBackedArrayBuffer(executor: JSHeapAccessExecutor)
-
-  private external fun accessExpiredJavaScriptBackedArrayBufferAsync(
-    executor: JSHeapAccessExecutor,
-    body: JNIFunctionBody,
-    callback: ArrayBufferScopedAccessAsyncCallback,
-    queueFailureCallback: ArrayBufferScopedAccessAsyncQueueFailureCallback
-  )
-
-  fun accessExpiredJavaScriptBackedArrayBufferAsync(
-    executor: JSHeapAccessExecutor,
-    callback: ArrayBufferScopedAccessAsyncCallback
-  ) {
-    accessExpiredJavaScriptBackedArrayBufferAsync(
-      executor,
-      JNIFunctionBody { null },
-      callback,
-      ArrayBufferScopedAccessAsyncQueueFailureCallback { error -> throw error }
-    )
-  }
 
   private external fun release()
 

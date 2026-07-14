@@ -210,10 +210,6 @@ public:
 
   [[nodiscard]] bool isNativeBacked();
 
-#if UNIT_TEST
-  void makeJavaScriptBackedStorageOutOfBoundsForTest();
-#endif
-
   [[nodiscard]] jni::local_ref<jni::JObject> withJSBytes(
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );

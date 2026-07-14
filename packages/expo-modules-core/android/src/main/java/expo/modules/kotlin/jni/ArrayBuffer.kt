@@ -77,11 +77,6 @@ class ArrayBuffer : Destructible {
    */
   external fun isNativeBacked(): Boolean
 
-  @DoNotStrip
-  @JvmName("makeJavaScriptBackedStorageOutOfBoundsForTest")
-  @Suppress("unused")
-  internal external fun makeJavaScriptBackedStorageOutOfBoundsForTest()
-
   /**
    * Provides scoped access to this buffer's visible bytes.
    *

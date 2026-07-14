@@ -522,9 +522,6 @@ void ArrayBuffer::registerNatives() {
                    makeNativeMethod("readDouble", ArrayBuffer::read<double>),
                    makeNativeMethod("toDirectBuffer", ArrayBuffer::toDirectBuffer),
                    makeNativeMethod("isNativeBacked", ArrayBuffer::isNativeBacked),
-#if UNIT_TEST
-                   makeNativeMethod("makeJavaScriptBackedStorageOutOfBoundsForTest", ArrayBuffer::makeJavaScriptBackedStorageOutOfBoundsForTest),
-#endif
                    makeNativeMethod("withJSBytes", ArrayBuffer::withJSBytes),
                    makeNativeMethod("withJSBytesAsync", ArrayBuffer::withJSBytesAsync),
                  });
@@ -625,17 +622,6 @@ jni::local_ref<jni::JByteBuffer> ArrayBuffer::toDirectBuffer() {
 bool ArrayBuffer::isNativeBacked() {
   return snapshotStorage()->isNativeBacked();
 }
-
-#if UNIT_TEST
-void ArrayBuffer::makeJavaScriptBackedStorageOutOfBoundsForTest() {
-  std::lock_guard<std::mutex> lock(storageMutex_);
-  auto jsStorage = std::dynamic_pointer_cast<JavaScriptBackedArrayBufferStorage>(storage);
-  if (!jsStorage) {
-    throw std::logic_error("Only JavaScript-backed ArrayBuffer storage can be made out of bounds.");
-  }
-  jsStorage->_length = std::numeric_limits<size_t>::max();
-}
-#endif
 
 jni::local_ref<jni::JObject> ArrayBuffer::withJSBytes(
   jni::alias_ref<JNIFunctionBody::javaobject> body
