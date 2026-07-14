@@ -2187,16 +2187,16 @@ jobs:
 
 ##### Properties
 
-| Property             | Type    | Required    | Description                                                                                                                                                                                                                                         |
-| -------------------- | ------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `flag`               | string  | <YesIcon /> | The key of the feature flag to update.                                                                                                                                                                                                              |
-| `active`             | boolean | <NoIcon />  | Whether the flag is enabled.                                                                                                                                                                                                                        |
-| `rollout_percentage` | number  | <NoIcon />  | Percentage of users the flag rolls out to, as an integer from `0` to `100`. It is applied to the flag's catch-all release condition and preserves other conditions. When the flag has no catch-all condition, it is applied to the first condition. |
-| `payload`            | json    | <NoIcon />  | Payload to attach to the flag.                                                                                                                                                                                                                      |
-| `variant`            | string  | <NoIcon />  | Variant key to store the `payload` under on a multivariate flag. Defaults to the flag's `true` payload.                                                                                                                                             |
-| `api_key`            | string  | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `feature_flag:read` and `feature_flag:write` scopes.                                                                                             |
-| `project_id`         | string  | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                                                                                                                  |
-| `ignore_error`       | boolean | <NoIcon />  | When `true`, a network error, a missing flag, or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error, or invalid input such as an out-of-range `rollout_percentage`, always fails the step.       |
+| Property             | Type    | Required    | Description                                                                                                                                                                                                                                                             |
+| -------------------- | ------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flag`               | string  | <YesIcon /> | The key of the feature flag to update.                                                                                                                                                                                                                                  |
+| `active`             | boolean | <NoIcon />  | Whether the flag is enabled.                                                                                                                                                                                                                                            |
+| `rollout_percentage` | number  | <NoIcon />  | Percentage of users the flag rolls out to, as an integer from `0` to `100`. The function applies it to the flag's catch-all release condition and preserves other conditions. When the flag has no catch-all condition, the function applies it to the first condition. |
+| `payload`            | json    | <NoIcon />  | Payload to attach to the flag.                                                                                                                                                                                                                                          |
+| `variant`            | string  | <NoIcon />  | Variant key to store the `payload` under on a multivariate flag. Defaults to the flag's `true` payload.                                                                                                                                                                 |
+| `api_key`            | string  | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `feature_flag:read` and `feature_flag:write` scopes.                                                                                                                 |
+| `project_id`         | string  | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                                                                                                                                      |
+| `ignore_error`       | boolean | <NoIcon />  | When `true`, a network error, a missing flag, or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error, or invalid input such as an out-of-range `rollout_percentage`, always fails the step.                           |
 
 <BoxLink
   title="eas/posthog_flag_rollout source code"
@@ -2211,7 +2211,7 @@ Pauses the workflow until a [HogQL](https://posthog.com/docs/hogql) query return
 
 The function runs the query every `interval_seconds` until the comparison is true or `timeout_seconds` elapses. A query that cannot be read, such as invalid HogQL, fails the step immediately, while transient errors are retried until the timeout.
 
-> **info** This step has no `ignore_error` input. A gate you ignore is not a gate, so a timeout or an unreadable query always fails the step.
+> **info** This step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
 
 ```yaml
 jobs:
@@ -2321,7 +2321,7 @@ jobs:
 
 #### `eas/posthog_upload_sourcemaps`
 
-Uploads JavaScript source maps to PostHog so that stack traces in [error tracking](/guides/using-posthog/#error-tracking) are symbolicated. Run it after the step that produces your bundle, in the same job, so the bundle and source maps are available on disk. Export with `npx expo export --source-maps`, and configure the PostHog Metro config from the [Source maps guide](/guides/using-posthog/#source-maps) so bundles carry the chunk IDs that match them to their source maps.
+Uploads JavaScript source maps to PostHog so that PostHog symbolicates stack traces in [error tracking](/guides/using-posthog/#error-tracking). Run it after the step that produces your bundle, in the same job, so the bundle and source maps are available on disk. Export with `npx expo export --source-maps`, and configure the PostHog Metro config from the [Source maps guide](/guides/using-posthog/#source-maps) so bundles carry the chunk IDs that match them to their source maps.
 
 > **warning** This step runs the PostHog CLI, which cannot tell a permissions error apart from any other failure. Unlike the other PostHog functions, setting `ignore_error: true` also hides authentication and scope errors.
 
