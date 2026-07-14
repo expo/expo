@@ -18,6 +18,7 @@
 - [iOS] Added `SharedObject.native(from:)` that recovers the native shared object paired with a JavaScript object, with a generic overload that returns the concrete subclass directly. ([#47054](https://github.com/expo/expo/pull/47054) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `@SharedObject` now binds `@JS` methods, properties and the `@JS init` directly onto the class prototype, so they no longer need `Function(…)` / `Property(…)` / `Constructor { … }` definition entries. ([#47107](https://github.com/expo/expo/pull/47107) by [@tsapeta](https://github.com/tsapeta))
 - Added `ArrayBuffer` as the preferred safe native module argument and return type, and deprecated `NativeArrayBuffer` in favor of it. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
+- [Android] Added `ArrayBuffer.withJSBytes` for safe scoped access to underlying bytes from any thread, with lifecycle-safe queue cancellation, one-time unscoped materialization, and corrected storage and direct-buffer lifetimes. ([#47261](https://github.com/expo/expo/pull/47261) by [@barthap](https://github.com/barthap))
 - [Android] Support `PlatformColor` as Color. ([#47632](https://github.com/expo/expo/pull/47632) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
