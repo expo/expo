@@ -15,6 +15,7 @@ export type Structure = {
     'key.offset': number;
     'key.length': number;
     'key.nameoffset': number;
+    'key.namelength': number;
     'key.inheritedtypes': {
         'key.name': string;
     }[];
