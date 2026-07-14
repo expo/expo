@@ -6,14 +6,11 @@ const mockNativeTarget = {
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
 };
-// The real native module is a JSI host object: it reports every prop as present via `in` and
-// `hasOwnProperty` (a host object has no `has` hook), yet `Object.keys` lists only its real members.
+// The real native module is a JSI host object.
 // Mirror that here so the AppMetrics-fallback tests exercise the actual on-device bug — a fallback
 // gated on `in`/`hasOwnProperty` would wrongly treat every prop as native and never forward.
 const mockNative = new Proxy(mockNativeTarget, {
   has: () => true,
-  getOwnPropertyDescriptor: (t, prop) =>
-    Object.getOwnPropertyDescriptor(t, prop) ?? { configurable: true, enumerable: false, value: undefined },
 });
 
 const mockAppMetrics = {
