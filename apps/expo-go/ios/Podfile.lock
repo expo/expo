@@ -3623,7 +3623,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNGestureHandler (2.32.0):
+  - RNGestureHandler (3.0.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -4285,7 +4285,7 @@ DEPENDENCIES:
   - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@8.0.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native_0180b0ed6046964ee33d8459d53b43aa/node_modules/react-native-pager-view`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react_4597956df5772f7c92a8134220d636ac/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.87.0-rc.0_@babel_9ae56cadb36b20399e5495cbe55c3117/node_modules/@react-native-segmented-control/segmented-control`)"
-  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=ba884424a75156115606f768b005e5af9a39e9836f1_fdcce57925ed98df14d03b937bc50069/node_modules/@shopify/react-native-skia`)"
+  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=e00eb5ce5f70273dd31f4b4259f1979f02fd808b962_63fd653ddb812123f7f948471dbaecef/node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.2.0/node_modules/@react-native-community/slider`)"
   - react-native-view-shot (from `../modules/react-native-view-shot`)
   - react-native-webview (from `../modules/react-native-webview`)
@@ -4327,9 +4327,9 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_5f1cd43ac95e4cb2f4253c55092074e3/node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-n_ee3b10c8fc5ffb74e796ad3ecb031b31/node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.1.0_expo@packages+expo_react-native@0.87.0-rc._e887756dc5b5db3fc8d8862bfd9c8a9e/node_modules/@react-native-community/datetimepicker`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-_2d9b385922eea3a0cc919921afcbec4c/node_modules/react-native-gesture-handler`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.0.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-n_2fe266be3ee9d07efc9e960fc8b5dfa1/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_6572ea9d58ce76972961dd96f2780789/node_modules/react-native-reanimated`)"
-  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_react-native@0.87.0-rc.0_@babel+_37dbec40f0746e87d063b66cdd40044e/node_modules/react-native-screens`)"
+  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_patch_hash=2601d21d48a3303ff60c8_9055f0c96726efb4b7fcf6ee8ec1304a/node_modules/react-native-screens`)"
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest_9365ec1d4e2a0d08f8e75b22b7eb9535/node_modules/react-native-svg`)"
   - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_3ced24ab06da6124aa62c2bf8f5aa836/node_modules/react-native-worklets`)"
   - SocketRocket (~> 0.7.1)
@@ -4625,7 +4625,7 @@ EXTERNAL SOURCES:
   react-native-segmented-control:
     :path: "../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.87.0-rc.0_@babel_9ae56cadb36b20399e5495cbe55c3117/node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
-    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=ba884424a75156115606f768b005e5af9a39e9836f1_fdcce57925ed98df14d03b937bc50069/node_modules/@shopify/react-native-skia"
+    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_patch_hash=e00eb5ce5f70273dd31f4b4259f1979f02fd808b962_63fd653ddb812123f7f948471dbaecef/node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "../../../node_modules/.pnpm/@react-native-community+slider@5.2.0/node_modules/@react-native-community/slider"
   react-native-view-shot:
@@ -4709,11 +4709,11 @@ EXTERNAL SOURCES:
   RNDateTimePicker:
     :path: "../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.1.0_expo@packages+expo_react-native@0.87.0-rc._e887756dc5b5db3fc8d8862bfd9c8a9e/node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-_2d9b385922eea3a0cc919921afcbec4c/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.0.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-n_2fe266be3ee9d07efc9e960fc8b5dfa1/node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_6572ea9d58ce76972961dd96f2780789/node_modules/react-native-reanimated"
   RNScreens:
-    :path: "../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_react-native@0.87.0-rc.0_@babel+_37dbec40f0746e87d063b66cdd40044e/node_modules/react-native-screens"
+    :path: "../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_patch_hash=2601d21d48a3303ff60c8_9055f0c96726efb4b7fcf6ee8ec1304a/node_modules/react-native-screens"
   RNSVG:
     :path: "../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest_9365ec1d4e2a0d08f8e75b22b7eb9535/node_modules/react-native-svg"
   RNWorklets:
@@ -4912,7 +4912,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: 5ef8c95cbab95334a32763b72896a7b7d07e6299
   RNCPicker: bf95ec4b2483e2ab256047130bc536b437cd916c
   RNDateTimePicker: 73ffdd45f0ce1d00ff981031679a05206e619fdc
-  RNGestureHandler: e9f48f57c0886f45af5c4ddc3161934e09c0d4d5
+  RNGestureHandler: 011b03f0ff4765315bc14ce479cd45ce065d528e
   RNReanimated: 50a83500888ffb2200595b037764bd14a3c403cf
   RNScreens: ae4213790924e85a9dd3f25da82e047249d5291d
   RNSVG: 6d6e49ea9306198e7b13c59ca8a0ff8afef76d88
