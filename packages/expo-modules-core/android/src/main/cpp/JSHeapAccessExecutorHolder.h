@@ -17,6 +17,11 @@ public:
 
   ~JSHeapAccessExecutorHolder();
 
+  /**
+   * The Java call may throw after it owns the runnable. The bridge owns exception state that can
+   * outlive that handoff, but callers must capture only asynchronous-safe state and never
+   * references to caller stack storage.
+   */
   void runSync(std::function<void()> body);
 
   void runAsync(

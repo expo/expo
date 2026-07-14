@@ -9,18 +9,41 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 @DoNotStrip
+/**
+ * Coordinates access to the JavaScript heap with the JavaScript queue.
+ */
 interface JSHeapAccessExecutor {
+  /**
+   * Hands an asynchronous request to the JavaScript queue. After a successful handoff, exactly one
+   * of [runnable] or [onCancellation] runs; `false` means the request was rejected and cancellation
+   * was already delivered. [onCancellation] can run off the JavaScript thread and must not access JSI.
+   * A queue handoff alone does not prove the body will run, so implementations must invoke
+   * [onCancellation] for accepted work they drop during shutdown.
+   */
   @DoNotStrip
   fun runOnQueue(runnable: Runnable, onCancellation: Runnable): Boolean
 
+  /**
+   * Runs [runnable] inline on the JavaScript queue; otherwise waits for queued work. A rejected or
+   * cancelled request throws without invoking [runnable]. After a timeout, it cancels and throws only
+   * if the body has not started; otherwise, it waits for completion. Exceptions from [runnable] propagate.
+   */
   @DoNotStrip
   @Throws(Throwable::class)
   fun runOnQueueSync(runnable: Runnable)
 
+  /**
+   * Idempotently rejects future queued work and cancels pending work before runtime or queue teardown.
+   * Inline work on the JavaScript queue remains permitted.
+   */
   @DoNotStrip
   fun invalidate()
 }
 
+/**
+ * MainRuntime implementation for React's JavaScript queue. Worklet runtimes do not install it, so
+ * ArrayBuffers without mutable native backing use the existing copy fallback there.
+ */
 @DoNotStrip
 class MainJSHeapAccessExecutor internal constructor(
   private val reactContext: ReactApplicationContext,
@@ -61,13 +84,13 @@ class MainJSHeapAccessExecutor internal constructor(
         )
         completed.countDown()
       }
-    ) ?: throw IllegalStateException("Cannot schedule ArrayBuffer access on the JavaScript queue.")
+    ) ?: throw IllegalStateException("Cannot schedule synchronous JavaScript task.")
 
     try {
       if (!completed.await(syncTimeoutMillis, TimeUnit.MILLISECONDS)) {
         if (task.cancel()) {
           throw IllegalStateException(
-            "Timed out waiting for the JavaScript thread to process ArrayBuffer access. " +
+            "Timed out waiting to run synchronous JavaScript task. " +
               "The JS thread may be blocked or shutting down."
           )
         }
