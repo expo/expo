@@ -1919,6 +1919,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const maybeResponse = await routeModule.loader(request, route.params);
 
         let data: unknown;
+        let headers: Headers | undefined;
         if (maybeResponse instanceof Response) {
           debug('Loader returned Response for location:', location.pathname);
 
@@ -1927,14 +1928,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             return maybeResponse;
           }
 
-          // In SSG, extract body
+          // In SSG, extract the body but keep the declared headers so the export can derive
+          // header rules from them.
           data = await maybeResponse.json();
+          headers = maybeResponse.headers;
         } else {
           data = maybeResponse;
         }
 
         debug('Loader data:', data ?? null, ' for location:', location.pathname);
-        return Response.json(data ?? null);
+        return Response.json(data ?? null, { headers });
       }
 
       debug('No loader found for location:', location.pathname);

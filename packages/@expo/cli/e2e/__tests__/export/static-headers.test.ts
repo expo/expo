@@ -17,6 +17,7 @@ const GLOBAL_HEADERS = {
 const PAGE_HEADERS = [
   { source: '/', headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' } },
   { source: '/api', headers: { 'Set-Cookie': ['page=1'] } },
+  { source: '/blog', headers: { 'Cache-Control': 'no-store', 'X-Page-Rule': 'blog' } },
 ];
 
 const EXPECTED_PAGE_HEADERS = [
@@ -27,6 +28,22 @@ const EXPECTED_PAGE_HEADERS = [
   {
     namedRegex: '^/api(?:/)?$',
     headers: { 'Set-Cookie': ['page=1'] },
+  },
+  {
+    namedRegex: '^/blog(?:/)?$',
+    headers: { 'Cache-Control': 'no-store', 'X-Page-Rule': 'blog' },
+  },
+  // Synthesized from the blog loader's `Response`; positioned after the author rules so the
+  // loader-declared `Cache-Control` wins over the `/blog` rule above.
+  {
+    namedRegex: '^/blog(?:/)?$',
+    headers: { 'Cache-Control': 'public, max-age=604800' },
+  },
+  // The same declaration also targets the loader data file, replacing the host's synthetic
+  // asset default.
+  {
+    namedRegex: '^/_expo/loaders/blog(?:/)?$',
+    headers: { 'Cache-Control': 'public, max-age=604800' },
   },
 ];
 
@@ -44,6 +61,7 @@ describe('export static with headers', () => {
         E2E_ROUTER_ASYNC: '',
         E2E_ROUTER_HEADERS: JSON.stringify(GLOBAL_HEADERS),
         E2E_ROUTER_PAGE_HEADERS: JSON.stringify(PAGE_HEADERS),
+        E2E_ROUTER_SERVER_LOADERS: 'true',
       },
     });
   });
