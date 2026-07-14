@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-07-07T17:11:30.891Z"
+    "fetchedAt": "2026-07-14T08:46:05.593Z"
   },
-  "totalSkills": 19,
+  "totalSkills": 20,
   "skills": [
     {
       "name": "eas-app-stores",
@@ -95,6 +95,12 @@
       "category": "framework",
       "description": "Navigation and routing for Expo Router. Covers file-based routes, groups and dynamic routes, folder organization, Link with previews and context menus, native Stack, page titles, modals and form sheets, NativeTabs, headers and toolbars, and header search bars.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-router/SKILL.md"
+    },
+    {
+      "name": "expo-skill-feedback",
+      "category": "framework",
+      "description": "Submit feedback on an Expo skill — or on Expo itself — or turn the bundled anonymous usage telemetry on or off (off by default / opt-in; the user saying \"enable Expo skills telemetry\" in conversation is the switch). Use when an Expo skill was useful, confusing, broken, missing context, or worth improving; when something fell short because of Expo (an SDK bug or confusing framework behavior) rather than the skill; or when the user wants to enable, turn on, opt in to, disable, turn off, opt out of, check the status of, or understand the anonymous usage tracking these skills can send.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-skill-feedback/SKILL.md"
     },
     {
       "name": "expo-tailwind-setup",
