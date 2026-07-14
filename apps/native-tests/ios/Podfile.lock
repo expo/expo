@@ -2501,7 +2501,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNGestureHandler (2.32.0):
+  - RNGestureHandler (3.0.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2850,7 +2850,7 @@ DEPENDENCIES:
   - "React-Mapbuffer (from `../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/ReactCommon`)"
   - "React-microtasksnativemodule (from `../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)"
   - "React-mutationobservernativemodule (from `../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver`)"
-  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react_77110fdb83eb94e4e57be44db5ffb7ab/node_modules/react-native-safe-area-context`)"
+  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react_4597956df5772f7c92a8134220d636ac/node_modules/react-native-safe-area-context`)"
   - "React-NativeModulesApple (from `../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)"
   - "React-networking (from `../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/ReactCommon/react/networking`)"
   - "React-oscompat (from `../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/ReactCommon/oscompat`)"
@@ -2887,11 +2887,11 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios/ReactCodegen`)
   - "ReactCommon/turbomodule/core (from `../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/ReactCommon`)"
   - "ReactNativeDependencies (from `../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)"
-  - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_6184438547bf56c3394a8579254c587f/node_modules/@react-native-masked-view/masked-view`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-_fdeb37e40945a7a69656d9ac7f1fd1f2/node_modules/react-native-gesture-handler`)"
-  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_fe2356100b9406767711cf538190973c/node_modules/react-native-reanimated`)"
-  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_react-native@0.87.0-rc.0_@babel+_e9e36bef4f2567e2de3e37bfdf5e61dd/node_modules/react-native-screens`)"
-  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_89b6ad3657fb54caf807ed03a8ef97b2/node_modules/react-native-worklets`)"
+  - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_5f1cd43ac95e4cb2f4253c55092074e3/node_modules/@react-native-masked-view/masked-view`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.0.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-n_2fe266be3ee9d07efc9e960fc8b5dfa1/node_modules/react-native-gesture-handler`)"
+  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_6572ea9d58ce76972961dd96f2780789/node_modules/react-native-reanimated`)"
+  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_patch_hash=2601d21d48a3303ff60c8_9055f0c96726efb4b7fcf6ee8ec1304a/node_modules/react-native-screens`)"
+  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_3ced24ab06da6124aa62c2bf8f5aa836/node_modules/react-native-worklets`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - UMAppLoader/Tests (from `../../../packages/unimodules-app-loader/ios`)
   - "Yoga (from `../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/ReactCommon/yoga`)"
@@ -3061,7 +3061,7 @@ EXTERNAL SOURCES:
   React-mutationobservernativemodule:
     :path: "../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver"
   react-native-safe-area-context:
-    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react_77110fdb83eb94e4e57be44db5ffb7ab/node_modules/react-native-safe-area-context"
+    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react_4597956df5772f7c92a8134220d636ac/node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
     :path: "../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-networking:
@@ -3135,15 +3135,15 @@ EXTERNAL SOURCES:
   ReactNativeDependencies:
     :podspec: "../../../node_modules/.pnpm/react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest-preset@0.87.0-rc.0_@babe_1dbfcd5dbd59c2d4e49c19c6c0622a60/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec"
   RNCMaskedView:
-    :path: "../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_6184438547bf56c3394a8579254c587f/node_modules/@react-native-masked-view/masked-view"
+    :path: "../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_5f1cd43ac95e4cb2f4253c55092074e3/node_modules/@react-native-masked-view/masked-view"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-_fdeb37e40945a7a69656d9ac7f1fd1f2/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.0.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-n_2fe266be3ee9d07efc9e960fc8b5dfa1/node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_fe2356100b9406767711cf538190973c/node_modules/react-native-reanimated"
+    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_6572ea9d58ce76972961dd96f2780789/node_modules/react-native-reanimated"
   RNScreens:
-    :path: "../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_react-native@0.87.0-rc.0_@babel+_e9e36bef4f2567e2de3e37bfdf5e61dd/node_modules/react-native-screens"
+    :path: "../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_patch_hash=2601d21d48a3303ff60c8_9055f0c96726efb4b7fcf6ee8ec1304a/node_modules/react-native-screens"
   RNWorklets:
-    :path: "../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_89b6ad3657fb54caf807ed03a8ef97b2/node_modules/react-native-worklets"
+    :path: "../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_3ced24ab06da6124aa62c2bf8f5aa836/node_modules/react-native-worklets"
   UMAppLoader:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-app-loader/ios"
@@ -3260,7 +3260,7 @@ SPEC CHECKSUMS:
   ReactCommon: 5e9829b88c23b703167b5f718c69bf762bdf4d96
   ReactNativeDependencies: ef55e8a669338d1f167d792cbe5ddc0ed8f99ba6
   RNCMaskedView: 7f905816ba35c54ee2ec0dd080c5231bc2587925
-  RNGestureHandler: 631c8425dd9b8821e19e0cad8be6a60cf5eca5da
+  RNGestureHandler: 0bc09573aabdc17ef083fa0db7c661c80de78a74
   RNReanimated: fd9bffd31f222479d8bdeaaff0b1386200ad7e7f
   RNScreens: 21503e85c54d6337a7cd8cf135eedf6b1ccc60fa
   RNWorklets: 52fb4b60f953f5ed7a25613f3ddeb15db11fc478

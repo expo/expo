@@ -3028,7 +3028,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNGestureHandler (2.32.0):
+  - RNGestureHandler (3.0.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3571,7 +3571,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_5f1cd43ac95e4cb2f4253c55092074e3/node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-n_ee3b10c8fc5ffb74e796ad3ecb031b31/node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@8.6.0_expo@packages+expo_react-native@0.87.0-rc._3714ccb4a3880f4713f655aea01e5a69/node_modules/@react-native-community/datetimepicker`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_patch_hash=5fe1a8d96067433327408eeb5b58783eef4713a2_5ef8aca7bdfa674ae1a6511d2897d6ad/node_modules/react-native-gesture-handler`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.0.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-n_2fe266be3ee9d07efc9e960fc8b5dfa1/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_6572ea9d58ce76972961dd96f2780789/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_patch_hash=2601d21d48a3303ff60c8_9055f0c96726efb4b7fcf6ee8ec1304a/node_modules/react-native-screens`)"
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-native+jest_9365ec1d4e2a0d08f8e75b22b7eb9535/node_modules/react-native-svg`)"
@@ -4044,7 +4044,7 @@ EXTERNAL SOURCES:
   RNDateTimePicker:
     :path: "../../../node_modules/.pnpm/@react-native-community+datetimepicker@8.6.0_expo@packages+expo_react-native@0.87.0-rc._3714ccb4a3880f4713f655aea01e5a69/node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_patch_hash=5fe1a8d96067433327408eeb5b58783eef4713a2_5ef8aca7bdfa674ae1a6511d2897d6ad/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.0.2_react-native@0.87.0-rc.0_@babel+core@7.29.0_@react-n_2fe266be3ee9d07efc9e960fc8b5dfa1/node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_6572ea9d58ce76972961dd96f2780789/node_modules/react-native-reanimated"
   RNScreens:
@@ -4253,7 +4253,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: 7f905816ba35c54ee2ec0dd080c5231bc2587925
   RNCPicker: 5f87cabdd23d8b6f0a5c6b664d941627e250a5ce
   RNDateTimePicker: caf05eb6c2d81a239f18ed01a5c25c03ab2e6187
-  RNGestureHandler: 631c8425dd9b8821e19e0cad8be6a60cf5eca5da
+  RNGestureHandler: 0bc09573aabdc17ef083fa0db7c661c80de78a74
   RNReanimated: fd9bffd31f222479d8bdeaaff0b1386200ad7e7f
   RNScreens: 21503e85c54d6337a7cd8cf135eedf6b1ccc60fa
   RNSVG: 4c7f2510fbf6f466e42d98809b273130ab8e3f7d
