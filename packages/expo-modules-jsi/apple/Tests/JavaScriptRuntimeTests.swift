@@ -590,7 +590,9 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function returns promise`() throws {
     let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
-      return JavaScriptValue(self.runtime, 42)
+      return {
+        return JavaScriptValue(self.runtime, 42)
+      }
     }
     let result = try fn.call()
 
@@ -601,7 +603,9 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function propagates promise construction failure`() throws {
     let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
-      return JavaScriptValue(self.runtime, 42)
+      return {
+        return JavaScriptValue(self.runtime, 42)
+      }
     }
     runtime.global().setProperty("asyncFn", value: fn.asValue())
     try runtime.eval("globalThis.Promise = undefined")
@@ -614,7 +618,9 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function resolves with value`() async throws {
     let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
-      return JavaScriptValue(self.runtime, 42)
+      return {
+        return JavaScriptValue(self.runtime, 42)
+      }
     }
 
     let result = try await fn.call().getPromise().await()
@@ -624,9 +630,12 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function receives arguments`() async throws {
     let fn = runtime.createAsyncFunction("add") { this, arguments in
+      // Decode phase: the buffer is only borrowed here and cannot escape into the body.
       let a = arguments[0].getInt()
       let b = arguments[1].getInt()
-      return JavaScriptValue(self.runtime, a + b)
+      return {
+        return JavaScriptValue(self.runtime, a + b)
+      }
     }
 
     let result = try await fn.call(arguments: 20, 22).getPromise().await()
@@ -634,13 +643,15 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
-  func `async function rejects on error`() async throws {
+  func `async function rejects on error thrown from the body`() async throws {
     struct TestError: Error {
       var localizedDescription: String { "something went wrong" }
     }
 
     let fn = runtime.createAsyncFunction("failing") { this, arguments in
-      throw TestError()
+      return {
+        throw TestError()
+      }
     }
 
     await #expect(throws: Error.self) {
@@ -649,16 +660,131 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `async function rejects on error thrown from the decode phase`() async throws {
+    struct TestError: Error {
+      var localizedDescription: String { "something went wrong" }
+    }
+
+    let fn = runtime.createAsyncFunction("failing") { this, arguments in
+      throw TestError()
+    }
+
+    // The closure throws before any suspension, but the call itself must not throw —
+    // matching JavaScript's async-function semantics, the returned promise rejects instead.
+    let promise = try fn.call().getPromise()
+    await #expect(throws: Error.self) {
+      try await promise.await()
+    }
+  }
+
+  @Test
   func `async function callable from JavaScript`() async throws {
     let fn = runtime.createAsyncFunction("greet") { this, arguments in
       let name = arguments[0].getString()
-      return JavaScriptValue(self.runtime, "Hello, \(name)!")
+      return {
+        return JavaScriptValue(self.runtime, "Hello, \(name)!")
+      }
     }
 
     runtime.global().setProperty("greet", value: fn.asValue())
     let result = try await runtime.evalAsync("Promise.resolve(greet('World'))")
 
     #expect(result.getString() == "Hello, World!")
+  }
+
+  @Test
+  func `legacy async function receives owned arguments and resolves`() async throws {
+    // The transitional overload for the current `expo-modules-macros` output: the closure runs in
+    // asynchronous context and owns `this` and the arguments.
+    let fn = runtime.createAsyncFunction("add") {
+      (this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) in
+      let a = arguments[0].getInt()
+      let b = arguments[1].getInt()
+      return JavaScriptValue(self.runtime, a + b)
+    }
+
+    let result = try await fn.call(arguments: 20, 22).getPromise().await()
+    #expect(result.getInt() == 42)
+    // The pending-call box deregisters when the task runs, so a stream of calls doesn't pin their
+    // arguments until teardown. Only never-run tasks stay registered.
+    #expect(runtime.longLivedObjects.count == 0)
+  }
+
+  @Test
+  func `legacy async function call dropped by a dying scheduler does not touch a freed runtime`() throws {
+    // Same scenario as the test below, through the transitional owned-values overload: its copies
+    // of `this` and the arguments are owned by the runtime's long-lived object collection, so the
+    // teardown sweep releases them and the dropped task has nothing to destroy against freed memory.
+    heldSchedulerTasks.removeAll()
+    do {
+      let baseRuntime = JavaScriptRuntime()
+      let schedulerRuntime = baseRuntime.withUnsafePointee { pointer in
+        JavaScriptRuntime(
+          unsafePointer: pointer,
+          scheduler: UnsafeMutableRawPointer(bitPattern: 0x1)!,
+          dispatch: unsafeBitCast(holdSchedulerTask, to: UnsafeRawPointer.self)
+        )
+      }
+      let fn = schedulerRuntime.createAsyncFunction("asyncFn") {
+        (this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) in
+        return .undefined
+      }
+      _ = try fn.call(arguments: schedulerRuntime.createObject().asValue())
+      #expect(heldSchedulerTasks.count == 1)
+    }
+    do {
+      let droppedTasks = heldSchedulerTasks
+      heldSchedulerTasks.removeAll()
+      _ = consume droppedTasks
+    }
+  }
+
+  @Test
+  func `async function call dropped by a dying scheduler does not touch a freed runtime`() throws {
+    // Regression test for the reload crash (#47716): the React runtime scheduler tears down with
+    // async host function tasks still queued, and the dropped task closures used to own a copy of
+    // the arguments buffer (and `this`). Their `jsi::Value` destructors then ran wherever the
+    // dropped closures were released, against the already destroyed Hermes runtime — the
+    // `JavaScriptValuesBuffer.deinit` use-after-free. With the two-phase `AsyncFunctionClosure`,
+    // the decode happens within the host call and the scheduled task captures no JSI-owned values,
+    // so dropping it after teardown is harmless.
+    heldSchedulerTasks.removeAll()
+    do {
+      let baseRuntime = JavaScriptRuntime()
+      let schedulerRuntime = baseRuntime.withUnsafePointee { pointer in
+        JavaScriptRuntime(
+          unsafePointer: pointer,
+          // Opaque scheduler handle, never dereferenced by `holdSchedulerTask`.
+          scheduler: UnsafeMutableRawPointer(bitPattern: 0x1)!,
+          dispatch: unsafeBitCast(holdSchedulerTask, to: UnsafeRawPointer.self)
+        )
+      }
+      // The body deliberately captures nothing: a captured runtime wrapper would outlive the
+      // runtime inside the dropped task and tear down its cached `jsi::PropNameID`s against freed
+      // memory — a separate, pre-existing hazard of wrappers outliving their runtime.
+      let fn = schedulerRuntime.createAsyncFunction("asyncFn") { this, arguments in
+        return {
+          return .undefined
+        }
+      }
+      // Call with a JS object argument — the kind whose destruction after teardown crashes.
+      _ = try fn.call(arguments: schedulerRuntime.createObject().asValue())
+      // The decode phase ran synchronously within the call; the async body is queued on the
+      // scheduler, emulating a task that React never gets to run before the reload.
+      #expect(heldSchedulerTasks.count == 1)
+      // Leaving the scope destroys the Hermes runtime (emulating the reload) while the scheduler
+      // still holds the task. The teardown sweep releases the promise's JSI state on this thread.
+    }
+    // The dying scheduler drops the task without ever running it. Releasing the last reference to
+    // its closure must not touch the freed runtime — this is the crash point of #47716. Drained
+    // through a local copy defensively: releasing a task can schedule follow-up work (e.g. the
+    // promise wrapper's deinit schedules its cleanup while its runtime is still alive), which
+    // would append to `heldSchedulerTasks` while `removeAll()` is mutating it.
+    do {
+      let droppedTasks = heldSchedulerTasks
+      heldSchedulerTasks.removeAll()
+      _ = consume droppedTasks
+    }
   }
 
   // MARK: - Class creation
@@ -858,6 +984,21 @@ struct JavaScriptRuntimeTests {
     #expect(runtime.longLivedObjects.count == 1)
   }
 }
+
+/// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React
+/// `RuntimeScheduler` that is torn down with work still queued (the #47716 reload scenario).
+/// Safe without synchronization: the dispatch always runs synchronously on the test's thread.
+nonisolated(unsafe) private var heldSchedulerTasks: [() -> Void] = []
+
+/// A `dispatch` trampoline for `JavaScriptRuntime.init(unsafePointer:scheduler:dispatch:)` that
+/// holds the scheduled tasks instead of running them, so a test controls when (and whether) they
+/// are released. Matches `expo.RuntimeScheduler.ScheduleFn`.
+private let holdSchedulerTask:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { _, _, callback in
+    heldSchedulerTasks.append(callback)
+  }
 
 /// Runs `body` on a freshly spawned synchronous thread and bridges the result back into the
 /// async test. The thread has a real run loop, which the cross-thread `execute` path pumps.
