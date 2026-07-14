@@ -1811,6 +1811,9 @@ importers:
 
   packages/@expo/cli:
     dependencies:
+      2g:
+        specifier: ^0.4.1
+        version: 0.4.1(typescript@6.0.3)
       '@expo/code-signing-certificates':
         specifier: ^0.0.6
         version: 0.0.6
@@ -6556,6 +6559,15 @@ importers:
         version: 6.0.3
 
 packages:
+
+  2g@0.4.1:
+    resolution: {integrity: sha512-m5lYjdNmgCDvDgW2xmCawbnmbgl2WpSHg1cfEAwtgLJB1pHqL36cJaL4a1X6JpKVIJbucHjDIIZMGYHnV9ng7w==}
+    hasBin: true
+    peerDependencies:
+      typescript: '>=5.8.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
@@ -15556,6 +15568,10 @@ packages:
       '@types/emscripten': '>=1.39.6'
 
 snapshots:
+
+  2g@0.4.1(typescript@6.0.3):
+    optionalDependencies:
+      typescript: 6.0.3
 
   '@adobe/css-tools@4.4.4': {}
 

@@ -3,11 +3,11 @@ import DevToolsPluginManager from '../DevToolsPluginManager';
 
 jest.mock('../../../log');
 
-jest.mock('../../../events', () => ({
+jest.mock('2g', () => ({
   events: jest.fn(() => jest.fn()),
 }));
 
-const { events } = require('../../../events') as { events: jest.Mock };
+const { events } = require('2g') as { events: jest.Mock };
 const mockEvent = events.mock.results[0]!.value as jest.Mock;
 
 // Mock the autolinking module
