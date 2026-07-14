@@ -98,6 +98,19 @@ export interface StandardNavigatorDescriptor<
   routeSource?: RouteSource;
 }
 
+/**
+ * A standard-navigation descriptor extended with Expo Router route information.
+ */
+export interface StandardNavigatorDescriptor<
+  NavigatorOptions extends object,
+> extends NavigatorDescriptor<NavigatorOptions> {
+  /**
+   * Indicates whether Expo Router received the route from a layout declaration or inferred it
+   * from the filesystem.
+   */
+  routeSource?: RouteSource;
+}
+
 export type StandardNavigatorContentProps<
   NavigatorOptions extends object,
   EventMap extends StandardNavigatorEventMapBase,
