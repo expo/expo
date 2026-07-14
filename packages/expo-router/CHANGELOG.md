@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Add `redirectTo` to protected routes and render guarded screens as redirects instead of removing them from navigators. ([#47744](https://github.com/expo/expo/pull/47744) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
 - [android] Support `Stack.Toolbar.Badge` in header left/right placements ([#46537](https://github.com/expo/expo/pull/46537) by [@benjaminkomen](https://github.com/benjaminkomen))

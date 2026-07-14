@@ -29,6 +29,7 @@
 - [Internal] Fix `LogStream.destroy()` racing a pending write and dropping log data ([#47181](https://github.com/expo/expo/pull/47181) by [@kitten](https://github.com/kitten))
 - Include external CSS imports in the production server manifest ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
 - Fall back to AGP's `output-metadata.json` when resolving APK filenames to support projects that override `outputFileName` in `applicationVariants` ([#47083](https://github.com/expo/expo/pull/47083) by [@NikhilVashistha](https://github.com/NikhilVashistha))
+- Surface the real `xcodebuild` error on `run:ios` failure instead of printing "0 error(s)" when the build formatter parsed none. ([#47748](https://github.com/expo/expo/pull/47748) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 
@@ -39,6 +40,7 @@
 - [Internal] Align find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
 - [Internal] Unify the sync realpath helper and make fallback handling explicit. ([#47175](https://github.com/expo/expo/pull/47175) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Bump to `dnssd-advertise@^1.1.6` ([#47183](https://github.com/expo/expo/pull/47183) by [@kitten](https://github.com/kitten))
+- [Internal] Migrate structured event logging to the `2g` package ([#46667](https://github.com/expo/expo/pull/46667) by [@kitten](https://github.com/kitten))
 
 ## 56.1.12 — 2026-05-26
 

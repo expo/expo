@@ -222,7 +222,7 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     ).toEqual(['index', 'second']);
   });
 
-  it('filters out Protected screens whose guard is false', () => {
+  it('keeps Protected screens whose guard is false hidden', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -236,7 +236,11 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       second: () => <View testID="second" />,
     });
 
-    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
+    const args = lastArgs();
+    const second = args.state.routes.find((route) => route.name === 'second')!;
+
+    expect(args.state.routes.map((route) => route.name)).toEqual(['index', 'second']);
+    expect(args.descriptors[second.key]!.options).toMatchObject({ hidden: true });
   });
 
   it('propagates route params into state and href', () => {
