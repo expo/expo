@@ -1,7 +1,4 @@
-import {
-  getNavigationMetricParams,
-  getNavigationRouteParams,
-} from '../../navigationConfig';
+import { getNavigationMetricParams, getNavigationRouteParams } from '../../navigationConfig';
 
 describe('expo-router navigation config', () => {
   it('filters configured route and query param keys', () => {

@@ -1,15 +1,15 @@
-import AppMetrics, { type MetricAttributes } from "expo-app-metrics";
-import { use, useCallback, useEffect, useRef } from "react";
+import AppMetrics, { type MetricAttributes } from 'expo-app-metrics';
+import { use, useCallback, useEffect, useRef } from 'react';
 
-import { getNavigationMetricParams } from "../navigationConfig";
-import { ObserveRouterIntegrationContext } from "./ObserveRouterIntegrationProvider";
-import { emitTTI } from "./emitTTI";
-import { getRouterIntegrationConfig, isInitialized } from "./init";
-import { buildRoutePattern } from "./routeName";
-import { optionalRouter } from "./router";
-import { useAssertValueDoesNotChange } from "../../useAssertValueDoesNotChange";
+import { getNavigationMetricParams } from '../navigationConfig';
+import { ObserveRouterIntegrationContext } from './ObserveRouterIntegrationProvider';
+import { emitTTI } from './emitTTI';
+import { getRouterIntegrationConfig, isInitialized } from './init';
+import { buildRoutePattern } from './routeName';
+import { optionalRouter } from './router';
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
-type MarkInteractive = (typeof AppMetrics)["markInteractive"];
+type MarkInteractive = (typeof AppMetrics)['markInteractive'];
 
 export function useObserveForRouter(): MarkInteractive | null {
   const initialized = isInitialized();
@@ -25,14 +25,14 @@ export function useObserveForRouter(): MarkInteractive | null {
   useAssertValueDoesNotChange(
     initialized,
     "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
-      "Call `Observe.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts.",
+      "Call `Observe.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
   );
 
   const screenId = route?.key;
   const prevScreenId = useRef(screenId);
   if (prevScreenId.current !== screenId) {
     console.warn(
-      "[expo-observe] Screen ID changed between renders. This is most likely an expo-router bug.",
+      '[expo-observe] Screen ID changed between renders. This is most likely an expo-router bug.'
     );
     prevScreenId.current = screenId;
   }
@@ -52,18 +52,18 @@ export function useObserveForRouter(): MarkInteractive | null {
       const now = performance.now();
       const timestamp = new Date().toISOString();
       if (!isMounted.current) {
-        console.warn("[expo-observe] Calling markInteractive on unmounted screen");
+        console.warn('[expo-observe] Calling markInteractive on unmounted screen');
         return;
       }
       if (!screenId) {
         console.warn(
-          "[expo-observe] No metadata available for the current screen. Make sure to call useObserve inside a screen component.",
+          '[expo-observe] No metadata available for the current screen. Make sure to call useObserve inside a screen component.'
         );
         return;
       }
       if (!storage) {
         throw new Error(
-          "[expo-observe] markInteractive was called without an active ObserveProvider. Wrap your app in ObserveRoot from expo-observe.",
+          '[expo-observe] markInteractive was called without an active ObserveProvider. Wrap your app in ObserveRoot from expo-observe.'
         );
       }
 
@@ -73,7 +73,7 @@ export function useObserveForRouter(): MarkInteractive | null {
       const navigationParams = getNavigationMetricParams(
         routerIntegrationConfig,
         routeParams,
-        pathname,
+        pathname
       );
 
       // Record lastInteractiveCall regardless of focus so the `pageFocused`
@@ -97,7 +97,7 @@ export function useObserveForRouter(): MarkInteractive | null {
       // pageFocused observes our writes before its own awaited writes.
       const attributeParams = attributes?.params ?? {};
       const safeAttributeParams = navigationParams.urlHidden
-        ? Object.fromEntries(Object.entries(attributeParams).filter(([key]) => key !== "url"))
+        ? Object.fromEntries(Object.entries(attributeParams).filter(([key]) => key !== 'url'))
         : attributeParams;
       AppMetrics.markInteractive({
         ...(attributes ?? {}),
@@ -131,7 +131,7 @@ export function useObserveForRouter(): MarkInteractive | null {
         config: routerIntegrationConfig,
       });
     },
-    [screenId, navigation, pathname, routePattern, storage, routeParams, routerIntegrationConfig],
+    [screenId, navigation, pathname, routePattern, storage, routeParams, routerIntegrationConfig]
   );
 
   return initialized ? markInteractive : null;

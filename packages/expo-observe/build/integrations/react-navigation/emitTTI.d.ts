@@ -5,5 +5,6 @@ export declare function emitTTI(args: {
     routeName: string | undefined;
     value: number;
     routeParams: object;
+    urlHidden?: true;
 }): Promise<void>;
 //# sourceMappingURL=emitTTI.d.ts.map

@@ -63,6 +63,15 @@ export type ObserveConfig = {
      */
     integrations?: ObserveIntegrationsConfig;
 };
+export type ObserveNavigationIntegrationConfig = {
+    /**
+     * Route or query parameter keys to remove from exported navigation metric
+     * `routeParams`. When any configured parameter is removed from a metric,
+     * the exported resolved URL/path is replaced with `urlHidden: true`.
+     * Does not affect `routeName`.
+     */
+    filteredParams?: string[];
+};
 export interface ObserveIntegrationsConfig {
     /**
      * Enables the `expo-router` integration, which records navigation metrics
@@ -70,9 +79,11 @@ export interface ObserveIntegrationsConfig {
      *
      * Requires `expo-router` to be installed.
      *
+     * Pass an object to filter exported route/query params.
+     *
      * @default false
      */
-    'expo-router'?: boolean;
+    'expo-router'?: boolean | ObserveNavigationIntegrationConfig;
     /**
      * Enables the `@react-navigation/native` integration, which records
      * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`).
@@ -81,9 +92,11 @@ export interface ObserveIntegrationsConfig {
      * to be wrapped in `<ObserveNavigationContainer>` instead of the stock
      * `<NavigationContainer>`.
      *
+     * Pass an object to filter exported route/query params.
+     *
      * @default false
      */
-    'react-navigation'?: boolean;
+    'react-navigation'?: boolean | ObserveNavigationIntegrationConfig;
 }
 /**
  * Events emitted by the native `ExpoObserve` module.
