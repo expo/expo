@@ -17,7 +17,11 @@ A React component that blurs everything underneath the view. Common usage of thi
 
 > **info** In SDK 55 and later, `expo-blur` is stable on Android, but some code changes are required for the `BlurView` to work. See the [Android support](#android-support) section to learn more.
 
-#### Known issues
+## Installation
+
+<APIInstallSection />
+
+### Known issues
 
 The blur effect does not update when `BlurView` is rendered before dynamic content is rendered using, for example, `FlatList`. To fix this, make sure that `BlurView` is rendered after the dynamic content component. For example:
 
@@ -27,10 +31,6 @@ The blur effect does not update when `BlurView` is rendered before dynamic conte
   <BlurView />
 </View>
 ```
-
-## Installation
-
-<APIInstallSection />
 
 ## Usage
 
