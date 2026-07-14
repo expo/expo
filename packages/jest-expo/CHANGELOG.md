@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Support React Native 0.87's `react-native/asset-registry`. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-20

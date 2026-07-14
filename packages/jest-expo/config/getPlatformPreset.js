@@ -103,6 +103,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     // Source exports can contain TypeScript files that use explicit `.js`
     // extensions for runtime ESM compatibility.
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^react-native/asset-registry$': 'react-native/src/asset-registry',
     ...preset.moduleNameMapper,
   };
 
