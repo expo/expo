@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Make the precompiled header reusable by passing `-Xclang -fno-pch-timestamp`, so ccache can reuse it across builds. ([#46915](https://github.com/expo/expo/pull/46915) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Pin the C++ dialect of PCH consumer targets to `-std=c++20`.
 
 ### 💡 Others
 
