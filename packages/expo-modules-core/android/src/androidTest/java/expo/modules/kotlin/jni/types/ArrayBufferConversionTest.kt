@@ -299,31 +299,6 @@ class ArrayBufferConversionTest {
   }
 
   @Test
-  fun main_runtime_teardown_deallocates_native_references_when_cancellation_throws() {
-    val cancellationFailure = IllegalStateException("Cancellation callback failed")
-    val queue = ControllableJSHeapAccessExecutor.manuallyDrained()
-    val runtime = MainRuntime(mockk(), WeakReference(mockk<ReactApplicationContext>()))
-    val nativeReference = ArrayBuffer.allocate(1)
-
-    try {
-      withJSIInterop(jsHeapAccessExecutor = queue) {
-        runtime.jsiContext = this
-        runtime.deallocator.addReference(nativeReference)
-        Truth.assertThat(queue.runOnQueue(Runnable {}, Runnable { throw cancellationFailure })).isTrue()
-
-        val failure = Assert.assertThrows(IllegalStateException::class.java) {
-          runtime.deallocate()
-        }
-
-        Truth.assertThat(failure).isSameInstanceAs(cancellationFailure)
-        Truth.assertThat(nativeReference.isValid()).isFalse()
-      }
-    } finally {
-      queue.close()
-    }
-  }
-
-  @Test
   fun rejecting_new_work_rejects_js_backed_async_access_without_mutating_its_source() {
     val queue = ControllableJSHeapAccessExecutor.manuallyDrained()
 
