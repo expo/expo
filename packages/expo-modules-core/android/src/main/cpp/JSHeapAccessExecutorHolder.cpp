@@ -3,6 +3,7 @@
 #include <fbjni/NativeRunnable.h>
 
 #include <atomic>
+#include <mutex>
 
 namespace expo {
 
@@ -29,6 +30,7 @@ bool runOnQueue(
 
 struct SyncCall {
   std::atomic<bool> abandoned{false};
+  std::mutex exceptionMutex;
   std::exception_ptr exception;
   std::function<void()> body;
 };
@@ -52,6 +54,7 @@ void JSHeapAccessExecutorHolder::runSync(std::function<void()> body) {
     try {
       call->body();
     } catch (...) {
+      std::lock_guard<std::mutex> lock(call->exceptionMutex);
       call->exception = std::current_exception();
     }
   });
@@ -64,8 +67,13 @@ void JSHeapAccessExecutorHolder::runSync(std::function<void()> body) {
     throw;
   }
 
-  if (call->exception) {
-    std::rethrow_exception(call->exception);
+  std::exception_ptr exception;
+  {
+    std::lock_guard<std::mutex> lock(call->exceptionMutex);
+    exception = call->exception;
+  }
+  if (exception) {
+    std::rethrow_exception(exception);
   }
 }
 

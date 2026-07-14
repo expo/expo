@@ -487,9 +487,9 @@ void JavaScriptBackedArrayBufferStorage::withJSBytesAsync(
   );
 
   _executor->runAsync([self, bodyRef, callbackRef]() mutable {
-    auto runtime = self->runtimeOrThrow();
     auto localCallback = jni::static_ref_cast<ArrayBufferScopedAccessAsyncCallback>(jni::make_local(*callbackRef));
     invokeScopedAccessBodyAsync(localCallback, [&]() {
+      auto runtime = self->runtimeOrThrow();
       jsi::Runtime &rt = runtime->get();
       self->validateBounds(rt);
       auto byteBuffer = jni::JByteBuffer::wrapBytes(self->_arrayBuffer->data(rt) + self->_offset, self->_length);

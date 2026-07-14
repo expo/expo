@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ExpoHeader.pch"
+#include "ArrayBuffer.h"
 #include "JSHeapAccessExecutorHolder.h"
 
 #include <ReactCommon/CallInvokerHolder.h>
@@ -32,6 +33,13 @@ public:
 
   void accessExpiredJavaScriptBackedArrayBuffer(
     jni::alias_ref<JSHeapAccessExecutorJavaClass::javaobject> executor
+  );
+
+  void accessExpiredJavaScriptBackedArrayBufferAsync(
+    jni::alias_ref<JSHeapAccessExecutorJavaClass::javaobject> executor,
+    jni::alias_ref<JNIFunctionBody::javaobject> body,
+    jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback,
+    jni::alias_ref<ArrayBufferScopedAccessAsyncQueueFailureCallback::javaobject> queueFailureCallback
   );
 
 private:

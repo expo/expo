@@ -5,10 +5,8 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.Exceptions
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 @DoNotStrip
@@ -21,13 +19,6 @@ internal fun interface ArrayBufferScopedAccessAsyncCallback {
 internal fun interface ArrayBufferScopedAccessAsyncQueueFailureCallback {
   @DoNotStrip
   fun invoke(error: Throwable)
-}
-
-private enum class ScopedAccessState {
-  QUEUED,
-  RUNNING,
-  CANCELLED,
-  FINISHED
 }
 
 /**
@@ -119,6 +110,8 @@ class ArrayBuffer : Destructible {
    *
    * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
    * The body must not retain it, detach, transfer, or resize the JavaScript backing while it is live.
+   * If cancellation occurs before the queued body begins, the body does not run; cancellation after it
+   * begins cannot roll it back.
    * Callers must externally serialize scoped mutable access with `read*`, `data()`,
    * `toDirectBuffer()`, `jsiMutableBuffer()`, or `copy()` on the same instance. Unscoped access
    * to JavaScript-backed storage may throw during first materialization.
@@ -168,6 +161,8 @@ class ArrayBuffer : Destructible {
    *
    * The [ByteBuffer] passed to [body] is valid only for the duration of [body].
    * The body must not retain it, detach, transfer, or resize the JavaScript backing while it is live.
+   * If cancellation occurs before the queued body begins, the body does not run; cancellation after it
+   * begins cannot roll it back.
    * Callers must externally serialize scoped mutable access with `read*`, `data()`,
    * `toDirectBuffer()`, `jsiMutableBuffer()`, or `copy()` on the same instance. Unscoped access
    * to JavaScript-backed storage may throw during first materialization. JavaScript-backed buffers
@@ -194,41 +189,25 @@ class ArrayBuffer : Destructible {
     ) -> Unit,
     body: (ByteBuffer) -> R
   ): R = suspendCancellableCoroutine { continuation ->
-    val state = AtomicReference(ScopedAccessState.QUEUED)
-    continuation.invokeOnCancellation {
-      state.compareAndSet(ScopedAccessState.QUEUED, ScopedAccessState.CANCELLED)
-    }
-
-    fun resolveQueuedFailure(error: Throwable) {
-      if (
-        state.compareAndSet(ScopedAccessState.QUEUED, ScopedAccessState.CANCELLED) &&
-        continuation.isActive
-      ) {
-        continuation.resumeWithException(error)
-      }
+    fun resumeException(error: Throwable) {
+      continuation.resumeWithException(error)
     }
     val callback = ArrayBufferScopedAccessAsyncCallback { result, error ->
-      if (!state.compareAndSet(
-        ScopedAccessState.RUNNING,
-        ScopedAccessState.FINISHED
-      ) || !continuation.isActive) {
-        return@ArrayBufferScopedAccessAsyncCallback
-      }
       if (error != null) {
-        continuation.resumeWithException(error)
+        resumeException(error)
       } else {
         @Suppress("UNCHECKED_CAST")
         continuation.resume(result as R)
       }
     }
 
-    val queueFailureCallback = ArrayBufferScopedAccessAsyncQueueFailureCallback(::resolveQueuedFailure)
+    val queueFailureCallback = ArrayBufferScopedAccessAsyncQueueFailureCallback(::resumeException)
 
     try {
       schedule(
         JNIFunctionBody { args ->
-          if (!state.compareAndSet(ScopedAccessState.QUEUED, ScopedAccessState.RUNNING)) {
-            throw CancellationException("ArrayBuffer scoped access was cancelled before it could run.")
+          if (!continuation.isActive) {
+            return@JNIFunctionBody null
           }
           body(args[0] as ByteBuffer)
         },
@@ -236,7 +215,7 @@ class ArrayBuffer : Destructible {
         queueFailureCallback
       )
     } catch (error: Throwable) {
-      resolveQueuedFailure(error)
+      resumeException(error)
     }
   }
 

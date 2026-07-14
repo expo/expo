@@ -7,6 +7,7 @@ import com.google.common.truth.Truth
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.jni.ArrayBuffer
+import expo.modules.kotlin.jni.ArrayBufferScopedAccessAsyncCallback
 import expo.modules.kotlin.jni.ControllableJSHeapAccessExecutor
 import expo.modules.kotlin.jni.JavaScriptArrayBuffer
 import expo.modules.kotlin.jni.MainJSHeapAccessExecutor
@@ -17,11 +18,13 @@ import expo.modules.kotlin.jni.inlineModule
 import expo.modules.kotlin.jni.tests.RuntimeHolder
 import expo.modules.kotlin.jni.waitForAsyncFunction
 import expo.modules.kotlin.jni.withJSIInterop
+import expo.modules.kotlin.runtime.MainRuntime
 import io.mockk.every
 import io.mockk.mockk
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.ReadOnlyBufferException
+import java.lang.ref.WeakReference
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -253,6 +256,76 @@ class ArrayBufferConversionTest {
   }
 
   @Test
+  fun main_runtime_teardown_cancels_queued_js_backed_async_access_once() {
+    val taskQueued = CountDownLatch(1)
+    val cancelled = AtomicInteger()
+    val queue = ControllableJSHeapAccessExecutor.manuallyDrained(
+      ControllableJSHeapAccessExecutor.LifecycleHooks(
+        afterTaskQueued = taskQueued::countDown,
+        beforeTaskCancellation = cancelled::incrementAndGet
+      )
+    )
+    val runtime = MainRuntime(mockk(), WeakReference(mockk<ReactApplicationContext>()))
+
+    try {
+      withJSIInterop(nativeBackedArrayBufferModule(), jsHeapAccessExecutor = queue) { methodQueue ->
+        runtime.jsiContext = this
+        evaluateScript(
+          """
+          globalThis.teardownAccessErrors = 0
+          expo.modules.TestModule.readWithJSBytesAsync(new Uint8Array([1]).buffer, 1)
+            .then(() => globalThis.teardownAccessCompleted = true)
+            .catch(error => {
+              globalThis.teardownAccessErrors += 1
+              globalThis.teardownAccessError = error.message
+            })
+          """.trimIndent()
+        )
+        methodQueue.testScheduler.advanceUntilIdle()
+        Truth.assertThat(taskQueued.await(5, TimeUnit.SECONDS)).isTrue()
+
+        runtime.deallocate()
+
+        methodQueue.testScheduler.advanceUntilIdle()
+        drainJSEventLoop()
+        Truth.assertThat(evaluateScript("globalThis.teardownAccessErrors").getInt()).isEqualTo(1)
+        Truth.assertThat(evaluateScript("globalThis.teardownAccessCompleted").isUndefined()).isTrue()
+        Truth.assertThat(evaluateScript("globalThis.teardownAccessError").getString()).contains("runtime is shutting down")
+        Truth.assertThat(cancelled.get()).isEqualTo(1)
+        Truth.assertThat(queue.runAll()).isEqualTo(0)
+        Truth.assertThat(queue.executedTaskCount).isEqualTo(0)
+      }
+    } finally {
+      queue.close()
+    }
+  }
+
+  @Test
+  fun main_runtime_teardown_deallocates_native_references_when_cancellation_throws() {
+    val cancellationFailure = IllegalStateException("Cancellation callback failed")
+    val queue = ControllableJSHeapAccessExecutor.manuallyDrained()
+    val runtime = MainRuntime(mockk(), WeakReference(mockk<ReactApplicationContext>()))
+    val nativeReference = ArrayBuffer.allocate(1)
+
+    try {
+      withJSIInterop(jsHeapAccessExecutor = queue) {
+        runtime.jsiContext = this
+        runtime.deallocator.addReference(nativeReference)
+        Truth.assertThat(queue.runOnQueue(Runnable {}, Runnable { throw cancellationFailure })).isTrue()
+
+        val failure = Assert.assertThrows(IllegalStateException::class.java) {
+          runtime.deallocate()
+        }
+
+        Truth.assertThat(failure).isSameInstanceAs(cancellationFailure)
+        Truth.assertThat(nativeReference.isValid()).isFalse()
+      }
+    } finally {
+      queue.close()
+    }
+  }
+
+  @Test
   fun rejecting_new_work_rejects_js_backed_async_access_without_mutating_its_source() {
     val queue = ControllableJSHeapAccessExecutor.manuallyDrained()
 
@@ -315,6 +388,41 @@ class ArrayBufferConversionTest {
         Truth.assertThat(queue.runNext()).isTrue()
         Truth.assertThat(completed.await(5, TimeUnit.SECONDS)).isTrue()
         caller.join()
+        Truth.assertThat(failure.get()).isInstanceOf(CodedException::class.java)
+        Truth.assertThat(failure.get()).hasMessageThat()
+          .contains("Cannot access JavaScript-backed ArrayBuffer after runtime deallocation")
+      }
+    } finally {
+      queue.close()
+    }
+  }
+
+  @Test
+  fun executed_js_backed_async_access_after_runtime_deallocation_completes_exceptionally() {
+    val taskQueued = CountDownLatch(1)
+    val completed = CountDownLatch(1)
+    val callbackCount = AtomicInteger()
+    val failure = AtomicReference<Throwable?>()
+    val queue = ControllableJSHeapAccessExecutor.manuallyDrained(
+      ControllableJSHeapAccessExecutor.LifecycleHooks(afterTaskQueued = taskQueued::countDown)
+    )
+
+    try {
+      RuntimeHolder().use { runtimeHolder ->
+        runtimeHolder.accessExpiredJavaScriptBackedArrayBufferAsync(
+          queue,
+          ArrayBufferScopedAccessAsyncCallback { _, error ->
+            callbackCount.incrementAndGet()
+            failure.set(error)
+            completed.countDown()
+          }
+        )
+
+        Truth.assertThat(taskQueued.await(5, TimeUnit.SECONDS)).isTrue()
+        Truth.assertThat(queue.runNext()).isTrue()
+        Truth.assertThat(callbackCount.get()).isEqualTo(1)
+        Truth.assertThat(completed.await(5, TimeUnit.SECONDS)).isTrue()
+        Truth.assertThat(queue.executedTaskCount).isEqualTo(1)
         Truth.assertThat(failure.get()).isInstanceOf(CodedException::class.java)
         Truth.assertThat(failure.get()).hasMessageThat()
           .contains("Cannot access JavaScript-backed ArrayBuffer after runtime deallocation")

@@ -34,6 +34,10 @@ void RuntimeHolder::registerNatives() {
                      "accessExpiredJavaScriptBackedArrayBuffer",
                      RuntimeHolder::accessExpiredJavaScriptBackedArrayBuffer
                    ),
+                   makeNativeMethod(
+                     "accessExpiredJavaScriptBackedArrayBufferAsync",
+                     RuntimeHolder::accessExpiredJavaScriptBackedArrayBufferAsync
+                   ),
                    makeNativeMethod("release", RuntimeHolder::release),
                  });
 }
@@ -131,6 +135,28 @@ void RuntimeHolder::accessExpiredJavaScriptBackedArrayBuffer(
     0
   );
   storage->readBytes(0, nullptr, 0);
+#endif
+}
+
+void RuntimeHolder::accessExpiredJavaScriptBackedArrayBufferAsync(
+  jni::alias_ref<JSHeapAccessExecutorJavaClass::javaobject> executor,
+  jni::alias_ref<JNIFunctionBody::javaobject> body,
+  jni::alias_ref<ArrayBufferScopedAccessAsyncCallback::javaobject> callback,
+  jni::alias_ref<ArrayBufferScopedAccessAsyncQueueFailureCallback::javaobject> queueFailureCallback
+) {
+#if !UNIT_TEST
+  throw std::logic_error(
+    "Expired JavaScript-backed ArrayBuffer async access is only available when UNIT_TEST is defined."
+  );
+#else
+  auto storage = std::make_shared<JavaScriptBackedArrayBufferStorage>(
+    std::weak_ptr<JavaScriptRuntime>{},
+    std::make_shared<JSHeapAccessExecutorHolder>(executor),
+    nullptr,
+    0,
+    0
+  );
+  storage->withJSBytesAsync(body, callback, queueFailureCallback);
 #endif
 }
 
