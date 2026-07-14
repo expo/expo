@@ -156,7 +156,6 @@ export async function prebuildAsync(
         event('dependencies:installed', {
           packageManager: resolvePackageManagerName(options.packageManager),
           ms: Date.now() - startedAt,
-          skipped: false,
         });
       }
     }

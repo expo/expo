@@ -19,7 +19,6 @@ declare module '2g' {
     'prebuild:dependencies:installed': {
       packageManager: string;
       ms: number;
-      skipped: boolean;
     };
     'prebuild:gitignore_check': { allPlatformsHaveGitignore: boolean };
     'prebuild:rename_files': { count: number };
