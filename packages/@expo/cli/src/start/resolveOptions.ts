@@ -2,9 +2,9 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import { Log } from '../log';
-import { envIsWebcontainer } from '../utils/env';
+import { env, envIsWebcontainer } from '../utils/env';
 import { AbortCommandError, CommandError } from '../utils/errors';
-import { resolvePortAsync } from '../utils/port';
+import { choosePortAsync, resolvePortAsync } from '../utils/port';
 import { canResolveDevClient, hasDirectDevClientDependency } from './detectDevClient';
 
 export type Options = {
@@ -159,8 +159,9 @@ export function resolveHostType(options: {
 /** Resolve the port options for all supported bundlers. */
 export async function resolvePortsAsync(
   projectRoot: string,
-  options: Partial<Pick<Options, 'port' | 'devClient'>>
-) {
+  options: Partial<Pick<Options, 'port' | 'devClient'>>,
+  bundlers: ('metro' | 'webpack')[]
+): Promise<{ metroPort: number; webpackPort?: number }> {
   const fallbackPort = process.env.RCT_METRO_PORT ? parseInt(process.env.RCT_METRO_PORT, 10) : 8081;
   const metroPort = await resolvePortAsync(projectRoot, {
     defaultPort: options.port,
@@ -168,6 +169,18 @@ export async function resolvePortsAsync(
   });
   if (metroPort == null) {
     throw new AbortCommandError();
+  }
+
+  if (bundlers.includes('webpack')) {
+    // Web runs on its own default port and ignores `--port`.
+    const webpackPort = await choosePortAsync(projectRoot, {
+      defaultPort: 19006,
+      host: env.WEB_HOST,
+    });
+    if (webpackPort == null) {
+      throw new AbortCommandError();
+    }
+    return { metroPort, webpackPort };
   }
 
   return { metroPort };

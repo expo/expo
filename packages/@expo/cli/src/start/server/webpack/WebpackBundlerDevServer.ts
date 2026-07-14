@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import type { Application } from 'express';
+import assert from 'node:assert';
 import fs from 'node:fs';
 import type http from 'node:http';
 import path from 'node:path';
@@ -11,7 +12,6 @@ import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { setNodeEnv, loadEnvFiles } from '../../../utils/nodeEnv';
-import { choosePortAsync } from '../../../utils/port';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -80,23 +80,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     return false;
   }
 
-  private async getAvailablePortAsync(options: { defaultPort?: number }): Promise<number> {
-    try {
-      const defaultPort = options?.defaultPort ?? 19006;
-      const port = await choosePortAsync(this.projectRoot, {
-        defaultPort,
-        host: env.WEB_HOST,
-        explicitPort: options?.defaultPort != null,
-      });
-      if (!port) {
-        throw new CommandError('NO_PORT_FOUND', `Port ${defaultPort} not available.`);
-      }
-      return port;
-    } catch (error: any) {
-      throw new CommandError('NO_PORT_FOUND', error.message);
-    }
-  }
-
   async bundleAsync({ mode, clear }: { mode: 'development' | 'production'; clear: boolean }) {
     // Do this first to fail faster.
     const webpack = importWebpackFromProject(this.projectRoot);
@@ -156,9 +139,8 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     await this.stopAsync();
 
-    options.port = await this.getAvailablePortAsync({
-      defaultPort: options.port,
-    });
+    // The port is resolved by the caller before the dev server is started.
+    assert(options.port, 'Expected a port to be defined before starting the Webpack dev server');
 
     const { resetDevServer, https, port, mode } = options;
 

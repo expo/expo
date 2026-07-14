@@ -44,8 +44,6 @@ async function getMultiBundlerStartOptions(
       scheme: options.scheme,
     },
   };
-  const multiBundlerSettings = await resolvePortsAsync(projectRoot, options);
-
   const optionalBundlers: Partial<PlatformBundlers> = { ...platformBundlers };
   // In the default case, we don't want to start multiple bundlers since this is
   // a bit slower. Our priority (for legacy) is native platforms.
@@ -54,9 +52,11 @@ async function getMultiBundlerStartOptions(
   }
 
   const bundlers = [...new Set(Object.values(optionalBundlers))];
+  const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, bundlers);
+
   const multiBundlerStartOptions = bundlers.map((bundler) => {
-    // Webpack resolves its own web port when it starts; Metro uses the resolved port.
-    const port = bundler === 'webpack' ? undefined : multiBundlerSettings.metroPort;
+    const port =
+      bundler === 'webpack' ? multiBundlerSettings.webpackPort : multiBundlerSettings.metroPort;
     return {
       type: bundler,
       options: {
