@@ -19,17 +19,10 @@
 
 + (double)getRunJSBundleEndTime
 {
-  return StartupLogger::getInstance().getRunJSBundleEndTime();
-}
-
-+ (double)getInitReactRuntimeStartTime
-{
-  return StartupLogger::getInstance().getInitReactRuntimeStartTime();
-}
-
-+ (double)getInitReactRuntimeEndTime
-{
-  return StartupLogger::getInstance().getInitReactRuntimeEndTime();
+  // TODO(@tsapeta): React Native 0.87 removed `StartupLogger::getRunJSBundleEndTime()` — the end
+  // time is still recorded internally on `RUN_JS_BUNDLE_STOP` but no longer publicly exposed.
+  // Restore the real value once react-native provides an accessor again.
+  return NAN;
 }
 
 @end
