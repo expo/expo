@@ -1,6 +1,8 @@
 import { jest } from '@jest/globals';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
+import { axe } from '~/common/test-utilities';
+
 import { NativeUpgradePromptCallout } from './NativeUpgradePromptCallout';
 
 const DIFF = `diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
@@ -65,5 +67,14 @@ describe('NativeUpgradePromptCallout', () => {
     fireEvent.click(screen.getByRole('button', { name: /copy prompt/i }));
 
     expect(await screen.findByText('Copied!')).toBeInTheDocument();
+  });
+
+  it('has no axe violations', async () => {
+    setupClipboard();
+
+    const { container } = render(
+      <NativeUpgradePromptCallout fromVersion="55" toVersion="56" diff={DIFF} />
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 });
