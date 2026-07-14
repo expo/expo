@@ -1,5 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 
 import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
@@ -8,53 +9,48 @@ import { P } from '~/ui/components/Text';
 
 import { Checkbox } from '../Form/Checkbox';
 import { SuccessCheckmark } from './SuccessCheckmark';
-import { Chapter } from './TutorialData';
+import { TUTORIAL_CHAPTERS, TUTORIAL_TRAILERS, type TutorialName } from './TutorialData';
 
 type ProgressTrackerProps = {
-  currentChapterIndex: number;
-  name: string;
-  summary: string;
+  name: TutorialName;
+  currentChapterSlug: string;
   chapterTitle?: string;
+  summary?: ReactNode;
   nextChapterTitle?: string;
   nextChapterDescription?: string;
   nextChapterLink?: string;
 };
 
 export function ProgressTracker({
-  currentChapterIndex,
   name,
-  summary,
+  currentChapterSlug,
   chapterTitle,
+  summary,
   nextChapterTitle,
   nextChapterDescription,
   nextChapterLink,
 }: ProgressTrackerProps) {
   const intl = useIntl();
-  const {
-    chapters,
-    setChapters,
-    getStartedChapters,
-    setGetStartedChapters,
-    buildWithAiChapters,
-    setBuildWithAiChapters,
-  } = useTutorialChapterCompletion();
+  const { isCompleted, setCompleted } = useTutorialChapterCompletion();
 
-  const tracks: Record<string, [Chapter[], (chapters: Chapter[]) => void]> = {
-    EAS_TUTORIAL: [chapters, setChapters],
-    GET_STARTED: [getStartedChapters, setGetStartedChapters],
-    BUILD_WITH_AI: [buildWithAiChapters, setBuildWithAiChapters],
-  };
-  const [trackChapters, setTrackChapters] = tracks[name] ?? tracks.EAS_TUTORIAL;
-  const currentChapter = trackChapters[currentChapterIndex];
+  const chapters = TUTORIAL_CHAPTERS[name];
+  const currentIndex = chapters.findIndex(chapter => chapter.slug === currentChapterSlug);
+
+  if (currentIndex === -1) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        `[ProgressTracker] chapter slug "${currentChapterSlug}" not found in ${name}. Update TutorialData.tsx or fix the currentChapterSlug prop.`
+      );
+    }
+    return null;
+  }
+
+  const currentChapter = chapters[currentIndex];
+  const next = chapters[currentIndex + 1] ?? TUTORIAL_TRAILERS[name];
+  const completed = isCompleted(name, currentChapterSlug);
 
   const handleCheckboxChange = () => {
-    const updatedChapters = trackChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: !currentChapter.completed };
-      }
-      return chapter;
-    });
-    setTrackChapters(updatedChapters);
+    setCompleted(name, currentChapterSlug, !completed);
   };
 
   return (
@@ -64,7 +60,7 @@ export function ProgressTracker({
           size="sm"
           className={mergeClasses(
             'mx-auto flex items-center justify-center grayscale transition duration-300',
-            currentChapter.completed && 'border-palette-green5 grayscale-0'
+            completed && 'border-palette-green5 grayscale-0'
           )}
         />
         <div className="flex flex-col items-center justify-center gap-2">
@@ -75,28 +71,28 @@ export function ProgressTracker({
             />{' '}
             {chapterTitle ?? currentChapter.title}
           </p>
-          <p className="max-w-[60ch] pb-2 text-center leading-normal text-secondary">{summary}</p>
+          <p className="max-w-[60ch] pb-2 text-center leading-normal text-secondary">
+            {summary ?? currentChapter.summary}
+          </p>
         </div>
         <div className="flex items-center justify-center">
           <Checkbox
-            id={`chapter-${currentChapterIndex}`}
-            checked={currentChapter.completed}
+            id={`chapter-${currentChapterSlug}`}
+            checked={completed}
             label={intl.formatMessage({
-              id: currentChapter.completed
-                ? 'progressTrackerMarkAsUnread'
-                : 'progressTrackerMarkAsRead',
+              id: completed ? 'progressTrackerMarkAsUnread' : 'progressTrackerMarkAsRead',
             })}
             onChange={handleCheckboxChange}
           />
         </div>
       </div>
       <>
-        <P className="my-4">{nextChapterDescription}</P>
+        <P className="my-4">{nextChapterDescription ?? currentChapter.nextDescription}</P>
         <BoxLink
-          href={nextChapterLink}
+          href={nextChapterLink ?? next.slug}
           title={intl.formatMessage(
             { id: 'progressTrackerNext' },
-            { title: nextChapterTitle ?? '' }
+            { title: nextChapterTitle ?? next.title }
           )}
           Icon={BookOpen02Icon}
         />

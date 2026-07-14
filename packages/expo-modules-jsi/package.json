@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build:xcframework": "apple/scripts/build-xcframework.sh",
+    "clean": "apple/scripts/clear-caches.sh",
     "swift:format": "../../scripts/swift-format.sh",
     "swift:lint": "../../scripts/swift-format.sh --lint",
     "test:integration": "apple/scripts/test.sh"

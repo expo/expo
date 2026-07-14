@@ -1,6 +1,11 @@
 import Observe from './module';
 
 export { default as AppMetrics } from 'expo-app-metrics';
+export { ObserveErrorBoundary } from './ObserveErrorBoundary';
+export type {
+  ObserveErrorBoundaryProps,
+  ObserveErrorBoundaryFallbackProps,
+} from './ObserveErrorBoundary';
 export { ObserveInteractiveMarker } from './ObserveInteractiveMarker';
 export type { ObserveInteractiveMarkerProps } from './ObserveInteractiveMarker';
 export { ObserveRoot } from './ObserveRoot';

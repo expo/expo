@@ -1,3 +1,4 @@
+import { events } from '2g';
 import { type ExpoConfig, getConfig, getPlatformsFromConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import type { createStableModuleIdFactory } from '@expo/metro-config';
@@ -18,10 +19,10 @@ import chalk from 'chalk';
 import type http from 'http';
 import path from 'path';
 
-import { events, shouldReduceLogs } from '../../../events';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
+import { shouldReduceLogs } from '../../../utils/interactive';
 import type DevToolsPluginManager from '../DevToolsPluginManager';
 import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
@@ -38,29 +39,32 @@ import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
-// prettier-ignore
-export const event = events('metro', (t) => [
-  t.event<'config', {
-    serverRoot: string;
-    projectRoot: string;
-    exporting: boolean;
-    flags: {
-      autolinkingModuleResolution: boolean;
-      serverActions: boolean;
-      serverComponents: boolean;
-      reactCompiler: boolean;
-      optimizeGraph?: boolean;
-      treeshaking?: boolean;
-      logbox?: boolean;
+declare module '2g' {
+  interface EventRegistry {
+    'metro:config': {
+      serverRoot: string;
+      projectRoot: string;
+      exporting: boolean;
+      flags: {
+        autolinkingModuleResolution: boolean;
+        serverActions: boolean;
+        serverComponents: boolean;
+        reactCompiler: boolean;
+        optimizeGraph?: boolean;
+        treeshaking?: boolean;
+        logbox?: boolean;
+      };
     };
-  }>(),
-  t.event<'instantiate', {
-    atlas: boolean;
-    workers: number | null;
-    host: string | null;
-    port: number | null;
-  }>(),
-]);
+    'metro:instantiate': {
+      atlas: boolean;
+      workers: number | null;
+      host: string | null;
+      port: number | null;
+    };
+  }
+}
+
+export const event = events('metro');
 
 // NOTE(@kitten): We pass a custom createStableModuleIdFactory function into the Metro module ID factory sometimes
 interface MetroServerWithModuleIdMod extends MetroServer {

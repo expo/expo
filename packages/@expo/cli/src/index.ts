@@ -1,11 +1,9 @@
 #!/usr/bin/env node
-
+import { installEventLogger } from '2g';
 import arg from 'arg';
 import chalk from 'chalk';
 import Debug from 'debug';
 import { boolish } from 'getenv';
-
-import { installEventLogger } from '../src/events';
 
 // Setup event logger output
 // NOTE: Done before any console output

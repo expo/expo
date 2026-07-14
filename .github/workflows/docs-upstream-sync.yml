@@ -29,8 +29,10 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
-      - name: 📦 Install workspace deps
-        run: pnpm install --ignore-scripts --frozen-lockfile
+          cache-dependency-path: docs/pnpm-lock.yaml
+      - name: 📦 Install docs deps
+        working-directory: docs
+        run: pnpm install --frozen-lockfile
       - name: 🔄 Run upstream sync
         id: sync
         working-directory: docs
@@ -41,7 +43,7 @@ jobs:
           echo "result=$result" >> "$GITHUB_OUTPUT"
       - name: 📝 Create Pull Request
         if: ${{ fromJSON(steps.sync.outputs.result).hasChanged }}
-        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           branch: bot/docs-upstream-sync
@@ -54,6 +56,11 @@ jobs:
           committer: Expo Bot <expo-bot@users.noreply.github.com>
           author: Expo Bot <expo-bot@users.noreply.github.com>
           reviewers: amandeepmittal
+      - name: 🚨 Surface generator failures
+        if: ${{ fromJSON(steps.sync.outputs.result).failedCount != 0 }}
+        run: |
+          echo "::error::Some generators failed. Check the 'Run upstream sync' step log for details."
+          exit 1
       - name: 🔔 Notify on Slack
         if: failure()
         uses: ./.github/actions/slack-notify

@@ -8,6 +8,14 @@ export const TALKS = [
     home: true,
   },
   {
+    title: 'What is your app actually doing in production?',
+    event: 'App.js Conf 2026',
+    description: 'Kadi Kraman',
+    videoId: '7DzSnY33t-Y',
+    uploadDate: '2026-07-06',
+    home: true,
+  },
+  {
     title: 'React Native without Cocoapods',
     event: 'App.js Conf 2026',
     description: 'Riccardo Cipolleschi, Christian Falch',

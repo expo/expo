@@ -32,6 +32,7 @@ import {
   findMarkdownPages,
   findMdxSource,
 } from './generate-markdown-pages-utils.ts';
+import { isUpgradePairMarkdownPath } from './generate-upgrade-diff-pages.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
 const PAGES_DIR = path.join(process.cwd(), 'pages');
@@ -72,7 +73,9 @@ function tabPanelHeadingDeficit(markdown: string, htmlPath: string): number {
 
 if (fs.existsSync(OUT_DIR)) {
   const htmlFiles = findHtmlPages(OUT_DIR);
-  const mdFiles = findMarkdownPages(OUT_DIR);
+  const mdFiles = findMarkdownPages(OUT_DIR).filter(
+    mdPath => !isUpgradePairMarkdownPath(path.relative(OUT_DIR, mdPath))
+  );
 
   if (mdFiles.length === 0) {
     console.error('No markdown files found in out/. Did generate-markdown-pages run?');

@@ -1,18 +1,17 @@
 import type { ModuleIosConfig } from '../types';
+import type { InlineModulesScanOptions } from './inlineModules';
 import { getMirrorStateObject } from './inlineModules';
 
 export async function getIosInlineModulesClassNames(
-  watchedDirectories: string[],
-  appRoot: string
+  options: InlineModulesScanOptions
 ): Promise<ModuleIosConfig[]> {
-  return (await getMirrorStateObject(watchedDirectories, appRoot)).swiftModuleClassNames.map(
-    (className: string) => {
-      return {
-        class: className,
-        name: null,
-      };
-    }
-  );
+  const stateObject = await getMirrorStateObject(options);
+  return stateObject.swiftModuleClassNames.map((className: string) => {
+    return {
+      class: className,
+      name: null,
+    };
+  });
 }
 
 export function isTargetInInlineModulesTargets({

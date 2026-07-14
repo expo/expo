@@ -13,6 +13,14 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Comparison with original image (e2e)',
+    route: 'image/comparison-e2e',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageComparisonE2EScreen'));
+    },
+  },
+  {
     name: 'Animated styles',
     route: 'image/animated-styles',
     options: {},

@@ -20,6 +20,18 @@ extension ExpoSwiftUI {
   }
 
   /**
+   Protocol for virtual views that can resign the first responder anywhere within their subtree,
+   not just on the view itself. Unlike `FocusableView`, this walks nested children so a focused
+   field wrapped in a container (e.g. a `TextField` inside an `HStack` or `LabeledContent`) is
+   also blurred on unmount, which `FocusableView` alone would miss.
+   See https://github.com/expo/expo/issues/47682
+   */
+  internal protocol FocusableViewContainer {
+    @MainActor
+    func resignFirstResponderInSubtree()
+  }
+
+  /**
    Protocol for wrapper views (e.g., UIBaseView) that wrap an inner view.
    Used by DynamicSwiftUIViewType to resolve the underlying view through wrapper layers.
    */
