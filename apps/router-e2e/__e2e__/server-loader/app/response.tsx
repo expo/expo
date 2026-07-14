@@ -10,7 +10,7 @@ import { Table, TableRow } from '../components/Table';
 export const loader: LoaderFunction = (request) => {
   // In SSG, request is unavailable since there's no HTTP request at build time
   if (!request) {
-    return { foo: null };
+    return Response.json({ foo: null }, { headers: { 'Cache-Control': 'public, max-age=604800' } });
   }
 
   const url = new URL(request.url);

@@ -34,6 +34,16 @@ const EXPECTED_PAGE_HEADERS = [
     namedRegex: '^/_expo/loaders/blog(?:/)?$',
     headers: { 'Cache-Control': 'public, max-age=604800' },
   },
+  // Added from `/blog`'s loader `Response` at export time and appended after
+  // the config option rules.
+  {
+    namedRegex: '^/blog(?:/)?$',
+    headers: { 'Cache-Control': 'public, max-age=86400' },
+  },
+  {
+    namedRegex: '^/_expo/loaders/blog(?:/)?$',
+    headers: { 'Cache-Control': 'public, max-age=86400' },
+  },
 ];
 
 describe('export static with headers', () => {
@@ -72,25 +82,29 @@ describe('export static with headers', () => {
         cacheControl: 'public, max-age=0',
       },
       {
+        // The loader-declared `Cache-Control` wins over the config option's
+        // `/blog` rule
         path: '/blog',
         status: 200,
         contentType: 'text/html; charset=UTF-8',
         poweredBy: 'expo-server',
         pageRule: 'blog',
         setCookie: 'session=1, session=2',
-        cacheControl: 'public, max-age=3600',
+        cacheControl: 'public, max-age=86400',
       },
       {
-        // Loader data files apply global headers and matching rules
+        // Loader data files apply global headers and matching rules, with the
+        // loader-declared `Cache-Control` winning over the config option's rule
         path: '/_expo/loaders/blog',
         status: 200,
         contentType: 'application/octet-stream',
         poweredBy: 'expo-server',
         pageRule: null,
         setCookie: 'session=1, session=2',
-        cacheControl: 'public, max-age=604800',
+        cacheControl: 'public, max-age=86400',
       },
       {
+        // NOTE(@hassankhan): This currently diverges from SSR/EAS.
         // The static file server serves 404s without header application
         path: '/not-a-route',
         status: 404,
