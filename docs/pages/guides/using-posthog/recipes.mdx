@@ -248,7 +248,7 @@ jobs:
 
 1. The [`update`](/eas/workflows/pre-packaged-jobs#update) job ships the code, then [`eas/posthog_flag_rollout`](/eas/workflows/syntax/#easposthog_flag_rollout) exposes it to 25% of users.
 2. [`eas/posthog_wait_for_metric`](/eas/workflows/syntax/#easposthog_wait_for_metric) runs a [HogQL](https://posthog.com/docs/hogql) query and waits until the exception count over the last 30 minutes is 5 or fewer. Once the gate clears, `full_rollout` widens the flag to 100%. If a bad rollout keeps the count elevated, the gate times out and fails, and `full_rollout` never runs.
-3. On failure, `roll_back` turns the flag off. It uses [`after`](/eas/workflows/syntax/#jobsjob_idafter) with [`if: ${{ failure() }}`](/eas/workflows/syntax/#jobsjob_idif) because a `needs` dependency would not work here: a job is skipped when a `needs` dependency fails, before its `if` condition is evaluated. `failure()` reflects the whole workflow run, so keep this workflow focused on the rollout and its gate.
+3. On failure, `roll_back` turns the flag off. It uses [`after`](/eas/workflows/syntax/#jobsjob_idafter) with [`if: ${{ failure() }}`](/eas/workflows/syntax/#jobsjob_idif) because a `needs` dependency would not work here. When a `needs` dependency fails, the job is skipped before its `if` condition is evaluated. `failure()` reflects the whole workflow run, so keep this workflow focused on the rollout and its gate.
 
 ## Roll out an EAS Update channel, or revert on failure
 
