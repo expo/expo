@@ -132,6 +132,17 @@ describe(choosePortAsync, () => {
 });
 
 describe(resolvePortAsync, () => {
+  const originalRctMetroPort = process.env.RCT_METRO_PORT;
+  beforeEach(() => {
+    delete process.env.RCT_METRO_PORT;
+  });
+  afterEach(() => {
+    if (originalRctMetroPort == null) {
+      delete process.env.RCT_METRO_PORT;
+    } else {
+      process.env.RCT_METRO_PORT = originalRctMetroPort;
+    }
+  });
   it(`finds the first available port from the fallback when port is 0`, async () => {
     jest.mocked(freePortAsync).mockResolvedValueOnce(8081);
     const port = await resolvePortAsync('/', { defaultPort: 0, fallbackPort: 8081 });
@@ -159,6 +170,13 @@ describe(resolvePortAsync, () => {
     await expect(resolvePortAsync('/', { defaultPort: 8081 })).rejects.toThrow(
       /Port 8081 is unavailable/
     );
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`hard-fails when a configured RCT_METRO_PORT is busy in non-interactive mode`, async () => {
+    process.env.RCT_METRO_PORT = '8081';
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    await expect(resolvePortAsync('/', {})).rejects.toThrow(/Port 8081 is unavailable/);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
 });

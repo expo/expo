@@ -180,7 +180,7 @@ export async function resolvePortAsync(
   const resolvedPort = await choosePortAsync(projectRoot, {
     defaultPort: port,
     reuseExistingPort,
-    explicitPort: defaultPort != null,
+    explicitPort: defaultPort != null || !!env.RCT_METRO_PORT,
   });
   if (resolvedPort == null) {
     Log.log('\u203A Skipping dev server');
