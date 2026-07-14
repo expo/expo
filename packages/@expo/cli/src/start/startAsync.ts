@@ -57,7 +57,7 @@ async function getMultiBundlerStartOptions(
   const bundlers = [...new Set(Object.values(optionalBundlers))];
   const multiBundlerStartOptions = bundlers.map((bundler) => {
     const port =
-      bundler === 'webpack' ? multiBundlerSettings.webpackPort : multiBundlerSettings.metroPort;
+      bundler === 'webpack' ? multiBundlerSettings.webpackPort! : multiBundlerSettings.metroPort!;
     return {
       type: bundler,
       options: {
