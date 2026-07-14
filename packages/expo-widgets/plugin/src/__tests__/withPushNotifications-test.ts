@@ -1,4 +1,4 @@
-import { withEntitlementsPlist, withInfoPlist } from 'expo/config-plugins';
+import { type InfoPlist, withEntitlementsPlist, withInfoPlist } from 'expo/config-plugins';
 
 import { mockModWithResults } from './mockMods';
 import withPushNotifications from '../ios/withPushNotifications';
@@ -20,8 +20,8 @@ describe(withPushNotifications, () => {
   });
 
   it('adds the aps-environment entitlement when push notifications are enabled', () => {
-    const entitlements: Record<string, unknown> = {};
-    const infoPlist: Record<string, unknown> = {};
+    const entitlements: InfoPlist = {};
+    const infoPlist: InfoPlist = {};
     mockModWithResults(withEntitlementsPlist, entitlements);
     mockModWithResults(withInfoPlist, infoPlist);
 
@@ -32,7 +32,7 @@ describe(withPushNotifications, () => {
   });
 
   it('keeps a pre-existing aps-environment value when push notifications are enabled', () => {
-    const entitlements: Record<string, unknown> = { 'aps-environment': 'production' };
+    const entitlements: InfoPlist = { 'aps-environment': 'production' };
     mockModWithResults(withEntitlementsPlist, entitlements);
     mockModWithResults(withInfoPlist, {});
 
@@ -42,7 +42,7 @@ describe(withPushNotifications, () => {
   });
 
   it('does not add the aps-environment entitlement when push notifications are disabled', () => {
-    const infoPlist: Record<string, unknown> = {};
+    const infoPlist: InfoPlist = {};
     mockModWithResults(withInfoPlist, infoPlist);
 
     withPushNotifications(config as any, { enablePushNotifications: false });
