@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Scan the whole Kotlin file for its `package` declaration when registering inline modules, so modules with long comments (for example, a license header) before the `package` declaration are no longer silently skipped. ([#47656](https://github.com/expo/expo/pull/47656) by [@HubertBer](https://github.com/HubertBer))
+
 ### 💡 Others
 
 ## 56.0.19 — 2026-07-07

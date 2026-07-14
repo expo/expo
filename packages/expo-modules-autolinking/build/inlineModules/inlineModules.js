@@ -4,9 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.inlineModuleFileNameInformation = inlineModuleFileNameInformation;
-exports.getKotlinFileNameWithItsPackage = getKotlinFileNameWithItsPackage;
+exports.getKotlinInlineModuleInfo = getKotlinInlineModuleInfo;
 exports.getSwiftModuleClassName = getSwiftModuleClassName;
-exports.hasKotlinModuleDefinition = hasKotlinModuleDefinition;
 exports.hasSwiftModuleDefinition = hasSwiftModuleDefinition;
 exports.getMirrorStateObject = getMirrorStateObject;
 const console_1 = require("console");
@@ -30,49 +29,34 @@ function inlineModuleFileNameInformation(fileName) {
     }
     return { valid: true, ext };
 }
-async function getKotlinFileNameWithItsPackage(absoluteFilePath) {
-    const HEADER_SIZE = 512;
-    const buffer = Buffer.alloc(HEADER_SIZE);
-    let fileHandle;
+/**
+ * Reads a Kotlin file once and derives both whether it defines an inline module and, if so, its
+ * `<package>.<fileName>` class name.
+ */
+async function getKotlinInlineModuleInfo(absoluteFilePath) {
+    let contents;
     try {
-        fileHandle = await fs_1.default.promises.open(absoluteFilePath, 'r');
-    }
-    catch (e) {
-        (0, console_1.warn)(`Kotlin inline module '${absoluteFilePath}' couldn't be opened.`);
-        return null;
-    }
-    try {
-        const { bytesRead } = await fileHandle.read(buffer, 0, HEADER_SIZE, 0);
-        const header = buffer.toString('utf8', 0, bytesRead);
-        // We want to find `package some.package` and capture the `some.package` from it.
-        const pacakgeRegex = /^package\s+([\w.]+)/m;
-        const packageMatch = header.match(pacakgeRegex);
-        if (!packageMatch) {
-            (0, console_1.warn)(`Package name couldn't be found in ${absoluteFilePath}.`);
-            return null;
-        }
-        return `${packageMatch[1]}.${path_1.default.basename(absoluteFilePath, path_1.default.extname(absoluteFilePath))}`;
-    }
-    catch (e) {
-        console.warn(`Couldn't read inline module '${absoluteFilePath}' package.`);
-        return null;
-    }
-    finally {
-        await fileHandle.close();
-    }
-}
-function getSwiftModuleClassName(absoluteFilePath) {
-    return path_1.default.basename(absoluteFilePath, path_1.default.extname(absoluteFilePath));
-}
-async function hasKotlinModuleDefinition(absoluteFilePath) {
-    try {
-        const contents = await fs_1.default.promises.readFile(absoluteFilePath, 'utf8');
-        return kotlinModuleDefinitionRegex.test(contents);
+        contents = await fs_1.default.promises.readFile(absoluteFilePath, 'utf8');
     }
     catch {
         (0, console_1.warn)(`Kotlin inline module '${absoluteFilePath}' could not be opened.`);
-        return false;
+        return { hasModuleDefinition: false, classNameWithPackage: null };
     }
+    if (!kotlinModuleDefinitionRegex.test(contents)) {
+        return { hasModuleDefinition: false, classNameWithPackage: null };
+    }
+    // We want to find `package some.package` and capture the `some.package` from it.
+    const pacakgeRegex = /^package\s+([\w.]+)/m;
+    const packageMatch = contents.match(pacakgeRegex);
+    if (!packageMatch) {
+        (0, console_1.warn)(`Package name couldn't be found in ${absoluteFilePath}.`);
+        return { hasModuleDefinition: true, classNameWithPackage: null };
+    }
+    const classNameWithPackage = `${packageMatch[1]}.${path_1.default.basename(absoluteFilePath, path_1.default.extname(absoluteFilePath))}`;
+    return { hasModuleDefinition: true, classNameWithPackage };
+}
+function getSwiftModuleClassName(absoluteFilePath) {
+    return path_1.default.basename(absoluteFilePath, path_1.default.extname(absoluteFilePath));
 }
 async function hasSwiftModuleDefinition(absoluteFilePath) {
     try {
@@ -87,7 +71,8 @@ async function hasSwiftModuleDefinition(absoluteFilePath) {
 /**
  * Scans the project and returns information about all of the inline modules inside in an InlineModulesMirror object.
  */
-async function getMirrorStateObject(watchedDirectories, appRoot) {
+async function getMirrorStateObject(options) {
+    const { watchedDirectories, appRoot } = options;
     const inlineModulesMirror = {
         kotlinClasses: [],
         swiftModuleClassNames: [],
@@ -108,16 +93,16 @@ async function getMirrorStateObject(watchedDirectories, appRoot) {
             if (!absoluteFilePath) {
                 continue;
             }
-            const hasKotlinDefinition = ext === '.kt' && (await hasKotlinModuleDefinition(absoluteFilePath));
-            const hasSwiftDefinition = ext === '.swift' && (await hasSwiftModuleDefinition(absoluteFilePath));
-            if (hasKotlinDefinition) {
-                const kotlinFileWithPackage = await getKotlinFileNameWithItsPackage(absoluteFilePath);
-                if (kotlinFileWithPackage === null) {
-                    continue;
+            if (ext === '.kt') {
+                const { hasModuleDefinition, classNameWithPackage } = await getKotlinInlineModuleInfo(absoluteFilePath);
+                if (hasModuleDefinition) {
+                    if (classNameWithPackage === null) {
+                        continue;
+                    }
+                    inlineModulesMirror.kotlinClasses.push(classNameWithPackage);
                 }
-                inlineModulesMirror.kotlinClasses.push(kotlinFileWithPackage);
             }
-            else if (hasSwiftDefinition) {
+            else if (ext === '.swift' && (await hasSwiftModuleDefinition(absoluteFilePath))) {
                 const swiftClassName = getSwiftModuleClassName(absoluteFilePath);
                 inlineModulesMirror.swiftModuleClassNames.push(swiftClassName);
             }

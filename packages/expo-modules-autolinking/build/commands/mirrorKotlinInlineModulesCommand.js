@@ -35,7 +35,7 @@ function mirrorKotlinInlineModulesCommand(cli) {
             !path_1.default.isAbsolute(inlineModulesListDirectory)) {
             throw new Error('Need to provide the absolute path to both the kotlin files mirror and inline modules list directories!');
         }
-        const inlineModulesMirror = await (0, inlineModules_1.getMirrorStateObject)(watchedDirectories, appRoot);
+        const inlineModulesMirror = await (0, inlineModules_1.getMirrorStateObject)({ watchedDirectories, appRoot });
         const createMirrorStructurePromise = fs_1.default.promises
             .rm(kotlinFilesMirrorDirectory, { recursive: true, force: true })
             .then(() => (0, androidInlineModules_1.createSymlinksToKotlinFiles)(kotlinFilesMirrorDirectory, inlineModulesMirror));
