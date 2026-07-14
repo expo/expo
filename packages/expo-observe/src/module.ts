@@ -47,7 +47,7 @@ const Observe: ObserveModule = new Proxy(native, {
       };
     }
 
-    // The native module is a JSI host object, so `prop in target` (and `hasOwnProperty`) report
+    // On Android, the native module is a JSI host object, so `prop in target` (and `hasOwnProperty`) report
     // `true` for names it doesn't implement — a host object has no `has` hook. `Object.keys(target)`
     // goes through `getPropertyNames`, which lists the module's actual members, so use it to forward
     // anything not really there (e.g. `logEvent`) to the AppMetrics module.
