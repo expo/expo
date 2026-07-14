@@ -25,6 +25,7 @@ import { CommandError } from '../../../utils/errors';
 import { shouldReduceLogs } from '../../../utils/interactive';
 import type DevToolsPluginManager from '../DevToolsPluginManager';
 import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import { createDevToolsPluginUpgradeHandler } from '../DevToolsPluginUpgradeHandler';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
@@ -36,7 +37,12 @@ import { replaceMetroFileMap } from './createFileMap-fork';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
-import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
+import {
+  runServer,
+  type ServerAddressInfo,
+  type SecureServerOptions,
+  type WebsocketUpgradeHandler,
+} from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
 declare module '2g' {
@@ -392,6 +398,8 @@ export async function instantiateMetroAsync(
     { getMetroBundler, serverBaseUrl }
   );
 
+  let websocketUpgradeHandler: WebsocketUpgradeHandler | undefined;
+
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
     prependMiddleware(middleware, createCorsMiddleware(exp));
@@ -421,6 +429,10 @@ export async function instantiateMetroAsync(
 
     const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint();
     Object.assign(websocketEndpoints, devtoolsWebsocketEndpoints);
+
+    const pluginUpgradeHandler = createDevToolsPluginUpgradeHandler(devToolsPluginManager);
+    websocketUpgradeHandler = pluginUpgradeHandler.upgradeHandler;
+    Object.assign(websocketEndpoints, pluginUpgradeHandler.dummyUpgradeEndpoint);
 
     // Register WebSocket endpoints contributed by DevTools plugins. A plugin's `serverEntryPoint`
     // exports a `webSocketHandlers` map (route -> connection handler); each becomes a `ws` server
@@ -475,6 +487,7 @@ export async function instantiateMetroAsync(
       {
         host: options.host,
         websocketEndpoints,
+        websocketUpgradeHandler,
         watch,
         secureServerOptions,
       },

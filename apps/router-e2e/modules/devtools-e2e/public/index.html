@@ -15,6 +15,8 @@
       <pre id="server-result" hidden></pre>
       <button id="open-socket">Open WebSocket</button>
       <pre id="socket-log" hidden></pre>
+      <button id="open-dynamic-socket">Open Dynamic WebSocket</button>
+      <pre id="dynamic-socket-log" hidden></pre>
     </main>
     <script>
       const pluginPathname = location.pathname.replace(/\/$/, '');
@@ -57,6 +59,34 @@
           socket = undefined;
         });
         socket.addEventListener('error', () => append('error'));
+      });
+
+      const dynamicSocketButton = document.getElementById('open-dynamic-socket');
+      const dynamicSocketLog = document.getElementById('dynamic-socket-log');
+      let dynamicSocket;
+      dynamicSocketButton.addEventListener('click', () => {
+        if (dynamicSocket) {
+          dynamicSocket.close();
+          return;
+        }
+        dynamicSocketLog.hidden = false;
+        dynamicSocketLog.textContent = '';
+        const append = (line) => {
+          dynamicSocketLog.textContent += `${line}\n`;
+        };
+        dynamicSocket = new WebSocket(`${pluginPathname}/ws/dynamic/e2e-channel?source=webpage`);
+        dynamicSocket.addEventListener('open', () => {
+          append('open');
+          dynamicSocketButton.textContent = 'Close Dynamic WebSocket';
+          dynamicSocket.send('Hello from the dynamic webpage!');
+        });
+        dynamicSocket.addEventListener('message', (event) => append(`message: ${event.data}`));
+        dynamicSocket.addEventListener('close', () => {
+          append('close');
+          dynamicSocketButton.textContent = 'Open Dynamic WebSocket';
+          dynamicSocket = undefined;
+        });
+        dynamicSocket.addEventListener('error', () => append('error'));
       });
     </script>
     <style>

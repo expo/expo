@@ -1,45 +1,45 @@
 import { loadModule } from '@expo/require-utils';
-import type { IncomingMessage } from 'node:http';
-import { type WebSocket, WebSocketServer } from 'ws';
+
+import type { RequestContext } from './DevToolsPluginSocketHelpers';
 
 const debug = require('debug')('expo:start:server:devtools') as typeof console.log;
 
 /**
  * Handler default-exported by a plugin's `serverEntryPoint`. Receives a fetch API `Request`
  * with the plugin endpoint prefix stripped from the URL. Returning `null`/`undefined` falls
- * through to static `webpageRoot` serving.
+ * through to static `webpageRoot` serving. For WebSocket Upgrade requests, return
+ * `context.upgrade(hooks)` to commit the handshake, or any plain `Response` to reject it.
  */
 export type DevToolsPluginRequestHandler = (
-  request: Request
+  request: Request,
+  context: RequestContext
 ) => Response | null | undefined | Promise<Response | null | undefined>;
 
-/**
- * Per-connection WebSocket handler exported by a plugin's `serverEntryPoint`. Receives the
- * connected `ws` socket, the upgrade `request`, and the `WebSocketServer` the connection belongs
- * to (use `server.clients` to broadcast). Mirrors the `ws` `'connection'` event so plugin authors
- * use the familiar `socket.on('message', ...)` / `socket.send(...)` API.
- */
-export type DevToolsPluginWebSocketHandler = (
-  socket: WebSocket,
-  request: Request,
-  server: WebSocketServer
-) => void;
+/** Creates the request context for plain HTTP requests, where no socket can be upgraded. */
+export function createHttpRequestContext(): RequestContext {
+  return {
+    upgrade() {
+      throw new Error(
+        'context.upgrade() was called for a regular HTTP request, so there is no socket to upgrade. ' +
+          'WebSocket hooks can only be attached when the client sends an Upgrade request; ' +
+          "check `request.headers.get('upgrade') === 'websocket'` before calling upgrade(), " +
+          'and return a normal Response for HTTP requests.'
+      );
+    },
+  };
+}
 
-function convertUpgradeRequest(request: IncomingMessage, route: string): Request {
-  const proto = 'encrypted' in request.socket && !!request.socket.encrypted ? 'https' : 'http';
-  const origin = `${proto}://${request.headers.host}`;
-  const url = new URL(request.url ?? '/', origin);
-  url.pathname = route;
-  const headers = new Headers();
-  const { rawHeaders } = request;
-  for (let index = 0; index < rawHeaders.length; index += 2) {
-    const name = rawHeaders[index];
-    const value = rawHeaders[index + 1];
-    if (name != null && value != null) {
-      headers.append(name, value);
-    }
+/**
+ * Extracts the (possibly scoped) plugin package name from a pathname that has the
+ * `/_expo/plugins/` endpoint prefix already stripped.
+ */
+export function parsePluginName(pathname: string): string {
+  const parts = pathname.split('/');
+  if (parts[0]![0] === '@' && parts.length > 1) {
+    // Scoped package name
+    return `${parts[0]}/${parts[1]}`;
   }
-  return new Request(url.href, { method: request.method, headers });
+  return parts[0]!;
 }
 
 export async function loadRequestHandlerAsync({
@@ -63,37 +63,4 @@ export async function loadRequestHandlerAsync({
     );
   }
   return handler;
-}
-
-export async function loadWebSocketServerAsync({
-  packageName,
-  serverEntryPoint,
-}: {
-  packageName: string;
-  serverEntryPoint: string;
-}): Promise<Record<string, WebSocketServer>> {
-  debug('Loading DevTools plugin WebSocket server module: %s', serverEntryPoint);
-  const serverModule = (await loadModule(serverEntryPoint)) as {
-    webSocketHandlers?: Record<string, DevToolsPluginWebSocketHandler>;
-  };
-  const handlers: Record<string, DevToolsPluginWebSocketHandler> =
-    serverModule?.webSocketHandlers ?? {};
-
-  return Object.fromEntries(
-    Object.entries(handlers).map(([route, handler]) => {
-      if (typeof handler !== 'function') {
-        throw new Error(
-          `The webSocketHandlers["${route}"] export of plugin ${packageName} ` +
-            `must be a function (socket, request, server) => void.`
-        );
-      }
-      // Routes are mounted relative to the plugin endpoint, so they must be absolute.
-      const normalizedRoute = route.startsWith('/') ? route : `/${route}`;
-      const server = new WebSocketServer({ noServer: true });
-      server.on('connection', (socket, request) =>
-        handler(socket, convertUpgradeRequest(request, normalizedRoute), server)
-      );
-      return [normalizedRoute, server];
-    })
-  );
 }

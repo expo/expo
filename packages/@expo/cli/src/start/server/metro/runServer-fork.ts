@@ -12,6 +12,7 @@ import createWebsocketServer from '@expo/metro/metro/lib/createWebsocketServer';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
+import type { Duplex } from 'stream';
 import type { WebSocketServer } from 'ws';
 
 import { Log } from '../../../log';
@@ -32,6 +33,17 @@ export interface ServerAddressInfo {
   port: number;
 }
 
+/**
+ * Called for Upgrade requests that no exact-path `websocketEndpoints` entry claimed.
+ * Resolve to `true` when the upgrade was handled (committed or rejected); resolving to
+ * `false` (or throwing) destroys the socket.
+ */
+export type WebsocketUpgradeHandler = (
+  request: http.IncomingMessage,
+  socket: Duplex,
+  head: Buffer
+) => Promise<boolean> | boolean;
+
 interface RunServerOptionsFork {
   hasReducedPerformance?: boolean;
   host?: string;
@@ -39,6 +51,7 @@ interface RunServerOptionsFork {
   onReady?(server: http.Server | https.Server): void;
   onClose?(): void;
   websocketEndpoints?: RunServerOptions['websocketEndpoints'];
+  websocketUpgradeHandler?: WebsocketUpgradeHandler;
   secureServerOptions?: SecureServerOptions;
   waitForBundler?: boolean;
   watch?: boolean;
@@ -54,6 +67,7 @@ export const runServer = async (
     onReady,
     secureServerOptions,
     websocketEndpoints = {},
+    websocketUpgradeHandler,
     watch,
     waitForBundler = !!watch,
   }: RunServerOptionsFork,
@@ -178,15 +192,24 @@ export const runServer = async (
         }),
       });
 
-      httpServer.on('upgrade', (request, socket, head) => {
+      httpServer.on('upgrade', async (request, socket, head) => {
         const { pathname } = new URL(request.url!, 'http://localhost');
         if (pathname != null && websocketEndpoints[pathname]) {
           websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
             websocketEndpoints[pathname]?.emit('connection', ws, request);
           });
-        } else {
-          socket.destroy();
+          return;
         }
+        if (websocketUpgradeHandler) {
+          try {
+            if (await websocketUpgradeHandler(request, socket, head)) {
+              return;
+            }
+          } catch (error) {
+            Log.exception(error as Error);
+          }
+        }
+        socket.destroy();
       });
 
       const address = httpServer.address();

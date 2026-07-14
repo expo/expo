@@ -8,8 +8,8 @@ import { DevToolsPluginEndpoint } from './DevToolsPluginManager';
 import {
   type DevToolsPluginRequestHandler,
   loadRequestHandlerAsync,
-  loadWebSocketServerAsync,
 } from './DevToolsPluginServerHelpers';
+import { loadWebSocketServerAsync } from './DevToolsPluginSocketHelpers';
 
 export type { DevToolsPluginRequestHandler } from './DevToolsPluginServerHelpers';
 
@@ -106,9 +106,9 @@ export class DevToolsPlugin {
    * Lazily builds the WebSocket servers contributed by the plugin's `serverEntryPoint`. The entry
    * point exports a `webSocketHandlers` map of route (e.g. `/ws`) to a connection handler; each
    * route becomes a `ws` `WebSocketServer` (in `noServer` mode) that the dev server mounts under
-   * `/_expo/plugins/<name>/<route>`. The fetch API based `requestHandler` cannot serve WebSocket
-   * upgrades, so this is how a plugin opts into them. Returns an empty object when the plugin
-   * exports no handlers.
+   * `/_expo/plugins/<name>/<route>` with exact-path matching. For dynamic routes, the fetch API
+   * based `requestHandler` can commit upgrades itself by returning `context.upgrade(hooks)`.
+   * Returns an empty object when the plugin exports no handlers.
    */
   async getWebSocketServersAsync(): Promise<Record<string, WebSocketServer>> {
     if (!this.plugin.serverEntryPoint) {
