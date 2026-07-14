@@ -3,7 +3,20 @@ import WebKit
 
 public class TestModule: Module {
   public func definition() -> ModuleDefinition {
-    Events("event1", "event2", "event3")
+    Events(
+      "event1",
+      "event2",
+      "event3",
+      globalEventName,
+      privateGlobalEventName,
+      EventNames.staticLetEvent,
+      EventNames.staticVarEvent,
+      EventStructNamespace.structEvent,
+      EventClassNamespace.classEvent,
+      OuterNamespace.InnerNamespace.nestedEvent,
+      // TODO(@HubertBer) Maybe fix this if this is needed, for now just document we don't support it
+      globalAssignedToGlobal
+    )
 
     Constant("StringConstant") { () -> Int in
       return "Swift constant 1283"
@@ -195,4 +208,28 @@ enum IntBackedEnum1: Int {
 
 enum IntBackedEnum2: Something, Int, SomethingElse {
   case simpleCase
+}
+// Global variable names
+let globalEventName = "onGlobalEvent"
+
+private let privateGlobalEventName = "onPrivateGlobalEvent"
+private let globalAssignedToGlobal = globalEventName
+
+enum EventNames {
+  static let staticLetEvent = "onStaticLetEvent"
+  static var staticVarEvent = "onStaticVarEvent"
+}
+
+struct EventStructNamespace {
+  static let structEvent = "onStructEvent"
+}
+
+class EventClassNamespace {
+  static let classEvent = "onClassEvent"
+}
+
+enum OuterNamespace {
+  enum InnerNamespace {
+    static let nestedEvent = "onNestedEvent"
+  }
 }

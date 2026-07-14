@@ -48,6 +48,8 @@ export enum IntBackedEnum1 {
 export enum IntBackedEnum2 {
   simpleCase
 }
+export enum EventNames {}
+export enum OuterNamespace {}
 
 export declare class TestClassWithConstructor {
   constructor(a: number);
@@ -69,6 +71,13 @@ export type TestModuleEvents = {
   event1: (...args: any[]) => void;
   event2: (...args: any[]) => void;
   event3: (...args: any[]) => void;
+  onClassEvent: (...args: any[]) => void;
+  onGlobalEvent: (...args: any[]) => void;
+  onNestedEvent: (...args: any[]) => void;
+  onPrivateGlobalEvent: (...args: any[]) => void;
+  onStaticLetEvent: (...args: any[]) => void;
+  onStaticVarEvent: (...args: any[]) => void;
+  onStructEvent: (...args: any[]) => void;
 };
 
 export interface ExpoWebViewProps extends ViewProps {
@@ -232,6 +241,8 @@ import {
   TestEnum,
   IntBackedEnum1,
   IntBackedEnum2,
+  EventNames,
+  OuterNamespace,
   TestRecord,
   TestRecord2,
   TestRecordClass,
@@ -338,6 +349,8 @@ export enum IntBackedEnum1 {
 export enum IntBackedEnum2 {
   simpleCase
 }
+export enum EventNames {}
+export enum OuterNamespace {}
 
 export declare class TestClassWithConstructor {
   constructor(a: number);
@@ -359,6 +372,13 @@ export type TestModuleEvents = {
   event1: (...args: any[]) => void;
   event2: (...args: any[]) => void;
   event3: (...args: any[]) => void;
+  onClassEvent: (...args: any[]) => void;
+  onGlobalEvent: (...args: any[]) => void;
+  onNestedEvent: (...args: any[]) => void;
+  onPrivateGlobalEvent: (...args: any[]) => void;
+  onStaticLetEvent: (...args: any[]) => void;
+  onStaticVarEvent: (...args: any[]) => void;
+  onStructEvent: (...args: any[]) => void;
 };
 
 export interface ExpoWebViewProps extends ViewProps {
@@ -444,6 +464,10 @@ export enum IntBackedEnum1 {
 export enum IntBackedEnum2 {
     simpleCase
 }
+export enum EventNames {
+}
+export enum OuterNamespace {
+}
 
 
 export function SimpleFunction(a: number, b: number): number { return 0; }
@@ -524,6 +548,12 @@ export var IntBackedEnum2;
 (function (IntBackedEnum2) {
     IntBackedEnum2[IntBackedEnum2["simpleCase"] = 0] = "simpleCase";
 })(IntBackedEnum2 || (IntBackedEnum2 = {}));
+export var EventNames;
+(function (EventNames) {
+})(EventNames || (EventNames = {}));
+export var OuterNamespace;
+(function (OuterNamespace) {
+})(OuterNamespace || (OuterNamespace = {}));
 export function SimpleFunction(a, b) { return 0; }
 export function TestUntypedFunction() { return ""; }
 export function TestUnicodeCharacters() { return; }
@@ -598,6 +628,8 @@ export enum IntBackedEnum1 {
 export enum IntBackedEnum2 {
   simpleCase
 }
+export enum EventNames {}
+export enum OuterNamespace {}
 
 export declare class TestClassWithConstructor {
   constructor(a: number);
@@ -619,6 +651,13 @@ export type TestModuleEvents = {
   event1: (...args: any[]) => void;
   event2: (...args: any[]) => void;
   event3: (...args: any[]) => void;
+  onClassEvent: (...args: any[]) => void;
+  onGlobalEvent: (...args: any[]) => void;
+  onNestedEvent: (...args: any[]) => void;
+  onPrivateGlobalEvent: (...args: any[]) => void;
+  onStaticLetEvent: (...args: any[]) => void;
+  onStaticVarEvent: (...args: any[]) => void;
+  onStructEvent: (...args: any[]) => void;
 };
 
 export declare class TestModuleNativeModuleType extends NativeModule<TestModuleEvents> {
@@ -696,8 +735,10 @@ export default _default;
 exports[`Same type information 1`] = `
 {
   "declaredTypeIdentifiersList": [
+    "EventNames",
     "IntBackedEnum1",
     "IntBackedEnum2",
+    "OuterNamespace",
     "TestBasicClass",
     "TestClassWithConstructor",
     "TestEmptyClass",
@@ -734,6 +775,16 @@ exports[`Same type information 1`] = `
       "name": "IntBackedEnum2",
       "stringBacked": false,
     },
+    {
+      "cases": [],
+      "name": "EventNames",
+      "stringBacked": true,
+    },
+    {
+      "cases": [],
+      "name": "OuterNamespace",
+      "stringBacked": true,
+    },
   ],
   "inferredTypeParametersCountList": [
     [
@@ -769,7 +820,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 2637,
+          "definitionOffset": 2915,
           "isStatic": false,
           "name": "TestSimpleAsyncFunction",
           "parameters": [],
@@ -798,7 +849,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 2840,
+          "definitionOffset": 3118,
           "isStatic": false,
           "name": "TestUnderscore",
           "parameters": [],
@@ -821,9 +872,9 @@ exports[`Same type information 1`] = `
                 },
               },
             ],
-            "definitionOffset": 2966,
+            "definitionOffset": 3244,
           },
-          "definitionOffset": 2920,
+          "definitionOffset": 3198,
           "methods": [],
           "name": "TestClassWithConstructor",
           "properties": [],
@@ -840,7 +891,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3508,
+              "definitionOffset": 3786,
               "isStatic": false,
               "name": "TestAsyncFunction",
               "parameters": [],
@@ -859,7 +910,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3606,
+              "definitionOffset": 3884,
               "isStatic": true,
               "name": "TestStaticAsyncFunction",
               "parameters": [],
@@ -905,13 +956,13 @@ exports[`Same type information 1`] = `
                 },
               },
             ],
-            "definitionOffset": 3068,
+            "definitionOffset": 3346,
           },
-          "definitionOffset": 3032,
+          "definitionOffset": 3310,
           "methods": [
             {
               "arguments": [],
-              "definitionOffset": 3693,
+              "definitionOffset": 3971,
               "isStatic": true,
               "name": "TestStaticFunction",
               "parameters": [],
@@ -924,7 +975,7 @@ exports[`Same type information 1`] = `
           "name": "TestBasicClass",
           "properties": [
             {
-              "definitionOffset": 3172,
+              "definitionOffset": 3450,
               "name": "TestIntProperty",
               "type": {
                 "kind": 0,
@@ -932,7 +983,7 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 3240,
+              "definitionOffset": 3518,
               "name": "TestEitherProperty",
               "type": {
                 "kind": 2,
@@ -952,7 +1003,7 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 3327,
+              "definitionOffset": 3605,
               "name": "TestEnumProperty",
               "type": {
                 "kind": 1,
@@ -960,7 +1011,7 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 3411,
+              "definitionOffset": 3689,
               "name": "TestRecordProperty",
               "type": {
                 "kind": 1,
@@ -972,7 +1023,7 @@ exports[`Same type information 1`] = `
         {
           "asyncMethods": [],
           "constructor": null,
-          "definitionOffset": 3791,
+          "definitionOffset": 4069,
           "methods": [],
           "name": "TestEmptyClass",
           "properties": [],
@@ -980,7 +1031,7 @@ exports[`Same type information 1`] = `
       ],
       "constants": [
         {
-          "definitionOffset": 167,
+          "definitionOffset": 437,
           "name": "StringConstant",
           "type": {
             "kind": 0,
@@ -988,7 +1039,7 @@ exports[`Same type information 1`] = `
           },
         },
         {
-          "definitionOffset": 338,
+          "definitionOffset": 608,
           "name": "IntConstant",
           "type": {
             "kind": 0,
@@ -996,7 +1047,7 @@ exports[`Same type information 1`] = `
           },
         },
         {
-          "definitionOffset": 488,
+          "definitionOffset": 758,
           "name": "UntypedConstant",
           "type": {
             "kind": 0,
@@ -1010,6 +1061,13 @@ exports[`Same type information 1`] = `
         "event1",
         "event2",
         "event3",
+        "onClassEvent",
+        "onGlobalEvent",
+        "onNestedEvent",
+        "onPrivateGlobalEvent",
+        "onStaticLetEvent",
+        "onStaticVarEvent",
+        "onStructEvent",
       ],
       "functions": [
         {
@@ -1029,7 +1087,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 534,
+          "definitionOffset": 804,
           "isStatic": false,
           "name": "SimpleFunction",
           "parameters": [],
@@ -1040,7 +1098,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 710,
+          "definitionOffset": 980,
           "isStatic": false,
           "name": "TestUntypedFunction",
           "parameters": [],
@@ -1051,7 +1109,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 866,
+          "definitionOffset": 1136,
           "isStatic": false,
           "name": "TestUnicodeCharacters",
           "parameters": [],
@@ -1062,7 +1120,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 1068,
+          "definitionOffset": 1338,
           "isStatic": false,
           "name": "TestUntypedFunction2",
           "parameters": [],
@@ -1073,7 +1131,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 1244,
+          "definitionOffset": 1514,
           "isStatic": false,
           "name": "TestUntypedFunction3",
           "parameters": [],
@@ -1095,7 +1153,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1422,
+          "definitionOffset": 1696,
           "isStatic": false,
           "name": "TestArrays",
           "parameters": [],
@@ -1154,7 +1212,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1593,
+          "definitionOffset": 1871,
           "isStatic": false,
           "name": "TestDictionaries",
           "parameters": [],
@@ -1245,7 +1303,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1802,
+          "definitionOffset": 2080,
           "isStatic": false,
           "name": "TestParametrizedTypes",
           "parameters": [],
@@ -1273,7 +1331,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 2058,
+          "definitionOffset": 2336,
           "isStatic": false,
           "name": "TestTypeCombinations",
           "parameters": [],
@@ -1311,7 +1369,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 2271,
+          "definitionOffset": 2549,
           "isStatic": false,
           "name": "TestFunctionReturningRecord",
           "parameters": [],
@@ -1322,7 +1380,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 2448,
+          "definitionOffset": 2726,
           "isStatic": false,
           "name": "TestFunctionReturningEnum",
           "parameters": [],
@@ -1341,7 +1399,7 @@ exports[`Same type information 1`] = `
           "classes": [],
           "constants": [],
           "constructor": null,
-          "definitionOffset": 3854,
+          "definitionOffset": 4132,
           "events": [
             "onEvent1",
             "onEvent2",
@@ -1367,7 +1425,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3900,
+              "definitionOffset": 4178,
               "name": "url",
             },
             {
@@ -1387,7 +1445,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 4084,
+              "definitionOffset": 4362,
               "name": "testRecord",
             },
             {
@@ -1407,7 +1465,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 4155,
+              "definitionOffset": 4433,
               "name": "testRecord2",
             },
             {
@@ -1427,7 +1485,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 4229,
+              "definitionOffset": 4507,
               "name": "testRecordClass",
             },
             {
@@ -1447,7 +1505,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 4315,
+              "definitionOffset": 4593,
               "name": "testEnum",
             },
           ],
@@ -1576,6 +1634,17 @@ exports[`Same type information 1`] = `
   ],
   "typeIdentifierDefinitionList": [
     [
+      "EventNames",
+      {
+        "definition": {
+          "cases": [],
+          "name": "EventNames",
+          "stringBacked": true,
+        },
+        "kind": 1,
+      },
+    ],
+    [
       "IntBackedEnum1",
       {
         "definition": {
@@ -1599,6 +1668,17 @@ exports[`Same type information 1`] = `
           ],
           "name": "IntBackedEnum2",
           "stringBacked": false,
+        },
+        "kind": 1,
+      },
+    ],
+    [
+      "OuterNamespace",
+      {
+        "definition": {
+          "cases": [],
+          "name": "OuterNamespace",
+          "stringBacked": true,
         },
         "kind": 1,
       },
