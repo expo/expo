@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIosInlineModulesClassNames = getIosInlineModulesClassNames;
 exports.isTargetInInlineModulesTargets = isTargetInInlineModulesTargets;
 const inlineModules_1 = require("./inlineModules");
-async function getIosInlineModulesClassNames(watchedDirectories, appRoot) {
-    return (await (0, inlineModules_1.getMirrorStateObject)(watchedDirectories, appRoot)).swiftModuleClassNames.map((className) => {
+async function getIosInlineModulesClassNames(options) {
+    const stateObject = await (0, inlineModules_1.getMirrorStateObject)(options);
+    return stateObject.swiftModuleClassNames.map((className) => {
         return {
             class: className,
             name: null,

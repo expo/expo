@@ -174,9 +174,7 @@ async function generatePackageListFileContentAsync(
     .filter(Boolean);
 
   if (isTargetInInlineModulesTargets(params)) {
-    modulesClassNames = modulesClassNames.concat(
-      await getIosInlineModulesClassNames(params.watchedDirectories, params.appRoot)
-    );
+    modulesClassNames = modulesClassNames.concat(await getIosInlineModulesClassNames(params));
   }
 
   const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
