@@ -12,25 +12,6 @@ if (boolish('EXPO_DEBUG', false) || /(^|[,\s])expo(:|\*|$)/.test(process.env.DEB
   process.env.LOG_DEBUG ??= '*';
 }
 
-// Setup event logger output
-// NOTE: Done before any console output
-installEventLogger();
-
-// Check Node.js version and issue a loud warning if it's too outdated
-// This is sent to stderr (console.error) so it doesn't interfere with programmatic commands
-const NODE_MIN = [22, 13, 0] as const;
-const nodeVersion = process.version?.slice(1).split('.', 3).map(Number);
-if (
-  nodeVersion[0]! < NODE_MIN[0] ||
-  (nodeVersion[0] === NODE_MIN[0] && nodeVersion[1]! < NODE_MIN[1])
-) {
-  console.error(
-    chalk.red`{bold Node.js (${process.version}) is outdated and unsupported.}` +
-      chalk.red` Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n` +
-      chalk.red`Go to: https://nodejs.org/en/download\n`
-  );
-}
-
 const defaultCmd = 'start';
 
 export type Command = (argv?: string[]) => void;
@@ -81,6 +62,22 @@ const args = arg(
   }
 );
 
+// Check if we are running `npx expo <subcommand>` or `npx expo`
+const isSubcommand = !!(args._[0] && commands[args._[0]]);
+const command = isSubcommand ? args._[0]! : defaultCmd;
+const commandArgs = isSubcommand ? args._.slice(1) : args._;
+
+// Setup event logger output before any console output. This single install handles explicit
+// LOG_EVENTS targets, parent IPC, and bounded command sessions in 2g's precedence order.
+installEventLogger({
+  command: args['--version']
+    ? 'expo --version'
+    : args['--help'] && !isSubcommand
+      ? 'expo --help'
+      : `expo ${command}`,
+  version: process.env.__EXPO_VERSION,
+});
+
 if (args['--version']) {
   // Version is added in the build script.
   console.log(process.env.__EXPO_VERSION);
@@ -91,8 +88,20 @@ if (args['--non-interactive']) {
   console.warn(chalk.yellow`  {bold --non-interactive} is not supported, use {bold $CI=1} instead`);
 }
 
-// Check if we are running `npx expo <subcommand>` or `npx expo`
-const isSubcommand = !!(args._[0] && commands[args._[0]]);
+// Check Node.js version and issue a loud warning if it's too outdated
+// This is sent to stderr (console.error) so it doesn't interfere with programmatic commands
+const NODE_MIN = [22, 13, 0] as const;
+const nodeVersion = process.version?.slice(1).split('.', 3).map(Number);
+if (
+  nodeVersion[0]! < NODE_MIN[0] ||
+  (nodeVersion[0] === NODE_MIN[0] && nodeVersion[1]! < NODE_MIN[1])
+) {
+  console.error(
+    chalk.red`{bold Node.js (${process.version}) is outdated and unsupported.}` +
+      chalk.red` Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n` +
+      chalk.red`Go to: https://nodejs.org/en/download\n`
+  );
+}
 
 // Handle `--help` flag
 if (!isSubcommand && args['--help']) {
@@ -211,9 +220,6 @@ if (!isSubcommand) {
     process.exit(1);
   }
 }
-
-const command = isSubcommand ? args._[0]! : defaultCmd;
-const commandArgs = isSubcommand ? args._.slice(1) : args._;
 
 // Push the help flag to the subcommand args.
 if (args['--help']) {
