@@ -87,12 +87,11 @@ async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
     '/',
     getPlatformBundlers('/', { web: { bundler: 'metro' } })
   );
-  (devServer as unknown as { getAvailablePortAsync: () => Promise<number> }).getAvailablePortAsync =
-    jest.fn(() => Promise.resolve(3000));
   // Tested in the superclass
   devServer['postStartAsync'] = jest.fn(async () => {});
   devServer['startImplementationAsync'] = jest.fn(devServer['startImplementationAsync']);
-  await devServer.startAsync({ location: {}, ...options });
+  // The port is always resolved by the caller before the dev server starts.
+  await devServer.startAsync({ location: {}, port: 3000, ...options });
   return devServer;
 }
 
