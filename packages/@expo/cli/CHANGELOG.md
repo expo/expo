@@ -30,6 +30,7 @@
 - Include external CSS imports in the production server manifest ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
 - Fall back to AGP's `output-metadata.json` when resolving APK filenames to support projects that override `outputFileName` in `applicationVariants` ([#47083](https://github.com/expo/expo/pull/47083) by [@NikhilVashistha](https://github.com/NikhilVashistha))
 - Surface the real `xcodebuild` error on `run:ios` failure instead of printing "0 error(s)" when the build formatter parsed none. ([#47748](https://github.com/expo/expo/pull/47748) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Reset the Metro cache when bundling production apps in local EAS builds. ([#47769](https://github.com/expo/expo/pull/47769) by [@tjzel](https://github.com/tjzel))
 
 ### 💡 Others
 
