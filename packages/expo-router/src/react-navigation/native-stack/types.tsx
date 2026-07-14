@@ -1204,6 +1204,23 @@ export type NativeStackHeaderItem =
   | NativeStackHeaderItemSpacing
   | NativeStackHeaderItemCustom;
 
+/**
+ * The navigator-level state consumed by `NativeStackView`.
+ *
+ * Routes after `index` are preloaded and rendered natively-detached.
+ */
+export type NativeStackViewState = {
+  index: number;
+  routes: { key: string; name: string; params?: object }[];
+};
+
+export type NativeStackEmit = (
+  event:
+    | { type: 'transitionStart' | 'transitionEnd'; data: { closing: boolean }; target: string }
+    | { type: 'gestureCancel'; target: string }
+    | { type: 'sheetDetentChange'; data: { index: number; stable: boolean }; target: string }
+) => void;
+
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<
   ParamListBase,
   string | undefined,

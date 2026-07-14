@@ -26,6 +26,8 @@ import {
   type NativeStackNavigationProp,
   NativeStackView,
   type NativeStackNavigatorProps,
+  usePopAction,
+  useProjectedStack,
 } from '../../react-navigation/native-stack';
 import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
 import { DescriptorsContext } from './descriptors-context';
@@ -98,12 +100,17 @@ function NativeStackNavigator({
   );
 
   // START FORK
+  // Project preloaded routes as regular routes after `index`, with descriptors covering them.
+  // The view then treats any route positioned after the focused one as preloaded.
+  const { projectedState, projectedDescriptors } = useProjectedStack(state, descriptors, describe);
+
   const { computedState, computedDescriptors, navigationWrapper } = usePreviewTransition(
-    state,
+    projectedState,
     navigation,
-    descriptors,
-    describe
+    projectedDescriptors
   );
+
+  const pop = usePopAction(navigation, state.key);
 
   // Map internal gesture option to React Navigation's gestureEnabled option
   // This allows Expo Router to override gesture behavior without affecting user settings
@@ -154,13 +161,13 @@ function NativeStackNavigator({
             {...rest}
             // START FORK
             state={computedState}
-            navigation={navigationWrapper}
             descriptors={mergedDescriptors}
+            emit={navigationWrapper.emit}
+            pop={pop}
             // state={state}
             // navigation={navigation}
             // descriptors={descriptors}
             // END FORK
-            describe={describe}
           />
         </CompositionContext>
       </NavigationContent>
