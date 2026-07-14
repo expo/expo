@@ -176,7 +176,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/develop/development-builds/create-a-build/':
     '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
   '/develop/development-builds/expo-go-to-dev-build/':
-    '/develop/development-builds/introduction/#switch-from-expo-go-to-a-development-build',
+    '/develop/development-builds/introduction/#build-locally',
   '/development/create-development-builds/':
     '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
   '/development/use-development-builds/': '/develop/development-builds/use-development-builds/',

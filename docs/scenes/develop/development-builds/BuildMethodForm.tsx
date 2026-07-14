@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { EasCliLogo } from './EasCliLogo';
 import { MethodSelectCard } from './MethodSelectCard';
 
-type BuildMethod = 'expo-go-to-dev-build' | 'build-with-eas' | 'eas-cli-local';
+type BuildMethod = 'build-locally' | 'build-with-eas' | 'eas-cli-local';
 
 export function BuildMethodForm() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export function BuildMethodForm() {
         if (query.buildenv === 'build-with-eas' || query.buildenv === 'eas-cli-local') {
           setMethod(query.buildenv);
         } else {
-          setMethod('expo-go-to-dev-build');
+          setMethod('build-locally');
         }
       }
     },
@@ -30,7 +30,7 @@ export function BuildMethodForm() {
     setMethod(method);
 
     const newQuery = { ...query };
-    if (method === 'expo-go-to-dev-build') {
+    if (method === 'build-locally') {
       delete newQuery.buildenv;
     } else {
       newQuery.buildenv = method;
@@ -49,11 +49,11 @@ export function BuildMethodForm() {
     <div className="flex flex-wrap gap-4">
       <MethodSelectCard
         Icon={TerminalSquareIcon}
-        title="Switch from Expo Go"
+        title="Build locally"
         description="Compile with Android Studio and Xcode using Expo CLI. No Expo account needed."
-        isSelected={method === 'expo-go-to-dev-build'}
+        isSelected={method === 'build-locally'}
         onClick={() => {
-          onRadioChange('expo-go-to-dev-build');
+          onRadioChange('build-locally');
         }}
       />
       <MethodSelectCard

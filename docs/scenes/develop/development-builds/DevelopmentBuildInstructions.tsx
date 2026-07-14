@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 
+import BuildLocally from './instructions/build-locally.mdx';
 import EasCliLocal from './instructions/eas-cli-local.mdx';
 import Eas from './instructions/eas.mdx';
-import ExpoGoToDevBuild from './instructions/expo-go-to-dev-build.mdx';
 
 export function DevelopmentBuildInstructions() {
   const router = useRouter();
@@ -16,5 +16,5 @@ export function DevelopmentBuildInstructions() {
     return <EasCliLocal />;
   }
 
-  return <ExpoGoToDevBuild />;
+  return <BuildLocally />;
 }

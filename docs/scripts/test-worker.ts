@@ -320,15 +320,12 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
   });
   const goLocation = goRedirect.headers.get('location') ?? '';
 
-  if (
-    goRedirect.status !== 301 ||
-    !goLocation.includes('switch-from-expo-go-to-a-development-build')
-  ) {
+  if (goRedirect.status !== 301 || !goLocation.includes('#build-locally')) {
     throw new Error(
-      `Expected 301 to the introduction switch section, got: HTTP ${goRedirect.status} -> ${goLocation}`
+      `Expected 301 to the introduction build locally section, got: HTTP ${goRedirect.status} -> ${goLocation}`
     );
   }
-  console.log('✓ expo-go-to-dev-build redirects to the introduction switch section');
+  console.log('✓ expo-go-to-dev-build redirects to the introduction build locally section');
 
   const mdRedirect = await fetch(`${BASE_URL}/develop/development-builds/create-a-build.md`, {
     redirect: 'manual',

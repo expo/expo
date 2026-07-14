@@ -23,8 +23,8 @@ export const SCENE_PAGES: ScenePage[] = [
     endHeading: '## After you install the development build',
     variants: [
       {
-        heading: 'Switch from Expo Go to a development build',
-        mdxPath: `${DEV_BUILDS_INSTRUCTIONS_DIR}/expo-go-to-dev-build.mdx`,
+        heading: 'Build locally',
+        mdxPath: `${DEV_BUILDS_INSTRUCTIONS_DIR}/build-locally.mdx`,
       },
       {
         heading: 'Create a development build with EAS',

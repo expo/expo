@@ -110,8 +110,8 @@ test('redirects deleted create-a-build page to the introduction EAS path', () =>
   );
 });
 
-test('redirects deleted expo-go-to-dev-build page to the introduction switch section', () => {
+test('redirects deleted expo-go-to-dev-build page to the introduction build locally section', () => {
   expect(getRedirectPath('/develop/development-builds/expo-go-to-dev-build/')).toEqual(
-    '/develop/development-builds/introduction/#switch-from-expo-go-to-a-development-build'
+    '/develop/development-builds/introduction/#build-locally'
   );
 });
