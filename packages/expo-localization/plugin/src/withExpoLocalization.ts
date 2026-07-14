@@ -43,6 +43,36 @@ export function convertBcp47ToResourceQualifier(locale: string): string {
   return `b+${locale.replaceAll('-', '+')}`;
 }
 
+// Matches a `resourceConfigurations += [...]` entry (with its indentation) that this
+// plugin previously wrote to build.gradle.
+const RESOURCE_CONFIGURATIONS_REGEX = /^([ \t]*)resourceConfigurations\s*\+=\s*\[[^\]\n]*\]/m;
+
+/**
+ * Writes the `resourceConfigurations` entry into the `defaultConfig` block of a groovy
+ * build.gradle. If an entry from a previous prebuild already exists it is replaced in place,
+ * so repeated `expo prebuild` runs stay idempotent and reflect changes to `supportedLocales`
+ * instead of accumulating duplicate lines.
+ */
+export function setResourceConfigurations(
+  buildGradleContents: string,
+  resourceQualifiers: string[]
+): string {
+  const entry = `resourceConfigurations += [${resourceQualifiers
+    .map((qualifier) => `"${qualifier}"`)
+    .join(', ')}]`;
+  if (RESOURCE_CONFIGURATIONS_REGEX.test(buildGradleContents)) {
+    return buildGradleContents.replace(
+      RESOURCE_CONFIGURATIONS_REGEX,
+      (_match, indent) => `${indent}${entry}`
+    );
+  }
+  return AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
+    buildGradleContents,
+    'defaultConfig',
+    `    ${entry}\n    `
+  );
+}
+
 function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   const mergedConfig = { ...config.extra, ...data };
 
@@ -130,10 +160,9 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
         const resourceQualifiers = supportedLocales.map((locale) =>
           convertBcp47ToResourceQualifier(locale)
         );
-        config.modResults.contents = AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
+        config.modResults.contents = setResourceConfigurations(
           config.modResults.contents,
-          'defaultConfig',
-          `    resourceConfigurations += [${resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ')}]\n    `
+          resourceQualifiers
         );
       } else {
         WarningAggregator.addWarningAndroid(
