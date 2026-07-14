@@ -8,7 +8,7 @@ import FancyButton from './GestureHandler/FancyButton';
 export default function GestureHandlerListScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <BodyText style={styles.title}>LongPressGestureHandler, TapGestureHandler</BodyText>
+      <BodyText style={styles.title}>useLongPressGesture, useTapGesture</BodyText>
       <BodyText color="secondary" style={styles.paragraph}>
         You can single tap, double tap, or long press these buttons!
       </BodyText>
@@ -30,7 +30,7 @@ export default function GestureHandlerListScreen() {
 
       <View style={{ marginTop: 10 }} />
 
-      <BodyText style={styles.title}>PanGestureHandler, RotationGestureHandler</BodyText>
+      <BodyText style={styles.title}>usePanGesture, useRotationGesture</BodyText>
       <BodyText color="secondary" style={styles.paragraph}>
         You can drag it left and right, and also use two fingers to rotate it, and it'll bounce
         back!
