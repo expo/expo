@@ -1,5 +1,6 @@
 import type { CodeFrame, MetroStackFrame } from '../Data/Types';
 import { fetchTextAsync } from '../fetchHelper';
+import { getDevServer } from './getDevServer';
 
 export type SymbolicatedStackTrace = {
   stack: MetroStackFrame[];
@@ -15,7 +16,6 @@ export function getBaseUrl() {
   }
 
   if (process.env.EXPO_OS !== 'web') {
-    const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
     const devServer = getDevServer();
     if (!devServer.bundleLoadedFromServer) {
       throw new Error('Cannot create devtools websocket connections in embedded environments.');
