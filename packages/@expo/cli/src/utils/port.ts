@@ -159,19 +159,22 @@ export async function resolvePortAsync(
     fallbackPort?: number;
   } = {}
 ): Promise<number | null> {
+  // NOTE(@kitten): We treat `--port` and `RCT_METRO_PORT` as the fixed preferred ports
+  const requestedMetroPort = env.RCT_METRO_PORT;
+  const preferredPort = requestedMetroPort || fallbackPort || 8081;
+
   let port: number;
   if (typeof defaultPort === 'string') {
     port = parseInt(defaultPort, 10);
   } else if (typeof defaultPort === 'number') {
     port = defaultPort;
   } else {
-    port = env.RCT_METRO_PORT || fallbackPort || 8081;
+    port = preferredPort;
   }
 
-  // Port 0 means "pick any available port" — scan from the fallback port without prompting.
+  // Port 0 means "pick any available port"
   if (port === 0) {
-    const scanFrom = env.RCT_METRO_PORT || fallbackPort || 8081;
-    const resolvedPort = await getFreePortAsync(scanFrom);
+    const resolvedPort = await getFreePortAsync(preferredPort);
     process.env.RCT_METRO_PORT = String(resolvedPort);
     return resolvedPort;
   }
@@ -180,7 +183,7 @@ export async function resolvePortAsync(
   const resolvedPort = await choosePortAsync(projectRoot, {
     defaultPort: port,
     reuseExistingPort,
-    explicitPort: defaultPort != null || !!env.RCT_METRO_PORT,
+    explicitPort: defaultPort != null || !!requestedMetroPort,
   });
   if (resolvedPort == null) {
     Log.log('\u203A Skipping dev server');
