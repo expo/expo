@@ -1,4 +1,8 @@
-import type { createStandardNavigator, NavigatorArgs } from 'standard-navigation';
+import type {
+  createStandardNavigator,
+  NavigatorArgs,
+  NavigatorDescriptor,
+} from 'standard-navigation';
 
 import type {
   DefaultNavigatorOptions,
@@ -7,6 +11,7 @@ import type {
   NavigationHelpers,
   NavigationState,
   ParamListBase,
+  RouteSource,
 } from '../react-navigation/native';
 import type { GoBackAction, NavigateAction } from '../react-navigation/routers/CommonActions';
 
@@ -85,6 +90,19 @@ export type IntegrateWithRouterOptions<
    */
   useOnlyUserDefinedScreens?: boolean;
 } & CreatePropsOption<State, CreateProps>;
+
+/**
+ * A standard-navigation descriptor extended with Expo Router route information.
+ */
+export interface StandardNavigatorDescriptor<
+  NavigatorOptions extends object,
+> extends NavigatorDescriptor<NavigatorOptions> {
+  /**
+   * Indicates whether Expo Router received the route from a layout declaration or inferred it
+   * from the filesystem.
+   */
+  routeSource?: RouteSource;
+}
 
 export type StandardNavigatorContentProps<
   NavigatorOptions extends object,

@@ -562,6 +562,12 @@ export type ScreenLayoutArgs<
   children: React.ReactElement;
 };
 
+/**
+ * Whether a screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+ * or inferred from the filesystem.
+ */
+export type RouteSource = 'layout' | 'filesystem';
+
 export type Descriptor<
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
@@ -587,6 +593,13 @@ export type Descriptor<
    * Navigation object for the screen
    */
   navigation: Navigation;
+
+  /**
+   * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+   * or inferred from the filesystem. Set by Expo Router; `undefined` for screens
+   * created outside Expo Router's screen pipeline.
+   */
+  routeSource?: RouteSource;
 };
 
 export type ScreenListeners<
@@ -702,6 +715,12 @@ export type RouteConfigProps<
    * Initial params object for the route.
    */
   initialParams?: Partial<ParamList[RouteName]>;
+
+  /**
+   * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+   * or inferred from the filesystem.
+   */
+  routeSource?: RouteSource;
 };
 
 export type RouteConfig<
