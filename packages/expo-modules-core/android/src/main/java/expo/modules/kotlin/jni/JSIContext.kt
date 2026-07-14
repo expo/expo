@@ -20,6 +20,18 @@ class JSIContext @DoNotStrip internal constructor(
   @DoNotStrip private val mHybridData: HybridData,
   val runtimeHolder: WeakReference<Runtime>
 ) : Destructible, AutoCloseable {
+  @DoNotStrip
+  private var jsHeapAccessExecutor: JSHeapAccessExecutor? = null
+
+  @DoNotStrip
+  internal fun setJSHeapAccessExecutor(executor: JSHeapAccessExecutor?) {
+    jsHeapAccessExecutor = executor
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun getJSHeapAccessExecutor(): JSHeapAccessExecutor? = jsHeapAccessExecutor
+
   /**
    * Evaluates given JavaScript source code.
    * @throws JavaScriptEvaluateException if the input format is unknown or evaluation causes an error
