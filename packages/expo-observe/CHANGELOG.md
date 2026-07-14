@@ -8,9 +8,11 @@
 
 - Expose configure event ([#47388](https://github.com/expo/expo/pull/47388) by [@Ubax](https://github.com/Ubax))
 - Add `filteredParams` configuration option to navigation integrations ([#47488](https://github.com/expo/expo/pull/47488) by [@Ubax](https://github.com/Ubax))
-- Fix non-serializable route params issue ([#47497](https://github.com/expo/expo/pull/47497) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
+
+- Fix non-serializable route params issue ([#47497](https://github.com/expo/expo/pull/47497) by [@Ubax](https://github.com/Ubax))
+- [Android] Fix `logEvent` not being forwarded to the AppMetrics module through the native module proxy. ([@Ubax](https://github.com/Ubax)) ([#47766](https://github.com/expo/expo/pull/47766) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
