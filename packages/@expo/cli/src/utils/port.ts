@@ -7,7 +7,7 @@ import { testPortAsync, freePortAsync } from './freeport';
 import { isInteractive } from './interactive';
 
 /** Get a free port or assert a CLI command error. */
-export async function getFreePortAsync(rangeStart: number): Promise<number> {
+async function getFreePortAsync(rangeStart: number): Promise<number> {
   const port = await freePortAsync(rangeStart, [null, 'localhost']);
   if (!port) {
     throw new CommandError('NO_PORT_FOUND', 'No available port found');
