@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
+- Apply `headers` when serving static exports with `expo serve` ([#47780](https://github.com/expo/expo/pull/47780) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
