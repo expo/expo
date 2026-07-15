@@ -43,34 +43,42 @@ export interface StandardNavigatorCreatePropsFactoryDeps<State extends Navigatio
   navigation: NavigationHelpers<ParamListBase>;
 }
 
-export interface IntegrateWithRouterOptions<
+/**
+ * Allows router-specific information to be exposed via navigator props alongside the standard
+ * `state` and `actions`.
+ *
+ * Receives the raw Expo Router `state` and `dispatch`. Both are internal and may have small
+ * breaking changes between releases, so prefer the `state` and `actions` passed to
+ * `NavigatorContent` when they suffice.
+ *
+ * @example
+ * ```tsx
+ * createProps: ({ state, dispatch }) => ({
+ *   activeRouteKey: state.routes[state.index].key,
+ *   preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
+ * })
+ * ```
+ */
+type CreatePropsFn<State extends NavigationState, CreateProps extends object> = (
+  deps: StandardNavigatorCreatePropsFactoryDeps<State>
+) => CreateProps;
+
+type CreatePropsOption<State extends NavigationState, CreateProps extends object> = [
+  keyof CreateProps,
+] extends [never]
+  ? { createProps?: CreatePropsFn<State, CreateProps> }
+  : { createProps: CreatePropsFn<State, CreateProps> };
+
+export type IntegrateWithRouterOptions<
   State extends NavigationState = NavigationState,
-  NavigatorProps extends object = object,
-> {
+  CreateProps extends object = object,
+> = {
   /**
    * When `true`, only screens explicitly declared as `<Navigator.Screen>` children are rendered;
    * routes discovered from the filesystem that were not declared are ignored.
    */
   useOnlyUserDefinedScreens?: boolean;
-
-  /**
-   * Allows router-specific information to be exposed via navigator props alongside the standard
-   * `state` and `actions`.
-   *
-   * Receives the raw Expo Router `state` and `dispatch`. Both are internal and may have small
-   * breaking changes between releases, so prefer the `state` and `actions` passed to
-   * `NavigatorContent` when they suffice.
-   *
-   * @example
-   * ```tsx
-   * createProps: ({ state, dispatch }) => ({
-   *   activeRouteKey: state.routes[state.index].key,
-   *   preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
-   * })
-   * ```
-   */
-  createProps?: (deps: StandardNavigatorCreatePropsFactoryDeps<State>) => Partial<NavigatorProps>;
-}
+} & CreatePropsOption<State, CreateProps>;
 
 export type StandardNavigatorContentProps<
   NavigatorOptions extends object,

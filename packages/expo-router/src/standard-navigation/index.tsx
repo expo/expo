@@ -36,6 +36,20 @@ export type {
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
 
+type NavigatorPropsWithCreateProps<NavigatorProps extends object, CreateProps extends object> = [
+  keyof CreateProps,
+] extends [never]
+  ? NavigatorProps
+  : NavigatorProps & CreateProps;
+
+// A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
+// required otherwise; a normal optional parameter would allow it in both cases.
+type IntegrateWithRouterOptionsTuple<State extends NavigationState, CreateProps extends object> = [
+  keyof CreateProps,
+] extends [never]
+  ? [options?: IntegrateWithRouterOptions<State, CreateProps>]
+  : [options: IntegrateWithRouterOptions<State, CreateProps>];
+
 /**
  * > **warning** This API is unstable and may change between minor releases.
  *
@@ -61,23 +75,35 @@ export function unstable_createStandardRouterNavigator<
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
+  CreateProps extends object = object,
 >(
   NavigatorContent: ComponentType<
-    NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps>
+    NavigatorContentProps<
+      NavigatorOptions,
+      EventMap,
+      NavigatorPropsWithCreateProps<NavigatorProps, CreateProps>
+    >
   >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  options?: IntegrateWithRouterOptions<State, NavigatorProps>
+  // A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
+  // required otherwise; a normal optional parameter would allow it in both cases.
+  ...[options]: IntegrateWithRouterOptionsTuple<State, CreateProps>
 ) {
-  const navigator = createStandardNavigator<NavigatorOptions, EventMap, NavigatorProps>(
-    NavigatorContent
-  );
+  const navigator = createStandardNavigator<
+    NavigatorOptions,
+    EventMap,
+    NavigatorPropsWithCreateProps<NavigatorProps, CreateProps>
+  >(NavigatorContent);
+  // `options` can only be undefined when `CreateProps` is empty, where it is optional in the
+  // forwarded call. TypeScript cannot narrow that unresolved conditional here.
   return unstable_integrateWithRouter<
     NavigatorOptions,
     State,
     EventMap,
     NavigatorProps,
-    RouterOptions
-  >(navigator, router, options);
+    RouterOptions,
+    CreateProps
+  >(navigator, router, options!);
 }
 
 /**
@@ -106,13 +132,24 @@ export function unstable_integrateWithRouter<
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
+  CreateProps extends object = object,
 >(
-  navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps>,
+  navigator: StandardNavigator<
+    NavigatorOptions,
+    EventMap,
+    NavigatorPropsWithCreateProps<NavigatorProps, CreateProps>
+  >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  options?: IntegrateWithRouterOptions<State, NavigatorProps>
+  // A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
+  // required otherwise; a normal optional parameter would allow it in both cases.
+  ...[options]: IntegrateWithRouterOptionsTuple<State, CreateProps>
 ) {
   assertStandardNavigator(navigator);
-  const { NavigatorContent } = navigator;
+  const { NavigatorContent } = navigator as StandardNavigator<
+    NavigatorOptions,
+    EventMap,
+    NavigatorProps & CreateProps
+  >;
 
   type NavPropsType = StandardRouterNavigatorProps<
     State,
@@ -140,7 +177,7 @@ export function unstable_integrateWithRouter<
 
     const { dispatch } = navigation;
 
-    const derivedProps = useMemo<Partial<NavigatorProps>>(
+    const derivedProps = useMemo<Partial<CreateProps>>(
       () => options?.createProps?.({ state, dispatch, navigation }) ?? {},
       [state, dispatch, navigation, options]
     );
@@ -162,7 +199,7 @@ export function unstable_integrateWithRouter<
           // its type, so the TS contract keeps users from reading router options off `NavigatorContent`
           // in the common case, even though they are physically present on the object.
           {...(extraProps as unknown as NavigatorProps)}
-          {...derivedProps}
+          {...(derivedProps as CreateProps)}
           {...standardArgs}
         />
       </NavigationContent>
