@@ -43,8 +43,7 @@ EAS Submit uploads your **.ipa** to App Store Connect, where it becomes availabl
 | Avoid manual uploads through Play Console, App Store Connect, or Transporter                                                                               | <YesIcon />    |
 | Submit builds from [CI or automated workflows](/eas/workflows/pre-packaged-jobs/#submit)                                                                   | <YesIcon />    |
 | Standardize release processes via [eas.json](/eas/json/) config                                                                                            | <YesIcon />    |
-| Testing locally and not ready for a store submission                                                                                                       | <NoIcon />     |
-| Do not have a store listing configured yet for Google Play Store                                                                                           | <NoIcon />     |
+| Testing during development                                                                                                                                 | <NoIcon />     |
 
 ## Choose a submission path
 
@@ -96,7 +95,7 @@ For local builds, use the `--path` flag to specify the binary:
   ]}
 />
 
-The binary must be correctly signed. For Android, this means a release keystore. For iOS, this means a distribution certificate and provisioning profile.
+The binary must be correctly signed. For Android, this means an upload keystore. For iOS, this means a distribution certificate and provisioning profile.
 
 </Collapsible>
 
