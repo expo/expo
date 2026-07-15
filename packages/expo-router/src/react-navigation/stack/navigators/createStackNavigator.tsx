@@ -31,6 +31,7 @@ function StackNavigator({
   screenListeners,
   screenOptions,
   screenLayout,
+  UNSTABLE_routeNamesAreStatic,
   UNSTABLE_router,
   ...rest
 }: StackNavigatorProps) {
@@ -50,6 +51,7 @@ function StackNavigator({
     screenListeners,
     screenOptions,
     screenLayout,
+    UNSTABLE_routeNamesAreStatic,
     UNSTABLE_router,
   });
 

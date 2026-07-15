@@ -40,6 +40,9 @@ export type DefaultNavigatorOptions<
    */
   children: React.ReactNode;
 
+  /** @internal */
+  UNSTABLE_routeNamesAreStatic?: boolean;
+
   /**
    * Layout for the navigator.
    * Useful for wrapping with a component with access to navigator's state and options.

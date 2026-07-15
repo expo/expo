@@ -874,6 +874,57 @@ test('reconciles route names when no previous route survives', () => {
   });
 });
 
+test('reconciles navigationKey changes for static route names', () => {
+  const getStateForRouteNamesChange = jest.fn(MockRouter({}).getStateForRouteNamesChange);
+  const TestRouter = () => ({ ...MockRouter({}), getStateForRouteNamesChange });
+  const TestNavigator = (props: any): any => {
+    useNavigationBuilder(TestRouter, props);
+    return null;
+  };
+
+  const root = render(
+    <BaseNavigationContainer>
+      <TestNavigator UNSTABLE_routeNamesAreStatic>
+        <Screen name="foo" navigationKey="a" component={React.Fragment} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  getStateForRouteNamesChange.mockClear();
+  root.update(
+    <BaseNavigationContainer>
+      <TestNavigator UNSTABLE_routeNamesAreStatic>
+        <Screen name="foo" navigationKey="b" component={React.Fragment} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(getStateForRouteNamesChange).toHaveBeenCalledWith(
+    expect.anything(),
+    expect.objectContaining({ routeKeyChanges: ['foo'] })
+  );
+});
+
+test('does not pass the static route-name flag to the router factory', () => {
+  const createRouter = jest.fn(MockRouter);
+  const TestNavigator = (props: any): any => {
+    useNavigationBuilder(createRouter, props);
+    return null;
+  };
+
+  render(
+    <BaseNavigationContainer>
+      <TestNavigator UNSTABLE_routeNamesAreStatic>
+        <Screen name="foo" component={React.Fragment} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(createRouter).toHaveBeenCalledWith(
+    expect.not.objectContaining({ UNSTABLE_routeNamesAreStatic: expect.anything() })
+  );
+});
+
 test('navigates to nested child in a navigator', () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
