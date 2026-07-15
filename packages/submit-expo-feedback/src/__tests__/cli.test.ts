@@ -41,10 +41,53 @@ function writeJson(filePath: string, value: unknown): void {
 }
 
 describe('feedback message resolution', () => {
+  beforeEach(() => {
+    mockPrompts.mockReset();
+  });
+
   it('uses positional arguments as the feedback message', async () => {
-    await expect(resolveFeedbackAsync(['please', 'improve', 'errors'])).resolves.toBe(
-      'please improve errors'
+    await expect(resolveFeedbackAsync(['please', 'improve', 'errors'])).resolves.toEqual({
+      category: 'unknown',
+      feedback: 'please improve errors',
+    });
+  });
+
+  it('uses a category supplied on the command line', async () => {
+    await expect(resolveFeedbackAsync(['improve', 'the', 'server'], 'mcp')).resolves.toEqual({
+      category: 'mcp',
+      feedback: 'improve the server',
+    });
+  });
+
+  it('rejects invalid categories', async () => {
+    await expect(resolveFeedbackAsync(['improve', 'this'], 'website')).rejects.toThrow(
+      'Invalid feedback category "website".'
     );
+  });
+
+  it('prompts for a category and message in interactive environments', async () => {
+    const originalIsTTY = process.stdin.isTTY;
+    Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: true });
+    mockPrompts.mockResolvedValueOnce({ category: 'docs', feedback: 'Clarify this example.' });
+
+    try {
+      await expect(resolveFeedbackAsync([])).resolves.toEqual({
+        category: 'docs',
+        feedback: 'Clarify this example.',
+      });
+      expect(mockPrompts).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'category', type: 'select' }),
+          expect.objectContaining({ name: 'feedback', type: 'text' }),
+        ]),
+        expect.any(Object)
+      );
+    } finally {
+      Object.defineProperty(process.stdin, 'isTTY', {
+        configurable: true,
+        value: originalIsTTY,
+      });
+    }
   });
 
   it('requires a message without prompting in non-interactive environments', async () => {
@@ -205,7 +248,7 @@ describe('feedback submission', () => {
   });
 
   it('posts feedback and metadata to the local CLI feedback endpoint', async () => {
-    const metadata = await createFeedbackMetadataAsync(projectRoot);
+    const metadata = await createFeedbackMetadataAsync(projectRoot, undefined, 'mcp');
 
     await sendFeedbackAsync({
       feedback: 'please make errors clearer',
@@ -225,6 +268,7 @@ describe('feedback submission', () => {
       }),
     });
     expect(metadata).toMatchObject({
+      category: 'mcp',
       agentEnvironment: {
         detected: true,
         agent: {

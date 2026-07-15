@@ -11,6 +11,9 @@ import prompts from 'prompts';
 
 const NODE_MIN = [22, 13, 0] as const;
 const CLI_NAME = 'submit-expo-feedback';
+const FEEDBACK_CATEGORIES = ['skills', 'expo-cli', 'eas-cli', 'mcp', 'docs', 'unknown'] as const;
+
+type FeedbackCategory = (typeof FEEDBACK_CATEGORIES)[number];
 
 type UserSession = {
   sessionSecret?: string;
@@ -30,6 +33,7 @@ type ConfigFilePaths = {
 };
 
 type FeedbackMetadata = {
+  category: FeedbackCategory;
   cli: {
     name: typeof CLI_NAME;
     version: string;
@@ -86,8 +90,10 @@ async function runAsync(): Promise<void> {
     {
       '--help': Boolean,
       '--version': Boolean,
+      '--category': String,
       '-h': '--help',
       '-v': '--version',
+      '-c': '--category',
     },
     {
       argv: process.argv.slice(2),
@@ -105,9 +111,9 @@ async function runAsync(): Promise<void> {
     return;
   }
 
-  const feedback = await resolveFeedbackAsync(args._);
+  const { category, feedback } = await resolveFeedbackAsync(args._, args['--category']);
   const session = getSession();
-  const metadata = await createFeedbackMetadataAsync(process.cwd(), session);
+  const metadata = await createFeedbackMetadataAsync(process.cwd(), session, category);
 
   await sendFeedbackAsync({
     feedback,
@@ -118,10 +124,14 @@ async function runAsync(): Promise<void> {
   console.log(chalk.green('Thanks for the feedback!'));
 }
 
-export async function resolveFeedbackAsync(messageParts: string[]): Promise<string> {
+export async function resolveFeedbackAsync(
+  messageParts: string[],
+  categoryValue?: string
+): Promise<{ category: FeedbackCategory; feedback: string }> {
+  const category = resolveFeedbackCategory(categoryValue);
   const feedback = messageParts.join(' ').trim();
   if (feedback) {
-    return feedback;
+    return { category, feedback };
   }
 
   if (ciInfo.isCI || !process.stdin.isTTY) {
@@ -129,12 +139,23 @@ export async function resolveFeedbackAsync(messageParts: string[]): Promise<stri
   }
 
   const response = await prompts(
-    {
-      type: 'text',
-      name: 'feedback',
-      message: 'Share feedback with Expo',
-      validate: (value) => (value.trim() ? true : 'Feedback cannot be empty.'),
-    },
+    [
+      {
+        type: categoryValue ? null : 'select',
+        name: 'category',
+        message: 'What is your feedback about?',
+        choices: FEEDBACK_CATEGORIES.map((value) => ({
+          title: value === 'unknown' ? 'Other / unknown' : value,
+          value,
+        })),
+      },
+      {
+        type: 'text',
+        name: 'feedback',
+        message: 'Share feedback with Expo',
+        validate: (value) => (value.trim() ? true : 'Feedback cannot be empty.'),
+      },
+    ],
     {
       onCancel() {
         throw new CommandError('Feedback prompt was cancelled.');
@@ -146,14 +167,19 @@ export async function resolveFeedbackAsync(messageParts: string[]): Promise<stri
   if (!promptedFeedback) {
     throw new CommandError('Feedback message cannot be empty.');
   }
-  return promptedFeedback;
+  return {
+    category: response.category ?? category,
+    feedback: promptedFeedback,
+  };
 }
 
 export async function createFeedbackMetadataAsync(
   projectRoot: string,
-  session = getSession()
+  session = getSession(),
+  category: FeedbackCategory = 'unknown'
 ): Promise<FeedbackMetadata> {
   return {
+    category,
     cli: {
       name: CLI_NAME,
       version: getPackageVersion(),
@@ -419,9 +445,20 @@ function printHelp(): void {
     Send feedback to the Expo team. If no message is provided, you will be prompted.
 
   {bold Options}
-    --version, -v   Version number
-    --help, -h      Usage info
+    --category, -c <category>  Feedback category (${FEEDBACK_CATEGORIES.join(', ')})
+    --version, -v              Version number
+    --help, -h                 Usage info
 `);
+}
+
+function resolveFeedbackCategory(value?: string): FeedbackCategory {
+  const category = value?.trim().toLowerCase() || 'unknown';
+  if (FEEDBACK_CATEGORIES.includes(category as FeedbackCategory)) {
+    return category as FeedbackCategory;
+  }
+  throw new CommandError(
+    `Invalid feedback category "${value}". Expected one of: ${FEEDBACK_CATEGORIES.join(', ')}.`
+  );
 }
 
 function getPackageVersion(): string {
