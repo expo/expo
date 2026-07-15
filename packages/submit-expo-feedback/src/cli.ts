@@ -398,10 +398,10 @@ function checkNodeVersion(): void {
     nodeVersion[0]! < NODE_MIN[0] ||
     (nodeVersion[0] === NODE_MIN[0] && nodeVersion[1]! < NODE_MIN[1])
   ) {
-    console.error(
-      chalk.red`{bold Node.js (${process.version}) is outdated and unsupported.}` +
-        chalk.red` Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n` +
-        chalk.red`Go to: https://nodejs.org/en/download\n`
+    throw new CommandError(
+      `Node.js (${process.version}) is outdated and unsupported. ` +
+        `Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n` +
+        `Go to: https://nodejs.org/en/download`
     );
   }
 }
