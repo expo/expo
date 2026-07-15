@@ -33,7 +33,10 @@ internal enum UpdatesStateEvent {
   case checkCompleteWithRollback(rollbackCommitTime: Date)
   case checkError(errorMessage: String)
   case download
+
+  // download finished with no update available, so nothing is pending
   case downloadComplete
+
   case downloadCompleteWithUpdate(manifest: [String: Any])
   case downloadCompleteWithRollback
   case downloadError(errorMessage: String)
@@ -497,7 +500,7 @@ internal class UpdatesStateMachine {
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
-        $0.isUpdatePending = true
+        $0.isUpdatePending = false
         $0.downloadProgress = 1.0
         $0.downloadStartTime = nil
         $0.downloadFinishTime = nil

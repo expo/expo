@@ -117,7 +117,7 @@ final class FetchUpdateProcedure: StateMachineProcedure {
 
         if didRollBackToEmbedded {
           self.successBlock(FetchUpdateResult.rollBackToEmbedded)
-          procedureContext.processStateEvent(.downloadComplete)
+          procedureContext.processStateEvent(.downloadCompleteWithRollback)
           procedureContext.onComplete()
           return
         }
