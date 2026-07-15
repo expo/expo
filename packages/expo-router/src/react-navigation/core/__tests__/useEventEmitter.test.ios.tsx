@@ -203,8 +203,35 @@ test('fires focus and blur events in nested navigator', () => {
   const parent = React.createRef<any>();
   const child = React.createRef<any>();
 
+  // The whole tree is seeded: root key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'nested'],
+        routes: [
+          { key: 'first', name: 'first' },
+          { key: 'second', name: 'second' },
+          {
+            key: 'nested',
+            name: 'nested',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['third', 'fourth'],
+              routes: [
+                { key: 'third', name: 'third' },
+                { key: 'fourth', name: 'fourth' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator ref={parent}>
         <Screen name="first" component={createComponent(firstFocusCallback, firstBlurCallback)} />
         <Screen
@@ -396,7 +423,15 @@ test('fires blur event when a route is removed with a delay', async () => {
   const navigation = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        type: 'test',
+        key: 'stack',
+        index: 0,
+        routeNames: ['first', 'second'],
+        routes: [{ key: 'first', name: 'first' }],
+      }}>
       <TestNavigator ref={navigation}>
         <Screen name="first" component={First} />
         <Screen name="second" component={Second} />

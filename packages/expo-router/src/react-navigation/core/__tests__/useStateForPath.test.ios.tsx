@@ -8,7 +8,11 @@ import { getPathFromState } from '../getPathFromState';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
 import { useStateForPath } from '../useStateForPath';
-import { MockRouter } from './__fixtures__/MockRouter';
+import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+
+beforeEach(() => {
+  MockRouterKey.current = 0;
+});
 
 test('gets focused route state at root', () => {
   const TestNavigator = (props: any): any => {
@@ -35,8 +39,21 @@ test('gets focused route state at root', () => {
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          { name: 'bar', key: 'bar' },
+          { name: 'xux', key: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar" component={TestScreen} />
         <Screen name="xux" component={TestScreen} />
@@ -90,8 +107,34 @@ test('gets focused route state in nested navigator', () => {
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  MockRouterKey.current = 2;
+
   render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          {
+            name: 'bar',
+            key: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar-a', 'bar-b'],
+              routes: [
+                { name: 'bar-a', key: 'bar-a' },
+                { name: 'bar-b', key: 'bar-b' },
+              ],
+            },
+          },
+          { name: 'xux', key: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar">
           {() => (
@@ -212,8 +255,34 @@ test('gets path in each screen', () => {
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  MockRouterKey.current = 2;
+
   render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          {
+            name: 'bar',
+            key: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar-a', 'bar-b'],
+              routes: [
+                { name: 'bar-a', key: 'bar-a' },
+                { name: 'bar-b', key: 'bar-b' },
+              ],
+            },
+          },
+          { name: 'xux', key: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar">
           {() => (

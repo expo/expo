@@ -35,8 +35,22 @@ test('gets the current navigation state', () => {
 
   const navigation = React.createRef<any>();
 
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'third'],
+        routes: [
+          { name: 'first', key: 'first' },
+          { name: 'second', key: 'second' },
+          { name: 'third', key: 'third' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="first" component={Test} />
         <Screen name="second">{() => null}</Screen>
@@ -90,8 +104,22 @@ test('gets the current navigation state with selector', () => {
 
   const navigation = React.createRef<any>();
 
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'third'],
+        routes: [
+          { name: 'first', key: 'first' },
+          { name: 'second', key: 'second' },
+          { name: 'third', key: 'third' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="first" component={Test} />
         <Screen name="second">{() => null}</Screen>
@@ -192,8 +220,22 @@ test('gets the current navigation state at navigator level', () => {
 
   const navigation = React.createRef<any>();
 
+  MockRouterKey.current = 1;
+
   const root = render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'third'],
+        routes: [
+          { name: 'first', key: 'first' },
+          { name: 'second', key: 'second' },
+          { name: 'third', key: 'third' },
+        ],
+      }}>
       <TestNavigator layout={() => <Test />}>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second">{() => null}</Screen>

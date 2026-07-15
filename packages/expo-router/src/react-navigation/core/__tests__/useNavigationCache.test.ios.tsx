@@ -150,8 +150,21 @@ test('returns correct value for isFocused after changing screens', () => {
     return null;
   };
 
+  MockRouterKey.current = 1;
+
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'third'],
+        routes: [
+          { name: 'first', key: 'first' },
+          { name: 'second', key: 'second' },
+          { name: 'third', key: 'third' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />

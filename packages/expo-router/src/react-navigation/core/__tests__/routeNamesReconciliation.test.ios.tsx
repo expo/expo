@@ -185,7 +185,15 @@ test('route-name reconciliation bypasses beforeRemove prevention', () => {
   }
 
   const root = render(
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '@',
+        routeNames: ['first', 'second'],
+        routes: [{ key: '@:first:0', name: 'first' }],
+      }}>
       <StackNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={PreventedScreen} />
@@ -217,7 +225,15 @@ test('reconciles route key changes for an unchanged route name', () => {
   const TestScreen = ({ route }: any) => `[${route.params?.version}]`;
 
   const root = render(
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '@',
+        routeNames: ['first'],
+        routes: [{ key: '@:first:0', name: 'first', params: { version: 'old' } }],
+      }}>
       <StackNavigator>
         <Screen
           name="first"
