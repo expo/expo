@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] `AsyncFunctionClosure` (taken by `createAsyncFunction` and the async `setProperty(_:function:)` overload) is now a synchronous closure that receives a borrowed unowned `this` and consumes the arguments buffer, matching the sync closure shape, and returns the async body of the function (`AsyncFunctionBody`). Decoding happens within the host function call, so nothing JSI-owned crosses the asynchronous boundary anymore: this removes the per-call copy of the arguments buffer and fixes a use-after-free when the runtime is reloaded while async host function calls are still queued or suspended. ([#47716](https://github.com/expo/expo/issues/47716), [#47755](https://github.com/expo/expo/pull/47755) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptError` is now a copyable class conforming to `Error` (was a non-copyable struct), and `JavaScriptValue` no longer conforms to `Error`. ([#47154](https://github.com/expo/expo/pull/47154) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -15,9 +16,11 @@
 - [iOS] Conform `JavaScriptRuntime` to `Identifiable` with an `id` based on the underlying runtime, equal across multiple wrappers of the same runtime. ([#47068](https://github.com/expo/expo/pull/47068) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add `JavaScriptRef.withValue`, a non-consuming borrow accessor that reads the referenced value without taking it, so a long-lived reference can be read repeatedly. ([#47238](https://github.com/expo/expo/pull/47238) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add `JavaScriptRuntime.longLivedObjects`, a `LongLivedObjectCollection` that keeps `LongLivedObject`s (such as in-flight promises) alive across asynchronous boundaries and releases any that remain when the runtime is torn down. ([#47511](https://github.com/expo/expo/pull/47511) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add a `JavaScriptCodable` conformance for `Date`: it encodes to a JS `Date` and decodes from a JS `Date`, a number of milliseconds since the epoch, or a string parsed by the JS engine's `Date` constructor. ([#47602](https://github.com/expo/expo/pull/47602) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed a use-after-free when a `JavaScriptPromise` outlives its runtime (e.g. an async function's promise held by a completion handler that fires after `reloadAsync()`) by having the runtime's `LongLivedObjectCollection` own its JSI values and release them on the JavaScript thread when the wrapper is dropped or at teardown, instead of against a freed runtime. ([#47521](https://github.com/expo/expo/pull/47521) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a standalone `JavaScriptRuntime` leaking its underlying Hermes runtime: a runtime it creates itself is now destroyed on `deinit`, while runtimes adopted from elsewhere (e.g. React Native) are left untouched. ([#47515](https://github.com/expo/expo/pull/47515) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed `Build ExpoModulesJSI xcframework` build phase failing on Xcode 26 because the nested SwiftPM build ignored `-derivedDataPath` and wrote products outside the expected location. ([#46326](https://github.com/expo/expo/issues/46326) by [@Kurogoma4D](https://github.com/Kurogoma4D))
 - [iOS] Fixed the xcframework build failing with a `sed` error when building in an environment that uses GNU `sed` instead of BSD `sed` (e.g. a Nix shell). ([#46389](https://github.com/expo/expo/pull/46389) by [@niteshbalusu11](https://github.com/niteshbalusu11))
@@ -41,6 +44,7 @@
 - [iOS] `JavaScriptNativeState` can now back any `jsi::NativeState` subtype via a `void *` factory, so consumers without Swift/C++ interop (e.g. `expo-modules-core`) can supply their own pointee. `expo::NativeState` ships from the xcframework as a public C++ header. ([#46330](https://github.com/expo/expo/pull/46330) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Ignore already-settled promises. ([#46765](https://github.com/expo/expo/pull/46765) by [@jakex7](https://github.com/jakex7))
 - [iOS] `getExpoNativeState` now probes with the specialized `hasNativeState<jsi::NativeState>` and dynamic-casts the raw pointer once, avoiding a redundant `dynamic_pointer_cast` on the shared object argument unwrap hot path. ([#46712](https://github.com/expo/expo/pull/46712) by [@tsapeta](https://github.com/tsapeta))
+- Added a script to clear local build caches and artifacts.
 
 ## 56.0.7 — 2026-05-20
 

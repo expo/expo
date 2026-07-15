@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added a `container` case to `ExpoSwiftUI.IgnoreSafeArea` that ignores the device and container safe area regions while keeping the keyboard region. `all` now removes both the container and keyboard regions. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added the `@Event` macro that turns a function-typed `var` on a module or shared object into a typed JavaScript event. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `@ExpoModule` now synthesizes the module's JavaScript name from the class name or its `@ExpoModule("CustomName")` argument, so a `Name(…)` definition entry is no longer required. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
@@ -49,6 +50,7 @@
 
 ### 💡 Others
 
+- [iOS] Bumped `@expo/expo-modules-macros-plugin` to `0.8.0`, which emits the two-phase async `@JS` bindings. ([#47755](https://github.com/expo/expo/pull/47755) by [@tsapeta](https://github.com/tsapeta))
 - Allow `react-native-worklets` `^0.9.0` in peer dependencies. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 - [Android] Make `expo-module-gradle-plugin` compatible with Android Gradle Plugin 9. ([#46769](https://github.com/expo/expo/pull/46769) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added `JavaScriptDecodable` / `JavaScriptEncodable` (composed as `JavaScriptCodable`), a statically-dispatched, non-erasing conversion path between JavaScript and native values for Expo Modules v2, with conformances for primitives, containers, records, enumerables and `Data`. ([#46893](https://github.com/expo/expo/pull/46893) by [@tsapeta](https://github.com/tsapeta))

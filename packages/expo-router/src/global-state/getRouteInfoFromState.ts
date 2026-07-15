@@ -1,6 +1,7 @@
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import type { NavigationState, PartialState } from '../react-navigation/native';
+import { safeDecodeURIComponent } from '../utils/url';
 import type { FocusedRouteState } from './types';
 
 export type UrlObject = {
@@ -212,13 +213,4 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     // TODO: Remove this, it is not used anywhere
     isIndex: false,
   };
-}
-
-function safeDecodeURIComponent(value: any) {
-  try {
-    return typeof value === 'string' ? decodeURIComponent(value) : value;
-  } catch {
-    // If the value is not a valid URI component, return it as is
-    return value;
-  }
 }

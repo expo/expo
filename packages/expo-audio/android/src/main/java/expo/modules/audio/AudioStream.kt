@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -51,6 +52,9 @@ class AudioStream(
 
   private var startTimeNanos: Long = 0
 
+  private var fileWriter: AudioStreamFileWriter? = null
+  private val fileWriterLock = Any()
+
   @RequiresPermission(Manifest.permission.RECORD_AUDIO)
   fun start() {
     if (isStreaming) {
@@ -88,6 +92,54 @@ class AudioStream(
     audioRecord?.release()
     audioRecord = null
     emitStatus()
+
+    // Auto-finalize any in-progress file recording.
+    // isStreaming = false causes the capture loop to exit; the lock guarantees any
+    // in-flight append has completed before we close the writer.
+    synchronized(fileWriterLock) {
+      fileWriter?.let { writer ->
+        try {
+          writer.finish()
+        } catch (e: Exception) {
+          appContext?.jsLogger?.warn("AudioStream: failed to auto-finalize file recording on stream stop", e)
+        }
+        fileWriter = null
+      }
+    }
+  }
+
+  fun startFileRecording(file: File, format: AudioStreamFileFormat): java.net.URL = synchronized(fileWriterLock) {
+    if (fileWriter != null) {
+      throw AudioStreamFileException(
+        "A file recording is already in progress. Each stream supports one file recording at a time. Call stopFileRecordingAsync() before starting another."
+      )
+    }
+    if (!isStreaming) {
+      throw AudioStreamFileException(
+        "The stream must be running to start file recording. Call start() before startFileRecordingAsync()."
+      )
+    }
+    fileWriter = AudioStreamFileWriter(file, format, sampleRate, channels, options.encoding)
+    file.toURI().toURL()
+  }
+
+  fun stopFileRecording(): AudioStreamFileRecordingResult = synchronized(fileWriterLock) {
+    val writer = fileWriter
+      ?: throw AudioStreamFileException(
+        "No file recording is in progress. Call startFileRecordingAsync() before stopFileRecordingAsync()."
+      )
+    val (totalSize, frames) = writer.finish()
+    fileWriter = null
+    val currentSampleRate = sampleRate
+    val currentChannels = channels
+    AudioStreamFileRecordingResult().apply {
+      uri = writer.file.toURI().toURL()
+      duration = if (currentSampleRate > 0) frames.toDouble() / currentSampleRate else 0.0
+      size = totalSize
+      sampleRate = currentSampleRate
+      channels = currentChannels
+      encoding = options.encoding
+    }
   }
 
   private fun resolveAudioConfig(): ResolvedAudioConfig {
@@ -178,6 +230,17 @@ class AudioStream(
     val bytesRead = recorder.read(byteBuffer, readSizeBytes, AudioRecord.READ_BLOCKING)
     if (bytesRead > 0) {
       byteBuffer.limit(bytesRead)
+      // Copy PCM bytes before acquiring the lock so the lock covers only the file write,
+      // not the allocation+copy. Write to file before constructing NativeArrayBuffer.
+      val pcmBytes = ByteArray(bytesRead).also { buf ->
+        byteBuffer.duplicate().apply {
+          position(0)
+          get(buf)
+        }
+      }
+      synchronized(fileWriterLock) {
+        fileWriter?.append(pcmBytes)
+      }
       emitBufferEvent(NativeArrayBuffer(byteBuffer), channels, sampleRate)
     }
   }
@@ -210,5 +273,13 @@ class AudioStream(
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
     stop()
+    synchronized(fileWriterLock) {
+      try {
+        fileWriter?.finish()
+      } catch (e: Exception) {
+        appContext?.jsLogger?.warn("AudioStream: Failed to finalise file recording during cleanup", e)
+      }
+      fileWriter = null
+    }
   }
 }

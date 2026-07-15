@@ -11,10 +11,9 @@ const serverConfig :Workerd.Config = (
 const server :Workerd.Worker = (
   modules = [
     (name = "worker", esModule = embed "workerd.js"),
-    (name = "_sitemap.html", text = embed "_sitemap.html"),
-    (name = "index.html", text = embed "index.html"),
-    (name = "+not-found.html", text = embed "+not-found.html"),
+    (name = "_expo/server/render.js", commonJsModule = embed "_expo/server/render.js"),
     (name = "_expo/functions/api+api.js", commonJsModule = embed "_expo/functions/api+api.js"),
+    (name = "_expo/loaders/blog.js", commonJsModule = embed "_expo/loaders/blog.js"),
     (name = "_expo/routes.json", text = embed "_expo/routes.json"),
   ],
   compatibilityDate = "2025-05-05",

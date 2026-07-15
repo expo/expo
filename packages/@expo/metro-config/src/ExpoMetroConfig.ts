@@ -312,6 +312,8 @@ export function getDefaultConfig(
       platforms: ['ios', 'android', 'tvos', 'macos'],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
+          // Additional font files mising from default values
+          ['woff', 'woff2'],
           // Add default support for `expo-image` file types.
           ['heic', 'avif'],
           // Add default support for `expo-sqlite` file types.
@@ -451,6 +453,12 @@ export function getDefaultConfig(
     metroDefaultValues as MetroConfig & typeof expoMetroConfig,
     expoMetroConfig
   );
+
+  // NOTE(@kitten): `useWatchman` is currently defaulting to `false`
+  // However, in standard Metro, it defaults to `true`, and we must override this to `null` to disable the slow "native find" codepath
+  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro-file-map/src/index.js#L326
+  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
+  (metroConfig.resolver as { useWatchman?: boolean | null }).useWatchman = null;
 
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }

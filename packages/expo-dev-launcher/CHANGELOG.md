@@ -23,8 +23,16 @@
 - [iOS] Explain why a project failed to load instead of showing a generic "Failed to connect" message. ([#46866](https://github.com/expo/expo/pull/46866) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix tvOS compile error in DevServersView. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
 - [Android] Fix auto-launching into the most recently opened project on startup. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Forward the launching intent's extras when cold-launching the most recently opened bundle, so launch arguments (e.g. from Maestro/Detox or `adb am start -e`) reach the app and `react-native-launch-arguments` can read them. ([#47352](https://github.com/expo/expo/pull/47352) by [@kanzelm3](https://github.com/kanzelm3))
+- [iOS] Fix Release build failure from an unguarded call to `RCTBundleURLProviderAllowPackagerServerAccess`. ([#47688](https://github.com/expo/expo/pull/47688) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [Android] Fix onUserLeaveHint NPE and lost EAS sign-in redirect. ([#47347](https://github.com/expo/expo/pull/47347) by [@vicprz](https://github.com/vicprz))
 
 ### 💡 Others
+
+- [Android] Remove the legacy (old architecture) dev support manager and dead build configuration. ([#47640](https://github.com/expo/expo/pull/47640) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Remove legacy (old architecture) code paths and dead build configuration. ([#47639](https://github.com/expo/expo/pull/47639) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Replace swizzling and reflection into React Native internals (packager access, RedBox, instance teardown) with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Replace reflection into React Native internals with public 0.86 APIs. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.16 — 2026-05-26
 

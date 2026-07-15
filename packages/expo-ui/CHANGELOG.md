@@ -6,6 +6,7 @@
 
 - [iOS] `<Host>`'s `ignoreSafeArea="all"` now also ignores the keyboard safe area, matching its name. Use the new `ignoreSafeArea="container"` for the previous behavior of ignoring only the device and container insets while still avoiding the keyboard. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 - [universal][android] Use `BasicTextField` component instead of Filled Material TextField. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `<Host>` centering its content instead of top-aligning it, so a `flex: 1` host matches Android's top-leading layout. ([#47561](https://github.com/expo/expo/pull/47561) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
 
@@ -41,6 +42,9 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix RN `Modal`s (and other presented view controllers) becoming untappable and missing from the accessibility tree after a `community/bottom-sheet` `BottomSheet` is dismissed. `RNHostView` attached an `RCTSurfaceTouchHandler` to the hosted RN view but never detached it, so it rode the recycled Fabric component view into the next surface and terminated that surface's touch responder. The handler is now detached when the host disappears. ([#47708](https://github.com/expo/expo/issues/47708) by [@oeddyo](https://github.com/oeddyo)) ([#47713](https://github.com/expo/expo/pull/47713) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `BottomSheet` opening at an unpredictable detent when multiple detents are set without a `selection`. The initial detent now follows the first entry in the array instead of the unordered set. ([#47652](https://github.com/expo/expo/pull/47652) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix components crashing on Android 7 (API 24/25), where `android.graphics.Color` props had no type converter below API 26. `Color` props and the seeded Material color palette now work on those versions. ([#47546](https://github.com/expo/expo/issues/47546) by [@anasvemmully](https://github.com/anasvemmully)) ([#47575](https://github.com/expo/expo/pull/47575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the graphical `DatePicker` style (`community/datetime-picker` `display="inline"`) rendering undersized on mount and jumping to its correct size on the first tap. ([#47062](https://github.com/expo/expo/issues/47062) by [@etiennetalbot](https://github.com/etiennetalbot)) ([#47465](https://github.com/expo/expo/pull/47465) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS][android] Fix `community/masked-view` doubling offsets and transforms by re-applying the user-supplied `style` to the inner mask/content `View` wrappers. ([#47067](https://github.com/expo/expo/issues/47067) by [@tsushanth](https://github.com/tsushanth))
 - [iOS] Fix the SwiftUI `TextField` crashing with "String index is out of bounds" on iOS 18 when JS writes new text into a focused field that holds an active text selection. ([#47447](https://github.com/expo/expo/pull/47447) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -76,6 +80,8 @@
 - [universal] Revamp web universal components (`Button`, `Checkbox`, `FieldGroup`, `Picker`, `Slider`,`Switch`,`TextInput`) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258), [#46541](https://github.com/expo/expo/pull/46541) by [@zoontek](https://github.com/zoontek))
 - [iOS][android] Removed the `react-native-reanimated` dependency from the worklet integration; worklet features rely on `react-native-worklets` directly. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway))
 - Removed `CLAUDE.md` and `CONTRIBUTING.md` from publishing and fixed side effects. ([#47451](https://github.com/expo/expo/pull/47451) by [@kudo](https://github.com/kudo))
+- [Android] Change modifiers type and provide appContext. ([#47616](https://github.com/expo/expo/pull/47616) by [@jakex7](https://github.com/jakex7))
+- [Android] Change `Text` color props to `ColorValue`. ([#47739](https://github.com/expo/expo/pull/47739) by [@jakex7](https://github.com/jakex7))
 
 ## 56.0.14 — 2026-05-26
 

@@ -95,7 +95,19 @@ class ExpoBlurTargetView(context: Context, appContext: AppContext) : ExpoView(co
 
   override fun getChildAt(index: Int): View? = blurTargetView.getChildAt(index)
 
-  override fun indexOfChild(child: View?): Int = blurTargetView.indexOfChild(child)
+  override fun indexOfChild(child: View?): Int {
+    // `blurTargetView` is our own real child (added via `super.addView` in `init`); every other
+    // child is proxied to it. Without this guard `indexOfChild(blurTargetView)` delegates to
+    // `blurTargetView.indexOfChild(blurTargetView)`, which is always -1 (a view can't be its own
+    // child) even though `blurTargetView.parent === this`. Consumers relying on the View
+    // parent/child contract — e.g. react-native-gesture-handler's attached-view walk — then treat
+    // everything under the blur target as detached and cancel their gestures. Mirror the
+    // add/remove overrides above.
+    if (child === blurTargetView) {
+      return super.indexOfChild(child)
+    }
+    return blurTargetView.indexOfChild(child)
+  }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     val width = MeasureSpec.getSize(widthMeasureSpec)
