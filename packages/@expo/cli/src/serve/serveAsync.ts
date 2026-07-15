@@ -6,12 +6,12 @@ import path from 'node:path';
 import send from 'send';
 
 import * as Log from '../log';
+import { applyStaticHeaders, loadStaticManifestAsync } from './static';
 import { directoryExistsAsync, fileExistsAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { resolvePortAsync } from '../utils/port';
-import { applyStaticHeaders, loadStaticManifestAsync } from './static';
 
 type Options = {
   port?: number;
