@@ -132,10 +132,14 @@ export class StackView extends React.Component<Props, State> {
     // Here we determine which routes were added or removed to animate them
     // We keep a copy of the route being removed in local state to be able to animate it
 
+    // Routes past the focused index are preloaded/inactive. Keep them out of the animated set (so
+    // the focused route stays last and drives push/pop animations), then render them hidden by
+    // appending them below. `CardStack` identifies them by key and positions them offscreen.
+    const preloadedRoutes = props.state.routes.slice(props.state.index + 1);
+
     let routes =
       props.state.index < props.state.routes.length - 1
-        ? // Remove any extra routes from the state
-          // The last visible route should be the focused route, i.e. at current index
+        ? // The last route in the animated set should be the focused route, i.e. at current index
           props.state.routes.slice(0, props.state.index + 1)
         : props.state.routes;
 
@@ -272,8 +276,12 @@ export class StackView extends React.Component<Props, State> {
       return acc;
     }, {});
 
+    const routesWithPreloaded = preloadedRoutes.length
+      ? [...routes, ...preloadedRoutes.filter((r) => !routes.some((e) => e.key === r.key))]
+      : routes;
+
     return {
-      routes,
+      routes: routesWithPreloaded,
       previousState: props.state,
       previousDescriptors: props.descriptors,
       openingRouteKeys,
