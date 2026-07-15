@@ -123,7 +123,7 @@ export function rootReducer(
       reduced === state
         ? state
         : normalizePayloadStateParams(
-            insertPayloadStateAtBoundary(reduced as NavigationState, currentAction, registry),
+            insertPayloadStateAtBoundary(reduced as NavigationState, currentAction),
             currentAction
           );
     if (nextState !== state) {
@@ -280,8 +280,7 @@ function focusAncestors(
 
 function insertPayloadStateAtBoundary(
   state: NavigationState,
-  action: NavigationAction,
-  registry: ReducerRegistry
+  action: NavigationAction
 ): NavigationState {
   const payloadState = getPayloadState(action);
 
@@ -296,7 +295,7 @@ function insertPayloadStateAtBoundary(
 
   const route = state.routes[routeIndex];
 
-  if (route == null || route.state != null || registry.hasReducer(payloadState.key ?? '')) {
+  if (route == null || route.state != null) {
     return state;
   }
 

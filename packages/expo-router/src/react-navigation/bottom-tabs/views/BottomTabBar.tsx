@@ -12,6 +12,7 @@ import {
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
 import { useStableTabOrder } from '../../core/useStableTabOrder';
+import { useStoreSlice } from '../../core/useStoreSlice';
 import { getDefaultSidebarWidth, getLabel, MissingIcon, useFrameSize } from '../../elements';
 import {
   CommonActions,
@@ -131,6 +132,7 @@ export const getTabBarHeight = ({
 };
 
 export function BottomTabBar({ state, navigation, descriptors, insets, style }: Props) {
+  const committedState = useStoreSlice(state.key);
   const { colors } = useTheme();
   const { direction } = useLocale();
   const { buildHref } = useLinkBuilder();
@@ -357,8 +359,11 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
               // On the first visit the tab has no committed state, so let the Expo Router-provided
               // builder navigate by href (installing the tab's complete compiled subtree). A
               // re-visit already has state, so fall through to a plain focus that preserves it.
+              const committedRoute = committedState?.routes.find((item) => item.key === route.key);
               const firstVisitAction =
-                route.state == null ? options.unstable_tabBarNavigateAction?.() : undefined;
+                committedRoute?.state == null
+                  ? options.unstable_tabBarNavigateAction?.()
+                  : undefined;
 
               navigation.dispatch(
                 firstVisitAction ?? {
