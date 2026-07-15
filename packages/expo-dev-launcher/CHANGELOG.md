@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix onUserLeaveHint NPE and lost EAS sign-in redirect. ([#47347](https://github.com/expo/expo/pull/47347) by [@vicprz](https://github.com/vicprz))
+
 ### 💡 Others
 
 ## 57.0.8 — 2026-07-22
