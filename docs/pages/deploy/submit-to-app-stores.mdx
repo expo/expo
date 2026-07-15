@@ -16,7 +16,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Releasing an app means uploading a signed binary (**.aab** for Android, **.ipa** for iOS) to Google Play Console or App Store Connect. From there, Google and Apple manage review, testing tracks, and production rollout.
 
-You have two options for getting a binary into each store: submit with **EAS Submit**, or upload manually through the store's own tools. **EAS Submit is the recommended path** since it works from any OS (including Windows and Linux for iOS), integrates with [EAS Build](/build/introduction/) and [EAS Workflows](/eas/workflows/introduction/), and can be run from a CI/CD service. Manual uploads are useful when you aren't using EAS, or when Google requires a first-time manual upload before the Play Store API will accept submissions.
+You have two options for getting a binary into each store: submit with **EAS Submit**, or upload manually through the store's own tools. **EAS Submit is the recommended path** since it works from any OS (including Windows and Linux for iOS), integrates with [EAS Build](/build/introduction/) and [EAS Workflows](/eas/workflows/introduction/), and can be run from a CI/CD service. Manual uploads are useful when you aren't using EAS, or when you prefer to create your Android app's first release directly in Play Console.
 
 <VideoBoxLink
   videoId="-KZjr576tuE"
@@ -28,7 +28,7 @@ You have two options for getting a binary into each store: submit with **EAS Sub
 
 ### Android (Google Play Store)
 
-EAS Submit uploads your **.aab** to Google Play Console and places it in the track you choose (internal, alpha, beta, or production). Google requires you to upload your app manually at least once before API-based submissions are allowed — after that, `eas submit` handles every subsequent release.
+EAS Submit uploads your **.aab** to Google Play Console and places it in the track you choose (internal, alpha, beta, or production). For a brand-new app, Google's API only accepts the first release as a draft: either upload the first build manually through Play Console, or set [`releaseStatus`](/eas/json/#releasestatus) to `draft` in **eas.json** and submit with `eas submit`. After the first release exists, `eas submit` handles every subsequent release.
 
 ### iOS (Apple App Store)
 
@@ -63,7 +63,7 @@ EAS Submit uploads your **.ipa** to App Store Connect, where it becomes availabl
 
 <BoxLink
   title="Manually submit an Android app for the first time"
-  description="Google requires every app to be uploaded manually through Play Console once before API submissions are allowed."
+  description="Follow a step-by-step Play Console walkthrough to create your Android app's first release."
   href="/submit/android-manual/"
   Icon={GoogleAppStoreIcon}
 />

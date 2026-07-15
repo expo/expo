@@ -7,9 +7,9 @@ description: Step-by-step guide for uploading an Android app to Google Play Cons
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Step } from '~/ui/components/Step';
 
-If you are submitting your Android app to the Google Play Store **for the first time**, Google requires you to upload it manually through Google Play Console, a web UI. This guide walks through the steps to create your first release in Play Console.
+If you are submitting your Android app to the Google Play Store **for the first time**, this guide walks through the steps to upload it manually and create your first release in Google Play Console, a web UI.
 
-> **info** After you have submitted your app manually once, you can use [`eas submit --platform android`](/submit/android/) for every subsequent submission.
+> **info** A manual upload is one way to create your app's first release. Alternatively, EAS Submit can create it as a draft when you set [`releaseStatus`](/eas/json/#releasestatus) to `draft` in **eas.json**. After the first release exists, use [`eas submit --platform android`](/submit/android/) for every subsequent submission.
 
 > **warning** The Google Play Console dashboard changes over time. If a screenshot or label in this guide does not match what you see, [open an issue on GitHub](https://github.com/expo/expo/issues/new/choose) to let us know.
 

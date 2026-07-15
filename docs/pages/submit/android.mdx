@@ -4,9 +4,6 @@ sidebar_title: Submit to Google Play Store
 description: Learn how to submit your Android app to the Google Play Store with EAS Submit.
 ---
 
-import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStoreIcon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
@@ -16,28 +13,17 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 ## Prerequisites
 
-<Prerequisites numberOfRequirements={6}>
+<Prerequisites numberOfRequirements={5}>
   <Requirement number={1} title="Sign up for a Google Play Developer account">
     A Google Play Developer account is required to submit your app to the Google Play Store. Sign up on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
   </Requirement>
   <Requirement number={2} title="Create an app on Google Play Console">
     Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
   </Requirement>
-  <Requirement number={3} title="Upload your app manually at least once">
-    Google Play Store requires every app to be uploaded manually through Play Console one time before it will accept API-based submissions.
-
-    <BoxLink
-      title="Manually submit an Android app for the first time"
-      description="Follow the step-by-step guide to create your first Play Console release."
-      href="/submit/android-manual/"
-      Icon={GoogleAppStoreIcon}
-    />
-
-  </Requirement>
-  <Requirement number={4} title="Create a Google Service Account key">
+  <Requirement number={3} title="Create a Google Service Account key">
     EAS requires a Google Service Account key to submit on your behalf. Follow the [Creating a Google Service Account key](https://expo.fyi/creating-google-service-account) guide to create one.
   </Requirement>
-  <Requirement number={5} title="Include a package name in app config">
+  <Requirement number={4} title="Include a package name in app config">
     Include your app's package name in **app.json**:
 
     ```json app.json
@@ -49,7 +35,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
     ```
 
   </Requirement>
-  <Requirement number={6} title="Install EAS CLI and authenticate with your Expo account">
+  <Requirement number={5} title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and log in with your Expo account:
 
     <Terminal
@@ -73,6 +59,13 @@ You need a production **.aab** (Android App Bundle) to submit. Google Play requi
 Alternatively, build on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
 
 The default `production` profile produces an **.aab**. A build profile only produces an **.apk** when it sets [`android.buildType`](/eas/json/#buildtype) to `apk`, which is useful for [installing on an emulator or device](/build-reference/apk/) but cannot be submitted to the Google Play Store.
+
+## First-time submission
+
+Google Play requires your app's first release to exist before `eas submit` can fully automate releases. If this is your app's first submission, pick one of the following:
+
+- **Upload manually once**: Create the first release in Play Console by uploading the **.aab** you just built. See the [manual submission guide](/submit/android-manual/) for step-by-step instructions.
+- **Submit a draft with EAS Submit**: Set [`releaseStatus`](/eas/json/#releasestatus) to `draft` in the submission profile in **eas.json**, run `eas submit`, and then complete the release in Play Console.
 
 ## Submit with `eas submit`
 
