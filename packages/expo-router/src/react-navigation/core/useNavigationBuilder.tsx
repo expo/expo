@@ -56,7 +56,6 @@ import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useLazyValue } from './useLazyValue';
 import { useNavigationHelpers } from './useNavigationHelpers';
 import { NavigationStateListenerProvider } from './useNavigationState';
-import { useOnGetState } from './useOnGetState';
 import { shouldPreventRemove, useOnPreventRemove } from './useOnPreventRemove';
 import { useRegisterNavigator } from './useRegisterNavigator';
 import { useStoreSlice } from './useStoreSlice';
@@ -888,11 +887,6 @@ export function useNavigationBuilder<
   useFocusedListenersChildrenAdapter({
     navigation,
     focusedListeners: childListeners.focus,
-  });
-
-  useOnGetState({
-    getState,
-    getStateListeners: keyedListeners.getState,
   });
 
   const { describe, descriptors } = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({

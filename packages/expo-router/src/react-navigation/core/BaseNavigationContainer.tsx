@@ -101,7 +101,7 @@ export function BaseNavigationContainer({
 
   const { listeners, addListener } = useChildListeners();
 
-  const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
+  const { addKeyedListener } = useKeyedChildListeners();
 
   const emitter = useEventEmitter<NavigationContainerEventMap>();
 
@@ -156,6 +156,12 @@ export function BaseNavigationContainer({
     console.error(message);
   });
 
+  // The committed sync store is the single source of truth for every imperative read and dispatch.
+  // Navigators reduce into it through `dispatchRoot` and read their slice back out of it; the
+  // registry (`hasReducer`) supplies the orthogonal "which navigators are mounted" signal, so there
+  // is no separate compose-up getter chain.
+  const getCommittedRootState = useLatestCallback(() => getState() as NavigationState | undefined);
+
   const dispatchRoot = useLatestCallback(
     (
       action: NavigationAction,
@@ -167,9 +173,7 @@ export function BaseNavigationContainer({
         skipBeforeRemove?: boolean;
       } = {}
     ) => {
-      const rootState = (keyedListeners.getState.root?.() ?? getState()) as
-        | NavigationState
-        | undefined;
+      const rootState = getCommittedRootState();
 
       if (rootState == null) {
         options.onNotInitialized?.();
@@ -239,9 +243,7 @@ export function BaseNavigationContainer({
 
   const dispatch = useLatestCallback(
     (action: NavigationAction | ((state: NavigationState) => NavigationAction)) => {
-      const rootState = (keyedListeners.getState.root?.() ?? getState()) as
-        | NavigationState
-        | undefined;
+      const rootState = getCommittedRootState();
 
       if (rootState == null) {
         console.error(NOT_INITIALIZED_ERROR);
@@ -254,9 +256,7 @@ export function BaseNavigationContainer({
   );
 
   const canGoBack = useLatestCallback(() => {
-    const rootState = (keyedListeners.getState.root?.() ?? getState()) as
-      | NavigationState
-      | undefined;
+    const rootState = getCommittedRootState();
 
     if (rootState == null) {
       return false;
@@ -270,9 +270,7 @@ export function BaseNavigationContainer({
   });
 
   const canDismiss = useLatestCallback(() => {
-    const rootState = (keyedListeners.getState.root?.() ?? getState()) as
-      | NavigationState
-      | undefined;
+    const rootState = getCommittedRootState();
 
     if (rootState == null) {
       return false;
@@ -289,7 +287,7 @@ export function BaseNavigationContainer({
     // Always target the live root navigator, ignoring the incoming state's key. Compiled states
     // (from `getStateFromPath`) carry deterministic keys that never match the live-minted root key,
     // and `resetRoot` means "reset the root" — so the target is the root, not the state.
-    const target = keyedListeners.getState.root?.().key;
+    const target = getCommittedRootState()?.key;
 
     if (target == null) {
       console.error(NOT_INITIALIZED_ERROR);
@@ -302,7 +300,7 @@ export function BaseNavigationContainer({
   });
 
   const getRootState = useLatestCallback(() => {
-    return keyedListeners.getState.root?.();
+    return getCommittedRootState();
   });
 
   const getCurrentRoute = useLatestCallback(() => {
@@ -321,7 +319,11 @@ export function BaseNavigationContainer({
 
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
-  const navigation: NavigationContainerRef<ParamListBase> = React.useMemo(
+  const navigation: NavigationContainerRef<ParamListBase> & {
+    // Internal: lets the action builder learn which navigators are currently mounted so it can aim
+    // an action at the nearest mounted navigator (the committed state may contain unmounted ones).
+    hasReducer: (key: string) => boolean;
+  } = React.useMemo(
     () => ({
       ...Object.keys(CommonActions).reduce<any>((acc, name) => {
         acc[name] = (...args: any[]) =>
@@ -344,6 +346,7 @@ export function BaseNavigationContainer({
       setOptions: () => {
         throw new Error('Cannot call setOptions outside a screen');
       },
+      hasReducer: (key: string) => reducerRegistry.hasReducer(key),
     }),
     [
       canGoBack,
@@ -356,6 +359,7 @@ export function BaseNavigationContainer({
       getState,
       isReady,
       resetRoot,
+      reducerRegistry,
     ]
   );
 

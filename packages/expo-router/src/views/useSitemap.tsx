@@ -68,3 +68,25 @@ export function useSitemap(): SitemapType | null {
   );
   return sitemap;
 }
+
+// Absolute href for every route node in the compiled tree, keyed by `contextKey`. Used to give a
+// tab its destination href when one isn't declared, so a tab press can navigate through the linking
+// config (producing a complete compiled subtree) instead of a bare `navigate(name)`.
+export function getRouteNodeHrefMap(): Map<string, string> {
+  const map = new Map<string, string>();
+
+  const walk = (route: RouteNode, parents: string[]) => {
+    map.set(route.contextKey, routeHref(route, parents));
+
+    const segments = routeSegments(route, parents);
+    for (const child of route.children) {
+      walk(child, segments);
+    }
+  };
+
+  if (store.routeNode) {
+    walk(store.routeNode, []);
+  }
+
+  return map;
+}

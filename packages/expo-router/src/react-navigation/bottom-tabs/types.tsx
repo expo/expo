@@ -13,6 +13,7 @@ import type { HeaderOptions, PlatformPressable } from '../elements';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  NavigationAction,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
@@ -106,6 +107,14 @@ export type BottomTabNavigationOptions = HeaderOptions & {
    * Title text for the screen.
    */
   title?: string;
+
+  /**
+   * Internal: supplied by Expo Router. Builds the action for a first-visit press of this tab so the
+   * tab lands on its complete compiled state (from its href) instead of a bare `navigate(name)` that
+   * leaves the nested navigator uncommitted. Only used on the first press (the tab has no committed
+   * state yet); a re-visit keeps the previous state. Returns `undefined` to fall back to the default.
+   */
+  unstable_tabBarNavigateAction?: () => NavigationAction | null | undefined;
 
   /**
    * Title string of a tab displayed in the tab bar

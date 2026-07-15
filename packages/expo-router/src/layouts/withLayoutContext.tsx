@@ -8,7 +8,7 @@ import type {
 } from 'react';
 import { Children, forwardRef, useMemo } from 'react';
 
-import { useContextKey, useRouteNode } from '../Route';
+import { type RouteNode, useContextKey, useRouteNode } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import type { EventMapBase, NavigationState } from '../react-navigation/native';
 import type { Href, PickPartial } from '../types';
@@ -152,7 +152,7 @@ export function withLayoutContext<
   TEventMap extends EventMapBase,
 >(
   Nav: T,
-  processor?: (options: ScreenProps[]) => ScreenProps[],
+  processor?: (options: ScreenProps[], node: RouteNode | null) => ScreenProps[],
   useOnlyUserDefinedScreens: boolean = false
 ) {
   return Object.assign(
@@ -167,7 +167,7 @@ export function withLayoutContext<
         }
       );
 
-      const processed = processor ? processor(screens ?? []) : screens;
+      const processed = processor ? processor(screens ?? [], node) : screens;
 
       const sorted = useSortedScreens(processed ?? [], guardedRedirects, useOnlyUserDefinedScreens);
 

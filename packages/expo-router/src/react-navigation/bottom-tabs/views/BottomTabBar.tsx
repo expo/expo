@@ -354,10 +354,18 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
             });
 
             if (!focused && !event.defaultPrevented) {
-              navigation.dispatch({
-                ...CommonActions.navigate(route),
-                target: state.key,
-              });
+              // On the first visit the tab has no committed state, so let the Expo Router-provided
+              // builder navigate by href (installing the tab's complete compiled subtree). A
+              // re-visit already has state, so fall through to a plain focus that preserves it.
+              const firstVisitAction =
+                route.state == null ? options.unstable_tabBarNavigateAction?.() : undefined;
+
+              navigation.dispatch(
+                firstVisitAction ?? {
+                  ...CommonActions.navigate(route),
+                  target: state.key,
+                }
+              );
             }
           };
 

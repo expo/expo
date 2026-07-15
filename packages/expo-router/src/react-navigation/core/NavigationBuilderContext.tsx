@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 
-import type { NavigationAction, NavigationState, ParamListBase } from '../routers';
+import type { NavigationAction, ParamListBase } from '../routers';
 import type { NavigationHelpers } from './types';
 
 export type ListenerMap = {
@@ -10,7 +10,6 @@ export type ListenerMap = {
 };
 
 export type KeyedListenerMap = {
-  getState: GetStateListener;
   beforeRemove: ChildBeforeRemoveListener;
 };
 
@@ -33,8 +32,6 @@ export type FocusedNavigationListener = <T>(callback: FocusedNavigationCallback<
   handled: boolean;
   result: T;
 };
-
-export type GetStateListener = () => NavigationState;
 
 export type ChildBeforeRemoveListener = (action: NavigationAction) => boolean;
 

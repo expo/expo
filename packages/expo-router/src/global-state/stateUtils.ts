@@ -174,7 +174,13 @@ export function findDivergentState(
   // These are the tab navigators that are React ancestors of the preview link, captured from
   // `NavigatorTypeContext`. A nested tab that is not such an ancestor (deeper in the target subtree)
   // is no longer looked through — that case is superseded by Step 4's payload subtrees.
-  tabNavigatorKeys?: ReadonlySet<string>
+  tabNavigatorKeys?: ReadonlySet<string>,
+  // Reports whether a committed navigator currently has a mounted reducer. The committed state is
+  // the seed and can contain a navigator that isn't mounted (e.g. a layout that renders `<Redirect>`
+  // instead of its navigator). We must not descend past such a navigator: only a mounted navigator
+  // can reduce an action, so we diverge at the nearest registered one and let the rest ride as
+  // `payload.state`, which the container installs verbatim.
+  isRegistered?: (key: string) => boolean
 ) {
   // The compiler now yields complete states (`stale: false`); this traversal only reads them, so
   // view it through the partial shape the loop already expects.
@@ -204,6 +210,11 @@ export function findDivergentState(
       actionStateRoute.name !== stateRoute.name ||
       !childState ||
       !nextNavigationState ||
+      // The committed child navigator exists in state but isn't mounted, so it can't reduce — treat
+      // it as the boundary and carry its subtree as `payload.state`.
+      (isRegistered != null &&
+        nextNavigationState.key != null &&
+        !isRegistered(nextNavigationState.key)) ||
       (dynamicName &&
         actionStateRouteParams?.[dynamicName.name] !==
           (stateRoute.params as Record<string, any> | undefined)?.[dynamicName.name]);

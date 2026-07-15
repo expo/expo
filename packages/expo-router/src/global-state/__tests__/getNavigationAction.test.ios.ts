@@ -276,7 +276,8 @@ describe(getNavigateAction, () => {
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
       expect.anything(),
-      new Set(['tab-1', 'tab-2'])
+      new Set(['tab-1', 'tab-2']),
+      undefined
     );
   });
 
@@ -286,6 +287,7 @@ describe(getNavigateAction, () => {
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
       expect.anything(),
+      undefined,
       undefined
     );
   });
@@ -296,7 +298,8 @@ describe(getNavigateAction, () => {
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
       expect.anything(),
-      new Set(['tab-1'])
+      new Set(['tab-1']),
+      undefined
     );
   });
 

@@ -74,10 +74,17 @@ export function getNavigateAction(
     ? new Set(options.__internal__tabNavigatorKeys)
     : undefined;
 
+  // The root state is the committed seed and may contain navigators that aren't currently mounted;
+  // `hasReducer` lets the traversal stop at the nearest mounted navigator so the rest of the target
+  // subtree is carried as `payload.state` (installed by the container) rather than aimed at a
+  // navigator that has no reducer to handle it.
+  const hasReducer = (navigationRef as { hasReducer?: (key: string) => boolean }).hasReducer;
+
   const { actionStateRoute, navigationState } = findDivergentState(
     state,
     rootState,
-    tabNavigatorKeys
+    tabNavigatorKeys,
+    hasReducer
   );
 
   /*
