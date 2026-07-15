@@ -8,7 +8,6 @@ import {
   getProjectMetadata,
   getUserMetadataAsync,
   resolveFeedbackAsync,
-  runExpoFeedbackAsync,
   sendFeedbackAsync,
 } from '../cli';
 
@@ -104,21 +103,6 @@ describe('feedback message resolution', () => {
         configurable: true,
         value: originalIsTTY,
       });
-    }
-  });
-});
-
-describe('Node.js version validation', () => {
-  it('stops before running the command on unsupported Node.js versions', async () => {
-    const versionDescriptor = Object.getOwnPropertyDescriptor(process, 'version')!;
-    Object.defineProperty(process, 'version', { ...versionDescriptor, value: 'v22.12.0' });
-
-    try {
-      await expect(runExpoFeedbackAsync()).rejects.toThrow(
-        'Node.js (v22.12.0) is outdated and unsupported.'
-      );
-    } finally {
-      Object.defineProperty(process, 'version', versionDescriptor);
     }
   });
 });

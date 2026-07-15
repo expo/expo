@@ -9,7 +9,6 @@ import { homedir } from 'os';
 import path from 'path';
 import prompts from 'prompts';
 
-const NODE_MIN = [22, 13, 0] as const;
 const CLI_NAME = 'submit-expo-feedback';
 const FEEDBACK_CATEGORIES = ['skills', 'expo-cli', 'eas-cli', 'mcp', 'docs', 'unknown'] as const;
 
@@ -69,7 +68,6 @@ type FeedbackMetadata = {
 };
 
 export async function runExpoFeedbackAsync(): Promise<void> {
-  checkNodeVersion();
   await runAsync();
 }
 
@@ -420,20 +418,6 @@ function getExpoApiBaseUrl(): string {
     return 'http://127.0.0.1:3000';
   }
   return 'https://api.expo.dev';
-}
-
-function checkNodeVersion(): void {
-  const nodeVersion = process.version.slice(1).split('.', 3).map(Number);
-  if (
-    nodeVersion[0]! < NODE_MIN[0] ||
-    (nodeVersion[0] === NODE_MIN[0] && nodeVersion[1]! < NODE_MIN[1])
-  ) {
-    throw new CommandError(
-      `Node.js (${process.version}) is outdated and unsupported. ` +
-        `Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n` +
-        `Go to: https://nodejs.org/en/download`
-    );
-  }
 }
 
 function printHelp(): void {
