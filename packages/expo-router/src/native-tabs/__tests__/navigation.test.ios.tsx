@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { Tabs } from 'react-native-screens';
 
 import { router } from '../../imperative-api';
+import { Stack } from '../../layouts/Stack';
 import { Link } from '../../link/Link';
 import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
@@ -164,4 +165,31 @@ describe('Native Bottom Tabs Navigation', () => {
     act(() => fireEvent.press(screen.getByTestId('second-hidden-link')));
     expectNoRenders();
   });
+});
+
+it('natively selects the compiler-derived route of an unvisited nested Stack tab', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" />
+        <NativeTabs.Trigger name="stack" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+    'stack/_layout': () => <Stack initialRouteName="a" />,
+    'stack/index': () => <View testID="stack-index" />,
+    'stack/a': () => <View testID="stack-a" />,
+  });
+
+  const stackScreenKey = TabsScreen.mock.calls[1][0].screenKey;
+  const onTabSelected = TabsHost.mock.calls.at(-1)![0].onTabSelected!;
+
+  act(() => {
+    onTabSelected({
+      nativeEvent: { selectedScreenKey: stackScreenKey, provenance: 1, actionOrigin: 'user' },
+    } as Parameters<typeof onTabSelected>[0]);
+  });
+
+  expect(screen.getByTestId('stack-index')).toBeVisible();
+  expect(screen.queryByTestId('stack-a')).toBeNull();
 });

@@ -3,12 +3,16 @@
 import React, { use, useCallback, useMemo, useRef } from 'react';
 import type { NavigatorArgs, NavigatorDescriptor, NavigatorRoute } from 'standard-navigation';
 
+import { useRouteNode } from '../Route';
+import { getNavigateAction } from '../global-state/getNavigationAction';
 import {
   NavigatorTypeContext,
   useNavigatorTypeContextValue,
 } from '../react-navigation/core/NavigatorTypeContext';
 import { useStableTabOrder } from '../react-navigation/core/useStableTabOrder';
+import { useStoreSlice } from '../react-navigation/core/useStoreSlice';
 import type {
+  NavigationAction,
   ParamListBase,
   TabNavigationState,
   TabRouterOptions,
@@ -16,6 +20,7 @@ import type {
 import { usePreloadRoutes } from '../react-navigation/usePreloadRoutes';
 import { unstable_createStandardRouterNavigator } from '../standard-navigation';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
+import { getRouteNodeHrefMap } from '../views/useSitemap';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
@@ -39,6 +44,7 @@ interface NativeTabsCreatedProps {
   lazyRoutes: NavigatorRoute[];
   lazyDescriptors: Record<string, NavigatorDescriptor<NativeTabOptions>>;
   preload: (name: string) => void;
+  dispatch: (action: NavigationAction) => void;
   // React Navigation state key of this navigator (the standard-navigation `state` prop omits it).
   // Provided to `NavigatorTypeContext` so link-preview navigation can look through this tab.
   stateKey: string;
@@ -55,6 +61,7 @@ function NativeTabsContent({
   lazyRoutes,
   lazyDescriptors,
   preload,
+  dispatch,
   stateKey,
   // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
   // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
@@ -80,6 +87,9 @@ function NativeTabsContent({
   }
 
   const { routes } = state;
+  const routeNode = useRouteNode();
+  const hrefMap = useMemo(() => getRouteNodeHrefMap(), [routeNode]);
+  const committedState = useStoreSlice(stateKey);
 
   // TODO: Consider supporting lazy routes here (preload only non-lazy tabs, like the JS navigators)
   // instead of always mounting every tab - would defer offscreen tab cost on the native side.
@@ -165,10 +175,24 @@ function NativeTabsContent({
             isPrevented: false,
           },
         });
-        actions.navigate(selectedRoute.name);
+        const child = routeNode?.children.find(
+          (candidate) => candidate.route === selectedRoute.name
+        );
+        const href = child ? hrefMap.get(child.contextKey) : undefined;
+        const committedRoute = committedState?.routes.find(
+          (route) => route.key === selectedRoute.key
+        );
+        const firstVisitAction =
+          committedRoute?.state == null && href != null ? getNavigateAction(href, {}) : undefined;
+
+        if (firstVisitAction != null) {
+          dispatch(firstVisitAction);
+        } else {
+          actions.navigate(selectedRoute.name);
+        }
       }
     },
-    [orderedRoutes, actions, emitter]
+    [orderedRoutes, actions, committedState, dispatch, emitter, hrefMap, routeNode]
   );
 
   // Compile-time guard: everything spread onto `<NativeTabsView>` must be a prop it declares. The
@@ -230,6 +254,7 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
         lazyRoutes.map((route) => [route.key, { ...describe(route, true), render: () => null }])
       ),
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
+      dispatch,
       stateKey: state.key,
     };
   },
