@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+- Process captured photos off the main thread on iOS so full-resolution captures no longer hang the UI on older devices. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+- Fix iOS captures being saved above their native resolution due to orientation normalization rendering at the screen scale. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+- Remove a redundant full-resolution JPEG re-encode when saving captured photos on iOS. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+
 ### 💡 Others
 
 ## 57.0.2 — 2026-07-15
