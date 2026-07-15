@@ -1,6 +1,7 @@
 import { mkdirSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
+import prompts from 'prompts';
 
 import {
   createFeedbackMetadataAsync,
@@ -21,6 +22,9 @@ jest.mock('agent-cli-detector', () => ({
     },
   })),
 }));
+jest.mock('prompts');
+
+const mockPrompts = prompts as unknown as jest.Mock;
 
 function createTempDir(): string {
   return mkdtemp(path.join(tmpdir(), 'submit-expo-feedback-test-'));
@@ -41,6 +45,23 @@ describe('feedback message resolution', () => {
     await expect(resolveFeedbackAsync(['please', 'improve', 'errors'])).resolves.toBe(
       'please improve errors'
     );
+  });
+
+  it('requires a message without prompting in non-interactive environments', async () => {
+    const originalIsTTY = process.stdin.isTTY;
+    Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: false });
+
+    try {
+      await expect(resolveFeedbackAsync([])).rejects.toThrow(
+        'Feedback message is required in non-interactive environments.'
+      );
+      expect(mockPrompts).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(process.stdin, 'isTTY', {
+        configurable: true,
+        value: originalIsTTY,
+      });
+    }
   });
 });
 

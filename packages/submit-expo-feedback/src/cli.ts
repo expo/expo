@@ -124,6 +124,10 @@ export async function resolveFeedbackAsync(messageParts: string[]): Promise<stri
     return feedback;
   }
 
+  if (ciInfo.isCI || !process.stdin.isTTY) {
+    throw new CommandError('Feedback message is required in non-interactive environments.');
+  }
+
   const response = await prompts(
     {
       type: 'text',
