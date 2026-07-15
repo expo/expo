@@ -10,6 +10,7 @@ import {
   StackRouter,
   TabRouter,
 } from '../../routers';
+import { getRouteKey, getStateKey } from '../../routers/getRouteKey';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { NavigationIndependentTree } from '../NavigationIndependentTree';
 import { NavigationStateContext } from '../NavigationStateContext';
@@ -18,6 +19,16 @@ import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import type { EventListenerCallback, NavigationContainerEventMap } from '../types';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+
+// Deterministic structural keys for the option-events tests' `foo`/`bar`/`baz` root (TabRouter and
+// StackRouter both mint keys via `getRouteKey`/`getStateKey`, not the `MockRouterKey` counter).
+const optionsRootKey = getStateKey(undefined);
+const optionsFooKey = getRouteKey({ stateKey: optionsRootKey, name: 'foo' });
+const optionsBarKey = getRouteKey({ stateKey: optionsRootKey, name: 'bar' });
+const optionsBazKey = getRouteKey({ stateKey: optionsRootKey, name: 'baz' });
+const optionsBazChildKey = getStateKey(optionsBazKey);
+const optionsQuxKey = getRouteKey({ stateKey: optionsBazChildKey, name: 'qux' });
+const optionsQuxxKey = getRouteKey({ stateKey: optionsBazChildKey, name: 'quxx' });
 
 beforeEach(() => {
   MockRouterKey.current = 0;
@@ -127,7 +138,10 @@ test('handle dispatching with ref', () => {
   const onStateChange = jest.fn();
 
   const initialState = {
+    stale: false as const,
     index: 1,
+    key: '0',
+    routeNames: ['foo', 'foo2', 'bar', 'baz'],
     routes: [
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
@@ -188,8 +202,22 @@ test('container dispatch runs the root reducer once and commits the returned roo
     changedSlices: [],
   }));
 
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -240,8 +268,29 @@ test('navigator dispatch passes local state to thunks and root reducer originKey
     changedSlices: [],
   }));
 
+  MockRouterKey.current = 2;
+
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar'],
+              routes: [{ key: 'bar', name: 'bar' }],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (
@@ -286,7 +335,47 @@ test('handle resetting state with ref', () => {
   const onStateChange = jest.fn();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'foo2', 'bar', 'baz'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          {
+            key: 'foo2',
+            name: 'foo2',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['qux1', 'lex1'],
+              routes: [
+                { key: 'qux1', name: 'qux1' },
+                { key: 'lex1', name: 'lex1' },
+              ],
+            },
+          },
+          { key: 'bar', name: 'bar' },
+          {
+            key: 'baz',
+            name: 'baz',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '2',
+              routeNames: ['qux2', 'lex2'],
+              routes: [
+                { key: 'qux2', name: 'qux2' },
+                { key: 'lex2', name: 'lex2' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="foo2">
@@ -309,6 +398,8 @@ test('handle resetting state with ref', () => {
       </TestNavigator>
     </BaseNavigationContainer>
   );
+
+  MockRouterKey.current = 3;
 
   render(element).update(element);
 
@@ -374,7 +465,31 @@ test('handles getRootState', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['qux', 'lex'],
+              routes: [
+                { key: 'qux', name: 'qux' },
+                { key: 'lex', name: 'lex' },
+              ],
+            },
+          },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo">
           {() => (
@@ -388,6 +503,8 @@ test('handles getRootState', () => {
       </TestNavigator>
     </BaseNavigationContainer>
   );
+
+  MockRouterKey.current = 2;
 
   render(element);
 
@@ -440,8 +557,18 @@ test('emits ready event when the container is ready with synchronous content', (
 
   expect(listener).not.toHaveBeenCalled();
 
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo'],
+        routes: [{ key: 'foo', name: 'foo' }],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
       </TestNavigator>
@@ -503,7 +630,19 @@ test('emits state events when the state changes', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+          { key: 'baz', name: 'baz' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -511,6 +650,8 @@ test('emits state events when the state changes', () => {
       </TestNavigator>
     </BaseNavigationContainer>
   );
+
+  MockRouterKey.current = 1;
 
   render(element).update(element);
 
@@ -660,7 +801,32 @@ test('emits option events when options change with tab router', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: optionsRootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { key: optionsFooKey, name: 'foo' },
+          { key: optionsBarKey, name: 'bar' },
+          {
+            key: optionsBazKey,
+            name: 'baz',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: optionsBazChildKey,
+              routeNames: ['qux', 'quxx'],
+              routes: [
+                { key: optionsQuxKey, name: 'qux' },
+                { key: optionsQuxxKey, name: 'quxx' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo" options={{ x: 1 }}>
           {() => null}
@@ -735,7 +901,32 @@ test('emits option events when options change with stack router', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: optionsRootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { key: optionsFooKey, name: 'foo' },
+          { key: optionsBarKey, name: 'bar' },
+          {
+            key: optionsBazKey,
+            name: 'baz',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: optionsBazChildKey,
+              routeNames: ['qux', 'quxx'],
+              routes: [
+                { key: optionsQuxKey, name: 'qux' },
+                { key: optionsQuxxKey, name: 'quxx' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo" options={{ x: 1 }}>
           {() => null}
@@ -904,8 +1095,22 @@ test('invokes the unhandled action listener with the unhandled action', () => {
 
   const TestScreen = () => <></>;
 
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer ref={ref} onUnhandledAction={fn}>
+    <BaseNavigationContainer
+      ref={ref}
+      onUnhandledAction={fn}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} />
         <Screen name="bar" component={TestScreen} />
@@ -940,12 +1145,34 @@ test('works with state change events in independent nested container', () => {
   const onStateChange = jest.fn();
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (
             <NavigationIndependentTree>
-              <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+              <BaseNavigationContainer
+                ref={ref}
+                onStateChange={onStateChange}
+                initialState={{
+                  stale: false as const,
+                  index: 0,
+                  key: '1',
+                  routeNames: ['qux', 'lex'],
+                  routes: [
+                    { key: 'qux', name: 'qux' },
+                    { key: 'lex', name: 'lex' },
+                  ],
+                }}>
                 <TestNavigator>
                   <Screen name="qux">{() => null}</Screen>
                   <Screen name="lex">{() => null}</Screen>
@@ -998,7 +1225,30 @@ test('warns for duplicate route names nested inside each other', () => {
   const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['foo', 'baz'],
+              routes: [
+                { key: 'foo', name: 'foo' },
+                { key: 'baz', name: 'baz' },
+              ],
+            },
+          },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (
@@ -1018,7 +1268,42 @@ test('warns for duplicate route names nested inside each other', () => {
   );
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '2',
+        routeNames: ['qux'],
+        routes: [
+          {
+            key: 'qux',
+            name: 'qux',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '3',
+              routeNames: ['foo', 'bar'],
+              routes: [
+                {
+                  key: 'foo',
+                  name: 'foo',
+                  state: {
+                    stale: false as const,
+                    index: 0,
+                    key: '4',
+                    routeNames: ['foo', 'baz'],
+                    routes: [
+                      { key: 'foo', name: 'foo' },
+                      { key: 'baz', name: 'baz' },
+                    ],
+                  },
+                },
+                { key: 'bar', name: 'bar' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="qux">
           {() => (
@@ -1044,7 +1329,30 @@ test('warns for duplicate route names nested inside each other', () => {
   );
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 1,
+        key: '5',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          {
+            key: 'bar',
+            name: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '6',
+              routeNames: ['foo', 'baz'],
+              routes: [
+                { key: 'foo', name: 'foo' },
+                { key: 'baz', name: 'baz' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator initialRouteName="bar">
         <Screen name="foo" component={TestScreen} />
         <Screen name="bar">

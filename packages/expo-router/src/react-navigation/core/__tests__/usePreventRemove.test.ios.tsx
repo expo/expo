@@ -67,7 +67,16 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: rootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [{ key: fooKey, name: 'foo' }],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={TestScreen} />
@@ -172,7 +181,16 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: rootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [{ key: fooKey, name: 'foo' }],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={TestScreen} />
@@ -270,7 +288,16 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: rootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [{ key: fooKey, name: 'foo' }],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={TestScreen} />
@@ -367,7 +394,16 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: rootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [{ key: fooKey, name: 'foo' }],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>

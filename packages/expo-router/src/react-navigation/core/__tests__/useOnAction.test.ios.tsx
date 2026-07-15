@@ -233,9 +233,22 @@ test("does not down-bubble NAVIGATE_DEPRECATED on the root reducer path", () => 
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  MockRouterKey.current = 1;
+
   const element = (
     <BaseNavigationContainer
       ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+          { key: 'baz', name: 'baz' },
+        ],
+      }}
       onStateChange={onStateChange}
       onUnhandledAction={onUnhandledAction}>
       <TestNavigator>
@@ -683,7 +696,16 @@ test("prevents removing a screen with 'beforeRemove' event", () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: rootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [{ key: fooKey, name: 'foo' }],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={TestScreen} />
@@ -813,7 +835,16 @@ test("prevents removing a child screen with 'beforeRemove' event", () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: rootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [{ key: fooKey, name: 'foo' }],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -967,7 +998,16 @@ test("prevents removing a grand child screen with 'beforeRemove' event", () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: rootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [{ key: fooKey, name: 'foo' }],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -1156,7 +1196,16 @@ test("prevents removing by multiple screens with 'beforeRemove' event", () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: rootKey,
+        routeNames: ['foo', 'bar', 'baz', 'bax'],
+        routes: [{ key: fooKey, name: 'foo' }],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={TestScreen} />
@@ -1304,7 +1353,16 @@ test("prevents removing a child screen with 'beforeRemove' event with 'resetRoot
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: rootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [{ key: fooKey, name: 'foo' }],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
