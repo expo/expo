@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.21 — 2026-07-15
+
+### 🐛 Bug fixes
+
 - [Android] Support `android.graphics.Color` arguments and props on Android below API 26 by adding a `ColorCompat` wrapper, since the class-based `Color` API (`Color.valueOf` and the float accessors) only exists on API 26 and above. ([#47546](https://github.com/expo/expo/issues/47546) by [@anasvemmully](https://github.com/anasvemmully)) ([#47575](https://github.com/expo/expo/pull/47575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix a `SIGABRT` crash when unmounting a SwiftUI view tree that still holds a focused field nested inside a container (e.g. an `@expo/ui` `TextField` inside an `HStack` or `LabeledContent` in a `Form`), such as dismissing a modal from a native header button. Resigning the first responder on unmount now recurses through the removed subtree instead of only handling a top-level focusable view. ([#47682](https://github.com/expo/expo/issues/47682) by [@andreavrr](https://github.com/andreavrr)) ([#47709](https://github.com/expo/expo/pull/47709) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 56.0.20 — 2026-07-07
 

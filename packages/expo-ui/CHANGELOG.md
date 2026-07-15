@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix components crashing on Android 7 (API 24/25), where `android.graphics.Color` props had no type converter below API 26. `Color` props and the seeded Material color palette now work on those versions. ([#47546](https://github.com/expo/expo/issues/47546) by [@anasvemmully](https://github.com/anasvemmully)) ([#47575](https://github.com/expo/expo/pull/47575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-
 ### 💡 Others
+
+## 56.0.22 — 2026-07-15
+
+### 🐛 Bug fixes
+
+- [Android] Fix components crashing on Android 7 (API 24/25), where `android.graphics.Color` props had no type converter below API 26. `Color` props and the seeded Material color palette now work on those versions. ([#47546](https://github.com/expo/expo/issues/47546) by [@anasvemmully](https://github.com/anasvemmully)) ([#47575](https://github.com/expo/expo/pull/47575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 56.0.21 — 2026-07-07
 

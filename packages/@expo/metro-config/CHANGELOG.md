@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `resolver.useWatchman: true` not re-enabling watchman as intended ([#47662](https://github.com/expo/expo/issues/47662) by [@isaka1022](https://github.com/isaka1022))
-
 ### 💡 Others
+
+## 56.0.17 — 2026-07-15
+
+### 🐛 Bug fixes
+
+- Fix `resolver.useWatchman: true` not re-enabling watchman as intended ([#47662](https://github.com/expo/expo/issues/47662) by [@isaka1022](https://github.com/isaka1022))
 
 ## 56.0.16 — 2026-07-03
 

@@ -1,6 +1,6 @@
 {
   "name": "@expo/inline-modules",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "The Expo inline modules",
   "main": "build/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "dependencies": {
-    "@expo/config-plugins": "workspace:~56.0.12"
+    "@expo/config-plugins": "workspace:~56.0.13"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
