@@ -403,9 +403,7 @@ function getSession(): UserSession | null {
 }
 
 export function getExpoHomeDirectory(): string {
-  if (process.env.__UNSAFE_EXPO_HOME_DIRECTORY) {
-    return process.env.__UNSAFE_EXPO_HOME_DIRECTORY;
-  } else if (process.env.EXPO_STAGING) {
+  if (process.env.EXPO_STAGING) {
     return path.join(homedir(), '.expo-staging');
   } else if (process.env.EXPO_LOCAL) {
     return path.join(homedir(), '.expo-local');

@@ -194,28 +194,18 @@ describe('user metadata', () => {
 
 describe('feedback submission', () => {
   const originalEnv = process.env;
-  let homeDir: string;
   let projectRoot: string;
   let fetchMock: jest.Mock;
 
   beforeEach(() => {
-    homeDir = createTempDir();
     projectRoot = createTempDir();
     const env: NodeJS.ProcessEnv = {
       ...originalEnv,
       EXPO_LOCAL: '1',
-      __UNSAFE_EXPO_HOME_DIRECTORY: homeDir,
     };
     delete env.EXPO_STAGING;
     delete env.EXPO_TOKEN;
     process.env = env;
-    writeJson(path.join(homeDir, 'state.json'), {
-      auth: {
-        sessionSecret: 'session-secret',
-        userId: 'user-id',
-        username: 'expo-user',
-      },
-    });
     writeJson(path.join(projectRoot, 'package.json'), {
       name: 'not-an-expo-app',
       version: '1.0.0',
@@ -226,7 +216,6 @@ describe('feedback submission', () => {
 
   afterEach(() => {
     process.env = originalEnv;
-    rmSync(homeDir, { force: true, recursive: true });
     rmSync(projectRoot, { force: true, recursive: true });
     jest.restoreAllMocks();
   });
@@ -234,11 +223,17 @@ describe('feedback submission', () => {
   it('posts feedback and metadata to the local CLI feedback endpoint', async () => {
     const timeoutSignal = new AbortController().signal;
     jest.spyOn(AbortSignal, 'timeout').mockReturnValue(timeoutSignal);
-    const metadata = await createFeedbackMetadataAsync(projectRoot, undefined, 'mcp');
+    const session = {
+      sessionSecret: 'session-secret',
+      userId: 'user-id',
+      username: 'expo-user',
+    };
+    const metadata = await createFeedbackMetadataAsync(projectRoot, session, 'mcp');
 
     await sendFeedbackAsync({
       feedback: 'please make errors clearer',
       metadata,
+      session,
     });
 
     expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:3000/v2/feedback/cli-send', {
