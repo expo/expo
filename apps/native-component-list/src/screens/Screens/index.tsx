@@ -2,7 +2,7 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import { useObserve } from 'expo-observe';
+import { useObserve } from '../../utilities/useObserveSafe';
 import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 

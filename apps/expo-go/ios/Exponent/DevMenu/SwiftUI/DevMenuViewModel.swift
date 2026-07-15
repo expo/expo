@@ -40,7 +40,6 @@ class DevMenuViewModel: ObservableObject {
     loadDevSettings()
     loadFloatingActionButtonState()
     updateSectionVisibility()
-    hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
   }
 
   /// True when running a lesson (vs a free-form snack)
@@ -48,7 +47,7 @@ class DevMenuViewModel: ObservableObject {
     return SnackEditingSession.shared.isLesson
   }
 
-  /// True for lessons or snacks with "lesson"/"learn" in name
+  /// True for lessons and embedded playground/demo sessions.
   var isLessonLikeSession: Bool {
     return SnackEditingSession.shared.isLessonLikeSession
   }
@@ -56,17 +55,6 @@ class DevMenuViewModel: ObservableObject {
   /// Hides the "Tools button" toggle for lessons / lesson-like snacks
   var shouldHideFABToggle: Bool {
     return isLessonLikeSession
-  }
-
-  /// True if there's an active snack editing session (lesson or saved snack)
-  var hasActiveSnackSession: Bool {
-    return SnackEditingSession.shared.isReady
-  }
-
-  /// Resets code to original and broadcasts to the runtime (no reload needed)
-  func resetCode() {
-    SnackEditingSession.shared.resetAndBroadcast()
-    manager.closeMenu()
   }
 
   private func loadAppInfo() {
@@ -211,20 +199,8 @@ class DevMenuViewModel: ObservableObject {
   }
 
   private func observeSnackEditingChanges() {
-    // Update hasBeenEdited when code changes
-    NotificationCenter.default.publisher(for: SnackEditingSession.codeDidChangeNotification)
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] _ in
-        self?.hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
-      }
-      .store(in: &cancellables)
-
-    // Reset hasBeenEdited when session changes (new snack opened)
-    NotificationCenter.default.publisher(for: SnackEditingSession.sessionDidChangeNotification)
-      .receive(on: DispatchQueue.main)
-      .sink { [weak self] _ in
-        self?.hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
-      }
-      .store(in: &cancellables)
+    // hasBeenEdited is @Published on the session; republish it directly
+    SnackEditingSession.shared.$hasBeenEdited
+      .assign(to: &$hasBeenEdited)
   }
 }

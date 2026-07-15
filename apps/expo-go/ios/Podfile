@@ -62,7 +62,9 @@ target 'Expo Go' do
       'expo-widgets',
       'expo-observe'
     ],
-    includeTests: true,
+    # Module unit tests are hosted by bare-expo (BareExpoTests); the Tests
+    # target here is for Expo Go app unit tests only and links no pods.
+    includeTests: false,
     flags: {
       :inhibit_warnings => false
     }
@@ -163,6 +165,6 @@ target 'Expo Go' do
   end
 
   target 'Tests' do
-    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
+    inherit! :search_paths
   end
 end

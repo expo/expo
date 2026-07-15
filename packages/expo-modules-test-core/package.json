@@ -37,5 +37,8 @@
     "xml-js": "^1.6.11",
     "yaml": "^2.8.3",
     "expo-type-information": "workspace:^0.1.2"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link, NavigationAction, useLinkBuilder, useLinkProps } from '@react-navigation/native';
-import { useObserve } from 'expo-observe';
+import { useObserve } from '../utilities/useObserveSafe';
 import React from 'react';
 import {
   FlatList,
