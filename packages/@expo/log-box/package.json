@@ -1,6 +1,6 @@
 {
   "name": "@expo/log-box",
-  "version": "55.0.12",
+  "version": "55.0.13",
   "main": "app/index.ts",
   "scripts": {
     "start": "expo start",

@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.16.8 — 2026-07-15
+
+### 🐛 Bug fixes
+
 - Fixed unstable fingerprint on Windows. ([#46196](https://github.com/expo/expo/pull/46196) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

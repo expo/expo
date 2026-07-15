@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.25 — 2026-07-15
+
+### 🎉 New features
+
 - Add experimental `tvos` and `macos` resolution ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
 - [iOS] Under precompiled modules, preserve a dynamic-framework subgraph set up by an earlier `pre_install` hook (e.g. `@rnmapbox/maps`) — both the dynamic frameworks and the pods that link against them — instead of forcing them back to static libraries. ([#47500](https://github.com/expo/expo/pull/47500) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 55.0.24 — 2026-05-21
 

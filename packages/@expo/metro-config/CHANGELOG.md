@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.25 — 2026-07-15
+
+### 💡 Others
+
 - Add misc. OOT platforms as base `react-native` paths for module configs like `getPolyfills` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 
 ## 55.0.24 — 2026-06-25
