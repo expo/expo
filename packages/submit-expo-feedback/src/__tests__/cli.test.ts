@@ -232,6 +232,8 @@ describe('feedback submission', () => {
   });
 
   it('posts feedback and metadata to the local CLI feedback endpoint', async () => {
+    const timeoutSignal = new AbortController().signal;
+    jest.spyOn(AbortSignal, 'timeout').mockReturnValue(timeoutSignal);
     const metadata = await createFeedbackMetadataAsync(projectRoot, undefined, 'mcp');
 
     await sendFeedbackAsync({
@@ -241,6 +243,7 @@ describe('feedback submission', () => {
 
     expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:3000/v2/feedback/cli-send', {
       method: 'POST',
+      signal: timeoutSignal,
       headers: expect.objectContaining({
         'Content-Type': 'application/json',
         'User-Agent': 'submit-expo-feedback/0.0.0',
@@ -251,6 +254,7 @@ describe('feedback submission', () => {
         metadata,
       }),
     });
+    expect(AbortSignal.timeout).toHaveBeenCalledWith(15_000);
     expect(metadata).toMatchObject({
       category: 'mcp',
       agentEnvironment: {

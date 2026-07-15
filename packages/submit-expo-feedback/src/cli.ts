@@ -10,6 +10,7 @@ import path from 'path';
 import prompts from 'prompts';
 
 const CLI_NAME = 'submit-expo-feedback';
+const FEEDBACK_TIMEOUT_MS = 15_000;
 const FEEDBACK_CATEGORIES = ['skills', 'expo-cli', 'eas-cli', 'mcp', 'docs', 'unknown'] as const;
 
 type FeedbackCategory = (typeof FEEDBACK_CATEGORIES)[number];
@@ -338,6 +339,7 @@ export async function sendFeedbackAsync({
 }): Promise<void> {
   const response = await fetch(new URL('/v2/feedback/cli-send', getExpoApiBaseUrl()).toString(), {
     method: 'POST',
+    signal: AbortSignal.timeout(FEEDBACK_TIMEOUT_MS),
     headers: {
       ...getAuthHeaders(session),
       'Content-Type': 'application/json',
