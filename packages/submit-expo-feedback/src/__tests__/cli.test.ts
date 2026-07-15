@@ -21,6 +21,10 @@ jest.mock('agent-cli-detector', () => ({
     },
   })),
 }));
+jest.mock('ci-info', () => ({
+  ...jest.requireActual('ci-info'),
+  isCI: false,
+}));
 jest.mock('prompts');
 
 const mockPrompts = prompts as unknown as jest.Mock;
