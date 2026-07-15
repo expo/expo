@@ -9,36 +9,24 @@ final class PatchedBundleRegistryTests: XCTestCase {
     super.tearDown()
   }
 
-  private func makeTempFile() throws -> URL {
-    let url = FileManager.default.temporaryDirectory
-      .appendingPathComponent("registry-test-\(UUID().uuidString).js")
-    try Data("x".utf8).write(to: url)
-    return url
+  func testStoresAndReadsInterceptorPerScopeKey() {
+    let interceptor = Data("//<patch>\n".utf8)
+    PatchedBundleRegistry.setInterceptor(interceptor, forScopeKey: "scope")
+
+    XCTAssertEqual(PatchedBundleRegistry.interceptor(forScopeKey: "scope"), interceptor)
+    XCTAssertNil(PatchedBundleRegistry.interceptor(forScopeKey: "other"))
   }
 
-  func testReplacingAPatchDeletesTheSupersededFile() throws {
-    let first = try makeTempFile()
-    let second = try makeTempFile()
-    PatchedBundleRegistry.setPatchedBundleURL(first, forScopeKey: "scope")
-    PatchedBundleRegistry.setPatchedBundleURL(second, forScopeKey: "scope")
-    XCTAssertFalse(FileManager.default.fileExists(atPath: first.path))
-    XCTAssertTrue(FileManager.default.fileExists(atPath: second.path))
-    XCTAssertEqual(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "scope"), second)
+  func testReplacingReturnsLatestInterceptor() {
+    PatchedBundleRegistry.setInterceptor(Data("first".utf8), forScopeKey: "scope")
+    PatchedBundleRegistry.setInterceptor(Data("second".utf8), forScopeKey: "scope")
+
+    XCTAssertEqual(PatchedBundleRegistry.interceptor(forScopeKey: "scope"), Data("second".utf8))
   }
 
-  func testClearDeletesFilesAndEntries() throws {
-    let url = try makeTempFile()
-    PatchedBundleRegistry.setPatchedBundleURL(url, forScopeKey: "scope")
+  func testClearRemovesEntries() {
+    PatchedBundleRegistry.setInterceptor(Data("x".utf8), forScopeKey: "scope")
     PatchedBundleRegistry.clear()
-    XCTAssertFalse(FileManager.default.fileExists(atPath: url.path))
-    XCTAssertNil(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "scope"))
-  }
-
-  func testPatchedBundleDataReadsRegisteredFile() throws {
-    let url = try makeTempFile()
-    PatchedBundleRegistry.setPatchedBundleURL(url, forScopeKey: "scope")
-
-    XCTAssertEqual(PatchedBundleRegistry.patchedBundleData(forScopeKey: "scope"), Data("x".utf8))
-    XCTAssertNil(PatchedBundleRegistry.patchedBundleData(forScopeKey: "other"))
+    XCTAssertNil(PatchedBundleRegistry.interceptor(forScopeKey: "scope"))
   }
 }

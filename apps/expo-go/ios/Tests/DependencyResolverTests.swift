@@ -93,13 +93,44 @@ final class DependencyResolverTests: XCTestCase {
     XCTAssertEqual(result["./Selector"], 0)
   }
 
-  func testAddedImportThrowsCountMismatch() {
+  func testAddedImportThrowsUnresolvable() {
     XCTAssertThrowsError(try DependencyResolver.resolve(
       names: ["react", "expo-crypto"], dependencyIds: [49],
       sourcePathsById: [49: "/r/node_modules/react/index.js"],
       moduleSourcePath: "/r/app/App.tsx")
     ) { error in
-      XCTAssertEqual(error as? DependencyResolver.ResolutionError, .countMismatch(found: 2, expected: 1))
+      XCTAssertEqual(error as? DependencyResolver.ResolutionError, .unresolvable(name: "expo-crypto"))
+    }
+  }
+
+  func testFewerNamesThanDepsThrowsCountMismatch() {
+    XCTAssertThrowsError(try DependencyResolver.resolve(
+      names: ["react"], dependencyIds: [49, 50],
+      sourcePathsById: [49: "/r/node_modules/react/index.js", 50: "/r/node_modules/react-native/index.js"],
+      moduleSourcePath: "/r/app/App.tsx")
+    ) { error in
+      XCTAssertEqual(error as? DependencyResolver.ResolutionError, .countMismatch(found: 1, expected: 2))
+    }
+  }
+
+  func testTwoSpecifiersMayShareOneDependency() throws {
+    // A file importing one module two ways (../utils and ../utils/index) -
+    // two names, one deduped dep id. Both must map to it, not be refused.
+    let result = try DependencyResolver.resolve(
+      names: ["../utils", "../utils/index"], dependencyIds: [7],
+      sourcePathsById: [7: "/r/app/utils/index.ts"],
+      moduleSourcePath: "/r/app/screens/Screen.tsx")
+    XCTAssertEqual(result["../utils"], 0)
+    XCTAssertEqual(result["../utils/index"], 0)
+  }
+
+  func testEmptySpecifierIsRefusedNotCrash() {
+    XCTAssertThrowsError(try DependencyResolver.resolve(
+      names: [""], dependencyIds: [1],
+      sourcePathsById: [1: "/r/app/a.ts"],
+      moduleSourcePath: "/r/app/App.tsx")
+    ) { error in
+      XCTAssertEqual(error as? DependencyResolver.ResolutionError, .unresolvable(name: ""))
     }
   }
 

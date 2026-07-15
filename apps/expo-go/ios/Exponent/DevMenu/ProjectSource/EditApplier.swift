@@ -109,20 +109,24 @@ final class PublishedEditApplier: EditApplier {
       do {
         let applier = try await applierTask.value
         try Task.checkCancellation()
-        let url = try applier.prepare(edits: edits)
-        guard !Task.isCancelled else {
-          try? FileManager.default.removeItem(at: url)
-          return
-        }
+        let result = applier.prepare(edits: edits)
+        guard !Task.isCancelled else { return }
+        let editCount = edits.count
         await MainActor.run {
           guard let self,
                 self.generation == requestGeneration,
                 environment.scopeKey() == scopeKey else {
-            try? FileManager.default.removeItem(at: url)
             return
           }
-          PatchedBundleRegistry.setPatchedBundleURL(url, forScopeKey: scopeKey)
+          if result.failures.count == editCount {
+            PatchedBundleRegistry.clear()
+          } else {
+            PatchedBundleRegistry.setInterceptor(Data(result.interceptor.utf8), forScopeKey: scopeKey)
+          }
           self.applyTask = nil
+          if !result.failures.isEmpty {
+            environment.onError(Self.message(for: result.failures))
+          }
           environment.reload()
         }
       } catch is CancellationError {
@@ -137,6 +141,12 @@ final class PublishedEditApplier: EditApplier {
         }
       }
     }
+  }
+
+  private static func message(for failures: [PublishedBundleApplier.EditFailure]) -> String {
+    failures
+      .map { $0.error.localizedDescription }
+      .joined(separator: "\n\n")
   }
 
   private func ensureApplier() -> Task<PublishedBundleApplier, Error> {

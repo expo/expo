@@ -37,7 +37,7 @@ final class PublishedBundleApplierTests: XCTestCase {
     super.tearDown()
   }
 
-  func testPrepareWritesPatchedBundleWithoutRegistering() throws {
+  func testPrepareBuildsInterceptorWithoutRegistering() throws {
     let transformer = FakeTransformer { _, _, _, _ in
       ModuleTransformResult(
         moduleCode: "exports.default = require('./a');",
@@ -46,30 +46,31 @@ final class PublishedBundleApplierTests: XCTestCase {
     let applier = try PublishedBundleApplier(
       bundleData: Data(Self.bundleText.utf8), transformer: transformer)
 
-    let url = try applier.prepare(
+    let result = applier.prepare(
       edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")])
-    defer { try? FileManager.default.removeItem(at: url) }
 
-    XCTAssertNil(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "test-scope"))
-    let patched = try String(contentsOf: url, encoding: .utf8)
-    XCTAssertTrue(patched.hasPrefix(BundlePatch.startMarker))
-    XCTAssertTrue(patched.contains("overrides[0] ="))
-    XCTAssertTrue(patched.contains("exports.default = require('./a');"))
-    // original bundle intact after the patch block
-    XCTAssertTrue(patched.hasSuffix(Self.bundleText))
+    XCTAssertTrue(result.failures.isEmpty)
+    XCTAssertNil(PatchedBundleRegistry.interceptor(forScopeKey: "test-scope"))
+    XCTAssertTrue(result.interceptor.hasPrefix(BundlePatch.startMarker))
+    XCTAssertTrue(result.interceptor.contains("overrides[0] ="))
+    XCTAssertTrue(result.interceptor.contains("exports.default = require('./a');"))
   }
 
-  func testUnknownPathThrowsModuleNotFound() throws {
+  func testUnknownPathReportedAsFailure() throws {
     let transformer = FakeTransformer { _, _, _, _ in
       ModuleTransformResult(moduleCode: "", dependencyNames: [])
     }
     let applier = try PublishedBundleApplier(
       bundleData: Data(Self.bundleText.utf8), transformer: transformer)
-    XCTAssertThrowsError(try applier.prepare(
-      edits: [.init(displayPath: "app/Missing.tsx", contents: "x", originalContents: "x")]))
+    let result = applier.prepare(
+      edits: [.init(displayPath: "app/Missing.tsx", contents: "x", originalContents: "x")])
+    XCTAssertEqual(result.failures.count, 1)
+    guard case .moduleNotFound = result.failures.first?.error as? PublishedBundleApplier.ApplyError else {
+      return XCTFail("expected .moduleNotFound, got \(String(describing: result.failures.first?.error))")
+    }
   }
 
-  func testAddedImportIsRefusedWithPreciseError() throws {
+  func testAddedImportReportedAsFailureWithPreciseError() throws {
     let transformer = FakeTransformer { source, _, _, _ in
       source == "orig"
         ? ModuleTransformResult(moduleCode: "o", dependencyNames: ["./a", "./b"])
@@ -77,32 +78,42 @@ final class PublishedBundleApplierTests: XCTestCase {
     }
     let applier = try PublishedBundleApplier(
       bundleData: Data(Self.bundleText.utf8), transformer: transformer)
-    XCTAssertThrowsError(try applier.prepare(
+    let result = applier.prepare(
       edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")])
-    ) { error in
-      guard case .importsChanged(_, let added, let removed) = error as? PublishedBundleApplier.ApplyError else {
-        return XCTFail("expected .importsChanged, got \(error)")
-      }
-      XCTAssertEqual(added, ["expo-crypto"])
-      XCTAssertEqual(removed, [])
+    guard case .importsChanged(_, let added, let removed) = result.failures.first?.error as? PublishedBundleApplier.ApplyError else {
+      return XCTFail("expected .importsChanged, got \(String(describing: result.failures.first?.error))")
     }
-    XCTAssertNil(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "test-scope"))
+    XCTAssertEqual(added, ["expo-crypto"])
+    XCTAssertEqual(removed, [])
   }
 
-  func testUnverifiablePristineIsRefused() throws {
+  func testUnverifiablePristineReportedAsFailure() throws {
     // pristine transform emits a name that doesn't match any dep
     let transformer = FakeTransformer { _, _, _, _ in
       ModuleTransformResult(moduleCode: "o", dependencyNames: ["some-phantom-pkg", "./b"])
     }
     let applier = try PublishedBundleApplier(
       bundleData: Data(Self.bundleText.utf8), transformer: transformer)
-    XCTAssertThrowsError(try applier.prepare(
+    let result = applier.prepare(
       edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")])
-    ) { error in
-      guard case .cannotVerify = error as? PublishedBundleApplier.ApplyError else {
-        return XCTFail("expected .cannotVerify, got \(error)")
-      }
+    guard case .cannotVerify = result.failures.first?.error as? PublishedBundleApplier.ApplyError else {
+      return XCTFail("expected .cannotVerify, got \(String(describing: result.failures.first?.error))")
     }
+  }
+
+  func testOneUnappliableEditDoesNotDropTheOthers() throws {
+    let transformer = FakeTransformer { _, _, _, _ in
+      ModuleTransformResult(moduleCode: "require('./a'); require('./b');", dependencyNames: ["./a", "./b"])
+    }
+    let applier = try PublishedBundleApplier(
+      bundleData: Data(Self.bundleText.utf8), transformer: transformer)
+    let result = applier.prepare(edits: [
+      .init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig"),
+      .init(displayPath: "app/Missing.tsx", contents: "x", originalContents: "y"),
+    ])
+
+    XCTAssertTrue(result.interceptor.contains("overrides[0] ="), "the valid edit should still be applied")
+    XCTAssertEqual(result.failures.map { $0.displayPath }, ["app/Missing.tsx"])
   }
 
   func testReimportOfExistingDepIsAllowed() throws {
@@ -114,9 +125,36 @@ final class PublishedBundleApplierTests: XCTestCase {
     }
     let applier = try PublishedBundleApplier(
       bundleData: Data(Self.bundleText.utf8), transformer: transformer)
-    let url = try applier.prepare(
+    let result = applier.prepare(
       edits: [.init(displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")])
-    defer { try? FileManager.default.removeItem(at: url) }
-    XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
+    XCTAssertTrue(result.failures.isEmpty)
+    XCTAssertTrue(result.interceptor.contains("overrides[0] ="))
+  }
+
+  func testFactoryCacheAvoidsRetransformingUnchangedEdits() throws {
+    final class Counter { var count = 0 }
+    let counter = Counter()
+    let transformer = FakeTransformer { source, _, _, _ in
+      counter.count += 1
+      return ModuleTransformResult(
+        moduleCode: "/* \(source) */ require('./a'); require('./b');",
+        dependencyNames: ["./a", "./b"])
+    }
+    let applier = try PublishedBundleApplier(
+      bundleData: Data(Self.bundleText.utf8), transformer: transformer)
+    let edit = PublishedBundleApplier.SourceEdit(
+      displayPath: "app/App.tsx", contents: "edited", originalContents: "orig")
+
+    _ = applier.prepare(edits: [edit])
+    let afterFirst = counter.count
+    XCTAssertGreaterThan(afterFirst, 0)
+
+    _ = applier.prepare(edits: [edit])
+    XCTAssertEqual(counter.count, afterFirst, "identical re-save should not re-transform")
+
+    let changed = PublishedBundleApplier.SourceEdit(
+      displayPath: "app/App.tsx", contents: "edited again", originalContents: "orig")
+    _ = applier.prepare(edits: [changed])
+    XCTAssertGreaterThan(counter.count, afterFirst, "changed contents should re-transform")
   }
 }

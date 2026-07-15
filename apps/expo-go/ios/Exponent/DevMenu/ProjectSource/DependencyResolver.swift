@@ -31,7 +31,7 @@ enum DependencyResolver {
       uniqueIds.append(id)
     }
 
-    guard names.count == uniqueIds.count else {
+    guard names.count >= uniqueIds.count else {
       throw ResolutionError.countMismatch(found: names.count, expected: uniqueIds.count)
     }
 
@@ -58,8 +58,10 @@ enum DependencyResolver {
         }
         if cands.count == 1, let id = cands.first {
           assigned[name] = id
-          for other in names where other != name {
-            candidates[other]?.remove(id)
+          for other in names where other != name && assigned[other] == nil {
+            if let otherCands = candidates[other], otherCands.count > 1 {
+              candidates[other]?.remove(id)
+            }
           }
           progress = true
         }
@@ -100,6 +102,7 @@ enum DependencyResolver {
     }
 
     let parts = name.split(separator: "/").map(String.init)
+    guard !parts.isEmpty else { return hits }
     let isScoped = name.hasPrefix("@")
     let package = isScoped ? parts.prefix(2).joined(separator: "/") : parts[0]
     let subpath = Array(isScoped ? parts.dropFirst(2) : parts.dropFirst())

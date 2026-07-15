@@ -77,34 +77,48 @@ final class ProjectSourceSession: ObservableObject {
   }
 
   private var editApplier: EditApplier?
+  private var applierResolved = false
 
   private func currentEditApplier() -> EditApplier? {
-    if let editApplier {
+    if applierResolved {
       return editApplier
     }
     let manifestURL = DevMenuManager.shared.currentManifestURL
     if let channel = SourceProviderSelector.snackParams(from: manifestURL).channel {
       editApplier = SnackEditApplier(channel: channel)
-    } else if SourceProviderSelector.isPublishedBundle(
-      manifestURL: manifestURL, bundleURL: DevMenuManager.shared.currentBundleURL),
-      let bundleData = EXKernel.sharedInstance().visibleApp.appLoader.bundle as Data?,
-      BundleSourceMapProvider.supportsPublishedEditing(bundle: bundleData) {
-      editApplier = PublishedEditApplier(
-        overlay: overlay,
-        environment: .init(
-          scopeKey: { EXKernel.sharedInstance().visibleApp.scopeKey },
-          makeApplier: {
-            guard let bundleData = await MainActor.run(body: {
-              EXKernel.sharedInstance().visibleApp.appLoader.bundle as Data?
-            }) else {
-              throw SourceMapError.noSourceMapFound
-            }
-            return try PublishedBundleApplier(bundleData: bundleData, transformer: try OnDeviceTransformer())
-          },
-          reload: { DevMenuManager.shared.reload() },
-          onError: { [weak self] message in self?.publishedEditError = message }
-        ))
+      applierResolved = true
+      return editApplier
     }
+
+    guard SourceProviderSelector.isPublishedBundle(
+      manifestURL: manifestURL, bundleURL: DevMenuManager.shared.currentBundleURL) else {
+      applierResolved = true
+      return nil
+    }
+
+    guard let bundleData = EXKernel.sharedInstance().visibleApp.appLoader.bundle as Data? else {
+      return nil
+    }
+
+    applierResolved = true
+    guard BundleSourceMapProvider.supportsPublishedEditing(bundle: bundleData) else {
+      return nil
+    }
+    editApplier = PublishedEditApplier(
+      overlay: overlay,
+      environment: .init(
+        scopeKey: { EXKernel.sharedInstance().visibleApp.scopeKey },
+        makeApplier: {
+          guard let bundleData = await MainActor.run(body: {
+            EXKernel.sharedInstance().visibleApp.appLoader.bundle as Data?
+          }) else {
+            throw SourceMapError.noSourceMapFound
+          }
+          return try PublishedBundleApplier(bundleData: bundleData, transformer: try OnDeviceTransformer())
+        },
+        reload: { DevMenuManager.shared.reload() },
+        onError: { [weak self] message in self?.publishedEditError = message }
+      ))
     return editApplier
   }
 

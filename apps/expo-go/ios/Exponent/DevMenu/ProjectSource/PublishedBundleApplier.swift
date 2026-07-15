@@ -42,6 +42,7 @@ final class PublishedBundleApplier: @unchecked Sendable {
   private let transformer: ModuleTransforming
   private let stateLock = NSLock()
   private var pristineResolutionByModuleId: [Int: [String: Int]] = [:]
+  private var factoryCacheByPath: [String: (contents: String, result: (moduleId: Int, factory: String))] = [:]
 
   /// Heavy (bundle scan + sourcemap walk + payload evaluation); create off
   /// the main actor and keep for the session.
@@ -57,25 +58,47 @@ final class PublishedBundleApplier: @unchecked Sendable {
     index.moduleIdByDisplayPath[displayPath] != nil
   }
 
-  /// Regenerates the patched bundle from the full set of session edits. The
-  /// caller registers the returned file only after confirming its session is
-  /// still current. Throws without changing the active bundle.
-  func prepare(edits: [SourceEdit]) throws -> URL {
+  struct EditFailure {
+    let displayPath: String
+    let error: Error
+  }
+
+  struct PrepareResult {
+    let interceptor: String
+    let failures: [EditFailure]
+  }
+
+  func prepare(edits: [SourceEdit]) -> PrepareResult {
     var factories: [(moduleId: Int, factory: String)] = []
+    var failures: [EditFailure] = []
     for edit in edits {
-      factories.append(try makeFactory(for: edit))
+      do {
+        factories.append(try cachedFactory(for: edit))
+      } catch {
+        failures.append(EditFailure(displayPath: edit.displayPath, error: error))
+      }
     }
 
-    var patched = Data(BundlePatch.interceptor(overrides: factories).utf8)
-    patched.append(originalBundle)
-
-    let url = FileManager.default.temporaryDirectory
-      .appendingPathComponent("expo-source-explorer-\(UUID().uuidString).js")
-    try patched.write(to: url, options: .atomic)
-    return url
+    return PrepareResult(interceptor: BundlePatch.interceptor(overrides: factories), failures: failures)
   }
 
   // MARK: - factory generation
+
+  private func cachedFactory(for edit: SourceEdit) throws -> (moduleId: Int, factory: String) {
+    stateLock.lock()
+    let cached = factoryCacheByPath[edit.displayPath]
+    stateLock.unlock()
+    if let cached, cached.contents == edit.contents {
+      return cached.result
+    }
+
+    let result = try makeFactory(for: edit)
+
+    stateLock.lock()
+    factoryCacheByPath[edit.displayPath] = (edit.contents, result)
+    stateLock.unlock()
+    return result
+  }
 
   private func makeFactory(for edit: SourceEdit) throws -> (moduleId: Int, factory: String) {
     guard let moduleId = index.moduleIdByDisplayPath[edit.displayPath],

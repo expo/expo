@@ -47,7 +47,7 @@ final class EditApplierRoutingTests: XCTestCase {
       ))
     applier.revertAll()
     XCTAssertTrue(reloaded)
-    XCTAssertNil(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "scope"))
+    XCTAssertNil(PatchedBundleRegistry.interceptor(forScopeKey: "scope"))
   }
 
   func testInvalidationSuppressesPendingPublishedEditFailure() async throws {
@@ -80,6 +80,6 @@ final class EditApplierRoutingTests: XCTestCase {
     await fulfillment(of: [lateFailure], timeout: 0.25)
     XCTAssertNil(publishedError)
     XCTAssertFalse(reloaded)
-    XCTAssertNil(PatchedBundleRegistry.patchedBundleURL(forScopeKey: "scope"))
+    XCTAssertNil(PatchedBundleRegistry.interceptor(forScopeKey: "scope"))
   }
 }
