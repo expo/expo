@@ -40,6 +40,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9.
 - Fix `Host` color scheme type errors on React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 - [iOS] Fix RN `Modal`s (and other presented view controllers) becoming untappable and missing from the accessibility tree after a `community/bottom-sheet` `BottomSheet` is dismissed. `RNHostView` attached an `RCTSurfaceTouchHandler` to the hosted RN view but never detached it, so it rode the recycled Fabric component view into the next surface and terminated that surface's touch responder. The handler is now detached when the host disappears. ([#47708](https://github.com/expo/expo/issues/47708) by [@oeddyo](https://github.com/oeddyo)) ([#47713](https://github.com/expo/expo/pull/47713) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))

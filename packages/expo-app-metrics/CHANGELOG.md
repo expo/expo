@@ -16,6 +16,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9.
 - [iOS] Report `bundleLoadTime` as unavailable on React Native 0.87, which removed the `StartupLogger` accessor it was measured from. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 - Fix integer metric and log attributes equal to `0` or `1` serializing as booleans on iOS. ([#47108](https://github.com/expo/expo/pull/47108) by [@tsapeta](https://github.com/tsapeta))

@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9.
 - Add missing `expo` peer dependency. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 - Preserve Error call stacks when capturing component stacks. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 

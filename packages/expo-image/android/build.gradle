@@ -24,6 +24,10 @@ android {
     buildConfigField("boolean", "ALLOW_GLIDE_LOGS", project.properties.get("EXPO_ALLOW_GLIDE_LOGS", "false"))
   }
 
+  buildFeatures {
+    buildConfig true
+  }
+
   sourceSets {
     main {
       java {

@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9.
 - Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 - [Android] Fixed image staying blank when its `source` changes while a `transition` cross-fade is still running. ([#46752](https://github.com/expo/expo/pull/46752) by [@zoontek](https://github.com/zoontek))

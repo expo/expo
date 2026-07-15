@@ -36,6 +36,8 @@ target_include_directories(
   ${REACT_NATIVE_INTERFACE_INCLUDE_DIRECTORIES}/react/fabric
   # header only imports from jni, e.g. react/turbomodule/CallInvokerHolder.h
   "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
+  # header only imports from ReactCommon, e.g. jserrorhandler/ErrorUtils.h
+  "${REACT_NATIVE_DIR}/ReactCommon"
   "${ANDROID_SRC_DIR}/fabric"
   "${COMMON_DIR}"
   "${COMMON_DIR}/fabric"

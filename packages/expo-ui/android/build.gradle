@@ -23,6 +23,7 @@ android {
   }
   buildFeatures {
     compose true
+    buildConfig true
   }
   lintOptions {
     abortOnError false
