@@ -26,6 +26,7 @@ function MaterialTopTabNavigator({
   screenListeners,
   screenOptions,
   screenLayout,
+  UNSTABLE_routeNamesAreStatic,
   UNSTABLE_router,
   ...rest
 }: MaterialTopTabNavigatorProps) {
@@ -44,6 +45,7 @@ function MaterialTopTabNavigator({
     screenListeners,
     screenOptions,
     screenLayout,
+    UNSTABLE_routeNamesAreStatic,
     UNSTABLE_router,
   });
 

@@ -27,7 +27,6 @@ import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
-import { isRecordEqual } from './isRecordEqual';
 import {
   type DefaultNavigatorOptions,
   type EventMapBase,
@@ -324,6 +323,7 @@ export function useNavigationBuilder<
     screenOptions,
     screenLayout,
     screenListeners,
+    UNSTABLE_routeNamesAreStatic,
     UNSTABLE_router,
     ...rest
   } = options;
@@ -534,18 +534,18 @@ export function useNavigationBuilder<
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
 
   let nextState: State = state;
+  const routeKeyChanges = Object.keys(routeKeyList).filter(
+    (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
+  );
   if (
-    !isArrayEqual(state.routeNames, routeNames) ||
-    !isRecordEqual(routeKeyList, previousRouteKeyList)
+    (!UNSTABLE_routeNamesAreStatic && !isArrayEqual(state.routeNames, routeNames)) ||
+    routeKeyChanges.length > 0
   ) {
-    // When the list of route names change, the router should handle it to remove invalid routes
     nextState = router.getStateForRouteNamesChange(state, {
       routeNames,
       routeParamList,
       routeGetIdList,
-      routeKeyChanges: Object.keys(routeKeyList).filter(
-        (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
-      ),
+      routeKeyChanges,
     });
   }
 
