@@ -8,6 +8,7 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
+import { areRouteNamesEqual } from './areRouteNamesEqual';
 import type { CommonNavigationAction, ParamListBase, PartialState, Router } from './types';
 export type DrawerStatus = 'open' | 'closed';
 
@@ -164,7 +165,7 @@ export function DrawerRouter({
     },
 
     getRehydratedState(partialState, { routeNames, routeParamList, routeGetIdList }) {
-      if (partialState.stale === false) {
+      if (partialState.stale === false && areRouteNamesEqual(partialState.routeNames, routeNames)) {
         return partialState;
       }
 

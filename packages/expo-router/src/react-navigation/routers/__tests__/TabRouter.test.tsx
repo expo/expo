@@ -281,11 +281,58 @@ test("doesn't rehydrate state if it's not stale", () => {
 
   expect(
     router.getRehydratedState(state, {
-      routeNames: [],
+      routeNames: ['qux', 'bar', 'baz'],
       routeParamList: {},
       routeGetIdList: {},
     })
   ).toBe(state);
+});
+
+test('rehydrates committed state if route names changed', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+
+  expect(
+    router.getRehydratedState(
+      {
+        index: 2,
+        key: 'tab-old',
+        routeNames: ['bar', 'baz', 'qux'],
+        routes: [
+          { key: 'bar-0', name: 'bar' },
+          { key: 'baz-1', name: 'baz' },
+          { key: 'qux-2', name: 'qux' },
+        ],
+        history: [
+          { type: 'route', key: 'bar-0' },
+          { type: 'route', key: 'baz-1' },
+          { type: 'route', key: 'qux-2' },
+        ],
+        stale: false,
+        type: 'tab',
+        preloadedRouteKeys: ['qux-2'],
+      },
+      {
+        routeNames: ['bar', 'baz'],
+        routeParamList: {},
+        routeGetIdList: {},
+      }
+    )
+  ).toEqual({
+    index: 0,
+    key: 'tab-test',
+    routeNames: ['bar', 'baz'],
+    routes: [
+      { key: 'bar-0', name: 'bar', params: undefined },
+      { key: 'baz-1', name: 'baz', params: undefined },
+    ],
+    history: [
+      { type: 'route', key: 'baz-1' },
+      { type: 'route', key: 'bar-0', params: undefined },
+    ],
+    stale: false,
+    type: 'tab',
+    preloadedRouteKeys: [],
+  });
 });
 
 test('restores correct history on rehydrating with backBehavior: order', () => {
@@ -532,179 +579,6 @@ test('restores correct history on rehydrating with backBehavior: none', () => {
       { key: 'qux-0', name: 'qux' },
     ],
     history: [{ key: 'baz-0', type: 'route' }],
-    stale: false,
-    type: 'tab',
-    preloadedRouteKeys: [],
-  });
-});
-
-test('gets state on route names change', () => {
-  const router = TabRouter({});
-
-  expect(
-    router.getStateForRouteNamesChange(
-      {
-        index: 0,
-        key: 'tab-test',
-        routeNames: ['bar', 'baz', 'qux'],
-        routes: [
-          { key: 'bar-test', name: 'bar' },
-          { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-          { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-        ],
-        history: [{ type: 'route', key: 'bar-test' }],
-        stale: false,
-        type: 'tab',
-        preloadedRouteKeys: [],
-      },
-      {
-        routeNames: ['qux', 'baz', 'foo', 'fiz'],
-        routeParamList: {
-          qux: { name: 'John' },
-          fiz: { fruit: 'apple' },
-        },
-        routeGetIdList: {},
-        routeKeyChanges: [],
-      }
-    )
-  ).toEqual({
-    index: 0,
-    key: 'tab-test',
-    routeNames: ['qux', 'baz', 'foo', 'fiz'],
-    routes: [
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'foo-test', name: 'foo' },
-      { key: 'fiz-test', name: 'fiz', params: { fruit: 'apple' } },
-    ],
-    history: [{ type: 'route', key: 'qux-test' }],
-    stale: false,
-    type: 'tab',
-    preloadedRouteKeys: [],
-  });
-
-  expect(
-    router.getStateForRouteNamesChange(
-      {
-        index: 0,
-        key: 'tab-test',
-        routeNames: ['bar', 'baz'],
-        routes: [
-          { key: 'bar-test', name: 'bar' },
-          { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-        ],
-        history: [{ type: 'route', key: 'bar-test' }],
-        stale: false,
-        type: 'tab',
-        preloadedRouteKeys: [],
-      },
-      {
-        routeNames: ['foo', 'fiz'],
-        routeParamList: {},
-        routeGetIdList: {},
-        routeKeyChanges: [],
-      }
-    )
-  ).toEqual({
-    index: 0,
-    key: 'tab-test',
-    routeNames: ['foo', 'fiz'],
-    routes: [
-      { key: 'foo-test', name: 'foo' },
-      { key: 'fiz-test', name: 'fiz' },
-    ],
-    history: [{ type: 'route', key: 'foo-test' }],
-    stale: false,
-    type: 'tab',
-    preloadedRouteKeys: [],
-  });
-});
-
-test('preserves focused route on route names change', () => {
-  const router = TabRouter({});
-
-  expect(
-    router.getStateForRouteNamesChange(
-      {
-        index: 1,
-        key: 'tab-test',
-        routeNames: ['bar', 'baz', 'qux'],
-        routes: [
-          { key: 'bar-test', name: 'bar' },
-          { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-          { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-        ],
-        history: [{ type: 'route', key: 'baz-test' }],
-        stale: false,
-        type: 'tab',
-        preloadedRouteKeys: [],
-      },
-      {
-        routeNames: ['qux', 'foo', 'fiz', 'baz'],
-        routeParamList: {
-          qux: { name: 'John' },
-          fiz: { fruit: 'apple' },
-        },
-        routeGetIdList: {},
-        routeKeyChanges: [],
-      }
-    )
-  ).toEqual({
-    index: 3,
-    key: 'tab-test',
-    routeNames: ['qux', 'foo', 'fiz', 'baz'],
-    routes: [
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'foo-test', name: 'foo' },
-      { key: 'fiz-test', name: 'fiz', params: { fruit: 'apple' } },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-    ],
-    history: [{ type: 'route', key: 'baz-test' }],
-    stale: false,
-    type: 'tab',
-    preloadedRouteKeys: [],
-  });
-});
-
-test('falls back to first route if route is removed on route names change', () => {
-  const router = TabRouter({});
-
-  expect(
-    router.getStateForRouteNamesChange(
-      {
-        index: 1,
-        key: 'tab-test',
-        routeNames: ['bar', 'baz', 'qux'],
-        routes: [
-          { key: 'bar-test', name: 'bar' },
-          { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-          { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-        ],
-        history: [{ type: 'route', key: 'baz-test' }],
-        stale: false,
-        type: 'tab',
-        preloadedRouteKeys: [],
-      },
-      {
-        routeNames: ['qux', 'foo', 'fiz'],
-        routeParamList: {
-          qux: { name: 'John' },
-          fiz: { fruit: 'apple' },
-        },
-        routeGetIdList: {},
-        routeKeyChanges: [],
-      }
-    )
-  ).toEqual({
-    index: 0,
-    key: 'tab-test',
-    routeNames: ['qux', 'foo', 'fiz'],
-    routes: [
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'foo-test', name: 'foo' },
-      { key: 'fiz-test', name: 'fiz', params: { fruit: 'apple' } },
-    ],
-    history: [{ type: 'route', key: 'qux-test' }],
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],

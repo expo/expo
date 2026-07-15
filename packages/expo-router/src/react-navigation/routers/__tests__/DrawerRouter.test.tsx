@@ -249,7 +249,7 @@ test("doesn't rehydrate state if it's not stale", () => {
 
   expect(
     router.getRehydratedState(state, {
-      routeNames: [],
+      routeNames: ['qux', 'bar', 'baz'],
       routeParamList: {},
       routeGetIdList: {},
     })

@@ -42,9 +42,6 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
     ExpoTabActionType | CommonNavigationAction
   > = {
     ...rnTabRouter,
-    getStateForRouteNamesChange(state, options) {
-      return state;
-    },
     getStateForAction(state, action, routerConfigOptions) {
       if (action.type === 'EXPO_ROUTER_TAB_ORDER_CHANGED') {
         // Reorder `state.routes` to the new trigger order, reusing the existing route

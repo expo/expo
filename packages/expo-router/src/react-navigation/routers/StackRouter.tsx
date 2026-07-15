@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid/non-secure';
 
 import { BaseRouter } from './BaseRouter';
+import { areRouteNamesEqual } from './areRouteNamesEqual';
 import { createParamsFromAction } from './createParamsFromAction';
 import { createRouteFromAction } from './createRouteFromAction';
 import type {
@@ -184,20 +185,16 @@ export function getRoutesForRouteNames(
   routeNames: string[],
   {
     routeParamList,
-    routeKeyChanges = [],
     initialRouteName,
   }: {
     routeParamList: ParamListBase;
-    routeKeyChanges?: string[];
     initialRouteName?: string;
   }
 ): Pick<StackNavigationState<ParamListBase>, 'routes' | 'index'> {
   const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
-  const routes = activeRoutes.filter(
-    (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
-  );
-  const filteredPreloadedRoutes = preloadedRoutes.filter(
-    (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
+  const routes = activeRoutes.filter((route) => routeNames.includes(route.name));
+  const filteredPreloadedRoutes = preloadedRoutes.filter((route) =>
+    routeNames.includes(route.name)
   );
 
   if (routes.length === 0) {
@@ -255,7 +252,7 @@ export function StackRouter(options: StackRouterOptions) {
     getRehydratedState(partialState, { routeNames, routeParamList }) {
       const state = partialState;
 
-      if (state.stale === false) {
+      if (state.stale === false && areRouteNamesEqual(state.routeNames, routeNames)) {
         return state;
       }
 
@@ -313,18 +310,6 @@ export function StackRouter(options: StackRouterOptions) {
         index: routes.length - 1,
         routeNames,
         routes: routes.concat(preloadedRoutes),
-      };
-    },
-
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      return {
-        ...state,
-        routeNames,
-        ...getRoutesForRouteNames(state, routeNames, {
-          routeParamList,
-          routeKeyChanges,
-          initialRouteName: options.initialRouteName,
-        }),
       };
     },
 

@@ -184,7 +184,7 @@ test("doesn't rehydrate state if it's not stale", () => {
 
   expect(
     router.getRehydratedState(state, {
-      routeNames: [],
+      routeNames: ['qux', 'bar', 'baz'],
       routeParamList: {},
       routeGetIdList: {},
     })
@@ -212,107 +212,38 @@ test('keeps the focused route when rehydration filters an earlier active route',
   expect(result.routes.map((route) => route.key)).toEqual(['focused', 'preloaded']);
 });
 
-test('gets state on route names change', () => {
+test('rehydrates committed state if route names changed', () => {
   const router = StackRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getRehydratedState(
       {
         index: 2,
-        key: 'stack-test',
+        key: 'stack-old',
         routeNames: ['bar', 'baz', 'qux'],
         routes: [
-          { key: 'bar-test', name: 'bar' },
-          { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-          { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+          { key: 'bar-0', name: 'bar' },
+          { key: 'baz-1', name: 'baz' },
+          { key: 'qux-2', name: 'qux' },
+          { key: 'qux-preloaded', name: 'qux' },
         ],
         stale: false,
         type: 'stack',
       },
       {
-        routeNames: ['qux', 'baz', 'foo', 'fiz'],
-        routeParamList: {
-          qux: { name: 'John' },
-          fiz: { fruit: 'apple' },
-        },
+        routeNames: ['bar', 'baz'],
+        routeParamList: {},
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
     index: 1,
     key: 'stack-test',
-    routeNames: ['qux', 'baz', 'foo', 'fiz'],
+    routeNames: ['bar', 'baz'],
     routes: [
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+      { key: 'bar-0', name: 'bar' },
+      { key: 'baz-1', name: 'baz' },
     ],
-    stale: false,
-    type: 'stack',
-  });
-
-  expect(
-    router.getStateForRouteNamesChange(
-      {
-        index: 1,
-        key: 'stack-test',
-        routeNames: ['foo', 'bar'],
-        routes: [
-          { key: 'foo-test', name: 'foo' },
-          { key: 'bar-test', name: 'bar' },
-        ],
-        stale: false,
-        type: 'stack',
-      },
-      {
-        routeNames: ['baz', 'qux'],
-        routeParamList: {
-          baz: { name: 'John' },
-        },
-        routeGetIdList: {},
-        routeKeyChanges: [],
-      }
-    )
-  ).toEqual({
-    index: 0,
-    key: 'stack-test',
-    routeNames: ['baz', 'qux'],
-    routes: [{ key: 'baz-test', name: 'baz', params: { name: 'John' } }],
-    stale: false,
-    type: 'stack',
-  });
-});
-
-test('gets state on route names change with initialRouteName', () => {
-  const router = StackRouter({ initialRouteName: 'qux' });
-
-  expect(
-    router.getStateForRouteNamesChange(
-      {
-        index: 1,
-        key: 'stack-test',
-        routeNames: ['foo', 'bar'],
-        routes: [
-          { key: 'foo-test', name: 'foo' },
-          { key: 'bar-test', name: 'bar' },
-        ],
-        stale: false,
-        type: 'stack',
-      },
-      {
-        routeNames: ['baz', 'qux'],
-        routeParamList: {
-          baz: { name: 'John' },
-        },
-        routeGetIdList: {},
-        routeKeyChanges: [],
-      }
-    )
-  ).toEqual({
-    index: 0,
-    key: 'stack-test',
-    routeNames: ['baz', 'qux'],
-    routes: [{ key: 'qux-test', name: 'qux' }],
     stale: false,
     type: 'stack',
   });
