@@ -1,4 +1,5 @@
 'use client';
+// TODO: Rename this file to `createStandardDrawerNavigator.tsx` in a follow-up.
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';

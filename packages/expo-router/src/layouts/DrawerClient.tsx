@@ -7,7 +7,7 @@ import {
 import type {
   DrawerNavigatorContentProps,
   StandardDrawerNavigationEventMap,
-} from '../react-navigation/drawer/navigators/createStandardDrawerNavigator';
+} from '../react-navigation/drawer/navigators/createDrawerNavigator';
 import type { DrawerNavigationHelpers } from '../react-navigation/drawer/types';
 import {
   DrawerRouter,
