@@ -103,11 +103,15 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		XXEXPOCLIENTXXXXXXXXXXXX /* Client */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = Client;
 			sourceTree = "<group>";
 		};
 		XXEXPOGOTESTSXXXXXXXXXXX /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = Tests;
 			sourceTree = "<group>";
 		};
@@ -475,13 +479,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -511,13 +511,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -727,7 +723,10 @@
 					"$(inherited)",
 					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				PODFILE_DIR = "$(SRCROOT)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;
@@ -801,7 +800,10 @@
 					"$(inherited)",
 					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				PODFILE_DIR = "$(SRCROOT)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../react-native-lab/react-native/packages/react-native";
 				SDKROOT = iphoneos;

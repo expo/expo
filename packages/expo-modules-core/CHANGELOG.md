@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.4 — 2026-07-15
+
+### 🎉 New features
+
 - [iOS] `@SharedObject` now binds `@JS` methods, properties and the `@JS init` directly onto the class prototype, so they no longer need `Function(…)` / `Property(…)` / `Constructor { … }` definition entries. ([#47107](https://github.com/expo/expo/pull/47107) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
@@ -16,8 +24,6 @@
 - [iOS] Pair a native shared object with one JavaScript object per runtime, so a shared object exposed to several runtimes (e.g. the main and UI runtimes, or worklet contexts) keeps a live pairing in each instead of only the one paired last. ([#47238](https://github.com/expo/expo/pull/47238) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fix `hsl()`/`hsla()` color strings failing to parse on some OS versions (observed on the iOS 27.0 beta), caused by regex-literal fragments composed in `RegexBuilder` blocks. The CSS color patterns are now built from `RegexBuilder` primitives only. ([#47543](https://github.com/expo/expo/pull/47543) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a potential use-after-free when native code scheduled work onto the JS thread (e.g. settling an async function's promise from a background queue) while the React instance was concurrently tearing down the runtime scheduler on reload. The dispatch trampoline now references the scheduler weakly and drops the task once the scheduler is gone. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
-
-### 💡 Others
 
 ## 57.0.3 — 2026-07-07
 

@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.2 — 2026-07-15
+
+### 🎉 New features
+
 - [iOS] Add `JavaScriptRef.withValue`, a non-consuming borrow accessor that reads the referenced value without taking it, so a long-lived reference can be read repeatedly. ([#47238](https://github.com/expo/expo/pull/47238) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add `JavaScriptRuntime.longLivedObjects`, a `LongLivedObjectCollection` that keeps `LongLivedObject`s (such as in-flight promises) alive across asynchronous boundaries and releases any that remain when the runtime is torn down. ([#47511](https://github.com/expo/expo/pull/47511) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add a `JavaScriptCodable` conformance for `Date`: it encodes to a JS `Date` and decodes from a JS `Date`, a number of milliseconds since the epoch, or a string parsed by the JS engine's `Date` constructor. ([#47602](https://github.com/expo/expo/pull/47602) by [@tsapeta](https://github.com/tsapeta))
@@ -15,8 +23,6 @@
 - [iOS] Fixed a use-after-free when a `JavaScriptPromise` outlives its runtime (e.g. an async function's promise held by a completion handler that fires after `reloadAsync()`) by having the runtime's `LongLivedObjectCollection` own its JSI values and release them on the JavaScript thread when the wrapper is dropped or at teardown, instead of against a freed runtime. ([#47521](https://github.com/expo/expo/pull/47521) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Preserve the `code` on the JavaScript error when an async function rejects with a `JavaScriptThrowable` (e.g. an `Exception`), instead of stringifying it and dropping the `code`, mirroring the synchronous throw path. ([#47259](https://github.com/expo/expo/pull/47259) by [@wwdrew](https://github.com/wwdrew))
 - [iOS] Fixed a standalone `JavaScriptRuntime` leaking its underlying Hermes runtime: a runtime it creates itself is now destroyed on `deinit`, while runtimes adopted from elsewhere (e.g. React Native) are left untouched. ([#47515](https://github.com/expo/expo/pull/47515) by [@tsapeta](https://github.com/tsapeta))
-
-### 💡 Others
 
 ## 57.0.1 — 2026-07-07
 

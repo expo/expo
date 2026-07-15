@@ -13,7 +13,7 @@ apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'expo.modules.widgets'
-version = '57.0.3'
+version = '57.0.4'
 
 expoModule {
   canBePublished false
@@ -23,7 +23,7 @@ android {
   namespace "expo.modules.widgets"
   defaultConfig {
     versionCode 1
-    versionName '57.0.3'
+    versionName '57.0.4'
   }
 
   buildFeatures {
