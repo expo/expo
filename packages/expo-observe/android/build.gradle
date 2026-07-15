@@ -48,6 +48,10 @@ android {
 
     buildConfigField "String", "EXPO_OBSERVE_VERSION", "\"${packageJson.version}\""
   }
+
+  buildFeatures {
+    buildConfig true
+  }
 }
 
 repositories {
