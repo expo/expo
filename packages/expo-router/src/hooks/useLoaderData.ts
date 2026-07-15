@@ -24,7 +24,7 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
  * import { useLoaderData } from 'expo-router';
  *
  * export function loader() {
- *   return Promise.resolve({ foo: 'bar' }};
+ *   return Promise.resolve({ foo: 'bar' });
  * }
  *
  * export default function Route() {
@@ -32,6 +32,7 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
  *
  *  return <Text>Data: {JSON.stringify(data)}</Text>;
  * }
+ * ```
  */
 export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunctionResult<T> {
   const serverDataLoaderContext = use(ServerDataLoaderContext);

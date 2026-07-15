@@ -210,11 +210,8 @@ export type ImperativeRouter = {
    */
   dismissTo: (href: Href, options?: NavigationOptions) => void;
   /**
-   * Returns to the first screen of the closest stack — equivalent to a stack
-   * `popToTop` action.
-   *
-   * @see React Navigation's [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop)
-   * stack action for the underlying behavior.
+   * Pops all screens in the closest stack back to the first screen, dismissing every
+   * screen except the initial one.
    */
   dismissAll: () => void;
   /**

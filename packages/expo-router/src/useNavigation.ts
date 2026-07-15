@@ -7,10 +7,11 @@ import { useNavigation as useUpstreamNavigation, useStateForPath } from './react
 import type { Href } from './types';
 
 /**
- * Returns the navigation object for the current route. Mirrors the React Navigation
- * [`navigation` object](https://reactnavigation.org/docs/navigation-object). Use it to
- * imperatively access layout-specific functionality like `navigation.openDrawer()` in a
- * [Drawer](/router/advanced/drawer/) layout.
+ * Returns the navigation object for the current route. The navigation object exposes
+ * methods for imperatively controlling the current navigator, such as `navigate`, `goBack`,
+ * `setParams`, and layout-specific functions like `navigation.openDrawer()` in a
+ * [Drawer](/router/advanced/drawer/) layout. It also lets you subscribe to
+ * [navigation events](/router/reference/navigation-events/).
  *
  * @example
  * ```tsx app/index.tsx
@@ -57,8 +58,9 @@ import type { Href } from './types';
  * @returns The navigation object for the current route.
  *
  * @see The full navigation API is available directly from `expo-router` — no
- * `@react-navigation/*` install required. For the navigator-dependent functions reference,
- * see [navigation dependent functions](https://reactnavigation.org/docs/navigation-object/#navigator-dependent-functions).
+ * `@react-navigation/*` install required. Some methods are navigator-dependent and only
+ * exist on the navigation object of a specific layout. For example, `openDrawer`, `closeDrawer`,
+ * and `toggleDrawer` are available only within a [Drawer](/router/advanced/drawer/) layout.
  */
 export function useNavigation<
   T = Omit<NavigationProp<ReactNavigation.RootParamList>, 'getState'> & {

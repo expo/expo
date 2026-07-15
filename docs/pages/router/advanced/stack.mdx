@@ -58,7 +58,7 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack
-      // See React Navigation documentation for more information on available screenOptions: https://reactnavigation.org/docs/headers/#sharing-common-options-across-screens
+      // See the Stack API reference for the full list of available screenOptions: /versions/latest/sdk/router/stack/
       screenOptions={{
         headerStyle: {
           backgroundColor: '#f4511e',
@@ -187,7 +187,9 @@ The `Stack` navigator supports comprehensive header configuration options. Below
 
 <ReactNavigationOptions category="header" />
 
-For additional details and navigator-specific examples, see [React Navigation's Native Stack Navigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
+For the full list of options, see the [Stack API reference](/versions/latest/sdk/router/stack/).
+
+The `Stack` navigator is a native stack. It renders each screen with the platform's own navigation primitives: a `UINavigationController` on iOS and a fragment-based stack on Android. This gives you native transition animations, gestures, and header behavior instead of a JavaScript reimplementation.
 
 ### Header buttons
 
@@ -288,7 +290,7 @@ For a complete list of all available other screen options including animations, 
 
 <ReactNavigationOptions excludeCategories={['header']} />
 
-For additional details and navigator-specific examples, see [React Navigation's Native Stack Navigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
+For the full list of options, see the [Stack API reference](/versions/latest/sdk/router/stack/).
 
 ## Custom push behavior
 
@@ -405,7 +407,7 @@ export default function Settings() {
 
 ### `dismissAll` action
 
-To return to the first screen in the closest stack. This is similar to [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action.
+Call `router.dismissAll()` to return to the first screen in the closest stack, dismissing every screen pushed after it in a single action.
 
 For example, the `home` route is the first screen, and the `settings` is the last. To go from `settings` to `home` route you'll have to go back to `details`. However, using the `dismissAll` action, you can go from `settings` to `home` and dismiss any screen in between.
 

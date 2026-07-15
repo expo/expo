@@ -3,9 +3,6 @@ title: Custom navigators
 description: Learn how to build your own navigator in Expo Router and how library authors can integrate an existing navigator with the router.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
 
 > **important** The custom navigator API described on this page is in [alpha](/more/release-statuses/#alpha) and available in SDK 56 and later. The API is subject to breaking changes.
@@ -212,9 +209,52 @@ Map each entry point to a [subpath export](https://nodejs.org/api/packages.html#
 
 Consumers then import the integration for their framework (for example, `import { Tabs } from 'my-tabs/expo-router'`) while you maintain the navigator logic in one place.
 
-<BoxLink
-  title="React Navigation integration"
-  href="https://reactnavigation.org/docs/standard-navigator/"
-  description="Learn how to integrate the same standard navigator with React Navigation, and read the contract that defines the state, descriptors, actions, and emitter your NavigatorContent receives."
-  Icon={BookOpen02Icon}
-/>
+The same standard navigator can be integrated with React Navigation from the `./react-navigation` entry point. Because both integrations target the standard contract — the `state`, `descriptors`, `actions`, and `emitter` your `NavigatorContent` receives — you write and test the navigator once and only the thin per-framework entry points differ.
+
+## Lower-level API: `Navigator` and `Slot`
+
+When you need direct access to React Navigation's navigator hook, Expo Router exports a `Navigator` component that wraps `useNavigationBuilder`. It accepts a `router` (`StackRouter` or `TabRouter`) and optional `screenOptions`, and it renders the routes discovered from the filesystem. Inside a `Navigator`, read the underlying navigation state with `Navigator.useContext()`, which returns the `state`, `descriptors`, `navigation`, and `router` produced by `useNavigationBuilder`.
+
+`Slot` renders the current child route without any surrounding navigation UI. It is a `Navigator` that only renders the focused screen, which is useful when you want file-based routing but no visible navigator (for example a layout that only provides context):
+
+```tsx app/_layout.tsx
+import { Slot } from 'expo-router';
+
+export default function Layout() {
+  return <Slot />;
+}
+```
+
+To build a custom UI around the routes, render `Navigator` and read its context:
+
+```tsx app/_layout.tsx
+import { Navigator } from 'expo-router';
+import { View, Pressable, Text } from 'react-native';
+
+function CustomTabs() {
+  const { state, navigation, descriptors } = Navigator.useContext();
+
+  return (
+    <View style={{ flex: 1 }}>
+      <View style={{ flexDirection: 'row' }}>
+        {state.routes.map(route => (
+          <Pressable key={route.key} onPress={() => navigation.navigate(route.name)}>
+            <Text>{descriptors[route.key].options.title ?? route.name}</Text>
+          </Pressable>
+        ))}
+      </View>
+      <Navigator.Slot />
+    </View>
+  );
+}
+
+export default function Layout() {
+  return (
+    <Navigator>
+      <CustomTabs />
+    </Navigator>
+  );
+}
+```
+
+The `expo-router/ui` submodule builds on this same foundation. Its `Tabs` primitives (`TabList`, `TabTrigger`, `TabSlot`) are composed from `Navigator` and `Slot`, so you can reach for `expo-router/ui` when you want a headless tab layout without wiring up `useNavigationBuilder` yourself.

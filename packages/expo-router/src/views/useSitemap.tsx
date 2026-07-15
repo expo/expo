@@ -61,6 +61,12 @@ const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route
     .map((child: RouteNode) => mapForRoute(child, routeSegments(route, parents))),
 });
 
+/**
+ * Returns the app's route tree as a `SitemapType`, where each node describes a route with its
+ * `href`, `filename`, `children`, and flags such as `isInternal` and `isGenerated`. Returns
+ * `null` before the route tree is available. Use it to build a custom route listing screen in
+ * place of the built-in `Sitemap`.
+ */
 export function useSitemap(): SitemapType | null {
   const sitemap = useMemo(
     () => (store.routeNode ? mapForRoute(store.routeNode, []) : null),

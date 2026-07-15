@@ -1,0 +1,127 @@
+---
+title: Navigation state
+description: Learn how to read the navigation state object in Expo Router and how file-based routes map to it.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { FileTree } from '~/ui/components/FileTree';
+
+The navigation state is the object that describes which routes are currently rendered and which one is focused. Expo Router builds this state from your file structure. You rarely need to read it directly, but it is useful for advanced cases such as inspecting the full navigation tree or building custom navigation logic.
+
+Use the `useRootNavigationState` hook to read the state of the root navigator — the top-level navigator that contains the current screen.
+
+```tsx app/index.tsx
+import { useRootNavigationState } from 'expo-router';
+import { Text } from 'react-native';
+
+export default function Route() {
+  const state = useRootNavigationState();
+
+  return <Text>{state.routes[0].name}</Text>;
+}
+```
+
+## Shape of the state object
+
+The hook returns a `NavigationState` object. The exact shape is defined by the `NavigationState` type of your installed `expo-router` version — see [`useRootNavigationState`](/versions/latest/sdk/router/#userootnavigationstate) in the versioned API reference. It contains the following fields:
+
+- `key` — a unique string that identifies this navigation state.
+- `index` — the index of the currently focused route in the `routes` array.
+- `routeNames` — the list of all valid route names for this navigator.
+- `routes` — the list of rendered routes. Each route has a `key`, a `name`, and optionally `params`, a `path`, and its own nested `state`.
+- `type` — the navigator type, such as `stack` or `tab`. Use it to detect which kind of navigator produced the state.
+- `stale` — always `false` for a hydrated state.
+
+The currently focused route is always `state.routes[state.index]`.
+
+```tsx
+const state = useRootNavigationState();
+
+const focusedRoute = state.routes[state.index];
+console.log(focusedRoute.name);
+```
+
+## How file-based routes map to state
+
+Each navigator in your app produces one level of navigation state, and nested navigators produce nested state through the `state` field on a route. Consider a tabs layout that contains a nested stack:
+
+<FileTree
+  files={[
+    'app/_layout.tsx',
+    'app/(tabs)/_layout.tsx',
+    'app/(tabs)/index.tsx',
+    'app/(tabs)/settings/_layout.tsx',
+    'app/(tabs)/settings/index.tsx',
+    'app/(tabs)/settings/account.tsx',
+  ]}
+/>
+
+When the user is on the `account` screen, the state hierarchy mirrors the file structure. The root navigator contains the `(tabs)` route, the tabs navigator contains the `settings` route, and the settings stack contains both `index` and `account`:
+
+```json
+{
+  "type": "stack",
+  "index": 0,
+  "routes": [
+    {
+      "name": "(tabs)",
+      "state": {
+        "type": "tab",
+        "index": 1,
+        "routes": [
+          { "name": "index" },
+          {
+            "name": "settings",
+            "state": {
+              "type": "stack",
+              "index": 1,
+              "routes": [{ "name": "index" }, { "name": "account" }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+To reach a deeply nested route, walk the `state` field on each focused route.
+
+```tsx
+const state = useRootNavigationState();
+
+// Walk from the root down to the deepest focused route.
+let current = state;
+while (current?.routes[current.index]?.state) {
+  current = current.routes[current.index].state;
+}
+```
+
+## Do not mutate the state
+
+The navigation state is read-only. Do not modify it directly to change what is rendered. Mutating the object has no effect on the UI and can lead to inconsistent behavior.
+
+To change the current route, use the `router` object or the `Link` component instead.
+
+```tsx
+import { router } from 'expo-router';
+
+// Correct: navigate with the router API.
+router.navigate('/settings/account');
+```
+
+<BoxLink
+  title="Navigating between pages"
+  description="Learn the different ways to link to and navigate between pages in Expo Router."
+  href="/router/basics/navigation/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Navigation events"
+  description="Subscribe to focus, blur, and state changes with the useNavigation hook."
+  href="/router/reference/navigation-events/"
+  Icon={BookOpen02Icon}
+/>

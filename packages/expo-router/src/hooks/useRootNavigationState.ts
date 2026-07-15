@@ -19,10 +19,14 @@ import { useNavigation } from '../react-navigation/native';
  * }
  * ```
  *
- * @returns The current `NavigationState` of the root navigator.
+ * @returns The current `NavigationState` of the root navigator, containing the list of
+ * `routes` with their params and any nested state, the `index` of the focused route, the
+ * navigator `type`, the valid `routeNames`, a unique `key`, and a `stale` flag that is
+ * `false` once the state has been rehydrated.
  *
- * @see React Navigation's [navigation state](https://reactnavigation.org/docs/navigation-state/)
- * reference for the shape of the returned object.
+ * @see The [navigation state](/router/reference/navigation-state/) guide for how file-based
+ * routes map to this object. The exact shape matches the `NavigationState` type of your
+ * installed `expo-router` version.
  */
 export function useRootNavigationState(): NavigationState {
   const parent =

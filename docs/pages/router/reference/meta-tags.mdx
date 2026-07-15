@@ -1,0 +1,121 @@
+---
+title: Meta tags
+description: Learn how to add Open Graph and Twitter Card meta tags to your web routes with the Head component in Expo Router.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+The `Head` component lets you set the document metadata for a route, such as its title and social sharing tags. On web, `Head` renders real `<title>` and `<meta>` tags into the document head, so social platforms and search engines can read them. On iOS, the same metadata registers a native user activity for Handoff and Spotlight indexing. On Android, `Head` is a no-op.
+
+Import `Head` from `expo-router/head` and render it anywhere in a route.
+
+```tsx app/index.tsx
+import Head from 'expo-router/head';
+import { Text } from 'react-native';
+
+export default function Home() {
+  return (
+    <>
+      <Head>
+        <title>Home</title>
+        <meta name="description" content="Welcome to my app" />
+      </Head>
+      <Text>Home</Text>
+    </>
+  );
+}
+```
+
+`Head` only applies the metadata of the focused route, so nested routes do not fight over the document head.
+
+## Open Graph tags
+
+[Open Graph](https://ogp.me/) tags control how a link to your page appears when shared on social platforms such as Facebook, LinkedIn, and messaging apps. Set them with `<meta property="og:...">` tags inside `Head`.
+
+```tsx app/index.tsx
+import Head from 'expo-router/head';
+
+export default function Home() {
+  return (
+    <Head>
+      <title>My App</title>
+      <meta property="og:title" content="My App" />
+      <meta property="og:description" content="The best way to explore my app" />
+      <meta property="og:image" content="https://example.com/preview.png" />
+      <meta property="og:url" content="https://example.com" />
+    </Head>
+  );
+}
+```
+
+## Twitter Card tags
+
+Twitter Card tags control how a link appears on X (formerly Twitter). Set them with `<meta name="twitter:...">` tags. Use `summary_large_image` for a large preview image.
+
+```tsx app/index.tsx
+import Head from 'expo-router/head';
+
+export default function Home() {
+  return (
+    <Head>
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="My App" />
+      <meta name="twitter:description" content="The best way to explore my app" />
+      <meta name="twitter:image" content="https://example.com/preview.png" />
+    </Head>
+  );
+}
+```
+
+## Per-route dynamic metadata
+
+Because `Head` accepts children like any component, you can build metadata from route params. This is useful for dynamic routes where each page needs its own title and image.
+
+```tsx app/products/[id].tsx
+import Head from 'expo-router/head';
+import { useLocalSearchParams } from 'expo-router';
+import { Text } from 'react-native';
+
+export default function Product() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+
+  return (
+    <>
+      <Head>
+        <title>{`Product ${id}`}</title>
+        <meta property="og:title" content={`Product ${id}`} />
+        <meta property="og:image" content={`https://example.com/products/${id}.png`} />
+        <meta property="og:url" content={`https://example.com/products/${id}`} />
+      </Head>
+      <Text>Product {id}</Text>
+    </>
+  );
+}
+```
+
+To make dynamic metadata visible to social platforms and search engines, render your web routes statically or on the server. Crawlers read the HTML response and usually do not run client-side JavaScript, so the tags need to be present in the initial HTML.
+
+<BoxLink
+  title="Static rendering and SEO"
+  description="Render your web routes to static HTML so meta tags are present in the initial response."
+  href="/router/web/static-rendering/"
+  Icon={BookOpen02Icon}
+/>
+
+## Verifying your meta tags
+
+After deploying, verify that the tags are present and correct:
+
+- View the page source in a web browser and confirm the `<meta>` tags appear inside `<head>`.
+- Use a social debugger to preview how the link renders, such as the [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) for Open Graph tags or the [X Card validator](https://cards-dev.twitter.com/validator) for Twitter Cards.
+
+If the tags do not appear in the page source, confirm that the route is rendered statically or on the server so the metadata is in the initial HTML.
+
+<BoxLink
+  title="Link preview"
+  description="Add an iOS peek and pop preview to a link in your app."
+  href="/router/reference/link-preview/"
+  Icon={BookOpen02Icon}
+/>

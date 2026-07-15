@@ -1,0 +1,128 @@
+---
+title: Screen animations
+description: Learn how to customize screen transition animations and dismissal gestures in Expo Router.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+The `Stack` navigator animates screens as they are pushed and popped. You can customize the transition animation, its duration, and the swipe-to-dismiss gesture through screen options. Configure these options on the `Stack` itself with `screenOptions`, or per screen with `<Stack.Screen options={} />`.
+
+## Choosing an animation
+
+Set the `animation` option to control how a screen animates when it is pushed or popped. It supports the following values:
+
+- `default` — the platform default animation.
+- `fade` — fades the screen in or out.
+- `fade_from_bottom` — a fade combined with a slide from the bottom.
+- `flip` — flips the screen. Requires `presentation: 'modal'` and is iOS only.
+- `simple_push` — the platform default push without the shadow and native header transition. iOS only.
+- `slide_from_bottom` — slides the new screen in from the bottom.
+- `slide_from_right` — slides in from the right. Android only; resolves to the default animation on iOS.
+- `slide_from_left` — slides in from the left. Android only; resolves to the default animation on iOS.
+- `ios_from_right` — an iOS-style slide from right to left. Android only; resolves to the default transition on iOS.
+- `ios_from_left` — an iOS-style slide from left to right. Android only; resolves to the default transition on iOS.
+- `none` — no animation.
+
+The `animation` option is only supported on iOS and Android.
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack
+      screenOptions={{
+        animation: 'fade',
+      }}
+    />
+  );
+}
+```
+
+You can also set the animation for a single screen with `<Stack.Screen>`.
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="modal" options={{ animation: 'slide_from_bottom' }} />
+    </Stack>
+  );
+}
+```
+
+## Disabling animations
+
+Set `animation: 'none'` to push and pop the screen without any transition.
+
+```tsx
+<Stack.Screen name="details" options={{ animation: 'none' }} />
+```
+
+## Animation duration
+
+Set `animationDuration` in milliseconds to control the length of the transition. On iOS, this applies to the `slide_from_bottom`, `fade_from_bottom`, `fade`, and `simple_push` animations. It defaults to `500`.
+
+The duration cannot be customized for screens using the `default` or `flip` animations, or for screens presented with a `modal`, `formSheet`, or `pageSheet` presentation.
+
+```tsx
+<Stack.Screen
+  name="details"
+  options={{
+    animation: 'fade',
+    animationDuration: 200,
+  }}
+/>
+```
+
+## Dismissal gestures
+
+On iOS, screens support a swipe-to-dismiss gesture. Use the following options to configure it:
+
+- `gestureEnabled` — whether the screen can be dismissed with a gesture. Defaults to `true`. iOS only.
+- `gestureDirection` — the direction to swipe to dismiss. Use `horizontal` (the default) or `vertical`. Using `vertical` also sets `fullScreenGestureEnabled: true`, `animationMatchesGesture: true`, and `animation: 'slide_from_bottom'` by default. iOS only.
+- `fullScreenGestureEnabled` — whether the dismiss gesture works across the whole screen instead of only the edge. iOS only.
+- `animationMatchesGesture` — whether the dismiss gesture uses the animation set in the `animation` option. Defaults to `false`. iOS only.
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      {/* Disable the swipe-to-dismiss gesture for this screen. */}
+      <Stack.Screen name="checkout" options={{ gestureEnabled: false }} />
+      {/* Dismiss by swiping down anywhere on the screen. */}
+      <Stack.Screen
+        name="photo"
+        options={{
+          gestureDirection: 'vertical',
+          fullScreenGestureEnabled: true,
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+## Zoom transition
+
+For a shared-element style transition that zooms from a source element to the destination screen, use the zoom transition. It uses the native iOS 18 zoom transition API and is configured through the `Link` component rather than screen options.
+
+<BoxLink
+  title="Zoom transition"
+  description="Create fluid, shared transitions that zoom from a source element into the destination screen on iOS."
+  href="/router/advanced/zoom-transition/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Stack"
+  description="Learn how to configure the Stack navigator, headers, and screen options."
+  href="/router/advanced/stack/"
+  Icon={BookOpen02Icon}
+/>
