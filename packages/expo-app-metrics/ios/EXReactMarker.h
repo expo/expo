@@ -10,7 +10,5 @@ NS_SWIFT_NAME(ReactMarker)
 + (double)getAppStartupEndTime;
 + (double)getRunJSBundleStartTime;
 + (double)getRunJSBundleEndTime;
-+ (double)getInitReactRuntimeStartTime;
-+ (double)getInitReactRuntimeEndTime;
 
 @end

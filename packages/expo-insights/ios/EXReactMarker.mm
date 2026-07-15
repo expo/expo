@@ -12,9 +12,12 @@
   return [self getDateFromMediaTime:StartupLogger::getInstance().getRunJSBundleStartTime()];
 }
 
-+ (NSDate *)getRunJSBundleEndTime
++ (nullable NSDate *)getRunJSBundleEndTime
 {
-  return [self getDateFromMediaTime:StartupLogger::getInstance().getRunJSBundleEndTime()];
+  // TODO(@tsapeta): React Native 0.87 removed `StartupLogger::getRunJSBundleEndTime()`. The end
+  // time is still recorded internally on `RUN_JS_BUNDLE_STOP`, but there is no longer a public
+  // accessor. Restore the `RUN_JS_BUNDLE_END` event once react-native exposes it again.
+  return nil;
 }
 
 + (NSDate *)getDateFromMediaTime:(double)mediaTime

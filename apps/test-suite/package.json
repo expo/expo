@@ -77,7 +77,7 @@
     "lodash": "^4.17.19",
     "path": "^0.12.7",
     "react": "19.2.3",
-    "react-native": "0.86.0",
+    "react-native": "0.87.0-rc.0",
     "react-native-gesture-handler": "~3.0.2",
     "react-native-safe-area-context": "^5.7.0",
     "semver": "^7.7.4"

@@ -669,8 +669,17 @@ export function withExtendedResolver(
       }
 
       // TODO(@kitten): Compare against `config.transformer.assetRegistryPath`
-      if (/^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)) {
-        return getAssetRegistryModule();
+      if (
+        moduleName === 'react-native/asset-registry' ||
+        /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)
+      ) {
+        // Serve a virtual registry on web (`react-native` isn't bundled there) and resolve to
+        // react-native's real registry on native so all consumers share one instance. The legacy
+        // `@react-native/assets-registry` package no longer ships with RN 0.87.
+        if (platform === 'web') {
+          return getAssetRegistryModule();
+        }
+        return getStrictResolver(context, platform)('react-native/asset-registry');
       }
 
       if (

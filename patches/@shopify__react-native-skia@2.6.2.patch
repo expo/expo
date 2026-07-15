@@ -1,3 +1,69 @@
+diff --git a/android/README.md b/android/README.md
+deleted file mode 100644
+index ac2fbda377ad1213c02f090138f48054e5660547..0000000000000000000000000000000000000000
+diff --git a/apple/RNSkiaModule.mm b/apple/RNSkiaModule.mm
+index 9f761befc4ce3e9da9dceb3b7cb6561a6c6bc69b..b70269f77f771cc693baa8999294096c506d2f5a 100644
+--- a/apple/RNSkiaModule.mm
++++ b/apple/RNSkiaModule.mm
+@@ -35,11 +35,17 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
+     // Already initialized, ignore call.
+     return @true;
+   }
+-  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
++#ifndef RCT_REMOVE_LEGACY_ARCH
+   if (!jsInvoker) {
++    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+     jsInvoker = cxxBridge.jsCallInvoker;
+   }
+-  skiaManager = [[SkiaManager alloc] initWithBridge:cxxBridge
++#endif
++  if (!jsInvoker) {
++    NSLog(@"[RNSkiaModule] Failed to install SkiaManager: jsInvoker is not initialized.");
++    return @false;
++  }
++  skiaManager = [[SkiaManager alloc] initWithBridge:self.bridge
+                                           jsInvoker:jsInvoker];
+   return @true;
+ }
+diff --git a/apple/SkiaManager.mm b/apple/SkiaManager.mm
+index e9bc75c1aecedc342baba4e1331b8a319c2ed3be..5cc043c149eba21af0527c58dc7b5bbe148751c1 100644
+--- a/apple/SkiaManager.mm
++++ b/apple/SkiaManager.mm
+@@ -2,12 +2,19 @@
+ 
+ #import <Foundation/Foundation.h>
+ 
+-#import <React/RCTBridge+Private.h>
+ #import <React/RCTBridge.h>
+ #import <React/RCTUIManager.h>
+ 
+ #import "RNSkApplePlatformContext.h"
+ 
++// Forward-declared runtime accessor that is satisfied by RCTCxxBridge
++// (legacy/transitional) and RCTBridgeProxy (bridgeless). Avoids referencing
++// RCTCxxBridge directly, which is compiled out when RCT_REMOVE_LEGACY_ARCH
++// is set (React Native 0.82+).
++@interface RCTBridge (RNSkiaRuntime)
++- (void *)runtime;
++@end
++
+ static __weak SkiaManager *sharedInstance = nil;
+ 
+ @implementation SkiaManager {
+@@ -29,11 +36,9 @@ static __weak SkiaManager *sharedInstance = nil;
+   self = [super init];
+   if (self) {
+     sharedInstance = self;
+-    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)bridge;
+-    if (cxxBridge.runtime) {
+-
++    if (bridge.runtime) {
+       facebook::jsi::Runtime *jsRuntime =
+-          (facebook::jsi::Runtime *)cxxBridge.runtime;
++          (facebook::jsi::Runtime *)bridge.runtime;
+ 
+       // Create the RNSkiaManager (cross platform)
+       _skManager = std::make_shared<RNSkia::RNSkManager>(
 diff --git a/apple/SkiaWebGPUView.mm b/apple/SkiaWebGPUView.mm
 index 2e2c142263c18eba80ca4576a1fe4023e25f477e..c334b728d270aec8e737e19b794bf300ef876179 100644
 --- a/apple/SkiaWebGPUView.mm
@@ -5,9 +71,12 @@ index 2e2c142263c18eba80ca4576a1fe4023e25f477e..c334b728d270aec8e737e19b794bf300
 @@ -7,7 +7,7 @@
  #import <react/renderer/components/rnskia/Props.h>
  #import <react/renderer/components/rnskia/RCTComponentViewHelpers.h>
-
+ 
 -#import "RCTFabricComponentsPlugins.h"
 +#import <React/RCTFabricComponentsPlugins.h>
  #import "WebGPUMetalView.h"
-
+ 
  using namespace facebook::react;
+diff --git a/cpp/skia/include/private/base/README.md b/cpp/skia/include/private/base/README.md
+deleted file mode 100644
+index 7f4f17b228c2b8e664b462983d66f735c6383fe7..0000000000000000000000000000000000000000

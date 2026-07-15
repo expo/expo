@@ -2,7 +2,7 @@ import * as GL from 'expo-gl';
 import mat4 from 'gl-mat4';
 import hsv2rgb from 'hsv2rgb';
 import React from 'react';
-import { ActivityIndicator, InteractionManager, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import REGL from 'regl';
 
 const NUM_POINTS = 1e4;
@@ -19,7 +19,7 @@ export default class BasicScene extends React.Component {
   };
 
   componentDidMount() {
-    InteractionManager.runAfterInteractions(() => {
+    requestIdleCallback(() => {
       this.setState({ transitionIsComplete: true });
     });
   }

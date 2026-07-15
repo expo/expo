@@ -1,5 +1,5 @@
 declare module 'react-native/Libraries/Image/AssetSourceResolver' {
-  import type { PackagerAsset } from '@react-native/assets/registry';
+  import type { PackagerAsset } from 'react-native/asset-registry';
 
   export type ResolvedAssetSource = {
     __packager_asset: boolean;
@@ -41,8 +41,8 @@ declare module 'react-native/Libraries/Image/resolveAssetSource' {
   ): void;
 }
 
-declare module '@react-native/assets-registry/registry' {
-  import type { PackagerAsset } from '@react-native/assets/registry';
+declare module 'react-native/asset-registry' {
+  import type { PackagerAsset } from 'react-native/asset-registry';
   export * from '@react-native/assets/registry';
 
   // NOTE(@kitten): Custom override supported in Expo only

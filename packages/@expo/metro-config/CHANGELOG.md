@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- Point Metro's `assetRegistryPath` at `react-native/asset-registry`, which replaces the `@react-native/assets-registry` package as of React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 - Add misc. OOT platforms as base `react-native` paths for module configs like `getPolyfills` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 - Vendor `msgpackr` dependency to remove `msgpackr-extract` postinstall warning ([#46676](https://github.com/expo/expo/pull/46676) by [@kitten](https://github.com/kitten))
 - [Internal] Deduplicate find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))

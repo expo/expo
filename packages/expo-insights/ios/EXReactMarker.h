@@ -8,7 +8,7 @@ NS_SWIFT_NAME(ReactMarker)
 
 + (NSDate *)getAppStartupEndTime;
 + (NSDate *)getRunJSBundleStartTime;
-+ (NSDate *)getRunJSBundleEndTime;
++ (nullable NSDate *)getRunJSBundleEndTime;
 + (NSDate *)getDateFromMediaTime:(double)mediaTime;
 
 @end

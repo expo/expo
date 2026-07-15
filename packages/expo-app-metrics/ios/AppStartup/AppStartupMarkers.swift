@@ -59,9 +59,10 @@ final class AppStartupMarkers: Sendable {
   }
 
   func getBundleLoadTime() -> TimeInterval? {
-    let bundleStartTime = ReactMarker.getRunJSBundleStartTime()
-    let bundleEndTime = ReactMarker.getRunJSBundleEndTime()
-    return (bundleEndTime - bundleStartTime) / 1000
+    // TODO(@tsapeta): React Native 0.87 removed `StartupLogger::getRunJSBundleEndTime()`, so
+    // `ReactMarker.getRunJSBundleEndTime()` currently returns NaN and the bundle load duration
+    // cannot be measured. Returning nil keeps NaN out of the serialized metrics payload.
+    return nil
   }
 }
 

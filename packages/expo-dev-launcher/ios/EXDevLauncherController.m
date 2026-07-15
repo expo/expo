@@ -3,7 +3,6 @@
 #import <React/RCTDevLoadingViewSetEnabled.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
-#import <React/RCTRootContentView.h>
 #import <React/RCTAppearance.h>
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>

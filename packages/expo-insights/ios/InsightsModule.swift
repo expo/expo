@@ -53,7 +53,9 @@ public final class InsightsModule: Module {
   private func contentAppeared(_ notification: Notification) {
     let date = Date()
     Insights.shared.sendOnce(event: "RUN_JS_BUNDLE_START", at: ReactMarker.getRunJSBundleStartTime())
-    Insights.shared.sendOnce(event: "RUN_JS_BUNDLE_END", at: ReactMarker.getRunJSBundleEndTime())
+    if let runJSBundleEndTime = ReactMarker.getRunJSBundleEndTime() {
+      Insights.shared.sendOnce(event: "RUN_JS_BUNDLE_END", at: runJSBundleEndTime)
+    }
     Insights.shared.sendOnce(event: "APP_STARTUP_END", at: ReactMarker.getAppStartupEndTime())
     Insights.shared.sendOnce(event: "CONTENT_APPEARED", at: date)
   }

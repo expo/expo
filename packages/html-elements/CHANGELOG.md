@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Support React Native 0.87's native `backgroundImage` style: widen the style type to accept gradient arrays in addition to CSS strings, and stop stripping the property from styles on native. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 56.0.1 — 2026-05-06
