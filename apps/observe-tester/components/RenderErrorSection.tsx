@@ -57,11 +57,11 @@ export function RenderErrorSection() {
     <>
       <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Render errors</Text>
       <Text style={[styles.sectionHint, { color: theme.text.secondary }]}>
-        Throw during React render to exercise <Text style={styles.code}>ObserveErrorBoundary</Text>.
-        Each is recorded as an <Text style={styles.code}>errorBoundary</Text> exception and
-        dispatched on the next flush. The locally-caught triggers report and recover so the app
-        stays usable; the last one escapes to the root boundary, which renders its fallback in place
-        of the app.
+        Throw during React render to exercise{' '}
+        <Text style={styles.code}>ObserveErrorBoundary</Text>. Each is recorded as an{' '}
+        <Text style={styles.code}>errorBoundary</Text> exception and dispatched on the next flush.
+        The locally-caught triggers report and recover so the app stays usable; the last one escapes
+        to the root boundary, which renders its fallback in place of the app.
       </Text>
 
       {LOCAL_TRIGGERS.map(({ kind, title, description }) => (
@@ -82,11 +82,7 @@ export function RenderErrorSection() {
           slot returns to a healthy, ready-to-fire state. `fallback={null}` renders nothing in place
           of the failed subtree; the sibling `Recovered` below surfaces the confirmation and reset. */}
       <ObserveErrorBoundary key={attempt} fallback={null}>
-        {crash === 'nested' ? (
-          <NestedBoom kind={crash} />
-        ) : crash != null ? (
-          <Boom kind={crash} />
-        ) : null}
+        {crash === 'nested' ? <NestedBoom kind={crash} /> : crash != null ? <Boom kind={crash} /> : null}
       </ObserveErrorBoundary>
       <Recovered visible={crash != null} theme={theme} onAcknowledge={() => setCrash(null)} />
 
