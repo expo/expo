@@ -66,11 +66,13 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 ## Build a production app
 
-You need a production **.aab** to submit. Create one with [EAS Build](/build/introduction/):
+You need a production **.aab** (Android App Bundle) to submit. Google Play requires new apps to be published as app bundles instead of **.apk** files, and generates optimized APKs for each device from the bundle. Create one with [EAS Build](/build/introduction/):
 
 <Terminal cmd={['$ eas build --platform android --profile production']} />
 
 Alternatively, build on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
+
+The default `production` profile produces an **.aab**. A build profile only produces an **.apk** when it sets [`android.buildType`](/eas/json/#buildtype) to `apk`, which is useful for [installing on an emulator or device](/build-reference/apk/) but cannot be submitted to the Google Play Store.
 
 ## Submit with `eas submit`
 
