@@ -18,9 +18,15 @@ public class EXDevLauncherUrl: NSObject {
     if EXDevLauncherURLHelper.isDevLauncherURL(url),
       let urlParam = queryParams["url"],
       let urlFromParam = URL(string: urlParam) {
-      self.url = EXDevLauncherURLHelper.replaceEXPScheme(urlFromParam, to: "http")
+      self.url = EXDevLauncherURLHelper.replaceEXPScheme(
+        urlFromParam,
+        to: EXDevLauncherURLHelper.packagerScheme(for: urlFromParam)
+      )
     } else {
-      self.url = EXDevLauncherURLHelper.replaceEXPScheme(url, to: "http")
+      self.url = EXDevLauncherURLHelper.replaceEXPScheme(
+        url,
+        to: EXDevLauncherURLHelper.packagerScheme(for: url)
+      )
     }
 
     super.init()
@@ -58,6 +64,19 @@ public class EXDevLauncherURLHelper: NSObject {
     if shouldDisable {
       DevMenuPreferences.isOnboardingFinished = true
     }
+  }
+
+  // Tunnel hosts (e.g. `*.exp.direct`) are served over TLS, and iOS App Transport
+  // Security blocks cleartext HTTP to remote hosts. Map `exp://` tunnel URLs to
+  // `https` — matching the scheme the Expo CLI already uses for tunnel manifest
+  // URLs (`UrlCreator.constructDevClientUrl`) — while LAN/localhost dev servers
+  // keep using `http`.
+  @objc
+  public static func packagerScheme(for url: URL) -> String {
+    if url.host?.hasSuffix(".exp.direct") == true {
+      return "https"
+    }
+    return "http"
   }
 
   @objc

@@ -4,6 +4,11 @@ import android.net.Uri
 
 fun replaceEXPScheme(uri: Uri, scheme: String): Uri = if (uri.scheme == "exp") uri.buildUpon().scheme(scheme).build() else uri
 
+// Tunnel hosts (e.g. `*.exp.direct`) are served over TLS, so `exp://` tunnel URLs
+// must map to `https` — matching the scheme the Expo CLI uses for tunnel manifest
+// URLs — while LAN/localhost dev servers keep using `http`.
+fun packagerScheme(uri: Uri): String = if (uri.host?.endsWith(".exp.direct") == true) "https" else "http"
+
 fun isDevLauncherUrl(uri: Uri) = uri.host == "expo-development-client"
 
 fun hasUrlQueryParam(uri: Uri): Boolean {
@@ -21,10 +26,10 @@ class DevLauncherUrl(var url: Uri) {
     if (isDevLauncherUrl(url)) {
       if (queryParams["url"] != null) {
         val queryUrl = Uri.parse(queryParams["url"])
-        url = replaceEXPScheme(queryUrl, "http")
+        url = replaceEXPScheme(queryUrl, packagerScheme(queryUrl))
       }
     } else {
-      url = replaceEXPScheme(url, "http")
+      url = replaceEXPScheme(url, packagerScheme(url))
     }
   }
 }
