@@ -10,6 +10,7 @@ export function getBundleUrl(): string | null {
 
   if (typeof window === 'undefined') {
     // For server runtime, we use the filename of the current script
+    // @ts-expect-error The react-native tsconfig doesn't support CJS
     scriptURL = 'file://' + __filename;
   }
 
