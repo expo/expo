@@ -4592,7 +4592,7 @@ SPEC CHECKSUMS:
   ExpoLogBox: b39a76aab749833d58111c3be1264bb90f3b92d4
   ExpoMailComposer: 93f4d65c12dd45331f69e0906773aa0e7b74344c
   ExpoMediaLibrary: 2fa3d1b3a7681a010602c36c547819e0e83970b9
-  ExpoModulesCore: e2ba255f216b4bee7817a71409f4ce6762b35c32
+  ExpoModulesCore: 06d7eb6165b27c2d998970fda8a9911b59a09acf
   ExpoModulesJSI: 0fad44a0464a4469b83a06e34e529c13043f2f69
   ExpoModulesWorklets: f6b71b8ddeb8dceb2ce3504544ecfbd708ba79a2
   ExpoModulesWorkletsAdapter: 8db49bc7bb9c51249d7ec873f1960aab395b774d
