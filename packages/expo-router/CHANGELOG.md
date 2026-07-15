@@ -24,6 +24,7 @@
 
 ### 🐛 Bug fixes
 
+- Keep fully guarded navigators mounted while hiding their protected content. ([#TODO](https://github.com/expo/expo/pull/TODO) by [@Ubax](https://github.com/Ubax))
 - [android] Disable safe area insets in Native Tabs on Android when tab bar is hidden. ([#47611](https://github.com/expo/expo/pull/47611) by [@debitan](https://github.com/debitan))
 - Sync config plugin `Props` type with the options schema, adding the missing `redirects`, `rewrites`, `platformRoutes`, and `disableSynchronousScreensUpdates` options. ([#46677](https://github.com/expo/expo/pull/46677) by [@zoontek](https://github.com/zoontek))
 - [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))

@@ -8,12 +8,7 @@ import {
   type ParamListBase,
   type StackNavigationState,
 } from '../react-navigation/routers';
-import type { Href } from '../types';
-import { GuardContext } from './GuardContext';
-
-function isGuardedRouteName(guards: Map<string, Href>, name: string): boolean {
-  return guards.has(name) || guards.has(name.replace(/\/index$/, ''));
-}
+import { GuardContext, isRouteGuarded } from './GuardContext';
 
 /**
  * Lets a stack navigator clear its own guarded routes from history, based on the guard context.
@@ -36,14 +31,14 @@ export function useClearGuardedRoutes(
     const focusedName = state.routes[state.index]?.name;
     // If focused route becomes guarded then we let the redirect fire
     const hasGuardedRoute = state.routes.some(
-      (route) => route.name !== focusedName && isGuardedRouteName(guards, route.name)
+      (route) => route.name !== focusedName && isRouteGuarded(route.name, guards)
     );
     if (!hasGuardedRoute) {
       return;
     }
 
     const allowedNames = state.routeNames.filter(
-      (name) => name === focusedName || !isGuardedRouteName(guards, name)
+      (name) => name === focusedName || !isRouteGuarded(name, guards)
     );
 
     const { routes, index } = getRoutesForRouteNames(state, allowedNames, { routeParamList: {} });
