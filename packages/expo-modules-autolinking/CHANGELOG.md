@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [Android] Set `CMAKE_OBJECT_PATH_MAX=1024` by default for the app and all library subprojects that build native code with CMake, so long object file paths (for example in pnpm monorepos on Windows) no longer fail the build. Configurable with the `expo.android.cmakeObjectPathMax` Gradle property. ([#47791](https://github.com/expo/expo/pull/47791) by [@ide](https://github.com/ide))
 - [Android] Apply the `android.cmakeVersion` build property to the app and all library subprojects. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
 - Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
 - Added support for compile-only inline module files, which are compiled into the target without being registered as Expo modules. ([#46969](https://github.com/expo/expo/pull/46969) by [@behenate](https://github.com/behenate))
