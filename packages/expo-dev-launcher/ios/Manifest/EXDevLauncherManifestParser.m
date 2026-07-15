@@ -75,7 +75,17 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
       if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300) {
-        NSString *message = @"Failed to open app.\n\nIf you are trying to load the app from a development server, check your network connectivity and make sure you can access the server from your device.\n\nIf you are trying to open a published project, install a compatible version of expo-updates and follow all setup and integration steps.";
+        // Surface the server-provided error instead of blaming connectivity: the dev
+        // server reached us and answered, so this is not a networking failure. Expo CLI
+        // responds with a JSON body ({"error": "..."}) explaining exactly what went
+        // wrong (e.g. a code signing misconfiguration), which used to be discarded here.
+        NSString *serverMessage = [EXDevLauncherManifestParser serverErrorMessageFromResponseBody:data];
+        NSString *message;
+        if (serverMessage) {
+          message = [NSString stringWithFormat:@"The development server responded with status code %ld:\n\n%@", (long)httpResponse.statusCode, serverMessage];
+        } else {
+          message = [NSString stringWithFormat:@"The development server responded with status code %ld.\n\nIf you are trying to load the app from a development server, check the server logs for errors.\n\nIf you are trying to open a published project, install a compatible version of expo-updates and follow all setup and integration steps.", (long)httpResponse.statusCode];
+        }
         onError([NSError errorWithDomain:@"DevelopmentClient" code:1 userInfo:@{NSLocalizedDescriptionKey: message}]);
         return;
       }
@@ -96,6 +106,33 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
   }];
 }
 
+
+/**
+ * Extract a human-readable error message from a dev server error response body.
+ * Expo CLI returns JSON like {"error": "..."}; fall back to a short plain-text body.
+ */
++ (nullable NSString *)serverErrorMessageFromResponseBody:(nullable NSData *)data
+{
+  if (data.length == 0) {
+    return nil;
+  }
+
+  NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+  if ([jsonObject isKindOfClass:[NSDictionary class]]) {
+    id errorValue = jsonObject[@"error"] ?: jsonObject[@"message"];
+    if ([errorValue isKindOfClass:[NSString class]] && [(NSString *)errorValue length] > 0) {
+      return errorValue;
+    }
+  }
+
+  // Only use plain-text bodies that are short enough to be a message rather than an HTML page.
+  NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  if (text.length > 0 && text.length <= 1024 && ![text containsString:@"<html"]) {
+    return [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  }
+
+  return nil;
+}
 
 - (void)_fetch:(NSString *)method onError:(OnManifestError)onError completionHandler:(CompletionHandler)completionHandler
 {
