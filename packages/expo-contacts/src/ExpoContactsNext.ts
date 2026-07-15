@@ -1,4 +1,4 @@
-import { NativeModule, Platform, requireNativeModule } from 'expo-modules-core';
+import { NativeModule, Platform, requireNativeModule } from 'expo';
 
 import type { Contact } from './types/Contact';
 import type { Container } from './types/Container';

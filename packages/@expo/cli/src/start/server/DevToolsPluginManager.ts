@@ -1,6 +1,6 @@
+import { events } from '2g';
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
 
-import { events } from '../../events';
 import { Log } from '../../log';
 import { DevToolsPlugin } from './DevToolsPlugin';
 
@@ -8,19 +8,20 @@ const debug = require('debug')('expo:start:server:devtools');
 
 export const DevToolsPluginEndpoint = '/_expo/plugins';
 
-export const event = events('expo', (t) => [
-  t.event<
-    'dev-tools-plugin:load',
-    {
+declare module '2g' {
+  interface EventRegistry {
+    'expo:dev-tools-plugin:load': {
       plugins: {
         packageName: string;
         bannerTitle: string;
         cliBanner: boolean;
         webpageEndpoint: string | undefined;
       }[];
-    }
-  >(),
-]);
+    };
+  }
+}
+
+export const event = events('expo');
 
 export default class DevToolsPluginManager {
   private plugins: DevToolsPlugin[] | null = null;

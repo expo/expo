@@ -37,11 +37,13 @@ jest.mock('expo-app-metrics', () => {
 jest.mock('../init', () => ({
   __esModule: true,
   isInitialized: jest.fn(() => true),
+  getReactNavigationIntegrationConfig: jest.fn(() => undefined),
   initReactNavigationIntegration: jest.fn(),
 }));
 
 const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
 const mockMarkInteractive = AppMetrics.markInteractive as jest.Mock;
+const initModule = require('../init') as { getReactNavigationIntegrationConfig: jest.Mock };
 
 type EmittedMetric = {
   name: string;
@@ -168,6 +170,7 @@ async function navigate(ref: React.RefObject<ContainerRef | null>, name: string,
 
 beforeEach(() => {
   jest.clearAllMocks();
+  initModule.getReactNavigationIntegrationConfig.mockReturnValue(undefined);
   jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
@@ -208,6 +211,21 @@ describe('react-navigation integration (real navigation tree)', () => {
       expect(metric.routeName).toBe('/Details');
       expect(metric.routeName).not.toContain('abc');
       expect(metric.params).toEqual({ isAppLaunch: false, routeParams: { id: 'abc' } });
+    });
+
+    it('filters route params from real navigation metrics', async () => {
+      initModule.getReactNavigationIntegrationConfig.mockReturnValue({ filteredParams: ['id'] });
+      const { ref } = await app();
+
+      await navigate(ref, 'Details', { id: 'abc', tab: 'posts' });
+
+      const metric = emittedMetrics().at(-1)!;
+      expect(metric.routeName).toBe('/Details');
+      expect(metric.params).toEqual({
+        isAppLaunch: false,
+        routeParams: { tab: 'posts' },
+        urlHidden: true,
+      });
     });
 
     it('emits warm_ttr with a params-free routeName when revisiting a screen', async () => {

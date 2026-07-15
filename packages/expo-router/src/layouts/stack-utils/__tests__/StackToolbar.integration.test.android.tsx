@@ -397,4 +397,99 @@ describe('Stack.Toolbar Android integration tests', () => {
       expect(screen.queryByTestId('Box')).toBeNull();
     });
   });
+
+  describe('menu badge support in left/right placement', () => {
+    it.each(['left', 'right'] as const)(
+      'renders Box with Badge when menu has a Badge child in %s placement',
+      (placement) => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement={placement}>
+                  <Stack.Toolbar.Menu icon={{ uri: 'menu-icon' }}>
+                    <Stack.Toolbar.Badge>3</Stack.Toolbar.Badge>
+                    <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
+                  </Stack.Toolbar.Menu>
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <View testID="index" />,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(screen.getByTestId('Box')).toBeDefined();
+        const badge = screen.getByTestId('Badge');
+        expect(badge).toBeDefined();
+        expect(within(badge).getByTestId('ComposeText')).toBeDefined();
+        expect(within(badge).getByTestId('ComposeText').props.children).toBe('3');
+      }
+    );
+
+    it('renders dot badge when menu Badge has no children', () => {
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Menu icon={{ uri: 'menu-icon' }}>
+                  <Stack.Toolbar.Badge />
+                  <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
+                </Stack.Toolbar.Menu>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      const badge = screen.getByTestId('Badge');
+      expect(badge).toBeDefined();
+      expect(within(badge).queryByTestId('ComposeText')).toBeNull();
+    });
+
+    it('folds the badge value into the icon contentDescription for TalkBack', () => {
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Menu icon={{ uri: 'menu-icon' }} accessibilityLabel="Notifications">
+                  <Stack.Toolbar.Badge>5</Stack.Toolbar.Badge>
+                  <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
+                </Stack.Toolbar.Menu>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      const icon = within(screen.getByTestId('Box')).getByTestId('Icon');
+      expect(icon.props.contentDescription).toBe('Notifications, 5');
+    });
+
+    it('does not render Box when menu has no Badge child', () => {
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Menu icon={{ uri: 'menu-icon' }}>
+                  <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
+                </Stack.Toolbar.Menu>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen.queryByTestId('Box')).toBeNull();
+    });
+  });
 });

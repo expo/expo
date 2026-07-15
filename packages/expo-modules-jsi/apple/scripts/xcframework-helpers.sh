@@ -1,8 +1,21 @@
 # Shared helpers for managing ExpoModulesJSI.xcframework.
 #
-# Sourced by create-stub-xcframework.sh and build-xcframework.sh. Defines the
-# canonical slice metadata and the Info.plist writer used by both scripts so
-# the manifest is produced from a single place.
+# Sourced by create-stub-xcframework.sh, build-xcframework.sh and
+# clear-caches.sh. Defines the canonical slice metadata and the Info.plist
+# writer used by those scripts so the manifest is produced from a single place.
+
+# clean_xcframework_state PACKAGE_DIR
+# Removes the built xcframework and the SwiftPM/Xcode build state next to the
+# package. Shared by build-xcframework.sh's --clean path and clear-caches.sh.
+clean_xcframework_state() {
+  local package_dir="$1"
+
+  rm -rf \
+    "${package_dir}/Products/ExpoModulesJSI.xcframework" \
+    "${package_dir}/.DerivedData" \
+    "${package_dir}/.build" \
+    "${package_dir}/.swiftpm"
+}
 
 # resolve_pods_root PACKAGE_DIR
 # Sets PODS_ROOT, preferring an explicit value (e.g. from CocoaPods build phase)

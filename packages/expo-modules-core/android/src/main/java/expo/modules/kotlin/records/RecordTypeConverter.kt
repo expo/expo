@@ -327,12 +327,12 @@ class RecordTypeConverter<T : Record>(
  * This function handles numeric type normalization since JS numbers come as Double in Kotlin Maps.
  */
 @PublishedApi
-internal fun <T : Record> recordFromMap(map: Map<String, Any?>, converter: RecordTypeConverter<T>): T {
-  return converter.conversionStrategy.convertFromMap(map, null, forceConversion = false)
+internal fun <T : Record> recordFromMap(map: Map<String, Any?>, converter: RecordTypeConverter<T>, appContext: AppContext? = null): T {
+  return converter.conversionStrategy.convertFromMap(map, appContext, forceConversion = false)
 }
 
-inline fun <reified T : Record> recordFromMap(map: Map<String, Any?>): T {
+inline fun <reified T : Record> recordFromMap(map: Map<String, Any?>, appContext: AppContext? = null): T {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>())
   @Suppress("UNCHECKED_CAST")
-  return recordFromMap(map, converter as RecordTypeConverter<T>)
+  return recordFromMap(map, converter as RecordTypeConverter<T>, appContext = appContext)
 }

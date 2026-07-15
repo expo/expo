@@ -6,7 +6,6 @@ import ExpoModulesCore
 
 class DevMenuPackagerConnectionHandler {
   weak var manager: DevMenuManager?
-  private static var suppressRNDevMenu = true
 
   init(manager: DevMenuManager) {
     self.manager = manager
@@ -16,10 +15,9 @@ class DevMenuPackagerConnectionHandler {
     // `RCT_DEV` isn't available in Swift, that's why we used `DEBUG` instead.
     // It shouldn't diverge, because of the definition of `RCT_DEV`.
 #if DEBUG
-    self.swizzleRCTDevMenuShow()
-
     DispatchQueue.main.async { [weak self] in
       guard let self, let manager = self.manager else { return }
+      disableRnDevMenu(manager)
 
       let devSettings: RCTDevSettings? = manager.currentAppContext?.nativeModule(named: "DevSettings")
 // TODO(gabrieldonadel): Remove this once we bump react-native-macos to 0.84
@@ -51,32 +49,14 @@ class DevMenuPackagerConnectionHandler {
 #endif
   }
 
-  private func swizzleRCTDevMenuShow() {
-    // [@alan] HACK: We are only doing this to prevent the RN dev menu from showing except when called from
-    // our dev menu. Without this, it will still respond to commands coming from the packager. I could not
-    // find an easier way to do this until we have a proper api.
-    guard let devMenuClass = NSClassFromString("RCTDevMenu") else {
-      return
-    }
-    let originalSelector = NSSelectorFromString("show")
-    guard let originalMethod = class_getInstanceMethod(devMenuClass, originalSelector) else {
-      return
-    }
-
-    let originalImplementation = method_getImplementation(originalMethod)
-
-    let block: @convention(block) (AnyObject) -> Void = { devMenuInstance in
-      if DevMenuPackagerConnectionHandler.suppressRNDevMenu {
-        return
-      }
-
-      typealias ShowFunction = @convention(c) (AnyObject, Selector) -> Void
-      let showFunc = unsafeBitCast(originalImplementation, to: ShowFunction.self)
-      showFunc(devMenuInstance, originalSelector)
-    }
-
-    let blockImpl = imp_implementationWithBlock(block)
-    method_setImplementation(originalMethod, blockImpl)
+  private func disableRnDevMenu(_ manager: DevMenuManager) {
+// TODO(gabrieldonadel): Remove this once we bump react-native-macos to 0.84
+#if !os(macOS)
+    let rctDevMenu: RCTDevMenu? = manager.currentAppContext?.nativeModule(named: "RCTDevMenu")
+    rctDevMenu?.devMenuEnabled = false
+    rctDevMenu?.keyboardShortcutsEnabled = false
+#endif
+    DevMenuKeyCommandsInterceptor.reinstall()
   }
 
   @objc
@@ -92,7 +72,7 @@ class DevMenuPackagerConnectionHandler {
 
     switch command {
     case "reload":
-      devDelegate.reload()
+      manager.reload()
     case "toggleDevMenu":
       self.manager?.toggleMenu()
     case "toggleElementInspector":
@@ -107,12 +87,5 @@ class DevMenuPackagerConnectionHandler {
   @objc
   func devMenuNotificationHanlder(_ parames: [String: Any]) {
     self.manager?.toggleMenu()
-  }
-
-  static func allowRNDevMenuTemporarily() {
-    suppressRNDevMenu = false
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-      suppressRNDevMenu = true
-    }
   }
 }

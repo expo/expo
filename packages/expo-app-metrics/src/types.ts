@@ -178,6 +178,12 @@ export type LogRecord = {
  */
 export type LogEventOptions = {
   /**
+   * Optional human-friendly label for the event. Unlike `name` (a stable machine
+   * identifier), this is meant for display in dashboards and is not constrained
+   * to a naming scheme.
+   */
+  displayName?: string | null;
+  /**
    * Optional free-form message describing the event.
    */
   body?: string | null;
@@ -543,17 +549,23 @@ export interface ExpoAppMetricsModuleType {
   getAllCrashReports?: () => Promise<CrashReport[]>;
 
   /**
-   * Reports an unhandled JavaScript error captured by the JS-side `global.ErrorUtils`
-   * handler, recorded natively as an `exception` log event following OpenTelemetry's
-   * exception conventions. Called by `installErrorHandler`; not intended to be called directly.
+   * Reports an unhandled JavaScript error, recorded natively as an `exception` log event following
+   * OpenTelemetry's exception conventions. Called by the global `ErrorUtils` handler that
+   * `installErrorHandler` installs and by `AppMetricsErrorBoundary`; the `source` field records
+   * which path captured the error.
    *
    * @private This API is unstable and may change without notice.
    */
   reportError(error: {
-    source: string;
+    source: 'global' | 'errorBoundary';
     type?: string;
     message: string;
     stacktrace?: string;
+    /**
+     * The React component stack of the subtree that threw, available only for errors caught by an
+     * error boundary. Recorded as the `expo.error.component_stack` attribute.
+     */
+    componentStack?: string;
     isFatal: boolean;
   }): void;
 

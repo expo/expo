@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Compile `pageHeaders` rules into the routes manifest ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 - Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))

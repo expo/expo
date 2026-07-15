@@ -67,16 +67,28 @@ export type ObserveConfig = {
   integrations?: ObserveIntegrationsConfig;
 };
 
-export type ObserveIntegrationsConfig = {
+export type ObserveNavigationIntegrationConfig = {
+  /**
+   * Route or query parameter keys to remove from exported navigation metric
+   * `routeParams`. When any configured parameter is removed from a metric,
+   * the exported resolved URL/path is replaced with `urlHidden: true`.
+   * Does not affect `routeName`.
+   */
+  filteredParams?: string[];
+};
+
+export interface ObserveIntegrationsConfig {
   /**
    * Enables the `expo-router` integration, which records navigation metrics
    * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes.
    *
    * Requires `expo-router` to be installed.
    *
+   * Pass an object to filter exported route/query params.
+   *
    * @default false
    */
-  'expo-router'?: boolean;
+  'expo-router'?: boolean | ObserveNavigationIntegrationConfig;
   /**
    * Enables the `@react-navigation/native` integration, which records
    * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`).
@@ -85,17 +97,35 @@ export type ObserveIntegrationsConfig = {
    * to be wrapped in `<ObserveNavigationContainer>` instead of the stock
    * `<NavigationContainer>`.
    *
+   * Pass an object to filter exported route/query params.
+   *
    * @default false
    */
-  'react-navigation'?: boolean;
+  'react-navigation'?: boolean | ObserveNavigationIntegrationConfig;
+}
+
+/**
+ * Events emitted by the native `ExpoObserve` module.
+ */
+export type ObserveModuleEvents = {
+  /**
+   * Fired on every `configure(...)` call, carrying the resolved `integrations`
+   * config
+   */
+  configure: (payload: { integrations: ObserveIntegrationsConfig }) => void;
 };
 
-export declare class ObserveModule extends NativeModule {
+export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
   dispatchEvents(): Promise<void>;
   /**
    * Configures observability settings.
    */
   configure(config: ObserveConfig): void;
+  /**
+   * Returns the `integrations` config from the most recent `configure(...)`
+   * call, or an empty object if `configure` has not run yet.
+   */
+  getIntegrations(): ObserveIntegrationsConfig;
   /**
    * Records a log event against the current main session. The event is
    * persisted locally and dispatched on the next `dispatchEvents()` flush.

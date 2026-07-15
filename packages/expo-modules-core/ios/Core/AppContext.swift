@@ -436,6 +436,10 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    to a synchronous no-op scheduler — callers can detect this via
    `JavaScriptRuntime.supportsAsyncScheduling`.
 
+   `scheduler` is an opaque handle that `dispatch` understands; the factories pass
+   a handle created by `expo::createReactSchedulerHandle` that references the React
+   runtime scheduler weakly (see `EXReactSchedulerDispatch.h`).
+
    `dispatch` is a raw pointer to a C function with signature
    `void (*)(void *scheduler, int priority, void (^callback)())` — cast back
    to the typed pointer inside `ExpoModulesJSI`. It's typed as `UnsafeRawPointer`
@@ -771,8 +775,13 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     if moduleRegistry.has(moduleWithName: "ExpoGo") {
       NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
     } else {
-      DispatchQueue.main.async {
-        RCTTriggerReloadCommandListeners(reason)
+      // Must run on the main thread (see #31789), but synchronously when already there — deferring
+      // via `DispatchQueue.main.async` deadlocks the bridgeless reload against TurboModule teardown.
+      let trigger = { RCTTriggerReloadCommandListeners(reason) }
+      if Thread.isMainThread {
+        trigger()
+      } else {
+        DispatchQueue.main.async(execute: trigger)
       }
     }
   }

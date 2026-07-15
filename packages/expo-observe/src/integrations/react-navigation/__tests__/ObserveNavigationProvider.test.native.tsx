@@ -27,6 +27,7 @@ jest.mock('expo-app-metrics', () => {
 
 jest.mock('../init', () => ({
   __esModule: true,
+  getReactNavigationIntegrationConfig: jest.fn(() => undefined),
   isInitialized: jest.fn(() => true),
   initReactNavigationIntegration: jest.fn(),
 }));

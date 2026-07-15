@@ -464,7 +464,7 @@ jobs:
 
 ### `jobs.<job_id>.env`
 
-Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `require-approval`, `doc`, `get-build`, and `slack` jobs).
+Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `branch-delete`, `doc`, `get-build`, `github-comment`, `require-approval`, and `slack` jobs).
 
 ```yaml
 jobs:
@@ -516,6 +516,15 @@ jobs:
 ## `defaults`
 
 Parameters to use as defaults for all jobs defined in the workflow configuration.
+
+### `defaults.image`
+
+Default VM image to use for all jobs in the workflow. Using an `sdk-XX` image tag is recommended. See [Infrastructure](/build-reference/infrastructure/) for available images. Individual jobs can override this value with [`jobs.<job_id>.image`](#jobsjob_idimage).
+
+```yaml
+defaults:
+  image: sdk-57
+```
 
 ### `defaults.run.working_directory`
 
@@ -1161,6 +1170,7 @@ jobs:
     params:
       alias: string # optional
       prod: boolean # optional
+      source_maps: boolean # optional
 ```
 
 This job outputs the following properties:
@@ -1328,6 +1338,7 @@ jobs:
       platform: string # optional - android | ios | all, defaults to all
       branch: string # optional
       channel: string # optional - cannot be used with branch
+      rollout_percentage: number # optional - 0 to 100, defaults to 100
       private_key_path: string # optional
       upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
 ```
@@ -1378,7 +1389,8 @@ jobs:
     type: maestro
     # @end #
     environment: production | preview | development # optional, defaults to preview
-    image: string # optional. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on  for a list of available images.
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    runs_on: string # optional. Use a linux-*-nested-virtualization worker for Android Emulator tests. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on for available options.
     params:
       build_id: string # required
       flow_path: string | string[] # required
@@ -1391,7 +1403,8 @@ jobs:
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
       android_system_image_package: string # optional. Android Emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
-      output_format?: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+      output_format: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+      skip_build_check: boolean # optional, defaults to false. Skip validation of the build (whether an iOS build is a simulator build).
     hooks:
       before_maestro_tests: step[] # optional
       after_maestro_tests: step[] # optional
@@ -1410,7 +1423,7 @@ jobs:
     type: maestro-cloud
     # @end #
     environment: production | preview | development # optional, defaults to preview
-    image: string # optional. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on  for a list of available images.
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
     params:
       build_id: string # required. ID of the build to test.
       maestro_project_id: string # required. Maestro Cloud project ID. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`.
@@ -1423,6 +1436,7 @@ jobs:
       device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`.
       device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro list-cloud-devices` for a list of supported values.
       device_os: string # optional. OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro list-cloud-devices` for a list of supported values.
+      skip_build_check: boolean # optional, defaults to false. Skip validation of the build (whether an iOS build is a simulator build).
       name: string # optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
       branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, *not* whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
@@ -1531,8 +1545,12 @@ jobs:
       build_id: string # required
       profile: string # optional
       embed_bundle_assets: boolean # optional
+      js_bundle_only: boolean # optional
+      ios_signing_use_source_app_entitlements: boolean # optional
+      ios_signing_app_entitlements_path: string # optional
       message: string # optional
       repack_version: string # optional
+      repack_package: string # optional
     # @end #
 ```
 
@@ -1609,7 +1627,7 @@ jobs:
 
 ### `jobs.<job_id>.runs_on`
 
-Specifies the worker that will execute the job. Available only on custom jobs.
+Specifies the worker that will execute the job. Available on custom jobs and on the `build`, `maestro`, `maestro-cloud`, and `repack` pre-packaged jobs.
 
 ```yaml
 jobs:
@@ -2011,6 +2029,53 @@ jobs:
   href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
 />
 
+#### `eas/upload_artifact`
+
+Uploads files from the job's workspace as an artifact attached to the workflow run. Uploaded artifacts appear in the run's **Artifacts** section and can be retrieved in a later job with [`eas/download_artifact`](#easdownload_artifact).
+
+> **info** In a custom (non-build) job, set `type: other` to upload a generic artifact. The `application-archive` and `build-artifact` types are reserved for build jobs — using them in a custom job fails with an error like `Uploading application archives outside of builds is not supported`.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - name: Run tests
+        run: ./scripts/run-tests.sh # writes results into ./results
+      # @info Upload whatever the previous step produced. #
+      - uses: eas/upload_artifact
+        # @info `if: always()` uploads results even when a previous step failed. #
+        if: ${{ always() }}
+        with:
+          type: other
+          name: test-results
+          path: |
+            results/**/*
+```
+
+##### Properties
+
+| Property       | Type    | Required    | Description                                                                                                                                                                                                                                                     |
+| -------------- | ------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `path`         | string  | <YesIcon /> | Path or newline-delimited list of paths to upload. Supports `*` and other [glob patterns](https://github.com/isaacs/node-glob#glob-primer).                                                                                                                     |
+| `type`         | string  | <NoIcon />  | Artifact type. In custom jobs use `other` (a generic artifact). Defaults to `other` when the job has no build platform, and to `application-archive` in build jobs. The build-scoped values `application-archive` and `build-artifact` only work in build jobs. |
+| `name`         | string  | <NoIcon />  | Name for the artifact, used to reference it from [`eas/download_artifact`](#easdownload_artifact).                                                                                                                                                              |
+| `metadata`     | json    | <NoIcon />  | Arbitrary metadata to attach to a generic (`other`) artifact.                                                                                                                                                                                                   |
+| `ignore_error` | boolean | <NoIcon />  | When `true`, an upload failure is logged but does not fail the step. Defaults to `false`.                                                                                                                                                                       |
+
+##### Outputs
+
+| Property      | Type   | Description                                                                                         |
+| ------------- | ------ | --------------------------------------------------------------------------------------------------- |
+| `artifact_id` | string | The ID of the uploaded artifact. Can be passed to [`eas/download_artifact`](#easdownload_artifact). |
+
+<BoxLink
+  title="eas/upload_artifact source code"
+  description="View the source code for the eas/upload_artifact function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadArtifact.ts"
+/>
+
 #### `eas/download_artifact`
 
 Downloads an artifact from EAS given an artifact's ID or name. Useful for sending artifacts from previous jobs to other services.
@@ -2063,6 +2128,231 @@ jobs:
   description="View the source code for the eas/download_artifact function on GitHub."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
+/>
+
+The following functions connect your workflow to [PostHog](/guides/using-posthog/). Run `eas integrations:posthog:connect` to link a PostHog project and set the environment variables these functions read. `eas/posthog_capture_event` uses your public project API key, while the other functions use a PostHog personal API key with the scopes noted for each one. For setup, see [Using PostHog](/guides/using-posthog/), and for complete workflows, see [PostHog recipes for EAS Workflows](/guides/using-posthog/recipes).
+
+#### `eas/posthog_capture_event`
+
+Sends an analytics event to PostHog. Use it to mark deploys, updates, and other workflow milestones on your PostHog timeline.
+
+When you do not provide a `distinct_id`, the event is sent anonymously and does not create a PostHog [person profile](https://posthog.com/docs/data/persons), which keeps workflow events out of your list of people.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_capture_event
+        # @end #
+        with:
+          event: ota_update_published
+          properties:
+            branch: main
+```
+
+##### Properties
+
+| Property       | Type    | Required    | Description                                                                                                                                                                                  |
+| -------------- | ------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `event`        | string  | <YesIcon /> | The name of the event to send.                                                                                                                                                               |
+| `distinct_id`  | string  | <NoIcon />  | The person to attribute the event to. When omitted, the event is sent anonymously and does not create a person profile.                                                                      |
+| `properties`   | json    | <NoIcon />  | Properties to attach to the event.                                                                                                                                                           |
+| `api_key`      | string  | <NoIcon />  | PostHog project API key. Defaults to the `EXPO_PUBLIC_POSTHOG_API_KEY` environment variable set by `eas integrations:posthog:connect`, falling back to `POSTHOG_API_KEY` if that is not set. |
+| `host`         | string  | <NoIcon />  | PostHog host. Defaults to the `EXPO_PUBLIC_POSTHOG_HOST` environment variable, or `https://us.posthog.com`.                                                                                  |
+| `ignore_error` | boolean | <NoIcon />  | When `true`, a failure to send the event is logged but does not fail the step. Defaults to `false`.                                                                                          |
+
+<BoxLink
+  title="eas/posthog_capture_event source code"
+  description="View the source code for the eas/posthog_capture_event function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/capturePosthogEvent.ts"
+/>
+
+#### `eas/posthog_flag_rollout`
+
+Enables, disables, or rolls out a [PostHog feature flag](https://posthog.com/docs/feature-flags). The function looks up the flag by key and then updates it. Provide at least one of `active`, `rollout_percentage`, or `payload`.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_flag_rollout
+        # @end #
+        with:
+          flag: new-checkout
+          rollout_percentage: 25
+```
+
+##### Properties
+
+| Property             | Type    | Required    | Description                                                                                                                                                                                                                                                             |
+| -------------------- | ------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flag`               | string  | <YesIcon /> | The key of the feature flag to update.                                                                                                                                                                                                                                  |
+| `active`             | boolean | <NoIcon />  | Whether the flag is enabled.                                                                                                                                                                                                                                            |
+| `rollout_percentage` | number  | <NoIcon />  | Percentage of users the flag rolls out to, as an integer from `0` to `100`. The function applies it to the flag's catch-all release condition and preserves other conditions. When the flag has no catch-all condition, the function applies it to the first condition. |
+| `payload`            | json    | <NoIcon />  | Payload to attach to the flag.                                                                                                                                                                                                                                          |
+| `variant`            | string  | <NoIcon />  | Variant key to store the `payload` under on a multivariate flag. Defaults to the flag's `true` payload.                                                                                                                                                                 |
+| `api_key`            | string  | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `feature_flag:read` and `feature_flag:write` scopes.                                                                                                                 |
+| `project_id`         | string  | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                                                                                                                                      |
+| `ignore_error`       | boolean | <NoIcon />  | When `true`, a network error, a missing flag, or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error, or invalid input such as an out-of-range `rollout_percentage`, always fails the step.                           |
+
+<BoxLink
+  title="eas/posthog_flag_rollout source code"
+  description="View the source code for the eas/posthog_flag_rollout function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/rolloutPosthogFlag.ts"
+/>
+
+#### `eas/posthog_wait_for_metric`
+
+Pauses the workflow until a [HogQL](https://posthog.com/docs/hogql) query returns a number that satisfies a comparison. Use it to gate a rollout on a metric, such as holding until the error count over the last few minutes stays low.
+
+The function runs the query every `interval_seconds` until the comparison is true or `timeout_seconds` elapses. A query that cannot be read, such as invalid HogQL, fails the step immediately, while transient errors are retried until the timeout.
+
+> **info** This step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_wait_for_metric
+        # @end #
+        with:
+          query: SELECT count() FROM events WHERE event = '$exception' AND timestamp > now() - INTERVAL 15 MINUTE
+          operator: lt
+          threshold: 10
+```
+
+##### Properties
+
+| Property           | Type   | Required    | Description                                                                                                             |
+| ------------------ | ------ | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `query`            | string | <YesIcon /> | A HogQL query. The first column of the first row must be a single number.                                               |
+| `operator`         | string | <YesIcon /> | Comparison operator. One of `lt`, `lte`, `gt`, `gte`, or `eq`. The step clears when `value <operator> threshold` holds. |
+| `threshold`        | number | <YesIcon /> | The value to compare the query result against.                                                                          |
+| `timeout_seconds`  | number | <NoIcon />  | Maximum time to wait, in seconds. Defaults to `600`.                                                                    |
+| `interval_seconds` | number | <NoIcon />  | Time between checks, in seconds. Defaults to `30`.                                                                      |
+| `api_key`          | string | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `query:read` scope.  |
+| `project_id`       | string | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                      |
+
+##### Outputs
+
+| Property | Type   | Description                                     |
+| -------- | ------ | ----------------------------------------------- |
+| `value`  | string | The metric value that satisfied the comparison. |
+
+<BoxLink
+  title="eas/posthog_wait_for_metric source code"
+  description="View the source code for the eas/posthog_wait_for_metric function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/waitForPosthogMetric.ts"
+/>
+
+#### `eas/posthog_wait_for_query`
+
+Pauses the workflow until a [HogQL](https://posthog.com/docs/hogql) query returns true. Use it when the condition is easier to express in the query itself. For a numeric comparison with an explicit threshold, use [`eas/posthog_wait_for_metric`](#easposthog_wait_for_metric) instead.
+
+The step clears when the first column of the first row is `true` or a nonzero number, so write the query to select a single boolean, such as `SELECT count() > 100 FROM events`.
+
+> **info** Like `eas/posthog_wait_for_metric`, this step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_wait_for_query
+        # @end #
+        with:
+          query: SELECT count() > 0 FROM events WHERE event = 'smoke_test_passed' AND timestamp > now() - INTERVAL 30 MINUTE
+```
+
+##### Properties
+
+| Property           | Type   | Required    | Description                                                                                                            |
+| ------------------ | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `query`            | string | <YesIcon /> | A HogQL query. The step clears when the first column of the first row is `true` or a nonzero number.                   |
+| `timeout_seconds`  | number | <NoIcon />  | Maximum time to wait, in seconds. Defaults to `600`.                                                                   |
+| `interval_seconds` | number | <NoIcon />  | Time between checks, in seconds. Defaults to `30`.                                                                     |
+| `api_key`          | string | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `query:read` scope. |
+| `project_id`       | string | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                     |
+
+<BoxLink
+  title="eas/posthog_wait_for_query source code"
+  description="View the source code for the eas/posthog_wait_for_query function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/waitForPosthogQuery.ts"
+/>
+
+#### `eas/posthog_annotation`
+
+Creates a [PostHog annotation](https://posthog.com/docs/data/annotations) on the project timeline. Annotations show up on your PostHog charts, which makes them useful for marking deploys and releases next to the metrics they affect.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_annotation
+        # @end #
+        with:
+          content: Published update to production
+```
+
+##### Properties
+
+| Property       | Type    | Required    | Description                                                                                                                                                  |
+| -------------- | ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `content`      | string  | <YesIcon /> | The annotation text.                                                                                                                                         |
+| `date_marker`  | string  | <NoIcon />  | The ISO 8601 timestamp the annotation is pinned to. Defaults to the current time.                                                                            |
+| `api_key`      | string  | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `annotation:write` scope.                                 |
+| `project_id`   | string  | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                           |
+| `ignore_error` | boolean | <NoIcon />  | When `true`, a network error or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error always fails the step. |
+
+<BoxLink
+  title="eas/posthog_annotation source code"
+  description="View the source code for the eas/posthog_annotation function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/createPosthogAnnotation.ts"
+/>
+
+#### `eas/posthog_upload_sourcemaps`
+
+Uploads JavaScript source maps to PostHog so that PostHog symbolicates stack traces in [error tracking](/guides/using-posthog/#error-tracking). Run it after the step that produces your bundle, in the same job, so the bundle and source maps are available on disk. Export with `npx expo export --source-maps`, and configure the PostHog Metro config from the [Source maps guide](/guides/using-posthog/#source-maps) so bundles carry the chunk IDs that match them to their source maps.
+
+> **warning** This step runs the PostHog CLI, which cannot tell a permissions error apart from any other failure. Unlike the other PostHog functions, setting `ignore_error: true` also hides authentication and scope errors.
+
+```yaml
+jobs:
+  publish_update:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - run: npx expo export --source-maps
+      # @info #
+      - uses: eas/posthog_upload_sourcemaps
+        # @end #
+        with:
+          directory: dist
+```
+
+##### Properties
+
+| Property       | Type    | Required   | Description                                                                                                              |
+| -------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `directory`    | string  | <NoIcon /> | The directory that contains the bundle and source maps, relative to the working directory. Defaults to `dist`.           |
+| `api_key`      | string  | <NoIcon /> | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires source map upload access. |
+| `project_id`   | string  | <NoIcon /> | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                       |
+| `ignore_error` | boolean | <NoIcon /> | When `true`, a failed upload is logged but does not fail the step. Defaults to `false`.                                  |
+
+<BoxLink
+  title="eas/posthog_upload_sourcemaps source code"
+  description="View the source code for the eas/posthog_upload_sourcemaps function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadPosthogSourcemaps.ts"
 />
 
 ## Built-in shell functions

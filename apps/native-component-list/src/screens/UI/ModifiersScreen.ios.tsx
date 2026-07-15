@@ -33,6 +33,7 @@ import {
   listRowSeparator,
   listRowSpacing,
   border,
+  strokeBorder,
   onTapGesture,
   onLongPressGesture,
   onAppear,
@@ -43,6 +44,8 @@ import {
   accessibilityHidden,
   accessibilityInputLabels,
   accessibilityElement,
+  accessibilityAddTraits,
+  accessibilityRemoveTraits,
   aspectRatio,
   grayscale,
   colorInvert,
@@ -416,6 +419,52 @@ export default function ModifiersScreen() {
             </HStack>
 
             <VStack spacing={15}>
+              <Text modifiers={[font({ size: 16 })]}>Stroke borders</Text>
+              <HStack spacing={12}>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({ color: '#45B7B8', style: { lineWidth: 2 } }),
+                  ]}>
+                  solid
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({ color: '#3498DB', style: { lineWidth: 2, dash: [6, 3] } }),
+                  ]}>
+                  dash
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({
+                      color: '#16A085',
+                      style: { lineWidth: 2, dash: [0.5, 4], lineCap: 'round' },
+                    }),
+                  ]}>
+                  dot
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    padding({ all: 8 }),
+                    strokeBorder({
+                      color: '#9B59B6',
+                      style: { lineWidth: 2, dash: [6, 3] },
+                      shape: 'roundedRectangle',
+                      cornerRadius: 10,
+                    }),
+                  ]}>
+                  rounded
+                </Text>
+              </HStack>
+            </VStack>
+
+            <VStack spacing={15}>
               <Picker
                 label="Select alignment"
                 modifiers={[pickerStyle('menu')]}
@@ -781,6 +830,29 @@ export default function ModifiersScreen() {
             <HStack spacing={6} modifiers={[accessibilityElement('combine')]}>
               <Image systemName="star.fill" size={17} />
               <Text>4.8 out of 5 stars</Text>
+            </HStack>
+
+            {/* accessibilityAddTraits: VoiceOver announces this as both a button and a heading */}
+            <HStack spacing={6}>
+              <Text
+                modifiers={[
+                  background('#9B59B6'),
+                  cornerRadius(8),
+                  padding({ all: 8 }),
+                  accessibilityAddTraits(['isButton', 'isHeader']),
+                ]}>
+                Filters
+              </Text>
+            </HStack>
+
+            {/* accessibilityRemoveTraits: drop the redundant "image" trait from a labeled icon */}
+            <HStack spacing={6}>
+              <Image
+                systemName="checkmark.seal.fill"
+                size={17}
+                modifiers={[accessibilityRemoveTraits(['isImage'])]}
+              />
+              <Text>Verified</Text>
             </HStack>
 
             <Text

@@ -1,37 +1,26 @@
 package expo.modules.widgets
 
 import android.content.Context
-import androidx.glance.GlanceId
-import androidx.glance.action.Action
-import androidx.glance.action.ActionParameters
-import androidx.glance.action.actionParametersOf
-import androidx.glance.appwidget.action.ActionCallback
-import androidx.glance.appwidget.action.actionRunCallback
+import android.content.Intent
+import io.github.jakex7.peek.emittables.PeekAction
+import io.github.jakex7.peek.emittables.actionSendBroadcast
 
-private val sourceKey = ActionParameters.Key<String>("source")
-private val targetKey = ActionParameters.Key<String>("target")
+internal const val WIDGET_INTERACTION_ACTION = "expo.modules.widgets.ACTION_WIDGET_INTERACTION"
+internal const val WIDGET_INTERACTION_SOURCE_EXTRA = "expo.modules.widgets.extra.SOURCE"
+internal const val WIDGET_INTERACTION_TARGET_EXTRA = "expo.modules.widgets.extra.TARGET"
 
 internal data class WidgetInteraction(
   val source: String,
   val target: String
 )
 
-internal fun WidgetInteraction.toGlanceAction(): Action {
-  return actionRunCallback<WidgetInteractionAction>(
-    actionParametersOf(
-      sourceKey to source,
-      targetKey to target
-    )
-  )
-}
-
-class WidgetInteractionAction : ActionCallback {
-  override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-    val source = parameters[sourceKey] ?: return
-    val target = parameters[targetKey] ?: return
-
-    WidgetsInteraction.handle(context.applicationContext, source, target)
-  }
+internal fun WidgetInteraction.toPeekAction(context: Context): PeekAction {
+  val intent = Intent(WIDGET_INTERACTION_ACTION)
+    .setComponent(widgetProviderComponentName(context, source))
+    .putExtra(WIDGET_INTERACTION_SOURCE_EXTRA, source)
+    .putExtra(WIDGET_INTERACTION_TARGET_EXTRA, target)
+  val requestCode = 31 * source.hashCode() + target.hashCode()
+  return actionSendBroadcast(intent, requestCode = requestCode)
 }
 
 internal object WidgetsInteraction {
@@ -42,7 +31,7 @@ internal object WidgetsInteraction {
     val updatedProps = evaluateWidgetButtonPress(context, layout, props, environment)
 
     if (updatedProps != null) {
-      WidgetsStorage.set(context, props.orEmpty() + updatedProps, "__expo_widgets_${source}_props")
+      WidgetsStorage.set(context, "__expo_widgets_${source}_props", props.orEmpty() + updatedProps)
     }
 
     WidgetsEvents.sendUserInteraction(source, target)

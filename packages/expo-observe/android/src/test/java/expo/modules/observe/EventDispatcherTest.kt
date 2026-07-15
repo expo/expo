@@ -59,7 +59,7 @@ class EventDispatcherTest {
   }
 
   @Test
-  fun `dispatch returns true on successful 200 response`() =
+  fun `dispatch returns Success on 200 response`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -74,7 +74,7 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertTrue(result)
+      assertEquals(DispatchResult.Success, result)
       assertEquals(1, mockServer.requestCount)
 
       val request = mockServer.takeRequest()
@@ -85,7 +85,7 @@ class EventDispatcherTest {
     }
 
   @Test
-  fun `dispatch returns true on successful 201 response`() =
+  fun `dispatch returns Success on 201 response`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -100,25 +100,26 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertTrue(result)
+      assertEquals(DispatchResult.Success, result)
     }
 
   @Test
-  fun `dispatch returns false when empty event list is provided`() =
+  fun `dispatch returns Success on empty event list without hitting the network`() =
     runTest {
-      // Arrange
+      // Empty input is a no-op; we still report Success so the caller treats it as "nothing
+      // to do" rather than as a transient failure to retry.
       val emptyEvents = emptyList<Event>()
 
       // Act
       val result = eventDispatcher.dispatch(emptyEvents)
 
       // Assert
-      assertFalse(result)
+      assertEquals(DispatchResult.Success, result)
       assertEquals(0, mockServer.requestCount)
     }
 
   @Test
-  fun `dispatch returns false on 400 error response`() =
+  fun `dispatch returns NonRetryable on 400 error response`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -133,14 +134,16 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertFalse(result)
+      assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryableFailure)
+      assertTrue((result as DispatchResult.NonRetryableFailure).reason.contains("400"))
       assertEquals(1, mockServer.requestCount)
     }
 
   @Test
-  fun `dispatch returns false on 500 server error`() =
+  fun `dispatch returns NonRetryable on 500 server error`() =
     runTest {
-      // Arrange
+      // 500 is NOT in OTLP's retryable list — only 429/502/503/504 are. 500 means an
+      // internal server error we can't reason about, so we drop the batch.
       mockServer.enqueue(
         MockResponse()
           .setResponseCode(500)
@@ -153,8 +156,46 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertFalse(result)
+      assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryableFailure)
       assertEquals(1, mockServer.requestCount)
+    }
+
+  @Test
+  fun `dispatch returns Retryable on 503 with Retry-After header`() =
+    runTest {
+      // Server says 5 s; that's below the client's 60 s base, so `parseRetryAfter` clamps
+      // up to base — the client wouldn't dispatch faster than that anyway.
+      mockServer.enqueue(
+        MockResponse()
+          .setResponseCode(503)
+          .setHeader("Retry-After", "5")
+          .setBody("""{"error": "Service Unavailable"}""")
+      )
+
+      val events = listOf(createTestEvent())
+
+      val result = eventDispatcher.dispatch(events)
+
+      assertTrue("expected Retryable, got $result", result is DispatchResult.RetryableFailure)
+      assertEquals(
+        DispatchUtils.backoffBaseMs,
+        (result as DispatchResult.RetryableFailure).retryAfterMs
+      )
+    }
+
+  @Test
+  fun `dispatch returns Retryable on 429 without Retry-After`() =
+    runTest {
+      mockServer.enqueue(
+        MockResponse()
+          .setResponseCode(429)
+          .setBody("""{"error": "Too Many Requests"}""")
+      )
+
+      val result = eventDispatcher.dispatch(listOf(createTestEvent()))
+
+      assertTrue("expected Retryable, got $result", result is DispatchResult.RetryableFailure)
+      assertEquals(null, (result as DispatchResult.RetryableFailure).retryAfterMs)
     }
 
   @Test
@@ -208,7 +249,7 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertTrue(result)
+      assertEquals(DispatchResult.Success, result)
       assertEquals(1, mockServer.requestCount)
 
       val request = mockServer.takeRequest()
@@ -240,21 +281,19 @@ class EventDispatcherTest {
     }
 
   @Test
-  fun `dispatch throws exception on network failure`() =
+  fun `dispatch returns Retryable on network failure`() =
     runTest {
-      // Arrange
+      // Transport-level errors (DNS, TLS, timeouts, connection reset) are transient by
+      // definition — fold them into Retryable(null) so the next dispatch round picks the
+      // batch up again instead of crashing the WorkManager job.
       mockServer.shutdown() // Shutdown server to simulate network failure
 
       val events = listOf(createTestEvent())
 
-      // Act & Assert
-      try {
-        eventDispatcher.dispatch(events)
-        fail("Expected exception to be thrown")
-      } catch (e: Exception) {
-        // Expected behavior
-        assertNotNull(e)
-      }
+      val result = eventDispatcher.dispatch(events)
+
+      assertTrue("expected Retryable, got $result", result is DispatchResult.RetryableFailure)
+      assertEquals(null, (result as DispatchResult.RetryableFailure).retryAfterMs)
     }
 
   @Test
@@ -323,7 +362,7 @@ class EventDispatcherTest {
     }
 
   @Test
-  fun `dispatch handles 299 response as success`() =
+  fun `dispatch handles 299 response as Success`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -338,7 +377,30 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertTrue(result)
+      assertEquals(DispatchResult.Success, result)
+    }
+
+  @Test
+  fun `dispatch returns PartialSuccess on 200 with partial_success that rejected records`() =
+    runTest {
+      // A 2xx body that includes `partialSuccess` with rejectedDataPoints > 0 means the
+      // collector accepted the batch but rejected those rows server-side. Surface as
+      // `PartialSuccess` so the caller logs the per-record rejection without describing it
+      // as a wholesale drop.
+      mockServer.enqueue(
+        MockResponse()
+          .setResponseCode(200)
+          .setBody("""{"partialSuccess":{"rejectedDataPoints":3,"errorMessage":"metric_kind_mismatch"}}""")
+      )
+
+      val result = eventDispatcher.dispatch(listOf(createTestEvent()))
+
+      assertEquals(
+        DispatchResult.PartialSuccess(
+          OTPartialSuccess(rejectedDataPoints = 3, errorMessage = "metric_kind_mismatch")
+        ),
+        result
+      )
     }
 
   // Helper function to create test events

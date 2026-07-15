@@ -208,7 +208,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
         return result
       }
       if object.isFunction() {
-        FatalError.unimplemented()
+        // Don't trap, callers convert speculatively under `try?`, which can't catch a `fatalError`.
+        return NSNull()
       }
       var result = [String: Any]()
 
@@ -222,7 +223,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
       }
       return result
     }
-    fatalError("Unsupported value kind: \(kind)")
+    // Unrepresentable kind (e.g. symbol). Don't trap, for the same reason as above.
+    return NSNull()
   }
 
   /// Returns the value as a boolean, or asserts if not a boolean.

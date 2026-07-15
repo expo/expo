@@ -128,24 +128,19 @@ Before each Expo SDK release, we publish beta versions of the `expo` package and
 
 <Collapsible summary="Expo SDK policy for tracking React Native releases">
 
-- Expo SDK versions are released three times each year, and each Expo SDK release targets a single React Native version. This is typically the latest stable version at the time of the release.
-- The release cadence of React Native has varied over its history and it is currently on pace for six releases in 2025. While on this cadence, you can expect that there will be an Expo SDK version for every second React Native release.
-- Pre-release versions of the upcoming Expo SDK will include support for the latest version of React Native quickly, usually the same day it is released. A member of the Expo SDK team works on the React Native releases team for each release, and is responsible for continuously updating the React Native version in the Expo repository, verifying compatibility, and reporting regressions back to the team at Meta.
-
-</Collapsible>
-
-<Collapsible summary=" Why not release a new Expo SDK version immediately for every React Native release?">
-
-At Expo, we have found that releasing three major version provides a good balance of stability and innovation for developers depending on our open source tools. Expo and Meta work closely together on releases, and we will keep improving our processes to get the latest Expo and React Native features to you as quickly as possible.
+- Each Expo SDK release targets a single React Native version. This is typically the latest stable version at the time of the release.
+- React Native currently has six releases per year and aims for every release to include no breaking changes.
+- Expo SDK releases aim to follow this cadence.
+- Pre-release versions of the upcoming Expo SDK will include support for the latest version of React Native quickly, usually the same day it is released. A member of the Expo SDK team works on the React Native releases team for each release, and is responsible for continuously updating the React Native version in the Expo repository, verifying compatibility, and reporting regressions back to the React Native team.
 
 </Collapsible>
 
 <Collapsible summary="What if I need a change from the latest React Native version and it's not yet in an Expo SDK release?"
 >
-We work closely with the team at Meta to ensure that any urgent fixes are included in the React Native version used by the latest Expo SDK. If your issue won't be cherrypicked into an existing release because it is more niche, or it involves a breaking change, then you have two options:
+Expo engineers on the React Native releases team ensure that any urgent fixes are included in the React Native version used by the latest Expo SDK. If your specific fix won't be cherrypicked into an existing release, perhaps because it is not considered critical or because it involves a breaking change, then you have two options:
 
 1. Use [`patch-package`](https://github.com/ds300/patch-package) to pull in the fix.
-2. Use a [pre-release version of the Expo SDK](#using-pre-release-versions). An ([example](https://expo.dev/changelog/react-native-78)).
+2. Use a [pre-release version of the Expo SDK](#using-pre-release-versions).
 
 </Collapsible>
 

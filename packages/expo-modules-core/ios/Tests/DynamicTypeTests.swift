@@ -258,7 +258,7 @@ struct DynamicTypeTests {
     
     @Test
     func `returns mixed elements to JS`() throws {
-      let mixedArray: [Any] = [1, NativeArrayBuffer.allocate(size: 3)]
+      let mixedArray: [Any] = [1, ArrayBuffer(size: 3)]
 
       let converted = try (~[Any].self).convertResult(mixedArray, appContext: appContext)
       let jsValue = try (~[Any].self).castToJS(converted, appContext: appContext)
@@ -352,7 +352,7 @@ struct DynamicTypeTests {
 
     @Test
     func `returns mixed elements to JS`() throws {
-      let mixedDict: [String: Any] = ["num": 1, "buf": NativeArrayBuffer.allocate(size: 3)]
+      let mixedDict: [String: Any] = ["num": 1, "buf": ArrayBuffer(size: 3)]
 
       let converted = try (~[String: Any].self).convertResult(mixedDict, appContext: appContext)
       let jsValue = try (~[String: Any].self).castToJS(converted, appContext: appContext)

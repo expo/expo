@@ -8,10 +8,9 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-この章では、サードパーティのライブラリを使ってスクリーンショットを撮影し、デバイスのメディアライブラリに保存する方法を学びます。スクリーンショットの撮影には [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) を、デバイスのメディアライブラリへの画像の保存には [`expo-media-library`](/versions/latest/sdk/media-library/) を使用します。
+この章では、サードパーティのライブラリを使ってスクリーンショットを撮影し、デバイスのメディアライブラリに保存する方法を学びます。スクリーンショットの撮影には [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) を、デバイスのメディアライブラリへの画像の保存には [`expo-media-library`](/versions/v54.0.0/sdk/media-library/) を使用します。
 
 > **info** ここまで、`react-native-gesture-handler` や `react-native-reanimated` などのサードパーティのライブラリを使用してきました。用途に応じて、[React Native Directory](https://reactnative.directory/) で他にも数百のサードパーティのライブラリを見つけることができます。
 
@@ -119,14 +118,14 @@ export default function Index() {
 
 `onSaveImageAsync()` 関数の中で `react-native-view-shot` の `captureRef()` メソッドを呼び出すことで、ビューのスクリーンショットを撮影できます。このメソッドは省略可能な引数を受け取り、スクリーンショットを撮影する領域の `width` と `height` を渡せます。利用可能なオプションの詳細については、[ライブラリのドキュメント](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api) を参照してください。
 
-また、`captureRef()` メソッドはスクリーンショットの URI で解決される Promise を返します。この URI を [`MediaLibrary.saveToLibraryAsync()`](/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) のパラメータとして渡し、デバイスのメディアライブラリにスクリーンショットを保存します。
+また、`captureRef()` メソッドはスクリーンショットの URI で解決される Promise を返します。この URI を [`MediaLibrary.saveToLibraryAsync()`](/versions/v54.0.0/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) のパラメータとして渡し、デバイスのメディアライブラリにスクリーンショットを保存します。
 
 **app/(tabs)/index.tsx** の中で、`onSaveImageAsync()` 関数を次のコードに更新します。
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library/legacy';
+/* @tutinfo `expo-media-library` から `MediaLibrary` をインポートします。 */import * as MediaLibrary from 'expo-media-library';/* @end */
 import { useEffect, useRef, useState } from 'react';
 import { ImageSourcePropType, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -267,17 +266,4 @@ const styles = StyleSheet.create({
 
 ## まとめ
 
-<ProgressTracker
-  currentChapterIndex={6}
-  name="GET_STARTED"
-  chapterTitle="第 7 章：スクリーンショットを撮影する"
-  summary={
-    <>
-      <CODE>react-native-view-shot</CODE> と <CODE>expo-media-library</CODE>{' '}
-      を使用して、スクリーンショットを撮影しデバイスのライブラリに保存できました。
-    </>
-  }
-  nextChapterDescription="次の章では、モバイルと web プラットフォームの違いを処理して、web で同じ機能を実装する方法を学びます。"
-  nextChapterTitle="プラットフォームの違いに対応する"
-  nextChapterLink="/ja/tutorial/platform-differences"
-/>
+<ProgressTracker name="GET_STARTED" currentChapterSlug="/tutorial/screenshot" />

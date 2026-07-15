@@ -53,6 +53,11 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ref.url.absoluteString
   }
 
+  var fileSize: Int64 {
+    let attributes = try? FileManager.default.attributesOfItem(atPath: ref.url.path(percentEncoded: false))
+    return (attributes?[.size] as? Int64) ?? 0
+  }
+
   private var currentSessionDuration: Int {
     guard startTimestamp > 0, currentState == .recording else {
       return 0
@@ -173,6 +178,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "canRecord": isPrepared,
       "isRecording": currentState == .recording,
       "durationMillis": totalDuration,
+      "fileSize": fileSize,
       "mediaServicesDidReset": mediaServicesDidReset,
       "url": ref.url.absoluteString
     ]

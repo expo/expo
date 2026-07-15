@@ -2,6 +2,9 @@ package expo.modules.kotlin.types
 
 import android.net.Uri
 import android.os.Bundle
+import expo.modules.kotlin.jni.ArrayBuffer
+import expo.modules.kotlin.jni.JavaScriptArrayBuffer
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.jni.ReturnType
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.formatters.FormattedRecord
@@ -217,6 +220,36 @@ interface JSTypeConverter<T> {
 
     override val returnType: ReturnType
       get() = ReturnType.JS_TYPED_ARRAY
+  }
+
+  object JavaScriptArrayBufferConverter : JSTypeConverter<JavaScriptArrayBuffer> {
+    override fun convertToJS(value: Any?): Any? {
+      enforceType<JavaScriptArrayBuffer?>(value)
+      return value
+    }
+
+    override val returnType: ReturnType
+      get() = ReturnType.JS_ARRAY_BUFFER
+  }
+
+  object ArrayBufferConverter : JSTypeConverter<ArrayBuffer> {
+    override fun convertToJS(value: Any?): Any? {
+      enforceType<ArrayBuffer?>(value)
+      return value
+    }
+
+    override val returnType: ReturnType
+      get() = ReturnType.ARRAY_BUFFER
+  }
+
+  object NativeArrayBufferConverter : JSTypeConverter<NativeArrayBuffer> {
+    override fun convertToJS(value: Any?): Any? {
+      enforceType<NativeArrayBuffer?>(value)
+      return value
+    }
+
+    override val returnType: ReturnType
+      get() = ReturnType.NATIVE_ARRAY_BUFFER
   }
 
   object CollectionConverter : JSTypeConverter<Collection<*>> {
