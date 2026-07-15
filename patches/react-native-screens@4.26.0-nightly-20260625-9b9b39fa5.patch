@@ -1,3 +1,20 @@
+diff --git a/android/src/main/java/com/swmansion/rnscreens/gamma/helpers/ImageLoader.kt b/android/src/main/java/com/swmansion/rnscreens/gamma/helpers/ImageLoader.kt
+index f3ad60c1fa229957a2281f39d3f3f735eb510f78..0ccc6803a8028b33e4b20df274302618785cf383 100644
+--- a/android/src/main/java/com/swmansion/rnscreens/gamma/helpers/ImageLoader.kt
++++ b/android/src/main/java/com/swmansion/rnscreens/gamma/helpers/ImageLoader.kt
+@@ -56,8 +56,10 @@ private fun loadImageInternal(
+ 
+                 if (closeableImage is CloseableStaticBitmap) {
+                     val bitmap = closeableImage.underlyingBitmap
+-                    val drawable = bitmap.toDrawable(context.resources)
+-                    onLoaded(drawable)
++                    if (bitmap != null) {
++                        val drawable = bitmap.toDrawable(context.resources)
++                        onLoaded(drawable)
++                    }
+                 }
+ 
+                 imageReference.close()
 diff --git a/ios/RNSScreenContentWrapper.mm b/ios/RNSScreenContentWrapper.mm
 index 7756a55b7aef23de1ad248e3471cebf69e4aceba..a99df644938f7bc6f9e1409d3284c15577b4e059 100644
 --- a/ios/RNSScreenContentWrapper.mm
