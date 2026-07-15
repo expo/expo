@@ -43,7 +43,14 @@ test('renders a drawer navigator with screens', async () => {
   const Drawer = createDrawerNavigator<DrawerParamList>();
 
   const { findByText, queryByText } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'drawer',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}>
       <Drawer.Navigator>
         <Drawer.Screen name="A" component={Test} />
         <Drawer.Screen name="B" component={Test} />
@@ -65,7 +72,15 @@ test('handles screens preloading', async () => {
   const navigation = createNavigationContainerRef<DrawerParamList>();
 
   const { queryByText } = render(
-    <NavigationContainer ref={navigation}>
+    <NavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'drawer',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}>
       <Drawer.Navigator>
         <Drawer.Screen name="A">{() => null}</Drawer.Screen>
         <Drawer.Screen name="B">{() => <Text>Screen B</Text>}</Drawer.Screen>
@@ -98,7 +113,14 @@ test('opens, closes, and toggles the drawer via useDrawerActions', async () => {
   const Drawer = createDrawerNavigator<DrawerParamList>();
 
   const { getByText, findByText } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'drawer',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}>
       <Drawer.Navigator>
         <Drawer.Screen name="A" component={StatusScreen} />
         <Drawer.Screen name="B" component={StatusScreen} />
@@ -125,7 +147,14 @@ test('navigating to another route closes an open drawer', async () => {
   const Drawer = createDrawerNavigator<DrawerParamList>();
 
   const { getByText, findByText } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'drawer',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}>
       <Drawer.Navigator>
         <Drawer.Screen name="A" component={StatusScreen} />
         <Drawer.Screen name="B" component={StatusScreen} />
@@ -146,7 +175,14 @@ test("defaultStatus 'open' starts open and can be toggled closed", async () => {
   const Drawer = createDrawerNavigator<DrawerParamList>();
 
   const { getByText, findByText } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'drawer',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}>
       <Drawer.Navigator defaultStatus="open">
         <Drawer.Screen name="A" component={StatusScreen} />
         <Drawer.Screen name="B" component={StatusScreen} />
@@ -164,7 +200,14 @@ test("defaultStatus 'open': navigating returns the drawer to its open default", 
   const Drawer = createDrawerNavigator<DrawerParamList>();
 
   const { getByText, findByText } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'drawer',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}>
       <Drawer.Navigator defaultStatus="open">
         <Drawer.Screen name="A" component={StatusScreen} />
         <Drawer.Screen name="B" component={StatusScreen} />
