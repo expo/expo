@@ -34,6 +34,7 @@ patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
   '@shopify/react-native-skia@2.6.2': patches/@shopify__react-native-skia@2.6.2.patch
   react-native-reanimated: patches/react-native-reanimated.patch
+  react-native-safe-area-context@5.7.0: patches/react-native-safe-area-context@5.7.0.patch
   react-native-screens@4.26.0-nightly-20260625-9b9b39fa5: patches/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5.patch
   react-native-view-shot: patches/react-native-view-shot.patch
   react-native-worklets: patches/react-native-worklets.patch
