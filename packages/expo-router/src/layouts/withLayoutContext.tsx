@@ -16,7 +16,7 @@ import type { ScreenProps } from '../useScreens';
 import { useSortedScreens } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
-import { GuardContextProvider } from './GuardContext';
+import { GuardContextProvider, normalizeRouteName, type GuardedRedirects } from './GuardContext';
 import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 
 export function useFilterScreenChildren(
@@ -34,7 +34,7 @@ export function useFilterScreenChildren(
     const customChildren: any[] = [];
 
     const screens: (ScreenProps & { name: string })[] = [];
-    const guardedRedirects = new Map<string, Href | undefined>();
+    const guardedRedirects: GuardedRedirects = new Map();
 
     function flattenChild(child: ReactNode, exclude = false, redirectTo?: Href) {
       if (isScreen(child, contextKey)) {
@@ -84,14 +84,13 @@ export function useFilterScreenChildren(
     // Add an assertion for development
     if (process.env.NODE_ENV !== 'production') {
       // Assert if names are not unique
-      const normalizeName = (name: unknown) =>
-        typeof name === 'string' ? name.replace(/\/index$/, '') : name;
-
       const screenNames =
         screens?.map(
           (screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name
         ) ?? [];
-      const allNames = screenNames.map(normalizeName);
+      const allNames = screenNames.map((name) =>
+        typeof name === 'string' ? normalizeRouteName(name) : name
+      );
       if (new Set(allNames).size !== allNames.length) {
         throw new Error('Screen names must be unique: ' + allNames);
       }
