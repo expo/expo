@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 54.0.17 — 2026-07-15
+
+### 💡 Others
+
 - [Internal] Deduplicate find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
 
 ## 54.0.16 — 2026-05-28

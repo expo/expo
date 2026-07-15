@@ -49,7 +49,7 @@ PODS:
   - EXNotifications/Tests (0.32.17):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.35):
+  - Expo (54.0.36):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -331,7 +331,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (54.0.35):
+  - Expo/Tests (54.0.36):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -600,7 +600,7 @@ PODS:
   - EXTaskManager (14.0.9):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (29.0.18):
+  - EXUpdates (29.0.19):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -628,7 +628,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - EXUpdates/Tests (29.0.18):
+  - EXUpdates/Tests (29.0.19):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -3590,7 +3590,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 4eb6d80e7f6e07b4db68d2e1a5da58a915825b68
   EXNotifications: 6b4dced0f3dfd0dfb9d7c5d47a5ccd86764fc73c
-  Expo: 0402aa13b318225ab96c28f8f6ed374efd62ca16
+  Expo: 213810830daece4970ccf62cfb3d34e47496cd41
   expo-dev-client: 11d439b492da4debb14d8c1d1ac5c725ecc71a37
   expo-dev-launcher: a1fa980e36477563afcbc19e759e76f9bf2d20ad
   expo-dev-menu: 34e1cbb3d6e1408904d341f448be69b158425c60
@@ -3658,7 +3658,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 93acaae9a851370332e0c1310cbcd1437c0b4377
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
   EXTaskManager: cdd7aa16ffc6b4b68e065ffb3795f26ad4fa6695
-  EXUpdates: b530dc91e2c6c5ce36241c438aee3acdd12e5d48
+  EXUpdates: f926da38c06856acffb3257ac3be155f82031de6
   EXUpdatesInterface: 1436757deb0d574b84bba063bd024c315e0ec08b
   FBLazyVector: e95a291ad2dadb88e42b06e0c5fb8262de53ec12
   hermes-engine: 9f4dfe93326146a1c99eb535b1cb0b857a3cd172

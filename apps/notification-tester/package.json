@@ -18,7 +18,7 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/native": "^7.1.8",
-    "expo": "~54.0.35",
+    "expo": "~54.0.36",
     "expo-font": "14.0.12",
     "expo-linking": "8.0.12",
     "expo-router": "6.0.24",
