@@ -22,7 +22,7 @@
 - Remove a redundant full-resolution JPEG re-encode when saving captured photos on iOS. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
 - [iOS] Fix the ZXing barcode fallback scanner returning raw AVFoundation type strings (e.g. `org.iso.PDF417`) instead of short expo `BarcodeType` values (e.g. `pdf417`) for `pdf417`, `code39`, and `codabar`, restoring the fix from [#44726](https://github.com/expo/expo/pull/44726) that was reverted by the `ExpoCameraBarcodeScanning` pod extraction in [#44766](https://github.com/expo/expo/pull/44766). ([#47613](https://github.com/expo/expo/pull/47613) by [@jensdev](https://github.com/jensdev))
 - [iOS] Disable deferred photo delivery so responsive capture no longer hangs the capture promise on iOS 17 and later. ([#47816](https://github.com/expo/expo/pull/47816) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Fire `onMountError` instead of crashing the app when the camera can't be started, such as a device reporting zero available cameras.
+- [Android] Fire `onMountError` instead of crashing the app when the camera can't be started, such as a device reporting zero available cameras. ([#47818](https://github.com/expo/expo/pull/47818) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
