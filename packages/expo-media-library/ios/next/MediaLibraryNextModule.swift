@@ -217,6 +217,10 @@ public final class MediaLibraryNextModule: Module {
         try await album.getAssets()
       }
 
+      AsyncFunction("getType") { (album: Album) async throws in
+        try await album.getType()
+      }
+
       AsyncFunction("add") { (album: Album, assets: [Asset]) async throws in
         try await album.add(assets)
       }
@@ -232,6 +236,11 @@ public final class MediaLibraryNextModule: Module {
       StaticAsyncFunction("getAll") {
         try await permissionDelegate.checkIfFullAccessGranted()
         return try await Album.getAll(assetMapper: assetMapper)
+      }
+
+      StaticAsyncFunction("getSmartAlbums") {
+        try await permissionDelegate.checkIfFullAccessGranted()
+        return try await Album.getSmartAlbums(assetMapper: assetMapper)
       }
 
       StaticAsyncFunction("get") { (title: String) -> Album? in

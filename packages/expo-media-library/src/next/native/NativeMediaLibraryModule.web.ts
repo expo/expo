@@ -6,6 +6,7 @@ import {
 } from 'expo';
 
 import type {
+  AlbumType,
   AssetField,
   AssetFieldValueMap,
   AssetMetadata,
@@ -120,6 +121,9 @@ class NativeAlbumWeb implements NativeAlbumClass {
   getTitle() {
     return unavailable('Album.getTitle');
   }
+  getType(): Promise<AlbumType> {
+    return unavailable('Album.getType');
+  }
   delete() {
     return unavailable('Album.delete');
   }
@@ -148,6 +152,10 @@ class NativeAlbumWeb implements NativeAlbumClass {
 
   static getAll(): Promise<NativeAlbumClass[]> {
     return unavailable('Album.getAll');
+  }
+
+  static getSmartAlbums(): Promise<NativeAlbumClass[]> {
+    return unavailable('Album.getSmartAlbums');
   }
 }
 

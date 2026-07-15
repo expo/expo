@@ -9,6 +9,7 @@
 - [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
 - Add filtering by `isFavorite` to `Query` ([#45769](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
 - Add `Query.exeForMetadata()` for cheap bulk fetch ([#46485](https://github.com/expo/expo/pull/46485) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `Album.getSmartAlbums()` and `Album.getType()`. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🐛 Bug fixes
 
@@ -16,6 +17,7 @@
 - [Android] Fix saving files larger than ~2 GB (e.g. `createAssetAsync` with large videos) failing with "Unable to copy file into external storage" by looping `FileChannel.transferTo` until the whole file is copied. ([#47811](https://github.com/expo/expo/pull/47811) by [@jiunshinn](https://github.com/jiunshinn))
 - Add `accessPrivileges` to `PermissionResponse` type ([#47177](https://github.com/expo/expo/pull/47177) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fix permission guards for limited and write-only photo library access. ([#47216](https://github.com/expo/expo/pull/47216) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Fix `Album.getAll()` not returning albums nested inside folders. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 
