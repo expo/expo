@@ -34,7 +34,7 @@ public protocol AnyModule: AnyObject, AnyArgument {
   @JavaScriptActor
   func _decorateModule(object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws
 
-  /// A lifecycle hook that is called right after the module is initialized and registered.
+  /// A lifecycle hook that is called once the module is initialized and registered in the app context.
   /// An equivalent of the `OnCreate` DSL component.
   func didCreate()
 

@@ -11,8 +11,14 @@ private final class LifecycleHooksModule: Module {
   var startedListeningEvents: [String] = []
   var stoppedListeningEvents: [String] = []
 
+  /// Whether the module could find its own holder in the registry from within `didCreate`.
+  /// It relies on `withEventTarget` which looks the holder up in the module registry, so it's
+  /// `true` only when the hook runs after the holder has been registered.
+  var wasRegisteredDuringDidCreate: Bool = false
+
   override func didCreate() {
     didCreateCalls += 1
+    wasRegisteredDuringDidCreate = appContext?.moduleRegistry.contains { $0.module === self } ?? false
   }
 
   override func willDestroy() {
@@ -71,6 +77,23 @@ private struct ModuleLifecycleHooksTests {
     #expect(module.didCreateCalls == 0)
     appContext.moduleRegistry.register(module: module, name: nil)
     #expect(module.didCreateCalls == 1)
+  }
+
+  @Test
+  func `calls didCreate after the module is put into the registry`() {
+    let module = LifecycleHooksModule(appContext: appContext)
+    appContext.moduleRegistry.register(module: module, name: nil)
+    #expect(module.wasRegisteredDuringDidCreate)
+  }
+
+  @Test
+  func `doesn't call didCreate for a registration rejected by preventModuleOverriding`() {
+    let firstModule = LifecycleHooksModule(appContext: appContext)
+    appContext.moduleRegistry.register(module: firstModule, name: "SharedName", preventModuleOverriding: true)
+    let secondModule = LifecycleHooksModule(appContext: appContext)
+    appContext.moduleRegistry.register(module: secondModule, name: "SharedName", preventModuleOverriding: true)
+    #expect(firstModule.didCreateCalls == 1)
+    #expect(secondModule.didCreateCalls == 0)
   }
 
   @Test

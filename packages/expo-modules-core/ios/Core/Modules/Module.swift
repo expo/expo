@@ -9,7 +9,8 @@ open class BaseModule {
   public private(set) weak var appContext: AppContext?
 
   @available(
-    *, unavailable, message: "Module's initializer cannot be overridden, override the \"didCreate\" lifecycle hook instead."
+    *, unavailable,
+    message: "Module's initializer cannot be overridden, override the \"didCreate\" lifecycle hook instead."
   )
   public init() {}
 
@@ -31,7 +32,7 @@ open class BaseModule {
   // dynamically: a subclass override is called even when the `Module` conformance comes
   // from an ancestor that doesn't implement the hook itself.
 
-  /// A lifecycle hook that is called right after the module is initialized and registered.
+  /// A lifecycle hook that is called once the module is initialized and registered in the app context.
   /// An equivalent of the `OnCreate` DSL component.
   open func didCreate() {}
 
