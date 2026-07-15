@@ -41,8 +41,21 @@ test('initializes state for a navigator on navigation', () => {
 
   const onStateChange = jest.fn();
 
+  const initialState = {
+    stale: false as const,
+    index: 0,
+    key: '0',
+    routeNames: ['foo', 'bar', 'baz'],
+    routes: [
+      { key: 'foo', name: 'foo', params: { count: 10 } },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
+    ],
+  };
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo" component={FooScreen} initialParams={{ count: 10 }} />
         <Screen name="bar" component={React.Fragment} />
@@ -151,7 +164,10 @@ test('rehydrates state for a navigator on navigation', () => {
   };
 
   const initialState = {
+    stale: false as const,
     index: 1,
+    key: '0',
+    routeNames: ['foo', 'bar'],
     routes: [
       { key: 'foo', name: 'foo' },
       { key: 'bar', name: 'bar' },
@@ -159,6 +175,8 @@ test('rehydrates state for a navigator on navigation', () => {
   };
 
   const onStateChange = jest.fn();
+  // The seeded root bypasses MockRouter.getInitialState(), which previously allocated key 0.
+  MockRouterKey.current = 1;
 
   const element = (
     <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
@@ -203,8 +221,21 @@ test('initializes state for nested screens in React.Fragment', () => {
 
   const onStateChange = jest.fn();
 
+  const initialState = {
+    stale: false as const,
+    index: 0,
+    key: '0',
+    routeNames: ['foo', 'bar', 'baz'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
+    ],
+  };
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} />
         <>
@@ -517,7 +548,7 @@ test('allows state updates by dispatching a function returning an action', () =>
   });
 });
 
-test('re-initializes state once for conditional rendering', () => {
+test('reconciles state once for conditional rendering', () => {
   const TestNavigatorA = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -538,9 +569,24 @@ test('re-initializes state once for conditional rendering', () => {
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  // Seed the first-rendered navigator; swapping to the second reconciles this keyed slice.
+  MockRouterKey.current = 1;
+
   const Test = ({ condition }: { condition: boolean }) => {
     return (
-      <BaseNavigationContainer ref={navigation} onStateChange={onStateChange}>
+      <BaseNavigationContainer
+        ref={navigation}
+        initialState={{
+          stale: false as const,
+          index: 0,
+          key: '0',
+          routeNames: ['foo', 'bar'],
+          routes: [
+            { key: 'foo', name: 'foo' },
+            { key: 'bar', name: 'bar' },
+          ],
+        }}
+        onStateChange={onStateChange}>
         {condition ? (
           <TestNavigatorA>
             <Screen name="foo">{() => null}</Screen>
@@ -572,16 +618,16 @@ test('re-initializes state once for conditional rendering', () => {
 
   root.update(<Test condition={false} />);
 
+  // Swapping the conditionally-rendered navigator reconciles the committed slice in place rather
+  // than minting a fresh one: the key is preserved ('0'), route names update to the new config,
+  // and the still-valid `bar` route is carried over. `baz` is not materialized until focused.
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
     index: 0,
-    key: '1',
+    key: '0',
     routeNames: ['bar', 'baz'],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'baz', name: 'baz' },
-    ],
+    routes: [{ key: 'bar', name: 'bar' }],
   });
 });
 
@@ -604,8 +650,21 @@ test('updates route params with setParams', () => {
 
   const onStateChange = jest.fn();
 
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo" component={FooScreen} />
         <Screen name="bar" component={React.Fragment} />
@@ -664,8 +723,32 @@ test('updates route params with setParams applied to parent', () => {
 
   const onStateChange = jest.fn();
 
+  // The whole tree is seeded: root key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['baz'],
+              routes: [{ key: 'baz', name: 'baz' }],
+            },
+          },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo">
           {() => (
@@ -738,8 +821,20 @@ test('handles change in route names', () => {
 
   const onStateChange = jest.fn();
 
+  MockRouterKey.current = 1;
+
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 1,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator initialRouteName="bar">
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />
@@ -779,8 +874,21 @@ test('does not clear params if there is no nested navigator', () => {
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} />
         <Screen name="bar" component={TestScreen} />
@@ -1040,8 +1148,21 @@ test('overrides router with UNSTABLE_router', () => {
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator
         UNSTABLE_router={(
           original: Router<NavigationState, NavigationAction>
@@ -1318,8 +1439,22 @@ test('preserves order of screens in state with non-numeric names', () => {
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  MockRouterKey.current = 1;
+
   const root = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+          { key: 'baz', name: 'baz' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />
@@ -1341,8 +1476,22 @@ test('preserves order of screens in state with numeric names', () => {
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  MockRouterKey.current = 1;
+
   const root = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['4', '7', '1'],
+        routes: [
+          { key: '4', name: '4' },
+          { key: '7', name: '7' },
+          { key: '1', name: '1' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="4" component={React.Fragment} />
         <Screen name="7" component={React.Fragment} />
@@ -1781,8 +1930,32 @@ test('returns currently focused route with getCurrentRoute', () => {
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  // The whole tree is seeded: outer key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   const container = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          {
+            key: 'bar',
+            name: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar-a'],
+              routes: [{ key: 'bar-a', name: 'bar-a' }],
+            },
+          },
+          { key: 'xux', name: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar" options={{ a: 'b' }}>
           {() => (
@@ -1817,8 +1990,35 @@ test("returns focused screen's options with getCurrentOptions when focused scree
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  // The whole tree is seeded: outer key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   const container = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          {
+            key: 'bar',
+            name: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar-a', 'bar-b'],
+              routes: [
+                { key: 'bar-a', name: 'bar-a' },
+                { key: 'bar-b', name: 'bar-b' },
+              ],
+            },
+          },
+          { key: 'xux', name: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar" options={{ a: 'b' }}>
           {() => (
@@ -1859,8 +2059,35 @@ test("returns focused screen's options with getCurrentOptions when focused scree
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  // The whole tree is seeded: outer key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   const container = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          {
+            key: 'bar',
+            name: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar-a', 'bar-b'],
+              routes: [
+                { key: 'bar-a', name: 'bar-a' },
+                { key: 'bar-b', name: 'bar-b' },
+              ],
+            },
+          },
+          { key: 'xux', name: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar" options={{ a: 'b' }}>
           {() => (
@@ -1903,8 +2130,35 @@ test("returns focused screen's options with getCurrentOptions when focused scree
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  // The whole tree is seeded: outer key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   const container = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          {
+            key: 'bar',
+            name: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar-a', 'bar-b'],
+              routes: [
+                { key: 'bar-a', name: 'bar-a' },
+                { key: 'bar-b', name: 'bar-b' },
+              ],
+            },
+          },
+          { key: 'xux', name: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar" options={{ a: 'b' }}>
           {() => (
@@ -1952,8 +2206,35 @@ test("returns focused screen's options with getCurrentOptions when all screens a
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  // The whole tree is seeded: outer key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   const container = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          {
+            key: 'bar',
+            name: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar-a', 'bar-b'],
+              routes: [
+                { key: 'bar-a', name: 'bar-a' },
+                { key: 'bar-b', name: 'bar-b' },
+              ],
+            },
+          },
+          { key: 'xux', name: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar" options={{ a: 'b' }}>
           {() => (
@@ -1996,8 +2277,35 @@ test("returns focused screen's options with getCurrentOptions when all screens a
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  // The whole tree is seeded: outer key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   const container = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          {
+            key: 'bar',
+            name: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar-a', 'bar-b'],
+              routes: [
+                { key: 'bar-a', name: 'bar-a' },
+                { key: 'bar-b', name: 'bar-b' },
+              ],
+            },
+          },
+          { key: 'xux', name: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar" options={{ a: 'b' }}>
           {() => (
@@ -2042,8 +2350,35 @@ test("returns focused screen's options with getCurrentOptions when all screens a
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  // The whole tree is seeded: outer key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   const container = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          {
+            key: 'bar',
+            name: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar-a', 'bar-b'],
+              routes: [
+                { key: 'bar-a', name: 'bar-a' },
+                { key: 'bar-b', name: 'bar-b' },
+              ],
+            },
+          },
+          { key: 'xux', name: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar" options={{ a: 'b' }}>
           {() => (
@@ -2089,8 +2424,35 @@ test('does not throw if while getting current options with no options defined', 
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
+  // The whole tree is seeded: outer key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   const container = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['bar', 'xux'],
+        routes: [
+          {
+            key: 'bar',
+            name: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar-a', 'bar-b'],
+              routes: [
+                { key: 'bar-a', name: 'bar-a' },
+                { key: 'bar-b', name: 'bar-b' },
+              ],
+            },
+          },
+          { key: 'xux', name: 'xux' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="bar" options={{ a: 'b' }}>
           {() => (
