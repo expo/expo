@@ -10,7 +10,7 @@ import {
   type TabRouterOptions,
 } from '../../react-navigation/routers';
 import type { GoBackAction, NavigateAction } from '../../react-navigation/routers/CommonActions';
-import { unstable_createStandardRouterNavigator } from '../index';
+import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
 import type { NavigatorContentProps, StandardNavigationAction } from '../types';
 
 // Type-equality helpers
@@ -85,6 +85,190 @@ export const _options: OptionsFn = ({ route, theme }) => {
   route.href;
   return { title: `${route.name}-${theme.dark}` };
 };
+
+// ---------------------------------------------------------------------------
+// CreateProps: content-only props injected by createProps
+// ---------------------------------------------------------------------------
+
+type NavProps = { tintColor?: string };
+type CreateProps = { routeNames: string[]; preload: (name: string) => void };
+type SplitContentProps = NavigatorContentProps<Opts, EventMap, NavProps & CreateProps>;
+type RequiredNavProps = { label: string };
+
+function SplitContent(_props: SplitContentProps) {
+  return null;
+}
+
+function PublicContent(_props: NavigatorContentProps<Opts, EventMap, NavProps>) {
+  return null;
+}
+
+function RequiredPublicContent(_props: NavigatorContentProps<Opts, EventMap, RequiredNavProps>) {
+  return null;
+}
+
+const SplitNav = unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  CreateProps
+>(SplitContent, TabRouter, {
+  createProps: () => ({ routeNames: [], preload: () => {} }),
+});
+
+type SplitElementProps = ComponentProps<typeof SplitNav>;
+
+export type _ElementAcceptsNavigatorProps = Expect<
+  Equal<SplitElementProps['tintColor'], string | undefined>
+>;
+export type _ContentRequiresRouteNames = Expect<Equal<SplitContentProps['routeNames'], string[]>>;
+export type _ContentRequiresPreload = Expect<
+  Equal<SplitContentProps['preload'], (name: string) => void>
+>;
+export type _ElementLacksRouteNames = Expect<
+  Equal<'routeNames' extends keyof SplitElementProps ? true : false, false>
+>;
+export type _ElementLacksPreload = Expect<
+  Equal<'preload' extends keyof SplitElementProps ? true : false, false>
+>;
+
+const InferredPublicNav = unstable_createStandardRouterNavigator(RequiredPublicContent, TabRouter);
+type InferredPublicElementProps = ComponentProps<typeof InferredPublicNav>;
+export type _InferredElementRequiresPublicProp = Expect<
+  Equal<InferredPublicElementProps['label'], string>
+>;
+
+// @ts-expect-error The options argument is required when `CreateProps` is non-empty.
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  CreateProps
+>(SplitContent, TabRouter);
+
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  CreateProps
+>(
+  SplitContent,
+  TabRouter,
+  // @ts-expect-error `createProps` is required when `CreateProps` is non-empty.
+  { useOnlyUserDefinedScreens: true }
+);
+
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  CreateProps
+>(SplitContent, TabRouter, {
+  // @ts-expect-error `createProps` must return the complete `CreateProps` shape.
+  createProps: () => ({ routeNames: [] }),
+});
+
+const splitStandardNavigator = createStandardNavigator<Opts, EventMap, NavProps & CreateProps>(
+  SplitContent
+);
+
+const IntegratedSplitNav = unstable_integrateWithRouter<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  CreateProps
+>(splitStandardNavigator, TabRouter, {
+  createProps: () => ({ routeNames: [], preload: () => {} }),
+});
+
+type IntegratedSplitElementProps = ComponentProps<typeof IntegratedSplitNav>;
+export type _IntegratedElementAcceptsNavigatorProps = Expect<
+  Equal<IntegratedSplitElementProps['tintColor'], string | undefined>
+>;
+export type _IntegratedElementLacksCreateProps = Expect<
+  Equal<'routeNames' extends keyof IntegratedSplitElementProps ? true : false, false>
+>;
+
+// @ts-expect-error The options argument is required when `CreateProps` is non-empty.
+unstable_integrateWithRouter<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  CreateProps
+>(splitStandardNavigator, TabRouter);
+
+unstable_integrateWithRouter<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  CreateProps
+>(splitStandardNavigator, TabRouter, {
+  // @ts-expect-error `createProps` must return the complete `CreateProps` shape.
+  createProps: () => ({ routeNames: [] }),
+});
+
+unstable_integrateWithRouter<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  CreateProps
+>(
+  splitStandardNavigator,
+  TabRouter,
+  // @ts-expect-error `createProps` is required when `CreateProps` is non-empty.
+  { useOnlyUserDefinedScreens: true }
+);
+
+const publicStandardNavigator = createStandardNavigator<Opts, EventMap, NavProps>(PublicContent);
+unstable_integrateWithRouter<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions
+>(publicStandardNavigator, TabRouter);
+
+unstable_integrateWithRouter<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  object
+>(publicStandardNavigator, TabRouter);
+
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions
+>(PublicContent, TabRouter);
+
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  object
+>(PublicContent, TabRouter);
 
 // ---------------------------------------------------------------------------
 // The exact example from the "Custom navigators" guide
