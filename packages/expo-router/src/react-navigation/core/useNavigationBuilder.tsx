@@ -1,5 +1,4 @@
 'use client';
-import deepEqual from 'fast-deep-equal';
 import * as React from 'react';
 import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
@@ -404,12 +403,6 @@ export function useNavigationBuilder<
     [isStateValid]
   );
 
-  const doesStateHaveOnlyInvalidRoutes = React.useCallback(
-    (state: NavigationState | PartialState<NavigationState>) =>
-      state.routes.every((r) => !routeNames.includes(r.name)),
-    [routeNames]
-  );
-
   const {
     state: currentState,
     getState: getCurrentState,
@@ -437,12 +430,10 @@ export function useNavigationBuilder<
   });
 
   const [
-    stateBeforeInitialization,
     initializedState,
     isFirstStateInitialization,
     paramsUsedForInitialization,
   ] = React.useMemo((): [
-    PartialState<State> | undefined,
     State | undefined,
     boolean,
     object | undefined,
@@ -459,7 +450,7 @@ export function useNavigationBuilder<
             routeGetIdList,
           });
 
-      return [undefined, state, false, undefined];
+      return [state, false, undefined];
     }
 
     const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
@@ -496,7 +487,6 @@ export function useNavigationBuilder<
       !isNestedParamsConsumed
     ) {
       return [
-        undefined,
         router.getInitialState({
           routeNames,
           routeParamList: initialRouteParamList,
@@ -526,15 +516,7 @@ export function useNavigationBuilder<
               routeGetIdList,
             });
 
-      if (
-        stateBeforeInitialization != null &&
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        doesStateHaveOnlyInvalidRoutes(stateBeforeInitialization)
-      ) {
-        return [stateBeforeInitialization, hydratedState, true, paramsForState];
-      }
-
-      return [undefined, hydratedState, false, paramsForState];
+      return [hydratedState, false, paramsForState];
     }
     // We explicitly don't include routeNames, route.params etc. in the dep list
     // below. We want to avoid forcing a new state to be calculated in those cases
@@ -552,22 +534,6 @@ export function useNavigationBuilder<
 
   const previousRouteKeyList = previousRouteKeyListRef.current;
 
-  const [unhandledState, setUnhandledState] = React.useState<
-    NavigationState | PartialState<NavigationState> | undefined
-  >(stateBeforeInitialization);
-
-  // An unhandled state is state that didn't have any valid routes
-  // So it was unhandled, i.e. not used for initializing the state
-  // It's possible that they were absent due to conditional render
-  // Store this state so we can reuse it if the routes change later
-  if (
-    options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-    stateBeforeInitialization &&
-    unhandledState !== stateBeforeInitialization
-  ) {
-    setUnhandledState(stateBeforeInitialization);
-  }
-
   let state =
     // If the state isn't initialized, or stale, use the state we initialized instead
     // The state won't update until there's a change needed in the state we have initialized locally
@@ -575,22 +541,7 @@ export function useNavigationBuilder<
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
 
   let nextState: State = state;
-  let shouldClearUnhandledState = false;
-
-  // Previously unhandled state is now valid again
-  // And current state no longer has any valid routes
-  // We should reuse the unhandled state instead of re-calculating the state
   if (
-    unhandledState?.routes.every((r) => routeNames.includes(r.name)) &&
-    state?.routes.every((r) => !routeNames.includes(r.name))
-  ) {
-    shouldClearUnhandledState = true;
-    nextState = router.getRehydratedState(unhandledState as PartialState<State>, {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-    });
-  } else if (
     !isArrayEqual(state.routeNames, routeNames) ||
     !isRecordEqual(routeKeyList, previousRouteKeyList)
   ) {
@@ -617,42 +568,22 @@ export function useNavigationBuilder<
     ) {
       didConsumeNestedParams = true;
 
-      if (
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        doesStateHaveOnlyInvalidRoutes(route.params.state)
-      ) {
-        if (route.params.state !== unhandledState) {
-          setUnhandledState(route.params.state);
-        }
-      } else {
-        // If the route was updated with new state, we should reset to it
-        action = CommonActions.reset(route.params.state);
-      }
+      // If the route was updated with new state, we should reset to it
+      action = CommonActions.reset(route.params.state);
     } else if (
       typeof route.params.screen === 'string' &&
       ((route.params.initial === false && isFirstStateInitialization) || !isNestedParamsConsumed)
     ) {
       didConsumeNestedParams = true;
 
-      if (
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        !routeNames.includes(route.params.screen)
-      ) {
-        const state = getStateFromParams(route.params);
-
-        if (state != null && !deepEqual(state, unhandledState)) {
-          setUnhandledState(state);
-        }
-      } else {
-        // If the route was updated with new screen name and/or params, we should navigate there
-        action = CommonActions.navigate({
-          name: route.params.screen,
-          params: route.params.params,
-          path: route.params.path,
-          merge: route.params.merge,
-          pop: route.params.pop,
-        });
-      }
+      // If the route was updated with new screen name and/or params, we should navigate there
+      action = CommonActions.navigate({
+        name: route.params.screen,
+        params: route.params.params,
+        path: route.params.path,
+        merge: route.params.merge,
+        pop: route.params.pop,
+      });
     }
 
     // The update should be limited to current navigator only, so we call the router manually
@@ -691,10 +622,6 @@ export function useNavigationBuilder<
     if (shouldUpdate) {
       // Schedule an update if the state needs to be updated
       setState(nextState);
-
-      if (shouldClearUnhandledState) {
-        setUnhandledState(undefined);
-      }
     }
   });
 
@@ -844,35 +771,6 @@ export function useNavigationBuilder<
   const onUnhandledActionParent = use(UnhandledActionContext);
 
   const onUnhandledAction = useLatestCallback((action: NavigationAction) => {
-    if (
-      options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-      action.type === 'NAVIGATE' &&
-      action.payload != null &&
-      'name' in action.payload &&
-      typeof action.payload.name === 'string' &&
-      !routeNames.includes(action.payload.name)
-    ) {
-      const state = {
-        routes: [
-          {
-            name: action.payload.name,
-            params:
-              'params' in action.payload &&
-              typeof action.payload.params === 'object' &&
-              action.payload.params !== null
-                ? action.payload.params
-                : undefined,
-            path:
-              'path' in action.payload && typeof action.payload.path === 'string'
-                ? action.payload.path
-                : undefined,
-          },
-        ],
-      };
-
-      setUnhandledState(state);
-    }
-
     onUnhandledActionParent?.(action);
   });
 
