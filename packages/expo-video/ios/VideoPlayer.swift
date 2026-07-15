@@ -13,6 +13,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   lazy var audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(owner: self)
   lazy var seeker: VideoPlayerSeeker = VideoPlayerSeeker(player: self)
   private var tracksLoadingTask: Task<(), Never>?
+  private let didRelease = Mutex(false)
 
   var loop = false
   var audioMixingMode: AudioMixingMode = .auto {
@@ -181,19 +182,18 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   deinit {
-    observer?.notifyPlayerDeinit(player: self)
-    observer?.cleanup()
-    NowPlayingManager.shared.unregisterPlayer(self)
-    VideoManager.shared.unregister(videoPlayer: self)
+    releasePlayer()
+  }
 
-    videoSourceLoader.cancelCurrentTask()
-    tracksLoadingTask?.cancel()
-
-    // We have to replace from the main thread because of KVOs (see comment in VideoSourceLoader).
-    // Moreover, in this case we have to keep a strong reference to AVPlayer and remove its item
-    // If we don't do this AVPlayer doesn't get deallocated
-    DispatchQueue.main.async { [ref] in
-      ref.replaceCurrentItem(with: nil)
+  override func sharedObjectWillRelease() {
+    if Thread.isMainThread {
+      releasePlayer()
+    } else {
+      // Strong self capture is intentional: it keeps the player alive until the teardown
+      // has run on the main thread, so `deinit` can never race with it.
+      DispatchQueue.main.async {
+        self.releasePlayer()
+      }
     }
   }
 
@@ -225,7 +225,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
     // which causes crashes.
     DispatchQueue.main.async { [weak self] in
-      guard let self else {
+      guard let self, !self.hasBeenReleased else {
         return
       }
       self.ref.replaceCurrentItem(with: playerItem)
@@ -262,7 +262,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
     // which causes crashes.
     DispatchQueue.main.async { [weak self] in
-      guard let self else {
+      guard let self, !self.hasBeenReleased else {
         return
       }
       self.ref.replaceCurrentItem(with: playerItem)
@@ -321,6 +321,45 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       dangerousPropertiesStore.ownerIsReplacing = false
     }
     return
+  }
+
+  private func releasePlayer() {
+    let alreadyReleased = didRelease.withLock { didRelease in
+      defer {
+        didRelease = true
+      }
+      return didRelease
+    }
+    guard !alreadyReleased else {
+      return
+    }
+
+    observer?.notifyPlayerDeinit(player: self)
+    observer?.cleanup()
+    observer = nil
+    NowPlayingManager.shared.unregisterPlayer(self)
+    VideoManager.shared.unregister(videoPlayer: self)
+
+    videoSourceLoader.cancelCurrentTask()
+    tracksLoadingTask?.cancel()
+
+    // We have to replace from the main thread because of KVOs (see comment in VideoSourceLoader).
+    // Moreover, in this case we have to keep a strong reference to AVPlayer and remove its item
+    // If we don't do this AVPlayer doesn't get deallocated
+    let clear = { [ref] in
+      ref.pause()
+      ref.replaceCurrentItem(with: nil)
+    }
+
+    if Thread.isMainThread {
+      clear()
+    } else {
+      DispatchQueue.main.async(execute: clear)
+    }
+  }
+
+  private var hasBeenReleased: Bool {
+    return didRelease.withLock { $0 }
   }
 
   private func getBufferedPosition() -> Double {
@@ -399,6 +438,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {
+    guard !hasBeenReleased else {
+      return
+    }
     // Loading tracks requires doing some long tasks, this callback can be called from the main thread
     // Which could cause hangs
     tracksLoadingTask?.cancel()
