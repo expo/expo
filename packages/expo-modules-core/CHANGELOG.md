@@ -65,6 +65,7 @@
 - [iOS] `SharedObject` is now paired with its JS counterpart through a `SharedObjectNativeState` attached to the JS object, so registry lookups in both directions go through the native state and fall back to the legacy id-based path. ([#46712](https://github.com/expo/expo/pull/46712) by [@tsapeta](https://github.com/tsapeta))
 - [iOS][android] Resolve the worklet UI runtime from its `react-native-worklets` holder instead of the reanimated `_WORKLET_RUNTIME` global; `installOnUIRuntime` now takes the holder from `getUIRuntimeHolder()`. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway))
 - iOS Turn `getModule(implementing:)` into a public function ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
+- [Android] Bump the Gradle plugin's Kotlin version to 2.2.21.
 
 ## 56.0.13 — 2026-05-26
 

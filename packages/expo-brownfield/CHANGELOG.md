@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Add support for React Native 0.87
+
 ## 56.0.15 — 2026-05-26
 
 ### 🎉 New features

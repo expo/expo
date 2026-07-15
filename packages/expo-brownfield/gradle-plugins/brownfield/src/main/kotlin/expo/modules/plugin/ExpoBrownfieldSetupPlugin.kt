@@ -274,7 +274,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
    */
   private fun getHermesVersion(project: Project): String {
     val process =
-      ProcessBuilder("node", "--print", "require('hermes-compiler/package.json').version")
+      ProcessBuilder("node", "--print", "require(require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })).version")
         .directory(project.rootProject.projectDir)
         .redirectErrorStream(true)
         .start()

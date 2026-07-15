@@ -15,7 +15,7 @@ internal fun setupPrebuiltsCopying(rootProject: Project) {
   rootProject.afterEvaluate {
     val configExtension = getConfigExtension(rootProject)
 
-    if (configExtension.publications.isEmpty) {
+    if (configExtension.publications.isEmpty()) {
       throw IllegalStateException(
         "`publications` is not set. Please, make sure that `publications { ... }` was called in the root `build.gradle` file."
       )
