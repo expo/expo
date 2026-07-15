@@ -10,7 +10,7 @@
 
 ### 🎉 New features
 
-- [iOS] Added a `container` case to `ExpoSwiftUI.IgnoreSafeArea` that ignores the device and container safe area regions while keeping the keyboard region. `all` now removes both the container and keyboard regions. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iO`ExpoSwiftUI.IgnoreSafeArea` that ignores the device and container safe area regions. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added the `@Event` macro that turns a function-typed `var` on a module or shared object into a typed JavaScript event. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `@ExpoModule` now synthesizes the module's JavaScript name from the class name or its `@ExpoModule("CustomName")` argument, so a `Name(…)` definition entry is no longer required. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
@@ -19,7 +19,6 @@
 - [iOS] Added `SharedObject.native(from:)` that recovers the native shared object paired with a JavaScript object, with a generic overload that returns the concrete subclass directly. ([#47054](https://github.com/expo/expo/pull/47054) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `@SharedObject` now binds `@JS` methods, properties and the `@JS init` directly onto the class prototype, so they no longer need `Function(…)` / `Property(…)` / `Constructor { … }` definition entries. ([#47107](https://github.com/expo/expo/pull/47107) by [@tsapeta](https://github.com/tsapeta))
 - Added `ArrayBuffer` as the preferred safe native module argument and return type, and deprecated `NativeArrayBuffer` in favor of it. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
-- [iOS] Added a `container` case to `ExpoSwiftUI.IgnoreSafeArea` that ignores the device and container safe area regions while keeping the keyboard region. `all` now removes both the container and keyboard regions. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
