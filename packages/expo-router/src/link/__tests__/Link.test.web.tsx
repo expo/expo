@@ -139,7 +139,13 @@ it('mixes registered styles with className', () => {
 
 it('uses web-only href attributes', () => {
   const { getByTestId } = render(
-    <Link href="/foo" testID="link" download="file.png" rel="noopener" target="_blank">
+    <Link
+      href="/foo"
+      testID="link"
+      download="file.png"
+      rel="noopener"
+      target="_blank"
+    >
       Hello
     </Link>
   );

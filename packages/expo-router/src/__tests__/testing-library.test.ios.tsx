@@ -25,13 +25,17 @@ describe('toHavePathname', () => {
 
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() => expect(screen).toHavePathname('/xyz'));
+    const message = getThrownMessage(() =>
+      expect(screen).toHavePathname('/xyz')
+    );
     expect(message).toMatchSnapshot();
   });
 
   it('fails with the correct message for a .not assertion', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() => expect(screen).not.toHavePathname('/home'));
+    const message = getThrownMessage(() =>
+      expect(screen).not.toHavePathname('/home')
+    );
     expect(message).toMatchSnapshot();
   });
 });
@@ -44,7 +48,9 @@ describe('toHavePathnameWithParams', () => {
 
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() => expect(screen).toHavePathnameWithParams('/xyz'));
+    const message = getThrownMessage(() =>
+      expect(screen).toHavePathnameWithParams('/xyz')
+    );
     expect(message).toMatchSnapshot();
   });
 
@@ -65,33 +71,47 @@ describe('toHaveSegments', () => {
 
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() => expect(screen).toHaveSegments(['xyz']));
+    const message = getThrownMessage(() =>
+      expect(screen).toHaveSegments(['xyz'])
+    );
     expect(message).toMatchSnapshot();
   });
 
   it('fails with the correct message for a .not assertion', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() => expect(screen).not.toHaveSegments(['[slug]']));
+    const message = getThrownMessage(() =>
+      expect(screen).not.toHaveSegments(['[slug]'])
+    );
     expect(message).toMatchSnapshot();
   });
 });
 
 describe('toHaveSearchParams', () => {
   it('correctly matches', () => {
-    renderRouter(['[slug]/[...catchAll]'], { initialUrl: '/home/long/name?test=true' });
-    expect(screen).toHaveSearchParams({ slug: 'home', test: 'true', catchAll: ['long', 'name'] });
+    renderRouter(['[slug]/[...catchAll]'], {
+      initialUrl: '/home/long/name?test=true',
+    });
+    expect(screen).toHaveSearchParams({
+      slug: 'home',
+      test: 'true',
+      catchAll: ['long', 'name'],
+    });
   });
 
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() => expect(screen).toHaveSearchParams({ slug: 'xyz' }));
+    const message = getThrownMessage(() =>
+      expect(screen).toHaveSearchParams({ slug: 'xyz' })
+    );
     expect(message).toMatchSnapshot();
   });
 
   it('fails with the correct message for a .not assertion', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
     const params = { slug: 'home', test: 'true' };
-    const message = getThrownMessage(() => expect(screen).not.toHaveSearchParams(params));
+    const message = getThrownMessage(() =>
+      expect(screen).not.toHaveSearchParams(params)
+    );
     expect(message).toMatchSnapshot();
   });
 });
@@ -99,7 +119,9 @@ describe('toHaveSearchParams', () => {
 describe('toHaveRouterState', () => {
   // This test is currently broken in React Navigation v7 as @react-navigation/routers still has the prerenderRoutes key
   it.skip('correctly matches', () => {
-    renderRouter(['[slug]', '[...catchAll]', 'directory/page'], { initialUrl: '/home?test=true' });
+    renderRouter(['[slug]', '[...catchAll]', 'directory/page'], {
+      initialUrl: '/home?test=true',
+    });
     act(() => router.navigate('/directory/page'));
     expect(screen).toHaveRouterState({
       index: 1,
@@ -129,17 +151,22 @@ describe('toHaveRouterState', () => {
 
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
-    const message = getThrownMessage(() => expect(screen).toHaveRouterState({ routes: [] }));
+    const message = getThrownMessage(() =>
+      expect(screen).toHaveRouterState({ routes: [] })
+    );
     expect(message).toMatchSnapshot();
   });
 
   it('fails with the correct message for a .not assertion', () => {
     const result = renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
     const state = result.getRouterState();
-    const message = getThrownMessage(() => expect(screen).not.toHaveRouterState(state));
+    const message = getThrownMessage(() =>
+      expect(screen).not.toHaveRouterState(state)
+    );
     expect(message).toMatchSnapshot();
   });
 });
+
 // https://github.com/expo/expo/issues/46864
 describe('fake timers', () => {
   afterEach(() => {
@@ -173,17 +200,27 @@ describe('fake timers', () => {
       ),
     });
 
-    expect(screen.getByTestId('now-iso')).toHaveTextContent(mockNow.toISOString());
-    expect(screen.getByTestId('now-num')).toHaveTextContent(String(mockNow.getTime()));
+    expect(screen.getByTestId('now-iso')).toHaveTextContent(
+      mockNow.toISOString()
+    );
+    expect(screen.getByTestId('now-num')).toHaveTextContent(
+      String(mockNow.getTime())
+    );
   });
 
   it('does not crash when setSystemTime is unavailable (legacy fake timers)', () => {
     // Legacy fake timers throw on `setSystemTime`. `renderRouter` must still work for those users.
-    const setSystemTime = jest.spyOn(jest, 'setSystemTime').mockImplementation(() => {
-      throw new TypeError('jest.setSystemTime() is not available when using legacy fake timers');
-    });
+    const setSystemTime = jest
+      .spyOn(jest, 'setSystemTime')
+      .mockImplementation(() => {
+        throw new TypeError(
+          'jest.setSystemTime() is not available when using legacy fake timers'
+        );
+      });
 
-    expect(() => renderRouter(['[slug]'], { initialUrl: '/home' })).not.toThrow();
+    expect(() =>
+      renderRouter(['[slug]'], { initialUrl: '/home' })
+    ).not.toThrow();
 
     setSystemTime.mockRestore();
   });
