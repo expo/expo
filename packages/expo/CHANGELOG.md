@@ -22,7 +22,7 @@
 - Fix `asyncRoutes` failing on Android and iOS with `Requiring unknown module` ([#46870](https://github.com/expo/expo/pull/46870) by [@hassankhan](https://github.com/hassankhan))
 - Fix `Response.blob()` in `expo/fetch` throwing when the global `Blob` is react-native's implementation. ([#47538](https://github.com/expo/expo/pull/47538) by [@kudo](https://github.com/kudo))
 - [iOS] Fix `Linking.getInitialURL()` returning `null` and deep links being dropped when a URL cold-starts an app on the UIKit scene life cycle. ([#47628](https://github.com/expo/expo/pull/47628) by [@tsapeta](https://github.com/tsapeta))
-- Fix `import.meta.url` being `null` on web when read after the bundle's synchronous execution (from effects, async code, or dynamic imports).
+- Fix `import.meta.url` being `null` on web when read after the bundle's synchronous execution (from effects, async code, or dynamic imports). ([#47802](https://github.com/expo/expo/pull/47802) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 
