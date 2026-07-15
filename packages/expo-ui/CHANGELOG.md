@@ -4,7 +4,6 @@
 
 ### 🛠 Breaking changes
 
-- [iOS] `<Host>`'s `ignoreSafeArea="all"` now also ignores the keyboard safe area, matching its name. Use the new `ignoreSafeArea="container"` for the previous behavior of ignoring only the device and container insets while still avoiding the keyboard. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 - [universal][android] Use `BasicTextField` component instead of Filled Material TextField. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `<Host>` centering its content instead of top-aligning it, so a `flex: 1` host matches Android's top-leading layout. ([#47561](https://github.com/expo/expo/pull/47561) by [@nishan](https://github.com/intergalacticspacehighway))
 
