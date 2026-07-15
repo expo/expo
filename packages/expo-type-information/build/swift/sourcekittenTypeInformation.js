@@ -244,7 +244,7 @@ function getLiteralOrResolvedIdentifier(offsetObject, ctx) {
     return parts[parts.length - 1] ?? literalOrIdentifier;
 }
 function isStringLiteral(str) {
-    return str.length > 1 && str[0] == '"' && str[str.length - 1] == '"';
+    return str.length > 1 && str[0] === '"' && str[str.length - 1] === '"';
 }
 function getInitializerValue(structure, file) {
     const nameEnd = structure['key.nameoffset'] + structure['key.namelength'];
