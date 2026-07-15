@@ -17,7 +17,20 @@ jsi::Value convertSharedObject(
 ) {
   int id = sharedObject->getId();
   if (id != 0) {
-    return jsi::Value(rt, *jsiContext->getSharedObject(id)->cthis()->get());
+    auto jsObject = jsiContext->getSharedObject(id);
+    if (jsObject != nullptr) {
+      return jsi::Value(rt, *jsObject->cthis()->get());
+    }
+
+    // The JS peer has already been garbage collected, but the pairing has not been fully
+    // deleted yet, so the id is still non-zero. The registry resolves the id through a weak
+    // reference, and Hermes clears weak references at the end of marking while the NativeState
+    // destructor that deletes the pairing runs later, on the background sweep. A conversion
+    // landing in that window would dereference the null lookup and abort the process
+    // (https://github.com/expo/expo/issues/47787). Delete the stale pairing now, so the
+    // destructor's late delete cannot reset the id of the pairing created below, and fall
+    // through to pair the native object with a fresh JS object.
+    JSIContext::deleteSharedObject(jsiContext->javaPart_, id);
   }
 
   auto jsClass = jsiContext->getJavascriptClass(sharedObject->getClass());
