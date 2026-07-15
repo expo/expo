@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix Compose-hosted React Native content (e.g. the `@expo/ui` community `BottomSheet`) keeping a stale size after a rapid resize such as dismissing the software keyboard, leaving bottom-anchored content stranded mid-view. The final shadow node size update could be dropped when its one-shot pre-draw listener fired without a following draw pass; the pending update is now also posted to the view so the latest size always flushes. ([#47778](https://github.com/expo/expo/issues/47778) by [@zayyartun-cgm](https://github.com/zayyartun-cgm)) ([#47810](https://github.com/expo/expo/pull/47810) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 56.0.21 — 2026-07-15
