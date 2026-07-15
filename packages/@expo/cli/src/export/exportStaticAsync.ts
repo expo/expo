@@ -33,6 +33,7 @@ import { generateFaviconAssetAsync } from './favicon';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
 import type { ExportAssetMap } from './saveAssets';
 import { getFilesFromSerialAssets } from './saveAssets';
+import type { StaticManifest } from './static';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -119,7 +120,7 @@ export async function getFilesToExportFromServerAsync(
   if (!exportServer && serverManifest) {
     // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
     // EAS Hosting to recognize the `headers`, `pageHeaders`, and `redirects` configs
-    const subsetServerManifest = {
+    const subsetServerManifest: StaticManifest = {
       headers: serverManifest.headers,
       pageHeaders: serverManifest.pageHeaders,
       redirects: serverManifest.redirects,

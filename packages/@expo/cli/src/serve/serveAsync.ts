@@ -11,7 +11,7 @@ import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { resolvePortAsync } from '../utils/port';
-import { applyStaticHeaders, loadStaticManifestAsync } from './static';
+import { applyStaticHeaders, loadStaticManifestAsync, resolveStaticHeaders } from './static';
 
 type Options = {
   port?: number;
@@ -72,8 +72,8 @@ async function startStaticServerAsync(dist: string, options: Options) {
       extensions: ['html'],
     })
       .on('headers', (res: http.ServerResponse, resolvedPath: string) => {
-        // If `headers` doesn't exist in the manifest, do nothing
-        if (!staticManifest?.headers) {
+        // If `headers` and `pageHeaders` don't exist in the manifest, do nothing
+        if (!staticManifest?.headers && !staticManifest?.pageHeaders?.length) {
           return;
         }
         // Headers only apply to page responses and loader data files, never to other static assets.
@@ -81,7 +81,7 @@ async function startStaticServerAsync(dist: string, options: Options) {
           return;
         }
 
-        applyStaticHeaders(res, staticManifest.headers);
+        applyStaticHeaders(res, resolveStaticHeaders(staticManifest, filePath));
       })
       .on('error', (err: any) => {
         if (err.status === 404) {
