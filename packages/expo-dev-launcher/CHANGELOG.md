@@ -110,6 +110,8 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] Cleared the deep-link URL from cached `launchOptions` after it is consumed ([#46265](https://github.com/expo/expo/pull/46265) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
+- [Android] Bump the Gradle plugin's Kotlin version to 2.2.21.
+
 ## 56.0.16 — 2026-05-26
 
 ### 🐛 Bug fixes

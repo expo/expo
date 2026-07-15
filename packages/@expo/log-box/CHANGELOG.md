@@ -10,6 +10,9 @@
 
 - Fix the web overlay bundle printing a `Deep imports from the 'react-native' package are deprecated` warning on every load. ([#47772](https://github.com/expo/expo/pull/47772) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Resolve development server requests from the URL the bundle was loaded from, instead of the default Metro address ([#48276](https://github.com/expo/expo/pull/48276) by [@kitten](https://github.com/kitten))
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9.
+- Add missing `expo` peer dependency. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
+- Preserve Error call stacks when capturing component stacks. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
