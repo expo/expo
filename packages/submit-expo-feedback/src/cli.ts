@@ -114,6 +114,11 @@ async function runAsync(): Promise<void> {
   const session = getSession();
   const metadata = await createFeedbackMetadataAsync(process.cwd(), session, category);
 
+  console.log(
+    chalk.dim(
+      'Submitting feedback with available agent, environment, project, and Expo account metadata.'
+    )
+  );
   await sendFeedbackAsync({
     feedback,
     metadata,
@@ -427,6 +432,10 @@ function printHelp(): void {
 
   {bold Info}
     Send feedback to the Expo team. If no message is provided, you will be prompted.
+
+  {bold Data collection}
+    Feedback includes available agent/session identifiers, environment details,
+    Expo project metadata, and Expo account identifiers.
 
   {bold Options}
     --category, -c <category>  Feedback category (${FEEDBACK_CATEGORIES.join(', ')})
