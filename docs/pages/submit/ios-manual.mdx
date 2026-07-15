@@ -8,7 +8,7 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-This guide walks through archiving an iOS app with Xcode and uploading it to [App Store Connect](https://appstoreconnect.apple.com/), which is useful if you aren't using EAS, or as a fallback if EAS Submit is temporarily unavailable. For most teams, [EAS Submit](/submit/ios/) is simpler and works from any OS.
+This guide walks through archiving an iOS app with Xcode and uploading it to [App Store Connect](https://appstoreconnect.apple.com/), which is useful if you aren't using EAS, or as a fallback if EAS Submit is temporarily unavailable. If you already have a **.ipa** file, skip to [Upload an existing build with Transporter](#upload-an-existing-build-with-transporter). For most teams, [EAS Submit](/submit/ios/) is simpler and works from any OS.
 
 ## Prerequisites
 
@@ -72,10 +72,21 @@ From the menu bar, open **Product** > **Build**. Xcode will build the release bi
 
 1. From the menu bar, open **Product** > **Archive**.
 2. Under **Archives**, click **Distribute App** from the right sidebar.
-3. Click **App Store Connect** and follow the prompts. Xcode will upload your build to App Store Connect.
+3. Click **App Store Connect** and follow the prompts. Xcode will upload your build to App Store Connect. To get a **.ipa** file instead and upload it later, choose **Export** in the prompts and use [Transporter](#upload-an-existing-build-with-transporter).
 4. Sign in to [App Store Connect](https://appstoreconnect.apple.com/), select your app, and submit it to TestFlight or for App Review from the App Store Connect dashboard.
 
 </Step>
+
+## Upload an existing build with Transporter
+
+If you already have a **.ipa** file, for example from running `eas build --platform ios --local` or downloading a build from the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds), you don't need to archive the app in Xcode. Upload it with Apple's Transporter app instead:
+
+1. Download [**Transporter** from the App Store](https://apps.apple.com/app/transporter/id1450874784).
+2. Sign in with your Apple ID.
+3. Add the build either by dragging the **.ipa** file directly into the Transporter window or by selecting it from the file dialog opened with **+** or **Add App** button.
+4. Submit it by clicking the **Deliver** button.
+
+This process can take a few minutes, then another 10-15 minutes of processing on Apple's servers. Afterward, you can check the status of your binary in App Store Connect and submit it to TestFlight or for App Review.
 
 ## Further reading
 
