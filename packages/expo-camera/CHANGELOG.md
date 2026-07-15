@@ -12,6 +12,7 @@
 - Remove a redundant full-resolution JPEG re-encode when saving captured photos on iOS. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
 - [iOS] Preserve the capture orientation as EXIF metadata instead of rotating captured pixels, so `takePictureAsync` and `savePictureAsync` return the real orientation tag and dimensions and no longer save captures above their native resolution. ([#47824](https://github.com/expo/expo/pull/47824) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Disable deferred photo delivery so responsive capture no longer hangs the capture promise on iOS 17 and later. ([#47816](https://github.com/expo/expo/pull/47816) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fire `onMountError` instead of crashing the app when the camera can't be started, such as a device reporting zero available cameras. ([#47818](https://github.com/expo/expo/pull/47818) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -31,6 +32,7 @@ _This version does not introduce any user-facing changes._
 - Replace the deprecated `videoOrientation` API with `AVCaptureDevice.RotationCoordinator` for the iOS camera preview. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix dark frames and the preview rotating into place on iOS launch by fully configuring the camera session before it starts running. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
 - Default the iOS camera `pictureSize` to `photo` instead of `high`. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 57.0.0 — 2026-06-25
 
 _This version does not introduce any user-facing changes._
