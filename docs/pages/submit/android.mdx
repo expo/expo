@@ -62,10 +62,10 @@ The default `production` profile produces an **.aab**. A build profile only prod
 
 ## First-time submission
 
-Google Play requires your app's first release to exist before `eas submit` can fully automate releases. If this is your app's first submission, pick one of the following:
+If this is your app's first submission, the default `eas submit` command works out of the box and creates your app's first release on the [internal testing track](/eas/json/#track). Before running it, complete the [prerequisites](#prerequisites) so that your app exists on Google Play Console and EAS has a [Google Service Account key](https://expo.fyi/creating-google-service-account) to submit on your behalf. The app stays in draft status in Play Console until you complete the store listing and setup tasks, which are required before a release can be promoted to production.
 
-- **Upload manually once**: Create the first release in Play Console by uploading the **.aab** you just built. See the [manual submission guide](/submit/android-manual/) for step-by-step instructions.
-- **Submit a draft with EAS Submit**: Set [`releaseStatus`](/eas/json/#releasestatus) to `draft` in the submission profile in **eas.json**, run `eas submit`, and then complete the release in Play Console.
+- **Prefer doing the first upload yourself?** Follow the [manual submission guide](/submit/android-manual/) to create the first release in Play Console.
+- **Want to upload without rolling out?** Set [`releaseStatus`](/eas/json/#releasestatus) to `draft` in the submission profile in **eas.json**, and complete the release in Play Console.
 
 ## Submit with `eas submit`
 
