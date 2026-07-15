@@ -19,10 +19,10 @@ export const ModulesCoreScreens = [
     },
   },
   {
-    name: 'Promise teardown',
-    route: 'modulescore/promise-teardown',
+    name: 'Runtime teardown',
+    route: 'modulescore/runtime-teardown',
     getComponent() {
-      return optionalRequire(() => require('./PromiseTeardownScreen'));
+      return optionalRequire(() => require('./RuntimeTeardownScreen'));
     },
   },
 ];

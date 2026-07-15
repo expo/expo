@@ -108,7 +108,8 @@
     "experiments": {
       "inlineModules": {
         "watchedDirectories": [
-          "../native-component-list/src/screens/inlineModules/inlineModulesExamples"
+          "../native-component-list/src/screens/inlineModules/inlineModulesExamples",
+          "../native-component-list/src/screens/ModulesCore"
         ]
       }
     }
