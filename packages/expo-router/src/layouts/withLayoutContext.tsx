@@ -113,7 +113,6 @@ export function useFilterScreenChildren(
  *
  * @param Nav - The navigator component to wrap.
  * @param processor - A function that processes the screens before passing them to the navigator.
- * @param useOnlyUserDefinedScreens - If true, all screens not specified as navigator's children will be ignored.
  *
  *  @example
  * ```tsx app/_layout.tsx
@@ -144,11 +143,7 @@ export function withLayoutContext<
   T extends ComponentType<any>,
   TState extends NavigationState,
   TEventMap extends EventMapBase,
->(
-  Nav: T,
-  processor?: (options: ScreenProps[]) => ScreenProps[],
-  useOnlyUserDefinedScreens: boolean = false
-) {
+>(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[]) {
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
@@ -160,7 +155,7 @@ export function withLayoutContext<
 
       const processed = processor ? processor(screens ?? []) : screens;
 
-      const sorted = useSortedScreens(processed ?? [], guardedRedirects, useOnlyUserDefinedScreens);
+      const sorted = useSortedScreens(processed ?? [], guardedRedirects);
 
       // Prevent throwing an error when there are no screens.
       if (!sorted.length) {

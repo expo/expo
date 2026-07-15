@@ -83,13 +83,7 @@ type CreatePropsOption<State extends NavigationState, CreateProps extends object
 export type IntegrateWithRouterOptions<
   State extends NavigationState = NavigationState,
   CreateProps extends object = object,
-> = {
-  /**
-   * When `true`, only screens explicitly declared as `<Navigator.Screen>` children are rendered;
-   * routes discovered from the filesystem that were not declared are ignored.
-   */
-  useOnlyUserDefinedScreens?: boolean;
-} & CreatePropsOption<State, CreateProps>;
+> = CreatePropsOption<State, CreateProps>;
 
 /**
  * A standard-navigation descriptor extended with Expo Router route information.

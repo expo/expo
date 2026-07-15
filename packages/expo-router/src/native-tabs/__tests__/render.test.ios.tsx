@@ -227,7 +227,9 @@ describe('First focused tab', () => {
       expect(screen.getByTestId('first')).toBeVisible();
       expect(screen.getByTestId('second')).toBeVisible();
       expect(screen.queryByTestId('index')).toBeNull();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      // Two renders: the hidden `index` route is registered and initially focused, then the
+      // navigator redirects to the first visible tab.
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
     });
   });
 

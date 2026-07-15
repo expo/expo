@@ -80,7 +80,6 @@ function typecheck(_value: unknown) {}
   };
 
   const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter, {
-    useOnlyUserDefinedScreens: true,
     createProps: ({ state, dispatch }) => ({
       activeRouteKey: state.routes[state.index]!.key,
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),

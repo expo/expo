@@ -180,22 +180,11 @@ function getSortedChildren(
  */
 export function useSortedScreens(
   order: ScreenProps[],
-  guardedRedirects: Map<string, Href | undefined> = new Map(),
-  useOnlyUserDefinedScreens: boolean = false
+  guardedRedirects: Map<string, Href | undefined> = new Map()
 ): React.ReactNode[] {
   const node = useRouteNode();
 
-  const nodeChildren = node?.children ?? [];
-  const children = useOnlyUserDefinedScreens
-    ? nodeChildren.filter((child) =>
-        order.some(
-          (userDefinedScreen) =>
-            userDefinedScreen.name === child.route ||
-            `${userDefinedScreen.name}/index` === child.route
-        )
-      )
-    : nodeChildren;
-
+  const children = node?.children ?? [];
   const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
   return React.useMemo(() => {
     const screensWithGuarded = sorted.map((value) => {

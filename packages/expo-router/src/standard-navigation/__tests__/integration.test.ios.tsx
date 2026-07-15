@@ -41,15 +41,6 @@ const StandardTabs = unstable_createStandardRouterNavigator<
   TestEventMap,
   { tintColor?: string },
   TabRouterOptions
->(NavigatorContent, TabRouter, { useOnlyUserDefinedScreens: true });
-
-// Same navigator, but without restricting to user-defined screens (the default).
-const StandardTabsAll = unstable_createStandardRouterNavigator<
-  TestOptions,
-  TabNavigationState<ParamListBase>,
-  TestEventMap,
-  object,
-  TabRouterOptions
 >(NavigatorContent, TabRouter);
 
 const lastArgs = (): NavigatorArgs<TestOptions, TestEventMap> & Record<string, unknown> =>
@@ -190,26 +181,12 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().tintColor).toBe('rebeccapurple');
   });
 
-  it('respects useOnlyUserDefinedScreens by filtering undeclared routes', () => {
+  it('always registers undeclared filesystem routes', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
         </StandardTabs>
-      ),
-      index: () => <View testID="index" />,
-      second: () => <View testID="second" />,
-    });
-
-    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
-  });
-
-  it('includes undeclared matched routes when useOnlyUserDefinedScreens is false', () => {
-    renderRouter({
-      _layout: () => (
-        <StandardTabsAll>
-          <StandardTabsAll.Screen name="index" />
-        </StandardTabsAll>
       ),
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
@@ -225,9 +202,9 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
   it('distinguishes declared and inferred routes via descriptor routeSource', () => {
     renderRouter({
       _layout: () => (
-        <StandardTabsAll>
-          <StandardTabsAll.Screen name="index" />
-        </StandardTabsAll>
+        <StandardTabs>
+          <StandardTabs.Screen name="index" />
+        </StandardTabs>
       ),
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
@@ -330,7 +307,6 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       TabRouterOptions,
       { focusedName: string }
     >(NavigatorContent, TabRouter, {
-      useOnlyUserDefinedScreens: true,
       createProps: ({ state }) => ({ focusedName: state.routes[state.index]!.name }),
     });
 
@@ -363,7 +339,6 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       TabRouterOptions,
       { goToSecond: () => void }
     >(NavigatorContent, TabRouter, {
-      useOnlyUserDefinedScreens: true,
       createProps: ({ dispatch }) => ({
         goToSecond: () => dispatch(TabActions.jumpTo('second')),
       }),
@@ -413,7 +388,7 @@ describe('preloaded routes projected through the integration (StackRouter)', () 
     TestEventMap,
     object,
     StackRouterOptions
-  >(NavigatorContent, StackRouter, { useOnlyUserDefinedScreens: true });
+  >(NavigatorContent, StackRouter);
 
   const renderStack = () =>
     renderRouter({
@@ -641,7 +616,6 @@ describe('custom-navigators guide example', () => {
     TabRouterOptions,
     CreatePropsProps
   >(TabsContent, TabRouter, {
-    useOnlyUserDefinedScreens: true,
     createProps: ({ state, dispatch }) => ({
       activeRouteKey: state.routes[state.index]!.key,
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
