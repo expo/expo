@@ -1,7 +1,7 @@
 {
   "name": "expo-observe",
   "title": "Expo Observe",
-  "version": "57.0.5",
+  "version": "57.0.6",
   "description": "Expo module that dispatches collected app metrics to EAS Observe",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -43,8 +43,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-app-metrics": "workspace:~57.0.3",
-    "expo-eas-client": "workspace:~57.0.0"
+    "expo-app-metrics": "workspace:~57.0.4",
+    "expo-eas-client": "workspace:~57.0.1"
   },
   "devDependencies": {
     "@react-navigation/native": "^7.1.33",

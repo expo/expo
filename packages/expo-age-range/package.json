@@ -1,6 +1,6 @@
 {
   "name": "expo-age-range",
-  "version": "57.0.1",
+  "version": "57.0.2",
   "description": "A native module for age range functionality",
   "sideEffects": false,
   "main": "build/index.js",

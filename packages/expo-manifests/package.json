@@ -1,6 +1,6 @@
 {
   "name": "expo-manifests",
-  "version": "57.0.0",
+  "version": "57.0.1",
   "description": "Code to parse and use Expo and Expo Updates manifests.",
   "main": "build/Manifests.js",
   "types": "build/Manifests.d.ts",
@@ -33,7 +33,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-json-utils": "workspace:~57.0.0"
+    "expo-json-utils": "workspace:~57.0.1"
   },
   "devDependencies": {
     "expo": "workspace:*",

@@ -1,6 +1,6 @@
 {
   "name": "expo-image-picker",
-  "version": "57.0.3",
+  "version": "57.0.4",
   "description": "Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.",
   "main": "src/ImagePicker.ts",
   "types": "build/ImagePicker.d.ts",
@@ -35,7 +35,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-image-loader": "workspace:~57.0.0"
+    "expo-image-loader": "workspace:~57.0.1"
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.0",
