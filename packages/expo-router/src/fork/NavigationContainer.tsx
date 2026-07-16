@@ -1,6 +1,7 @@
 import React from 'react';
 import { I18nManager } from 'react-native';
 
+import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
 import { useImperativeApiEmitter } from '../imperative-api';
 import type {
   DocumentTitleOptions,
@@ -23,6 +24,7 @@ import {
   validatePathConfig,
 } from '../react-navigation/native';
 import useLatestCallback from '../utils/useLatestCallback';
+import { extractExpoPathFromURL } from './extractPathFromURL';
 import { useBackButton } from './useBackButton';
 import { useDocumentTitle } from './useDocumentTitle';
 import { useLinking } from './useLinking';
@@ -105,28 +107,39 @@ function NavigationContainerInner(
     [lastUnhandledLink, setLastUnhandledLink]
   );
 
-  const onReadyForLinkingHandling = useLatestCallback(() => {
-    // If the screen path matches lastUnhandledLink, we do not track it
-    const path = refContainer.current?.getCurrentRoute()?.path;
+  // Clear `lastUnhandledLink` once the committed state actually reaches it. The current URL is
+  // derived from the committed state (`getRouteInfoFromState`) rather than read off a route's
+  // stashed `path`; both the derived URL and the tracked link are normalized to the same shape
+  // (`extractExpoPathFromURL`) before comparing. The derivation runs only when a link is actually
+  // being tracked — the tracked link only comes from expo-router's linking (a complete `__root`
+  // tree), so `getRouteInfoFromState` never sees a non-expo-router shape here.
+  const clearHandledLink = useLatestCallback(() => {
     setLastUnhandledLink((previousLastUnhandledLink) => {
-      if (previousLastUnhandledLink === path) {
+      if (previousLastUnhandledLink == null) {
+        return previousLastUnhandledLink;
+      }
+
+      const state = refContainer.current?.getRootState();
+      const currentPath =
+        state != null
+          ? extractExpoPathFromURL([], getRouteInfoFromState(state).pathnameWithParams)
+          : undefined;
+
+      if (extractExpoPathFromURL([], previousLastUnhandledLink) === currentPath) {
         return undefined;
       }
       return previousLastUnhandledLink;
     });
+  });
+
+  const onReadyForLinkingHandling = useLatestCallback(() => {
+    clearHandledLink();
     onReady?.();
   });
 
   const onStateChangeForLinkingHandling = useLatestCallback(
     (state: Readonly<NavigationState> | undefined) => {
-      // If the screen path matches lastUnhandledLink, we do not track it
-      const path = refContainer.current?.getCurrentRoute()?.path;
-      setLastUnhandledLink((previousLastUnhandledLink) => {
-        if (previousLastUnhandledLink === path) {
-          return undefined;
-        }
-        return previousLastUnhandledLink;
-      });
+      clearHandledLink();
       onStateChange?.(state);
     }
   );

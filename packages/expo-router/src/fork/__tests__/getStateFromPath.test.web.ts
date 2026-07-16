@@ -1,5 +1,7 @@
 import { expectComplete, stripCompleteness } from './completeness';
+import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
 import { getMockConfig } from '../../testing-library';
+import { extractExpoPathFromURL } from '../extractPathFromURL';
 import { getPathFromState } from '../getPathFromState';
 import { getStateFromPath as getStateFromPathRaw } from '../getStateFromPath';
 import { getUrlWithReactNavigationConcessions, stripBaseUrl } from '../getStateFromPath-forks';
@@ -136,6 +138,38 @@ describe('URL round-trips through the compiled state (no route.path preservation
     expect(
       getPathFromState(getStateFromPath<object>('/expo/prefix/blog/a/b', config)!, config)
     ).toBe('/expo/prefix/blog/a/b');
+  });
+});
+
+// Guard for the `NavigationContainer` unhandled-link clear (Part 2, Step 6d): instead of comparing
+// a route's stashed `path` against the tracked link, the container derives the current URL from the
+// committed state via `getRouteInfoFromState` and compares both normalized through
+// `extractExpoPathFromURL`. This locks in that the derivation reproduces the link a handled URL was
+// reached by — including a query string — so the tracked link is actually cleared.
+describe('unhandled-link clear: derived current path matches the source URL (normalized)', () => {
+  const derivedMatchesUrl = (url: string, routes: string[]) => {
+    const config = getMockConfig(routes);
+    const state = getStateFromPathRaw(url, config)!;
+    const derived = extractExpoPathFromURL(
+      [],
+      getRouteInfoFromState(state as Parameters<typeof getRouteInfoFromState>[0]).pathnameWithParams
+    );
+    return { derived, source: extractExpoPathFromURL([], url) };
+  };
+
+  it('matches a plain path', () => {
+    const { derived, source } = derivedMatchesUrl('/one', ['index', 'one']);
+    expect(derived).toBe(source);
+  });
+
+  it('matches a path with a query string', () => {
+    const { derived, source } = derivedMatchesUrl('/one?foo=bar', ['index', 'one']);
+    expect(derived).toBe(source);
+  });
+
+  it('matches a catch-all path', () => {
+    const { derived, source } = derivedMatchesUrl('/blog/a/b', ['index', 'blog/[...rest]']);
+    expect(derived).toBe(source);
   });
 });
 
