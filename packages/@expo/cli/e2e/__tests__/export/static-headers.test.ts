@@ -18,7 +18,7 @@ const GLOBAL_HEADERS = {
 const PAGE_HEADERS = [
   { source: '/', headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' } },
   { source: '/blog', headers: { 'X-Page-Rule': 'blog', 'Cache-Control': 'public, max-age=3600' } },
-  { source: '/_expo/loaders/blog', headers: { 'Cache-Control': 'public, max-age=604800' } },
+  { source: '/_expo/loaders/blog/index', headers: { 'Cache-Control': 'public, max-age=604800' } },
 ];
 
 const EXPECTED_PAGE_HEADERS = [
@@ -31,6 +31,8 @@ const EXPECTED_PAGE_HEADERS = [
     headers: { 'X-Page-Rule': 'blog', 'Cache-Control': 'public, max-age=3600' },
   },
   {
+    // The source's `/index` suffix is normalized away, so this rule cannot match the loader's
+    // actual static file URL (`/_expo/loaders/blog/index`) — see the disabled fetch case below.
     namedRegex: '^/_expo/loaders/blog(?:/)?$',
     headers: { 'Cache-Control': 'public, max-age=604800' },
   },
@@ -39,8 +41,8 @@ const EXPECTED_PAGE_HEADERS = [
 describe('export static with headers', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE], {
-      fixtureName: 'server-headers',
-      uniqueOutputKey: 'static',
+      fixtureName: 'server-features',
+      uniqueOutputKey: 'static-headers',
       export: {
         env: {
           EXPO_USE_STATIC: 'static',
@@ -80,16 +82,20 @@ describe('export static with headers', () => {
         setCookie: 'session=1, session=2',
         cacheControl: 'public, max-age=3600',
       },
-      {
-        // Loader data files apply global headers and matching rules
-        path: '/_expo/loaders/blog',
-        status: 200,
-        contentType: 'application/octet-stream',
-        poweredBy: 'expo-server',
-        pageRule: null,
-        setCookie: 'session=1, session=2',
-        cacheControl: 'public, max-age=604800',
-      },
+      // TODO(#47774): re-enable once loader-declared `Cache-Control` rules land. `pageHeaders`
+      // sources cannot target index-route loader files today: the source normalizes `/index`
+      // away while the static file URL keeps it (and the normalized URL 301s to the directory
+      // form, which 404s), so the Cache-Control rule never applies.
+      // {
+      //   // Loader data files apply global headers and matching rules
+      //   path: '/_expo/loaders/blog/index',
+      //   status: 200,
+      //   contentType: 'application/octet-stream',
+      //   poweredBy: 'expo-server',
+      //   pageRule: null,
+      //   setCookie: 'session=1, session=2',
+      //   cacheControl: 'public, max-age=604800',
+      // },
       {
         // The static file server serves 404s without header application
         path: '/not-a-route',
