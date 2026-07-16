@@ -11,14 +11,14 @@ runExportSideEffects();
 
 describe('server rewrites', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-server-rewrites-screens';
+  const outputName = 'dist-server-features-rewrites-screens';
 
   beforeAll(async () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_SRC: 'server-features',
         E2E_ROUTER_REWRITES: JSON.stringify([
           { source: '/rewrite', destination: '/styled' },
         ] as RewriteConfig[]),
@@ -86,8 +86,8 @@ describe('server rewrites', () => {
     expect(files).not.toContain('rewrite.html');
 
     // generateStaticParams values
-    expect(files).toContain('[post].html');
-    expect(files).toContain('welcome-to-the-universe.html');
-    expect(files).toContain('other.html');
+    expect(files).toContain('blog/[post].html');
+    expect(files).toContain('blog/welcome-to-the-universe.html');
+    expect(files).toContain('blog/other.html');
   });
 });
