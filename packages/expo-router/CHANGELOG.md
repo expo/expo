@@ -30,6 +30,7 @@
 - [android] Remove navigation state restoration across activity recreation. ([#47422](https://github.com/expo/expo/pull/47422) by [@Ubax](https://github.com/Ubax))
 - Fix `renderRouter` ignoring `overrides` and listing duplicate routes when an override key matches a file in `appDir`. ([#47287](https://github.com/expo/expo/pull/47287) by [@wwdrew](https://github.com/wwdrew))
 - Guard the deep link decode in `extractExactPathFromURL` against malformed percent-encoding. ([#47526](https://github.com/expo/expo/pull/47526) by [@momomuchu](https://github.com/momomuchu))
+- [android][ios] Fix `expo-router/head` and `expo-router/stack` resolution on native platforms. ([#47870](https://github.com/expo/expo/pull/47870) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
