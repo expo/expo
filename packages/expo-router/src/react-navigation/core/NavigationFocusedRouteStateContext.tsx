@@ -7,7 +7,6 @@ export type FocusedRouteState = {
       key?: string;
       name: string;
       params?: object;
-      path?: string;
       state?: FocusedRouteState;
     },
   ];

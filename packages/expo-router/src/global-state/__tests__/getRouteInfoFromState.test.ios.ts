@@ -16,13 +16,23 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathnameWithParams).toBe('/');
   });
 
-  it('handles +not-found route with path', () => {
+  it('handles +not-found route with a not-found rest param', () => {
     const result = getRouteInfoFromState({
-      routes: [{ name: '+not-found', path: '/missing-page' }],
+      routes: [{ name: '+not-found', params: { 'not-found': ['missing-page'] } }],
       index: 0,
     });
 
     expect(result.pathname).toBe('/missing-page');
+    expect(result.segments).toEqual(['+not-found']);
+  });
+
+  it('handles +not-found route with a multi-segment not-found rest param', () => {
+    const result = getRouteInfoFromState({
+      routes: [{ name: '+not-found', params: { 'not-found': ['deep', 'missing', 'page'] } }],
+      index: 0,
+    });
+
+    expect(result.pathname).toBe('/deep/missing/page');
     expect(result.segments).toEqual(['+not-found']);
   });
 

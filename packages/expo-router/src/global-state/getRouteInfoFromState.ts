@@ -53,7 +53,23 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   let route = state.routes[index]!;
 
   if (route.name === NOT_FOUND_ROUTE_NAME || route.name === SITEMAP_ROUTE_NAME) {
-    const path = route.path || (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
+    // Derive the URL without `route.path`. A top-level `+not-found` reconstructs its URL from the
+    // `not-found` rest param, exactly as the nested `+not-found` case below does; `_sitemap` is a
+    // fixed route.
+    let path: string;
+    if (route.name === SITEMAP_ROUTE_NAME) {
+      path = `/${route.name}`;
+    } else {
+      const notFound = (route.params as Record<string, string | string[]> | undefined)?.[
+        'not-found'
+      ];
+      const notFoundSegments = Array.isArray(notFound)
+        ? notFound
+        : notFound != null
+          ? [String(notFound)]
+          : [];
+      path = '/' + notFoundSegments.join('/');
+    }
     return {
       ...defaultRouteInfo,
       unstable_globalHref: appendBaseUrl(path),

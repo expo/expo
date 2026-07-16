@@ -85,7 +85,6 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
           key: route.key,
           name: route.name,
           params: route.params,
-          path: route.path,
         },
       ],
     };
@@ -109,7 +108,7 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
     };
 
     return addState(parentFocusedRouteState);
-  }, [parentFocusedRouteState, route.key, route.name, route.params, route.path]);
+  }, [parentFocusedRouteState, route.key, route.name, route.params]);
 
   const context = React.useMemo(
     () => ({
