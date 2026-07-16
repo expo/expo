@@ -17,7 +17,8 @@ runExportSideEffects();
 describe('exports middleware', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
-      fixtureName: 'server-middleware-async',
+      fixtureName: 'server-features',
+      uniqueOutputKey: 'middleware',
       export: {
         env: {
           E2E_ROUTER_REDIRECTS: JSON.stringify([
@@ -30,6 +31,7 @@ describe('exports middleware', () => {
       },
       serve: {
         env: { TEST_SECRET_KEY: 'test-secret-key' },
+        workerd: { configName: 'middleware.capnp' },
       },
     })
   )('$name requests', (config) => {
@@ -156,14 +158,14 @@ describe('exports middleware', () => {
       const sourceMap = JSON.parse(
         fs.readFileSync(path.join(server.outputDir, middlewareMapFile), 'utf8')
       );
-      expect(sourceMap.sources).toContain('__e2e__/server-middleware-async/app/+middleware.ts');
+      expect(sourceMap.sources).toContain('__e2e__/server-features/app/+middleware.ts');
     });
   });
 });
 
 describe('skips middleware when flag is disabled', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-server-middleware-disabled';
+  const outputName = 'dist-server-features-middleware-disabled';
   const outputDir = path.join(projectRoot, outputName);
 
   it('does not export middleware when unstable_useServerMiddleware is not enabled', async () => {
@@ -174,7 +176,7 @@ describe('skips middleware when flag is disabled', () => {
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'server',
-          E2E_ROUTER_SRC: 'server-middleware-async',
+          E2E_ROUTER_SRC: 'server-features',
         },
       }
     );
