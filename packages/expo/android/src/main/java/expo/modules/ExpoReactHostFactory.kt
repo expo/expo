@@ -33,6 +33,7 @@ object ExpoReactHostFactory {
     override val jsMainModulePath: String,
     private val jsBundleAssetPath: String?,
     private val jsBundleFilePath: String? = null,
+    private val jsBundleFilePathLoader: (() -> String?)? = null,
     private val useDevSupport: Boolean,
     override val bindingsInstaller: BindingsInstaller? = null,
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
@@ -44,7 +45,7 @@ object ExpoReactHostFactory {
       get() =
         hostHandlers.asSequence()
           .mapNotNull { it.getJSBundleFile(useDevSupport) }
-          .firstOrNull() ?: jsBundleFilePath
+          .firstOrNull() ?: jsBundleFilePathLoader?.invoke() ?: jsBundleFilePath
 
     val hostDelegateJSBundleAssetPath: String?
       get() =
@@ -102,6 +103,7 @@ object ExpoReactHostFactory {
     jsMainModulePath: String = ".expo/.virtual-metro-entry",
     jsBundleAssetPath: String = "index.android.bundle",
     jsBundleFilePath: String? = null,
+    jsBundleFilePathLoader: (() -> String?)? = null,
     useDevSupport: Boolean = ReactBuildConfig.DEBUG,
     bindingsInstaller: BindingsInstaller? = null
   ): ReactHost {
@@ -117,6 +119,7 @@ object ExpoReactHostFactory {
         jsMainModulePath,
         jsBundleAssetPath,
         jsBundleFilePath,
+        jsBundleFilePathLoader,
         useDevSupport,
         bindingsInstaller,
         hostHandlers = hostHandlers
