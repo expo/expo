@@ -255,6 +255,10 @@ extension UIHostingController {
   /// Applies the `ignoreSafeArea` mode reactively, restoring the default safe area when `nil` so
   /// clearing the prop re-enables the safe area without an app reload.
   func setSafeAreaRegions(ignoring mode: ExpoSwiftUI.IgnoreSafeArea?) {
+    // `safeAreaRegions` needs iOS 16.4+; the precompiled xcframework targets 16.0, so no-op below it.
+    guard #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) else {
+      return
+    }
     var regions: SafeAreaRegions = .all
     if let mode {
       switch mode {
