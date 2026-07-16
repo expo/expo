@@ -70,6 +70,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
   _addReminder = async () => {
     const { calendar } = this.state;
     if (!calendar) {
+      Alert.alert('Calendar is not loaded yet');
       return;
     }
     if (!calendar.allowsModifications) {
@@ -106,6 +107,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
   _updateReminder = async (reminder: Calendar.Reminder) => {
     const { calendar } = this.state;
     if (!calendar) {
+      Alert.alert('Calendar is not loaded yet');
       return;
     }
     if (!calendar.allowsModifications) {

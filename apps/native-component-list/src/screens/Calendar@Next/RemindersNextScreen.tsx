@@ -60,6 +60,7 @@ const RemindersScreen = ({ route }: Props) => {
 
   const addReminder = async () => {
     if (!calendar) {
+      Alert.alert('Calendar is not loaded yet');
       return;
     }
     if (!calendar.allowsModifications) {
@@ -96,6 +97,7 @@ const RemindersScreen = ({ route }: Props) => {
 
   const updateReminder = async (reminder: ExpoCalendarReminder) => {
     if (!calendar) {
+      Alert.alert('Calendar is not loaded yet');
       return;
     }
     if (!calendar.allowsModifications) {
