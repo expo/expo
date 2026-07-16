@@ -30,6 +30,7 @@
 - [android] Remove navigation state restoration across activity recreation. ([#47422](https://github.com/expo/expo/pull/47422) by [@Ubax](https://github.com/Ubax))
 - Fix `renderRouter` ignoring `overrides` and listing duplicate routes when an override key matches a file in `appDir`. ([#47287](https://github.com/expo/expo/pull/47287) by [@wwdrew](https://github.com/wwdrew))
 - Guard the deep link decode in `extractExactPathFromURL` against malformed percent-encoding. ([#47526](https://github.com/expo/expo/pull/47526) by [@momomuchu](https://github.com/momomuchu))
+- Fix `TabRouter.getStateForAction` crashing on a `stale: false` state that is missing `history`/`preloadedRouteKeys`. ([#47869](https://github.com/expo/expo/pull/47869) by [@kimchouard](https://github.com/kimchouard))
 
 ### 💡 Others
 
