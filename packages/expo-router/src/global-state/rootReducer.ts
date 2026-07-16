@@ -122,9 +122,11 @@ export function rootReducer(
     const nextState =
       reduced === state
         ? state
-        : normalizePayloadStateParams(
-            insertPayloadStateAtBoundary(reduced as NavigationState, currentAction),
-            currentAction
+        : completeNavigationState(
+            normalizePayloadStateParams(
+              insertPayloadStateAtBoundary(reduced as NavigationState, currentAction),
+              currentAction
+            )
           );
     if (nextState !== state) {
       changed = true;
@@ -189,6 +191,28 @@ export function rootReducer(
   return handled
     ? { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary }
     : { state: tree, handled: false, noop: true, changedSlices };
+}
+
+function completeNavigationState(state: NavigationState): NavigationState {
+  let changed = state.stale !== false;
+  const routes = state.routes.map((route) => {
+    const childState = route.state;
+    const nextChildState = childState
+      ? completeNavigationState(childState as NavigationState)
+      : undefined;
+    const hasUndefinedParams = 'params' in route && route.params === undefined;
+
+    if (nextChildState === childState && !hasUndefinedParams) {
+      return route;
+    }
+
+    changed = true;
+    const nextRoute = { ...route, ...(nextChildState ? { state: nextChildState } : null) };
+    if (hasUndefinedParams) delete nextRoute.params;
+    return nextRoute;
+  });
+
+  return changed ? { ...state, stale: false, routes } : state;
 }
 
 function findStatePath(state: NavigationState, key: string): PathEntry[] | null {

@@ -69,14 +69,14 @@ export function useSitemap(): SitemapType | null {
   return sitemap;
 }
 
-// Absolute href for every route node in the compiled tree, keyed by `contextKey`. Used to give a
-// tab its destination href when one isn't declared, so a tab press can navigate through the linking
-// config (producing a complete compiled subtree) instead of a bare `navigate(name)`.
-export function getRouteNodeHrefMap(): Map<string, string> {
-  const map = new Map<string, string>();
+// Absolute href for every route node in the compiled tree. Route nodes created from a shared
+// multi-group layout intentionally have the same context key, so preserve node identity here: a
+// context-keyed map would make every sibling tab resolve to the final group that was visited.
+export function getRouteNodeHrefMap(): Map<RouteNode, string> {
+  const map = new Map<RouteNode, string>();
 
   const walk = (route: RouteNode, parents: string[]) => {
-    map.set(route.contextKey, routeHref(route, parents));
+    map.set(route, getInitialRouteHref(route, parents));
 
     const segments = routeSegments(route, parents);
     for (const child of route.children) {
@@ -89,4 +89,21 @@ export function getRouteNodeHrefMap(): Map<string, string> {
   }
 
   return map;
+}
+
+function getInitialRouteHref(route: RouteNode, parents: string[]): string {
+  const initialChild = route.initialRouteName
+    ? route.children.find(
+        (child) =>
+          child.route === route.initialRouteName ||
+          child.route === `${route.initialRouteName}/index`
+      )
+    : undefined;
+
+  if (initialChild == null) {
+    return routeHref(route, parents);
+  }
+
+  const segments = routeSegments(route, parents);
+  return getInitialRouteHref(initialChild, segments);
 }

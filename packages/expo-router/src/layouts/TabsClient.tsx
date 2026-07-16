@@ -82,7 +82,7 @@ const ExpoTabs = withLayoutContext<
       // store install is a no-op once the tab slice exists.
       if (hrefMap != null && node != null) {
         const child = node.children.find((candidate) => candidate.route === screen.name);
-        const derivedHref = child ? hrefMap.get(child.contextKey) : undefined;
+        const derivedHref = child ? hrefMap.get(child) : undefined;
 
         if (derivedHref != null) {
           return {
@@ -108,7 +108,7 @@ const ExpoTabs = withLayoutContext<
       }
 
       const child = node?.children.find((candidate) => candidate.route === screen.props.name);
-      const href = child ? hrefMap?.get(child.contextKey) : undefined;
+      const href = child ? hrefMap?.get(child) : undefined;
 
       if (href == null) {
         return screen;

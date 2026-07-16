@@ -178,7 +178,7 @@ function NativeTabsContent({
         const child = routeNode?.children.find(
           (candidate) => candidate.route === selectedRoute.name
         );
-        const href = child ? hrefMap.get(child.contextKey) : undefined;
+        const href = child ? hrefMap.get(child) : undefined;
         const committedRoute = committedState?.routes.find(
           (route) => route.key === selectedRoute.key
         );
