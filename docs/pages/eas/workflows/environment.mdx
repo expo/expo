@@ -35,8 +35,6 @@ The variables available in a job are merged from three sources. When the same na
 
 On top of these, the worker sets a number of [built-in variables](#built-in-environment-variables) such as `EAS_BUILD_ID` and `CI`. Avoid naming your own variables with the `EAS_` prefix so they aren't shadowed by the built-in ones.
 
-> **info** **.env** files are not part of this hierarchy. They are meant for local development and are typically listed in **.gitignore**, so they aren't present on the worker. Even if you commit a **.env** file, EAS CLI doesn't load it to populate the job environment, though tools that read **.env** files themselves (such as Expo CLI reading `EXPO_PUBLIC_*` variables while bundling) still do. Use [EAS environment variables](/eas/environment-variables/) instead of committing **.env** files. To pull them into a local **.env** file for development, use [`eas env:pull`](/eas/environment-variables/manage/#pull-variables-for-local-development).
-
 ## The job environment
 
 Which EAS environment variables a job can read depends on its [environment](/eas/workflows/syntax/#jobsjob_idenvironment): `production` (the default), `preview`, or `development`. Only variables assigned to that environment are exposed to the job.
@@ -72,6 +70,158 @@ Interpolation happens in two places, which changes what `${{ env.NAME }}` can re
 Because of this, read built-in variables like `EAS_BUILD_ID` inside a `run` step rather than in a job's `params`. Inside a `run` step, `${{ env.EAS_BUILD_ID }}` and `$EAS_BUILD_ID` are equivalent.
 
 > **info** Values interpolated from EAS environment variables of type secret or sensitive are redacted in workflow logs.
+
+## Context variables
+
+Environment variables are not the only thing a job can interpolate. The same `${{ ... }}` syntax exposes several context objects that describe the workflow run. The `env` context covered above is one of them. The others are documented below. For the interpolation syntax and the available [context functions](/eas/workflows/syntax/#context-functions) such as `toJSON`, `fromJSON`, and `success()`, see [Syntax](/eas/workflows/syntax/#interpolation).
+
+> **info** To see the full contents of any context at runtime, print it with `toJSON`. For example, `run: echo '${{ toJSON(github) }}'`.
+
+### `github`
+
+Fields from the GitHub event that triggered the workflow. When a run is started with `eas workflow:run`, `event_name` is `workflow_dispatch` and the other fields are empty.
+
+```ts
+type GitHubContext = {
+  triggering_actor?: string;
+  event_name: 'pull_request' | 'push' | 'schedule' | 'workflow_dispatch';
+  sha: string;
+  ref: string; // e.g. refs/heads/main
+  ref_name: string; // e.g. main
+  ref_type: 'branch' | 'tag' | 'other';
+  commit_message?: string; // Only available for push and schedule events
+  label?: string;
+  repository?: string;
+  repository_owner?: string;
+  event?: {
+    action?: string;
+    label?: {
+      name: string;
+    };
+    // Only available for push and schedule events
+    head_commit?: {
+      message: string;
+      id: string;
+    };
+    pull_request?: {
+      number: number;
+      title: string;
+      body: string | null;
+      state: 'open' | 'closed';
+      draft: boolean;
+      merged: boolean | null;
+      // ... Other fields from the GitHub Pull Request webhook payload
+    };
+    number?: number;
+    schedule?: string;
+    inputs?: Record<string, string | number | boolean>;
+  };
+};
+```
+
+The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For a detailed field reference and examples, see [`github`](/eas/workflows/syntax/#github) in the Syntax guide.
+
+### `inputs`
+
+A record of the inputs provided when the workflow was started manually with [`workflow_dispatch`](/eas/workflows/syntax/#onworkflow_dispatchinputs). Empty when the workflow was triggered another way.
+
+```yaml
+jobs:
+  greet:
+    steps:
+      - run: echo "Hello, ${{ inputs.name }}!"
+```
+
+### `needs`
+
+A record of the upstream jobs listed in the current job's [`needs`](/eas/workflows/syntax/#jobsjob_idneeds). Each entry provides the job's `status` (`success`, `failure`, or `skipped`) and its `outputs`.
+
+```yaml
+jobs:
+  notify:
+    needs: [build]
+    steps:
+      - run: echo "Build status: ${{ needs.build.status }}"
+```
+
+### `after`
+
+A record of the upstream jobs listed in the current job's [`after`](/eas/workflows/syntax/#jobsjob_idafter), whether or not they succeeded. Each entry provides the same `status` and `outputs` shape as [`needs`](#needs).
+
+### `steps`
+
+A record of the steps in the current job, keyed by step `id`. Each entry exposes the `outputs` set with the [`set-output`](/eas/workflows/syntax/#set-output) function. This context is only available within a job's steps.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - id: step_1
+        run: set-output value "hello"
+      - run: echo "${{ steps.step_1.outputs.value }}"
+```
+
+### `metadata`
+
+Metadata about the build associated with the job, such as `buildProfile`, `appVersion`, `appBuildVersion`, `sdkVersion`, `runtimeVersion`, `gitCommitHash`, and `distribution`. It is populated for [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs and is an empty object (`{}`) for job types without build metadata, such as custom jobs.
+
+### `workflow`
+
+Information about the current workflow run.
+
+```ts
+type WorkflowContext = {
+  id: string;
+  name: string;
+  filename: string;
+  url: string;
+};
+```
+
+```yaml
+jobs:
+  notify:
+    type: slack
+    params:
+      message: |
+        Workflow run completed: ${{ workflow.name }}
+        View details: ${{ workflow.url }}
+```
+
+### `app_store_connect`
+
+Information about the App Store Connect entities associated with the run. This context is present only for workflows triggered by an [App Store Connect event](/eas/workflows/syntax/#onapp_store_connect).
+
+```ts
+type AppStoreConnectContext = {
+  app: {
+    id: string;
+  };
+  build_upload?: {
+    id: string;
+    state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
+    cf_bundle_version?: string;
+    build?: {
+      id: string;
+    };
+  };
+  app_version?: {
+    id: string;
+    state: string;
+  };
+  external_beta?: {
+    id: string;
+    state: string;
+  };
+  beta_feedback?: {
+    id: string;
+    type: 'crash' | 'screenshot';
+    url: string;
+  };
+};
+```
+
+For the event domains that populate each field and full examples, see [`app_store_connect`](/eas/workflows/syntax/#app_store_connect) in the Syntax guide.
 
 ## Built-in environment variables
 
@@ -122,29 +272,6 @@ jobs:
       - run: set-env GENERATED_TAG "v$(date +%Y%m%d)"
       # `set-env` only affects later steps, so the value is available here.
       - run: echo "Tag is $GENERATED_TAG"
-```
-
-> **info** `set-env` only affects later steps within the same job. It does not export the variable into the current step's shell, and it is not visible to other jobs. See [Sharing environment variables with other steps](/custom-builds/schema/#sharing-environment-variables-with-other-steps) for details.
-
-### Share a value with another job
-
-Environment variables are scoped to a single job, so a variable set with `env` or `set-env` is not available in other jobs. To pass a value to a later job, expose it as a [job output](/eas/workflows/syntax/#jobsjob_idoutputs) and read it through the [`needs`](/eas/workflows/syntax/#needs) context. The downstream job can then place it in its own `env` if needed.
-
-```yaml
-jobs:
-  setup:
-    outputs:
-      tag: ${{ steps.compute.outputs.tag }}
-    steps:
-      - id: compute
-        run: set-output tag "v$(date +%Y%m%d)"
-
-  build:
-    needs: [setup]
-    env:
-      RELEASE_TAG: ${{ needs.setup.outputs.tag }}
-    steps:
-      - run: echo "Building $RELEASE_TAG"
 ```
 
 <BoxLink
