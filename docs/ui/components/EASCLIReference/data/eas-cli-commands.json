@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-07-14T08:46:06.048Z",
-    "cliVersion": "21.0.0"
+    "fetchedAt": "2026-07-15T08:48:49.622Z",
+    "cliVersion": "21.0.1"
   },
-  "totalCommands": 125,
+  "totalCommands": 126,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -209,7 +209,7 @@
     {
       "command": "eas deploy [options]",
       "description": "deploy your Expo Router web build and API Routes",
-      "usage": "USAGE\n  $ eas deploy [options]\n  $ eas deploy --prod\n\nFLAGS\n  --alias=name           Custom alias to assign to the new deployment.\n  --dry-run              Outputs a tarball of the new deployment instead of uploading it.\n  --environment=<value>  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --export-dir=dir       [default: dist] Directory where the Expo project was exported.\n  --id=xyz123            Custom unique identifier for the new deployment.\n  --json                 Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive      Run the command in non-interactive mode.\n  --prod                 Create a new production deployment.\n  --[no-]source-maps     Include source maps in the deployment.\n\nDESCRIPTION\n  deploy your Expo Router web build and API Routes\n\nALIASES\n  $ eas worker:deploy"
+      "usage": "USAGE\n  $ eas deploy [options]\n  $ eas deploy --prod\n  $ eas deploy --non-interactive --dev-domain my-app\n\nFLAGS\n  --alias=name           Custom alias to assign to the new deployment.\n  --dev-domain=name      Custom preview URL subdomain to assign to the project on its first deployment, e.g. \"my-app\"\n                         for my-app.expo.app. Required with --non-interactive if you want to customize the preview URL.\n  --dry-run              Outputs a tarball of the new deployment instead of uploading it.\n  --environment=<value>  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --export-dir=dir       [default: dist] Directory where the Expo project was exported.\n  --id=xyz123            Custom unique identifier for the new deployment.\n  --json                 Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive      Run the command in non-interactive mode.\n  --prod                 Create a new production deployment.\n  --[no-]source-maps     Include source maps in the deployment.\n\nDESCRIPTION\n  deploy your Expo Router web build and API Routes\n\nALIASES\n  $ eas worker:deploy"
     },
     {
       "command": "eas deploy:alias",
@@ -445,6 +445,11 @@
       "command": "eas observe:versions",
       "description": "display app versions with build and update details",
       "usage": "USAGE\n  $ eas observe:versions [--platform android|ios] [--start <value> | --days <value>] [--end <value> | ] [--project-id\n    <value>] [--json] [--non-interactive]\n\nFLAGS\n  --days=<value>        Show results from the last N days (mutually exclusive with --start/--end)\n  --end=<value>         End of time range (ISO date)\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n  --platform=<option>   Filter by platform\n                        <options: android|ios>\n  --project-id=<value>  EAS project ID (defaults to the project ID of the current directory)\n  --start=<value>       Start of time range (ISO date)\n\nDESCRIPTION\n  display app versions with build and update details"
+    },
+    {
+      "command": "eas project:delete [NAME]",
+      "description": "delete a project",
+      "usage": "USAGE\n  $ eas project:delete [NAME] [--dangerously-confirm-deletion <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  [NAME]  Full name (@account/slug) or ID of the project to delete. Defaults to the project in the current directory.\n\nFLAGS\n  --dangerously-confirm-deletion=<value>  The project's full name (@account/slug), to confirm deletion. Required in\n                                          non-interactive mode.\n  --json                                  Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                          --non-interactive.\n  --non-interactive                       Run the command in non-interactive mode.\n\nDESCRIPTION\n  delete a project"
     },
     {
       "command": "eas project:info",

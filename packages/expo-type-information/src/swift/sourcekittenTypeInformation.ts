@@ -307,7 +307,7 @@ function getLiteralOrResolvedIdentifier(offsetObject: Structure, ctx: ParseConte
 }
 
 function isStringLiteral(str: string): boolean {
-  return str.length > 1 && str[0] == '"' && str[str.length - 1] == '"';
+  return str.length > 1 && str[0] === '"' && str[str.length - 1] === '"';
 }
 
 function getInitializerValue(structure: Structure, file: FileType): string | null {
