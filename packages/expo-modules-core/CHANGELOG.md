@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] `ExpoSwiftUI.IgnoreSafeArea` that ignores the device and container safe area regions. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

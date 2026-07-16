@@ -48,7 +48,7 @@ export interface UniversalHostProps extends ViewProps {
      */
     layoutDirection?: 'leftToRight' | 'rightToLeft';
     /**
-     * Controls which safe area regions the hosting view should ignore. Can only be set once on mount.
+     * Controls which safe area regions the hosting view should ignore.
      * - `'all'`- ignores all safe area insets.
      * - `'keyboard'` - ignores only the keyboard safe area.
      *
