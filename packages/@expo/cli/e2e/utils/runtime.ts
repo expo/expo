@@ -24,7 +24,7 @@ export type ServerTestConfiguration = {
 };
 
 export type ServerTestOptions = {
-  /** The E2E test scenario directory name (e.g., 'server-middleware-async') */
+  /** The E2E test scenario directory name (e.g., 'server-features') */
   fixtureName: string;
   /** A unique value to ensure the output directory is not overwritten by another test running in parallel. Useful for tests that share the same `fixtureName` */
   uniqueOutputKey?: string;
@@ -39,6 +39,14 @@ export type ServerTestOptions = {
   serve?: {
     /** Environment variables to pass to the server */
     env?: Record<string, string>;
+    /** Options for the workerd runtime */
+    workerd?: {
+      /**
+       * Name of the capnp config file inside a fixture's `workerd/` directory.
+       * Defaults to `config.capnp`.
+       */
+      configName?: string;
+    };
   };
 };
 
@@ -53,7 +61,7 @@ export type ServerTestOptions = {
  * ```ts
  * describe.each(
  *   prepareServers(['expo serve', 'workerd'], {
- *     fixtureName: 'server-middleware-async',
+ *     fixtureName: 'server-features',
  *     export: { env: { E2E_ROUTER_SERVER_MIDDLEWARE: 'true' } },
  *   })
  * )('$name requests', (config) => {
@@ -74,6 +82,7 @@ export function prepareServers(
   const exportEnv = options.export?.env ?? {};
   const exportCliFlags = options.export?.cliFlags ?? [];
   const serveEnv = options.serve?.env ?? {};
+  const serveWorkerd = options.serve?.workerd;
 
   const defaultExportEnv = {
     NODE_ENV: 'production',
@@ -165,23 +174,27 @@ export function prepareServers(
           `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
           path.join(projectRoot, `__e2e__/${fixtureName}/workerd/workerd.mjs`),
         ]);
-        fs.copyFileSync(
-          path.join(projectRoot, `__e2e__/${fixtureName}/workerd/config.capnp`),
-          path.join(outputDir, 'server/config.capnp')
-        );
 
         return [outputDir];
       },
-      createServer: (overrideServe) =>
-        createBackgroundServer({
+      createServer: (overrideServe) => {
+        const outputDir = path.join(
+          projectRoot,
+          generateOutputDir('workerd', fixtureName, uniqueOutputKey)
+        );
+        // Staged at server-creation time (not in `prepareDist`) so per-test `serve` overrides
+        // from `setupServer` can select a different config against the same exported dist.
+        const configName =
+          overrideServe?.workerd?.configName ?? serveWorkerd?.configName ?? 'config.capnp';
+        fs.copyFileSync(
+          path.join(projectRoot, `__e2e__/${fixtureName}/workerd/${configName}`),
+          path.join(outputDir, 'server/config.capnp')
+        );
+        return createBackgroundServer({
           command: [
             'node_modules/.bin/workerd',
             'serve',
-            path.join(
-              projectRoot,
-              generateOutputDir('workerd', fixtureName, uniqueOutputKey),
-              'server/config.capnp'
-            ),
+            path.join(outputDir, 'server/config.capnp'),
           ],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Workerd server listening'),
           port: 8787,
@@ -189,7 +202,8 @@ export function prepareServers(
           env: {
             ...overrideServe?.env,
           },
-        }),
+        });
+      },
     },
   };
 
