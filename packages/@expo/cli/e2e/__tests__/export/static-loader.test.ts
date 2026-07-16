@@ -12,7 +12,7 @@ runExportSideEffects();
 
 describe.each(
   prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
-    fixtureName: 'server-loader',
+    fixtureName: 'server-features',
     uniqueOutputKey: 'static',
     export: {
       env: {

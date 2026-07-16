@@ -9,7 +9,7 @@ test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
-const outputDir = 'dist-server-loader-playwright';
+const outputDir = 'dist-server-features-loader-playwright';
 
 test.describe('server loaders in production', () => {
   const expoServe = createExpoServe({
@@ -27,7 +27,7 @@ test.describe('server loaders in production', () => {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SRC: 'server-loader',
+        E2E_ROUTER_SRC: 'server-features',
         E2E_ROUTER_SERVER_LOADERS: 'true',
         E2E_ROUTER_SERVER_RENDERING: 'true',
       },
