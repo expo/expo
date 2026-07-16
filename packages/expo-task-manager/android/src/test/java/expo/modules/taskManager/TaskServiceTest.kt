@@ -1,35 +1,23 @@
 package expo.modules.taskManager
 
-import android.content.Context
 import android.os.Bundle
-import androidx.test.core.app.ApplicationProvider
+import expo.modules.interfaces.taskManager.TaskConsumerInterface
 import expo.modules.interfaces.taskManager.TaskExecutionCallback
 import expo.modules.interfaces.taskManager.TaskInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.unmockkAll
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 class TaskServiceTest {
-  @After
-  fun tearDown() {
-    unmockkAll()
-  }
-
   @Test
   fun `notifyTaskFinished invokes and releases the task callback`() {
-    val context = ApplicationProvider.getApplicationContext<Context>()
+    val context = RuntimeEnvironment.getApplication()
 
     // TasksAndEventsRepository.create() reads application metadata to pick a storage
     // strategy; Robolectric's default package has none, so give it an empty Bundle.
@@ -39,23 +27,39 @@ class TaskServiceTest {
     val taskService = TaskService(context)
     val appScopeKey = "testAppScopeKey"
 
-    // Register a mock task manager so executeTask delivers the event body
+    // Register a task manager so executeTask delivers the event body
     // synchronously instead of going through the headless app loader.
-    val bodySlot = slot<Bundle>()
-    val taskManager = mockk<TaskManagerInterface>(relaxed = true)
-    every { taskManager.executeTaskWithBody(capture(bodySlot)) } just Runs
+    var capturedBody: Bundle? = null
+    val taskManager = object : TaskManagerInterface {
+      override fun registerTask(taskName: String, consumerClass: Class<*>, options: Map<String, Any>) = Unit
+      override fun unregisterTask(taskName: String, consumerClass: Class<*>) = Unit
+      override fun executeTaskWithBody(body: Bundle) {
+        capturedBody = body
+      }
+      override fun taskHasConsumerOfClass(taskName: String, consumerClass: Class<*>) = false
+      override fun flushQueuedEvents() = Unit
+      override fun getAppScopeKey() = appScopeKey
+    }
     taskService.setTaskManager(taskManager, appScopeKey, "appUrl")
 
-    val task = mockk<TaskInterface>(relaxed = true)
-    every { task.name } returns "testTask"
-    every { task.appScopeKey } returns appScopeKey
+    val task = object : TaskInterface {
+      override fun getName() = "testTask"
+      override fun getAppScopeKey() = appScopeKey
+      override fun getAppUrl() = "appUrl"
+      override fun getConsumer(): TaskConsumerInterface? = null
+      override fun getOptions(): Map<String, Any>? = null
+      override fun getOptionsBundle(): Bundle? = null
+      override fun execute(data: Bundle?, error: Error?) = Unit
+      override fun execute(data: Bundle?, error: Error?, callback: TaskExecutionCallback?) = Unit
+      override fun setOptions(options: Map<String, Any>?) = Unit
+    }
 
     var finishedCount = 0
     val callback = TaskExecutionCallback { finishedCount++ }
 
     taskService.executeTask(task, Bundle(), null, callback)
 
-    val eventId = bodySlot.captured.getBundle("executionInfo")!!.getString("eventId")!!
+    val eventId = capturedBody!!.getBundle("executionInfo")!!.getString("eventId")!!
     taskService.notifyTaskFinished("testTask", appScopeKey, mapOf<String, Any>("eventId" to eventId))
 
     assertEquals(1, finishedCount)
