@@ -12,9 +12,12 @@ private object Mutex
 private var lastMessage = 0L
 
 class DevMenuCommandHandlersProvider(
-  weakDevSupportManager: WeakReference<out DevSupportManager>
+  devSupportManagerProvider: () -> DevSupportManager?
 ) {
-  private val devToolsDelegate = DevMenuDevToolsDelegate(weakDevSupportManager)
+  constructor(weakDevSupportManager: WeakReference<out DevSupportManager>) :
+    this({ weakDevSupportManager.get() })
+
+  private val devToolsDelegate = DevMenuDevToolsDelegate(devSupportManagerProvider)
 
   private val onReload = createHandler { devToolsDelegate.reload() }
   private val onDevMenu = createHandler { devToolsDelegate.toggleMenu() }

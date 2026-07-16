@@ -34,10 +34,12 @@ class DevLauncherBridgelessDevSupportManager(
   null,
   null
 ) {
-  private val controller = DevLauncherController.nullableInstance
+  // Resolved lazily: this manager is constructed while the ReactHost is being built, which can
+  // happen before DevLauncherController.initialize has set the instance.
+  private val controller get() = DevLauncherController.nullableInstance
 
   init {
-    injectDevServerHelper(applicationContext, this, controller)
+    injectDevServerHelper(applicationContext, this) { DevLauncherController.nullableInstance }
   }
 
   // TODO(kudo,20250217) - Remove this when we drop react-native 0.78 support

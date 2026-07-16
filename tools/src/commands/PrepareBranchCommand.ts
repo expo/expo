@@ -84,11 +84,11 @@ function createSteps(): Step[] {
       },
     },
     {
-      title: 'Removing expo-modules-jsi build artifacts',
+      title: 'Clearing expo-modules-jsi caches',
       async runAsync() {
-        for (const name of ['.DerivedData', '.generated', '.swiftpm', 'Products']) {
-          await fs.remove(path.join(jsiAppleDir, name));
-        }
+        await spawnAsync(path.join(jsiAppleDir, 'scripts', 'clear-caches.sh'), [], {
+          stdio: 'inherit',
+        });
       },
     },
     {

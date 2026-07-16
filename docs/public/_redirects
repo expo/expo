@@ -379,6 +379,16 @@
 # After archiving Configure JS engines guide
 /guides/configuring-js-engines/ /archive/configuring-js-engines/ 301
 
+# After Algolia 404 report on 2026-07-13
+/router/reference/middleware/ /router/web/middleware 301
+/guides/configuring-statusbar/ /develop/user-interface/system-bars 301
+/get-started/introduction/ /get-started/create-a-project 301
+/eas/workflows/examples/ /eas/workflows/examples/introduction 301
+/eas/using-environment-variables/ /eas/environment-variables 301
+/eas/hosting/environment-variables/ /eas/environment-variables/usage/#using-environment-variables-with-eas-hosting 301
+/versions/v50.0.0/* /versions/latest/:splat 301
+/versions/v52.0.0/* /versions/latest/:splat 301
+
 # Serve markdown at the sibling /<slug>.md path that AI agents typically request,
 # rewriting to the canonical /<slug>/index.md the build script writes.
 # The first two rules are pass-throughs that preserve canonical URLs (root /index.md

@@ -1,69 +1,81 @@
-// @ts-nocheck
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import React, { Component } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
 const AnimatedIcon = Animated.createAnimatedComponent(MaterialIcons);
 
-export default class AppleStyleSwipeableRow extends Component {
-  _swipeableRow?: Swipeable;
+function ActionIcon({
+  name,
+  style,
+  dragX,
+  inputRange,
+  outputRange,
+  onPress,
+}: {
+  name: 'archive' | 'delete-forever';
+  style: typeof styles.leftAction;
+  dragX: SharedValue<number>;
+  inputRange: number[];
+  outputRange: number[];
+  onPress: () => void;
+}) {
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(dragX.value, inputRange, outputRange, Extrapolation.CLAMP) }],
+  }));
+  return (
+    <RectButton style={style} onPress={onPress}>
+      <AnimatedIcon name={name} size={30} color="#fff" style={[styles.actionIcon, animatedStyle]} />
+    </RectButton>
+  );
+}
 
-  renderLeftActions = (progress: Animated.Value, dragX: Animated.Value) => {
-    const scale = dragX.interpolate({
-      inputRange: [0, 80],
-      outputRange: [0, 1],
-      extrapolate: 'clamp',
-    });
-    return (
-      <RectButton style={styles.leftAction} onPress={this.close}>
-        <AnimatedIcon
-          name="archive"
-          size={30}
-          color="#fff"
-          style={[styles.actionIcon, { transform: [{ scale }] }]}
-        />
-      </RectButton>
-    );
+export default function GmailStyleSwipeableRow({ children }: { children?: React.ReactNode }) {
+  const swipeableRow = useRef<SwipeableMethods>(null);
+
+  const close = () => {
+    swipeableRow.current?.close();
   };
-  renderRightActions = (progress: Animated.Value, dragX: Animated.Value) => {
-    const scale = dragX.interpolate({
-      inputRange: [-80, 0],
-      outputRange: [1, 0],
-      extrapolate: 'clamp',
-    });
-    return (
-      <RectButton style={styles.rightAction} onPress={this.close}>
-        <AnimatedIcon
-          name="delete-forever"
-          size={30}
-          color="#fff"
-          style={[styles.actionIcon, { transform: [{ scale }] }]}
-        />
-      </RectButton>
-    );
-  };
-  updateRef = (ref: Swipeable) => {
-    this._swipeableRow = ref;
-  };
-  close = () => {
-    this._swipeableRow!.close();
-  };
-  render() {
-    const { children } = this.props;
-    return (
-      <Swipeable
-        ref={this.updateRef}
-        friction={2}
-        leftThreshold={80}
-        rightThreshold={40}
-        renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}>
-        {children}
-      </Swipeable>
-    );
-  }
+
+  const renderLeftActions = (_progress: SharedValue<number>, dragX: SharedValue<number>) => (
+    <ActionIcon
+      name="archive"
+      style={styles.leftAction}
+      dragX={dragX}
+      inputRange={[0, 80]}
+      outputRange={[0, 1]}
+      onPress={close}
+    />
+  );
+  const renderRightActions = (_progress: SharedValue<number>, dragX: SharedValue<number>) => (
+    <ActionIcon
+      name="delete-forever"
+      style={styles.rightAction}
+      dragX={dragX}
+      inputRange={[-80, 0]}
+      outputRange={[1, 0]}
+      onPress={close}
+    />
+  );
+
+  return (
+    <Swipeable
+      ref={swipeableRow}
+      friction={2}
+      leftThreshold={80}
+      rightThreshold={40}
+      renderLeftActions={renderLeftActions}
+      renderRightActions={renderRightActions}>
+      {children}
+    </Swipeable>
+  );
 }
 
 const styles = StyleSheet.create({

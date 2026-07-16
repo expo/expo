@@ -4,11 +4,17 @@ import AVKit
 import ExpoModulesCore
 
 public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
-  lazy var playerViewController = OrientationAVPlayerViewController(delegate: self)
+  private lazy var playerViewControllerWrapper = OrientationAVPlayerViewControllerWrapper(delegate: self)
+  var playerViewController: OrientationAVPlayerViewController {
+    playerViewControllerWrapper.controller
+  }
 
   weak var player: VideoPlayer? {
     didSet {
-      playerViewController.player = player?.ref
+      if playerViewControllerWrapper.setPlayer(player) {
+        removeFirstFrameObserver()
+        addFirstFrameObserver()
+      }
     }
   }
 
@@ -42,7 +48,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   public override var bounds: CGRect {
     didSet {
-      playerViewController.view.frame = self.bounds
+      playerViewControllerWrapper.view.frame = bounds
+      playerViewControllerWrapper.layoutControllerView()
     }
   }
 
@@ -52,15 +59,9 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     VideoManager.shared.register(videoView: self)
 
     clipsToBounds = true
-    playerViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    playerViewController.view.backgroundColor = .clear
-    // Now playing is managed by the `NowPlayingManager`
-    #if !os(tvOS)
-    playerViewController.updatesNowPlayingInfoCenter = false
-    #endif
 
     addFirstFrameObserver()
-    addSubview(playerViewController.view)
+    addSubview(playerViewControllerWrapper.view)
   }
 
   deinit {
@@ -113,8 +114,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     self.onFullscreenExit()
     self.isFullscreen = false
     // Reset the bounds of the view controller and add it back to our view
-    self.playerViewController.view.frame = self.bounds
-    addSubview(self.playerViewController.view)
+    self.playerViewControllerWrapper.layoutControllerView()
+    self.playerViewControllerWrapper.view.addSubview(self.playerViewController.view)
     // End the appearance transition
     self.playerViewController.endAppearanceTransition()
     // Ensure playing state is preserved
@@ -174,10 +175,14 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   public override func safeAreaInsetsDidChange() {
     super.safeAreaInsetsDidChange()
-    // This is the only way that I (@behenate) found to force re-calculation of the safe-area insets for native controls
-    playerViewController.view.removeFromSuperview()
-    addSubview(playerViewController.view)
+    playerViewControllerWrapper.refreshSafeAreaInsets()
   }
+
+  #if !os(tvOS)
+  func setFullscreenOptions(_ options: FullscreenOptions?) {
+    playerViewControllerWrapper.setFullscreenOptions(options)
+  }
+  #endif
 
   private func addFirstFrameObserver() {
     firstFrameObserver = playerViewController.observe(\.isReadyForDisplay, changeHandler: { [weak self] playerViewController, _ in
