@@ -5,14 +5,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import Debug from 'debug';
 import type { Socket } from 'net';
 
 import type { ProtocolReaderCallback, ProtocolWriter } from './AbstractProtocol';
 import { ProtocolClient, ProtocolReader, ProtocolReaderFactory } from './AbstractProtocol';
 import { CommandError } from '../../../../utils/errors';
 
-const debug = Debug('expo:apple-device:protocol:gdb');
 const ACK_SUCCESS = '+'.charCodeAt(0);
 
 export interface GDBMessage {
@@ -74,7 +72,6 @@ export class GDBProtocolReader extends ProtocolReader {
   }
 
   parseBody(buffer: Buffer) {
-    debug(`Response body: ${buffer.toString()}`);
     // check for checksum
     const checksum = buffer.slice(-3).toString();
     if (checksum.match(/#[0-9a-f]{2}/)) {
@@ -104,7 +101,6 @@ export class GDBProtocolReader extends ProtocolReader {
 export class GDBProtocolWriter implements ProtocolWriter {
   write(socket: Socket, msg: GDBMessage) {
     const { cmd, args } = msg;
-    debug(`Socket write: ${cmd}, args: ${args}`);
     // hex encode and concat all args
     const encodedArgs = args
       .map((arg) => Buffer.from(arg).toString('hex'))

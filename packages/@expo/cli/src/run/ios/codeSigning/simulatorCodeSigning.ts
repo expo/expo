@@ -2,7 +2,7 @@ import { IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
 import fs from 'fs';
 
-const debug = require('debug')('expo:run:ios:codeSigning:simulator');
+import { debugEvent } from '../../events';
 
 // NOTE(EvanBacon): These are entitlements that work in a simulator
 // but still require the project to have development code signing setup.
@@ -23,7 +23,7 @@ function getEntitlements(projectRoot: string): Record<string, any> | null {
     const entitlements = plist.parse(entitlementsContents);
     return entitlements;
   } catch (error) {
-    debug('Failed to read entitlements', error);
+    debugEvent('ios:entitlements_read_failed', { error: debugEvent.error(error as Error) });
   }
   return null;
 }

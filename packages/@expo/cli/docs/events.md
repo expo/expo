@@ -7,10 +7,10 @@ how we define and emit events; to _read_ sessions, run `2g --help`, which is sel
 
 ## Activation
 
-`installEventLogger()` runs once per process. `src/index.ts` calls it early (so `LOG_EVENTS`
-and child-process IPC are honored before any output), and most commands (`start`, `serve`,
-`export`, `run:*`) call `installEventLogger({ command, version })` to open a bounded session
-under the system temp dir. The first activated destination wins; later calls are no-ops.
+`installEventLogger()` runs once per process. `src/index.ts` parses enough argv to identify the
+Expo command, then calls `installEventLogger({ command, version })` before any output. That single
+call honors `LOG_EVENTS`, child-process IPC, and bounded sessions under the system temp dir in
+`2g`'s precedence order.
 
 `LOG_EVENTS` overrides the destination — a file, or `1`/`2` for stdout/stderr:
 
@@ -31,7 +31,7 @@ import { events } from '2g';
 declare module '2g' {
   interface EventRegistry {
     'my_module:something_started': { platform: string };
-    'my_module:something_finished': { platform: string; duration: number };
+    'my_module:something_finished': { platform: string };
   }
 }
 
@@ -53,8 +53,9 @@ event('something_started', { wrong: true }); // TS error
 Use `event.span()` for a start/end pair with a measured duration (recorded as `_d`, ms):
 
 ```ts
-const done = event.span('something_started', { platform: 'ios' });
-done('something_finished', { platform: 'ios', duration: 500 });
+const done = event.span();
+// ...work...
+done('something_finished', { platform: 'ios' });
 ```
 
 ### `events` vs `events.debug`
@@ -64,12 +65,14 @@ session records them only when the process runs with `LOG_DEBUG` set, and `2g` r
 only with `--debug`. Use `events()` for events worth keeping in the bounded history;
 `events.debug()` for high-volume diagnostics.
 
-Diagnostic logging is organized one category per sub-feature (`devserver`, `tunnel`, `metro`,
-`resolve`, `hmr`, `inspector`, `manifest`, `middleware`, `ssr`, `rsc`, `router`, `atlas`,
-`typegen`, `devtools`, `interface`, `platform`, `run`, `prebuild`, `export`, `install`,
-`doctor`, `api`, `utils`, `telemetry`, …) so `LOG_DEBUG=<category>:*` targets a single
-subsystem — the structured successor to the old `DEBUG=expo:<area>:*` namespaces. `src/index.ts`
-bridges the legacy switches: `EXPO_DEBUG=1` (or `DEBUG=expo:*`) sets `LOG_DEBUG=*`.
+The CLI's diagnostic logging is organized into one category per sub-feature (`devserver`,
+`tunnel`, `metro`, `resolve`, `hmr`, `inspector`, `manifest`, `middleware`, `ssr`, `rsc`,
+`router`, `atlas`, `typegen`, `devtools`, `interface`, `platform`, `run`, `prebuild`, `export`,
+`install`, `doctor`, `api`, `utils`, `telemetry`, …) so `LOG_DEBUG=<category>:*` targets a
+single subsystem — the structured successor to the old `DEBUG=expo:<area>:*` namespaces.
+
+`src/index.ts` bridges the legacy switches: `EXPO_DEBUG=1` (or `DEBUG=expo:*`) sets `LOG_DEBUG=*`,
+so existing muscle memory keeps surfacing debug events on stderr.
 
 ## Deferred payload helpers
 

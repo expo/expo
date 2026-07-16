@@ -8,9 +8,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
+import { event } from './events';
 import type { ServerRequest, ServerResponse } from './server.types';
-
-const debug = require('debug')('expo:start:server:middleware:createFile') as typeof console.log;
 
 interface TouchFileInput {
   type: 'router_index';
@@ -139,13 +138,11 @@ export class CreateFileMiddleware extends ExpoMiddleware {
     try {
       properties = await this.parseRawBody(req);
     } catch (e) {
-      debug('Error parsing request body', e);
+      event('create_file:parse_error', { error: event.error(e as Error) });
       res.statusCode = 400;
       res.end('Bad Request');
       return;
     }
-
-    debug(`Requested: %O`, properties);
 
     const file = this.makeOutputForInput(properties);
     if (fs.existsSync(file.absolutePath)) {
@@ -154,19 +151,18 @@ export class CreateFileMiddleware extends ExpoMiddleware {
       return;
     }
 
-    debug(`Resolved path:`, file.absolutePath);
+    event('create_file:resolved_path', { path: event.path(file.absolutePath) });
 
     try {
       await fs.promises.mkdir(path.dirname(file.absolutePath), { recursive: true });
       await fs.promises.writeFile(file.absolutePath, file.contents, 'utf8');
     } catch (e) {
-      debug('Error writing file', e);
+      event('create_file:write_error', { error: event.error(e as Error) });
       res.statusCode = 500;
       res.end('Error writing file.');
       return;
     }
 
-    debug(`File created`);
     res.statusCode = 200;
     res.end('OK');
   }

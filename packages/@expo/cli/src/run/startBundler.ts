@@ -1,4 +1,3 @@
-import { installEventLogger } from '2g';
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
@@ -21,10 +20,6 @@ export async function startBundlerAsync(
     scheme?: string;
   }
 ): Promise<DevServerManager> {
-  // Later than the traditional start command but emulates the start logging that you would normally expect.
-  // This mirrors the `run:android` command which directly runs `expo start` if it's not already running.
-  installEventLogger({ command: 'expo start', version: process.env.__EXPO_VERSION });
-
   const options: BundlerStartOptions = {
     port,
     headless,

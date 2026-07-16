@@ -7,13 +7,10 @@
  */
 
 import plist from '@expo/plist';
-import Debug from 'debug';
 import type { Socket } from 'net';
 
 import type { ProtocolWriter } from './AbstractProtocol';
 import { PlistProtocolReader, ProtocolClient, ProtocolReaderFactory } from './AbstractProtocol';
-
-const debug = Debug('expo:apple-device:protocol:usbmux');
 
 export const USBMUXD_HEADER_SIZE = 16;
 
@@ -38,9 +35,7 @@ export class UsbmuxProtocolReader extends PlistProtocolReader {
   }
 
   parseBody(data: Buffer) {
-    const resp = super.parseBody(data);
-    debug(`Response: ${JSON.stringify(resp)}`);
-    return resp;
+    return super.parseBody(data);
   }
 }
 
@@ -48,8 +43,6 @@ export class UsbmuxProtocolWriter implements ProtocolWriter {
   private useTag = 0;
 
   write(socket: Socket, msg: UsbmuxMessage) {
-    // TODO Usbmux message type
-    debug(`socket write: ${JSON.stringify(msg)}`);
     const { messageType, extraFields } = msg;
     const plistMessage = plist.build({
       BundleID: 'dev.expo.native-run', // TODO

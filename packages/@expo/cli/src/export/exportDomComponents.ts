@@ -15,9 +15,8 @@ import {
 import { env } from '../utils/env';
 import { toPosixPath } from '../utils/filePath';
 import type { PlatformMetadata } from './createMetadataJson';
+import { debugEvent } from './events';
 import { type BundleOutput, type ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
-
-const debug = require('debug')('expo:export:exportDomComponents') as typeof console.log;
 
 // TODO(EvanBacon): determine how to support DOM Components with hosting.
 export async function exportDomComponentAsync({
@@ -45,7 +44,7 @@ export async function exportDomComponentAsync({
   htmlOutputName: string;
 }> {
   const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
-  debug('Bundle DOM Component:', filePath);
+  debugEvent('dom:bundle', { filePath });
   // MUST MATCH THE BABEL PLUGIN!
   const hash = crypto.createHash('md5').update(filePath).digest('hex');
   const outputName = `${DOM_COMPONENTS_BUNDLE_DIR}/${hash}.html`;

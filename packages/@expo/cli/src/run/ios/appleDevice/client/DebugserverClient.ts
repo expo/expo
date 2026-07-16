@@ -5,14 +5,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import Debug from 'debug';
 import type { Socket } from 'net';
 import * as path from 'path';
 
 import { ServiceClient } from './ServiceClient';
 import { GDBProtocolClient } from '../protocol/GDBProtocol';
-
-const debug = Debug('expo:apple-device:client:debugserver');
 
 export class DebugserverClient extends ServiceClient<GDBProtocolClient> {
   constructor(public socket: Socket) {
@@ -42,15 +39,12 @@ export class DebugserverClient extends ServiceClient<GDBProtocolClient> {
 
   halt() {
     // ^C
-    debug('Sending ^C to debugserver');
     return this.protocolClient.socket.write('\u0003');
   }
 
   async kill() {
-    debug(`kill`);
     const msg: any = { cmd: 'k', args: [] };
     return this.protocolClient.sendMessage(msg, (resp: string, resolve: any) => {
-      debug(`kill:response: ${resp}`);
       this.protocolClient.socket.write('+');
       const parts = resp.split(';');
       for (const part of parts) {
@@ -74,7 +68,6 @@ export class DebugserverClient extends ServiceClient<GDBProtocolClient> {
 
   async sendCommand(cmd: string, args: string[]) {
     const msg = { cmd, args };
-    debug(`Sending command: ${cmd}, args: ${args}`);
     const resp = await this.protocolClient.sendMessage(msg);
     // we need to ACK as well
     this.protocolClient.socket.write('+');

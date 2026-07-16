@@ -4,8 +4,7 @@ import path from 'node:path';
 
 import { Log } from '../../../log';
 import { Prerequisite, PrerequisiteCommandError } from '../Prerequisite';
-
-const debug = require('debug')('expo:doctor:apple:simulatorApp') as typeof console.log;
+import { debugEvent } from '../events';
 
 // NOTE(cedric): Xcode 27 Beta moved the `<xcode>/Contents/Developer/Applications` to `<xcode>/Contents/Applications`
 const XCODE_DEVICE_HUB_PATH = '../Applications/DeviceHub.app/Contents/Info.plist';
@@ -24,7 +23,7 @@ export class SimulatorAppPrerequisite extends Prerequisite {
 
     if (!appId) {
       const xcodePath = await getXcodeSelectPath();
-      debug('Xcode select path: %s', xcodePath);
+      debugEvent('simulator_xcode_select_path', { path: xcodePath });
       if (xcodePath) {
         appId = await getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_SIMULATOR_PATH)).then(
           (appId) => {
@@ -52,7 +51,7 @@ export class SimulatorAppPrerequisite extends Prerequisite {
       );
     }
 
-    debug('Xcode simulator app id: %s', appId);
+    debugEvent('simulator_app_id', { appId });
 
     try {
       // make sure we can run simctl
