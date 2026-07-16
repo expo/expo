@@ -22,6 +22,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [iOS] Pass target name to the generateModulesProviderCommand to match it against inline modules targets, when checking if inline modules should be autolinked with that target. ([#47502](https://github.com/expo/expo/pull/47502) by [@HubertBer](https://github.com/HubertBer))
 - [Android] Scan the whole Kotlin file for its `package` declaration when registering inline modules, so modules with long comments (for example, a license header) before the `package` declaration are no longer silently skipped. ([#47656](https://github.com/expo/expo/pull/47656) by [@HubertBer](https://github.com/HubertBer))
 
 ## 57.0.5 — 2026-07-07

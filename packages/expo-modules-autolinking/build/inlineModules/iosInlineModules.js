@@ -12,19 +12,18 @@ async function getIosInlineModulesClassNames(options) {
         };
     });
 }
-function isTargetInInlineModulesTargets({ targetPath, inlineModulesTargets, }) {
+function extractTargetNameFromPath(targetPath) {
     const targetRegex = /\/Pods-(.+?)\/ExpoModulesProvider\.swift$/;
-    const match = targetPath.match(targetRegex);
-    if (!match) {
-        return false;
-    }
-    const targetName = match[1];
-    if (targetName === undefined) {
+    return targetPath.match(targetRegex)?.[1];
+}
+function isTargetInInlineModulesTargets({ targetName, targetPath, inlineModulesTargets, }) {
+    const resolvedTargetName = targetName ?? extractTargetNameFromPath(targetPath);
+    if (resolvedTargetName === undefined) {
         return false;
     }
     if (inlineModulesTargets.mainTarget) {
-        return targetName === inlineModulesTargets.mainTarget;
+        return resolvedTargetName === inlineModulesTargets.mainTarget;
     }
-    return inlineModulesTargets.targets.includes(targetName);
+    return inlineModulesTargets.targets.includes(resolvedTargetName);
 }
 //# sourceMappingURL=iosInlineModules.js.map

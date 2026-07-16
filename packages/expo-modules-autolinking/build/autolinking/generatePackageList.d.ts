@@ -2,6 +2,7 @@ import type { ModuleDescriptor, SupportedPlatform } from '../types';
 interface GenerateModulesProviderParams {
     platform: SupportedPlatform;
     targetPath: string;
+    targetName?: string;
     entitlementPath: string | null;
     watchedDirectories: string[];
     inlineModulesTargets: {

@@ -17,6 +17,7 @@ interface GenerateModulesProviderParams {
         targets: string[];
     };
     targetPath: string;
+    targetName?: string;
     appRoot: string;
 }
 /**
