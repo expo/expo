@@ -17,8 +17,7 @@ import {
 import type { StartOptions } from './commandsTable';
 import { BLT, printHelp, printItem, printUsage } from './commandsTable';
 import { createDevToolsMenuItems } from './createDevToolsMenuItems';
-
-const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
+import { event } from './events';
 
 interface MoreToolMenuItem extends ExpoChoice<string> {
   action?: () => unknown;
@@ -56,7 +55,7 @@ export async function printDevToolsPluginCliBannersAsync(
 
     return bannerItems.length;
   } catch (error: any) {
-    debug(`Failed to print DevTools plugin CLI banners: ${error.toString()}`);
+    event('banners_failed', { error: event.error(error as Error) });
     return 0;
   }
 }
@@ -226,7 +225,7 @@ export class DevServerManagerActions {
         this.devServerManager.broadcastMessage('sendDevCommand', { name: menuItem.value });
       }
     } catch (error: any) {
-      debug(error);
+      event('action_failed', { error: event.error(error as Error) });
       // do nothing
     } finally {
       printHelp();

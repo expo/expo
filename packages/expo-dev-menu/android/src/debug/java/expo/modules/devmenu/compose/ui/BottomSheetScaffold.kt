@@ -10,6 +10,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,8 +23,10 @@ import com.composables.core.Sheet
 import com.composables.core.SheetDetent
 import com.composables.core.SheetDetent.Companion.Hidden
 import com.composables.core.rememberModalBottomSheetState
+import com.composeunstyled.LocalModalWindow
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.Surface
+import expo.modules.devmenu.detectors.InterceptingWindowCallback
 
 val Peek = SheetDetent(identifier = "peek") { containerHeight, sheetHeight ->
   containerHeight * 0.6f
@@ -41,6 +46,7 @@ fun rememberBottomSheetState() = rememberModalBottomSheetState(
 fun BottomSheetScaffold(
   state: ModalBottomSheetState,
   onDismiss: () -> Unit = {},
+  onMenuKeyPress: () -> Unit = {},
   header: @Composable () -> Unit = {},
   content: @Composable () -> Unit
 ) {
@@ -50,6 +56,19 @@ fun BottomSheetScaffold(
     state = state,
     onDismiss = onDismiss
   ) {
+    val modalWindow = LocalModalWindow.current
+    val currentOnMenuKeyPress by rememberUpdatedState(onMenuKeyPress)
+    DisposableEffect(modalWindow) {
+      val originalCallback = modalWindow.callback
+      modalWindow.callback = InterceptingWindowCallback(originalCallback, null) {
+        currentOnMenuKeyPress()
+        true
+      }
+      onDispose {
+        modalWindow.callback = originalCallback
+      }
+    }
+
     Scrim()
     Sheet(
       modifier = Modifier

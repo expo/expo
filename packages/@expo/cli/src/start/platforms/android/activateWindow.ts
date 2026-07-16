@@ -2,13 +2,12 @@ import * as osascript from '@expo/osascript';
 import { execFileSync } from 'child_process';
 
 import type { Device } from './adb';
-
-const debug = require('debug')('expo:start:platforms:android:activateWindow') as typeof console.log;
+import { event } from '../events';
 
 function getUnixPID(port: number | string): string | undefined {
   // Runs like `lsof -i:8081 -P -t -sTCP:LISTEN`
   const args = [`-i:${port}`, '-P', '-t', '-sTCP:LISTEN'];
-  debug('lsof ' + args.join(' '));
+  event('activate_window_lsof', { args: 'lsof ' + args.join(' ') });
   return execFileSync('lsof', args, {
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'ignore'],
@@ -19,7 +18,6 @@ function getUnixPID(port: number | string): string | undefined {
 
 /** Activate the Emulator window on macOS. */
 export async function activateWindowAsync(device: Pick<Device, 'type' | 'pid'>): Promise<boolean> {
-  debug(`Activating window for device (pid: ${device.pid}, type: ${device.type})`);
   if (
     // only mac is supported for now.
     process.platform !== 'darwin' ||
@@ -40,7 +38,7 @@ export async function activateWindowAsync(device: Pick<Device, 'type' | 'pid'>):
   if (!pid) {
     return false;
   }
-  debug(`Activate window for pid:`, pid);
+  event('activate_window_pid', { pid });
   try {
     await osascript.execAsync(`
     tell application "System Events"

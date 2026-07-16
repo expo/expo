@@ -11,7 +11,7 @@ import generate from '@babel/generator';
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 
-const debug = require('debug')('expo:metro:collect-dependencies') as typeof console.log;
+import { debugEvent } from './events';
 
 const MAGIC_IMPORT_COMMENTS = [
   '@metro-ignore',
@@ -628,9 +628,10 @@ function processImportCall(
   // Check both leading and inner comments
   if (hasMagicImportComment(path)) {
     const line = path.node.loc && path.node.loc.start && path.node.loc.start.line;
-    debug(
-      `Magic comment at line ${line || '<unknown>'}: Ignoring import: ${generate(path.node).code}`
-    );
+    debugEvent('collect_deps:magic_comment_ignored', {
+      line: line || '<unknown>',
+      code: generate(path.node).code,
+    });
     return;
   }
 

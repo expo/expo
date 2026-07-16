@@ -15,9 +15,14 @@ import {
   VideoStabilization,
 } from 'expo-camera';
 import * as FileSystem from 'expo-file-system/legacy';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  GestureDetector,
+  useCompetingGestures,
+  useLongPressGesture,
+  useTapGesture,
+} from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 import GalleryScreen from './GalleryScreen';
@@ -78,36 +83,28 @@ interface State {
 }
 
 function Gestures({ children }: { children: React.ReactNode }) {
-  const doubleTapGesture = useMemo(
-    () =>
-      Gesture.Tap()
-        .numberOfTaps(2)
-        .maxDuration(250)
-        .onStart(() => {
-          console.log('doubleTapGesture > onStart');
-        }),
-    []
-  );
+  const doubleTapGesture = useTapGesture({
+    numberOfTaps: 2,
+    maxDuration: 250,
+    onActivate: () => {
+      console.log('doubleTapGesture > onActivate');
+    },
+  });
 
-  const longPressGesture = useMemo(
-    () =>
-      Gesture.LongPress()
-        .minDuration(750)
-        .onStart(() => {
-          console.log('longPressGesture > onStart');
-        }),
-    []
-  );
+  const longPressGesture = useLongPressGesture({
+    minDuration: 750,
+    onActivate: () => {
+      console.log('longPressGesture > onActivate');
+    },
+  });
+
+  const gesture = useCompetingGestures(doubleTapGesture, longPressGesture);
 
   if (Platform.OS === 'web') {
     return children;
   }
 
-  return (
-    <GestureDetector gesture={Gesture.Race(doubleTapGesture, longPressGesture)}>
-      {children}
-    </GestureDetector>
-  );
+  return <GestureDetector gesture={gesture}>{children}</GestureDetector>;
 }
 
 export default function CameraScreen() {

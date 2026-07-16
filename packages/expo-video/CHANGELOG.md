@@ -16,11 +16,13 @@
 - Recover failed players to fix broken playback placeholder ([#46681](https://github.com/expo/expo/pull/46681) by [@zoontek](https://github.com/zoontek))
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))
 - [iOS] Fixed a thread-safety crash caused by mutating the internal player registries while they were being iterated on another thread (e.g. during audio session and now playing updates). ([#46930](https://github.com/expo/expo/pull/46930) by [@jiunshinn](https://github.com/jiunshinn))
+- Fix VideoView holding a strong reference to VideoPlayer even after the player has been detached. ([#46453](https://github.com/expo/expo/pull/46453) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
 - [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`). ([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
 - Replace `TimeoutID` typing on `_timeUpdateLoop` ([#46730](https://github.com/expo/expo/pull/46730) by [@kitten](https://github.com/kitten))
+- When `source` of `useVideoPlayer` changes use `replaceAsync` instead of re-creating the player. ([#46495](https://github.com/expo/expo/pull/46495) by [@behenate](https://github.com/behenate))
 
 ## 56.1.2 — 2026-05-21
 

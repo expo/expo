@@ -167,16 +167,6 @@ struct ExpoCameraUtils {
     return UIImage(cgImage: croppedCgImage, scale: image.scale, orientation: image.imageOrientation)
   }
 
-  static func normalizeOrientation(of image: UIImage) -> UIImage {
-    guard image.imageOrientation != .up else {
-      return image
-    }
-    let renderer = UIGraphicsImageRenderer(size: image.size)
-    return renderer.image { _ in
-      image.draw(in: CGRect(origin: .zero, size: image.size))
-    }
-  }
-
   static func write(data: Data, to path: String) -> String? {
     let url = URL(fileURLWithPath: path)
     do {
@@ -188,38 +178,21 @@ struct ExpoCameraUtils {
   }
 
   static func data(from image: UIImage, with metadata: [String: Any], quality: Float) -> Data? {
-    guard let sourceCGImageRef = image.cgImage,
-    let sourceData = image.jpegData(compressionQuality: 1.0) as CFData?,
-    let sourceCGImageSourceRef = CGImageSourceCreateWithData(sourceData, nil),
-    let sourceMetadata = CGImageSourceCopyPropertiesAtIndex(sourceCGImageSourceRef, 0, nil) else {
+    guard let sourceCGImageRef = image.cgImage else {
       return nil
     }
 
-    let updatedMetadata = NSMutableDictionary(dictionary: sourceMetadata)
-
-    for (key, value) in metadata {
-      updatedMetadata[key] = value
-    }
-
+    let updatedMetadata = NSMutableDictionary(dictionary: metadata)
     updatedMetadata.setObject(NSNumber(value: quality), forKey: kCGImageDestinationLossyCompressionQuality as NSString)
     let processedImageData = NSMutableData()
 
-    guard let sourceType = CGImageSourceGetType(sourceCGImageSourceRef) else {
-      return nil
-    }
-
     guard let destinationCGImageRef =
-      CGImageDestinationCreateWithData(processedImageData, sourceType, 1, nil) else {
+      CGImageDestinationCreateWithData(processedImageData, UTType.jpeg.identifier as CFString, 1, nil) else {
       return nil
     }
 
     CGImageDestinationAddImage(destinationCGImageRef, sourceCGImageRef, updatedMetadata)
 
-    if CGImageDestinationFinalize(destinationCGImageRef) {
-      return processedImageData as Data
-    }
-
-    CGImageDestinationAddImage(destinationCGImageRef, sourceCGImageRef, updatedMetadata as CFDictionary)
     return CGImageDestinationFinalize(destinationCGImageRef) ? processedImageData as Data : nil
   }
 
@@ -247,8 +220,6 @@ struct ExpoCameraUtils {
       throw CameraSavingImageException("Failed to locate `cacheDirectory`")
     }
 
-    let normalizedImage = normalizeOrientation(of: image)
-
     var result = [String: Any]()
     let directory = URL(fileURLWithPath: cachesDirectory.path).appendingPathComponent("Camera")
     let filename = UUID().uuidString.appending(".jpg")
@@ -256,13 +227,17 @@ struct ExpoCameraUtils {
 
     FileSystemUtilities.ensureDirExists(at: directory)
 
-    guard let data = data(from: normalizedImage, with: options.metadata ?? [:], quality: Float(options.quality)) else {
+    // Record the capture orientation as an EXIF tag instead of rotating the pixels so viewers display it upright.
+    var metadata = options.metadata ?? [:]
+    metadata[kCGImagePropertyOrientation as String] = toExifOrientation(orientation: image.imageOrientation)
+
+    guard let data = data(from: image, with: metadata, quality: Float(options.quality)) else {
       throw CameraSavingImageException("Image data could not be processed")
     }
 
     result["url"] = fileUrl.absoluteString
-    result["width"] = normalizedImage.size.width
-    result["height"] = normalizedImage.size.height
+    result["width"] = image.size.width
+    result["height"] = image.size.height
     result["base64"] = options.base64 ? data.base64EncodedString() : nil
 
     do {

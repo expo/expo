@@ -2,8 +2,7 @@ import { execSync } from 'child_process';
 
 import * as SimControl from './simctl';
 import { CommandError } from '../../../utils/errors';
-
-const debug = require('debug')('expo:start:platforms:ios:getBestSimulator') as typeof console.log;
+import { event } from '../events';
 
 type DeviceContext = Partial<Pick<SimControl.Device, 'osType'>>;
 
@@ -33,11 +32,11 @@ export async function getBestBootedSimulatorAsync({
     simulatorOpenedByApp?.udid &&
     (!osType || (osType && simulatorOpenedByApp.osType === osType))
   ) {
-    debug(`First booted simulator: ${simulatorOpenedByApp?.windowName}`);
+    event('simulator_first_booted', { windowName: simulatorOpenedByApp.windowName });
     return simulatorOpenedByApp;
   }
 
-  debug(`No booted simulator matching requirements (osType: ${osType}).`);
+  event('simulator_no_match', { osType });
   return null;
 }
 
@@ -52,7 +51,7 @@ export async function getBestUnbootedSimulatorAsync({ osType }: DeviceContext = 
   string | null
 > {
   const defaultId = getDefaultSimulatorDeviceUDID();
-  debug(`Default simulator ID: ${defaultId}`);
+  event('simulator_default_id', { defaultId });
 
   if (defaultId && !osType) {
     return defaultId;

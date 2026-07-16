@@ -1,6 +1,10 @@
-# Tests whether the fullscreen opens, and if appropriate events were sent
-appId: dev.expo.Payments
+# Tests that entering and exiting picture-in-picture restores the view hierarchy
+appId: dev.expo.payments
 jsEngine: graaljs
+# A failed attempt can leave the app as a PiP window, which would poison the flows that run
+# after this one in the same Maestro invocation; always leave the app stopped instead.
+onFlowComplete:
+  - stopApp
 ---
 - openLink: bareexpo://components/video/pip
 
@@ -19,6 +23,11 @@ jsEngine: graaljs
     point: 68%,68%
     repeat: 2
     delay: 700
+# The restore animation and the system bar insets take a moment to settle after exiting
+# PiP; capturing earlier makes the screenshot racy. Safe only because the player is paused
+# here (a playing video never settles and would burn the full timeout).
+- waitForAnimationToEnd:
+    timeout: 5000
 # Make sure the view hierarchy was restored
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml

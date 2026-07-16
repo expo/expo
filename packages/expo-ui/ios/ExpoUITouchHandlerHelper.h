@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable UIGestureRecognizer *)createAndAttachTouchHandlerForView:(UIView *)view;
 
++ (void)detachTouchHandler:(UIGestureRecognizer *)touchHandler fromView:(UIView *)view;
+
 @end
 
 NS_ASSUME_NONNULL_END

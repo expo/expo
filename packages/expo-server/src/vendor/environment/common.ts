@@ -31,6 +31,10 @@ function initManifestRegExp(manifest: RawManifest): Manifest {
         ...route,
         namedRegex: new RegExp(route.namedRegex),
       })) ?? [],
+    pageHeaders: manifest.pageHeaders?.map((rule) => ({
+      ...rule,
+      namedRegex: new RegExp(rule.namedRegex),
+    }))
   };
 }
 

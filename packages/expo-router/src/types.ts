@@ -55,7 +55,7 @@ export type NativeIntent = {
    *
    * Using this API is not recommended for newer projects or integrations since it is
    * incompatible with Server Side Routing and
-   * [Static Rendering](/router/reference/static-rendering/), and can become challenging to manage while offline or in a low network environment.
+   * [Static Rendering](/router/web/static-rendering/), and can become challenging to manage while offline or in a low network environment.
    *
    */
   legacy_subscribe?: (listener: (url: string) => void) => undefined | void | (() => void);

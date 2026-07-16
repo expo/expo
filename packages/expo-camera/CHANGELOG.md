@@ -8,6 +8,7 @@
 
 - Enabled responsive capture and fast capture prioritization on iOS for lower shutter lag and faster successive photo captures.
 - [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
+- Added `CameraView.scanDocumentAsync` to scan multi-page documents on Android and iOS. ([#47362](https://github.com/expo/expo/pull/47362) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
@@ -16,6 +17,13 @@
 - Replace the deprecated `videoOrientation` API with `AVCaptureDevice.RotationCoordinator` for the iOS camera preview. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix dark frames and the preview rotating into place on iOS launch by fully configuring the camera session before it starts running. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
 - Default the iOS camera `pictureSize` to `photo` instead of `high`. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
+- Process captured photos off the main thread on iOS so full-resolution captures no longer hang the UI on older devices. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+- Fix iOS captures being saved above their native resolution due to orientation normalization rendering at the screen scale. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+- Remove a redundant full-resolution JPEG re-encode when saving captured photos on iOS. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+- [iOS] Fix the ZXing barcode fallback scanner returning raw AVFoundation type strings (e.g. `org.iso.PDF417`) instead of short expo `BarcodeType` values (e.g. `pdf417`) for `pdf417`, `code39`, and `codabar`, restoring the fix from [#44726](https://github.com/expo/expo/pull/44726) that was reverted by the `ExpoCameraBarcodeScanning` pod extraction in [#44766](https://github.com/expo/expo/pull/44766). ([#47613](https://github.com/expo/expo/pull/47613) by [@jensdev](https://github.com/jensdev))
+- [iOS] Disable deferred photo delivery so responsive capture no longer hangs the capture promise on iOS 17 and later. ([#47816](https://github.com/expo/expo/pull/47816) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fire `onMountError` instead of crashing the app when the camera can't be started, such as a device reporting zero available cameras. ([#47818](https://github.com/expo/expo/pull/47818) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Preserve the capture orientation as EXIF metadata instead of rotating captured pixels, so `takePictureAsync` and `savePictureAsync` return the real orientation tag and dimensions. ([#47824](https://github.com/expo/expo/pull/47824) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

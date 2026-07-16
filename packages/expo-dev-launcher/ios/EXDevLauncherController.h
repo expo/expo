@@ -1,5 +1,4 @@
 #import <React/RCTBridgeModule.h>
-#import <React/RCTBridgeDelegate.h>
 
 #import <ExpoModulesCore/Platform.h>
 
@@ -40,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXDevLauncherController : RCTDefaultReactNativeFactoryDelegate <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
+@interface EXDevLauncherController : RCTDefaultReactNativeFactoryDelegate <EXUpdatesExternalInterfaceDelegate>
 
 @property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
