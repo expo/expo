@@ -13,7 +13,6 @@ extension ExpoSwiftUI {
 
     #if os(macOS)
     func makeNSView(context: Context) -> NSView {
-      context.coordinator.originalAutoresizingMask = view.autoresizingMask
       return view
     }
 
@@ -23,6 +22,9 @@ extension ExpoSwiftUI {
     #endif
 
     func makeUIView(context: Context) -> UIView {
+      #if os(macOS)
+      return view
+      #else
       // Hand SwiftUI a disposable container instead of the React-managed
       // view. SwiftUI mutates the platform view it hosts — autoresizingMask,
       // frame, visibility — and Menu/ContextMenu can do so asynchronously,
@@ -43,6 +45,7 @@ extension ExpoSwiftUI {
       container.hostedView = view
       container.addSubview(view)
       return container
+      #endif
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {
@@ -60,7 +63,6 @@ extension ExpoSwiftUI {
     }
 
     class Coordinator {
-      var originalAutoresizingMask: UIView.AutoresizingMask = []
       init() {}
     }
 
@@ -79,6 +81,7 @@ extension ExpoSwiftUI {
     }
   }
 
+  #if !os(macOS)
   /**
    Disposable UIView handed to SwiftUI in place of the React-managed view —
    see `UIViewHost.makeUIView`.
@@ -98,4 +101,5 @@ extension ExpoSwiftUI {
       }
     }
   }
+  #endif
 }
