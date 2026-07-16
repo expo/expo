@@ -109,6 +109,7 @@ const EventsScreen = ({ route }: Props) => {
 
   const addEvent = async (recurring: boolean) => {
     if (!calendar) {
+      Alert.alert('Calendar is not loaded yet');
       return;
     }
     if (!calendar.allowsModifications) {
@@ -169,6 +170,7 @@ const EventsScreen = ({ route }: Props) => {
 
   const updateEvent = async (event: ExpoCalendarEvent) => {
     if (!calendar) {
+      Alert.alert('Calendar is not loaded yet');
       return;
     }
     if (!calendar.allowsModifications) {
@@ -249,6 +251,7 @@ const EventsScreen = ({ route }: Props) => {
         <Button
           onPress={async () => {
             if (!calendar) {
+              Alert.alert('Calendar is not loaded yet');
               return;
             }
             const newEvent = prepareEvent(calendar.id, true);

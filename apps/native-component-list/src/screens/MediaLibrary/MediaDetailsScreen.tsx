@@ -122,6 +122,8 @@ export default class MediaDetailsScreen extends React.Component<Props> {
   render() {
     const { details, detailsWithoutDownloadingFromNetwork } = this.state;
     const { albumId, albumTitle } = this.props.route.params;
+    // Show the local asset while the network-downloading fetch is still in flight.
+    const previewDetails = details ?? detailsWithoutDownloadingFromNetwork;
 
     return (
       <ScrollView style={styles.container}>
@@ -156,7 +158,9 @@ export default class MediaDetailsScreen extends React.Component<Props> {
           />
         )}
 
-        {details && <View style={styles.imageContainer}>{this.renderAsset(details)}</View>}
+        {previewDetails && (
+          <View style={styles.imageContainer}>{this.renderAsset(previewDetails)}</View>
+        )}
 
         {details && (
           <View style={styles.details}>

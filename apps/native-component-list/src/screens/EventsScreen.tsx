@@ -105,6 +105,7 @@ export default class EventsScreen extends React.Component<Props, State> {
   _addEvent = async (recurring: boolean) => {
     const { calendar } = this.state;
     if (!calendar) {
+      Alert.alert('Calendar is not loaded yet');
       return;
     }
     if (!calendar.allowsModifications) {
@@ -149,6 +150,7 @@ export default class EventsScreen extends React.Component<Props, State> {
   _updateEvent = async (event: Calendar.Event) => {
     const { calendar } = this.state;
     if (!calendar) {
+      Alert.alert('Calendar is not loaded yet');
       return;
     }
     if (!calendar.allowsModifications) {
