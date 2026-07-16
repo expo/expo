@@ -176,7 +176,10 @@ it('natively selects the compiler-derived route of an unvisited nested Stack tab
       </NativeTabs>
     ),
     index: () => <View testID="index" />,
-    'stack/_layout': () => <Stack initialRouteName="a" />,
+    'stack/_layout': {
+      unstable_settings: { initialRouteName: 'a' },
+      default: () => <Stack />,
+    },
     'stack/index': () => <View testID="stack-index" />,
     'stack/a': () => <View testID="stack-a" />,
   });
@@ -190,6 +193,6 @@ it('natively selects the compiler-derived route of an unvisited nested Stack tab
     } as Parameters<typeof onTabSelected>[0]);
   });
 
-  expect(screen.getByTestId('stack-index')).toBeVisible();
-  expect(screen.queryByTestId('stack-a')).toBeNull();
+  expect(screen.queryByTestId('stack-index')).toBeNull();
+  expect(screen.getByTestId('stack-a')).toBeVisible();
 });

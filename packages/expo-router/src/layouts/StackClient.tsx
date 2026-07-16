@@ -607,8 +607,10 @@ function filterSingular<
  *
  * @hideType
  */
+type StackProps = Omit<ComponentProps<typeof RNStack>, 'initialRouteName'>;
+
 const Stack = Object.assign(
-  (props: ComponentProps<typeof RNStack>) => {
+  (props: StackProps) => {
     const { isStackAnimationDisabled } = useLinkPreviewContext();
 
     const screenOptionsWithCompositionAPIOptions = useMemo<NativeStackScreenOptions>(() => {
