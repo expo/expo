@@ -85,9 +85,13 @@ export const home = [
         expanded: false,
       }
     ),
-    makeGroup('Agent toolkits', [makePage('agents/argent.mdx')], {
-      expanded: false,
-    }),
+    makeGroup(
+      'Agent toolkits',
+      [makePage('agents/agent-device.mdx'), makePage('agents/argent.mdx')],
+      {
+        expanded: false,
+      }
+    ),
     makePage('llms.mdx'),
   ]),
   makeSection('Develop', [
