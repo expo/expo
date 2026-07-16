@@ -10,7 +10,7 @@ runExportSideEffects();
 
 describe('exports static', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-static-rendering';
+  const outputName = 'dist-server-features-static-rendering';
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
@@ -21,7 +21,7 @@ describe('exports static', () => {
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_SRC: 'server-features',
           E2E_ROUTER_ASYNC: '',
           E2E_FAVICON: './assets/icon.png',
         },
@@ -48,20 +48,20 @@ describe('exports static', () => {
 
     it(`can serve up index html`, async () => {
       const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
-      expect(html.querySelector('[data-testid="index-text"]')?.textContent).toEqual('Index');
+      expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual('Index');
     });
 
     it(`can serve up non-index html`, async () => {
       const html = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
-      expect(html.querySelector('[data-testid="styled-text"]')?.textContent).toEqual('Hello World');
+      expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual('Hello World');
     });
 
     ['other', 'welcome-to-the-universe'].forEach((post) => {});
     it.each([{ post: 'other' }, { post: 'welcome-to-the-universe' }])(
       `can serve up statically generated html for post: $post`,
       async ({ post }) => {
-        const html = getHtml(await server.fetchAsync(`/${post}`).then((res) => res.text()));
-        expect(html.querySelector('[data-testid="post-text"]')?.textContent).toEqual(
+        const html = getHtml(await server.fetchAsync(`/blog/${post}`).then((res) => res.text()));
+        expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual(
           `Post: ${post}`
         );
       }
@@ -72,7 +72,7 @@ describe('exports static', () => {
     });
 
     it('injects `<link rel="icon">` into statically rendered pages', async () => {
-      for (const route of ['/', '/styled', '/welcome-to-the-universe']) {
+      for (const route of ['/', '/styled', '/blog/welcome-to-the-universe']) {
         const html = getHtml(await server.fetchAsync(route).then((res) => res.text()));
         const icon = html.querySelector('html > head > link[rel="icon"]');
         expect(icon).not.toBeNull();
@@ -98,9 +98,9 @@ describe('exports static', () => {
     expect(files).toContain('styled.html');
 
     // generateStaticParams values
-    expect(files).toContain('[post].html');
-    expect(files).toContain('welcome-to-the-universe.html');
-    expect(files).toContain('other.html');
+    expect(files).toContain('blog/[post].html');
+    expect(files).toContain('blog/welcome-to-the-universe.html');
+    expect(files).toContain('blog/other.html');
 
     expect(files).toContain('_expo/.routes.json');
 
@@ -133,7 +133,7 @@ describe('exports static', () => {
           ),
 
           // NOTE: relative to the server root for optimal source map support
-          expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/\[post\]\.tsx/),
+          expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/server-features\/app\/blog\/\[post\]\.tsx/),
         ])
       );
     }
@@ -250,14 +250,14 @@ describe('exports static', () => {
     // CSS Module
     expect(
       fs.readFileSync(path.join(outputDir, links[2]?.attributes.href ?? ''), 'utf-8')
-    ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
+    ).toMatchInlineSnapshot(`".w4O25a_text{color:#1e90ff}"`);
 
     const styledHtml = await getPageHtml(outputDir, 'styled.html');
 
     // Ensure the atomic CSS class is used
     expect(
-      styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
-    ).toMatch('HPV33q_text');
+      styledHtml.querySelector('html > body div[data-testid="title"]')?.attributes.class
+    ).toMatch('w4O25a_text');
   });
 
   it('statically extracts fonts', async () => {
@@ -268,11 +268,11 @@ describe('exports static', () => {
     const links = indexHtml.querySelectorAll('html > head > link[as="font"]');
     expect(links.length).toBe(1);
     expect(links[0]?.attributes.href).toBe(
-      '/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
+      '/assets/__e2e__/server-features/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
     );
 
     expect(links[0]?.toString()).toMatch(
-      /<link rel="preload" href="\/assets\/__e2e__\/static-rendering\/sweet\.[a-zA-Z0-9]{32}\.ttf" as="font" crossorigin="" >/
+      /<link rel="preload" href="\/assets\/__e2e__\/server-features\/sweet\.[a-zA-Z0-9]{32}\.ttf" as="font" crossorigin="" >/
     );
 
     expect(
@@ -283,7 +283,7 @@ describe('exports static', () => {
     ).toBeDefined();
 
     // Ensure the font is used
-    expect(indexHtml.querySelector('div[data-testid="index-text"]')?.attributes.style).toMatch(
+    expect(indexHtml.querySelector('div[data-testid="title"]')?.attributes.style).toMatch(
       'font-family:sweet'
     );
 
@@ -326,10 +326,10 @@ describe('exports static', () => {
     ).toBe('/');
 
     expect(
-      (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
+      (await getPageHtml(outputDir, 'blog/welcome-to-the-universe.html')).querySelector(
         'html > head > meta[name="expo-e2e-pathname"]'
       )?.attributes.content
-    ).toBe('/welcome-to-the-universe');
+    ).toBe('/blog/welcome-to-the-universe');
   });
 
   it('supports nested static head values', async () => {
@@ -349,7 +349,7 @@ describe('exports static', () => {
 
     expect(
       // Other routes have the nested layout value
-      (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
+      (await getPageHtml(outputDir, 'blog/welcome-to-the-universe.html')).querySelector(
         'html > head > meta[name="expo-nested-layout"]'
       )?.attributes.content
     ).toBe('TEST_VALUE');

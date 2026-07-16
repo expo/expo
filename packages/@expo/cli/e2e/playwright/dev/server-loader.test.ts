@@ -21,7 +21,7 @@ for (const outputMode of outputModes) {
       cwd: projectRoot,
       env: {
         EXPO_USE_STATIC: outputMode,
-        E2E_ROUTER_SRC: 'server-loader',
+        E2E_ROUTER_SRC: 'server-features',
         E2E_ROUTER_SERVER_LOADERS: 'true',
         E2E_ROUTER_SERVER_RENDERING: outputMode === 'server' ? 'true' : 'false',
 

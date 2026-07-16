@@ -16,7 +16,7 @@ runExportSideEffects();
 
 describe.each(
   prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START, RUNTIME_WORKERD], {
-    fixtureName: 'server-loader',
+    fixtureName: 'server-features',
     uniqueOutputKey: 'server',
     export: {
       env: {
@@ -32,6 +32,7 @@ describe.each(
         TEST_THROW_ERROR: 'true',
         E2E_ROUTER_SERVER_RENDERING: 'true',
       },
+      workerd: { configName: 'loaders.capnp' },
     },
   })
 )('server loader - $name', (config) => {

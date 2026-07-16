@@ -12,7 +12,8 @@ runExportSideEffects();
 
 describe('middleware matchers', () => {
   const configs = prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
-    fixtureName: 'server-middleware-matcher-async',
+    fixtureName: 'server-features',
+    uniqueOutputKey: 'matchers',
     export: {
       env: {
         E2E_ROUTER_SERVER_MIDDLEWARE: 'true',
@@ -25,10 +26,11 @@ describe('middleware matchers', () => {
       const server = setupServer(config, {
         serve: {
           env: {
+            E2E_MIDDLEWARE_MATCHER_MODE: 'true',
             E2E_MIDDLEWARE_MATCHER_PATTERNS: JSON.stringify([
               '/api',
               '/posts/[postId]',
-              '/catch-all/[...everything]',
+              '/catch-all/[...post]',
             ]),
           },
         },
@@ -66,6 +68,7 @@ describe('middleware matchers', () => {
       const server = setupServer(config, {
         serve: {
           env: {
+            E2E_MIDDLEWARE_MATCHER_MODE: 'true',
             E2E_MIDDLEWARE_MATCHER_METHODS: JSON.stringify(['POST']),
           },
         },
@@ -90,6 +93,7 @@ describe('middleware matchers', () => {
       const server = setupServer(config, {
         serve: {
           env: {
+            E2E_MIDDLEWARE_MATCHER_MODE: 'true',
             E2E_MIDDLEWARE_MATCHER_METHODS: JSON.stringify(['POST']),
             E2E_MIDDLEWARE_MATCHER_PATTERNS: JSON.stringify(['/api']),
           },
@@ -118,7 +122,13 @@ describe('middleware matchers', () => {
 
   describe('no matchers (should run on all requests)', () => {
     describe.each(configs)('$name', (config) => {
-      const server = setupServer(config);
+      const server = setupServer(config, {
+        serve: {
+          env: {
+            E2E_MIDDLEWARE_MATCHER_MODE: 'true',
+          },
+        },
+      });
 
       it('runs middleware on root route when no matchers defined', async () => {
         const response = await server.fetchAsync('/');

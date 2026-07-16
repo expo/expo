@@ -11,7 +11,7 @@ runExportSideEffects();
 
 describe('exports static', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-static-redirects';
+  const outputName = 'dist-server-features-redirects-screens';
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
@@ -22,7 +22,7 @@ describe('exports static', () => {
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_SRC: 'server-features',
           E2E_ROUTER_ASYNC: '',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
             { source: '/styled-redirect', destination: '/styled' },
@@ -77,8 +77,8 @@ describe('exports static', () => {
     expect(files).toContain('styled-redirect.html');
 
     // generateStaticParams values
-    expect(files).toContain('[post].html');
-    expect(files).toContain('welcome-to-the-universe.html');
-    expect(files).toContain('other.html');
+    expect(files).toContain('blog/[post].html');
+    expect(files).toContain('blog/welcome-to-the-universe.html');
+    expect(files).toContain('blog/other.html');
   });
 });

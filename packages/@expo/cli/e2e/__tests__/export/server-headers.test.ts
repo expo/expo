@@ -43,7 +43,8 @@ const EXPECTED_PAGE_HEADERS = [
 describe('export server with headers', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
-      fixtureName: 'server-headers',
+      fixtureName: 'server-features',
+      uniqueOutputKey: 'headers',
       export: {
         env: {
           E2E_ROUTER_HEADERS: JSON.stringify(GLOBAL_HEADERS),
@@ -52,6 +53,9 @@ describe('export server with headers', () => {
           E2E_ROUTER_SERVER_LOADERS: 'true',
           E2E_ROUTER_SERVER_RENDERING: 'true',
         },
+      },
+      serve: {
+        workerd: { configName: 'headers.capnp' },
       },
     })
   )('$name requests', (config) => {
@@ -101,7 +105,7 @@ describe('export server with headers', () => {
       },
       {
         // Loader routes only apply global headers
-        path: '/_expo/loaders/blog',
+        path: '/_expo/loaders/blog/index',
         status: 200,
         contentType: 'application/json',
         poweredBy: 'expo-server',

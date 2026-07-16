@@ -9,7 +9,7 @@ test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
-const outputDir = 'dist-server-rendering-async-playwright';
+const outputDir = 'dist-server-features-rendering-async-playwright';
 
 test.describe('server rendering with async routes in production', () => {
   const expoServe = createExpoServe({
@@ -26,9 +26,12 @@ test.describe('server rendering with async routes in production', () => {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_SRC: 'server-features',
         E2E_ROUTER_ASYNC: 'true',
         E2E_ROUTER_SERVER_RENDERING: 'true',
+        // Loader routes crash hydration when the loaders flag is off (client still fetches
+        // /_expo/loaders/*); browser-driven tests of this fixture export with loaders enabled.
+        E2E_ROUTER_SERVER_LOADERS: 'true',
       },
     });
     console.timeEnd('expo export');
@@ -45,7 +48,7 @@ test.describe('server rendering with async routes in production', () => {
     const pageErrors = pageCollectErrors(page);
 
     await page.goto(expoServe.url.href);
-    await page.waitForSelector('[data-testid="index-text"]');
+    await page.waitForSelector('[data-testid="title"]');
 
     expect(pageErrors.errors).toEqual([]);
   });

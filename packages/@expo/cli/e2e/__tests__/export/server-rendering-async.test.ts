@@ -18,7 +18,7 @@ describe('server rendering with async routes', () => {
   describe.each(
     // NOTE: This test only looks at the exported files, so there's no need for multiple runtimes
     prepareServers([RUNTIME_EXPO_SERVE], {
-      fixtureName: 'static-rendering',
+      fixtureName: 'server-features',
       uniqueOutputKey: 'server-rendering-async',
       export: {
         env: {
@@ -85,7 +85,12 @@ describe('server rendering with async routes', () => {
         });
 
         const routeName = path.basename(route.page);
-        expect(jsFilenames).toEqual(['_layout-<HASH>.js', `${routeName}-<HASH>.js`]);
+        // Every chunk before the page chunk is a layout in the route's layout chain.
+        expect(jsFilenames.length).toBeGreaterThanOrEqual(2);
+        expect(jsFilenames.slice(0, -1)).toEqual(
+          jsFilenames.slice(0, -1).map(() => '_layout-<HASH>.js')
+        );
+        expect(jsFilenames.at(-1)).toBe(`${routeName}-<HASH>.js`);
       }
     });
   });

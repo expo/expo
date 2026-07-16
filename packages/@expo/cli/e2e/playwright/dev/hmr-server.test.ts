@@ -8,9 +8,9 @@ import { mutateFile, openPageAndEagerlyLoadJS, raceOrFail } from '../../utils/hm
 import { pageCollectErrors } from '../page';
 
 const projectRoot = getRouterE2ERoot();
-const indexFile = path.join(projectRoot, '__e2e__/server-loader/app/index.tsx');
-const postsFile = path.join(projectRoot, '__e2e__/server-loader/app/posts/[postId].tsx');
-const noLoaderFile = path.join(projectRoot, '__e2e__/server-loader/app/no-loader.tsx');
+const indexFile = path.join(projectRoot, '__e2e__/server-features/app/index.tsx');
+const postsFile = path.join(projectRoot, '__e2e__/server-features/app/posts/[postId].tsx');
+const noLoaderFile = path.join(projectRoot, '__e2e__/server-features/app/no-loader.tsx');
 
 const ORIGINAL_LOADER_VALUE = 'root-index';
 
@@ -28,7 +28,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     env: {
       NODE_ENV: 'development',
       EXPO_USE_STATIC: 'server',
-      E2E_ROUTER_SRC: 'server-loader',
+      E2E_ROUTER_SRC: 'server-features',
       E2E_ROUTER_SERVER_LOADERS: 'true',
       E2E_ROUTER_SERVER_RENDERING: 'true',
 

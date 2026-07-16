@@ -17,7 +17,8 @@ runExportSideEffects();
 describe('exports server', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
-      fixtureName: 'static-rendering',
+      fixtureName: 'server-features',
+      uniqueOutputKey: 'ssr',
       export: {
         env: {
           E2E_ROUTER_ASYNC: '',
@@ -30,6 +31,7 @@ describe('exports server', () => {
         env: {
           TEST_SECRET_KEY: 'test-secret-key',
         },
+        workerd: { configName: 'ssr.capnp' },
       },
     })
   )('$name requests', (config) => {
@@ -42,19 +44,19 @@ describe('exports server', () => {
 
     it(`can serve up index html`, async () => {
       const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
-      expect(html.querySelector('[data-testid="index-text"]')?.textContent).toEqual('Index');
+      expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual('Index');
     });
 
     it(`can serve up non-index html`, async () => {
       const html = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
-      expect(html.querySelector('[data-testid="styled-text"]')?.textContent).toEqual('Hello World');
+      expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual('Hello World');
     });
 
     it.each([{ post: 'other' }, { post: 'welcome-to-the-universe' }])(
       `can serve up dynamically rendered html for post: $post`,
       async ({ post }) => {
-        const html = getHtml(await server.fetchAsync(`/${post}`).then((res) => res.text()));
-        expect(html.querySelector('[data-testid="post-text"]')?.textContent).toEqual(
+        const html = getHtml(await server.fetchAsync(`/blog/${post}`).then((res) => res.text()));
+        expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual(
           `Post: ${post}`
         );
       }
@@ -100,7 +102,7 @@ describe('exports server', () => {
     });
 
     it('injects `<link rel="icon">` into every streamed SSR response', async () => {
-      for (const route of ['/', '/styled', '/welcome-to-the-universe']) {
+      for (const route of ['/', '/styled', '/blog/welcome-to-the-universe']) {
         const html = getHtml(await server.fetchAsync(route).then((res) => res.text()));
         const icon = html.querySelector('html > head > link[rel="icon"]');
         expect(icon).not.toBeNull();
@@ -115,15 +117,15 @@ describe('exports server', () => {
 
       // Should have the dynamic route pattern
       const postRoute = routesJson.htmlRoutes.find(
-        (route: { page: string }) => route.page === '/[post]'
+        (route: { page: string }) => route.page === '/blog/[post]'
       );
       expect(postRoute).toBeDefined();
-      expect(postRoute?.file).toBe('./[post].tsx');
+      expect(postRoute?.file).toBe('./blog/[post].tsx');
 
       // Should NOT have the generated static routes from `generateStaticParams()`
       // `[post].tsx` exports `generateStaticParams()` returning ['welcome-to-the-universe', 'other']
       const generatedRoutes = routesJson.htmlRoutes.filter((route) =>
-        ['/welcome-to-the-universe', '/other'].includes(route.page)
+        ['/blog/welcome-to-the-universe', '/blog/other'].includes(route.page)
       );
       expect(generatedRoutes).toHaveLength(0);
     });
@@ -160,7 +162,7 @@ describe('exports server', () => {
             ),
 
             // NOTE: relative to the server root for optimal source map support
-            expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/index\.tsx/),
+            expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/server-features\/app\/index\.tsx/),
           ])
         );
       }
@@ -334,14 +336,14 @@ describe('exports server', () => {
           path.join(server.outputDir, 'client', cssModulePreload!.attributes.href ?? ''),
           'utf-8'
         )
-      ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
+      ).toMatchInlineSnapshot(`".w4O25a_text{color:#1e90ff}"`);
 
       const styledHtml = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
 
       // Ensure the atomic CSS class is used
       expect(
-        styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
-      ).toMatch('HPV33q_text');
+        styledHtml.querySelector('html > body div[data-testid="title"]')?.attributes.class
+      ).toMatch('w4O25a_text');
     });
 
     it('extracts fonts', async () => {
@@ -350,11 +352,11 @@ describe('exports server', () => {
       const links = indexHtml.querySelectorAll('link[as="font"]');
       expect(links.length).toBe(1);
       expect(links[0]?.attributes.href).toBe(
-        '/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
+        '/assets/__e2e__/server-features/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
       );
 
       expect(links[0]?.toString()).toMatch(
-        /<link rel="preload" href="\/assets\/__e2e__\/static-rendering\/sweet\.[a-zA-Z0-9]{32}\.ttf" as="font" crossorigin="">/
+        /<link rel="preload" href="\/assets\/__e2e__\/server-features\/sweet\.[a-zA-Z0-9]{32}\.ttf" as="font" crossorigin="">/
       );
 
       expect(
@@ -369,7 +371,7 @@ describe('exports server', () => {
       ).toBeDefined();
 
       // Ensure the font is used
-      expect(indexHtml.querySelector('div[data-testid="index-text"]')?.attributes.style).toMatch(
+      expect(indexHtml.querySelector('div[data-testid="title"]')?.attributes.style).toMatch(
         'font-family:sweet'
       );
 
@@ -471,7 +473,7 @@ describe('exports server', () => {
       const page = getHtml(html);
       const head = page.querySelector('html > head');
 
-      expect(page.querySelector('html > body [data-testid="metadata-text"]')?.innerText).toBe(
+      expect(page.querySelector('html > body [data-testid="title"]')?.innerText).toBe(
         'Metadata'
       );
       expect(head).not.toBeNull();
@@ -490,7 +492,7 @@ describe('exports server', () => {
         await server.fetchAsync('/metadata-async/123').then((res) => res.text())
       );
 
-      expect(page.querySelector('html > body [data-testid="async-metadata-text"]')?.innerText).toBe(
+      expect(page.querySelector('html > body [data-testid="title"]')?.innerText).toBe(
         'Async Metadata'
       );
       expect(page.querySelector('html > head > title')?.innerText).toBe('Async Metadata 123');

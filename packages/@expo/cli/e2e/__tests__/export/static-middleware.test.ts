@@ -9,7 +9,7 @@ runExportSideEffects();
 
 describe('static export with middleware', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-static-middleware-async';
+  const outputName = 'dist-server-features-static-middleware';
   const outputDir = path.join(projectRoot, outputName);
 
   describe('static', () => {
@@ -21,7 +21,7 @@ describe('static export with middleware', () => {
           env: {
             NODE_ENV: 'production',
             EXPO_USE_STATIC: 'static',
-            E2E_ROUTER_SRC: 'server-middleware-async',
+            E2E_ROUTER_SRC: 'server-features',
           },
         }
       );
