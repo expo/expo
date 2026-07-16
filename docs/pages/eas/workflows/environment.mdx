@@ -81,60 +81,43 @@ Environment variables are not the only thing a job can interpolate. The same `${
 
 Fields from the GitHub event that triggered the workflow. When a run is started with `eas workflow:run`, `event_name` is `workflow_dispatch` and the other fields are empty.
 
-```ts
-type GitHubContext = {
-  triggering_actor?: string;
-  event_name: 'pull_request' | 'push' | 'schedule' | 'workflow_dispatch';
-  sha: string;
-  ref: string; // e.g. refs/heads/main
-  ref_name: string; // e.g. main
-  ref_type: 'branch' | 'tag' | 'other';
-  commit_message?: string; // Only available for push and schedule events
-  label?: string;
-  repository?: string;
-  repository_owner?: string;
-  event?: {
-    action?: string;
-    label?: {
-      name: string;
-    };
-    // Only available for push and schedule events
-    head_commit?: {
-      message: string;
-      id: string;
-    };
-    pull_request?: {
-      number: number;
-      title: string;
-      body: string | null;
-      state: 'open' | 'closed';
-      draft: boolean;
-      merged: boolean | null;
-      html_url: string;
-      user: {
-        login: string;
-      };
-      labels: {
-        name: string;
-      }[];
-      head: {
-        ref: string; // Source branch
-        sha: string;
-      };
-      base: {
-        ref: string; // Target branch
-        sha: string;
-      };
-      created_at: string;
-      updated_at: string;
-      merged_at: string | null;
+```
+github {
+  triggering_actor,   // User who triggered the run, e.g. jonexpo
+  event_name,         // 'pull_request', 'push', 'schedule', or 'workflow_dispatch'
+  sha,                // Commit SHA
+  ref,                // Full ref, e.g. refs/heads/main
+  ref_name,           // Short ref, e.g. main
+  ref_type,           // 'branch', 'tag', or 'other'
+  commit_message,     // Only for push and schedule events
+  label,              // Label name, for pull_request_labeled events
+  repository,         // e.g. expo/expo
+  repository_owner,   // e.g. expo
+  event {             // Full GitHub webhook payload
+    action,
+    head_commit { message, id },   // Only for push and schedule events
+    pull_request {
+      number,
+      title,
+      body,
+      state,          // 'open' or 'closed'
+      draft,
+      merged,
+      html_url,
+      user { login },
+      labels,         // Array of { name }
+      head { ref, sha },   // Source branch
+      base { ref, sha },   // Target branch
+      created_at,
+      updated_at,
+      merged_at,
       // ... and other fields from the GitHub Pull Request webhook payload
-    };
-    number?: number;
-    schedule?: string;
-    inputs?: Record<string, string | number | boolean>;
-  };
-};
+    },
+    inputs,           // workflow_dispatch inputs
+    schedule,         // Cron expression, for scheduled runs
+    number,
+  }
+}
 ```
 
 The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For a detailed field reference and examples, see [`github`](/eas/workflows/syntax/#github) in the Syntax guide.
@@ -230,33 +213,23 @@ jobs:
 
 Information about the App Store Connect entities associated with the run. This context is present only for workflows triggered by an [App Store Connect event](/eas/workflows/syntax/#onapp_store_connect).
 
-```ts
-type AppStoreConnectContext = {
-  app: {
-    id: string;
-  };
-  build_upload?: {
-    id: string;
-    state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
-    cf_bundle_version?: string;
-    build?: {
-      id: string;
-    };
-  };
-  app_version?: {
-    id: string;
-    state: string;
-  };
-  external_beta?: {
-    id: string;
-    state: string;
-  };
-  beta_feedback?: {
-    id: string;
-    type: 'crash' | 'screenshot';
-    url: string;
-  };
-};
+```
+app_store_connect {
+  app { id },
+  build_upload {
+    id,
+    state,             // 'awaiting_upload', 'processing', 'failed', or 'complete'
+    cf_bundle_version,
+    build { id },
+  },
+  app_version { id, state },
+  external_beta { id, state },
+  beta_feedback {
+    id,
+    type,              // 'crash' or 'screenshot'
+    url,
+  },
+}
 ```
 
 ```yaml
