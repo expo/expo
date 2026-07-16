@@ -60,6 +60,16 @@ function withDrawerStatus<State extends TabNavigationState<ParamListBase>>(
 
 /**
  * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version.
+ *
+ * Documented deviation from the global-state invariants (decided, not accidental): the drawer keeps
+ * its open/closed state as a navigator-owned scalar `drawerStatus` on the navigation state, and
+ * `GO_BACK` closes an open drawer before the positional back walk. This intentionally departs from
+ * the "reducers only remove/reorder/refocus routes" and "uniform back" invariants the store refactor
+ * is built on, because it mirrors upstream React Navigation's DrawerRouter and `drawerStatus` is
+ * orthogonal UI state, not a route/index/focus change. The rejected alternative — modelling the open
+ * drawer as a route — would diverge from upstream, force the compiler/linking to give a UI toggle a
+ * URL, and over-model a boolean. `drawerStatus` is deliberately left out of the compiler seed (it is
+ * a React-only concern); an absent field reads as the default (see `effectiveStatus` below).
  */
 export function DrawerRouter({
   defaultStatus = 'closed',
