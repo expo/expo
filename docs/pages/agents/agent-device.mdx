@@ -67,7 +67,14 @@ Check that the local toolchain and devices are ready, then read the version-matc
 
 If your coding agent supports skills, install the official skill. It teaches the agent to select the right workflow and read help that matches your installed CLI version.
 
-<Terminal cmd={['$ npx skills add callstack/agent-device']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx skills add callstack/agent-device'],
+    yarn: ['$ yarn dlx skills add callstack/agent-device'],
+    pnpm: ['$ pnpm dlx skills add callstack/agent-device'],
+    bun: ['$ bunx skills add callstack/agent-device'],
+  }}
+/>
 
 You can also use `agent-device` without a skill. Tell your agent to use `agent-device`; it can learn the current workflow from the CLI's built-in help. See [AI Agent Setup](https://oss.callstack.com/agent-device/docs/agent-setup) for client-specific instructions and optional MCP configuration.
 
