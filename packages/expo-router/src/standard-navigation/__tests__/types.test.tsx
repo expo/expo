@@ -11,12 +11,17 @@ import {
 } from '../../react-navigation/routers';
 import type { GoBackAction, NavigateAction } from '../../react-navigation/routers/CommonActions';
 import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
-import type { NavigatorContentProps, StandardNavigationAction } from '../types';
+import type {
+  IntegrateWithRouterOptions,
+  NavigatorContentProps,
+  StandardNavigationAction,
+} from '../types';
 
 // Type-equality helpers
 type Expect<T extends true> = T;
 type Equal<A, B> =
   (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
+function typecheck(_value: unknown) {}
 
 type Opts = { title?: string };
 type EventMap = { tabPress: { data: undefined; canPreventDefault: true } };
@@ -92,7 +97,7 @@ export const _options: OptionsFn = ({ route, theme }) => {
 
 type NavProps = { tintColor?: string };
 type CreateProps = { routeNames: string[]; preload: (name: string) => void };
-type SplitContentProps = NavigatorContentProps<Opts, EventMap, NavProps & CreateProps>;
+type SplitContentProps = NavigatorContentProps<Opts, EventMap, NavProps, CreateProps>;
 type RequiredNavProps = { label: string };
 
 function SplitContent(_props: SplitContentProps) {
@@ -140,6 +145,83 @@ export type _InferredElementRequiresPublicProp = Expect<
   Equal<InferredPublicElementProps['label'], string>
 >;
 
+const InferredSplitNav = unstable_createStandardRouterNavigator(SplitContent, TabRouter, {
+  createProps: () => ({ routeNames: [], preload: () => {} }),
+});
+type InferredSplitElementProps = ComponentProps<typeof InferredSplitNav>;
+export type _InferredElementAcceptsNavigatorProps = Expect<
+  Equal<InferredSplitElementProps['tintColor'], string | undefined>
+>;
+export type _InferredElementLacksRouteNames = Expect<
+  Equal<'routeNames' extends keyof InferredSplitElementProps ? true : false, false>
+>;
+export type _InferredElementLacksPreload = Expect<
+  Equal<'preload' extends keyof InferredSplitElementProps ? true : false, false>
+>;
+
+unstable_createStandardRouterNavigator(RequiredPublicContent, TabRouter, {
+  // @ts-expect-error This content does not declare any injected props.
+  createProps: () => ({ label: 1 }),
+});
+
+type CarrierCreateProps = { x: string };
+function CarrierContent(
+  _props: NavigatorContentProps<Opts, EventMap, object, CarrierCreateProps>
+) {
+  return null;
+}
+
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  object,
+  TabRouterOptions,
+  { x: number }
+  // @ts-expect-error Explicit CreateProps must match the content's declared CreateProps.
+>(CarrierContent, TabRouter, { createProps: () => ({ x: 1 }) });
+
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  RequiredNavProps,
+  TabRouterOptions
+  // @ts-expect-error Five explicit generics declare no injected props, so `createProps` is forbidden.
+>(RequiredPublicContent, TabRouter, { createProps: () => ({ label: 1 }) });
+
+const broadlyAnnotatedFactoryOptions: IntegrateWithRouterOptions = {
+  // @ts-expect-error Bare options do not declare injected props, so `createProps` is forbidden.
+  createProps: () => ({ label: 1 }),
+};
+unstable_createStandardRouterNavigator(
+  RequiredPublicContent,
+  TabRouter,
+  broadlyAnnotatedFactoryOptions
+);
+
+// @ts-expect-error Inferred non-empty CreateProps require the options argument.
+unstable_createStandardRouterNavigator(SplitContent, TabRouter);
+
+// `NoInfer` keeps a zero-argument factory from declaring injected props for content that has none.
+unstable_createStandardRouterNavigator(PublicContent, TabRouter, {
+  // @ts-expect-error `PublicContent` does not declare any injected props.
+  createProps: () => ({ injected: true }),
+});
+
+type OptionalCreateProps = { a?: string };
+function OptionalCreateContent(
+  _props: NavigatorContentProps<Opts, EventMap, object, OptionalCreateProps>
+) {
+  return null;
+}
+
+// @ts-expect-error CreateProps with optional keys still require options.
+unstable_createStandardRouterNavigator(OptionalCreateContent, TabRouter);
+unstable_createStandardRouterNavigator(OptionalCreateContent, TabRouter, {
+  createProps: () => ({}),
+});
+
 // @ts-expect-error The options argument is required when `CreateProps` is non-empty.
 unstable_createStandardRouterNavigator<
   Opts,
@@ -157,12 +239,8 @@ unstable_createStandardRouterNavigator<
   NavProps,
   TabRouterOptions,
   CreateProps
->(
-  SplitContent,
-  TabRouter,
   // @ts-expect-error `createProps` is required when `CreateProps` is non-empty.
-  { useOnlyUserDefinedScreens: true }
-);
+>(SplitContent, TabRouter, { useOnlyUserDefinedScreens: true });
 
 unstable_createStandardRouterNavigator<
   Opts,
@@ -174,6 +252,22 @@ unstable_createStandardRouterNavigator<
 >(SplitContent, TabRouter, {
   // @ts-expect-error `createProps` must return the complete `CreateProps` shape.
   createProps: () => ({ routeNames: [] }),
+});
+
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  CreateProps
+>(SplitContent, TabRouter, {
+  createProps: (): CreateProps => ({
+    routeNames: [],
+    preload: () => {},
+    // @ts-expect-error `createProps` must not return undeclared properties.
+    extra: true,
+  }),
 });
 
 unstable_createStandardRouterNavigator<
@@ -331,21 +425,36 @@ unstable_integrateWithRouter<
 // action against the raw router `dispatch` (the guide's `createProps` example). `POP_TO_TOP` would
 // be a no-op on a TabRouter, so the guide uses `PRELOAD`.
 {
-  type TabsContentProps = NavigatorContentProps<{ title?: string }>;
+  type TabsCreateProps = { activeRouteKey: string; preload: (name: string) => void };
+  type TabsContentProps = NavigatorContentProps<
+    { title?: string },
+    Record<string, never>,
+    object,
+    TabsCreateProps
+  >;
 
-  const TabsContent = ({ state, descriptors }: TabsContentProps) => {
+  const TabsContent = ({ state, descriptors, activeRouteKey, preload }: TabsContentProps) => {
     const focusedRoute = state.routes[state.index]!;
-    return <View style={{ flex: 1 }}>{descriptors[focusedRoute.key]!.render()}</View>;
+    return (
+      <Pressable onPress={() => preload(activeRouteKey)} style={{ flex: 1 }}>
+        {descriptors[focusedRoute.key]!.render()}
+      </Pressable>
+    );
   };
 
-  // eslint-disable-next-line no-unused-expressions
-  unstable_createStandardRouterNavigator(TabsContent, TabRouter, {
+  const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter, {
     useOnlyUserDefinedScreens: true,
     createProps: ({ state, dispatch }) => ({
       activeRouteKey: state.routes[state.index]!.key,
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
     }),
   });
+
+  typecheck(<Tabs />);
+  // @ts-expect-error `activeRouteKey` is injected by `createProps`.
+  typecheck(<Tabs activeRouteKey="route" />);
+  // @ts-expect-error `preload` is injected by `createProps`.
+  typecheck(<Tabs preload={() => {}} />);
 }
 
 // "Library entry points" — a framework-agnostic navigator created directly with

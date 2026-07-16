@@ -599,6 +599,7 @@ describe('custom-navigators guide example', () => {
   type ContentProps = NavigatorContentProps<
     { title?: string },
     Record<string, never>,
+    object,
     CreatePropsProps
   >;
 

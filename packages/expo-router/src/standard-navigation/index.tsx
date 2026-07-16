@@ -36,12 +36,6 @@ export type {
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
 
-type NavigatorPropsWithCreateProps<NavigatorProps extends object, CreateProps extends object> = [
-  keyof CreateProps,
-] extends [never]
-  ? NavigatorProps
-  : NavigatorProps & CreateProps;
-
 // A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
 // required otherwise; a normal optional parameter would accept `undefined` in both cases.
 type IntegrateWithRouterOptionsTuple<State extends NavigationState, CreateProps extends object> = [
@@ -50,12 +44,31 @@ type IntegrateWithRouterOptionsTuple<State extends NavigationState, CreateProps 
   ? [options?: IntegrateWithRouterOptions<State, CreateProps>]
   : [options: IntegrateWithRouterOptions<State, CreateProps>];
 
+type StandardRouterNavigatorComponent<
+  NavigatorOptions extends object,
+  State extends NavigationState,
+  EventMap extends StandardNavigatorEventMapBase,
+  NavigatorProps extends object,
+  RouterOptions extends DefaultRouterOptions,
+> = ReturnType<
+  typeof withLayoutContext<
+    NavigatorOptions,
+    ComponentType<
+      StandardRouterNavigatorProps<State, NavigatorOptions, EventMap, NavigatorProps, RouterOptions>
+    >,
+    State,
+    EventMap & EventMapBase
+  >
+>;
+
 /**
  * > **warning** This API is unstable and may change between minor releases.
  *
  * Creates a [`standard-navigation`](https://www.npmjs.com/package/standard-navigation) navigator and
  * wires it into Expo Router in one step. Use `unstable_integrateWithRouter` instead if you already
  * have a navigator from `createStandardNavigator`.
+ * Props declared in both `NavigatorProps` and `CreateProps` are intersected, so incompatible types
+ * produce `never` rather than a type error at this call.
  *
  * @param NavigatorContent Renders the navigator UI; receives the standard-navigation `state`,
  * `descriptors`, `actions`, and `emitter`.
@@ -78,21 +91,21 @@ export function unstable_createStandardRouterNavigator<
   CreateProps extends object = object,
 >(
   NavigatorContent: ComponentType<
-    NavigatorContentProps<
-      NavigatorOptions,
-      EventMap,
-      NavigatorPropsWithCreateProps<NavigatorProps, CreateProps>
-    >
+    NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps, CreateProps>
   >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  // A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
-  // required otherwise; a normal optional parameter would accept `undefined` in both cases.
-  ...[options]: IntegrateWithRouterOptionsTuple<State, CreateProps>
-) {
+  ...options: IntegrateWithRouterOptionsTuple<State, NoInfer<CreateProps>>
+): StandardRouterNavigatorComponent<
+  NavigatorOptions,
+  State,
+  EventMap,
+  NavigatorProps,
+  RouterOptions
+> {
   const navigator = createStandardNavigator<
     NavigatorOptions,
     EventMap,
-    NavigatorPropsWithCreateProps<NavigatorProps, CreateProps>
+    NavigatorProps & CreateProps
   >(NavigatorContent);
   return unstable_integrateWithRouter<
     NavigatorOptions,
@@ -101,7 +114,7 @@ export function unstable_createStandardRouterNavigator<
     NavigatorProps,
     RouterOptions,
     CreateProps
-  >(navigator, router, ...([options ?? {}] as IntegrateWithRouterOptionsTuple<State, CreateProps>));
+  >(navigator, router, ...options);
 }
 
 /**
@@ -132,22 +145,12 @@ export function unstable_integrateWithRouter<
   RouterOptions extends DefaultRouterOptions,
   CreateProps extends object = object,
 >(
-  navigator: StandardNavigator<
-    NavigatorOptions,
-    EventMap,
-    NavigatorPropsWithCreateProps<NavigatorProps, CreateProps>
-  >,
+  navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps & CreateProps>,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  // A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
-  // required otherwise; a normal optional parameter would accept `undefined` in both cases.
-  ...[options]: IntegrateWithRouterOptionsTuple<State, CreateProps>
+  ...[options]: IntegrateWithRouterOptionsTuple<State, NoInfer<CreateProps>>
 ) {
   assertStandardNavigator(navigator);
-  const { NavigatorContent } = navigator as StandardNavigator<
-    NavigatorOptions,
-    EventMap,
-    NavigatorProps & CreateProps
-  >;
+  const { NavigatorContent } = navigator;
 
   type NavPropsType = StandardRouterNavigatorProps<
     State,
