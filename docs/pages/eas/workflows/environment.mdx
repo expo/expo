@@ -110,7 +110,25 @@ type GitHubContext = {
       state: 'open' | 'closed';
       draft: boolean;
       merged: boolean | null;
-      // ... Other fields from the GitHub Pull Request webhook payload
+      html_url: string;
+      user: {
+        login: string;
+      };
+      labels: {
+        name: string;
+      }[];
+      head: {
+        ref: string; // Source branch
+        sha: string;
+      };
+      base: {
+        ref: string; // Target branch
+        sha: string;
+      };
+      created_at: string;
+      updated_at: string;
+      merged_at: string | null;
+      // ... and other fields from the GitHub Pull Request webhook payload
     };
     number?: number;
     schedule?: string;
@@ -148,6 +166,14 @@ jobs:
 
 A record of the upstream jobs listed in the current job's [`after`](/eas/workflows/syntax/#jobsjob_idafter), whether or not they succeeded. Each entry provides the same `status` and `outputs` shape as [`needs`](#needs).
 
+```yaml
+jobs:
+  notify:
+    after: [build]
+    steps:
+      - run: echo "Build status: ${{ after.build.status }}"
+```
+
 ### `steps`
 
 A record of the steps in the current job, keyed by step `id`. Each entry exposes the `outputs` set with the [`set-output`](/eas/workflows/syntax/#set-output) function. This context is only available within a job's steps.
@@ -157,25 +183,37 @@ jobs:
   my_job:
     steps:
       - id: step_1
-        run: set-output value "hello"
-      - run: echo "${{ steps.step_1.outputs.value }}"
+        run: set-output my_greeting "hello"
+      - run: echo "${{ steps.step_1.outputs.my_greeting }}"
 ```
 
 ### `metadata`
 
-Metadata about the build associated with the job, such as `buildProfile`, `appVersion`, `appBuildVersion`, `sdkVersion`, `runtimeVersion`, `gitCommitHash`, and `distribution`. It is populated for [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs and is an empty object (`{}`) for job types without build metadata, such as custom jobs.
+Metadata about the build associated with the job. It is populated for [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs and is an empty object (`{}`) for job types without build metadata, such as custom jobs.
+
+```
+metadata {
+  buildProfile,     // Build profile from eas.json, e.g. production
+  appVersion,       // App version, e.g. 1.0.0
+  appBuildVersion,  // Build number (iOS) or version code (Android)
+  sdkVersion,       // Expo SDK version, e.g. 54.0.0
+  runtimeVersion,   // Runtime version for EAS Update
+  gitCommitHash,    // Git commit the build ran against
+  distribution,     // 'store' or 'internal'
+}
+```
 
 ### `workflow`
 
 Information about the current workflow run.
 
-```ts
-type WorkflowContext = {
-  id: string;
-  name: string;
-  filename: string;
-  url: string;
-};
+```
+workflow {
+  id,        // ID of the workflow run
+  name,      // Name of the workflow
+  filename,  // Name of the workflow file, e.g. deploy.yml
+  url,       // URL of the run on the EAS dashboard
+}
 ```
 
 ```yaml
@@ -219,6 +257,23 @@ type AppStoreConnectContext = {
     url: string;
   };
 };
+```
+
+```yaml
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  notify:
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: |
+        Upload complete for app: ${{ app_store_connect.app.id }}
+        Upload state: ${{ app_store_connect.build_upload.state }}
 ```
 
 For the event domains that populate each field and full examples, see [`app_store_connect`](/eas/workflows/syntax/#app_store_connect) in the Syntax guide.
