@@ -28,6 +28,7 @@ export const Drawer = unstable_integrateWithRouter<
 >(createStandardDrawerNavigator, DrawerRouter, {
   createProps: ({ state, navigation }) => ({
     drawerState: state,
+    // `createProps` exposes base helpers, but `DrawerRouter` adds drawer action helpers at runtime.
     navigation: navigation as DrawerNavigationHelpers,
   }),
 });

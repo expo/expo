@@ -1,5 +1,6 @@
 import 'react-native-gesture-handler/jestSetup';
 
+import { userEvent } from '@testing-library/react-native';
 import { useEffect } from 'react';
 import { Button, Text, View } from 'react-native';
 import { Drawer as DrawerLayout } from 'react-native-drawer-layout';
@@ -7,7 +8,7 @@ import { Drawer as DrawerLayout } from 'react-native-drawer-layout';
 import { router } from '../../../imperative-api';
 import { Drawer } from '../../../layouts/Drawer';
 import { Stack } from '../../../layouts/Stack';
-import { act, fireEvent, renderRouter, screen } from '../../../testing-library';
+import { act, renderRouter, screen } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
 import { DrawerActions, type ParamListBase } from '../../native';
 import type { DrawerNavigationProp } from '../types';
@@ -53,7 +54,7 @@ test('renders a drawer navigator and navigates between screens', () => {
   expect(screen).toHavePathname('/second');
 });
 
-test('handles drawer actions and preventable item presses', () => {
+test('handles drawer actions and preventable item presses', async () => {
   function Second() {
     const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
     useEffect(
@@ -86,14 +87,15 @@ test('handles drawer actions and preventable item presses', () => {
   });
 
   expect(drawerOpen()).toBe(false);
-  fireEvent.press(screen.getByTestId('open-drawer'));
+  await userEvent.press(screen.getByTestId('open-drawer'));
   expect(drawerOpen()).toBe(true);
 
-  fireEvent.press(screen.getByText('second'));
+  await userEvent.press(screen.getByText('second'));
+  // The `drawerItemPress` listener prevents navigation to the second screen.
   expect(screen).toHavePathname('/');
 });
 
-test('preloads screens', () => {
+test('preloads screens', async () => {
   function Index() {
     const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
     return <Button testID="preload" title="Preload" onPress={() => navigation.preload('second')} />;
@@ -112,12 +114,12 @@ test('preloads screens', () => {
 
   expect(screen.queryByText('Second screen', { includeHiddenElements: true })).toBeNull();
 
-  fireEvent.press(screen.getByTestId('preload'));
+  await userEvent.press(screen.getByTestId('preload'));
 
   expect(screen.queryByText('Second screen', { includeHiddenElements: true })).not.toBeNull();
 });
 
-test('pops a nested stack to top on blur', () => {
+test('resets a nested stack when its drawer screen loses focus with popToTopOnBlur', async () => {
   renderRouter(
     {
       _layout: () => (
@@ -135,9 +137,16 @@ test('pops a nested stack to top on blur', () => {
   );
 
   act(() => router.push('/one/details'));
-  act(() => router.navigate('/two'));
-  act(() => router.navigate('/one'));
 
+  expect(screen.getByTestId('one-details')).toBeVisible();
+
+  act(() => router.navigate('/two'));
+
+  expect(screen.getByTestId('two')).toBeVisible();
+
+  await userEvent.press(screen.getByText('one'));
+
+  // Without `popToTopOnBlur`, the details screen would still be active.
   expect(screen.getByTestId('one-index')).toBeVisible();
   expect(screen.queryByTestId('one-details')).toBeNull();
 });
