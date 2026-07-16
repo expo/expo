@@ -43,7 +43,7 @@ type NavigatorPropsWithCreateProps<NavigatorProps extends object, CreateProps ex
   : NavigatorProps & CreateProps;
 
 // A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
-// required otherwise; a normal optional parameter would allow it in both cases.
+// required otherwise; a normal optional parameter would accept `undefined` in both cases.
 type IntegrateWithRouterOptionsTuple<State extends NavigationState, CreateProps extends object> = [
   keyof CreateProps,
 ] extends [never]
@@ -86,7 +86,7 @@ export function unstable_createStandardRouterNavigator<
   >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
   // A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
-  // required otherwise; a normal optional parameter would allow it in both cases.
+  // required otherwise; a normal optional parameter would accept `undefined` in both cases.
   ...[options]: IntegrateWithRouterOptionsTuple<State, CreateProps>
 ) {
   const navigator = createStandardNavigator<
@@ -94,8 +94,6 @@ export function unstable_createStandardRouterNavigator<
     EventMap,
     NavigatorPropsWithCreateProps<NavigatorProps, CreateProps>
   >(NavigatorContent);
-  // `options` can only be undefined when `CreateProps` is empty, where it is optional in the
-  // forwarded call. TypeScript cannot narrow that unresolved conditional here.
   return unstable_integrateWithRouter<
     NavigatorOptions,
     State,
@@ -103,7 +101,7 @@ export function unstable_createStandardRouterNavigator<
     NavigatorProps,
     RouterOptions,
     CreateProps
-  >(navigator, router, options!);
+  >(navigator, router, ...([options ?? {}] as IntegrateWithRouterOptionsTuple<State, CreateProps>));
 }
 
 /**
@@ -141,7 +139,7 @@ export function unstable_integrateWithRouter<
   >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
   // A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
-  // required otherwise; a normal optional parameter would allow it in both cases.
+  // required otherwise; a normal optional parameter would accept `undefined` in both cases.
   ...[options]: IntegrateWithRouterOptionsTuple<State, CreateProps>
 ) {
   assertStandardNavigator(navigator);
@@ -199,6 +197,8 @@ export function unstable_integrateWithRouter<
           // its type, so the TS contract keeps users from reading router options off `NavigatorContent`
           // in the common case, even though they are physically present on the object.
           {...(extraProps as unknown as NavigatorProps)}
+          // `derivedProps` is partial only when `CreateProps` is empty; otherwise `createProps` is
+          // required and returns the complete shape.
           {...(derivedProps as CreateProps)}
           {...standardArgs}
         />

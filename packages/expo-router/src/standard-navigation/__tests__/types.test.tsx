@@ -87,7 +87,7 @@ export const _options: OptionsFn = ({ route, theme }) => {
 };
 
 // ---------------------------------------------------------------------------
-// CreateProps: content-only props injected by createProps
+// CreateProps - unstable_createStandardRouterNavigator: content-only props injected by createProps
 // ---------------------------------------------------------------------------
 
 type NavProps = { tintColor?: string };
@@ -176,6 +176,27 @@ unstable_createStandardRouterNavigator<
   createProps: () => ({ routeNames: [] }),
 });
 
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions
+>(PublicContent, TabRouter);
+
+unstable_createStandardRouterNavigator<
+  Opts,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  NavProps,
+  TabRouterOptions,
+  object
+>(PublicContent, TabRouter);
+
+// ---------------------------------------------------------------------------
+// CreateProps - unstable_integrateWithRouter: content-only props injected by createProps
+// ---------------------------------------------------------------------------
+
 const splitStandardNavigator = createStandardNavigator<Opts, EventMap, NavProps & CreateProps>(
   SplitContent
 );
@@ -252,23 +273,6 @@ unstable_integrateWithRouter<
   TabRouterOptions,
   object
 >(publicStandardNavigator, TabRouter);
-
-unstable_createStandardRouterNavigator<
-  Opts,
-  TabNavigationState<ParamListBase>,
-  EventMap,
-  NavProps,
-  TabRouterOptions
->(PublicContent, TabRouter);
-
-unstable_createStandardRouterNavigator<
-  Opts,
-  TabNavigationState<ParamListBase>,
-  EventMap,
-  NavProps,
-  TabRouterOptions,
-  object
->(PublicContent, TabRouter);
 
 // ---------------------------------------------------------------------------
 // The exact example from the "Custom navigators" guide
