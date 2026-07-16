@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix GraphQL `data` results with all-null fields being treated as failed, obscuring underlying failure states ([#47860](https://github.com/expo/expo/pull/47860) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 57.0.8 — 2026-07-15
