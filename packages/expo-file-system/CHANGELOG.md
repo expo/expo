@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support. ([#47176](https://github.com/expo/expo/pull/47176) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
 
 - Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376) by [@wh201906](https://github.com/wh201906))
