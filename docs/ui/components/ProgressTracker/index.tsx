@@ -1,5 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
+import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -10,6 +12,11 @@ import { P } from '~/ui/components/Text';
 import { Checkbox } from '../Form/Checkbox';
 import { SuccessCheckmark } from './SuccessCheckmark';
 import { TUTORIAL_CHAPTERS, TUTORIAL_TRAILERS, type TutorialName } from './TutorialData';
+
+const NEXT_CHAPTER_ICONS: Partial<Record<TutorialName, typeof BookOpen02Icon>> = {
+  EAS_TUTORIAL: PlanEnterpriseIcon,
+  CICD_TUTORIAL: Dataflow03Icon,
+};
 
 type ProgressTrackerProps = {
   name: TutorialName;
@@ -94,7 +101,7 @@ export function ProgressTracker({
             { id: 'progressTrackerNext' },
             { title: nextChapterTitle ?? next.title }
           )}
-          Icon={BookOpen02Icon}
+          Icon={NEXT_CHAPTER_ICONS[name] ?? BookOpen02Icon}
         />
       </>
     </>
