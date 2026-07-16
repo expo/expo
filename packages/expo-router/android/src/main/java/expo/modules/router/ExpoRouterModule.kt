@@ -1,5 +1,7 @@
 package expo.modules.router
 
+import android.app.Application
+import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
@@ -9,12 +11,41 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import androidx.appcompat.view.ContextThemeWrapper
 import com.google.android.material.color.MaterialColors
 
+private const val COLOR_PALETTE_CHANGED_EVENT = "onColorPaletteChanged"
+
+// `ActivityInfo.CONFIG_ASSETS_PATHS` — inlined because the constant is public API
+// only since compileSdk 36, while the framework sets the bit since API 26.
+private const val CONFIG_ASSETS_PATHS = 0x80000000.toInt()
+
 class ExpoRouterModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
+  @Volatile
+  private var lastConfiguration: Configuration? = null
+
+  // Kept so unregistration works even after the react context is gone.
+  // Only touched on the modules queue (start/stop observing, destroy), so not volatile.
+  private var registeredApplication: Application? = null
+
+  // Android delivers a Material You palette change as an assets-path configuration
+  // change (the dynamic-color overlay is swapped), so emit only on that diff bit.
+  private val componentCallbacks = object : ComponentCallbacks {
+    override fun onConfigurationChanged(newConfig: Configuration) {
+      val previous = lastConfiguration
+      lastConfiguration = Configuration(newConfig)
+      if (previous != null && previous.diff(newConfig) and CONFIG_ASSETS_PATHS != 0) {
+        sendEvent(COLOR_PALETTE_CHANGED_EVENT)
+      }
+    }
+
+    override fun onLowMemory() = Unit
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoRouter")
+
+    Events(COLOR_PALETTE_CHANGED_EVENT)
 
     Function("Material3Color") { name: String, scheme: String ->
       materialColor(name, scheme)
@@ -23,6 +54,31 @@ class ExpoRouterModule : Module() {
     Function("Material3DynamicColor") { name: String, scheme: String ->
       dynamicColor(name, scheme)
     }
+
+    // If the react context is unexpectedly null here, registration is skipped for the
+    // session — accepted risk, since a JS listener implies a live react context.
+    OnStartObserving(COLOR_PALETTE_CHANGED_EVENT) {
+      unregisterComponentCallbacks()
+      registeredApplication = (appContext.reactContext?.applicationContext as? Application)?.also {
+        lastConfiguration = Configuration(it.resources.configuration)
+        it.registerComponentCallbacks(componentCallbacks)
+      }
+    }
+
+    OnStopObserving(COLOR_PALETTE_CHANGED_EVENT) {
+      unregisterComponentCallbacks()
+    }
+
+    // JS never removes listeners on react-instance teardown (for example, a reload),
+    // so clean up here to avoid leaking the callback on the application context.
+    OnDestroy {
+      unregisterComponentCallbacks()
+    }
+  }
+
+  private fun unregisterComponentCallbacks() {
+    registeredApplication?.unregisterComponentCallbacks(componentCallbacks)
+    registeredApplication = null
   }
 
   private fun materialColor(name: String, scheme: String): String? {

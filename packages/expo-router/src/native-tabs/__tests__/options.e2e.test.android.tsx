@@ -13,6 +13,7 @@ import { SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES } from '../types';
 
 // Mock Color API with known test values
 jest.mock('../../color', (): typeof import('../../color') => ({
+  ...(jest.requireActual('../../color') as typeof import('../../color')),
   Color: {
     android: {
       dynamic: {
