@@ -53,7 +53,13 @@ type NavigationPayloadRoute = Omit<AnyPartialRoute, 'state'> & {
 export function getNavigationPayloadFromStateRoute(
   actionStateRoute: NavigationPayloadRoute | undefined,
   navigationState: NavigationState,
-  extraParams?: Record<string, unknown>
+  extraParams?: Record<string, unknown>,
+  // A navigate (unlike a push) that lands on a route already present in the target navigator reuses
+  // that route rather than appending a new one — e.g. switching to a sibling tab. The subtree must
+  // then adopt the existing route's key so the installed slice keys the same as the live navigator;
+  // minting a fresh index instead would key a differently-identified subtree over a preloaded tab
+  // and remount its screens. A push always appends, so it keeps minting the next key.
+  reuseExistingRoute?: boolean
 ): NavigationPayload {
   const name = actionStateRoute?.name;
   const params = getRouteParams(actionStateRoute?.params, extraParams);
@@ -62,11 +68,16 @@ export function getNavigationPayloadFromStateRoute(
     return { name, params };
   }
 
-  const routeKey = getNextRouteKeyFromState({
-    stateKey: navigationState.key,
-    name,
-    state: navigationState,
-  });
+  const existingRoute = reuseExistingRoute
+    ? navigationState.routes.find((route) => route.name === name)
+    : undefined;
+  const routeKey =
+    existingRoute?.key ??
+    getNextRouteKeyFromState({
+      stateKey: navigationState.key,
+      name,
+      state: navigationState,
+    });
   const state = actionStateRoute?.state
     ? rekeyState(actionStateRoute.state, routeKey, params)
     : undefined;

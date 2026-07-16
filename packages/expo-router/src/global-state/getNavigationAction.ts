@@ -101,7 +101,10 @@ export function getNavigateAction(
   const subtreePayload = getNavigationPayloadFromStateRoute(
     actionStateRoute || {},
     navigationState,
-    expoParams
+    expoParams,
+    // A push always appends a new route; a navigate reuses one already present in the target
+    // navigator (a sibling tab, a preloaded tab), so its subtree must adopt that route's key.
+    type !== 'PUSH'
   );
 
   if (withAnchor) {

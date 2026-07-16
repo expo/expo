@@ -331,7 +331,8 @@ describe(getNavigateAction, () => {
     const result = getNavigateAction('/home', {});
 
     expect(mockGetLegacyPayload).toHaveBeenCalledWith({});
-    expect(mockGetPayload).toHaveBeenCalledWith({}, expect.anything(), {});
+    // Fourth arg is the reuse-existing-route flag (`true` for a NAVIGATE, `false` for a PUSH).
+    expect(mockGetPayload).toHaveBeenCalledWith({}, expect.anything(), {}, true);
     expect(result).toBeDefined();
   });
 
