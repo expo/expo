@@ -20,8 +20,29 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
   <Requirement number={2} title="Create an app on Google Play Console">
     Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
   </Requirement>
-  <Requirement number={3} title="Create a Google Service Account key">
-    EAS requires a Google Service Account key to submit on your behalf. Follow the [Creating a Google Service Account key](https://expo.fyi/creating-google-service-account) guide to create one.
+  <Requirement number={3} title="Create a Google Service Account key and upload it to EAS">
+    EAS requires a Google Service Account key to submit on your behalf. Follow the [Creating a Google Service Account key](https://expo.fyi/creating-google-service-account) guide to create one. Then, upload the key to your project's credentials with the EAS dashboard or EAS CLI:
+
+    <Tabs>
+    <Tab label="EAS dashboard">
+    - Go to your project's EAS dashboard, click **Credentials**, and under **Android**, click your app's **Application identifier**.
+    - Under **Service Credentials**, click **Add a Google Service Account Key**.
+    - Ensure **Upload new key** is selected and upload the downloaded JSON key.
+
+    <ContentSpotlight
+      alt="Uploading the Google Service Account key to EAS dashboard under Service Credentials"
+      src="/static/images/tutorial/eas/credentials-03.png"
+      className="max-w-[540px]"
+    />
+    </Tab>
+    <Tab label="EAS CLI">
+    - Run `eas credentials --platform android`
+    - When prompted **Which build profile do you want to configure?**, select **production**
+    - When prompted **What do you want to do?**, select **Google Service Account** > **Upload a Google Service Account Key**
+    - Enter the path to the JSON key file
+    </Tab>
+    </Tabs>
+
   </Requirement>
   <Requirement number={4} title="Include a package name in app config">
     Include your app's package name in **app.json**:
@@ -85,27 +106,7 @@ See [Automate submissions](/build/automate-submissions/) for details.
 
 ## Automate with EAS Workflows
 
-[EAS Workflows](/eas/workflows/introduction/) runs the same `eas submit` command on EAS infrastructure, triggered by a git push or run manually from CLI. Upload your Google Service Account key to your project's credentials (via the EAS dashboard or `eas credentials --platform android`) so workflows can authenticate with Google Play.
-
-<Tabs>
-<Tab label="EAS dashboard">
-- Go to your project's EAS dashboard, click **Credentials**, and under **Android**, click your app's **Application identifier**.
-- Under **Service Credentials**, click **Add a Google Service Account Key**.
-- Ensure **Upload new key** is selected and upload the downloaded JSON key.
-
-<ContentSpotlight
-  alt="Uploading the Google Service Account key to EAS dashboard under Service Credentials"
-  src="/static/images/tutorial/eas/credentials-03.png"
-  className="max-w-[540px]"
-/>
-</Tab>
-<Tab label="EAS CLI">
-- Run `eas credentials --platform android`
-- When prompted **Which build profile do you want to configure?**, select **production**
-- When prompted **What do you want to do?**, select **Google Service Account** > **Upload a Google Service Account Key**
-- Enter the path to the JSON key file
-</Tab>
-</Tabs>
+[EAS Workflows](/eas/workflows/introduction/) runs the same `eas submit` command on EAS infrastructure, triggered by a git push or run manually from CLI. Workflows authenticate with Google Play using the Google Service Account key you uploaded in the [prerequisites](#prerequisites).
 
 Create a workflow file named **.eas/workflows/submit-android.yml** with the following contents:
 
