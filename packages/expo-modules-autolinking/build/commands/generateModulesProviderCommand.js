@@ -13,6 +13,7 @@ const resolveModules_1 = require("../autolinking/resolveModules");
 function generateModulesProviderCommand(cli) {
     return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('generate-modules-provider [searchPaths...]'))
         .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
+        .option('--target-name <name>', 'Name of the user target the package list is generated for. Used to match against the inline modules targets.')
         .option('--entitlement <path>', 'Path to the Apple code signing entitlements file.')
         .option('-p, --packages <packages...>', 'Names of the packages to include in the generated modules provider.')
         .option('--app-root <path>', 'Path to the app root directory.')
@@ -43,6 +44,7 @@ function generateModulesProviderCommand(cli) {
         await (0, generatePackageList_1.generateModulesProviderAsync)(filteredModules, {
             platform,
             targetPath: commandArguments.target,
+            targetName: commandArguments.targetName,
             entitlementPath: commandArguments.entitlement ?? null,
             watchedDirectories,
             inlineModulesTargets,

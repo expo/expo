@@ -9,6 +9,7 @@ import { resolveModulesAsync } from '../autolinking/resolveModules';
 
 interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   target: string;
+  targetName?: string;
   podfilePropertiesFilePath: string;
   entitlement?: string;
   packages?: string[] | null;
@@ -26,6 +27,10 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
     .option(
       '-t, --target <path>',
       'Path to the target file, where the package list should be written to.'
+    )
+    .option(
+      '--target-name <name>',
+      'Name of the user target the package list is generated for. Used to match against the inline modules targets.'
     )
     .option('--entitlement <path>', 'Path to the Apple code signing entitlements file.')
     .option(
@@ -76,6 +81,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         await generateModulesProviderAsync(filteredModules, {
           platform,
           targetPath: commandArguments.target,
+          targetName: commandArguments.targetName,
           entitlementPath: commandArguments.entitlement ?? null,
           watchedDirectories,
           inlineModulesTargets,
