@@ -81,7 +81,7 @@ Environment variables are not the only thing a job can interpolate. The same `${
 
 Fields from the GitHub event that triggered the workflow. When a run is started with `eas workflow:run`, `event_name` is `workflow_dispatch` and the other fields are empty.
 
-```
+```js
 github {
   triggering_actor,   // User who triggered the run, e.g. jonexpo
   event_name,         // 'pull_request', 'push', 'schedule', or 'workflow_dispatch'
@@ -174,7 +174,7 @@ jobs:
 
 Metadata about the build associated with the job. It is populated for [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs and is an empty object (`{}`) for job types without build metadata, such as custom jobs.
 
-```
+```js
 metadata {
   buildProfile,     // Build profile from eas.json, e.g. production
   appVersion,       // App version, e.g. 1.0.0
@@ -190,7 +190,7 @@ metadata {
 
 Information about the current workflow run.
 
-```
+```js
 workflow {
   id,        // ID of the workflow run
   name,      // Name of the workflow
@@ -213,7 +213,7 @@ jobs:
 
 Information about the App Store Connect entities associated with the run. This context is present only for workflows triggered by an [App Store Connect event](/eas/workflows/syntax/#onapp_store_connect).
 
-```
+```js
 app_store_connect {
   app { id },
   build_upload {
