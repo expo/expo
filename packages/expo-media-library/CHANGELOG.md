@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix saving files larger than ~2 GB (e.g. `createAssetAsync` with large videos) failing with "Unable to copy file into external storage" by looping `FileChannel.transferTo` until the whole file is copied. ([#47811](https://github.com/expo/expo/pull/47811) by [@jiunshinn](https://github.com/jiunshinn))
+
 ### 💡 Others
 
 ## 57.0.2 — 2026-07-15
