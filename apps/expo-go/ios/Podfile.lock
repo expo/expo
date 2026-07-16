@@ -110,6 +110,8 @@ PODS:
     - ExpoModulesCore
   - ExpoCamera (56.0.7):
     - ExpoModulesCore
+  - ExpoCamera/Tests (56.0.7):
+    - ExpoModulesCore
   - ExpoCameraBarcodeScanning (56.0.7):
     - ExpoCamera
     - ZXingObjC/OneD
@@ -4159,6 +4161,7 @@ DEPENDENCIES:
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
   - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
+  - ExpoCamera/Tests (from `../../../packages/expo-camera/ios`)
   - ExpoCameraBarcodeScanning (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
@@ -4744,7 +4747,7 @@ SPEC CHECKSUMS:
   ExpoBlur: caddd80171e5f8f3581ff3d865e99c6465047240
   ExpoBrightness: db4e1904c09d8cad3e120cd82466fdb3cfb8ff85
   ExpoCalendar: abe02062604dad8fac03539ea769e29870d4feee
-  ExpoCamera: fc1d2688e9824984e28cf606062da40d2d80b13e
+  ExpoCamera: 81c10b3e5d0652becc62d496b36e41bd9e8f4dd4
   ExpoCameraBarcodeScanning: a6a8781886a0cf5ebe78184dcc895c0c88e1b8b5
   ExpoCellular: 61e540ab0138c7f441639b51a27b3cca2bbc5ae8
   ExpoClipboard: 40221903a1caa68259e022517af49d12962821fe
@@ -4814,7 +4817,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 9c084a6e3fdd40f70d498576a8540d94aee5a76e
+  hermes-engine: 42f0ed2cf70592b35e2ca49a6b725d31c8ad4136
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
