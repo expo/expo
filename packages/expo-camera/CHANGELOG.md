@@ -24,6 +24,7 @@
 - [iOS] Disable deferred photo delivery so responsive capture no longer hangs the capture promise on iOS 17 and later. ([#47816](https://github.com/expo/expo/pull/47816) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fire `onMountError` instead of crashing the app when the camera can't be started, such as a device reporting zero available cameras. ([#47818](https://github.com/expo/expo/pull/47818) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Preserve the capture orientation as EXIF metadata instead of rotating captured pixels, so `takePictureAsync` and `savePictureAsync` return the real orientation tag and dimensions. ([#47824](https://github.com/expo/expo/pull/47824) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Return zeroed `bounds` and `cornerPoints` from the ZXing fallback scanner so scanning a `pdf417`, `code39`, or `codabar` code no longer crashes with `Cannot read property 'origin' of undefined`. ([#47854](https://github.com/expo/expo/pull/47854) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

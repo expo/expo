@@ -469,21 +469,12 @@ export default function CameraScreen() {
 
   const renderBarcode = () => (
     <View style={styles.barcode} pointerEvents="none">
-      <Animated.View style={barcodeOverlayStyle}>
-        <Text
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: 0,
-            color: 'black',
-            fontSize: 12,
-            fontWeight: 'bold',
-            paddingHorizontal: 4,
-            paddingVertical: 2,
-          }}>
-          {barcodeData}
-        </Text>
-      </Animated.View>
+      <Animated.View style={barcodeOverlayStyle} />
+      {barcodeData ? (
+        <View style={styles.barcodeDataLabel}>
+          <Text style={styles.barcodeDataText}>{barcodeData}</Text>
+        </View>
+      ) : null}
     </View>
   );
 
@@ -511,7 +502,7 @@ export default function CameraScreen() {
             videoStabilizationMode={state.videoStabilizationMode}
             onMountError={handleMountError}
             barcodeScannerSettings={{
-              barcodeTypes: ['qr', 'pdf417'],
+              barcodeTypes: ['pdf417', 'codabar', 'code39'],
             }}
             onBarcodeScanned={state.barcodeScanning ? onBarcodeScanned : undefined}
           />
@@ -644,5 +635,24 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+  },
+  barcodeDataLabel: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  barcodeDataText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    overflow: 'hidden',
   },
 });
