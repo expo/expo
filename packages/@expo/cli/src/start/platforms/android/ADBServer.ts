@@ -6,8 +6,7 @@ import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { AbortCommandError, CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
-
-const debug = require('debug')('expo:start:platforms:android:adbServer') as typeof console.log;
+import { event } from '../events';
 
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
 
@@ -55,10 +54,7 @@ export class ADBServer {
 
   /** Kill the ADB server. */
   async stopAsync(): Promise<boolean> {
-    debug('Stopping ADB server');
-
     if (!this.isRunning) {
-      debug('ADB server is not running');
       return false;
     }
     this.removeExitHook();
@@ -69,7 +65,6 @@ export class ADBServer {
       Log.error('Failed to stop ADB server: ' + error.message);
       return false;
     } finally {
-      debug('Stopped ADB server');
       this.isRunning = false;
     }
   }
@@ -81,7 +76,7 @@ export class ADBServer {
 
     await this.startAsync();
 
-    debug([adb, ...args].join(' '));
+    event('adb_server_run', { command: [adb, ...args].join(' ') });
     const result = await this.resolveAdbPromise(spawnAsync(adb, args));
     return result.output.join('\n');
   }
@@ -99,7 +94,7 @@ export class ADBServer {
         stdio: 'pipe',
       })
     );
-    debug('[ADB] File output:\n', results);
+    event('adb_file_output', { output: results });
     return results;
   }
 

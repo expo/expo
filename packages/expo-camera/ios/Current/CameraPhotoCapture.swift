@@ -17,6 +17,13 @@ protocol CameraPhotoCaptureDelegate: AnyObject {
 class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
   weak var captureDelegate: CameraPhotoCaptureDelegate?
 
+  // Serial + per-item autorelease: overlapping full-res photo pipelines can jetsam small devices
+  private static let processingQueue = DispatchQueue(
+    label: "com.expo.cameraPhotoProcessingQueue",
+    qos: .userInitiated,
+    autoreleaseFrequency: .workItem
+  )
+
   private var photoCaptureOptions: TakePictureOptions?
   private var photoCapturedContinuation: CheckedContinuation<Any, Error>?
 
@@ -124,21 +131,45 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
       return
     }
 
-    do {
-      let result = try processImageData(
-        imageData: photo.fileDataRepresentation(),
-        metadata: photo.metadata,
-        options: options
-      )
-      continuation.resume(returning: result)
-    } catch {
-      continuation.resume(throwing: error)
+    // Processing a full-res still takes seconds and this callback can arrive on the main queue —
+    // extract what we need from the photo, then do the heavy work off the delivery queue
+    let imageData = photo.fileDataRepresentation()
+    let metadata = photo.metadata
+    let previewSize = currentPreviewSize()
+
+    Self.processingQueue.async { [weak self] in
+      guard let self else {
+        continuation.resume(throwing: CameraImageCaptureException())
+        return
+      }
+      do {
+        let result = try self.processImageData(
+          imageData: imageData,
+          metadata: metadata,
+          previewSize: previewSize,
+          options: options
+        )
+        continuation.resume(returning: result)
+      } catch {
+        continuation.resume(throwing: error)
+      }
     }
+  }
+
+  private func currentPreviewSize() -> CGSize {
+    guard let captureDelegate else {
+      return .zero
+    }
+    let size = captureDelegate.previewLayer.frame.size
+    return captureDelegate.deviceOrientation == .portrait
+      ? CGSize(width: size.height, height: size.width)
+      : size
   }
 
   private func processImageData(
     imageData: Data?,
     metadata: [String: Any],
+    previewSize: CGSize,
     options: TakePictureOptions
   ) throws -> Any {
     guard let captureDelegate else {
@@ -149,12 +180,6 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
       throw CameraSavingImageException("Failed to process image data")
     }
 
-    let previewSize = if captureDelegate.deviceOrientation == .portrait {
-      CGSize(width: captureDelegate.previewLayer.frame.size.height, height: captureDelegate.previewLayer.frame.size.width)
-    } else {
-      CGSize(width: captureDelegate.previewLayer.frame.size.width, height: captureDelegate.previewLayer.frame.size.height)
-    }
-
     guard let takenCgImage = takenImage.cgImage else {
       throw CameraSavingImageException("Failed to get CGImage")
     }
@@ -163,7 +188,6 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     let croppedSize = AVMakeRect(aspectRatio: previewSize, insideRect: cropRect)
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
-    takenImage = ExpoCameraUtils.normalizeOrientation(of: takenImage)
 
     let width = takenImage.size.width
     let height = takenImage.size.height
@@ -181,12 +205,15 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
         with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
       )
 
-      updatedExif[kCGImagePropertyExifPixelYDimension as String] = width
-      updatedExif[kCGImagePropertyExifPixelXDimension as String] = height
+      if let cgImage = takenImage.cgImage {
+        updatedExif[kCGImagePropertyExifPixelXDimension as String] = cgImage.width
+        updatedExif[kCGImagePropertyExifPixelYDimension as String] = cgImage.height
+      }
       response["exif"] = updatedExif
 
       var updatedMetadata = metadata
-      updatedMetadata[kCGImagePropertyOrientation as String] = 1
+      updatedMetadata[kCGImagePropertyOrientation as String] =
+        ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)
 
       if let additionalExif = options.additionalExif {
         for (key, value) in additionalExif {

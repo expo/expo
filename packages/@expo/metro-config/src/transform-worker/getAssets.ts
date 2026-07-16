@@ -13,8 +13,6 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const debug = require('debug')('expo:metro-config:assets') as typeof console.log;
-
 type ExpoAssetData = AssetData & {
   fileHashes?: string[];
 };
@@ -56,7 +54,6 @@ function isHashedAssetData(asset: ExpoAssetData): asset is HashedAssetData {
 async function ensureOtaAssetHashesAsync(asset: ExpoAssetData): Promise<HashedAssetData> {
   // Legacy cases where people have the `expo-asset/tools/hashAssetFiles` set still.
   if (isHashedAssetData(asset)) {
-    debug('fileHashes already added, skipping injection for: ' + asset.name);
     return asset;
   }
 

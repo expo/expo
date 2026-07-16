@@ -70,7 +70,7 @@ object MediaLibraryUtils {
     }
     FileInputStream(src).channel.use { input ->
       FileOutputStream(newFile).channel.use { output ->
-        val transferred = input.transferTo(0, input.size(), output)
+        val transferred = input.transferAllTo(output)
         if (transferred != input.size()) {
           newFile.delete()
           throw IOException("Could not save file to $destDir Not enough space.")

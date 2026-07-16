@@ -1,4 +1,3 @@
-import Debug from 'debug';
 import fs from 'fs';
 import path from 'path';
 
@@ -17,8 +16,7 @@ import { delayAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { profile } from '../../../utils/profile';
-
-const debug = Debug('expo:apple-device');
+import { debugEvent } from '../../events';
 
 // NOTE(EvanBacon): I have a feeling this shape will change with new iOS versions (tested against iOS 15).
 export interface ConnectedDevice {
@@ -71,7 +69,7 @@ function coercePlatformToOsType(platform: string): OSType {
     case 'xrOS':
       return 'xrOS';
     default:
-      debug('Unknown devicectl platform (needs to be added to Expo CLI):', platform);
+      debugEvent('apple_device:unknown_platform', { platform });
       return platform as OSType;
   }
 }
@@ -83,7 +81,7 @@ function coerceUsbmuxdPlatformToOsType(platform: string): OSType {
     case 'iPhone OS':
       return 'iOS';
     default:
-      debug('Unknown usbmuxd platform (needs to be added to Expo CLI):', platform);
+      debugEvent('apple_device:unknown_usbmuxd_platform', { platform });
       return platform as OSType;
   }
 }
@@ -155,7 +153,7 @@ export async function runOnDevice({
   /** Callback to be called with progress updates */
   onProgress: OnInstallProgressCallback;
 }) {
-  debug('Running on device:', { udid, appPath, bundleId, waitForApp, deltaPath });
+  debugEvent('apple_device:run_started', { udid, bundleId });
 
   const clientManager = await ClientManager.create(udid);
 
@@ -211,7 +209,7 @@ export async function runOnDevice({
           await delayAsync(64);
         });
 
-        debug(`Waiting for app to close...\n`);
+        debugEvent('apple_device:wait_app', {});
         const result = await debugServerClient.continue();
         // TODO: I have no idea what this packet means yet (successful close?)
         // if not a close (ie, most likely due to halt from onBeforeExit), then kill the app
@@ -277,7 +275,7 @@ async function launchAppWithUsbmux(
       if (detach) {
         // https://github.com/libimobiledevice/libimobiledevice/blob/25059d4c7d75e03aab516af2929d7c6e6d4c17de/tools/idevicedebug.c#L455-L464
         const res = await debugServerClient.sendCommand('D', []);
-        debug('Disconnect from debug server request:', res);
+        debugEvent('apple_device:disconnect_response', { result: res });
         if (res !== 'OK') {
           console.warn(
             'Something went wrong while attempting to disconnect from iOS debug server, you may need to reopen the app manually.'
@@ -287,7 +285,7 @@ async function launchAppWithUsbmux(
 
       return debugServerClient;
     } else if (result === 'EBusy' || result === 'ENotFound') {
-      debug('Device busy or app not found, trying to launch again in .5s...');
+      debugEvent('apple_device:launch_retry', { tries });
       tries++;
       debugServerClient.socket.end();
       await delayAsync(500);
@@ -315,7 +313,7 @@ async function launchApp(
   try {
     return await launchAppWithUsbmux(clientManager, { appInfo, detach });
   } catch (error) {
-    debug('Failed to launch app with Usbmuxd, falling back to xcrun...', error);
+    debugEvent('apple_device:launch_fallback', { error: debugEvent.error(error as Error) });
 
     // Get the device UDID and close the connection, to allow `xcrun devicectl` to connect
     const deviceId = clientManager.device.Properties.SerialNumber;

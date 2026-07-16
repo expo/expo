@@ -1,0 +1,50 @@
+{
+  "name": "submit-expo-feedback",
+  "version": "0.0.0",
+  "description": "Send feedback to the Expo team",
+  "keywords": [
+    "expo",
+    "feedback"
+  ],
+  "homepage": "https://docs.expo.dev",
+  "license": "MIT",
+  "author": "Expo <support@expo.dev>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/submit-expo-feedback"
+  },
+  "bin": "./bin/submit-expo-feedback.js",
+  "files": [
+    "bin",
+    "build"
+  ],
+  "main": "build/index.js",
+  "scripts": {
+    "build": "ncc build ./src/index.ts -o build/ -e typescript",
+    "build:prod": "ncc build ./src/index.ts -o build/ -e typescript --minify --no-cache --no-source-map-register",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
+  },
+  "devDependencies": {
+    "@expo/config": "workspace:*",
+    "@expo/package-manager": "workspace:*",
+    "@types/jest": "^29.2.1",
+    "@types/prompts": "^2.0.6",
+    "@vercel/ncc": "^0.38.3",
+    "agent-cli-detector": "^0.1.2",
+    "arg": "^5.0.2",
+    "chalk": "^4.0.0",
+    "ci-info": "^3.3.0",
+    "expo-module-scripts": "workspace:*",
+    "prompts": "^2.3.2"
+  },
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
+  }
+}

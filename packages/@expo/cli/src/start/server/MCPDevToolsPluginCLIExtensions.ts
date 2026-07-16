@@ -5,8 +5,7 @@ import { DevToolsPluginOutputSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
 import type { McpServer } from './MCP';
 import { createMCPDevToolsExtensionSchema } from './createMCPDevToolsExtensionSchema';
-
-const debug = require('debug')('expo:start:server:devtools:mcp');
+import { debugEvent } from './devtoolsEvents';
 
 export async function addMcpCapabilities(mcpServer: McpServer, devServerManager: DevServerManager) {
   const plugins = await devServerManager.devtoolsPluginManager.queryPluginsAsync();
@@ -33,9 +32,10 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
 
       const schema = createMCPDevToolsExtensionSchema(mcpPlugin);
 
-      debug(
-        `Installing MCP CLI extension for plugin: ${plugin.packageName} - found ${mcpCommands.length} commands`
-      );
+      debugEvent('mcp_extension_installed', {
+        packageName: plugin.packageName,
+        commandCount: mcpCommands.length,
+      });
 
       mcpServer.registerTool(
         plugin.packageName,

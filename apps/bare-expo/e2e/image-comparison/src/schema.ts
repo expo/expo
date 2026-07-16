@@ -10,6 +10,12 @@ const undefinableString = z
   .transform((val) => (val === 'undefined' ? undefined : val))
   .pipe(z.string().nonempty().optional());
 
+// 'in-process' renders the view inside the app via the inspector dylib (iOS only; other
+// platforms fall back to 'screen'), 'screen' takes a full-screen screenshot and crops it.
+const undefinableCaptureMode = z
+  .transform((val) => (val === 'undefined' ? undefined : val))
+  .pipe(z.enum(['in-process', 'screen']).default('screen'));
+
 const screenshotSchema = z.object({
   baseImage: z.string().nonempty(),
   currentScreenshot: z.string().nonempty(),
@@ -17,6 +23,7 @@ const screenshotSchema = z.object({
   similarityThreshold: undefinablePercentage(0).default(-1), // default to make TS happy, overridden later
   platform: z.enum(['ios', 'android']),
   resizingFactor: undefinablePercentage(0.1).default(0.5),
+  captureMode: undefinableCaptureMode,
 });
 
 const viewShotSchema = screenshotSchema.and(

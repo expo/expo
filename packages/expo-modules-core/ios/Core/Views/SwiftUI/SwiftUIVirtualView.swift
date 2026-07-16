@@ -123,7 +123,7 @@ extension ExpoSwiftUI {
     }
 
     override func removeFromSuperview() {
-      virtualViewRemoveFromSuperview(contentView: contentView)
+      resignFirstResponderInSubtree()
       super.removeFromSuperview()
     }
 
@@ -143,6 +143,12 @@ extension ExpoSwiftUI {
         }
       }
     }
+  }
+}
+
+extension ExpoSwiftUI.SwiftUIVirtualView: ExpoSwiftUI.FocusableViewContainer {
+  func resignFirstResponderInSubtree() {
+    virtualViewResignFirstResponderInSubtree(contentView: contentView, children: props.children)
   }
 }
 
@@ -283,7 +289,7 @@ extension ExpoSwiftUI {
     }
 
     override func removeFromSuperview() {
-      virtualViewRemoveFromSuperview(contentView: contentView)
+      resignFirstResponderInSubtree()
       super.removeFromSuperview()
     }
 
@@ -303,6 +309,12 @@ extension ExpoSwiftUI {
         }
       }
     }
+  }
+}
+
+extension ExpoSwiftUI.SwiftUIVirtualViewDev: ExpoSwiftUI.FocusableViewContainer {
+  func resignFirstResponderInSubtree() {
+    virtualViewResignFirstResponderInSubtree(contentView: contentView, children: props.children)
   }
 }
 
@@ -375,10 +387,14 @@ private func virtualViewUnmountChild<Props: ExpoSwiftUI.ViewProps>(_ childCompon
   }
 }
 
-private func virtualViewRemoveFromSuperview<ContentView: SwiftUI.View>(contentView: ContentView) {
-  // When the view is unmounted, the focus on TextFieldView stays active and it causes a crash, so we blur it here
-  // UIView does something similar to resign the first responder in removeFromSuperview, so we do the same for our virtual view
+@MainActor
+private func virtualViewResignFirstResponderInSubtree<ContentView: SwiftUI.View>(
+  contentView: ContentView, children: [any ExpoSwiftUI.AnyChild]?) {
+  // Mirror UIView.removeFromSuperview, which resigns the first responder for a view and its subviews;
+  // a field left first responder during SwiftUI's teardown crashes. Recurse into children so one
+  // nested in a container (HStack, LabeledContent, …) is resigned too. https://github.com/expo/expo/issues/47682
   if let focusableView = contentView as? any ExpoSwiftUI.FocusableView {
     focusableView.forceResignFirstResponder()
   }
+  children?.forEach { ($0 as? any ExpoSwiftUI.FocusableViewContainer)?.resignFirstResponderInSubtree() }
 }

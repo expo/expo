@@ -1,10 +1,9 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import { getLogFile, shouldReduceLogs } from '../events';
 import * as Log from '../log';
 import { env } from '../utils/env';
-import { isInteractive } from '../utils/interactive';
+import { isInteractive, shouldReduceLogs } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import {
   checkDependencies,
@@ -78,10 +77,6 @@ export async function startAsync(
 ) {
   if (!shouldReduceLogs()) {
     Log.log(chalk.gray(`Starting project at ${projectRoot}`));
-    const logFile = getLogFile();
-    if (!isInteractive() && logFile) {
-      Log.log(chalk.gray(`Logs: ${logFile}`));
-    }
   }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);

@@ -1,3 +1,4 @@
+import { events } from '2g';
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
@@ -16,9 +17,23 @@ import DevToolsPluginManager from './DevToolsPluginManager';
 import { DevelopmentSession } from './DevelopmentSession';
 import type { CreateURLOptions } from './UrlCreator';
 import { UrlCreator } from './UrlCreator';
+import { debugEvent } from './events';
 import type { PlatformBundlers } from './platformBundlers';
 
-const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
+declare module '2g' {
+  interface EventRegistry {
+    'devserver:url': {
+      bundler: string;
+      url: string;
+      runtimeUrl: string | null;
+      hostType: 'localhost' | 'lan' | 'tunnel' | null;
+      port: number;
+    };
+    'devserver:stop': { bundler: string; ms: number };
+  }
+}
+
+const event = events('devserver');
 
 export type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
@@ -174,6 +189,18 @@ export abstract class BundlerDevServer {
 
     this.setInstance(instance);
     await this.postStartAsync(options);
+    const url =
+      this.getTunnelUrl() ??
+      this.getUrlCreator().constructUrl({
+        scheme: instance.location.protocol,
+      });
+    event('url', {
+      bundler: this.name,
+      url,
+      runtimeUrl: this.getNativeRuntimeUrl(),
+      hostType: options.location.hostType ?? null,
+      port: instance.location.port,
+    });
     return instance;
   }
 
@@ -260,7 +287,6 @@ export abstract class BundlerDevServer {
   public async _startTunnelAsync(): Promise<AsyncNgrok | AsyncWsTunnel | null> {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
-    debug('[tunnel] connect to port: ' + port);
     this.tunnel = this._createTunnel(port);
     await this.tunnel.startAsync();
     return this.tunnel;
@@ -333,6 +359,7 @@ export abstract class BundlerDevServer {
 
   /** Stop the running dev server instance. */
   async stopAsync() {
+    const stoppedAt = Date.now();
     // Reset url creator
     this.urlCreator = undefined;
 
@@ -352,16 +379,12 @@ export abstract class BundlerDevServer {
       Log.exception(e);
     });
 
-    return resolveWithTimeout(
+    await resolveWithTimeout(
       () =>
         new Promise<void>((resolve, reject) => {
-          // Close the server.
-          debug(`Stopping dev server (bundler: ${this.name})`);
-
           if (this.instance?.server) {
             // Check if server is even running.
             this.instance.server.close((error) => {
-              debug(`Stopped dev server (bundler: ${this.name})`);
               this.instance = null;
               if (error) {
                 if ('code' in error && error.code === 'ERR_SERVER_NOT_RUNNING') {
@@ -374,7 +397,6 @@ export abstract class BundlerDevServer {
               }
             });
           } else {
-            debug(`Stopped dev server (bundler: ${this.name})`);
             this.instance = null;
             resolve();
           }
@@ -385,6 +407,8 @@ export abstract class BundlerDevServer {
         errorMessage: `Timeout waiting for '${this.name}' dev server to close`,
       }
     );
+
+    event('stop', { bundler: this.name, ms: Date.now() - stoppedAt });
   }
 
   // TODO(@kitten): This should be created top-down rather than bottom up from implementors
@@ -520,7 +544,6 @@ export abstract class BundlerDevServer {
   /** Get the redirect URL when redirecting is enabled. */
   public getRedirectUrl(platform: keyof PlatformManagers | null = null): string | null {
     if (!this.isRedirectPageEnabled()) {
-      debug('Redirect page is disabled');
       return null;
     }
 
@@ -544,7 +567,7 @@ export abstract class BundlerDevServer {
           'Cannot interact with native platforms until dev server has started'
         );
       }
-      debug(`Creating platform manager (platform: ${platform}, port: ${port})`);
+      debugEvent('platform_manager_created', { platform, port });
       const managerParams = {
         getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
         getExpoGoUrl: this.getExpoGoUrl.bind(this),

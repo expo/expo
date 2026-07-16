@@ -376,7 +376,11 @@ export const general = [
       makePage('guides/using-bugsnag.mdx'),
       makePage('guides/using-logrocket.mdx'),
       makePage('guides/using-vexo.mdx'),
-      makePage('guides/using-posthog.mdx'),
+      makeGroup(
+        'Using PostHog',
+        [makePage('guides/using-posthog/index.mdx'), makePage('guides/using-posthog/recipes.mdx')],
+        { expanded: false }
+      ),
     ]),
     makeGroup('Authentication', [
       makePage('guides/using-authentication.mdx'),
@@ -473,6 +477,7 @@ export const eas = [
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
     makePage('eas/workflows/rest-api.mdx'),
+    makePage('eas/workflows/troubleshooting.mdx'),
     makePage('eas/workflows/limitations.mdx'),
     makeGroup('Examples', [
       makePage('eas/workflows/examples/introduction.mdx'),
