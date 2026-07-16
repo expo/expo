@@ -49,7 +49,7 @@ export default function App() {
           async function throwAsyncError() {
             throw new Error('unhandled-async-throw');
           }
-          void throwAsyncError();
+          throwAsyncError();
         }}
       />
       <BigButton
@@ -61,7 +61,9 @@ export default function App() {
       <BigButton
         title="Promise.reject(string)"
         onPress={() => {
-          void Promise.reject('unhandled-rejection-string');
+          // Intentionally rejecting with a string, not an Error, to test that case.
+          // eslint-disable-next-line prefer-promise-reject-errors
+          Promise.reject('unhandled-rejection-string');
         }}
       />
       <Headline>From fixtures:</Headline>
@@ -179,9 +181,12 @@ function RErrThrowInRender() {
 function RWarningMissingKeys() {
   return (
     <>
-      {Array.from({ length: 3 }, (_, i) => (
-        <View style={{ padding: 8, backgroundColor: 'white' }} />
-      )).reverse()}
+      {
+        // eslint-disable-next-line react/jsx-key -- intentionally missing key, to test the React warning
+        Array.from({ length: 3 }, (_, i) => (
+          <View style={{ padding: 8, backgroundColor: 'white' }} />
+        )).reverse()
+      }
     </>
   );
 }
