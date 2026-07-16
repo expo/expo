@@ -433,9 +433,11 @@ export type NavigationHelpers<
 
 export type NavigationContainerProps = {
   /**
-   * Initial state object for the navigation tree.
+   * Initial state object for the navigation tree. Accepts a legacy partial `InitialState` (keys and
+   * `stale` filled in on rehydration) or the complete, keyed state (`stale: false`) the compiler now
+   * emits as the seed.
    */
-  initialState?: InitialState;
+  initialState?: InitialState | NavigationState;
   /**
    * Callback which is called with the latest navigation state when it changes.
    */

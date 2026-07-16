@@ -426,7 +426,6 @@ test('fires blur event when a route is removed with a delay', async () => {
     <BaseNavigationContainer
       initialState={{
         stale: false as const,
-        type: 'test',
         key: 'stack',
         index: 0,
         routeNames: ['first', 'second'],

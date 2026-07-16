@@ -36,7 +36,6 @@ test('renders a stack navigator with screens', async () => {
     <NavigationContainer
       initialState={{
         stale: false as const,
-        type: 'stack',
         index: 0,
         key: '@',
         routeNames: ['A', 'B'],
@@ -70,7 +69,6 @@ test("doesn't show back button on the first screen", async () => {
     <NavigationContainer
       initialState={{
         stale: false as const,
-        type: 'stack',
         index: 0,
         key: '@',
         routeNames: ['A', 'B'],
@@ -115,7 +113,6 @@ test('fires transition events on navigation', async () => {
     <NavigationContainer
       initialState={{
         stale: false as const,
-        type: 'stack',
         index: 0,
         key: '@',
         routeNames: ['A', 'B'],
@@ -177,7 +174,6 @@ test('handles screens preloading', async () => {
       ref={navigation}
       initialState={{
         stale: false as const,
-        type: 'stack',
         index: 0,
         key: '@',
         routeNames: ['A', 'B'],
@@ -220,7 +216,6 @@ test('runs focus effect on focus change on preloaded route', () => {
       ref={navigation}
       initialState={{
         stale: false as const,
-        type: 'stack',
         index: 0,
         key: '@',
         routeNames: ['A', 'B'],
@@ -274,7 +269,6 @@ test('renders correct focus state with preloading', () => {
       ref={navigation}
       initialState={{
         stale: false as const,
-        type: 'stack',
         index: 0,
         key: '@',
         routeNames: ['A', 'B'],
@@ -325,7 +319,6 @@ test('renders back button in the nested stack', async () => {
     <NavigationContainer
       initialState={{
         stale: false as const,
-        type: 'stack',
         index: 0,
         key: 'stackB',
         routeNames: ['A', 'B'],
@@ -335,7 +328,6 @@ test('renders back button in the nested stack', async () => {
             name: 'A',
             state: {
               stale: false as const,
-              type: 'stack',
               index: 0,
               key: 'A',
               routeNames: ['C'],
