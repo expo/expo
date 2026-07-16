@@ -1,6 +1,7 @@
 package expo.modules.medialibrary.next.extensions
 
 import expo.modules.medialibrary.MediaLibraryUtils.getFileNameAndExtension
+import expo.modules.medialibrary.transferAllTo
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -15,7 +16,7 @@ fun File.safeCopy(destinationDirectory: File): File {
   val newFile = createUniqueFileIn(destinationDirectory, name)
   FileInputStream(this).channel.use { input ->
     FileOutputStream(newFile).channel.use { output ->
-      val transferred = input.transferTo(0, input.size(), output)
+      val transferred = input.transferAllTo(output)
       if (transferred != input.size()) {
         newFile.delete()
         throw IOException("Could not save file to $destinationDirectory Not enough space.")

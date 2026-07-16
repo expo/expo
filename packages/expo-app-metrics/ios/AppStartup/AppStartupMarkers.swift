@@ -58,9 +58,17 @@ final class AppStartupMarkers: Sendable {
     return nil
   }
 
+  /// Duration of JS bundle evaluation, which also covers synchronous setup of the native modules
+  /// eagerly required during that evaluation. React Native logs `APP_STARTUP_STOP` right after
+  /// evaluation finishes, so it stands in for the bundle end time.
   func getBundleLoadTime() -> TimeInterval? {
     let bundleStartTime = ReactMarker.getRunJSBundleStartTime()
-    let bundleEndTime = ReactMarker.getRunJSBundleEndTime()
+    let bundleEndTime = ReactMarker.getAppStartupEndTime()
+    // The markers are `NaN` until React Native logs them (e.g. no logger attached), and any
+    // arithmetic on `NaN` stays `NaN`. Skip the metric rather than report a bogus value.
+    guard bundleStartTime.isFinite, bundleEndTime.isFinite else {
+      return nil
+    }
     return (bundleEndTime - bundleStartTime) / 1000
   }
 }
