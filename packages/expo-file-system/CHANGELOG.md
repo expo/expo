@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `readAsStringAsync` to respect `position` and `length` when reading UTF-8 strings. ([#20291](https://github.com/expo/expo/issues/20291) by [@mvincentong](https://github.com/mvincentong)) ([#45714](https://github.com/expo/expo/pull/45714) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 - Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376) by [@wh201906](https://github.com/wh201906))
