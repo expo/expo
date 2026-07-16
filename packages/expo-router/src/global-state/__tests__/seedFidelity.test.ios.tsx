@@ -95,23 +95,16 @@ it('commits the compiled seed verbatim for a declared-anchor tabs deep link', ()
   expect(store.navigationRef.current?.getRootState()).toEqual(compiled);
 });
 
-// Test B: on a verbatim-seeded mount the router repair functions must not rebuild the slice.
-// `getInitialState` and `getStateForRouteNamesChange` must not be called at all, and every
-// `getRehydratedState` call must be identity (output deep-equals input). Fails today: the container
-// stales the seed, so each `getRehydratedState` returns a freshly keyed, un-staled slice that does
-// not equal its `stale: true` input.
+// Test B: on a verbatim-seeded mount no navigator rebuilds its slice, so none of the router's
+// repair functions run. Every navigator reads its committed slice straight from the store; there is
+// no init/rehydrate/route-names-change pass over the seed.
 it('does not rebuild navigator slices when seeding a deep link', () => {
   renderRouter(nestedStacksApp, { initialUrl: '/settings/profile/42' });
 
-  // Guards (already green today): a complete nested seed means no navigator falls back to
-  // `getInitialState`, and compiled `routeNames` order matches the rendered order so no
-  // route-names-change repair fires.
+  // A complete nested seed means no navigator falls back to `getInitialState`, compiled
+  // `routeNames` order matches the rendered order so no route-names-change repair fires, and the
+  // committed slice is read verbatim so there is no rehydrate pass.
   expect(routerSpyCalls.getInitialState).toHaveLength(0);
   expect(routerSpyCalls.getStateForRouteNamesChange).toHaveLength(0);
-
-  // Core RED assertion: rehydration must be a no-op. Today it re-mints keys and un-stales.
-  expect(routerSpyCalls.getRehydratedState.length).toBeGreaterThan(0);
-  for (const call of routerSpyCalls.getRehydratedState) {
-    expect(call.output).toEqual(call.input);
-  }
+  expect(routerSpyCalls.getRehydratedState).toHaveLength(0);
 });

@@ -58,7 +58,15 @@ test('builds href in navigator layout', () => {
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer
+      linking={config}
+      initialState={{
+        stale: false,
+        key: '@',
+        index: 0,
+        routeNames: ['Foo'],
+        routes: [{ key: '@:Foo:0', name: 'Foo' }],
+      }}>
       <Stack.Navigator layout={({ children }) => <Test>{children}</Test>}>
         <Stack.Screen name="Foo">{() => null}</Stack.Screen>
       </Stack.Navigator>
@@ -82,7 +90,15 @@ test('builds href in route context', () => {
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer
+      linking={config}
+      initialState={{
+        stale: false,
+        key: '@',
+        index: 0,
+        routeNames: ['Foo'],
+        routes: [{ key: '@:Foo:0', name: 'Foo' }],
+      }}>
       <Stack.Navigator
         layout={({ state }) => (
           <NavigationRouteContext.Provider value={state.routes.find((r) => r.name === 'Foo')}>

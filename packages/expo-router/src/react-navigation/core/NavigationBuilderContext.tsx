@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 
-import type { NavigationAction, ParamListBase } from '../routers';
+import type { NavigationAction, NavigationState, ParamListBase } from '../routers';
 import type { NavigationHelpers } from './types';
 
 export type ListenerMap = {
@@ -52,6 +52,11 @@ export const NavigationBuilderContext = React.createContext<{
   addListener?: AddListener;
   addKeyedListener?: AddKeyedListener;
   dispatchRoot?: DispatchRoot;
+  // Commit a navigator's initial state into the store when its slice isn't committed yet: the root
+  // (no compiler seed) or an unvisited/preloaded nested navigator. Splices `state` at the route
+  // keyed `parentRouteKey` (or seeds the root when `parentRouteKey` is `undefined`) only if that
+  // slot is still empty, so it's a one-time seed, never a compose-up.
+  seedNavigatorState?: (parentRouteKey: string | undefined, state: NavigationState) => void;
   onDispatchAction: (action: NavigationAction, noop: boolean) => void;
   onOptionsChange: (options: object) => void;
   scheduleUpdate: (callback: () => void) => void;

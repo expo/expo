@@ -72,7 +72,6 @@ type Options<
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
   onAction: (action: NavigationAction) => boolean;
   getState: () => State;
-  setState: (state: State) => void;
   addListener: AddListener;
   addKeyedListener: AddKeyedListener;
   router: Router<State, NavigationAction>;
@@ -101,7 +100,6 @@ export function useDescriptors<
   screenLayout,
   onAction,
   getState,
-  setState,
   addListener,
   addKeyedListener,
   router,
@@ -111,6 +109,7 @@ export function useDescriptors<
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
   const {
     dispatchRoot,
+    seedNavigatorState,
     onDispatchAction,
     onOptionsChange,
     scheduleUpdate,
@@ -125,6 +124,7 @@ export function useDescriptors<
       addListener,
       addKeyedListener,
       dispatchRoot,
+      seedNavigatorState,
       onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
@@ -137,6 +137,7 @@ export function useDescriptors<
       addListener,
       addKeyedListener,
       dispatchRoot,
+      seedNavigatorState,
       onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
@@ -237,7 +238,6 @@ export function useDescriptors<
         screen={screen}
         routeState={routeState}
         getState={getState}
-        setState={setState}
         options={customOptions}
         clearOptions={clearOptions}
       />

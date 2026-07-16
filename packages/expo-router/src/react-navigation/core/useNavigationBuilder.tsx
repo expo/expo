@@ -6,6 +6,7 @@ import { isValidElementType } from 'react-is';
 
 import {
   type NavigationReducer,
+  NavigationSyncStateContext,
   type NavigatorRegistryEntry,
   ReducerRegistryContext,
 } from '../../global-state/storeContext';
@@ -58,7 +59,7 @@ import { useNavigationHelpers } from './useNavigationHelpers';
 import { NavigationStateListenerProvider } from './useNavigationState';
 import { shouldPreventRemove, useOnPreventRemove } from './useOnPreventRemove';
 import { useRegisterNavigator } from './useRegisterNavigator';
-import { useStoreSlice } from './useStoreSlice';
+import { getCachedSlice, useStoreSlice } from './useStoreSlice';
 
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -449,100 +450,43 @@ export function useNavigationBuilder<
     );
   }
 
-  const isStateInitialized = React.useCallback(
-    <T extends NavigationState>(state: T | PartialState<T> | undefined): state is T =>
-      state !== undefined && state.stale === false,
-    []
-  );
+  const { state: currentState, setKey } = use(NavigationStateContext);
 
-  const {
-    state: currentState,
-    getState: getCurrentState,
-    setState: setCurrentState,
-    setKey,
-    getKey,
-    getIsInitial,
-  } = use(NavigationStateContext);
+  // The committed store is the single source of truth. The parent (or the container) hands this
+  // navigator its committed slice as `currentState`; we take the slice key from it and subscribe to
+  // that slice in the store directly (see `state` below), so a change to this navigator's slice
+  // re-renders it even when an ancestor is memoized. There is no compose-up — the root reducer is
+  // the only writer, and a navigator whose slice isn't committed yet seeds its own initial state
+  // into the store (see the self-seed effect below).
+  const store = use(NavigationSyncStateContext);
 
-  const stateCleanupRef = React.useRef<boolean>(false);
-  const lastStateRef = React.useRef<State | PartialState<State> | undefined>(undefined);
+  if (store == null) {
+    throw new Error("Couldn't find a navigation store. Is your component inside a navigator?");
+  }
 
-  const setState = useLatestCallback((state: State | PartialState<State> | undefined) => {
-    if (stateCleanupRef.current) {
-      // Store the state locally in case the current navigator is in `Activity`
-      lastStateRef.current = state;
-
-      // State might have been already cleaned up due to unmount
-      // We don't want to update `route.state` in parent
-      // Otherwise it will be reused if a new navigator gets mounted
-      return;
-    }
-
-    setCurrentState(state);
-  });
-
-  const initializedState = React.useMemo((): State | undefined => {
-    // If the state was already cleaned up, but we have it stored in ref,
-    // It likely got cleaned up due to `<Activity mode="hidden">`
-    // We should reuse this state to avoid remounting screens
-    if (stateCleanupRef.current && lastStateRef.current) {
-      const state: State = isStateInitialized(lastStateRef.current)
-        ? lastStateRef.current
-        : router.getRehydratedState(lastStateRef.current, {
+  // This navigator's initial state, computed ONLY when its slice isn't committed yet — an
+  // unvisited/preloaded nested navigator, or a container mounted without a compiler seed. It seeds
+  // the store (see the self-seed effect) and renders until the seed lands. When the slice is already
+  // committed (the compiler seeded it, or a dispatch created it) this stays `undefined` so
+  // `getInitialState` is never called on the seeded path.
+  const isCommitted = currentState != null;
+  const initialState = React.useMemo(
+    () =>
+      isCommitted
+        ? undefined
+        : (router.getInitialState({
             routeNames,
             parentRouteKey,
             routeParamList,
             routeGetIdList,
-          });
-
-      return state;
-    }
-
-    const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
-      (acc, curr) => {
-        const { initialParams } = screens[curr]!.props;
-        acc[curr] = initialParams;
-
-        return acc;
-      },
-      {}
-    );
-
-    // If the current state isn't initialized on first render, we initialize it
-    // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
-    // Otherwise assume that the state was provided as initial state
-    // So we need to rehydrate it to make it usable
-    if (currentState === undefined) {
-      return router.getInitialState({
-        routeNames,
-        parentRouteKey,
-        routeParamList: initialRouteParamList,
-        routeGetIdList,
-      });
-    } else {
-      const stateToHydrate = currentState as PartialState<State> | undefined;
-
-      return stateToHydrate == null
-        ? router.getInitialState({
-            routeNames,
-            parentRouteKey,
-            routeParamList: initialRouteParamList,
-            routeGetIdList,
-          })
-        : router.getRehydratedState(stateToHydrate, {
-            routeNames,
-            parentRouteKey,
-            routeParamList: initialRouteParamList,
-            routeGetIdList,
-          });
-    }
-    // We explicitly don't include routeNames, route.params etc. in the dep list
-    // below. We want to avoid forcing a new state to be calculated in those cases
-    // Instead, we handle changes to these in the nextState code below. Note
-    // that some changes to routeConfigs are explicitly ignored, such as changes
-    // to initialParams
+          }) as State),
+    // Recomputes when committed-ness flips or the router changes; routeNames/param changes are
+    // reconciled through the store, not by recomputing the seed.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentState, router]);
+    [isCommitted, router]
+  );
+
+  const key = currentState?.key ?? initialState?.key;
 
   const previousRouteKeyListRef = React.useRef(routeKeyList);
   const previousRouteKeyList = previousRouteKeyListRef.current;
@@ -560,14 +504,11 @@ export function useNavigationBuilder<
     NavigationState | PartialState<NavigationState> | undefined
   >(undefined);
 
-  const contextState =
-    // If the state isn't initialized, or stale, use the state we initialized instead
-    // The state won't update until there's a change needed in the state we have initialized locally
-    // So it'll be `undefined` or stale until the first navigation event happens
-    isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
-
-  const storeSlice = useStoreSlice(contextState?.key);
-  let state = (storeSlice ?? contextState) as State;
+  const storeSlice = useStoreSlice(key);
+  // Prefer the subscribed store slice. Fall back to the slice the parent handed down (covers a
+  // committed navigator whose subscription hasn't observed the latest commit yet), then to the
+  // initial state for a navigator that isn't committed at all (it seeds itself below).
+  let state = (storeSlice ?? currentState ?? initialState) as State;
 
   const reconciliationState = state;
   state = getStateForRenderableRoutes(
@@ -578,46 +519,23 @@ export function useNavigationBuilder<
     routeParamList
   );
 
-  // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
+  // The last committed slice this navigator rendered. `getState` reads the live slice from the
+  // store by key, but during a transition (deep link, a slice briefly re-keyed) that lookup can
+  // come back empty for a beat; fall back to what we last rendered so imperative reads never see
+  // `undefined`.
+  const lastCommittedStateRef = React.useRef(reconciliationState);
   React.useEffect(() => {
-    lastStateRef.current = state;
+    lastCommittedStateRef.current = reconciliationState;
   });
 
-  const lastNotifiedStateRef = React.useRef<State | null>(null);
-
   React.useEffect(() => {
-    // In strict mode, React will double-invoke effects.
-    // So we need to reset the flag if component was not unmounted
-    stateCleanupRef.current = false;
-
     setKey(navigatorKey);
-
-    if (!getIsInitial() && lastNotifiedStateRef.current !== state) {
-      // If it's not initial render, we need to update the state
-      // This will make sure that our container gets notifier of state changes due to new mounts
-      // This is necessary for proper screen tracking, URL updates etc.
-      // We only notify if the state is different what we already notified
-      // Otherwise this goes into a loop when inside `<Activity mode="hidden">`
-      setState(state);
-      lastNotifiedStateRef.current = state;
-    }
-
-    return () => {
-      // We need to clean up state for this navigator on unmount
-      if (getCurrentState() !== undefined && getKey() === navigatorKey) {
-        setCurrentState(undefined);
-        stateCleanupRef.current = true;
-      }
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getState = useLatestCallback((): State => {
-    const currentState = getCurrentState();
-
-    return deepFreeze(
-      (isStateInitialized(currentState) ? currentState : initializedState) as State
-    );
+    const slice = key == null ? undefined : getCachedSlice(store.getState(), key);
+    return deepFreeze((slice ?? lastCommittedStateRef.current) as State);
   });
 
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
@@ -694,7 +612,7 @@ export function useNavigationBuilder<
     latestConfigRef.current = routerConfigOptions;
   });
 
-  const { dispatchRoot } = use(NavigationBuilderContext);
+  const { dispatchRoot, seedNavigatorState } = use(NavigationBuilderContext);
   const needsRouteNamesReconcile =
     !isArrayEqual(reconciliationState.routeNames, routeNames) ||
     !isRecordEqual(routeKeyList, previousRouteKeyList);
@@ -798,6 +716,18 @@ export function useNavigationBuilder<
     };
   }, [backBehavior, reducerRegistry, registryEntry, state.key]);
 
+  // Seed this navigator's slice into the store when it isn't committed yet — the root container
+  // with no compiler seed, or an unvisited/preloaded nested navigator whose parent route carries no
+  // `state`. Idempotent: it only writes when the slice is absent, so once committed (here, by the
+  // compiler, or by a dispatch) it never runs again. This is the sole path by which a navigator's
+  // initial state reaches the store; there is no render-time compose-up.
+  useClientLayoutEffect(() => {
+    if (storeSlice == null && initialState != null) {
+      seedNavigatorState?.(parentRouteKey, initialState as NavigationState);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storeSlice, parentRouteKey, initialState, seedNavigatorState]);
+
   useClientLayoutEffect(() => {
     if (!needsRouteNamesReconcile && !shouldRestoreUnhandledState) {
       previousRouteKeyListRef.current = routeKeyList;
@@ -841,37 +771,14 @@ export function useNavigationBuilder<
   });
 
   const onAction = useLatestCallback((action: NavigationAction) => {
-    const handled =
+    // Forward to the container's root reducer, tagged with this navigator's key. The old local
+    // reducer escape hatch is gone — the store is the only writer.
+    return (
       dispatchRoot?.(action, {
         originKey: state.key,
         suppressUnhandled: true,
-      }) ?? false;
-
-    if (handled) {
-      return true;
-    }
-
-    if (action.type === 'PRELOAD' || action.target == null || action.target === state.key) {
-      const result = router.getStateForAction(state, action, latestConfigRef.current);
-
-      if (result != null && result !== state) {
-        const isPrevented = shouldPreventRemove(
-          emitter,
-          keyedListeners.beforeRemove,
-          state.routes,
-          result.routes,
-          action
-        );
-
-        if (!isPrevented) {
-          setState(result);
-        }
-      }
-
-      return result != null;
-    }
-
-    return false;
+      }) ?? false
+    );
   });
 
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
@@ -897,7 +804,6 @@ export function useNavigationBuilder<
     screenLayout,
     onAction,
     getState,
-    setState,
     addListener,
     addKeyedListener,
     router,

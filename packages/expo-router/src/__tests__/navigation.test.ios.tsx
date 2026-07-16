@@ -1676,6 +1676,7 @@ describe('navigation action fallbacks', () => {
   it('can fall back correctly for tab navigators', () => {
     renderRouter({
       _layout: () => <Tabs />,
+      index: () => <Text testID="index" />,
       one: () => <Text testID="one" />,
       two: () => <Text testID="two" />,
       redirected: () => <Redirect href="/" />,

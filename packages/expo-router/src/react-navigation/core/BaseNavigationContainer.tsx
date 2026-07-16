@@ -259,6 +259,31 @@ export function BaseNavigationContainer({
     }
   }, [replayTick, dispatchRoot]);
 
+  const seedNavigatorState = useLatestCallback(
+    (parentRouteKey: string | undefined, initialState: NavigationState) => {
+      const rootState = getCommittedRootState();
+
+      if (parentRouteKey == null) {
+        // Root navigator with no committed tree yet (a standalone container mounted without a
+        // compiler seed): adopt its initial state as the whole tree.
+        if (rootState == null) {
+          setState(initialState);
+        }
+        return;
+      }
+
+      if (rootState == null) {
+        return;
+      }
+
+      const next = seedSliceAtRoute(rootState, parentRouteKey, initialState);
+
+      if (next !== rootState) {
+        setState(next);
+      }
+    }
+  );
+
   const getFocusedOriginKey = React.useCallback(
     (rootState: NavigationState | undefined) => {
       if (rootState == null) {
@@ -414,6 +439,7 @@ export function BaseNavigationContainer({
       addListener,
       addKeyedListener,
       dispatchRoot,
+      seedNavigatorState,
       onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
@@ -424,6 +450,7 @@ export function BaseNavigationContainer({
       addListener,
       addKeyedListener,
       dispatchRoot,
+      seedNavigatorState,
       onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
@@ -609,4 +636,41 @@ function getStateDepth(state: NavigationState, key: string, depth = 0): number {
   }
 
   return -1;
+}
+
+// Install `slice` at the (committed, stale-false) route keyed `parentRouteKey`, but only if that
+// route has no `state` yet. Returns the same tree reference when nothing changed, so callers can
+// skip a redundant commit.
+function seedSliceAtRoute(
+  state: NavigationState,
+  parentRouteKey: string,
+  slice: NavigationState
+): NavigationState {
+  let changed = false;
+
+  const routes = state.routes.map((route) => {
+    if (route.key === parentRouteKey) {
+      if (route.state == null) {
+        changed = true;
+        return { ...route, state: slice };
+      }
+
+      return route;
+    }
+
+    const childState = route.state;
+
+    if (childState != null && childState.stale === false) {
+      const nextChildState = seedSliceAtRoute(childState as NavigationState, parentRouteKey, slice);
+
+      if (nextChildState !== childState) {
+        changed = true;
+        return { ...route, state: nextChildState };
+      }
+    }
+
+    return route;
+  });
+
+  return changed ? { ...state, routes } : state;
 }

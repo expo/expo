@@ -34,7 +34,7 @@ beforeEach(() => {
   require('nanoid/non-secure').__key = 0;
 });
 
-test('does not use local bubbling before the root reducer is initialized', () => {
+test('bubbles an untargeted child action up to the handling ancestor via the root reducer', () => {
   function CurrentRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
     const ParentRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
@@ -81,8 +81,32 @@ test('does not use local bubbling before the root reducer is initialized', () =>
 
   const onStateChange = jest.fn();
 
+  MockRouterKey.current = 2;
+
   render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        key: '0',
+        index: 2,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+          {
+            key: 'baz',
+            name: 'baz',
+            state: {
+              stale: false as const,
+              key: '1',
+              index: 0,
+              routeNames: ['qux'],
+              routes: [{ key: 'qux', name: 'qux' }],
+            },
+          },
+        ],
+      }}
+      onStateChange={onStateChange}>
       <ParentNavigator initialRouteName="baz">
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -97,7 +121,15 @@ test('does not use local bubbling before the root reducer is initialized', () =>
     </BaseNavigationContainer>
   );
 
-  expect(onStateChange).not.toHaveBeenCalled();
+  // `REVERSE` is dispatched from the deeply-nested `qux`. Its own (child) router doesn't handle it,
+  // so the root reducer ascends and applies it at the parent navigator that does — no local
+  // per-navigator bubbling, but the untargeted action still reaches the handling ancestor.
+  expect(onStateChange).toHaveBeenCalledTimes(1);
+  expect(onStateChange.mock.calls[0]![0].routes.map((route: any) => route.name)).toEqual([
+    'baz',
+    'bar',
+    'foo',
+  ]);
 });
 
 test("does not down-bubble actions with navigationInChildEnabled on the root reducer path", () => {
@@ -162,12 +194,16 @@ test("does not down-bubble actions with navigationInChildEnabled on the root red
   const onStateChange = jest.fn();
 
   const initialState = {
+    stale: false as const,
     index: 1,
+    key: '0',
+    routeNames: ['foo', 'bar', 'baz'],
     routes: [
       {
         key: 'baz',
         name: 'baz',
         state: {
+          stale: false as const,
           index: 0,
           key: '4',
           routeNames: ['qux', 'lex'],
@@ -180,6 +216,8 @@ test("does not down-bubble actions with navigationInChildEnabled on the root red
       { key: 'bar', name: 'bar' },
     ],
   };
+
+  MockRouterKey.current = 5;
 
   const element = (
     <BaseNavigationContainer
@@ -224,7 +262,7 @@ test("does not down-bubble NAVIGATE_DEPRECATED on the root reducer path", () => 
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
-  MockRouterKey.current = 1;
+  MockRouterKey.current = 2;
 
   const element = (
     <BaseNavigationContainer
@@ -237,7 +275,20 @@ test("does not down-bubble NAVIGATE_DEPRECATED on the root reducer path", () => 
         routes: [
           { key: 'foo', name: 'foo' },
           { key: 'bar', name: 'bar' },
-          { key: 'baz', name: 'baz' },
+          {
+            key: 'baz',
+            name: 'baz',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['qux', 'lex'],
+              routes: [
+                { key: 'qux', name: 'qux' },
+                { key: 'lex', name: 'lex' },
+              ],
+            },
+          },
         ],
       }}
       onStateChange={onStateChange}
@@ -552,8 +603,35 @@ test("action doesn't bubble if target is specified", () => {
 
   const onStateChange = jest.fn();
 
+  const initialState = {
+    stale: false as const,
+    index: 1,
+    key: '0',
+    routeNames: ['foo', 'bar', 'baz'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+      {
+        key: 'baz',
+        name: 'baz',
+        state: {
+          stale: false as const,
+          index: 0,
+          key: '1',
+          routeNames: ['qux', 'lex'],
+          routes: [
+            { key: 'qux', name: 'qux' },
+            { key: 'lex', name: 'lex' },
+          ],
+        },
+      },
+    ],
+  };
+
+  MockRouterKey.current = 2;
+
   const element = (
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <ParentNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={TestScreen} />
@@ -598,12 +676,16 @@ test('logs error if no navigator handled the action', () => {
   };
 
   const initialState = {
+    stale: false as const,
     index: 1,
+    key: '0',
+    routeNames: ['foo', 'bar', 'baz'],
     routes: [
       {
         key: 'baz',
         name: 'baz',
         state: {
+          stale: false as const,
           index: 0,
           key: '4',
           routeNames: ['qux', 'lex'],
@@ -616,6 +698,8 @@ test('logs error if no navigator handled the action', () => {
       { key: 'bar', name: 'bar' },
     ],
   };
+
+  MockRouterKey.current = 5;
 
   const element = (
     <BaseNavigationContainer initialState={initialState}>

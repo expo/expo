@@ -428,8 +428,20 @@ test("doesn't update state if nothing changed", () => {
 
   const onStateChange = jest.fn();
 
+  const initialState = {
+    stale: false as const,
+    index: 0,
+    key: '0',
+    routeNames: ['foo', 'bar'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+    ],
+  };
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo" component={FooScreen} />
         <Screen name="bar" component={React.Fragment} />
@@ -493,7 +505,7 @@ test("doesn't update state if action wasn't handled", () => {
   spy.mockRestore();
 });
 
-test('cleans up state when the navigator unmounts', () => {
+test('retains committed state when the navigator unmounts', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -554,8 +566,9 @@ test('cleans up state when the navigator unmounts', () => {
     <BaseNavigationContainer onStateChange={onStateChange}>{null}</BaseNavigationContainer>
   );
 
-  expect(onStateChange).toHaveBeenCalledTimes(2);
-  expect(onStateChange).toHaveBeenLastCalledWith(undefined);
+  // Unmounting the navigator does not clear the store: the committed slice is retained (there is no
+  // compose-up cleanup), so no further state change is emitted.
+  expect(onStateChange).toHaveBeenCalledTimes(1);
 });
 
 test('allows state updates by dispatching a function returning an action', () => {

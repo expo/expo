@@ -10,7 +10,6 @@ import {
 } from './NavigationFocusedRouteStateContext';
 import { NavigationStateContext } from './NavigationStateContext';
 import { StaticContainer } from './StaticContainer';
-import { isArrayEqual } from './isArrayEqual';
 import type { NavigationProp, RouteConfigComponent } from './types';
 import { useOptionsGetters } from './useOptionsGetters';
 
@@ -20,7 +19,6 @@ type Props<State extends NavigationState, ScreenOptions extends object> = {
   route: Route<string>;
   routeState: NavigationState | PartialState<NavigationState> | undefined;
   getState: () => State;
-  setState: (state: State) => void;
   options: object;
   clearOptions: () => void;
 };
@@ -35,7 +33,6 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
   navigation,
   routeState,
   getState,
-  setState,
   options,
   clearOptions,
 }: Props<State, ScreenOptions>) {
@@ -59,30 +56,11 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
     return currentRoute ? currentRoute.state : undefined;
   }, [getState, route.key]);
 
-  const setCurrentState = React.useCallback(
-    (child: NavigationState | PartialState<NavigationState> | undefined) => {
-      const state = getState();
-
-      const routes = state.routes.map((r) => {
-        if (r.key === route.key && r.state !== child) {
-          return {
-            ...r,
-            state: child,
-          };
-        }
-
-        return r;
-      });
-
-      if (!isArrayEqual(state.routes, routes)) {
-        setState({
-          ...state,
-          routes,
-        });
-      }
-    },
-    [getState, route.key, setState]
-  );
+  // Nested navigators reduce through the container's root reducer (via `dispatchRoot`), so they no
+  // longer patch their slice up into the parent's state here. The compose-up write is gone; this
+  // stays a no-op only because the child navigator still reads `setState` off this context (removed
+  // together with the context state reads in the store-slice step).
+  const setCurrentState = React.useCallback(() => {}, []);
 
   const isInitialRef = React.useRef(true);
 
