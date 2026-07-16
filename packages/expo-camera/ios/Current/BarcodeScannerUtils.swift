@@ -25,6 +25,16 @@ class BarcodeScannerUtils {
     return [BARCODE_TYPES_KEY: Array(validTypes.values)]
   }
 
+  // AVFoundation reports Interleaved 2 of 5 codes as either .itf14 or .interleaved2of5. Registering
+  // both when itf14 is requested mirrors Android ML Kit's single FORMAT_ITF and avoids dropping scans.
+  static func augmentedBarcodeTypes(_ types: [AVMetadataObject.ObjectType]) -> [AVMetadataObject.ObjectType] {
+    var augmented = types
+    if augmented.contains(.itf14) && !augmented.contains(.interleaved2of5) {
+      augmented.append(.interleaved2of5)
+    }
+    return augmented
+  }
+
   static func avMetadataCodeObjectToDictionary(_ barcodeScannerResult: AVMetadataMachineReadableCodeObject) -> [String: Any] {
     var result = [String: Any]()
     result["type"] = BarcodeType.toBarcodeType(type: barcodeScannerResult.type).rawValue

@@ -212,6 +212,31 @@ struct ExpoCameraUtils {
     return mutableMetadata
   }
 
+  struct EncodedImage {
+    let data: Data
+    let width: Double
+    let height: Double
+    let base64: String?
+  }
+
+  // Records the capture orientation as an EXIF tag instead of rotating the pixels, so viewers display
+  // it upright. Free of the file system so it can be unit tested.
+  static func encodeForSave(image: UIImage, metadata: [String: Any]?, quality: Double, includeBase64: Bool) throws -> EncodedImage {
+    var metadata = metadata ?? [:]
+    metadata[kCGImagePropertyOrientation as String] = toExifOrientation(orientation: image.imageOrientation)
+
+    guard let data = data(from: image, with: metadata, quality: Float(quality)) else {
+      throw CameraSavingImageException("Image data could not be processed")
+    }
+
+    return EncodedImage(
+      data: data,
+      width: image.size.width,
+      height: image.size.height,
+      base64: includeBase64 ? data.base64EncodedString() : nil
+    )
+  }
+
   /**
    Saves the image as a file.
    */
@@ -220,31 +245,30 @@ struct ExpoCameraUtils {
       throw CameraSavingImageException("Failed to locate `cacheDirectory`")
     }
 
-    var result = [String: Any]()
     let directory = URL(fileURLWithPath: cachesDirectory.path).appendingPathComponent("Camera")
     let filename = UUID().uuidString.appending(".jpg")
     let fileUrl = directory.appendingPathComponent(filename)
 
     FileSystemUtilities.ensureDirExists(at: directory)
 
-    // Record the capture orientation as an EXIF tag instead of rotating the pixels so viewers display it upright.
-    var metadata = options.metadata ?? [:]
-    metadata[kCGImagePropertyOrientation as String] = toExifOrientation(orientation: image.imageOrientation)
-
-    guard let data = data(from: image, with: metadata, quality: Float(options.quality)) else {
-      throw CameraSavingImageException("Image data could not be processed")
-    }
-
-    result["url"] = fileUrl.absoluteString
-    result["width"] = image.size.width
-    result["height"] = image.size.height
-    result["base64"] = options.base64 ? data.base64EncodedString() : nil
+    let encoded = try encodeForSave(
+      image: image,
+      metadata: options.metadata,
+      quality: options.quality,
+      includeBase64: options.base64
+    )
 
     do {
-      try data.write(to: fileUrl, options: .atomic)
+      try encoded.data.write(to: fileUrl, options: .atomic)
     } catch let error {
       throw CameraSavingImageException(error.localizedDescription)
     }
+
+    var result = [String: Any]()
+    result["url"] = fileUrl.absoluteString
+    result["width"] = encoded.width
+    result["height"] = encoded.height
+    result["base64"] = encoded.base64
     return result
   }
 }
