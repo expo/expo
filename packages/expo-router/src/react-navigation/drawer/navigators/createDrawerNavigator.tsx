@@ -13,11 +13,16 @@ import type {
 } from '../types';
 import { DrawerView } from '../views/DrawerView';
 
-export interface DrawerNavigatorContentProps extends DrawerNavigationConfig {
-  defaultStatus?: 'open' | 'closed';
-  drawerState?: DrawerNavigationState<ParamListBase>;
-  navigation?: DrawerNavigationHelpers;
+export interface DrawerNavigatorCreateProps {
+  drawerState: DrawerNavigationState<ParamListBase>;
+  navigation: DrawerNavigationHelpers;
 }
+
+export interface DrawerNavigatorProps extends DrawerNavigationConfig {
+  defaultStatus?: 'open' | 'closed';
+}
+
+export type DrawerNavigatorContentProps = DrawerNavigatorProps & DrawerNavigatorCreateProps;
 
 export type StandardDrawerNavigationEventMap = {
   [Event in keyof DrawerNavigationEventMap]: DrawerNavigationEventMap[Event] & {
@@ -41,8 +46,8 @@ function DrawerNavigatorContent({
 }: ContentArgs) {
   return (
     <DrawerView
-      state={drawerState!}
-      navigation={navigation!}
+      state={drawerState}
+      navigation={navigation}
       descriptors={descriptors as unknown as DrawerDescriptorMap}
       defaultStatus={defaultStatus}
       drawerContent={drawerContent}

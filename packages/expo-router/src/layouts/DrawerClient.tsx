@@ -5,7 +5,8 @@ import {
   type DrawerNavigationOptions,
 } from '../react-navigation/drawer';
 import type {
-  DrawerNavigatorContentProps,
+  DrawerNavigatorCreateProps,
+  DrawerNavigatorProps,
   StandardDrawerNavigationEventMap,
 } from '../react-navigation/drawer/navigators/createDrawerNavigator';
 import type { DrawerNavigationHelpers } from '../react-navigation/drawer/types';
@@ -21,8 +22,9 @@ export const Drawer = unstable_integrateWithRouter<
   DrawerNavigationOptions,
   DrawerNavigationState<ParamListBase>,
   StandardDrawerNavigationEventMap,
-  DrawerNavigatorContentProps,
-  DrawerRouterOptions
+  DrawerNavigatorProps,
+  DrawerRouterOptions,
+  DrawerNavigatorCreateProps
 >(createStandardDrawerNavigator, DrawerRouter, {
   createProps: ({ state, navigation }) => ({
     drawerState: state,
