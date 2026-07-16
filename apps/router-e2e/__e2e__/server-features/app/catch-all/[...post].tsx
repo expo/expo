@@ -7,12 +7,5 @@ export async function generateStaticParams() {
 
 export default function Post() {
   const params = useGlobalSearchParams();
-  const post = params.post;
-  return (
-    <>
-      <Text testID="post-text">Post: {post}</Text>
-      {/* Middleware matcher tests read the raw segments. */}
-      <Text testID="params">{Array.isArray(post) ? post.join(',') : post}</Text>
-    </>
-  );
+  return <Text testID="title">Post: {params.post}</Text>;
 }

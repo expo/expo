@@ -47,7 +47,7 @@ test.describe('server rendering in production', () => {
     const pageErrors = pageCollectErrors(page);
 
     await page.goto(expoServe.url.href);
-    await page.waitForSelector('[data-testid="index-text"]');
+    await page.waitForSelector('[data-testid="title"]');
 
     expect(pageErrors.errors).toEqual([]);
   });

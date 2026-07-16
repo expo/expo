@@ -44,19 +44,19 @@ describe('exports server', () => {
 
     it(`can serve up index html`, async () => {
       const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
-      expect(html.querySelector('[data-testid="index-text"]')?.textContent).toEqual('Index');
+      expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual('Index');
     });
 
     it(`can serve up non-index html`, async () => {
       const html = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
-      expect(html.querySelector('[data-testid="styled-text"]')?.textContent).toEqual('Hello World');
+      expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual('Hello World');
     });
 
     it.each([{ post: 'other' }, { post: 'welcome-to-the-universe' }])(
       `can serve up dynamically rendered html for post: $post`,
       async ({ post }) => {
         const html = getHtml(await server.fetchAsync(`/blog/${post}`).then((res) => res.text()));
-        expect(html.querySelector('[data-testid="post-text"]')?.textContent).toEqual(
+        expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual(
           `Post: ${post}`
         );
       }
@@ -342,7 +342,7 @@ describe('exports server', () => {
 
       // Ensure the atomic CSS class is used
       expect(
-        styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
+        styledHtml.querySelector('html > body div[data-testid="title"]')?.attributes.class
       ).toMatch('w4O25a_text');
     });
 
@@ -371,7 +371,7 @@ describe('exports server', () => {
       ).toBeDefined();
 
       // Ensure the font is used
-      expect(indexHtml.querySelector('div[data-testid="index-text"]')?.attributes.style).toMatch(
+      expect(indexHtml.querySelector('div[data-testid="title"]')?.attributes.style).toMatch(
         'font-family:sweet'
       );
 
@@ -473,7 +473,7 @@ describe('exports server', () => {
       const page = getHtml(html);
       const head = page.querySelector('html > head');
 
-      expect(page.querySelector('html > body [data-testid="metadata-text"]')?.innerText).toBe(
+      expect(page.querySelector('html > body [data-testid="title"]')?.innerText).toBe(
         'Metadata'
       );
       expect(head).not.toBeNull();
@@ -492,7 +492,7 @@ describe('exports server', () => {
         await server.fetchAsync('/metadata-async/123').then((res) => res.text())
       );
 
-      expect(page.querySelector('html > body [data-testid="async-metadata-text"]')?.innerText).toBe(
+      expect(page.querySelector('html > body [data-testid="title"]')?.innerText).toBe(
         'Async Metadata'
       );
       expect(page.querySelector('html > head > title')?.innerText).toBe('Async Metadata 123');

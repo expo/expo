@@ -11,5 +11,5 @@ export const generateMetadata: GenerateMetadataFunction = async (request, params
 };
 
 export default function AsyncMetadataPage() {
-  return <Text testID="async-metadata-text">Async Metadata</Text>;
+  return <Text testID="title">Async Metadata</Text>;
 }

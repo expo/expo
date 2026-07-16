@@ -1,4 +1,3 @@
-/** @type {import('expo-router/server').RequestHandler} */
 export function GET() {
   return Response.json({
     method: 'get',
@@ -6,7 +5,6 @@ export function GET() {
   });
 }
 
-/** @type {import('expo-router/server').RequestHandler} */
 export function POST() {
   return Response.json({
     method: 'post',

@@ -6,7 +6,7 @@ import { unstable_styles } from '../test.module.css';
 
 export default function Page() {
   return (
-    <Text testID="styled-text" style={unstable_styles.text}>
+    <Text testID="title" style={unstable_styles.text}>
       Hello World
     </Text>
   );

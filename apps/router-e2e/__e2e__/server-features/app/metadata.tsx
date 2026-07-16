@@ -25,7 +25,7 @@ export default function MetadataPage() {
       <Head>
         <meta name="expo-e2e-metadata-head" content="head" />
       </Head>
-      <Text testID="metadata-text">Metadata</Text>
+      <Text testID="title">Metadata</Text>
     </>
   );
 }

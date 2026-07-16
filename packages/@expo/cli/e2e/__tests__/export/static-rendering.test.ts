@@ -48,12 +48,12 @@ describe('exports static', () => {
 
     it(`can serve up index html`, async () => {
       const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
-      expect(html.querySelector('[data-testid="index-text"]')?.textContent).toEqual('Index');
+      expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual('Index');
     });
 
     it(`can serve up non-index html`, async () => {
       const html = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
-      expect(html.querySelector('[data-testid="styled-text"]')?.textContent).toEqual('Hello World');
+      expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual('Hello World');
     });
 
     ['other', 'welcome-to-the-universe'].forEach((post) => {});
@@ -61,7 +61,7 @@ describe('exports static', () => {
       `can serve up statically generated html for post: $post`,
       async ({ post }) => {
         const html = getHtml(await server.fetchAsync(`/blog/${post}`).then((res) => res.text()));
-        expect(html.querySelector('[data-testid="post-text"]')?.textContent).toEqual(
+        expect(html.querySelector('[data-testid="title"]')?.textContent).toEqual(
           `Post: ${post}`
         );
       }
@@ -256,7 +256,7 @@ describe('exports static', () => {
 
     // Ensure the atomic CSS class is used
     expect(
-      styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
+      styledHtml.querySelector('html > body div[data-testid="title"]')?.attributes.class
     ).toMatch('w4O25a_text');
   });
 
@@ -283,7 +283,7 @@ describe('exports static', () => {
     ).toBeDefined();
 
     // Ensure the font is used
-    expect(indexHtml.querySelector('div[data-testid="index-text"]')?.attributes.style).toMatch(
+    expect(indexHtml.querySelector('div[data-testid="title"]')?.attributes.style).toMatch(
       'font-family:sweet'
     );
 

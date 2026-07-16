@@ -16,9 +16,8 @@ export default function IndexRoute() {
   return (
     <>
       {/* Outside the Suspense boundary: middleware and rendering tests identify this page by
-          these testIDs in modes where loaders are disabled and the screen renders its fallback. */}
-      <Text testID="title">Index</Text>
-      <Text testID="index-text" style={{ fontFamily: 'sweet' }}>
+          this testID in modes where loaders are disabled and the screen renders its fallback. */}
+      <Text testID="title" style={{ fontFamily: 'sweet' }}>
         Index
       </Text>
       <Suspense fallback={<Loading />}>

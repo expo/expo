@@ -48,7 +48,7 @@ describe('server rewrites', () => {
 
     it(`correctly shows the destination contents after a rewrite`, async () => {
       const getIndexText = (htmlString: string) => {
-        return htmlParser.parse(htmlString).querySelector('[data-testid=styled-text]')!.textContent;
+        return htmlParser.parse(htmlString).querySelector('[data-testid=title]')!.textContent;
       };
 
       const indexResponse = await server.fetchAsync('/styled');
