@@ -8,10 +8,10 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
-@DoNotStrip
 /**
  * Coordinates access to the JavaScript heap with the JavaScript queue.
  */
+@DoNotStrip
 interface JSHeapAccessExecutor {
   /**
    * Hands an asynchronous request to the JavaScript queue. After a successful handoff, exactly one

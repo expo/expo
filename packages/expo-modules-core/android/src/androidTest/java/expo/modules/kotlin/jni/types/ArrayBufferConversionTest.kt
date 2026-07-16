@@ -376,13 +376,15 @@ class ArrayBufferConversionTest {
     var finalizer: Thread? = null
 
     try {
-      Truth.assertThat(executor.runOnQueue(
-        Runnable {
-          queueStarted.countDown()
-          allowQueueDrain.await()
-        },
-        Runnable { allowQueueDrain.countDown() }
-      )).isTrue()
+      Truth.assertThat(
+        executor.runOnQueue(
+          Runnable {
+            queueStarted.countDown()
+            allowQueueDrain.await()
+          },
+          Runnable { allowQueueDrain.countDown() }
+        )
+      ).isTrue()
       Truth.assertThat(queueStarted.await(5, TimeUnit.SECONDS)).isTrue()
 
       withJSIInterop(
