@@ -102,6 +102,43 @@ describe('baseUrl', () => {
   });
 });
 
+// Guard for retiring the `route.path` recompile branch in `useLinking` (Part 2, Step 6): the URL a
+// wildcard/catch-all, encoded, or not-found route was reached by must be reproducible from the
+// compiled state alone. If these hold, `useLinking` no longer needs to stash the original `path` on
+// the route and recompile from it to preserve the URL.
+describe('URL round-trips through the compiled state (no route.path preservation needed)', () => {
+  const roundTrip = (path: string, routes: string[]) => {
+    const config = getMockConfig(routes);
+    return getPathFromState(getStateFromPath<object>(path, config)!, config);
+  };
+
+  it('round-trips a catch-all route', () => {
+    expect(roundTrip('/blog/2024/01/hello', ['index', 'blog/[...rest]'])).toBe('/blog/2024/01/hello');
+  });
+
+  it('round-trips a catch-all route with encoded segments', () => {
+    expect(roundTrip('/files/hello%20world/a', ['index', 'files/[...rest]'])).toBe(
+      '/files/hello%20world/a'
+    );
+  });
+
+  it('round-trips an encoded dynamic param', () => {
+    expect(roundTrip('/hello%20world', ['index', '[slug]'])).toBe('/hello%20world');
+  });
+
+  it('round-trips a top-level not-found', () => {
+    expect(roundTrip('/missing/page', ['index', '+not-found'])).toBe('/missing/page');
+  });
+
+  it('round-trips a catch-all with EXPO_BASE_URL', () => {
+    process.env.EXPO_BASE_URL = '/expo/prefix';
+    const config = getMockConfig(['index', 'blog/[...rest]']);
+    expect(
+      getPathFromState(getStateFromPath<object>('/expo/prefix/blog/a/b', config)!, config)
+    ).toBe('/expo/prefix/blog/a/b');
+  });
+});
+
 describe(getUrlWithReactNavigationConcessions, () => {
   beforeEach(() => {
     delete process.env.EXPO_BASE_URL;

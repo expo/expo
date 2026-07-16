@@ -1,4 +1,3 @@
-import isEqual from 'fast-deep-equal';
 import { type RefObject, useEffect, useState, useCallback, useRef, use } from 'react';
 
 import { ServerContext } from '../global-state/serverLocationContext';
@@ -6,7 +5,6 @@ import { useExpoRouterStore } from '../global-state/storeContext';
 import { getRootStackRouteNames } from '../global-state/utils';
 import {
   type LinkingOptions,
-  findFocusedRoute,
   getActionFromState as getActionFromStateDefault,
   getPathFromState as getPathFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
@@ -16,7 +14,6 @@ import {
   useNavigationIndependentTree,
 } from '../react-navigation/native';
 import { createMemoryHistory } from './createMemoryHistory';
-import { appendBaseUrl } from './getPathFromState';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
@@ -304,56 +301,12 @@ export function useLinking(
       return;
     }
 
-    const getPathForRoute = (
-      route: ReturnType<typeof findFocusedRoute>,
-      state: NavigationState
-    ): string => {
-      let path;
-
-      // If the `route` object contains a `path`, use that path as long as `route.name` and `params` still match
-      // This makes sure that we preserve the original URL for wildcard routes
-      if (route?.path) {
-        const stateForPath = getStateFromPathRef.current(route.path, configRef.current);
-
-        if (stateForPath) {
-          const focusedRoute = findFocusedRoute(stateForPath);
-
-          if (
-            focusedRoute &&
-            focusedRoute.name === route.name &&
-            isEqual({ ...focusedRoute.params }, { ...route.params })
-          ) {
-            // START FORK - Ensure paths coming from events (e.g refresh) have the base URL
-            // path = route.path;
-            path = appendBaseUrl(route.path);
-            // END FORK
-          }
-        }
-      }
-
-      if (path == null) {
-        path = getPathFromStateRef.current(state, configRef.current);
-      }
-
-      // START FORK - ExpoRouter manually handles hashes. This code is intentionally removed
-      // const previousRoute = previousStateRef.current
-      //   ? findFocusedRoute(previousStateRef.current)
-      //   : undefined;
-
-      // Preserve the hash if the route didn't change
-      // if (
-      //   previousRoute &&
-      //   route &&
-      //   'key' in previousRoute &&
-      //   'key' in route &&
-      //   previousRoute.key === route.key
-      // ) {
-      //   path = path + location.hash;
-      // }
-      // END FORK
-
-      return path;
-    };
+    // The URL is reproduced from the committed state alone. `getPathFromState` re-encodes
+    // wildcard/dynamic segments and appends the base URL, so we no longer stash the original
+    // `route.path` on the route and recompile from it to preserve wildcard URLs (guarded by the
+    // `getStateFromPath` round-trip tests).
+    const getPathForState = (state: NavigationState): string =>
+      getPathFromStateRef.current(state, configRef.current);
 
     if (ref.current) {
       // We need to record the current metadata on the first render if they aren't set
@@ -368,8 +321,7 @@ export function useLinking(
       // END FORK
 
       if (state) {
-        const route = findFocusedRoute(state);
-        const path = getPathForRoute(route, state);
+        const path = getPathForState(state);
 
         if (previousStateRef.current === undefined) {
           // START FORK
@@ -404,8 +356,7 @@ export function useLinking(
       }
 
       const pendingPath = pendingPopStatePathRef.current;
-      const route = findFocusedRoute(state);
-      const path = getPathForRoute(route, state);
+      const path = getPathForState(state);
 
       // START FORK
       // previousStateRef.current = state;

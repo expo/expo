@@ -1,4 +1,3 @@
-import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 
 import {
@@ -270,29 +269,10 @@ export function useLinking(
       route: ReturnType<typeof findFocusedRoute>,
       state: NavigationState
     ): string => {
-      let path;
-
-      // If the `route` object contains a `path`, use that path as long as `route.name` and `params` still match
-      // This makes sure that we preserve the original URL for wildcard routes
-      if (route?.path) {
-        const stateForPath = getStateFromPathRef.current(route.path, configRef.current);
-
-        if (stateForPath) {
-          const focusedRoute = findFocusedRoute(stateForPath);
-
-          if (
-            focusedRoute &&
-            focusedRoute.name === route.name &&
-            isEqual(focusedRoute.params, route.params)
-          ) {
-            path = route.path;
-          }
-        }
-      }
-
-      if (path == null) {
-        path = getPathFromStateRef.current(state, configRef.current);
-      }
+      // Reproduce the URL from the committed state. The original wildcard `route.path` no longer
+      // needs preserving: `getPathFromState` re-encodes wildcard/dynamic segments so the URL
+      // round-trips.
+      let path = getPathFromStateRef.current(state, configRef.current);
 
       const previousRoute = previousStateRef.current
         ? findFocusedRoute(previousStateRef.current)
