@@ -557,7 +557,7 @@ export interface ExpoAppMetricsModuleType {
    * @private This API is unstable and may change without notice.
    */
   reportError(error: {
-    source: 'global' | 'errorBoundary';
+    source: 'global' | 'errorBoundary' | 'reportedByUser';
     type?: string;
     message: string;
     stacktrace?: string;
