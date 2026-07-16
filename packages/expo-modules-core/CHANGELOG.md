@@ -21,6 +21,7 @@
 - Added `ArrayBuffer` as the preferred safe native module argument and return type, and deprecated `NativeArrayBuffer` in favor of it. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
 - [iOS] Added module lifecycle hooks that replace the `OnCreate`, `OnDestroy`, `OnStartObserving` and `OnStopObserving` DSL components: `didCreate`, `willDestroy`, `didStartListening` and `didStopListening`. ([#47542](https://github.com/expo/expo/pull/47542) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Support `PlatformColor` as Color. ([#47632](https://github.com/expo/expo/pull/47632) by [@jakex7](https://github.com/jakex7))
+- [Android] Added `ArrayBuffer.withJSBytes` for safe scoped access to underlying bytes from any thread. ([#47261](https://github.com/expo/expo/pull/47261) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 
