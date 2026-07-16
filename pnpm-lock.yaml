@@ -4462,6 +4462,42 @@ importers:
         specifier: ^3.2.0
         version: 3.6.0
 
+  packages/submit-expo-feedback:
+    devDependencies:
+      '@expo/config':
+        specifier: workspace:*
+        version: link:../@expo/config
+      '@expo/package-manager':
+        specifier: workspace:*
+        version: link:../@expo/package-manager
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
+      '@types/prompts':
+        specifier: ^2.0.6
+        version: 2.4.9
+      '@vercel/ncc':
+        specifier: ^0.38.3
+        version: 0.38.4
+      agent-cli-detector:
+        specifier: ^0.1.2
+        version: 0.1.2
+      arg:
+        specifier: ^5.0.2
+        version: 5.0.2
+      chalk:
+        specifier: ^4.0.0
+        version: 4.1.2
+      ci-info:
+        specifier: ^3.3.0
+        version: 3.9.0
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+      prompts:
+        specifier: ^2.3.2
+        version: 2.4.2
+
   packages/expo-file-system:
     dependencies:
       expo:
