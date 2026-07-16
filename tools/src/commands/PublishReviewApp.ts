@@ -75,10 +75,14 @@ async function runEASUpdate(): Promise<void> {
 
   // Plain JS with an inline sourcemap so Expo Go's source code explorer can
   // show the project's source to App Review (Hermes bytecode carries neither).
-  await spawnAsync('eas', ['update', '--branch', 'main', '--no-bytecode', '--source-maps', 'inline'], {
-    cwd: NCL_DIR,
-    stdio: 'inherit',
-  });
+  await spawnAsync(
+    'eas',
+    ['update', '--branch', 'main', '--no-bytecode', '--source-maps', 'inline'],
+    {
+      cwd: NCL_DIR,
+      stdio: 'inherit',
+    }
+  );
 }
 
 async function main(options: ActionOptions): Promise<void> {
