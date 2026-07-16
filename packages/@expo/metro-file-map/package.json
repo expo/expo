@@ -35,7 +35,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "2g": "^0.4.1",
+    "2g": "^0.4.3",
     "debug": "^4.3.4",
     "fb-watchman": "^2.0.2",
     "invariant": "^2.2.4",
