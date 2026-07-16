@@ -7,7 +7,12 @@ import { expoInlineManifestPlugin } from '../plugins/expo-inline-manifest-plugin
 import { expoRouterBabelPlugin } from '../plugins/expo-router-plugin';
 import { expoImportMetaTransformPluginFactory } from '../plugins/import-meta-transform-plugin';
 import { expoInlineEnvVars } from '../plugins/inline-env-vars';
-import { lazyDecoratorsPlugin } from '../plugins/lazy-decorators-plugin';
+import {
+  lazyClassPropertiesPlugin,
+  lazyDecoratorsPlugin,
+  lazyPrivateMethodsPlugin,
+  lazyPrivatePropertyInObjectPlugin,
+} from '../plugins/lazy-decorators-plugin';
 import { environmentRestrictedReactAPIsPlugin } from '../plugins/restricted-react-api-plugin';
 import { reactServerActionsPlugin } from '../plugins/server-actions-plugin';
 import { serverDataLoadersPlugin } from '../plugins/server-data-loaders-plugin';
@@ -34,6 +39,10 @@ export interface ExpoConfigOptions {
   bundler: 'metro' | 'webpack' | null;
   inlineEnvironmentVariables?: boolean;
   decorators: { legacy?: boolean; version?: number } | false | undefined;
+  /** Whether the selected engine preset does not compile class features (class
+   * properties, private methods), so they must be compiled here for files that
+   * use decorators. */
+  needsClassFeaturesForDecorators: boolean | undefined;
   reanimated: boolean | undefined;
   worklets: boolean | undefined;
   expoUi: boolean | undefined;
@@ -152,6 +161,16 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   // TODO: Remove
   if (options.decorators !== false) {
     plugins.push([lazyDecoratorsPlugin, options.decorators ?? { legacy: true }]);
+    // See `lazy-decorators-plugin.ts` for why the class-feature transforms must follow.
+    if (options.needsClassFeaturesForDecorators) {
+      // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
+      const loose = true;
+      plugins.push(
+        [lazyClassPropertiesPlugin, { loose }],
+        [lazyPrivateMethodsPlugin, { loose }],
+        [lazyPrivatePropertyInObjectPlugin, { loose }]
+      );
+    }
   }
 
   // Automatically add worklets or reanimated plugin when package is installed.
