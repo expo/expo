@@ -188,10 +188,9 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     let croppedSize = AVMakeRect(aspectRatio: previewSize, insideRect: cropRect)
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
-    takenImage = ExpoCameraUtils.normalizeOrientation(of: takenImage)
 
-    let width = takenImage.cgImage.map { CGFloat($0.width) } ?? takenImage.size.width
-    let height = takenImage.cgImage.map { CGFloat($0.height) } ?? takenImage.size.height
+    let width = takenImage.size.width
+    let height = takenImage.size.height
     var processedImageData: Data?
 
     var response = [String: Any]()
@@ -206,12 +205,15 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
         with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
       )
 
-      updatedExif[kCGImagePropertyExifPixelXDimension as String] = width
-      updatedExif[kCGImagePropertyExifPixelYDimension as String] = height
+      if let cgImage = takenImage.cgImage {
+        updatedExif[kCGImagePropertyExifPixelXDimension as String] = cgImage.width
+        updatedExif[kCGImagePropertyExifPixelYDimension as String] = cgImage.height
+      }
       response["exif"] = updatedExif
 
       var updatedMetadata = metadata
-      updatedMetadata[kCGImagePropertyOrientation as String] = 1
+      updatedMetadata[kCGImagePropertyOrientation as String] =
+        ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)
 
       if let additionalExif = options.additionalExif {
         for (key, value) in additionalExif {

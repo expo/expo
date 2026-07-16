@@ -36,20 +36,26 @@ export default function CameraScreenCaptureDimensions() {
       const pixelY = exif.PixelYDimension;
       const orientation = exif.Orientation;
 
+      const sameSet = (a: [number, number], b: [number, number]) =>
+        (a[0] === b[0] && a[1] === b[1]) || (a[0] === b[1] && a[1] === b[0]);
+      const quarterTurn = typeof orientation === 'number' && orientation >= 5 && orientation <= 8;
+
       setChecks([
         {
           label: 'Returned size matches the encoded file',
-          ok: result.width === decoded.width && result.height === decoded.height,
+          ok: sameSet([result.width, result.height], [decoded.width, decoded.height]),
           detail: `returned ${result.width}×${result.height}, file ${decoded.width}×${decoded.height}`,
         },
         {
-          label: 'EXIF pixel dimensions match the returned size',
-          ok: pixelX === result.width && pixelY === result.height,
-          detail: `exif ${pixelX}×${pixelY}, returned ${result.width}×${result.height}`,
+          label: 'EXIF pixel dimensions are consistent with the orientation tag',
+          ok: quarterTurn
+            ? pixelX === result.height && pixelY === result.width
+            : pixelX === result.width && pixelY === result.height,
+          detail: `orientation ${orientation}, exif ${pixelX}×${pixelY}, returned ${result.width}×${result.height}`,
         },
         {
-          label: 'EXIF orientation is normalized to 1',
-          ok: orientation === 1,
+          label: 'EXIF orientation tag is present and valid',
+          ok: typeof orientation === 'number' && orientation >= 1 && orientation <= 8,
           detail: `orientation ${orientation}`,
         },
       ]);
