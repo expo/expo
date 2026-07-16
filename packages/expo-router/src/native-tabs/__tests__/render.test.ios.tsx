@@ -129,9 +129,10 @@ describe('Tabs visibility', () => {
     expect(screen.queryByTestId('third')).toBeNull();
     expect(screen.queryByTestId('fourth')).toBeNull();
     expect(screen.getByTestId('fifth')).toBeVisible();
-    // Store-slice reads add a committed-slice pass before eager preload self-heals hidden triggers:
-    // 3 visible tabs x 3 passes.
-    expect(TabsScreen).toHaveBeenCalledTimes(9);
+    // A hidden trigger no longer forces an extra self-healing render: reconciliation and eager
+    // preload converge through the root reducer in the same two passes as the non-hidden case
+    // (initial pass plus preload pass): 3 visible tabs x 2 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
   });
 
   it('does not render tabs, when route does not exist', () => {

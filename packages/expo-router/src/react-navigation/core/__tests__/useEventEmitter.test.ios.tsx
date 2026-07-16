@@ -51,8 +51,22 @@ test('fires focus and blur events in root navigator', () => {
 
   const navigation = React.createRef<any>();
 
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'third', 'fourth'],
+        routes: [
+          { name: 'first', key: 'first' },
+          { name: 'second', key: 'second' },
+          { name: 'third', key: 'third' },
+          { name: 'fourth', key: 'fourth' },
+        ],
+      }}>
       <TestNavigator ref={navigation}>
         <Screen name="first" component={createComponent(firstFocusCallback, firstBlurCallback)} />
         <Screen
@@ -130,8 +144,20 @@ test('fires focus event after blur', () => {
 
   const navigation = React.createRef<any>();
 
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second'],
+        routes: [
+          { name: 'first', key: 'first' },
+          { name: 'second', key: 'second' },
+        ],
+      }}>
       <TestNavigator ref={navigation}>
         <Screen name="first" component={Test} />
         <Screen name="second" component={Test} />

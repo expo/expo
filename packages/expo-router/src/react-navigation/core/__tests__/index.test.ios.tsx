@@ -282,8 +282,21 @@ test('initializes state for nested screens in Group', () => {
 
   const onStateChange = jest.fn();
 
+  const initialState = {
+    stale: false as const,
+    index: 0,
+    key: '0',
+    routeNames: ['foo', 'bar', 'baz'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
+    ],
+  };
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} />
         <Group>
@@ -330,8 +343,31 @@ test('initializes state for nested navigator on navigation', () => {
 
   const onStateChange = jest.fn();
 
+  const initialState = {
+    stale: false as const,
+    index: 2,
+    key: '0',
+    routeNames: ['foo', 'bar', 'baz'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+      {
+        key: 'baz',
+        name: 'baz',
+        state: {
+          stale: false as const,
+          index: 0,
+          key: '1',
+          routeNames: ['qux'],
+          routes: [{ key: 'qux', name: 'qux' }],
+        },
+      },
+    ],
+  };
+  MockRouterKey.current = 2;
+
   const element = (
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator initialRouteName="baz">
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />
@@ -426,8 +462,20 @@ test("doesn't update state if action wasn't handled", () => {
 
   const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
+  const initialState = {
+    stale: false as const,
+    index: 0,
+    key: '0',
+    routeNames: ['foo', 'bar'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+    ],
+  };
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo" component={FooScreen} />
         <Screen name="bar" component={React.Fragment} />
@@ -465,8 +513,20 @@ test('cleans up state when the navigator unmounts', () => {
 
   const onStateChange = jest.fn();
 
+  const initialState = {
+    stale: false as const,
+    index: 0,
+    key: '0',
+    routeNames: ['foo', 'bar'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+    ],
+  };
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo" component={FooScreen} />
         <Screen name="bar" component={React.Fragment} />
@@ -524,8 +584,20 @@ test('allows state updates by dispatching a function returning an action', () =>
 
   const onStateChange = jest.fn();
 
+  const initialState = {
+    stale: false as const,
+    index: 0,
+    key: '0',
+    routeNames: ['foo', 'bar'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
+    ],
+  };
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo" component={FooScreen} />
         <Screen name="bar" component={BarScreen} />

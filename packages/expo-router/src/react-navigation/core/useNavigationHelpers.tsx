@@ -55,43 +55,11 @@ export function useNavigationHelpers<
       const action = typeof op === 'function' ? op(state) : op;
 
       if (dispatchRoot) {
-        // TODO(Step 8): This root-reducer path intentionally does not reproduce the old
-        // `NAVIGATE_DEPRECATED` / `navigationInChildEnabled` down-bubbling fallback. If a real
-        // consumer depends on that legacy child search, reintroduce it at the dispatch boundary
-        // deliberately.
-        let isRootNotInitialized = false;
-        let isOriginMissing = false;
-        const mayFallbackLocally = action.type === 'PRELOAD' || action.target == null;
-        const handled = dispatchRoot(action, {
-          originKey: state.key,
-          suppressUnhandled: mayFallbackLocally,
-          onNotInitialized: () => {
-            isRootNotInitialized = true;
-          },
-          onMissingOrigin: () => {
-            isOriginMissing = true;
-          },
-        });
-
-        if (!handled && mayFallbackLocally) {
-          const shouldFallbackLocally =
-            action.type === 'PRELOAD' ||
-            (action.target == null &&
-              (action.type === 'NAVIGATE' ||
-                ((isRootNotInitialized || isOriginMissing) &&
-                  (action.type === 'UPDATE' || action.type === 'NOOP'))));
-
-          if (!shouldFallbackLocally) {
-            onUnhandledAction?.(action);
-            return;
-          }
-
-          const handledLocally = onAction(action);
-
-          if (!handledLocally) {
-            onUnhandledAction?.(action);
-          }
-        }
+        // The committed store is the single dispatch path — forward to the root reducer, tagged
+        // with this navigator's key. No local reducer fallback: `dispatchRoot` reports unhandled
+        // actions itself, and it holds+replays actions dispatched before the origin navigator's
+        // reducer has registered (the mount window).
+        dispatchRoot(action, { originKey: state.key });
         return;
       }
 

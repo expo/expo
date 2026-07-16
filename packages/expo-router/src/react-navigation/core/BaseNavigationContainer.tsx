@@ -162,36 +162,48 @@ export function BaseNavigationContainer({
   // is no separate compose-up getter chain.
   const getCommittedRootState = useLatestCallback(() => getState() as NavigationState | undefined);
 
+  // Actions dispatched before their origin navigator's reducer has registered. This is the mount
+  // window: a descendant's mount effect can dispatch (e.g. an untargeted `navigate` or a `preload`)
+  // before its ancestor navigators' registration effects run. Rather than reducing locally, we hold
+  // the action and replay it through the root reducer after the next commit, once registration lands.
+  const pendingReplayRef = React.useRef<{ action: NavigationAction; originKey?: string }[]>([]);
+  const [replayTick, requestReplay] = React.useReducer((tick: number) => tick + 1, 0);
+
   const dispatchRoot = useLatestCallback(
     (
       action: NavigationAction,
       options: {
         originKey?: string;
         suppressUnhandled?: boolean;
-        onNotInitialized?: () => void;
-        onMissingOrigin?: () => void;
         skipBeforeRemove?: boolean;
+        isReplay?: boolean;
       } = {}
     ) => {
       const rootState = getCommittedRootState();
 
       if (rootState == null) {
-        options.onNotInitialized?.();
-        if (options.onNotInitialized == null) {
-          console.error(NOT_INITIALIZED_ERROR);
-        }
+        console.error(NOT_INITIALIZED_ERROR);
         return false;
       }
 
       const result = rootReducer(rootState, action, reducerRegistry, options);
 
       if (!result.handled) {
+        const originUnregistered =
+          options.originKey != null && !reducerRegistry.hasReducer(options.originKey);
+        const isDeferrable = action.type === 'PRELOAD' || action.target == null;
+
+        if (originUnregistered && isDeferrable && !options.suppressUnhandled && !options.isReplay) {
+          // Mount window: the origin navigator exists in the committed tree but hasn't registered
+          // its reducer yet. Hold the action and replay it after the next commit (see below). If it
+          // is still unhandled on replay, it falls through to the unhandled reporting.
+          pendingReplayRef.current.push({ action, originKey: options.originKey });
+          requestReplay();
+          return false;
+        }
+
         const originEntry =
           options.originKey == null ? undefined : reducerRegistry.getEntry(options.originKey);
-
-        if (options.originKey != null && !reducerRegistry.hasReducer(options.originKey)) {
-          options.onMissingOrigin?.();
-        }
 
         if (options.suppressUnhandled) {
           return false;
@@ -229,6 +241,23 @@ export function BaseNavigationContainer({
       return true;
     }
   );
+
+  // Replay actions held during the mount window. Runs on every commit (and whenever `requestReplay`
+  // fires), which for the initial mount lands after the descendant navigators' registration effects,
+  // so the root reducer now sees the origin registered. `isReplay` stops a still-unhandled replay
+  // from re-queuing, bounding this to a single retry.
+  React.useEffect(() => {
+    if (pendingReplayRef.current.length === 0) {
+      return;
+    }
+
+    const pending = pendingReplayRef.current;
+    pendingReplayRef.current = [];
+
+    for (const { action, originKey } of pending) {
+      dispatchRoot(action, { originKey, isReplay: true });
+    }
+  }, [replayTick, dispatchRoot]);
 
   const getFocusedOriginKey = React.useCallback(
     (rootState: NavigationState | undefined) => {
