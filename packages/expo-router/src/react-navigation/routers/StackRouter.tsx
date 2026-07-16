@@ -364,9 +364,9 @@ export function StackRouter(options: StackRouterOptions) {
           if (!route) {
             route = createRouteFromAction({ action, routeParamList }, state);
 
-            // TODO(Step 5/7): payload.state is dormant until the wire emits it and the root reducer
-            // inserts it at the boundary. Attach it only to this freshly created replacement (a
-            // newly-minted key); a promoted preloaded route keeps its own complete subtree.
+            // payload.state is dormant until the structure-param wire emits it (Step 8) and the
+            // root reducer inserts it at the boundary. Attach it only to this freshly created
+            // replacement (a newly-minted key); a promoted preloaded route keeps its own subtree.
             if (action.payload.state !== undefined) {
               route = { ...route, state: action.payload.state };
               assertSubtreeKeyMatchesRoute(route.key, action.payload.state);
@@ -446,7 +446,6 @@ export function StackRouter(options: StackRouterOptions) {
                 if (r.key === route.key) {
                   routes.push({
                     ...route,
-                    path: action.payload.path !== undefined ? action.payload.path : route.path,
                     params,
                   });
                   break;
@@ -460,7 +459,6 @@ export function StackRouter(options: StackRouterOptions) {
               if (!routes.some((r) => r.key === route.key)) {
                 routes.push({
                   ...route,
-                  path: action.payload.path !== undefined ? action.payload.path : route.path,
                   params,
                 });
               }
@@ -468,10 +466,6 @@ export function StackRouter(options: StackRouterOptions) {
               routes = activeRoutes.filter((r) => r.key !== route.key);
               routes.push({
                 ...route,
-                path:
-                  action.type === 'NAVIGATE' && action.payload.path !== undefined
-                    ? action.payload.path
-                    : route.path,
                 params,
               });
             }
@@ -483,13 +477,13 @@ export function StackRouter(options: StackRouterOptions) {
                 state,
               }),
               name: action.payload.name,
-              path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
               params,
             };
 
-            // TODO(Step 5/7): payload.state is dormant until the wire emits it and the root reducer
-            // inserts it at the boundary. Attach it verbatim only to this freshly created route
-            // (a newly-minted key) — the child navigator it describes is not yet mounted.
+            // payload.state is dormant until the structure-param wire emits it (Step 8) and the
+            // root reducer inserts it at the boundary. Attach it verbatim only to this freshly
+            // created route (a newly-minted key) — the child navigator it describes is not yet
+            // mounted.
             if (action.payload.state !== undefined) {
               newRoute.state = action.payload.state;
               assertSubtreeKeyMatchesRoute(newRoute.key, action.payload.state);

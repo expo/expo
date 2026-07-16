@@ -67,7 +67,6 @@ describe('baseUrl', () => {
             routes: [
               {
                 name: 'bar',
-                path: '/bar',
               },
             ],
           },
@@ -93,7 +92,6 @@ describe('baseUrl', () => {
             routes: [
               {
                 name: 'bar',
-                path: '/bar',
               },
             ],
           },
@@ -115,7 +113,9 @@ describe('URL round-trips through the compiled state (no route.path preservation
   };
 
   it('round-trips a catch-all route', () => {
-    expect(roundTrip('/blog/2024/01/hello', ['index', 'blog/[...rest]'])).toBe('/blog/2024/01/hello');
+    expect(roundTrip('/blog/2024/01/hello', ['index', 'blog/[...rest]'])).toBe(
+      '/blog/2024/01/hello'
+    );
   });
 
   it('round-trips a catch-all route with encoded segments', () => {
@@ -221,7 +221,6 @@ describe('hash', () => {
       routes: [
         {
           name: 'hello',
-          path: '/hello#123',
           params: {
             '#': '123',
           },
@@ -246,7 +245,6 @@ describe('hash', () => {
                   '#': '123',
                   hello: 'hello',
                 },
-                path: '/hello#123',
               },
             ],
           },
@@ -267,7 +265,6 @@ describe('hash', () => {
                 params: {
                   '#': '123',
                 },
-                path: '/?#123',
               },
             ],
           },
@@ -290,7 +287,6 @@ it(`supports spaces`, () => {
     routes: [
       {
         name: 'hello world',
-        path: '/hello%20world',
       },
     ],
   });
@@ -309,7 +305,6 @@ it(`supports spaces`, () => {
               params: {
                 'hello world': 'hello world',
               },
-              path: '/hello%20world',
             },
           ],
         },
@@ -370,7 +365,6 @@ it(`matches against dynamic groups`, () => {
                           params: {
                             user: '(explore)',
                           },
-                          path: '',
                         },
                       ],
                     },
@@ -438,7 +432,6 @@ it(`adds dynamic route params from all levels of the path`, () => {
                                   baz: 'baz',
                                   foo: 'foo',
                                 },
-                                path: '/foo/bar/baz/other',
                               },
                             ],
                           },
@@ -471,7 +464,6 @@ it(`handles not-found routes`, () => {
               params: {
                 'not-found': ['missing-page'],
               },
-              path: '/missing-page',
             },
           ],
         },
@@ -496,7 +488,6 @@ it(`handles query params`, () => {
                 hello: 'world',
                 test: 'true',
               },
-              path: '/?test=true&hello=world&array=1&array=2',
             },
           ],
         },
@@ -521,7 +512,6 @@ it(`handles query params`, () => {
                 hello: 'world',
                 test: 'true',
               },
-              path: '/?test=true&hello=world&array=1&array=2',
             },
           ],
         },
@@ -541,7 +531,6 @@ it(`matches routes with multiple spaces in path`, () => {
     routes: [
       {
         name: 'hello beautiful world',
-        path: '/hello%20beautiful%20world',
       },
     ],
   });
@@ -558,7 +547,6 @@ it(`prioritizes hoisted index routes over dynamic groups`, () => {
           routes: [
             {
               name: '(one)/index',
-              path: '',
             },
           ],
         },

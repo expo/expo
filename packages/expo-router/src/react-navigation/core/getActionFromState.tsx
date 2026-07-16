@@ -67,10 +67,9 @@ export function getActionFromState(
     | {
         name: string;
         params: NavigatorScreenParams<ParamListBase>;
-        path?: string;
         pop?: boolean;
       }
-    | undefined = route ? { name: route.name, path: route.path, params } : undefined;
+    | undefined = route ? { name: route.name, params } : undefined;
 
   // If the screen contains a navigator, pop other screens to navigate to it
   // This avoid pushing multiple instances of navigators onto a stack
@@ -127,7 +126,6 @@ export function getActionFromState(
       params.pop = true;
       params = params.params as NavigatorScreenParams<ParamListBase>;
     } else {
-      params.path = route.path;
       params.params = route.params;
     }
 

@@ -41,7 +41,6 @@ describe('push', () => {
               {
                 key: expect.any(String),
                 name: 'page',
-                path: '/page',
               },
               {
                 key: expect.any(String),
@@ -49,7 +48,6 @@ describe('push', () => {
                 params: {
                   a: 'true',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -57,19 +55,16 @@ describe('push', () => {
                 params: {
                   b: 'true',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
                 name: 'page',
                 params: {},
-                path: undefined,
               },
               {
                 key: expect.any(String),
                 name: 'page',
                 params: {},
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -77,7 +72,6 @@ describe('push', () => {
                 params: {
                   c: 'true',
                 },
-                path: undefined,
               },
             ],
             stale: false,
@@ -111,7 +105,6 @@ describe('push', () => {
                 key: expect.any(String),
                 name: 'page',
                 params: undefined,
-                path: '/page',
               },
             ],
             stale: false,
@@ -165,7 +158,6 @@ describe('navigate', () => {
                 params: {
                   c: 'true',
                 },
-                path: '/page',
               },
             ],
             stale: false,
@@ -206,7 +198,6 @@ describe('navigate', () => {
               {
                 key: expect.any(String),
                 name: 'index',
-                path: '/',
               },
               {
                 key: expect.any(String),
@@ -214,7 +205,6 @@ describe('navigate', () => {
                 params: {
                   page: 'a',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -222,7 +212,6 @@ describe('navigate', () => {
                 params: {
                   page: 'b',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -230,7 +219,6 @@ describe('navigate', () => {
                 params: {
                   page: 'c',
                 },
-                path: undefined,
               },
             ],
             stale: false,
@@ -258,7 +246,6 @@ describe('navigate', () => {
               {
                 key: expect.any(String),
                 name: 'index',
-                path: '/',
               },
             ],
             stale: false,
@@ -304,7 +291,6 @@ describe('replace', () => {
               {
                 key: expect.any(String),
                 name: 'page',
-                path: '/page',
               },
               {
                 key: expect.any(String),
@@ -312,7 +298,6 @@ describe('replace', () => {
                 params: {
                   a: 'true',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -327,7 +312,6 @@ describe('replace', () => {
                 params: {
                   c: 'true',
                 },
-                path: undefined,
               },
             ],
             stale: false,

@@ -122,7 +122,7 @@ test('prepends trailing slash to path', () => {
         {
           name: 'foo',
           state: {
-            routes: [{ name: 'bar', path: 'foo/bar' }],
+            routes: [{ name: 'bar' }],
           },
         },
       ],

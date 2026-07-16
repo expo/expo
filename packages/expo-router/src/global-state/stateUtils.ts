@@ -139,7 +139,6 @@ function rekeyState(
       const nextRoute = {
         ...route,
         key,
-        path: undefined,
         params: routeParams,
       };
 

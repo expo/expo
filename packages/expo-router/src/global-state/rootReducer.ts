@@ -455,7 +455,6 @@ function getNestedActionFromRouteParams(params: unknown): NavigationAction | und
     payload: {
       name: params.screen,
       params: 'params' in params ? params.params : undefined,
-      path: 'path' in params ? params.path : undefined,
       merge: 'merge' in params ? params.merge : undefined,
       pop: 'pop' in params ? params.pop : undefined,
     },
@@ -558,7 +557,6 @@ function getRealParams(params: Record<string, unknown>): Record<string, unknown>
   delete result.screen;
   delete result.initial;
   delete result.params;
-  delete result.path;
   delete result.merge;
   delete result.pop;
 

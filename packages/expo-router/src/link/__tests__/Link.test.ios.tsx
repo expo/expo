@@ -361,7 +361,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: '/apple',
               },
               {
                 key: expect.any(String),
@@ -369,7 +368,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -377,7 +375,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -385,7 +382,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
             ],
             stale: false,
@@ -420,7 +416,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -428,7 +423,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
             ],
             stale: false,
@@ -484,7 +478,6 @@ test('can dynamically route using singular function', () => {
               params: {
                 slug: 'apple',
               },
-              path: '/apple',
             },
             {
               key: expect.any(String),
@@ -493,7 +486,6 @@ test('can dynamically route using singular function', () => {
                 id: '1',
                 slug: 'apple',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -502,7 +494,6 @@ test('can dynamically route using singular function', () => {
                 id: '1',
                 slug: 'apple',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -511,7 +502,6 @@ test('can dynamically route using singular function', () => {
                 id: '2',
                 slug: 'apple',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -519,7 +509,6 @@ test('can dynamically route using singular function', () => {
               params: {
                 slug: 'banana',
               },
-              path: undefined,
             },
           ],
           stale: false,
@@ -554,7 +543,6 @@ test('can dynamically route using singular function', () => {
               params: {
                 slug: 'apple',
               },
-              path: '/apple',
             },
             {
               key: expect.any(String),
@@ -563,7 +551,6 @@ test('can dynamically route using singular function', () => {
                 id: '2',
                 slug: 'apple',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -571,7 +558,6 @@ test('can dynamically route using singular function', () => {
               params: {
                 slug: 'banana',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -580,7 +566,6 @@ test('can dynamically route using singular function', () => {
                 id: '1',
                 slug: 'apple',
               },
-              path: undefined,
             },
           ],
           stale: false,
@@ -618,7 +603,6 @@ describe('prefetch', () => {
                 key: expect.any(String),
                 name: 'index',
                 params: undefined,
-                path: '/',
               },
               {
                 key: expect.any(String),
@@ -669,7 +653,6 @@ describe('prefetch', () => {
                 key: expect.any(String),
                 name: 'index',
                 params: undefined,
-                path: '/',
               },
               {
                 key: expect.any(String),
@@ -718,7 +701,6 @@ describe('prefetch', () => {
                 key: expect.any(String),
                 name: 'index',
                 params: undefined,
-                path: '/',
               },
               {
                 key: expect.any(String),

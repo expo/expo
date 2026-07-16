@@ -642,10 +642,6 @@ export function useNavigationBuilder<
               action.payload.params !== null
                 ? action.payload.params
                 : undefined,
-            path:
-              'path' in action.payload && typeof action.payload.path === 'string'
-                ? action.payload.path
-                : undefined,
           },
         ],
       };

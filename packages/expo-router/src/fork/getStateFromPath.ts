@@ -45,7 +45,6 @@ export type CompleteResultState = {
 export type CompleteRoute = {
   key: string;
   name: string;
-  path?: string;
   params?: Record<string, any>;
   state?: CompleteResultState;
 };
@@ -55,7 +54,6 @@ export type ResultState = CompleteResultState;
 
 export type ParsedRoute = {
   name: string;
-  path?: string;
   params?: Record<string, any> | undefined;
 };
 
@@ -798,7 +796,7 @@ const buildStateForChain = (
 };
 
 const createNestedStateObject = (
-  { path, ...expoURL }: ReturnType<typeof expo.getUrlWithReactNavigationConcessions>,
+  { path }: ReturnType<typeof expo.getUrlWithReactNavigationConcessions>,
   routes: ParsedRoute[],
   initialRoutes: InitialRouteConfig[],
   rootScreens: ScreenConfigMap | undefined,
@@ -808,10 +806,6 @@ const createNestedStateObject = (
   const state = buildStateForChain(routes, rootScreens, undefined, [], initialRoutes);
 
   const route = findFocusedRoute(state as unknown as InitialState) as ParsedRoute;
-  // START FORK
-  route.path = expoURL.pathWithoutGroups;
-  // route.path = path;
-  // END FORK
 
   // START FORK
   // const params = parseQueryParams(

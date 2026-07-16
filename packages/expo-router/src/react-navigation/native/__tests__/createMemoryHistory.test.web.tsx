@@ -41,7 +41,6 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     routes: [
       {
         name: 'One',
-        path: '/route-one',
         key: 'One-23',
         params: undefined,
       },
@@ -68,13 +67,11 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     routes: [
       {
         name: 'One',
-        path: '/route-one',
         key: 'One-23',
         params: undefined,
       },
       {
         name: 'Two',
-        path: '/route-two',
         key: 'Two-34',
         params: {},
       },
@@ -121,13 +118,11 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     routes: [
       {
         name: 'Three',
-        path: '/route-three',
         key: 'Three-23',
         params: undefined,
       },
       {
         name: 'Two',
-        path: '/route-two',
         key: 'Two-23',
         params: undefined,
       },
@@ -151,13 +146,11 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     routes: [
       {
         name: 'Three',
-        path: '/route-three',
         key: 'Three-23',
         params: undefined,
       },
       {
         name: 'One',
-        path: '/route-one',
         key: 'One-23',
         params: undefined,
       },

@@ -319,7 +319,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: '/apple',
               },
             ],
             stale: false,
@@ -354,7 +353,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: '/apple',
               },
             ],
             stale: false,
@@ -388,7 +386,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: '/apple',
               },
               {
                 key: expect.any(String),
@@ -396,7 +393,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
             ],
             stale: false,
@@ -431,7 +427,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -439,7 +434,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: '/apple',
               },
             ],
             stale: false,

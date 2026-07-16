@@ -38,7 +38,6 @@ it('can push a hash url', () => {
             {
               key: expect.any(String),
               name: 'index',
-              path: '/',
             },
             {
               key: expect.any(String),
@@ -46,7 +45,6 @@ it('can push a hash url', () => {
               params: {
                 '#': 'a',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -54,7 +52,6 @@ it('can push a hash url', () => {
               params: {
                 '#': 'b',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -62,7 +59,6 @@ it('can push a hash url', () => {
               params: {
                 '#': 'b',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -70,7 +66,6 @@ it('can push a hash url', () => {
               params: {
                 '#': 'c',
               },
-              path: undefined,
             },
           ],
           stale: false,
@@ -219,7 +214,6 @@ it('navigating to the same route with a hash will only rerender the screen', () 
             {
               key: expect.any(String),
               name: 'index',
-              path: '/',
             },
           ],
           stale: false,
@@ -250,7 +244,6 @@ it('navigating to the same route with a hash will only rerender the screen', () 
               params: {
                 '#': 'hash1',
               },
-              path: '/',
             },
           ],
           stale: false,

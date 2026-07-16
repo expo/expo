@@ -61,11 +61,6 @@ export type Route<
    * User-provided name for the route.
    */
   name: RouteName;
-  /**
-   * Path associated with the route.
-   * Usually present when the screen was opened from a deep link.
-   */
-  path?: string;
 }> &
   (undefined extends Params
     ? Readonly<{

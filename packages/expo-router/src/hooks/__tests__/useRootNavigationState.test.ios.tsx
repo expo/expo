@@ -31,7 +31,6 @@ describe(useRootNavigationState, () => {
                 params: {
                   test: ['1', '2'],
                 },
-                path: '/?test=1&test=2',
               },
             ],
             stale: false,
@@ -78,7 +77,6 @@ describe(useRootNavigationState, () => {
                     {
                       key: expect.any(String),
                       name: 'index',
-                      path: '/',
                     },
                   ],
                   stale: false,
@@ -120,7 +118,6 @@ describe(useRootNavigationState, () => {
               {
                 key: expect.any(String),
                 name: 'index',
-                path: '/',
               },
             ],
             stale: false,
@@ -167,7 +164,6 @@ describe(useRootNavigationState, () => {
                     {
                       key: expect.any(String),
                       name: 'index',
-                      path: '/',
                     },
                   ],
                   stale: false,

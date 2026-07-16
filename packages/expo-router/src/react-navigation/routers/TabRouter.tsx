@@ -519,15 +519,8 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
             params = createParamsFromAction({ action, routeParamList });
           }
 
-          const path =
-            action.type === 'NAVIGATE' && action.payload.path != null
-              ? action.payload.path
-              : route.path;
-
           let updatedRoute =
-            params !== route.params || path !== route.path || key !== route.key
-              ? { ...route, key, path, params }
-              : route;
+            params !== route.params || key !== route.key ? { ...route, key, params } : route;
 
           // A changed key means a fresh identity, so any retained nested state belongs to the old
           // identity — drop it so the subtree remounts clean (and a re-minted key can't land on it).
@@ -535,8 +528,8 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
             delete (updatedRoute as { state?: unknown }).state;
           }
 
-          // TODO(Step 5/7): payload.state is dormant until the wire emits it and the root reducer
-          // inserts it at the boundary. Attach it only on a fresh identity — an absent tab or one
+          // payload.state is dormant until the structure-param wire emits it (Step 8) and the root
+          // reducer inserts it at the boundary. Attach it only on a fresh identity — an absent tab or one
           // re-keyed by an id change — never onto a live tab with an unchanged key (that keeps its
           // own substate; the divergence is handled deeper by the child navigator).
           const payloadState = action.payload.state;

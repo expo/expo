@@ -16,7 +16,6 @@ type AnyState = {
 type AnyRoute = {
   key?: unknown;
   name: string;
-  path?: string;
   params?: Record<string, unknown>;
   state?: AnyState;
 };
@@ -146,7 +145,6 @@ export function stripCompleteness<T>(state: T): T {
 
   output.routes = input.routes.map((route) => {
     const nextRoute: Record<string, unknown> = { name: route.name };
-    if ('path' in route) nextRoute.path = route.path;
     if ('params' in route) nextRoute.params = route.params;
     if (route.state !== undefined) nextRoute.state = stripCompleteness(route.state);
     return nextRoute;

@@ -72,7 +72,6 @@ it('deep link to a redirect', () => {
             {
               key: expect.any(String),
               name: 'bar',
-              path: '/bar',
             }
           ],
           stale: false,
@@ -119,7 +118,6 @@ it('deep link to a dynamic redirect', () => {
               key: expect.any(String),
               name: 'deeply/nested/route/[slug]',
               params: { slug: 'bar' },
-              path: '/deeply/nested/route/bar',
             }
           ],
           stale: false,
@@ -164,7 +162,6 @@ it('keeps extra params as query params', () => {
             {
               key: expect.any(String),
               name: 'bar',
-              path: '/bar',
             }
           ],
           stale: false,
@@ -211,7 +208,6 @@ it('can redirect from single to catch all', () => {
               key: expect.any(String),
               name: 'bar/[...slug]',
               params: { slug: ['bar'] },
-              path: '/bar/bar',
             }
           ],
           stale: false,
@@ -251,7 +247,6 @@ it('can push to a redirect', () => {
             {
               key: expect.any(String),
               name: 'index',
-              path: '/',
             }
           ],
           stale: false,
@@ -279,13 +274,11 @@ it('can push to a redirect', () => {
             {
               key: expect.any(String),
               name: 'index',
-              path: '/',
             },
             {
               key: expect.any(String),
               name: 'bar',
               params: {},
-              path: undefined,
             },
           ],
           stale: false,
@@ -441,13 +434,11 @@ it('not existing nested route redirects correctly', () => {
             {
               key: expect.any(String),
               name: 'index',
-              path: '/',
             },
             {
               key: expect.any(String),
               name: 'explore',
               params: {},
-              path: undefined,
             },
           ],
           stale: false,

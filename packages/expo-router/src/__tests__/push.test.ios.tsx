@@ -34,7 +34,7 @@ it('stacks should always push a new route', () => {
           index: 0,
           key: expect.any(String),
           routeNames: ['index', '(group)'],
-          routes: [{ key: expect.any(String), name: 'index', path: '/' }],
+          routes: [{ key: expect.any(String), name: 'index' }],
           stale: false,
         },
       },
@@ -68,7 +68,6 @@ it('stacks should always push a new route', () => {
             {
               key: expect.any(String),
               name: 'index',
-              path: '/',
             },
             {
               key: expect.any(String),
@@ -84,7 +83,6 @@ it('stacks should always push a new route', () => {
                   screen: 'index',
                 },
               },
-              path: undefined,
               state: {
                 index: 3,
                 key: expect.any(String),
@@ -96,7 +94,6 @@ it('stacks should always push a new route', () => {
                     params: {
                       id: '1',
                     },
-                    path: undefined,
                     state: {
                       index: 0,
                       key: expect.any(String),
@@ -108,7 +105,6 @@ it('stacks should always push a new route', () => {
                           params: {
                             id: '1',
                           },
-                          path: undefined,
                         },
                       ],
                       stale: false,
@@ -124,7 +120,6 @@ it('stacks should always push a new route', () => {
                       },
                       screen: 'index',
                     },
-                    path: undefined,
                     state: {
                       index: 0,
                       key: expect.any(String),
@@ -136,7 +131,6 @@ it('stacks should always push a new route', () => {
                           params: {
                             id: '1',
                           },
-                          path: undefined,
                         },
                       ],
                       stale: false,
@@ -152,7 +146,6 @@ it('stacks should always push a new route', () => {
                       },
                       screen: 'index',
                     },
-                    path: undefined,
                     state: {
                       index: 0,
                       key: expect.any(String),
@@ -164,7 +157,6 @@ it('stacks should always push a new route', () => {
                           params: {
                             id: '2',
                           },
-                          path: undefined,
                         },
                       ],
                       stale: false,
@@ -180,7 +172,6 @@ it('stacks should always push a new route', () => {
                       },
                       screen: 'index',
                     },
-                    path: undefined,
                     state: {
                       index: 1,
                       key: expect.any(String),
@@ -192,7 +183,6 @@ it('stacks should always push a new route', () => {
                           params: {
                             id: '1',
                           },
-                          path: undefined,
                         },
                         {
                           key: expect.any(String),
@@ -200,7 +190,6 @@ it('stacks should always push a new route', () => {
                           params: {
                             id: '2',
                           },
-                          path: undefined,
                         },
                       ],
                       stale: false,
@@ -315,7 +304,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
             {
               key: expect.any(String),
               name: 'index',
-              path: '/',
             },
             {
               key: expect.any(String),
@@ -324,7 +312,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                 params: {},
                 screen: 'a',
               },
-              path: undefined,
               state: {
                 // firstRoute arranges the back stack as `[first, focused, ...rest]`,
                 // so focusing `c` gives `[a, c, b]` with `c` at index 1.
@@ -336,7 +323,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                     key: expect.any(String),
                     name: 'a',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -345,7 +331,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                       params: {},
                       screen: 'one',
                     },
-                    path: undefined,
                     state: {
                       index: 2,
                       key: expect.any(String),
@@ -355,19 +340,16 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                           key: expect.any(String),
                           name: 'one',
                           params: {},
-                          path: undefined,
                         },
                         {
                           key: expect.any(String),
                           name: 'two',
                           params: {},
-                          path: undefined,
                         },
                         {
                           key: expect.any(String),
                           name: 'two',
                           params: {},
-                          path: undefined,
                         },
                       ],
                       stale: false,
@@ -377,7 +359,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                     key: expect.any(String),
                     name: 'b',
                     params: {},
-                    path: undefined,
                   },
                 ],
                 stale: false,
@@ -387,7 +368,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
               key: expect.any(String),
               name: 'd',
               params: {},
-              path: undefined,
             },
           ],
           stale: false,
@@ -448,13 +428,11 @@ it('targets the correct Stack when pushing to a nested layout', () => {
             {
               key: expect.any(String),
               name: 'a',
-              path: '/a',
             },
             {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -463,7 +441,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                 params: {},
                 screen: 'index',
               },
-              path: undefined,
               state: {
                 index: 2,
                 key: expect.any(String),
@@ -473,13 +450,11 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
                     name: 'page',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -488,7 +463,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                       params: {},
                       screen: 'index',
                     },
-                    path: undefined,
                     state: {
                       index: 1,
                       key: expect.any(String),
@@ -498,13 +472,11 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                           key: expect.any(String),
                           name: 'index',
                           params: {},
-                          path: undefined,
                         },
                         {
                           key: expect.any(String),
                           name: 'page',
                           params: {},
-                          path: undefined,
                         },
                       ],
                       stale: false,
@@ -518,7 +490,6 @@ it('targets the correct Stack when pushing to a nested layout', () => {
               key: expect.any(String),
               name: 'a',
               params: {},
-              path: undefined,
             },
           ],
           stale: false,
@@ -560,7 +531,6 @@ it('push should also add anchor routes', () => {
             {
               key: expect.any(String),
               name: 'index',
-              path: '/',
             },
           ],
           stale: false,
@@ -588,7 +558,6 @@ it('push should also add anchor routes', () => {
             {
               key: expect.any(String),
               name: 'index',
-              path: '/',
             },
             {
               key: expect.any(String),
@@ -600,7 +569,6 @@ it('push should also add anchor routes', () => {
                 },
                 screen: 'orange',
               },
-              path: undefined,
               state: {
                 index: 1,
                 key: expect.any(String),
@@ -610,13 +578,11 @@ it('push should also add anchor routes', () => {
                     key: expect.any(String),
                     name: 'apple',
                     params: undefined,
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
                     name: 'orange',
                     params: {},
-                    path: undefined,
                   },
                 ],
                 stale: false,
@@ -668,7 +634,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: '/apple',
               },
               {
                 key: expect.any(String),
@@ -676,7 +641,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -684,7 +648,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -692,7 +655,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
             ],
             stale: false,
@@ -727,7 +689,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -735,7 +696,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
             ],
             stale: false,
@@ -783,7 +743,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: '/apple',
               },
               {
                 key: expect.any(String),
@@ -792,7 +751,6 @@ describe('singular', () => {
                   id: '1',
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -801,7 +759,6 @@ describe('singular', () => {
                   id: '1',
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -810,7 +767,6 @@ describe('singular', () => {
                   id: '2',
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -818,7 +774,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
             ],
             stale: false,
@@ -855,7 +810,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -863,7 +817,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
             ],
             stale: false,

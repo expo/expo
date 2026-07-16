@@ -15,6 +15,7 @@ import {
 import {
   type CommonNavigationAction,
   type NavigationAction,
+  type NavigationState,
   type ParamListBase,
   type PartialRoute,
   type PartialState,
@@ -30,7 +31,10 @@ import type {
   NativeStackNavigationOptions,
 } from '../react-navigation/native-stack';
 import { getActiveRoutes, getInactiveRoutes } from '../react-navigation/routers/StackRouter';
-import { getNextRouteKeyFromState } from '../react-navigation/routers/getRouteKey';
+import {
+  assertSubtreeKeyMatchesRoute,
+  getNextRouteKeyFromState,
+} from '../react-navigation/routers/getRouteKey';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../useScreens';
 import { isChildOfType } from '../utils/children';
@@ -285,7 +289,6 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
                 if (r.key === route.key) {
                   routes.push({
                     ...route,
-                    path: action.payload.path !== undefined ? action.payload.path : route.path,
                     params,
                   });
                   break;
@@ -301,7 +304,6 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               if (!routes.some((r) => r.key === route.key)) {
                 routes.push({
                   ...route,
-                  path: action.payload.path !== undefined ? action.payload.path : route.path,
                   params,
                 });
               }
@@ -341,38 +343,33 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               routes.push({
                 ...route,
                 key,
-                path:
-                  action.type === 'NAVIGATE' && action.payload.path !== undefined
-                    ? action.payload.path
-                    : route.path,
                 params,
               });
-
-              // routes = state.routes.filter((r) => r.key !== route.key);
-              // routes.push({
-              //   ...route,
-              //   path:
-              //     action.type === 'NAVIGATE' && action.payload.path !== undefined
-              //       ? action.payload.path
-              //       : route.path,
-              //   params,
-              // });
               // END FORK
             }
           } else {
-            routes = [
-              ...activeRoutes,
-              {
-                key: getNextRouteKeyFromState({
-                  stateKey: state.key,
-                  name: action.payload.name,
-                  state,
-                }),
+            const newRoute: Route<string> & {
+              state?: NavigationState | PartialState<NavigationState>;
+            } = {
+              key: getNextRouteKeyFromState({
+                stateKey: state.key,
                 name: action.payload.name,
-                path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
-                params,
-              },
-            ];
+                state,
+              }),
+              name: action.payload.name,
+              params,
+            };
+
+            // payload.state is dormant until the structure-param wire emits it (Step 8) and the
+            // root reducer inserts it at the boundary. Attach it verbatim only to this freshly
+            // created route (a newly-minted key) — the child navigator it describes is not yet
+            // mounted. Mirrors StackRouter.
+            if (action.payload.state !== undefined) {
+              newRoute.state = action.payload.state;
+              assertSubtreeKeyMatchesRoute(newRoute.key, action.payload.state);
+            }
+
+            routes = [...activeRoutes, newRoute];
           }
 
           // START FORK

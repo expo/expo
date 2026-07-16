@@ -289,7 +289,6 @@ type NavigationHelpersCommon<
       ? {
           name: RouteName;
           params: ParamList[RouteName];
-          path?: string;
           merge?: boolean;
           pop?: boolean;
         }
@@ -988,7 +987,6 @@ export type NavigatorScreenParams<ParamList extends {}> =
       merge?: never;
       initial?: never;
       pop?: never;
-      path?: string;
       state: PartialState<NavigationState> | NavigationState | undefined;
     }
   | {
@@ -998,7 +996,6 @@ export type NavigatorScreenParams<ParamList extends {}> =
             params?: ParamList[RouteName];
             merge?: boolean;
             initial?: boolean;
-            path?: string;
             pop?: boolean;
             state?: never;
           }
@@ -1007,7 +1004,6 @@ export type NavigatorScreenParams<ParamList extends {}> =
             params: ParamList[RouteName];
             merge?: boolean;
             initial?: boolean;
-            path?: string;
             pop?: boolean;
             state?: never;
           };

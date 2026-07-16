@@ -33,7 +33,6 @@ type StrictState = (FocusedRouteState | NavigationState | PartialState<Navigatio
     key?: string;
     name: string;
     params?: StrictFocusedRouteParams;
-    path?: string;
     state?: StrictState;
   }[];
 };

@@ -112,9 +112,15 @@ function NavigationContainerInner(
     [lastUnhandledLink, setLastUnhandledLink]
   );
 
+  // Reproduce the current URL from the committed state — the route no longer stashes `path`.
+  const getCurrentPath = useLatestCallback(() => {
+    const state = refContainer.current?.getRootState();
+    return state ? getPathFromState(state, linking?.config) : undefined;
+  });
+
   const onReadyForLinkingHandling = useLatestCallback(() => {
     // If the screen path matches lastUnhandledLink, we do not track it
-    const path = refContainer.current?.getCurrentRoute()?.path;
+    const path = getCurrentPath();
     setLastUnhandledLink((previousLastUnhandledLink) => {
       if (previousLastUnhandledLink === path) {
         return undefined;
@@ -127,7 +133,7 @@ function NavigationContainerInner(
   const onStateChangeForLinkingHandling = useLatestCallback(
     (state: Readonly<NavigationState> | undefined) => {
       // If the screen path matches lastUnhandledLink, we do not track it
-      const path = refContainer.current?.getCurrentRoute()?.path;
+      const path = getCurrentPath();
       setLastUnhandledLink((previousLastUnhandledLink) => {
         if (previousLastUnhandledLink === path) {
           return undefined;

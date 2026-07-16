@@ -245,7 +245,6 @@ test('builds action from href outside of a navigator', () => {
       type: 'NAVIGATE',
       payload: {
         name: 'Foo',
-        path: '/foo',
         params: {},
         pop: true,
       },
@@ -273,7 +272,6 @@ test('builds action from href in navigator screen', () => {
       type: 'NAVIGATE',
       payload: {
         name: 'Foo',
-        path: '/foo',
         params: {},
         pop: true,
       },
@@ -309,7 +307,6 @@ test('builds action from href in nested navigator', () => {
           initial: true,
           screen: 'Bar',
           params: { id: '42' },
-          path: '/foo/bar/42',
         },
         pop: true,
       },
