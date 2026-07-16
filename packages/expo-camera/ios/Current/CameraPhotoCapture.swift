@@ -189,71 +189,28 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
 
-    let width = takenImage.size.width
-    let height = takenImage.size.height
-    var processedImageData: Data?
-
-    var response = [String: Any]()
-
-    if options.exif {
-      guard let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? [String: Any] else {
-        throw CameraSavingImageException("Failed to process EXIF data")
-      }
-
-      var updatedExif = ExpoCameraUtils.updateExif(
-        metadata: exifDict,
-        with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
-      )
-
-      if let cgImage = takenImage.cgImage {
-        updatedExif[kCGImagePropertyExifPixelXDimension as String] = cgImage.width
-        updatedExif[kCGImagePropertyExifPixelYDimension as String] = cgImage.height
-      }
-      response["exif"] = updatedExif
-
-      var updatedMetadata = metadata
-      updatedMetadata[kCGImagePropertyOrientation as String] =
-        ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)
-
-      if let additionalExif = options.additionalExif {
-        for (key, value) in additionalExif {
-          updatedExif[key] = value
-        }
-
-        let gpsDict = createGPSDict(additionalExif: options.additionalExif)
-
-        if updatedMetadata[kCGImagePropertyGPSDictionary as String] == nil {
-          updatedMetadata[kCGImagePropertyGPSDictionary as String] = gpsDict
-        } else if var existingGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any] {
-          existingGpsDict.merge(gpsDict) { _, new in
-            new
-          }
-          updatedMetadata[kCGImagePropertyGPSDictionary as String] = existingGpsDict
-        }
-      }
-
-      updatedMetadata[kCGImagePropertyExifDictionary as String] = updatedExif
-      processedImageData = ExpoCameraUtils.data(
-        from: takenImage,
-        with: updatedMetadata,
-        quality: Float(options.quality))
-    } else {
-      if options.imageType == .png {
-        processedImageData = takenImage.pngData()
-      } else {
-        processedImageData = takenImage.jpegData(compressionQuality: options.quality)
-      }
-    }
-
-    guard let processedImageData else {
-      throw CameraSavingImageException("Image data could not be processed")
-    }
+    let request = CaptureRequest(
+      exif: options.exif,
+      quality: options.quality,
+      imageType: options.imageType,
+      additionalExif: options.additionalExif
+    )
+    let result = try CapturedPhotoProcessor().process(
+      image: takenImage,
+      sourceMetadata: metadata,
+      request: request
+    )
 
     if options.pictureRef {
-      if let image = UIImage(data: processedImageData) {
+      if let image = UIImage(data: result.data) {
         return PictureRef(image)
       }
       throw CameraSavingImageException("Failed to create UIImage from processed data")
+    }
+
+    var response = [String: Any]()
+    if let exif = result.exif {
+      response["exif"] = exif
     }
 
     let path = FileSystemUtilities.generatePathInCache(
@@ -262,13 +219,13 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
       extension: options.imageType.toExtension()
     )
 
-    response["uri"] = ExpoCameraUtils.write(data: processedImageData, to: path)
-    response["width"] = width
-    response["height"] = height
+    response["uri"] = ExpoCameraUtils.write(data: result.data, to: path)
+    response["width"] = result.width
+    response["height"] = result.height
     response["format"] = options.imageType.rawValue
 
     if options.base64 {
-      response["base64"] = processedImageData.base64EncodedString()
+      response["base64"] = result.data.base64EncodedString()
     }
 
     if options.fastMode {
@@ -281,74 +238,5 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
   func cleanup() {
     photoCapturedContinuation?.resume(throwing: CameraUnmountedException())
     self.photoCapturedContinuation = nil
-  }
-
-  private func createGPSDict(additionalExif: [String: Any]?) -> [String: Any] {
-    guard let additionalExif else {
-      return [:]
-    }
-
-    var gpsDict = [String: Any]()
-
-    if let latitude = additionalExif["GPSLatitude"], let latValue = toDouble(latitude) {
-      gpsDict[kCGImagePropertyGPSLatitude as String] = abs(latValue)
-      gpsDict[kCGImagePropertyGPSLatitudeRef as String] = latValue >= 0 ? "N" : "S"
-    }
-
-    if let longitude = additionalExif["GPSLongitude"], let lonValue = toDouble(longitude) {
-      gpsDict[kCGImagePropertyGPSLongitude as String] = abs(lonValue)
-      gpsDict[kCGImagePropertyGPSLongitudeRef as String] = lonValue >= 0 ? "E" : "W"
-    }
-
-    if let altitude = additionalExif["GPSAltitude"], let altValue = toDouble(altitude) {
-      gpsDict[kCGImagePropertyGPSAltitude as String] = abs(altValue)
-      gpsDict[kCGImagePropertyGPSAltitudeRef as String] = altValue >= 0 ? 0 : 1
-    }
-
-    if let speed = additionalExif["GPSSpeed"], let speedValue = toDouble(speed) {
-      gpsDict[kCGImagePropertyGPSSpeed as String] = speedValue
-    }
-    if let speedRef = additionalExif["GPSSpeedRef"] as? String {
-      gpsDict[kCGImagePropertyGPSSpeedRef as String] = speedRef
-    }
-
-    if let imgDirection = additionalExif["GPSImgDirection"], let dirValue = toDouble(imgDirection) {
-      gpsDict[kCGImagePropertyGPSImgDirection as String] = dirValue
-    }
-    if let imgDirectionRef = additionalExif["GPSImgDirectionRef"] as? String {
-      gpsDict[kCGImagePropertyGPSImgDirectionRef as String] = imgDirectionRef
-    }
-
-    if let destBearing = additionalExif["GPSDestBearing"], let bearingValue = toDouble(destBearing) {
-      gpsDict[kCGImagePropertyGPSDestBearing as String] = bearingValue
-    }
-    if let destBearingRef = additionalExif["GPSDestBearingRef"] as? String {
-      gpsDict[kCGImagePropertyGPSDestBearingRef as String] = destBearingRef
-    }
-
-    if let dateStamp = additionalExif["GPSDateStamp"] as? String {
-      gpsDict[kCGImagePropertyGPSDateStamp as String] = dateStamp
-    }
-
-    if let timeStamp = additionalExif["GPSTimeStamp"] as? String {
-      gpsDict[kCGImagePropertyGPSTimeStamp as String] = timeStamp
-    }
-
-    if let hPositioningError = additionalExif["GPSHPositioningError"], let errorValue = toDouble(hPositioningError) {
-      gpsDict[kCGImagePropertyGPSHPositioningError as String] = errorValue
-    }
-
-    return gpsDict
-  }
-
-  private func toDouble(_ value: Any) -> Double? {
-    if let doubleValue = value as? Double {
-      return doubleValue
-    } else if let intValue = value as? Int {
-      return Double(intValue)
-    } else if let floatValue = value as? Float {
-      return Double(floatValue)
-    }
-    return nil
   }
 }
