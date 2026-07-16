@@ -1,0 +1,39 @@
+# Imports the base schema for workerd configuration files.
+# Refer to the comments in /src/workerd/server/workerd.capnp for more details.
+using Workerd = import "/workerd/workerd.capnp";
+
+# Config for the headers-mode export: SSR + loaders with headers and rewrites configured.
+# The module list mirrors that mode's `server/` output.
+const serverConfig :Workerd.Config = (
+  services = [ (name = "main", worker = .server) ],
+  sockets = [ ( name = "http", address = "*:8787", http = (), service = "main" ) ]
+);
+
+const server :Workerd.Worker = (
+  modules = [
+    (name = "worker", esModule = embed "workerd.js"),
+    (name = "_expo/server/render.js", commonJsModule = embed "_expo/server/render.js"),
+    (name = "_expo/routes.json", text = embed "_expo/routes.json"),
+    (name = "_expo/functions/api+api.js", commonJsModule = embed "_expo/functions/api+api.js"),
+    (name = "_expo/functions/data+api.js", commonJsModule = embed "_expo/functions/data+api.js"),
+    (name = "_expo/loaders/(group)/index.js", commonJsModule = embed "_expo/loaders/(group)/index.js"),
+    (name = "_expo/loaders/blog/index.js", commonJsModule = embed "_expo/loaders/blog/index.js"),
+    (name = "_expo/loaders/env.js", commonJsModule = embed "_expo/loaders/env.js"),
+    (name = "_expo/loaders/error.js", commonJsModule = embed "_expo/loaders/error.js"),
+    (name = "_expo/loaders/index.js", commonJsModule = embed "_expo/loaders/index.js"),
+    (name = "_expo/loaders/meta.js", commonJsModule = embed "_expo/loaders/meta.js"),
+    (name = "_expo/loaders/nested/index.js", commonJsModule = embed "_expo/loaders/nested/index.js"),
+    (name = "_expo/loaders/nullish/[value].js", commonJsModule = embed "_expo/loaders/nullish/[value].js"),
+    (name = "_expo/loaders/posts/[postId].js", commonJsModule = embed "_expo/loaders/posts/[postId].js"),
+    (name = "_expo/loaders/request.js", commonJsModule = embed "_expo/loaders/request.js"),
+    (name = "_expo/loaders/response.js", commonJsModule = embed "_expo/loaders/response.js"),
+    (name = "_expo/loaders/second.js", commonJsModule = embed "_expo/loaders/second.js"),
+    (name = "_expo/loaders/server-helper.js", commonJsModule = embed "_expo/loaders/server-helper.js"),
+    (name = "_expo/loaders/static-helper.js", commonJsModule = embed "_expo/loaders/static-helper.js"),
+  ],
+  compatibilityDate = "2025-05-05",
+  compatibilityFlags = [
+    "nodejs_compat",
+    "global_fetch_strictly_public",
+  ],
+);
