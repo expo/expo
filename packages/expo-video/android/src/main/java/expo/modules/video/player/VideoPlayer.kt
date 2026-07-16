@@ -86,6 +86,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
         setSeekForwardIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
       }
     }.build()
+    .apply {
+      playerBuilderOptions?.videoChangeFrameRateStrategy?.let {
+        setVideoChangeFrameRateStrategy(it.toMedia3Strategy())
+      }
+    }
 
   internal val firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
