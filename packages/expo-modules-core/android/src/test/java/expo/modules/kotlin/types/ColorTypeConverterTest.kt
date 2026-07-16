@@ -21,7 +21,7 @@ import org.robolectric.annotation.Config
 internal class ColorTypeConverterTest {
   private val androidContext = ApplicationProvider.getApplicationContext<Application>()
   private val converterContext = mockk<ConverterContext> {
-    every { context } returns androidContext
+    every { applicationContext } returns androidContext
   }
 
   @Test
@@ -126,7 +126,7 @@ internal class ColorTypeConverterTest {
 
     val color = convert<Color>(platformColor, converterContext)
     val expectedColor = TypedValue().let {
-      converterContext.context.theme.resolveAttribute(android.R.attr.textColorPrimary, it, true)
+      converterContext.applicationContext.theme.resolveAttribute(android.R.attr.textColorPrimary, it, true)
       it.data
     }
 
