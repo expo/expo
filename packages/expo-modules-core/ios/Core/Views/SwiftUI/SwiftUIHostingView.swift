@@ -255,59 +255,19 @@ extension UIHostingController {
   /// Applies the `ignoreSafeArea` mode reactively, restoring the default safe area when `nil` so
   /// clearing the prop re-enables the safe area without an app reload.
   func setSafeAreaRegions(ignoring mode: ExpoSwiftUI.IgnoreSafeArea?) {
-    if #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) {
-      var regions: SafeAreaRegions = .all
-      if let mode {
-        switch mode {
-        case .all:
-          regions = []
-        case .container:
-          regions.remove(.container)
-        case .keyboard:
-          regions.remove(.keyboard)
-        }
+    var regions: SafeAreaRegions = .all
+    if let mode {
+      switch mode {
+      case .all:
+        regions = []
+      case .container:
+        regions.remove(.container)
+      case .keyboard:
+        regions.remove(.keyboard)
       }
-      if safeAreaRegions != regions {
-        safeAreaRegions = regions
-      }
-    } else if let mode {
-      // iOS < 16.4 (reached only in the precompiled build, which targets iOS 16.0): `safeAreaRegions`
-      // is unavailable, so fall back to runtime subclassing. This path can only disable the safe
-      // area, not restore it.
-      // https://gist.github.com/steipete/da72299613dcc91e8d729e48b4bb582c
-      guard let viewClass = object_getClass(view) else {
-        return
-      }
-      let ignoresContainer = mode == .all || mode == .container
-      let suffix = ignoresContainer ? "_IgnoresSafeArea" : "_IgnoresKeyboard"
-      let viewSubclassName = String(cString: class_getName(viewClass)).appending(suffix)
-      if let viewSubclass = NSClassFromString(viewSubclassName) {
-        object_setClass(view, viewSubclass)
-      } else {
-        guard let viewClassNameUtf8 = (viewSubclassName as NSString).utf8String else {
-          return
-        }
-        guard let viewSubclass = objc_allocateClassPair(viewClass, viewClassNameUtf8, 0) else {
-          return
-        }
-
-        if ignoresContainer,
-           let method = class_getInstanceMethod(UIView.self, #selector(getter: UIView.safeAreaInsets)) {
-          let safeAreaInsets: @convention(block) (AnyObject) -> UIEdgeInsets = { _ in
-            return .zero
-          }
-          class_addMethod(viewSubclass, #selector(getter: UIView.safeAreaInsets),
-                          imp_implementationWithBlock(safeAreaInsets), method_getTypeEncoding(method))
-        }
-
-        if let method = class_getInstanceMethod(viewClass, NSSelectorFromString("keyboardWillShowWithNotification:")) {
-          let keyboardWillShow: @convention(block) (AnyObject, AnyObject) -> Void = { _, _ in }
-          class_addMethod(viewSubclass, NSSelectorFromString("keyboardWillShowWithNotification:"),
-                          imp_implementationWithBlock(keyboardWillShow), method_getTypeEncoding(method))
-        }
-        objc_registerClassPair(viewSubclass)
-        object_setClass(view, viewSubclass)
-      }
+    }
+    if safeAreaRegions != regions {
+      safeAreaRegions = regions
     }
   }
 }
