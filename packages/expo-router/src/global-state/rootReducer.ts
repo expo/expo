@@ -200,16 +200,13 @@ function completeNavigationState(state: NavigationState): NavigationState {
     const nextChildState = childState
       ? completeNavigationState(childState as NavigationState)
       : undefined;
-    const hasUndefinedParams = 'params' in route && route.params === undefined;
 
-    if (nextChildState === childState && !hasUndefinedParams) {
+    if (nextChildState === childState) {
       return route;
     }
 
     changed = true;
-    const nextRoute = { ...route, ...(nextChildState ? { state: nextChildState } : null) };
-    if (hasUndefinedParams) delete nextRoute.params;
-    return nextRoute;
+    return { ...route, state: nextChildState };
   });
 
   return changed ? { ...state, stale: false, routes } : state;
