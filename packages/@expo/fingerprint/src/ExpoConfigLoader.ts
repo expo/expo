@@ -13,12 +13,14 @@ import { isIgnoredPath, toPosixPath } from './utils/Path';
 
 async function runAsync(programName: string, args: string[] = []) {
   if (args[0] == null) {
-    console.log(`Usage: ${programName} <projectRoot> [ignoredFile]`);
+    console.log(`Usage: ${programName} <projectRoot> [ignoredFile] [--skipPlugins]`);
     return;
   }
 
   const projectRoot = path.resolve(args[0]);
-  const ignoredFile = args[1] ? path.resolve(args[1]) : null;
+  const skipPlugins = args.includes('--skipPlugins');
+  const ignoredFileArg = args[1] && !args[1].startsWith('--') ? args[1] : null;
+  const ignoredFile = ignoredFileArg ? path.resolve(ignoredFileArg) : null;
 
   setNodeEnv('development');
   require('@expo/env').load(projectRoot);
@@ -29,6 +31,7 @@ async function runAsync(programName: string, args: string[] = []) {
     const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
     config = await getConfig(projectRoot, {
       skipSDKVersionRequirement: true,
+      skipPlugins,
     });
   } finally {
     uninstall();
@@ -38,7 +41,6 @@ async function runAsync(programName: string, args: string[] = []) {
     ...DEFAULT_CONFIG_LOADING_IGNORE_PATHS,
     ...(await loadIgnoredPathsAsync(ignoredFile)),
   ];
-
   const loadedModules = await resolveLoadedModuleSourcesAsync(
     getCapturedModules(),
     projectRoot,
@@ -46,7 +48,8 @@ async function runAsync(programName: string, args: string[] = []) {
   );
 
   const result = JSON.stringify({
-    config,
+    // The plugins-skipped pass only contributes its module list to the diff; its config is unused.
+    config: skipPlugins ? null : config,
     loadedModules,
   });
 
@@ -208,69 +211,37 @@ function setNodeEnv(mode: 'development' | 'production') {
   globalThis.__DEV__ = process.env.NODE_ENV !== 'production';
 }
 
-// Ignore default javascript files when calling `getConfig()`
+// Ignore known non-native packages loaded while applying config plugins, which the plugins-skipped
+// diff can't drop since they only load during plugin application.
 const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
-  // We don't want to include the whole project package.json from the ExpoConfigLoader phase.
-  'package.json',
-
-  '**/node_modules/@babel/**/*',
   '**/node_modules/@expo/**/*',
-  '**/node_modules/@jridgewell/**/*',
-  '**/node_modules/cross-spawn/**/*',
-  '**/node_modules/isexe/**/*',
-  '**/node_modules/shebang-command/**/*',
-  '**/node_modules/shebang-regex/**/*',
-  '**/node_modules/semver/**/*',
-  '**/node_modules/slugify/**/*',
-  '**/node_modules/typescript/**/*',
-  '**/node_modules/expo/config/**/*',
-  '**/node_modules/expo/config.js',
-  '**/node_modules/expo/config-plugins.js',
   `**/node_modules/{${[
-    'ajv',
-    'ajv-formats',
-    'ajv-keywords',
     'ansi-styles',
     'base64-js',
     'big-integer',
     'bplist-creator',
     'chalk',
+    'cross-spawn',
     'debug',
-    'dotenv',
-    'dotenv-expand',
-    'escape-string-regexp',
-    'getenv',
-    'graceful-fs',
-    'fast-deep-equal',
-    'fast-uri',
     'has-flag',
-    'imurmurhash',
+    'isexe',
     'jimp-compact',
-    'js-tokens',
-    'json5',
-    'json-schema-traverse',
     'ms',
     'parse-png',
     'path-key',
-    'picocolors',
     'plist',
     'pngjs',
-    'lines-and-columns',
-    'require-from-string',
-    'resolve-from',
     'sax',
-    'schema-utils',
-    'signal-exit',
+    'semver',
+    'shebang-command',
+    'shebang-regex',
     'simple-plist',
     'stream-buffers',
-    'sucrase',
     'supports-color',
-    'ts-interface-checker',
-    'write-file-atomic',
+    'uuid',
+    'which',
+    'xcode',
     'xml2js',
     'xmlbuilder',
-    'which',
-    'uuid',
-    'xcode',
   ].join(',')}}/**/*`,
 ];
