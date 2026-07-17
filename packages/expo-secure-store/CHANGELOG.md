@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix a typo in the "File already open with write permission" error message. ([#47910](https://github.com/expo/expo/pull/47910) by [@chinesepowered](https://github.com/chinesepowered))
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-21

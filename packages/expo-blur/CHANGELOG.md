@@ -10,6 +10,7 @@
 
 - Fix `BlurView` not applying border radius styles to the native blur layer. ([#45691](https://github.com/expo/expo/pull/45691) by [@mvincentong](https://github.com/mvincentong)) and [@behenate](https://github.com/behenate)
 - [Android] Fix gesture handlers treating views under a `BlurTargetView` as detached and cancelling their gestures. ([#47404](https://github.com/expo/expo/pull/47404) by [@efstathiosntonas](https://github.com/efstathiosntonas))
+- Fix a typo in the `experimentalBlurMethod` deprecation warning. ([#47910](https://github.com/expo/expo/pull/47910) by [@chinesepowered](https://github.com/chinesepowered))
 
 ### 💡 Others
 

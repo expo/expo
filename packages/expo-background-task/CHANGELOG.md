@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix a typo in the task handler error message. ([#47910](https://github.com/expo/expo/pull/47910) by [@chinesepowered](https://github.com/chinesepowered))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26

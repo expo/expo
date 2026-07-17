@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix a typo in the PDF write error message. ([#47910](https://github.com/expo/expo/pull/47910) by [@chinesepowered](https://github.com/chinesepowered))
+
 ### 💡 Others
 
 ## 56.0.3 — 2026-05-06
