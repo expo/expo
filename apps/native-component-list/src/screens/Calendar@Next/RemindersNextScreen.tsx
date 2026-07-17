@@ -1,6 +1,6 @@
-import { StackScreenProps } from '@react-navigation/stack';
 import { EntityTypes, ExpoCalendar, ExpoCalendarReminder, getCalendars } from 'expo-calendar';
 import * as Calendar from 'expo-calendar/legacy';
+import { type NativeStackScreenProps } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -26,7 +26,7 @@ type Links = {
   Reminders: { calendarId: string };
 };
 
-type Props = StackScreenProps<Links, 'Reminders'>;
+type Props = NativeStackScreenProps<Links, 'Reminders'>;
 
 const RemindersScreen = ({ route }: Props) => {
   const [reminders, setReminders] = useState<ExpoCalendarReminder[]>([]);

@@ -1,16 +1,18 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link, NavigationAction, useLinkBuilder, useLinkProps } from '@react-navigation/native';
 import { useObserve } from 'expo-observe';
+import { Link } from 'expo-router';
 import React from 'react';
 import {
   FlatList,
   ListRenderItem,
   PixelRatio,
   StatusBar,
+  StyleProp,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
+  ViewStyle,
   Platform,
   Pressable,
   useWindowDimensions,
@@ -62,51 +64,49 @@ function LinkButton({
   href,
   children,
   ...rest
-}: Omit<React.ComponentProps<typeof Link>, 'action'> & {
+}: {
   href: string;
   disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
 }) {
   const { theme } = useTheme();
-  const { buildAction } = useLinkBuilder();
-  const action: NavigationAction = buildAction(href);
-
-  const { onPress, ...props } = useLinkProps({ href, action });
-
   const [isPressed, setIsPressed] = React.useState(false);
 
   if (Platform.OS === 'web') {
     // It's important to use a `View` or `Text` on web instead of `TouchableX`
     // Otherwise React Native for Web omits the `onClick` prop that's passed
-    // You'll also need to pass `onPress` as `onClick` to the `View`
     // You can add hover effects using `onMouseEnter` and `onMouseLeave`
     return (
-      <Pressable
-        pointerEvents={rest.disabled === true ? 'none' : 'auto'}
-        onPressIn={() => setIsPressed(true)}
-        onPressOut={() => setIsPressed(false)}
-        onPress={onPress}
-        {...props}
-        {...rest}
-        style={[
-          {
-            backgroundColor: isPressed ? theme.background.hover : undefined,
-          },
-          rest.style,
-        ]}>
-        {children}
-      </Pressable>
+      <Link href={href} asChild>
+        <Pressable
+          pointerEvents={rest.disabled === true ? 'none' : 'auto'}
+          onPressIn={() => setIsPressed(true)}
+          onPressOut={() => setIsPressed(false)}
+          {...rest}
+          // `Link asChild` requires a flattened style object on its child.
+          style={StyleSheet.flatten([
+            {
+              backgroundColor: isPressed ? theme.background.hover : undefined,
+            },
+            rest.style,
+          ])}>
+          {children}
+        </Pressable>
+      </Link>
     );
   }
 
   return (
-    <TouchableHighlight
-      underlayColor={theme.background.hover}
-      onPress={onPress}
-      {...props}
-      {...rest}>
-      {children}
-    </TouchableHighlight>
+    <Link href={href} asChild>
+      <TouchableHighlight
+        underlayColor={theme.background.hover}
+        {...rest}
+        // `Link asChild` requires a flattened style object on its child.
+        style={StyleSheet.flatten(rest.style)}>
+        {children}
+      </TouchableHighlight>
+    </Link>
   );
 }
 

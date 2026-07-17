@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 import React from 'react';
 import {
   Dimensions,

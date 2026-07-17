@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { router } from 'expo-router';
 import { FlatList, PixelRatio, StyleSheet, TouchableHighlight, View } from 'react-native';
 
 import { BodyText } from '../../components/BodyText';
@@ -17,15 +17,7 @@ export const SVGScreens = [
   },
 ];
 
-type StackParams = {
-  SVGExample: { exampleKey: string };
-};
-
-export default function SVGScreen({
-  navigation,
-}: {
-  navigation: StackNavigationProp<StackParams>;
-}) {
+export default function SVGScreen() {
   return (
     <FlatList<string>
       style={styles.container}
@@ -34,7 +26,9 @@ export default function SVGScreen({
         <TouchableHighlight
           underlayColor="#dddddd"
           style={styles.rowTouchable}
-          onPress={() => navigation.navigate('SVGExample', { exampleKey })}>
+          onPress={() =>
+            router.push({ pathname: '/components/svg/example', params: { exampleKey } })
+          }>
           <View style={styles.row}>
             <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
             <BodyText style={styles.rowLabel}>{exampleKey}</BodyText>

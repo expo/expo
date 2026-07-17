@@ -1,5 +1,4 @@
 import { useTheme } from 'ThemeProvider';
-import { TabBackground } from 'native-component-list/src/components/TabBackground';
 import TabIcon from 'native-component-list/src/components/TabIcon';
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -18,15 +17,6 @@ export default function Playground() {
     </View>
   );
 }
-
-Playground.navigationOptions = {
-  title: 'Playground',
-  tabBarLabel: 'Playground',
-  tabBarIcon: ({ focused }: { focused: boolean }) => {
-    return <TabIcon name="flask-outline" focused={focused} />;
-  },
-  tabBarBackground: () => <TabBackground />,
-};
 
 const styles = StyleSheet.create({
   container: {
