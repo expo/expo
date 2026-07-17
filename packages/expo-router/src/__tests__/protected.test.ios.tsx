@@ -3,7 +3,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { createContext, use, useState } from 'react';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';

@@ -4,7 +4,7 @@ import { getStateFromPath } from '../../fork/getStateFromPath';
 import { Stack } from '../../layouts/Stack';
 import { Tabs } from '../../layouts/Tabs';
 import { getMockConfig, renderRouter } from '../../testing-library';
-import { store } from '../router-store';
+import { store } from '../store';
 import { resetRouterSpies, routerSpyCalls } from './routerSpies';
 
 // Step 3 of the "global navigation state" refactor: the compiled state from `getStateFromPath`

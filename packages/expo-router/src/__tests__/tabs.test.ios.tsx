@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 
 import { router } from '../exports';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { useLocalSearchParams, useSegments } from '../hooks';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';

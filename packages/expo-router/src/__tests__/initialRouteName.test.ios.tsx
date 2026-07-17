@@ -1,7 +1,7 @@
 import { screen, act } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';

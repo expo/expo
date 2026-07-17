@@ -1,6 +1,6 @@
 import { screen, act } from '@testing-library/react-native';
 
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { router } from '../imperative-api';
 import { renderRouter, testRouter } from '../testing-library';
 

@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import type { RedirectConfig } from '../exports';
 import { router } from '../exports';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import Stack from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';

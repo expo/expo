@@ -6,7 +6,7 @@ import type { Options, State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
 import { applyRedirects } from './getRoutesRedirects';
 import type { UrlObject } from './global-state/getRouteInfoFromState';
-import type { StoreRedirects } from './global-state/router-store';
+import type { StoreRedirects } from './global-state/types';
 import { getInitialURL, getPathFromState, getStateFromPath, subscribe } from './link/linking';
 import type { LinkingOptions } from './react-navigation/native';
 import { getActionFromState } from './react-navigation/native';

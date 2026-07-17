@@ -4,8 +4,8 @@ import type { RenderResult } from '@testing-library/react-native';
 
 import { ExpoRoot } from '../ExpoRoot';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
-import type { ReactNavigationState } from '../global-state/router-store';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
+import type { ReactNavigationState } from '../global-state/types';
 import { router } from '../imperative-api';
 import { type MockContextConfig, getMockContext } from './mock-config';
 

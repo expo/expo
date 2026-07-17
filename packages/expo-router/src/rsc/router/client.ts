@@ -36,7 +36,7 @@ import type {
 } from 'react';
 import { Text } from 'react-native';
 
-import type { NavigationOptions } from '../../global-state/routing.js';
+import type { NavigationOptions } from '../../global-state/types';
 import type { ImperativeRouter as ClassicExpoRouterType } from '../../imperative-api';
 import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Link.js';
 import { resolveHref } from '../../link/href';

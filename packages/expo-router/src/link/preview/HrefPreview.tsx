@@ -7,7 +7,7 @@ import type { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
 import type { CompleteResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
-import { store } from '../../global-state/router-store';
+import { store } from '../../global-state/store';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { usePathname } from '../../hooks';
 import {

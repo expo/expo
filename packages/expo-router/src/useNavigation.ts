@@ -6,7 +6,7 @@ import {
   navigate as hrefNavigate,
   push as hrefPush,
   replace as hrefReplace,
-} from './global-state/routing';
+} from './global-state/router';
 import { getRootStackRouteNames } from './global-state/utils';
 import { resolveHref } from './link/href';
 import { useIsPreview } from './link/preview/PreviewRouteContext';

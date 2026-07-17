@@ -1,7 +1,7 @@
 import { addGlobalDomEventListener } from 'expo/dom/global';
 import React from 'react';
 
-import { dismiss, dismissAll, goBack, linkTo, setParams } from '../global-state/routing';
+import { dismiss, dismissAll, goBack, linkTo, setParams } from '../global-state/router';
 import {
   ROUTER_LINK_TYPE,
   ROUTER_DISMISS_ALL_TYPE,

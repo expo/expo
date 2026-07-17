@@ -11,7 +11,7 @@ import {
   Slot,
   usePathname,
 } from '../exports';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link';

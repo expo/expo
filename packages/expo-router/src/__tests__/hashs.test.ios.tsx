@@ -2,7 +2,7 @@ import { act, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { router } from '../exports';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { renderRouter } from '../testing-library';
 import { parseUrlUsingCustomBase } from '../utils/url';
 

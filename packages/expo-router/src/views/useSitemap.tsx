@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import type { RouteNode } from '../Route';
 import { sortRoutes } from '../Route';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { matchDynamicName } from '../matchers';
 import type { Href } from '../types';
 

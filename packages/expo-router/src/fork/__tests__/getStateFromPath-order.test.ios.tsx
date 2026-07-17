@@ -2,7 +2,7 @@ import { act } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { router } from '../../imperative-api';
-import { store } from '../../global-state/router-store';
+import { store } from '../../global-state/store';
 import Stack from '../../layouts/StackClient';
 import { Tabs } from '../../layouts/Tabs';
 import { getMockConfig, renderRouter } from '../../testing-library';

@@ -1,7 +1,7 @@
 import { act } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/StackClient';
 import { getMockConfig, renderRouter, screen } from '../testing-library';

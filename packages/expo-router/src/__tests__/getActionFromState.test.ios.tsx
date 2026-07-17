@@ -5,7 +5,7 @@ import { getStateFromPath } from '../fork/getStateFromPath';
 import { router } from '../imperative-api';
 import Stack from '../layouts/StackClient';
 import { getActionFromState } from '../react-navigation/native';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { getMockConfig, renderRouter, screen } from '../testing-library';
 
 // Deep links while the app runs (useLinking.native) and web history-forward events (useLinking)

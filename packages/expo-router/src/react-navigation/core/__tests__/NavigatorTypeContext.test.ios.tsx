@@ -6,7 +6,7 @@ import {
   NavigatorTypeContext,
   type NavigatorTypeContextValue,
 } from '../NavigatorTypeContext';
-import { store } from '../../../global-state/router-store';
+import { store } from '../../../global-state/store';
 import { router } from '../../../imperative-api';
 import { Stack } from '../../../layouts/Stack';
 import Tabs from '../../../layouts/Tabs';

@@ -4,8 +4,8 @@ import { Platform } from 'react-native';
 
 import { emitDomLinkEvent } from '../domComponents/emitDomEvent';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
-import type { LinkToOptions } from '../global-state/routing';
-import { linkTo } from '../global-state/routing';
+import { linkTo } from '../global-state/router';
+import type { LinkToOptions } from '../global-state/types';
 import { stripGroupSegmentsFromPath } from '../matchers';
 import { shouldLinkExternally } from '../utils/url';
 

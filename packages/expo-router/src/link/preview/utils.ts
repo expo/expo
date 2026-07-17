@@ -1,8 +1,9 @@
-import { store, type ReactNavigationState } from '../../global-state/router-store';
 import {
   findDivergentState,
   getNavigationPayloadFromStateRoute,
 } from '../../global-state/stateUtils';
+import { store } from '../../global-state/store';
+import type { ReactNavigationState } from '../../global-state/types';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
 import type {
   NavigationRoute,

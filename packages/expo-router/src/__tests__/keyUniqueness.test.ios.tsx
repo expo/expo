@@ -6,7 +6,7 @@ import { getStateFromPath } from '../fork/getStateFromPath';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { getMockConfig, renderRouter } from '../testing-library';
 
 // S2.1 structural key scheme (`:` separator, `%` escape, `@` root seed): every key embeds its real

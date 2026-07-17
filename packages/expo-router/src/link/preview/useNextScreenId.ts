@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, use } from 'react';
 
-import { store } from '../../global-state/router-store';
+import { store } from '../../global-state/store';
 import { useRouter } from '../../hooks';
 import {
   collectTabNavigatorKeys,
