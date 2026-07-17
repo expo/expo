@@ -981,14 +981,24 @@ async function parseModuleStructure(
   return moduleClassDeclaration;
 }
 
+type ParseStructuresOutput = {
+  modulesStructures: { structure: Structure; name: string }[];
+  recordsStructures: Structure[];
+  enumsStructures: Structure[];
+};
+
+type ParseStructureOptions = {
+  file: FileType;
+  structure: Structure;
+  name: string;
+};
+
 function parseStructure(
-  file: FileType,
-  structure: Structure,
-  name: string,
-  modulesStructures: { structure: Structure; name: string }[],
-  recordsStructures: Structure[],
-  enumsStructures: Structure[]
+  { file, structure, name }: ParseStructureOptions,
+  // Note that instead of returning and merging the enum, record and module arrays, we're just collecting the items in the 3 arrays inside this object.
+  parsedStructuresOutput: ParseStructuresOutput
 ) {
+  const { modulesStructures, recordsStructures, enumsStructures } = parsedStructuresOutput;
   // TODO(@HubertBer): Find out why sometimes the structure is undefined (for example when parsing expo-audio)
   const substructure = structure['key.substructure'];
   if (!structure || !substructure) {
@@ -1004,12 +1014,12 @@ function parseStructure(
   } else if (Array.isArray(substructure) && substructure.length > 0) {
     for (const substructure of structure['key.substructure']) {
       parseStructure(
-        file,
-        substructure,
-        structure['key.name'] ?? name,
-        modulesStructures,
-        recordsStructures,
-        enumsStructures
+        {
+          file,
+          structure: substructure,
+          name: structure['key.name'] ?? name,
+        },
+        parsedStructuresOutput
       );
     }
   }
@@ -1166,12 +1176,16 @@ export async function getSwiftFileTypeInformation(
   const enumsStructures: Structure[] = [];
   const fileStructure = getStructureFromFile(file);
   parseStructure(
-    file,
-    getStructureFromFile(file),
-    '',
-    modulesStructures,
-    recordsStructures,
-    enumsStructures
+    {
+      file,
+      structure: getStructureFromFile(file),
+      name: '',
+    },
+    {
+      modulesStructures,
+      recordsStructures,
+      enumsStructures,
+    }
   );
   const namespaces: { [key: string]: namespace } = {};
   namespaces[''] = {};
