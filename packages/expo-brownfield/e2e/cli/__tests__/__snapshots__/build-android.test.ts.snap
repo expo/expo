@@ -4,6 +4,7 @@ exports[`build:android command with prebuild should infer and print build config
 "Resolved build configuration
  - Build variant: All
  - Library: brownfield
+ - Fused: false
  - Verbose: false
  - Dry run: true
  - Tasks:

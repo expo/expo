@@ -63,8 +63,8 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
     // Emit the fused siblings' build.gradle.kts files. Same template at
     // packages/expo-brownfield/plugin/templates/android/fused/build.gradle.kts —
     // `fusedVariant` is the only difference: substituted as "release" or "debug",
-    // the script then branches on `isReleaseVariant` for the few places the two
-    // siblings differ (dev-only skip, namespace suffix, publication name).
+    // it drives the namespace suffix, publication name, and which build type the
+    // sibling resolves and fuses.
     const fusedTemplate = path.join('fused', 'build.gradle.kts');
     const fusedBaseVars = {
       packageId: pluginConfig.package,

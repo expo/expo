@@ -2,7 +2,7 @@
   "expo": {
     "name": "expo-app",
     "slug": "expo-app",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "expo-app",
@@ -43,14 +43,7 @@
           },
           "android": {
             "publishing": [
-              { "type": "localMaven" },
-              {
-                "type": "remotePrivate",
-                "name": "GitHubPackages",
-                "url": "https://maven.pkg.github.com/gabrieldonadel/brownfield-fused-test",
-                "username": "gabrieldonadel",
-                "password": { "variable": "GITHUB_TOKEN" }
-              }
+              { "type": "localMaven" }
             ]
           }
         }

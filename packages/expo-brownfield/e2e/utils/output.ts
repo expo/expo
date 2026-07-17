@@ -24,6 +24,7 @@ export const BUILD_ANDROID = {
   BUILD_VARIANT_ALL: `- Build variant: All`,
   BUILD_VARIANT_DEBUG: `- Build variant: Debug`,
   BUILD_VARIANT_RELEASE: `- Build variant: Release`,
+  FUSED: `- Fused: true`,
   LIBRARY: `- Library: brownfieldlib`,
   TASK: [`- Tasks:`, `- task1`],
   TASKS: [`- Tasks:`, `- task1`, `- task2`, `- task3`],

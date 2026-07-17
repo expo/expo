@@ -70,6 +70,7 @@ export const printAndroidConfig = (config: AndroidConfig) => {
   console.log(chalk.bold('Resolved build configuration'));
   console.log(` - Build variant: ${chalk.blue(config.variant)}`);
   console.log(` - Library: ${chalk.blue(config.library)}`);
+  console.log(` - Fused: ${chalk.blue(config.fused)}`);
   console.log(` - Verbose: ${chalk.blue(config.verbose)}`);
   console.log(` - Dry run: ${chalk.blue(config.dryRun)}`);
   console.log(` - Tasks:`);
@@ -110,12 +111,17 @@ export const runTask = async (
   dryRun: boolean,
   extraGradleArgs: string[] = []
 ) => {
-  // For fused tasks, forward the variant as a Gradle property so
-  // `setupFusedModeStripping` applies the right strip prefixes.
-  const fusedVariantMatch = task.match(/:[^:]+-fused-(release|debug):/);
-  const perTaskArgs = fusedVariantMatch
-    ? [...extraGradleArgs, `-Pbrownfield.fused.variant=${fusedVariantMatch[1]}`]
-    : extraGradleArgs;
+  // Fused-shaped tasks (e.g. passed manually via -t without --fused) must still
+  // activate fused mode in Gradle: without `-Pbrownfield.fused=true` the fused
+  // sibling subprojects are inert (no publications) and the conditional AGP
+  // force-bump in the root build.gradle never applies, so the build would fail
+  // mid-execution under the version catalog's AGP.
+  const fusedProperty = '-Pbrownfield.fused=true';
+  const isFusedTask = /(?:^|:)[^:\s]+-fused-(?:release|debug):/.test(task);
+  const perTaskArgs =
+    isFusedTask && !extraGradleArgs.includes(fusedProperty)
+      ? [...extraGradleArgs, fusedProperty]
+      : extraGradleArgs;
 
   const args = [task, ...perTaskArgs];
   if (dryRun) {
