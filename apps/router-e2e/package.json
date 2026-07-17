@@ -1,6 +1,7 @@
 {
   "name": "@expo/router-e2e",
   "version": "0.0.0",
+  "private": true,
   "main": "expo-router/entry",
   "scripts": {
     "prebuild": "TEMPLATE_DIR=\"../../templates/expo-template-bare-minimum\" && (cd \"$TEMPLATE_DIR\" && PACKED_FILE=$(npm pack) && mv \"$PACKED_FILE\" pack.tgz) && npx expo prebuild --clean --template \"$TEMPLATE_DIR/pack.tgz\"",
@@ -58,7 +59,8 @@
     "android:toolbar-press": "E2E_ROUTER_JS_ENGINE=hermes E2E_ROUTER_SRC=toolbar-press expo run:android",
     "start:helmet": "E2E_ROUTER_SRC=helmet expo start",
     "export:helmet": "E2E_ROUTER_SRC=helmet expo export -p web",
-    "lint": "expo lint __e2e__",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "test:e2e": "./maestro/test.sh"
@@ -100,6 +102,5 @@
     "tailwindcss": "^3.3.5",
     "tiny": "^0.0.10",
     "workerd": "^1.20250807.0"
-  },
-  "private": true
+  }
 }
