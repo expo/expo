@@ -69,6 +69,22 @@ export default function Home() {
 
 </Step>
 
+## Filter sensitive URL parameters
+
+By default, the integration includes the resolved `url` and all serializable route and query parameters in `routeParams`. If your app includes sensitive values in URL parameters, pass their keys to `filteredParams`:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: {
+    'expo-router': {
+      filteredParams: ['userId', 'token'],
+    },
+  },
+});
+```
+
 ## Metrics
 
 ### Per-route first render (`cold_ttr`)
@@ -83,6 +99,7 @@ Emitted at most once per screen instance within a session.
 | ------------- | --------- | ------------------------------------------------------------------------------ |
 | `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                     |
 | `url`         | `string`  | Resolved pathname for the navigation.                                          |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered.      |
 | `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).                   |
 | `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation. |
 
@@ -92,11 +109,12 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type     | Description                                                  |
-| ------------- | -------- | ------------------------------------------------------------ |
-| `routeName`   | `string` | Route pattern, for example `/(tabs)/sessions/[sessionId]`.   |
-| `url`         | `string` | Resolved pathname for the navigation.                        |
-| `routeParams` | `object` | Resolved route params (for example, `{ sessionId: 'abc' }`). |
+| Param         | Type      | Description                                                               |
+| ------------- | --------- | ------------------------------------------------------------------------- |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                |
+| `url`         | `string`  | Resolved pathname for the navigation.                                     |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered. |
+| `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).              |
 
 ### Per-route time to interactive (`tti`)
 
@@ -104,12 +122,13 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type     | Description                                                          |
-| ------------- | -------- | -------------------------------------------------------------------- |
-| `routeName`   | `string` | Route pattern, for example `/(tabs)/sessions/[sessionId]`.           |
-| `url`         | `string` | Resolved pathname.                                                   |
-| `routeParams` | `object` | Resolved route params.                                               |
-| `...`         | `any`    | Any custom params passed via `markInteractive({ params: { ... } })`. |
+| Param         | Type      | Description                                                               |
+| ------------- | --------- | ------------------------------------------------------------------------- |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                |
+| `url`         | `string`  | Resolved pathname.                                                        |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered. |
+| `routeParams` | `object`  | Resolved route params.                                                    |
+| `...`         | `any`     | Any custom params passed via `markInteractive({ params: { ... } })`.      |
 
 ## Notes and troubleshooting
 
