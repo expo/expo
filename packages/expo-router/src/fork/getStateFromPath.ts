@@ -49,9 +49,6 @@ export type CompleteRoute = {
   state?: CompleteResultState;
 };
 
-/** @deprecated Superseded by `CompleteResultState`; kept so existing imports keep compiling. */
-export type ResultState = CompleteResultState;
-
 export type ParsedRoute = {
   name: string;
   params?: Record<string, any> | undefined;
