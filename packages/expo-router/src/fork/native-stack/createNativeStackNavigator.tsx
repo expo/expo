@@ -112,19 +112,15 @@ function NativeStackContent({
   // `usePreviewTransition` wraps `emit` to track the native preview transition; the SAME wrapped
   // emit must flow into the view so transition events reach the wrapper.
   const emitterNavigation = React.useMemo(() => ({ emit: emitter.emit }), [emitter]);
-  const { computedState, computedDescriptors, navigationWrapper } = usePreviewTransition(
-    state,
-    emitterNavigation,
-    rnDescriptors
-  );
+  const { computedState, navigationWrapper } = usePreviewTransition(state, emitterNavigation);
 
   // Map internal gesture option to React Navigation's gestureEnabled option
   // This allows Expo Router to override gesture behavior without affecting user settings
   const finalDescriptors = React.useMemo(() => {
     let needsNewMap = false;
-    const result: typeof computedDescriptors = {};
-    for (const key of Object.keys(computedDescriptors)) {
-      const descriptor = computedDescriptors[key]!;
+    const result: typeof rnDescriptors = {};
+    for (const key of Object.keys(rnDescriptors)) {
+      const descriptor = rnDescriptors[key]!;
       const options = descriptor.options as NativeStackNavigationOptionsWithInternal;
       const internalGestureEnabled = options?.[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
       const needsGestureFix = internalGestureEnabled !== undefined;
@@ -147,8 +143,8 @@ function NativeStackContent({
         result[key] = descriptor;
       }
     }
-    return needsNewMap ? result : computedDescriptors;
-  }, [computedDescriptors]);
+    return needsNewMap ? result : rnDescriptors;
+  }, [rnDescriptors]);
 
   const { registry, contextValue } = useCompositionRegistry();
 
