@@ -10,6 +10,8 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+- **`expo`**
+  - [Android] Add `jsBundleFilePathLoader` parameter to `ExpoReactHostFactory`.
 
 ### 🐛 Bug fixes
 
