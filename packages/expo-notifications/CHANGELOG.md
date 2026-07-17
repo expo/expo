@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Prevent a crash on notification tap when `getLaunchIntentForPackage` throws (`NullPointerException: class name is null`) on some OEM ROMs, by guarding both call sites (`ExpoHandlingDelegate.getMainActivityLauncher` and the `NotificationForwarderActivity` fallback) so a missing launcher degrades gracefully instead of crashing. ([#PLACEHOLDER](https://github.com/expo/expo/pull/PLACEHOLDER) by [@nunocaseiro](https://github.com/nunocaseiro))
+- [Android] Prevent a crash on notification tap when `getLaunchIntentForPackage` throws (`NullPointerException: class name is null`) on some OEM ROMs, by guarding both call sites (`ExpoHandlingDelegate.getMainActivityLauncher` and the `NotificationForwarderActivity` fallback) so a missing launcher degrades gracefully instead of crashing. ([#47889](https://github.com/expo/expo/pull/47889) by [@nunocaseiro](https://github.com/nunocaseiro))
 
 ### 💡 Others
 
