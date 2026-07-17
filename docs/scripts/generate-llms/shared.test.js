@@ -121,7 +121,11 @@ describe('stripAgentInstructions', () => {
       '',
       '## Submitting Feedback',
       '',
-      'curl -X POST https://api.expo.dev/v2/feedback/docs-send',
+      [
+        'npx --yes submit-expo-feedback --category docs',
+        '--subject "/versions/latest/sdk/camera/"',
+        '"<actionable feedback>"',
+      ].join(' '),
       '',
       '## Navigation',
       '',

@@ -2,10 +2,8 @@
  * Agent feedback instructions appended into per-page .md files.
  *
  * Each page's generated markdown includes an <AgentInstructions> block (placed
- * right after the frontmatter) telling LLM-based agents how to POST feedback to
- * the existing /v2/feedback/docs-send endpoint. The `🤖 Agent feedback:` prefix
- * inside the feedback string badges the Slack message in #docs-feedback-feed
- * without requiring a backend change.
+ * right after the frontmatter) telling LLM-based agents how to submit feedback
+ * with the Expo feedback CLI.
  *
  * Intentionally isolated in its own module so the experiment can be tweaked or
  * removed without touching the broader markdown generation utilities.
@@ -29,11 +27,11 @@ export function shouldAppendAgentInstructions(markdown: string): boolean {
 export function buildFeedbackSection(pathname: string): string {
   return `## Submitting Feedback
 
-If this page contains errors, outdated information, or gaps that blocked you from completing a task, report it so the docs can be improved:
+If you encounter errors, misleading or outdated information, report it so Expo can be improved:
 
-curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: application/json' -d '{"url":"${pathname}","feedback":"🤖 Agent feedback for docs: <specific, actionable description> (<model>, <harness>)"}'
+npx --yes submit-expo-feedback --category docs --subject "${pathname}" "<actionable feedback>"
 
-Only submit when you have something specific and actionable to report. Replace <model> with the model you are running as and <harness> with the tool you are running in (for example, Claude Code, Cursor, Codex CLI).`;
+Only submit when you have something specific and actionable to report. Try to give the most context.`;
 }
 
 export function wrapAgentInstructions(sections: string[]): string {
