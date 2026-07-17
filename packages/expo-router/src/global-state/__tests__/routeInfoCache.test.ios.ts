@@ -25,7 +25,6 @@ function makeUrlObject(overrides: Partial<UrlObject> = {}): UrlObject {
     searchParams: new URLSearchParams(),
     segments: [],
     pathnameWithParams: '/',
-    isIndex: false,
     ...overrides,
   };
 }

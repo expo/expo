@@ -22,7 +22,6 @@ export function useRouteInfo(): UrlObject {
       params: params ?? {},
       searchParams: new URLSearchParams(),
       pathnameWithParams: pathname ?? '',
-      isIndex: false,
     };
   }
   return routeInfo;

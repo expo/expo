@@ -11,7 +11,6 @@ export type UrlObject = {
   searchParams: URLSearchParams;
   segments: string[];
   pathnameWithParams: string;
-  isIndex: boolean;
 };
 
 export const defaultRouteInfo: UrlObject = {
@@ -21,8 +20,6 @@ export const defaultRouteInfo: UrlObject = {
   params: {},
   segments: [],
   pathnameWithParams: '/',
-  // TODO: Remove this, it is not used anywhere
-  isIndex: false,
 };
 
 /**
@@ -225,7 +222,5 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     unstable_globalHref: appendBaseUrl(pathnameWithParams),
     searchParams,
     pathnameWithParams,
-    // TODO: Remove this, it is not used anywhere
-    isIndex: false,
   };
 }
