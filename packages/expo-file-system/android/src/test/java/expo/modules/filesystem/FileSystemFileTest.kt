@@ -192,8 +192,16 @@ class FileSystemFileTest {
       ): EnumSet<Permission> = permissions
     }
 
+  // FileSystemPath/SharedObject holds its runtime, MainRuntime holds its AppContext, and
+  // AppContext holds its ReactContext all through WeakReferences. Without a strong reference
+  // kept here for the lifetime of the test, this context graph can be garbage-collected
+  // mid-test, making permission checks fail spuriously with ReactContextLost or
+  // InvalidPermissionException instead of the behavior under test.
+  private val retainedContexts = mutableListOf<Any>()
+
   private fun createAppContext(permissionService: FilePermissionService): AppContext {
     val reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
+    retainedContexts.add(reactContext)
     return AppContext(
       object : ModulesProvider {
         override fun getModulesMap(): Map<Class<out Module>, String?> = emptyMap()
@@ -203,6 +211,7 @@ class FileSystemFileTest {
       WeakReference(reactContext)
     ).also {
       it.services.register(FilePermissionService::class.java, permissionService)
+      retainedContexts.add(it)
     }
   }
 
