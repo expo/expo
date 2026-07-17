@@ -71,9 +71,11 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
       photoCaptureOptions = options
 
       let connection = photoOutput.connection(with: .video)
-      let orientation = captureDelegate?.responsiveWhenOrientationLocked == true ?
-        captureDelegate?.physicalOrientation ?? .unknown : UIDevice.current.orientation
-      connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
+      connection?.videoOrientation = ExpoCameraUtils.captureOrientation(
+        responsiveWhenOrientationLocked: captureDelegate?.responsiveWhenOrientationLocked == true,
+        physicalOrientation: captureDelegate?.physicalOrientation ?? .unknown,
+        interfaceOrientation: captureDelegate?.deviceOrientation ?? .unknown
+      )
 
       // options.mirror is deprecated but should continue to work until removed
       connection?.isVideoMirrored = captureDelegate?.presetCamera == .front &&
