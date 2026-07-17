@@ -13,7 +13,6 @@ data class UpdatesStateEvent(
     CheckCompleteWithRollback("checkCompleteWithRollback"),
     CheckError("checkError"),
     Download("download"),
-    DownloadComplete("downloadComplete"),
     DownloadCompleteUnavailable("downloadCompleteUnavailable"),
     DownloadCompleteWithUpdate("downloadCompleteWithUpdate"),
     DownloadCompleteWithRollback("downloadCompleteWithRollback"),
