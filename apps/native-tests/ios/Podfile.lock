@@ -306,6 +306,13 @@ PODS:
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
+  - ExpoImageManipulator (56.0.15):
+    - ExpoModulesCore
+    - SDWebImageWebPCoder
+  - ExpoImageManipulator/Tests (56.0.15):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - SDWebImageWebPCoder
   - ExpoMediaLibrary (56.0.6):
     - ExpoModulesCore
     - React-Core
@@ -2743,6 +2750,8 @@ DEPENDENCIES:
   - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
   - ExpoImage (from `../../../packages/expo-image/ios`)
   - ExpoImage/Tests (from `../../../packages/expo-image/ios`)
+  - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
+  - ExpoImageManipulator/Tests (from `../../../packages/expo-image-manipulator/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
@@ -2896,6 +2905,9 @@ EXTERNAL SOURCES:
   ExpoImage:
     inhibit_warnings: false
     :path: "../../../packages/expo-image/ios"
+  ExpoImageManipulator:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-image-manipulator/ios"
   ExpoMediaLibrary:
     inhibit_warnings: false
     :path: "../../../packages/expo-media-library/ios"
@@ -3110,6 +3122,7 @@ SPEC CHECKSUMS:
   ExpoBackgroundTask: d2ab6bf83921dc84ad3995fed08d56491ca8cba8
   ExpoClipboard: 40221903a1caa68259e022517af49d12962821fe
   ExpoImage: 3f44073bf450afdb87333f9671ffe7b9bfa5f70e
+  ExpoImageManipulator: 00e382cd32da78b9162cff710953f6e35bd6460c
   ExpoMediaLibrary: 5ab82b8ace3f9ab7ac4ca3b2060bd915a4f1568f
   ExpoModulesCore: ede87d8176627de2d322b38e4485d9e31ba99459
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
@@ -3123,7 +3136,7 @@ SPEC CHECKSUMS:
   EXUpdates: c6488f0bebe92d6decb5f9b685d33ee91feeccf0
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: dd9a9191125ffe9f57c224173db85afb0210cd23
+  hermes-engine: 2aec7235ef614eba6dbbd7a348c4bab7634e34a5
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
