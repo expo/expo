@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { useLinkPreviewContext } from '../../link/preview/LinkPreviewContext';
 import type { NativeStackViewState } from '../../react-navigation/native-stack';
-import type { NativeStackDescriptorMap } from './descriptors-context';
 
 /**
  * Manages the preview transition state for link previews.
@@ -14,8 +13,7 @@ import type { NativeStackDescriptorMap } from './descriptors-context';
  */
 export function usePreviewTransition<TNavigation extends { emit: (...args: any[]) => any }>(
   state: NativeStackViewState,
-  navigation: TNavigation,
-  descriptors: NativeStackDescriptorMap
+  navigation: TNavigation
 ) {
   const { openPreviewKey, setOpenPreviewKey } = useLinkPreviewContext();
 
@@ -95,5 +93,5 @@ export function usePreviewTransition<TNavigation extends { emit: (...args: any[]
     return state;
   }, [state, previewTransitioningScreenId]);
 
-  return { computedState, computedDescriptors: descriptors, navigationWrapper };
+  return { computedState, navigationWrapper };
 }

@@ -2,12 +2,10 @@ import { renderHook, act, type RenderHookOptions } from '@testing-library/react-
 
 import { useLinkPreviewContext } from '../../../link/preview/LinkPreviewContext';
 import type { NativeStackViewState } from '../../../react-navigation/native-stack';
-import type { NativeStackDescriptor, NativeStackDescriptorMap } from '../descriptors-context';
 import { usePreviewTransition } from '../usePreviewTransition';
 
 type HookProps = {
   state: NativeStackViewState;
-  descriptors: NativeStackDescriptorMap;
 };
 
 jest.mock('../../../link/preview/LinkPreviewContext');
@@ -27,23 +25,6 @@ function makeState(overrides: Partial<NativeStackViewState> = {}): NativeStackVi
     routes: [makeRoute('index-key')],
     ...overrides,
   };
-}
-
-function makeDescriptor(key: string): NativeStackDescriptor {
-  return {
-    render: jest.fn(),
-    options: {},
-    route: makeRoute(key),
-    navigation: {} as any,
-  };
-}
-
-function makeDescriptors(keys: string[]): NativeStackDescriptorMap {
-  const result: NativeStackDescriptorMap = {};
-  for (const key of keys) {
-    result[key] = makeDescriptor(key);
-  }
-  return result;
 }
 
 function makeNavigation() {
@@ -67,15 +48,13 @@ describe('usePreviewTransition', () => {
     jest.restoreAllMocks();
   });
 
-  it('passes through original state, descriptors, and navigation when no preview is active', () => {
+  it('passes through original state and navigation when no preview is active', () => {
     const state = makeState();
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key']);
 
-    const { result } = renderHook(() => usePreviewTransition(state, navigation, descriptors));
+    const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     expect(result.current.computedState).toBe(state);
-    expect(result.current.computedDescriptors).toBe(descriptors);
     expect(result.current.navigationWrapper).toBe(navigation);
   });
 
@@ -88,9 +67,8 @@ describe('usePreviewTransition', () => {
 
     const state = makeState();
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key']);
 
-    const { result } = renderHook(() => usePreviewTransition(state, navigation, descriptors));
+    const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     // Navigation wrapper should be a new object, not the original
     expect(result.current.navigationWrapper).not.toBe(navigation);
@@ -109,9 +87,8 @@ describe('usePreviewTransition', () => {
       routes: [makeRoute('index-key'), makeRoute('preview-key')],
     });
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key', 'preview-key']);
 
-    const { result } = renderHook(() => usePreviewTransition(state, navigation, descriptors));
+    const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     // Fire transitionStart for the preview key
     act(() => {
@@ -126,9 +103,6 @@ describe('usePreviewTransition', () => {
     expect(result.current.computedState.routes).toHaveLength(2);
     expect(result.current.computedState.routes[1]!.key).toBe('preview-key');
     expect(result.current.computedState.index).toBe(1);
-
-    // The descriptors already cover the preloaded route, so they pass through unchanged
-    expect(result.current.computedDescriptors).toBe(descriptors);
 
     // Original emit should still have been called
     expect(navigation.emit).toHaveBeenCalledTimes(1);
@@ -146,9 +120,8 @@ describe('usePreviewTransition', () => {
       routes: [makeRoute('index-key'), makeRoute('other-preloaded'), makeRoute('preview-key')],
     });
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key', 'other-preloaded', 'preview-key']);
 
-    const { result } = renderHook(() => usePreviewTransition(state, navigation, descriptors));
+    const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     act(() => {
       result.current.navigationWrapper.emit({
@@ -175,9 +148,8 @@ describe('usePreviewTransition', () => {
 
     const state = makeState();
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key']);
 
-    const { result } = renderHook(() => usePreviewTransition(state, navigation, descriptors));
+    const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     act(() => {
       result.current.navigationWrapper.emit({
@@ -200,9 +172,8 @@ describe('usePreviewTransition', () => {
 
     const state = makeState();
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key']);
 
-    const { result } = renderHook(() => usePreviewTransition(state, navigation, descriptors));
+    const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     act(() => {
       result.current.navigationWrapper.emit({
@@ -227,9 +198,8 @@ describe('usePreviewTransition', () => {
 
     const state = makeState();
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key']);
 
-    const { result } = renderHook(() => usePreviewTransition(state, navigation, descriptors));
+    const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     act(() => {
       result.current.navigationWrapper.emit({
@@ -255,11 +225,10 @@ describe('usePreviewTransition', () => {
       routes: [makeRoute('index-key'), makeRoute('preview-key')],
     });
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key', 'preview-key']);
 
     const { result, rerender } = renderHook(
-      ({ state, descriptors }: HookProps) => usePreviewTransition(state, navigation, descriptors),
-      { initialProps: { state, descriptors } as HookProps } as RenderHookOptions<HookProps>
+      ({ state }: HookProps) => usePreviewTransition(state, navigation),
+      { initialProps: { state } as HookProps } as RenderHookOptions<HookProps>
     );
 
     // Start tracking
@@ -279,13 +248,10 @@ describe('usePreviewTransition', () => {
       index: 1,
       routes: [makeRoute('index-key'), makeRoute('preview-key')],
     });
-    const updatedDescriptors = makeDescriptors(['index-key', 'preview-key']);
-
-    rerender({ state: updatedState, descriptors: updatedDescriptors });
+    rerender({ state: updatedState });
 
     // After state update, the hook should pass through the real state directly
     expect(result.current.computedState).toBe(updatedState);
-    expect(result.current.computedDescriptors).toBe(updatedDescriptors);
   });
 
   it('passes through emit events with no data property', () => {
@@ -297,9 +263,8 @@ describe('usePreviewTransition', () => {
 
     const state = makeState();
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key']);
 
-    const { result } = renderHook(() => usePreviewTransition(state, navigation, descriptors));
+    const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     act(() => {
       result.current.navigationWrapper.emit({
@@ -316,20 +281,18 @@ describe('usePreviewTransition', () => {
   it('preserves navigationWrapper reference across re-renders when no preview is active', () => {
     const state = makeState();
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key']);
 
     const { result, rerender } = renderHook(
-      ({ state, descriptors }: HookProps) => usePreviewTransition(state, navigation, descriptors),
-      { initialProps: { state, descriptors } as HookProps } as RenderHookOptions<HookProps>
+      ({ state }: HookProps) => usePreviewTransition(state, navigation),
+      { initialProps: { state } as HookProps } as RenderHookOptions<HookProps>
     );
 
     const firstWrapper = result.current.navigationWrapper;
     expect(firstWrapper).toBe(navigation);
 
-    // Rerender with new state/descriptors but no preview active
+    // Rerender with new state but no preview active
     const newState = makeState({ index: 0 });
-    const newDescriptors = makeDescriptors(['index-key']);
-    rerender({ state: newState, descriptors: newDescriptors });
+    rerender({ state: newState });
 
     // navigationWrapper should still be the same navigation reference
     expect(result.current.navigationWrapper).toBe(navigation);
@@ -347,9 +310,8 @@ describe('usePreviewTransition', () => {
       routes: [makeRoute('index-key'), makeRoute('other-preloaded')],
     });
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['index-key', 'other-preloaded']);
 
-    const { result } = renderHook(() => usePreviewTransition(state, navigation, descriptors));
+    const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     // Start tracking
     act(() => {
@@ -362,7 +324,6 @@ describe('usePreviewTransition', () => {
 
     // No matching preloaded route → should fall through to original state
     expect(result.current.computedState).toBe(state);
-    expect(result.current.computedDescriptors).toBe(descriptors);
   });
 
   it('does not promote an already-active route', () => {
@@ -377,9 +338,8 @@ describe('usePreviewTransition', () => {
       routes: [makeRoute('other-key'), makeRoute('index-key'), makeRoute('preloaded-key')],
     });
     const navigation = makeNavigation();
-    const descriptors = makeDescriptors(['other-key', 'index-key', 'preloaded-key']);
 
-    const { result } = renderHook(() => usePreviewTransition(state, navigation, descriptors));
+    const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     act(() => {
       result.current.navigationWrapper.emit({

@@ -42,6 +42,8 @@ beforeEach(() => {
   MockedScreenStackItem.mockClear();
 });
 
+afterEach(() => jest.useRealTimers());
+
 describe('navigation basics', () => {
   it('renders the initial route and navigates with push/replace/back', () => {
     renderRouter({
@@ -386,7 +388,5 @@ describe('tabPress', () => {
 
     expect(screen).toHavePathname('/a');
     expect(screen.getByTestId('a-index')).toBeVisible();
-
-    jest.useRealTimers();
   });
 });
