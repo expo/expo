@@ -68,7 +68,7 @@ export function rootReducer(
   let changed = false;
   const changedSlices: RootReducerChangedSlice[] = [];
   const reducedKeys = new Set<string>();
-  let currentAction = getReducerAction(action);
+  let currentAction = action;
   let nestedBoundary: RootReducerNestedBoundary | undefined;
   // Set once the loop switches to a decoded nested action, so a later `null` reduction can be
   // captured as a `rejected` boundary and attributed to the route it descended through.
@@ -91,7 +91,24 @@ export function rootReducer(
         : { state: tree, handled: false, noop: true, changedSlices };
     }
 
-    const reduced = entry.reduce(state, currentAction);
+    let reduced = entry.reduce(state, currentAction);
+
+    // Navigating into an ALREADY-MOUNTED nested navigator: the descent carries the parent's action
+    // down (so a deeper unmounted boundary still gets `payload.state` spliced), but a mounted child
+    // often can't apply that action verbatim — e.g. the action names the parent's route, not one of
+    // the child's. When it can't, reconcile the child toward `payload.state` by navigating it to the
+    // subtree's focused route. This is the reach the legacy nested-param chain gives for mounted
+    // children.
+    if (reduced === null) {
+      const payloadStateAction = getNestedActionFromPayloadState(currentAction);
+      if (payloadStateAction != null) {
+        const payloadReduced = entry.reduce(state, payloadStateAction);
+        if (payloadReduced !== null) {
+          reduced = payloadReduced;
+          currentAction = payloadStateAction;
+        }
+      }
+    }
 
     if (reduced === null) {
       if (nestedParentRouteKey != null && nestedBoundary == null) {
@@ -398,42 +415,6 @@ function getNestedActionFromAction(action: NavigationAction): NavigationAction |
     : undefined;
 }
 
-function getReducerAction(action: NavigationAction): NavigationAction {
-  const payload = action.payload;
-
-  if (
-    action.type !== 'PUSH' ||
-    payload == null ||
-    typeof payload !== 'object' ||
-    !('state' in payload) ||
-    !hasMultipleRoutes(payload.state) ||
-    !('params' in payload) ||
-    payload.params == null ||
-    typeof payload.params !== 'object' ||
-    ('initial' in payload.params && payload.params.initial === false)
-  ) {
-    return action;
-  }
-
-  const nextPayload = { ...payload };
-  delete nextPayload.state;
-
-  return {
-    ...action,
-    payload: nextPayload,
-  };
-}
-
-function hasMultipleRoutes(state: unknown): state is PayloadState {
-  return (
-    state != null &&
-    typeof state === 'object' &&
-    'routes' in state &&
-    Array.isArray(state.routes) &&
-    state.routes.length > 1
-  );
-}
-
 function getNestedActionFromRouteParams(params: unknown): NavigationAction | undefined {
   if (params == null || typeof params !== 'object') {
     return undefined;
@@ -457,6 +438,42 @@ function getNestedActionFromRouteParams(params: unknown): NavigationAction | und
       params: 'params' in params ? params.params : undefined,
       merge: 'merge' in params ? params.merge : undefined,
       pop: 'pop' in params ? params.pop : undefined,
+    },
+  };
+}
+
+// Unwrap one level of a `payload.state` subtree into a nested NAVIGATE: navigate the mounted child
+// to the subtree's focused route, carrying that route's own subtree as the next `payload.state`.
+// Recursing this per level walks the action down a chain of mounted navigators (mirroring how the
+// old nested-param descent reached mounted children), while unmounted boundaries below are filled
+// by `insertPayloadStateAtBoundary` as the descent reaches them.
+function getNestedActionFromPayloadState(action: NavigationAction): NavigationAction | undefined {
+  if (
+    action.type !== 'NAVIGATE' &&
+    action.type !== 'NAVIGATE_DEPRECATED' &&
+    action.type !== 'PUSH'
+  ) {
+    return undefined;
+  }
+
+  const payloadState = getPayloadState(action);
+
+  if (payloadState == null) {
+    return undefined;
+  }
+
+  const focused = payloadState.routes[payloadState.index ?? payloadState.routes.length - 1];
+
+  if (focused == null) {
+    return undefined;
+  }
+
+  return {
+    type: 'NAVIGATE',
+    payload: {
+      name: focused.name,
+      params: focused.params,
+      ...(focused.state != null ? { state: focused.state } : null),
     },
   };
 }

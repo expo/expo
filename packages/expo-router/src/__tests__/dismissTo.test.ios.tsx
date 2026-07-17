@@ -26,7 +26,6 @@ it('should go back to a previous route in the same stack', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -35,15 +34,11 @@ it('should go back to a previous route in the same stack', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
             },
             {
               key: expect.any(String),
               name: '1',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               state: {
                 index: 2,
                 key: expect.any(String),
@@ -86,7 +81,6 @@ it('should go back to a previous route in the same stack', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -95,15 +89,11 @@ it('should go back to a previous route in the same stack', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
             },
             {
               key: expect.any(String),
               name: '1',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -154,7 +144,6 @@ it('should go back to a previous route in different stacks', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -163,15 +152,11 @@ it('should go back to a previous route in different stacks', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
             },
             {
               key: expect.any(String),
               name: '1',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               state: {
                 index: 1,
                 key: expect.any(String),
@@ -185,10 +170,7 @@ it('should go back to a previous route in different stacks', () => {
                   {
                     key: expect.any(String),
                     name: '2',
-                    params: {
-                      params: {},
-                      screen: 'c',
-                    },
+                    params: {},
                     state: {
                       index: 1,
                       key: expect.any(String),
@@ -202,10 +184,7 @@ it('should go back to a previous route in different stacks', () => {
                         {
                           key: expect.any(String),
                           name: '3',
-                          params: {
-                            params: {},
-                            screen: 'e',
-                          },
+                          params: {},
                           state: {
                             index: 0,
                             key: expect.any(String),
@@ -246,7 +225,6 @@ it('should go back to a previous route in different stacks', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -255,15 +233,11 @@ it('should go back to a previous route in different stacks', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
             },
             {
               key: expect.any(String),
               name: '1',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -315,7 +289,6 @@ it('will replace the route if the provided href is not in the history', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -324,15 +297,11 @@ it('will replace the route if the provided href is not in the history', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
             },
             {
               key: expect.any(String),
               name: '1',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               state: {
                 index: 1,
                 key: expect.any(String),
@@ -346,10 +315,7 @@ it('will replace the route if the provided href is not in the history', () => {
                   {
                     key: expect.any(String),
                     name: '2',
-                    params: {
-                      params: {},
-                      screen: 'c',
-                    },
+                    params: {},
                     state: {
                       index: 0,
                       key: expect.any(String),
@@ -358,10 +324,7 @@ it('will replace the route if the provided href is not in the history', () => {
                         {
                           key: expect.any(String),
                           name: '3',
-                          params: {
-                            params: {},
-                            screen: 'e',
-                          },
+                          params: {},
                           state: {
                             index: 0,
                             key: expect.any(String),

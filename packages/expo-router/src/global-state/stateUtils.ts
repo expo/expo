@@ -8,37 +8,7 @@ import type {
 } from '../react-navigation/native';
 import { getNextRouteKeyFromState, getRouteKey } from '../react-navigation/routers/getRouteKey';
 
-/**
- * React Navigation uses params to store information about the screens, rather then create new state for each level.
- * This function traverses the action state that will not be part of state and returns a payload that can be used in action.
- */
 type AnyPartialRoute = Partial<PartialRoute<Route<string>>>;
-
-export function getPayloadFromStateRoute(_actionStateRoute: AnyPartialRoute) {
-  const rootPayload: Record<string, any> = { params: {} };
-  let payload = rootPayload;
-  let params = payload.params;
-  let actionStateRoute: AnyPartialRoute | undefined = _actionStateRoute;
-
-  while (actionStateRoute) {
-    Object.assign(params, { ...payload.params, ...actionStateRoute.params });
-    // Assign the screen name to the payload
-    payload.screen = actionStateRoute.name;
-    // Merge the params, ensuring that we create a new object
-    payload.params = { ...params };
-
-    // Params don't include the screen, thats a separate attribute
-    delete payload.params['screen'];
-
-    // Continue down the payload tree
-    // Initially these values are separate, but React Nav merges them after the first layer
-    payload = payload.params;
-    params = payload;
-
-    actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
-  }
-  return rootPayload;
-}
 
 type NavigationPayload = {
   name?: string;

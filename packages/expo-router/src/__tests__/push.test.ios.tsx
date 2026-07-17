@@ -74,14 +74,6 @@ it('stacks should always push a new route', () => {
               name: '(group)',
               params: {
                 id: '1',
-                screen: 'post/[id]',
-                params: {
-                  id: '1',
-                  params: {
-                    id: '1',
-                  },
-                  screen: 'index',
-                },
               },
               state: {
                 index: 3,
@@ -115,10 +107,6 @@ it('stacks should always push a new route', () => {
                     name: 'user/[id]',
                     params: {
                       id: '1',
-                      params: {
-                        id: '1',
-                      },
-                      screen: 'index',
                     },
                     state: {
                       index: 0,
@@ -141,10 +129,6 @@ it('stacks should always push a new route', () => {
                     name: 'post/[id]',
                     params: {
                       id: '2',
-                      params: {
-                        id: '2',
-                      },
-                      screen: 'index',
                     },
                     state: {
                       index: 0,
@@ -167,10 +151,6 @@ it('stacks should always push a new route', () => {
                     name: 'user/[id]',
                     params: {
                       id: '1',
-                      params: {
-                        id: '1',
-                      },
-                      screen: 'index',
                     },
                     state: {
                       index: 1,
@@ -308,10 +288,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
             {
               key: expect.any(String),
               name: '(tabs)',
-              params: {
-                params: {},
-                screen: 'a',
-              },
+              params: {},
               state: {
                 // firstRoute arranges the back stack as `[first, focused, ...rest]`,
                 // so focusing `c` gives `[a, c, b]` with `c` at index 1.
@@ -327,10 +304,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                   {
                     key: expect.any(String),
                     name: 'c',
-                    params: {
-                      params: {},
-                      screen: 'one',
-                    },
+                    params: {},
                     state: {
                       index: 2,
                       key: expect.any(String),
@@ -437,10 +411,7 @@ it('targets the correct Stack when pushing to a nested layout', () => {
             {
               key: expect.any(String),
               name: 'one',
-              params: {
-                params: {},
-                screen: 'index',
-              },
+              params: {},
               state: {
                 index: 2,
                 key: expect.any(String),
@@ -459,10 +430,7 @@ it('targets the correct Stack when pushing to a nested layout', () => {
                   {
                     key: expect.any(String),
                     name: 'two',
-                    params: {
-                      params: {},
-                      screen: 'index',
-                    },
+                    params: {},
                     state: {
                       index: 1,
                       key: expect.any(String),
@@ -562,13 +530,7 @@ it('push should also add anchor routes', () => {
             {
               key: expect.any(String),
               name: '(group)',
-              params: {
-                initial: false,
-                params: {
-                  initial: false,
-                },
-                screen: 'orange',
-              },
+              params: {},
               state: {
                 index: 1,
                 key: expect.any(String),

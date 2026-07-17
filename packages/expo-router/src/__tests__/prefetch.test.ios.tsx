@@ -542,7 +542,6 @@ it('can prefetch a deeply nested route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -563,13 +562,7 @@ it('can prefetch a deeply nested route', () => {
                   {
                     key: expect.any(String),
                     name: 'apple',
-                    params: {
-                      params: {
-                        params: {},
-                        screen: 'index',
-                      },
-                      screen: 'banana',
-                    },
+                    params: {},
                     // A preloaded route is a real route now, so its nested navigator state is
                     // materialized from the nested-navigation params.
                     state: {

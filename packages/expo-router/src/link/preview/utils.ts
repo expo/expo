@@ -1,5 +1,8 @@
 import { store, type ReactNavigationState } from '../../global-state/router-store';
-import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/stateUtils';
+import {
+  findDivergentState,
+  getNavigationPayloadFromStateRoute,
+} from '../../global-state/stateUtils';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
 import type {
   NavigationRoute,
@@ -76,7 +79,9 @@ export function getPreloadedRouteFromRootStateByHref(
   // routes are simply the `routes` tail after `index` — for every navigator kind. Tab and drawer
   // navigators keep their inactive items in the tail too, so unlike the old stack-only lookup this
   // can intentionally match a preloaded tab route (e.g. previewing a sibling leaf tab).
-  const payload = getPayloadFromStateRoute(actionStateRoute);
+  // Match against the preloaded route's own (clean) params — the same shape the `PRELOAD` action
+  // now writes onto the route, since the legacy nested `screen`/`params` chain is gone.
+  const payload = getNavigationPayloadFromStateRoute(actionStateRoute, navigationState);
   const index = navigationState.index ?? 0;
 
   const preloadedRoute = navigationState.routes

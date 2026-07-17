@@ -1,7 +1,6 @@
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
 import {
-  appendInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   type InternalExpoRouterParams,
@@ -11,7 +10,6 @@ import {
   collapseToFocusedPath,
   findDivergentState,
   getNavigationPayloadFromStateRoute,
-  getPayloadFromStateRoute,
 } from './stateUtils';
 import { store } from './store';
 import type { LinkToOptions } from './types';
@@ -97,7 +95,6 @@ export function getNavigateAction(
         [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
       }
     : {};
-  const rootPayload = getPayloadFromStateRoute(actionStateRoute || {});
   const subtreePayload = getNavigationPayloadFromStateRoute(
     actionStateRoute || {},
     navigationState,
@@ -107,42 +104,18 @@ export function getNavigateAction(
     type !== 'PUSH'
   );
 
-  if (withAnchor) {
-    if (rootPayload.params.initial) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
-      }
-    }
-    /*
-     * The logic for initial can seen backwards depending on your perspective
-     *   True: The initialRouteName is not loaded. The incoming screen is the initial screen (default)
-     *   False: The initialRouteName is loaded. THe incoming screen is placed after the initialRouteName
-     *
-     * withAnchor flips the perspective.
-     *   True: You want the initialRouteName to load.
-     *   False: You do not want the initialRouteName to load.
-     */
-    // Keep the legacy nested-param path alive until Step 9b moves this normalization to dispatch.
-    let currentParams = rootPayload.params;
-    while (currentParams) {
-      currentParams.initial = !withAnchor;
-      currentParams = currentParams.params;
-    }
-  }
-
-  const params = appendInternalExpoRouterParams(rootPayload.params, expoParams);
-
-  // A plain `push` must skip a nested navigator's `initialRouteName` anchor (`initial !== false`).
-  // Collapse the compiled subtree to its focused path so the created navigator contains only the
-  // pushed target; `withAnchor` (`initial: false`) keeps the full subtree so the anchor loads.
+  // The nested target is carried entirely as `payload.state` (the compiled, live-keyed subtree the
+  // container installs at the boundary); the action itself is a plain navigate to the divergent
+  // route. A plain `push` must skip a nested navigator's `initialRouteName` anchor, so collapse the
+  // subtree to its focused path; `withAnchor` keeps the full subtree so the anchor loads.
   const payloadState =
-    type === 'PUSH' && subtreePayload.state != null && rootPayload.params.initial !== false
+    type === 'PUSH' && subtreePayload.state != null && !withAnchor
       ? collapseToFocusedPath(subtreePayload.state)
       : subtreePayload.state;
 
   const payload = {
-    name: rootPayload.screen,
-    params,
+    name: subtreePayload.name,
+    params: subtreePayload.params,
     singular,
     ...(payloadState ? { state: payloadState } : null),
   };

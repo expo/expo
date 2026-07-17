@@ -1,10 +1,6 @@
 import { applyRedirects } from '../../getRoutesRedirects';
 import { getNavigateAction } from '../getNavigationAction';
-import {
-  findDivergentState,
-  getNavigationPayloadFromStateRoute,
-  getPayloadFromStateRoute,
-} from '../stateUtils';
+import { findDivergentState, getNavigationPayloadFromStateRoute } from '../stateUtils';
 import { store } from '../store';
 
 jest.mock('../store', () => ({
@@ -41,9 +37,9 @@ jest.mock('../store', () => ({
 }));
 
 jest.mock('../stateUtils', () => ({
+  ...jest.requireActual('../stateUtils'),
   findDivergentState: jest.fn(),
   getNavigationPayloadFromStateRoute: jest.fn(),
-  getPayloadFromStateRoute: jest.fn(),
 }));
 
 jest.mock('../../getRoutesRedirects', () => ({
@@ -57,9 +53,6 @@ jest.mock('../../link/href', () => ({
 const mockFindDivergentState = findDivergentState as jest.MockedFunction<typeof findDivergentState>;
 const mockGetPayload = getNavigationPayloadFromStateRoute as jest.MockedFunction<
   typeof getNavigationPayloadFromStateRoute
->;
-const mockGetLegacyPayload = getPayloadFromStateRoute as jest.MockedFunction<
-  typeof getPayloadFromStateRoute
 >;
 const mockApplyRedirects = applyRedirects as jest.MockedFunction<typeof applyRedirects>;
 
@@ -79,11 +72,6 @@ function setupDefaultMocks() {
     },
     actionStateRoute: { name: 'home' },
     navigationRoutes: [],
-  });
-
-  mockGetLegacyPayload.mockReturnValue({
-    screen: 'home',
-    params: {},
   });
 
   mockGetPayload.mockReturnValue({
@@ -220,42 +208,69 @@ describe(getNavigateAction, () => {
     expect(result!.target).toBe('nav-key');
   });
 
-  it('withAnchor keeps legacy initial params until Step 9b', () => {
-    mockGetLegacyPayload.mockReturnValue({
-      screen: 'home',
-      params: {
-        screen: 'nested',
-        params: {
-          screen: 'deep',
-          params: {},
-        },
+  // A plain `push` skips a nested navigator's `initialRouteName` anchor by collapsing the compiled
+  // subtree to its focused path; `withAnchor` keeps the full subtree so the anchor loads. The
+  // decision now lives entirely in `payload.state` — there is no legacy `initial` param.
+  it('collapses the subtree to the focused path for a plain push', () => {
+    mockGetPayload.mockReturnValue({
+      name: 'root',
+      params: {},
+      state: {
+        stale: false,
+        key: '@:root:0',
+        index: 1,
+        routeNames: ['anchor', 'leaf'],
+        routes: [
+          { key: '@:root:0:anchor:0', name: 'anchor' },
+          { key: '@:root:0:leaf:0', name: 'leaf' },
+        ],
       },
     });
 
-    const result = getNavigateAction('/home', {}, 'NAVIGATE', true);
+    const result = getNavigateAction('/root/leaf', {}, 'PUSH');
 
-    const params = result!.payload.params as Record<string, any>;
-    expect(params.initial).toBe(false);
-    expect(params.params.initial).toBe(false);
-    expect(params.params.params.initial).toBe(false);
+    expect(result!.payload.state).toEqual({
+      stale: false,
+      key: '@:root:0',
+      index: 0,
+      routeNames: ['anchor', 'leaf'],
+      routes: [{ key: '@:root:0:leaf:0', name: 'leaf' }],
+    });
+    expect((result!.payload.params as Record<string, any>).initial).toBeUndefined();
   });
 
-  it('isPreviewNavigation adds preview and no-animation params', () => {
-    const isPreviewNavigation = true;
-    const result = getNavigateAction(
-      '/home',
-      {},
-      'NAVIGATE',
-      false,
-      undefined,
-      isPreviewNavigation
-    );
+  it('withAnchor keeps the full anchored subtree on a push', () => {
+    const anchored = {
+      stale: false,
+      key: '@:root:0',
+      index: 1,
+      routeNames: ['anchor', 'leaf'],
+      routes: [
+        { key: '@:root:0:anchor:0', name: 'anchor' },
+        { key: '@:root:0:leaf:0', name: 'leaf' },
+      ],
+    };
+    mockGetPayload.mockReturnValue({ name: 'root', params: {}, state: anchored });
 
-    expect(result!.payload.params).toEqual(
+    const result = getNavigateAction('/root/leaf', {}, 'PUSH', true);
+
+    expect(result!.payload.state).toEqual(anchored);
+  });
+
+  // The preview/no-animation flags are threaded into the compiled subtree builder as extra params
+  // (it propagates them to the focused leaf via rekeyState), not stitched onto the payload here.
+  it('isPreviewNavigation threads preview and no-animation params into the subtree builder', () => {
+    const isPreviewNavigation = true;
+    getNavigateAction('/home', {}, 'NAVIGATE', false, undefined, isPreviewNavigation);
+
+    expect(mockGetPayload).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
       expect.objectContaining({
         __internal__expo_router_is_preview_navigation: true,
         __internal_expo_router_no_animation: true,
-      })
+      }),
+      true
     );
   });
 
@@ -325,22 +340,18 @@ describe(getNavigateAction, () => {
       navigationRoutes: [],
     });
 
-    mockGetLegacyPayload.mockReturnValue({ screen: undefined, params: {} });
     mockGetPayload.mockReturnValue({ name: undefined, params: {} });
 
     const result = getNavigateAction('/home', {});
 
-    expect(mockGetLegacyPayload).toHaveBeenCalledWith({});
     // Fourth arg is the reuse-existing-route flag (`true` for a NAVIGATE, `false` for a PUSH).
     expect(mockGetPayload).toHaveBeenCalledWith({}, expect.anything(), {}, true);
     expect(result).toBeDefined();
   });
 
-  it('emits payload.state alongside legacy nested screen params', () => {
-    mockGetLegacyPayload.mockReturnValue({
-      screen: 'root',
-      params: { id: '123', screen: 'leaf', params: { id: '123' } },
-    });
+  // A nested target is emitted purely as `payload.state` (the compiled subtree). The action's own
+  // `name`/`params` describe only the divergent route; there is no legacy nested screen/params chain.
+  it('emits a nested target as payload.state with no legacy screen/params chain', () => {
     mockGetPayload.mockReturnValue({
       name: 'root',
       params: { id: '123' },
@@ -356,7 +367,8 @@ describe(getNavigateAction, () => {
     const result = getNavigateAction('/root/leaf?id=123', {});
 
     expect(result!.payload.name).toBe('root');
-    expect(result!.payload.params).toEqual({ id: '123', screen: 'leaf', params: { id: '123' } });
+    expect(result!.payload.params).toEqual({ id: '123' });
+    expect((result!.payload.params as Record<string, any>).screen).toBeUndefined();
     expect(result!.payload.state).toEqual({
       stale: false,
       key: '@:root:0',
@@ -365,5 +377,4 @@ describe(getNavigateAction, () => {
       routes: [{ key: '@:root:0:leaf:0', name: 'leaf' }],
     });
   });
-
 });
