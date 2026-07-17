@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix a typo in the `currencyCode` documentation ("specifc" → "specific"). ([#47912](https://github.com/expo/expo/pull/47912) by [@chinesepowered](https://github.com/chinesepowered))
+
 ### 💡 Others
 
 ## 56.0.6 — 2026-05-21
