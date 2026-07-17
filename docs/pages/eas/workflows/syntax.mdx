@@ -464,7 +464,7 @@ jobs:
 
 ### `jobs.<job_id>.env`
 
-Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `branch-delete`, `doc`, `get-build`, `github-comment`, `require-approval`, and `slack` jobs).
+Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `branch-delete`, `doc`, `get-build`, `github-comment`, `require-approval`, `slack`, and `update-rollout` jobs).
 
 ```yaml
 jobs:
@@ -1349,6 +1349,31 @@ This job outputs the following properties:
 {
   "first_update_group_id": string, // ID of the first update group. You can use it to e.g. construct the update URL for a development client deep link.
   "updates_json": string // Stringified JSON array of update groups. Output of `eas update --json`.
+}
+```
+
+#### `update-rollout`
+
+Increases the rollout percentage of an in-progress EAS Update rollout. See [Update rollout job documentation](/eas/workflows/pre-packaged-jobs#update-rollout) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: update-rollout
+    # @end #
+    params:
+      update_group_id: string # required
+      rollout_percentage: number # optional - 0 to 100, defaults to 100
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "update_group_id": string, // ID of the update group that was rolled out.
+  "rollout_percentage": string, // The rollout percentage that was applied to the update group.
+  "updates_json": string // Stringified JSON array of the updates in the group.
 }
 ```
 

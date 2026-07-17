@@ -1010,6 +1010,79 @@ jobs:
 
 </Collapsible>
 
+## Update rollout
+
+Increase the rollout percentage of an in-progress [EAS Update](/eas-update/introduction/) rollout. Use this to gradually roll out an update group that was published to a subset of users with a partial `rollout_percentage`.
+
+### Syntax
+
+```yaml
+jobs:
+  roll_out_update:
+    type: update-rollout
+    params:
+      update_group_id: string # required
+      rollout_percentage: number # optional - 0 to 100, defaults to 100
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter          | Type   | Description                                                                                                                                                                                                                                                       |
+| ------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| update_group_id    | string | Required. The ID of the update group whose rollout to change. This is typically the `first_update_group_id` output of a preceding [`update`](#update) job. The group must have an in-progress rollout, otherwise the job fails.                                   |
+| rollout_percentage | number | Optional. Percentage of users this update group should be rolled out to. Must be an integer between `0` and `100`, and no less than the group's current rollout percentage. Defaults to `100`, which rolls the update out to all users and completes the rollout. |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output             | Type   | Description                                                          |
+| ------------------ | ------ | -------------------------------------------------------------------- |
+| update_group_id    | string | The ID of the update group that was rolled out.                      |
+| rollout_percentage | number | The rollout percentage that was applied to the update group.         |
+| updates_json       | string | A JSON string containing information about all updates in the group. |
+
+### Examples
+
+Here are some practical examples of using the update rollout job:
+
+<Collapsible summary="Publish a partial rollout, then complete it after approval">
+
+This workflow publishes an update to 25% of users, waits for approval, and only then completes the rollout to 100%.
+
+```yaml .eas/workflows/update-rollout.yml
+name: Update with staged rollout
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  publish_update:
+    name: Publish update to 25% of users
+    type: update
+    params:
+      channel: production
+      rollout_percentage: 25
+
+  require_approval:
+    name: Roll out to all users?
+    type: require-approval
+    needs: [publish_update]
+
+  complete_rollout:
+    name: Roll out to all users
+    type: update-rollout
+    needs: [publish_update, require_approval]
+    params:
+      update_group_id: ${{ needs.publish_update.outputs.first_update_group_id }}
+      rollout_percentage: 100
+```
+
+</Collapsible>
+
 ## Branch delete
 
 Delete an [EAS Update](/eas-update/introduction/) branch in the current project. The same as [`eas branch:delete`](/eas-update/eas-cli/#delete-a-branch). Pass the EAS Update branch name in `branch_name`.
