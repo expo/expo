@@ -2,6 +2,23 @@
 appId: dev.expo.Payments
 jsEngine: graaljs
 ---
+# Relaunch to start from a clean state: a failed earlier attempt can leave the app
+# stuck in fullscreen, which would break every retry that follows. The app id casing
+# differs per platform, so launch inside platform-scoped flows.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - launchApp:
+          appId: dev.expo.Payments
+          stopApp: true
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - launchApp:
+          appId: dev.expo.payments
+          stopApp: true
 - openLink: bareexpo://components/video/fullscreen
 
 - tapOn: 'Enter Fullscreen'
@@ -21,27 +38,36 @@ jsEngine: graaljs
 # is not asserted because its controls auto-hide and would flake on slow simulators.)
 - assertNotVisible: 'Enter Fullscreen'
 
-# Exit fullscreen. Android has a dedicated exit button in the bottom-right of the
-# custom fullscreen activity.
+# Exit fullscreen. Android uses the media3 fullscreen toggle button. The controller
+# starts visible after entering fullscreen, so wait for it to auto-hide to get a
+# deterministic state, then reveal it and tap the button by its resource id instead
+# of blind coordinates (edge-to-edge insets move it around).
 - runFlow:
     when:
       platform: Android
     commands:
+      - extendedWaitUntil:
+          notVisible:
+            id: 'dev.expo.payments:id/exo_fullscreen'
+          timeout: 15000
       - tapOn:
-          point: 94%,97%
-          delay: 400
-          repeat: 2
-# iOS uses the native AVPlayerViewController chrome, whose controls auto-hide. Tap the
-# center to reveal them, then tap the close button in the top-left exactly once: a
-# second tap would land on the screen's back button and navigate away from the test.
+          point: 50%,50%
+      - tapOn:
+          id: 'dev.expo.payments:id/exo_fullscreen'
+# iOS uses the native AVPlayerViewController chrome. The controls start visible after
+# entering fullscreen, so a blind center tap could hide them instead of revealing them.
+# Wait for the initial auto-hide to get a deterministic state, then reveal the controls
+# and tap the close button by its accessibility label.
 - runFlow:
     when:
       platform: iOS
     commands:
+      - extendedWaitUntil:
+          notVisible: 'Close'
+          timeout: 15000
       - tapOn:
           point: 50%,50%
-      - tapOn:
-          point: 11%,10%
+      - tapOn: 'Close'
 
 - assertVisible: 'Enter Fullscreen'
 - assertVisible: '0 = onFullscreenEnter'
