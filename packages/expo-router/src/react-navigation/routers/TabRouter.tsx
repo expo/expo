@@ -315,6 +315,19 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
     },
 
     getStateForAction(state, action, { routeParamList, routeGetIdList }) {
+      // A `stale: false` state is returned verbatim by `getRehydratedState`, so a
+      // state that skipped rehydration (e.g. a foreign navigator's state adopted
+      // as-is) can reach here without `history`/`preloadedRouteKeys`. Normalize
+      // them the same way `getRehydratedState` already does so the `.filter`/
+      // `.length` reads below don't throw. Fixes #47868.
+      if (state.history === undefined || state.preloadedRouteKeys === undefined) {
+        state = {
+          ...state,
+          history: state.history ?? [],
+          preloadedRouteKeys: state.preloadedRouteKeys ?? [],
+        };
+      }
+
       switch (action.type) {
         case 'JUMP_TO':
         case 'NAVIGATE':

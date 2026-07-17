@@ -2592,3 +2592,138 @@ test('handles screen preloading', () => {
     history: [{ type: 'route', key: 'qux-test' }],
   });
 });
+
+// Regression tests for #47868: a `stale: false` state can reach
+// getStateForAction without `history`/`preloadedRouteKeys` (e.g. a foreign
+// navigator's state returned verbatim by getRehydratedState). The unguarded
+// `.filter`/`.length` reads used to throw
+// "Cannot read properties of undefined (reading 'filter'/'length')".
+
+const partialState = () =>
+  ({
+    stale: false,
+    type: 'tab',
+    key: 'root',
+    index: 0,
+    routeNames: ['baz', 'bar'],
+    routes: [
+      { key: 'baz', name: 'baz' },
+      { key: 'bar', name: 'bar' },
+    ],
+    // `history` and `preloadedRouteKeys` intentionally absent
+  }) as unknown as TabNavigationState<ParamListBase>;
+
+test('handles jump to on a state without history/preloadedRouteKeys (#47868)', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+
+  expect(() =>
+    router.getStateForAction(partialState(), TabActions.jumpTo('bar'), options)
+  ).not.toThrow();
+
+  expect(router.getStateForAction(partialState(), TabActions.jumpTo('bar'), options)).toEqual({
+    stale: false,
+    type: 'tab',
+    preloadedRouteKeys: [],
+    key: 'root',
+    index: 1,
+    routeNames: ['baz', 'bar'],
+    routes: [
+      { key: 'baz', name: 'baz' },
+      { key: 'bar', name: 'bar' },
+    ],
+    history: [
+      { type: 'route', key: 'baz' },
+      { type: 'route', key: 'bar' },
+    ],
+  });
+});
+
+test('handles navigate on a state without history/preloadedRouteKeys (#47868)', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+
+  expect(() =>
+    router.getStateForAction(partialState(), CommonActions.navigate('bar'), options)
+  ).not.toThrow();
+
+  expect(router.getStateForAction(partialState(), CommonActions.navigate('bar'), options)).toEqual({
+    stale: false,
+    type: 'tab',
+    preloadedRouteKeys: [],
+    key: 'root',
+    index: 1,
+    routeNames: ['baz', 'bar'],
+    routes: [
+      { key: 'baz', name: 'baz' },
+      { key: 'bar', name: 'bar' },
+    ],
+    history: [
+      { type: 'route', key: 'baz' },
+      { type: 'route', key: 'bar' },
+    ],
+  });
+});
+
+test('handles back on a state without history/preloadedRouteKeys (#47868)', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+
+  expect(() =>
+    router.getStateForAction(partialState(), CommonActions.goBack(), options)
+  ).not.toThrow();
+
+  expect(router.getStateForAction(partialState(), CommonActions.goBack(), options)).toBeNull();
+});
+
+test('leaves a complete state unchanged (#47868 guard does not trip)', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+
+  const complete: TabNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'tab',
+    preloadedRouteKeys: [],
+    key: 'root',
+    index: 0,
+    routeNames: ['baz', 'bar'],
+    routes: [
+      { key: 'baz', name: 'baz' },
+      { key: 'bar', name: 'bar' },
+    ],
+    history: [{ type: 'route', key: 'baz' }],
+  };
+
+  expect(router.getStateForAction(complete, TabActions.jumpTo('bar'), options)).toEqual({
+    stale: false,
+    type: 'tab',
+    preloadedRouteKeys: [],
+    key: 'root',
+    index: 1,
+    routeNames: ['baz', 'bar'],
+    routes: [
+      { key: 'baz', name: 'baz' },
+      { key: 'bar', name: 'bar' },
+    ],
+    history: [
+      { type: 'route', key: 'baz' },
+      { type: 'route', key: 'bar' },
+    ],
+  });
+});
