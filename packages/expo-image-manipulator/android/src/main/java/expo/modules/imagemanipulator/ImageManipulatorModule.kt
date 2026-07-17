@@ -46,7 +46,7 @@ class ImageManipulatorModule : Module() {
           }
         }
         if (maxWidth != null || maxHeight != null) {
-          imageLoader.loadImageForManipulationFromURL(url.toString(), maxWidth ?: Int.MAX_VALUE, maxHeight ?: Int.MAX_VALUE, resultListener)
+          imageLoader.loadImageForManipulationFromURL(url.toString(), maxWidth ?: ImageLoaderInterface.SIZE_ORIGINAL, maxHeight ?: ImageLoaderInterface.SIZE_ORIGINAL, resultListener)
         } else {
           imageLoader.loadImageForManipulationFromURL(url.toString(), resultListener)
         }

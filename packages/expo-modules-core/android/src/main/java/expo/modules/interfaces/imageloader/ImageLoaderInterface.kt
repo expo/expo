@@ -5,6 +5,14 @@ import expo.modules.kotlin.services.Service
 import java.util.concurrent.Future
 
 interface ImageLoaderInterface : Service {
+  companion object {
+    /**
+     * Indicates that the image should keep its original size on the given axis.
+     * Matches the value of Glide's `Target.SIZE_ORIGINAL`.
+     */
+    const val SIZE_ORIGINAL = Int.MIN_VALUE
+  }
+
   interface ResultListener {
     fun onSuccess(bitmap: Bitmap)
 
