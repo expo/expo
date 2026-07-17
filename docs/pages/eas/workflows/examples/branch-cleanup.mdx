@@ -1,55 +1,129 @@
----
-title: Clean up EAS Update branches with EAS Workflows
-sidebar_title: Clean up update branches
-description: Learn how to delete EAS Update branches when GitHub branches are deleted using EAS Workflows.
----
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, FlatList, Image, StyleSheet, SafeAreaView, TouchableOpacity, Alert, ScrollView, Switch, Modal, Platform, KeyboardAvoidingView } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import { WebView } from 'react-native-webview';
+import { initializeApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, doc, setDoc, updateDoc, deleteDoc, getDocs, increment, serverTimestamp } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
-import { Terminal } from '~/ui/components/Snippet';
+const firebaseConfig = {
+  apiKey: "SAGACIOUS", authDomain: "SAGACIOUS.COM", projectId: "PASTE YOUR PROJECT ID", storageBucket: "PASTE YOUR STORAGE", messagingSenderId: "PASTE ID", appId: "PASTE APP ID",
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-You might publish updates to EAS Update branches named after GitHub branches, for example with [`eas update --auto`](/eas-update/eas-cli/#create-a-new-update-and-publish-it), the [`update` workflow job](/eas/workflows/pre-packaged-jobs#update) with `branch: ${{ github.ref_name }}`, or [preview updates on every branch](/eas/workflows/examples/publish-preview-update). When you do, deleting the GitHub branch leaves the EAS Update branch behind. This workflow cleans up the orphaned EAS Update branch when a Git branch is deleted.
+const ADMIN_EMAILS = ["Sagaciousc2007@gmail.com"];
+const ADMIN_SETTINGS = { paystackPublicKey: "pk_test_YOUR_KEY" };
 
-## Get started
+const PRICES = {
+  star1: { usd: 500, ngn: 5000, name: "100K - 1 Star ★☆☆", followers: 100000 },
+  star2: { usd: 1500, ngn: 15000, name: "500K - 2 Stars ★★☆", followers: 500000 },
+  star3: { usd: 3000, ngn: 30000, name: "1M - 3 Stars ★★★", followers: 1000000 },
+  verified: { usd: 5000, ngn: 50000, name: "30M - Verified FL ✅", followers: 30000000 }
+};
 
-<Prerequisites>
-  <Requirement title="Set up EAS Update">
-    Your project needs to have [EAS Update](/eas-update/introduction/) configured. You can set up your project with:
+const tikTokGifts = [
+  { name: "Rose", icon: "🌹", price: { NGN: 50, USD: 1 } }, { name: "Heart", icon: "❤️", price: { NGN: 100, USD: 2 } },
+  { name: "Coffee", icon: "☕", price: { NGN: 250, USD: 5 } }, { name: "Perfume", icon: "🌸", price: { NGN: 500, USD: 10 } },
+  { name: "Glove", icon: "🧤", price: { NGN: 1000, USD: 20 } }, { name: "Car", icon: "🏎️", price: { NGN: 5000, USD: 100 } },
+  { name: "Lion", icon: "🦁", price: { NGN: 15000, USD: 300 } }, { name: "Universe", icon: "🌌", price: { NGN: 25000, USD: 500 } },
+  { name: "DJ Mix", icon: "🎛️", price: { NGN: 15000, USD: 30 } },
+];
+const holyGifts = [
+  { name: "Rosary", icon: "📿", price: { NGN: 500000, USD: 1000 }, image: "rosary.png" },
+  { name: "Bible", icon: "📖", price: { NGN: 750000, USD: 1500 }, image: "bible.png" },
+  { name: "Mary", icon: "👩", price: { NGN: 1000000, USD: 2000 }, image: "mary.png" },
+  { name: "Jesus", icon: "✝️", price: { NGN: 1500000, USD: 3000 }, image: "jesus.png" },
+  { name: "Sagacious", icon: "👑", price: { NGN: 2500000, USD: 5000 }, image: "sagacious.png" },
+];
+const countryFlagGifts = [
+  { name: "USA", icon: "🇺🇸", price: { NGN: 250000, USD: 500 } }, { name: "China", icon: "🇨🇳", price: { NGN: 250000, USD: 500 } },
+  { name: "UK", icon: "🇬🇧", price: { NGN: 150000, USD: 300 } }, { name: "Canada", icon: "🇨🇦", price: { NGN: 150000, USD: 300 } },
+  { name: "Germany", icon: "🇩🇪", price: { NGN: 150000, USD: 300 } }, { name: "France", icon: "🇫🇷", price: { NGN: 150000, USD: 300 } },
+  { name: "Japan", icon: "🇯🇵", price: { NGN: 150000, USD: 300 } }, { name: "Italy", icon: "🇮🇹", price: { NGN: 150000, USD: 300 } },
+  { name: "Australia", icon: "🇦🇺", price: { NGN: 150000, USD: 300 } }, { name: "South Korea", icon: "🇰🇷", price: { NGN: 150000, USD: 300 } },
+  { name: "Russia", icon: "🇷🇺", price: { NGN: 150000, USD: 300 } }, { name: "Brazil", icon: "🇧🇷", price: { NGN: 150000, USD: 300 } },
+  { name: "India", icon: "🇮🇳", price: { NGN: 150000, USD: 300 } },
+  { name: "Nigeria", icon: "🇳🇬", price: { NGN: 50000, USD: 100 } }, { name: "South Africa", icon: "🇿🇦", price: { NGN: 50000, USD: 100 } },
+  { name: "Egypt", icon: "🇪🇬", price: { NGN: 50000, USD: 100 } }, { name: "Saudi Arabia", icon: "🇸🇦", price: { NGN: 50000, USD: 100 } },
+  { name: "UAE", icon: "🇦🇪", price: { NGN: 50000, USD: 100 } }, { name: "Turkey", icon: "🇹🇷", price: { NGN: 50000, USD: 100 } },
+  { name: "Spain", icon: "🇪🇸", price: { NGN: 50000, USD: 100 } }, { name: "Mexico", icon: "🇲🇽", price: { NGN: 50000, USD: 100 } },
+  { name: "Indonesia", icon: "🇮🇩", price: { NGN: 50000, USD: 100 } }, { name: "Netherlands", icon: "🇳🇱", price: { NGN: 50000, USD: 100 } },
+  { name: "Switzerland", icon: "🇨🇭", price: { NGN: 50000, USD: 100 } }, { name: "Sweden", icon: "🇸🇪", price: { NGN: 50000, USD: 100 } },
+  { name: "Ghana", icon: "🇬🇭", price: { NGN: 25000, USD: 50 } }, { name: "Kenya", icon: "🇰🇪", price: { NGN: 25000, USD: 50 } },
+  { name: "Tanzania", icon: "🇹🇿", price: { NGN: 25000, USD: 50 } }, { name: "Uganda", icon: "🇺🇬", price: { NGN: 25000, USD: 50 } },
+  { name: "Morocco", icon: "🇲🇦", price: { NGN: 25000, USD: 50 } }, { name: "Algeria", icon: "🇩🇿", price: { NGN: 25000, USD: 50 } },
+  { name: "Argentina", icon: "🇦🇷", price: { NGN: 25000, USD: 50 } }, { name: "Poland", icon: "🇵🇱", price: { NGN: 25000, USD: 50 } },
+  { name: "Thailand", icon: "🇹🇭", price: { NGN: 25000, USD: 50 } }, { name: "Vietnam", icon: "🇻🇳", price: { NGN: 25000, USD: 50 } },
+  { name: "Pakistan", icon: "🇵🇰", price: { NGN: 25000, USD: 50 } }, { name: "Bangladesh", icon: "🇧🇩", price: { NGN: 25000, USD: 50 } },
+  { name: "Cameroon", icon: "🇨🇲", price: { NGN: 10000, USD: 20 } }, { name: "Togo", icon: "🇹🇬", price: { NGN: 10000, USD: 20 } },
+  { name: "Senegal", icon: "🇸🇳", price: { NGN: 10000, USD: 20 } }, { name: "Ivory Coast", icon: "🇨🇮", price: { NGN: 10000, USD: 20 } },
+  { name: "Mali", icon: "🇲🇱", price: { NGN: 10000, USD: 20 } }, { name: "Burkina Faso", icon: "🇧🇫", price: { NGN: 10000, USD: 20 } },
+  { name: "Zimbabwe", icon: "🇿🇼", price: { NGN: 10000, USD: 20 } }, { name: "Zambia", icon: "🇿🇲", price: { NGN: 10000, USD: 20 } },
+  { name: "Ethiopia", icon: "🇪🇹", price: { NGN: 10000, USD: 20 } }, { name: "Portugal", icon: "🇵🇹", price: { NGN: 10000, USD: 20 } },
+  { name: "Greece", icon: "🇬🇷", price: { NGN: 10000, USD: 20 } }, { name: "Philippines", icon: "🇵🇭", price: { NGN: 10000, USD: 20 } },
+  { name: "Benin", icon: "🇧🇯", price: { NGN: 5000, USD: 10 } }, { name: "Rwanda", icon: "🇷🇼", price: { NGN: 5000, USD: 10 } },
+  { name: "Liberia", icon: "🇱🇷", price: { NGN: 5000, USD: 10 } }, { name: "Sierra Leone", icon: "🇸🇱", price: { NGN: 5000, USD: 10 } },
+  { name: "Gambia", icon: "🇬🇲", price: { NGN: 5000, USD: 10 } }, { name: "Guinea", icon: "🇬🇳", price: { NGN: 5000, USD: 10 } },
+  { name: "Chad", icon: "🇹🇩", price: { NGN: 5000, USD: 10 } }, { name: "Niger", icon: "🇳🇪", price: { NGN: 5000, USD: 10 } },
+  { name: "Burundi", icon: "🇧🇮", price: { NGN: 5000, USD: 10 } }, { name: "Lesotho", icon: "🇱🇸", price: { NGN: 5000, USD: 10 } },
+  { name: "Eswatini", icon: "🇸🇿", price: { NGN: 5000, USD: 10 } }, { name: "Djibouti", icon: "🇩🇯", price: { NGN: 5000, USD: 10 } },
+  { name: "Somalia", icon: "🇸🇴", price: { NGN: 5000, USD: 10 } }, { name: "Malawi", icon: "🇲🇼", price: { NGN: 5000, USD: 10 } },
+  { name: "Gabon", icon: "🇬🇦", price: { NGN: 5000, USD: 10 } }, { name: "Congo", icon: "🇨🇬", price: { NGN: 5000, USD: 10 } },
+  { name: "DR Congo", icon: "🇨🇩", price: { NGN: 5000, USD: 10 } },
+];
 
-    <Terminal cmd={['$ eas update:configure']} />
+const lightTheme = { bg: '#F0F2F5', card: 'white', text: '#000', subtext: 'gray', border: '#ddd' };
+const darkTheme = { bg: '#18191A', card: '#242526', text: '#E4E6EB', subtext: '#B0B3B8', border: '#3A3B3C' };
+Notifications.setNotificationHandler({ handleNotification: async () => ({ shouldShowAlert: true, shouldPlaySound: true, shouldSetBadge: false }) });
+async function registerForPushNotificationsAsync(){ if(Device.isDevice){ const {status}=await Notifications.requestPermissionsAsync(); if(status==='granted') return (await Notifications.getExpoPushTokenAsync()).data; } return ''; }
+async function sendPushNotification(token,title,body){ await fetch('https://exp.host/--/api/v2/push/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:token,sound:'default',title,body})}); }
 
-  </Requirement>
-  <Requirement title="Connect your GitHub repository">
-    Your EAS project must be linked to a GitHub repository. See [Get started with EAS Workflows](/eas/workflows/get-started/#automate-workflows-with-github-events).
-  </Requirement>
-  <Requirement title="Workflow file on the default branch">
-    Keep this workflow file on your repository's default branch. When a branch is deleted, EAS reads workflow configuration from the default branch HEAD, not from the deleted ref.
-  </Requirement>
-</Prerequisites>
+const USERS = [
+  { id:"1", name:"Aisha Bello", bio:"Designer in Katsina. Building Sagacious 🔥", pic:"https://i.pravatar.cc/150?img=1", cover:"https://picsum.photos/400/200?random=1", followers:1200000, following:340, posts:52, job:"UI Designer", location:"Katsina, Nigeria", school:"FUTMINNA", country:"Nigeria", email:"aisha@test.com", uid:"1", isLocked:false },
+  { id:"4", name:"Sarah USA", bio:"USA girl - Online", pic:"https://i.pravatar.cc/150?img=5", cover:"https://picsum.photos/400/200?random=5", followers:120000, following:100, posts:10, job:"Model", location:"Texas, USA", school:"Harvard", country:"USA", email:"sarah@test.com", uid:"4", isLocked:false },
+];
 
-The following workflow deletes the EAS Update branch with the same name as the deleted GitHub branch:
+export default function App(){
+  const [user,setUser]=useState(null); const [screen,setScreen]=useState('home'); const [chatWith,setChatWith]=useState(USERS[0]); const [selectedUser,setSelectedUser]=useState(USERS[0]); const [selectedProduct,setSelectedProduct]=useState(null); const [isDark,setIsDark]=useState(false); const [isAdmin,setIsAdmin]=useState(false); const [freeMode,setFreeMode]=useState(false); const [isLocked,setIsLocked]=useState(false);
+  useEffect(()=>{ const unsub=onAuthStateChanged(auth, async(u)=>{ setUser(u); if(u){ setIsAdmin(ADMIN_EMAILS.includes(u.email)); const token=await registerForPushNotificationsAsync(); if(token) await setDoc(doc(db,"users",u.uid),{email:u.email,uid:u.uid,pushToken:token,wallets:{NGN:0,USD:0},points:0,posts_count:0,isLocked:false},{merge:true}); } }); return unsub; },[]);
+  const theme=isDark?darkTheme:lightTheme;
+  if(!user) return <LoginScreen theme={theme} />;
+  return(
+    <SafeAreaView style={[styles.container,{backgroundColor:theme.bg}]}>
+      {screen==='home' && <HomeScreen setScreen={setScreen} theme={theme} isDark={isDark} setIsDark={setIsDark} isAdmin={isAdmin} freeMode={freeMode} setFreeMode={setFreeMode} openProfile={(u)=>{setSelectedUser(u);setScreen('profile');}} />}
+      {screen==='friends' && <UsersScreen setScreen={setScreen} setChatWith={setChatWith} theme={theme} />}
+      {screen==='w3' && <W3Page setScreen={setScreen} setChatWith={setChatWith} theme={theme} />}
+      {screen==='market' && <MarketplaceScreen setScreen={setScreen} setSelectedProduct={setSelectedProduct} theme={theme} />}
+      {screen==='product' && <ProductDetailScreen setScreen={setScreen} product={selectedProduct} theme={theme} setChatWith={setChatWith} />}
+      {screen==='payment' && <PaymentScreen setScreen={setScreen} product={selectedProduct} theme={theme} />}
+      {screen==='myOrders' && <MyOrdersScreen setScreen={setScreen} theme={theme} />}
+      {screen==='sellerOrders' && <SellerOrdersScreen setScreen={setScreen} theme={theme} />}
+      {screen==='admin' && <AdminPanel setScreen={setScreen} theme={theme} />}
+      {screen==='profile' && <ProfileScreen user={selectedUser} goBack={()=>setScreen('home')} theme={theme} myId={auth.currentUser.uid} />}
+      {screen==='live' && <LiveScreen setScreen={setScreen} theme={theme} />}
+      {screen==='library' && <LibraryScreen setScreen={setScreen} theme={theme} />}
+      {screen==='sagacious' && <SagaciousAIScreen setScreen={setScreen} theme={theme} />}
+      {screen==='chat' && <ChatScreen setScreen={setScreen} chatWith={chatWith} theme={theme} freeMode={freeMode} />}
+      {screen==='call' && <CallScreen setScreen={setScreen} chatWith={chatWith} />}
+      {screen==='wallet' && <WalletScreen setScreen={setScreen} theme={theme} />}
+      {screen==='settings' && <SettingsScreen setScreen={setScreen} theme={theme} isLocked={isLocked} setIsLocked={setIsLocked} freeMode={freeMode} setFreeMode={setFreeMode} />}
 
-```yaml .eas/workflows/branch-cleanup.yml
-name: Branch cleanup
-
-on:
-  ref_delete:
-    branches: ['*', '!main']
-
-jobs:
-  delete-update-branch:
-    type: branch-delete
-    params:
-      branch_name: ${{ github.ref_name }}
-```
-
-## How it works
-
-1. [`on.ref_delete`](/eas/workflows/syntax/#onref_delete) runs when a GitHub branch matching the patterns is deleted. The example above triggers on all branches except `main`.
-2. The [`branch-delete`](/eas/workflows/pre-packaged-jobs#branch-delete) job deletes the EAS Update branch named `${{ github.ref_name }}`, the same name as the deleted Git branch.
-3. With the default `fail_on_missing: false`, the job succeeds even if the EAS Update branch was already deleted or never existed.
-
-## Important notes
-
-- `github.sha` is the default branch, not the deleted ref's last commit. See the [`github` context reference](/eas/workflows/syntax/#github) for interpolation details on `ref_delete` runs.
-- Channel mappings block deletion: if a channel points to the EAS Update branch, deletion fails with an error about the channel mapping.
-- Protect branches you never want cleaned up using negation patterns like `!main` or `!release/**` in `on.ref_delete.branches`.
+      <View style={[styles.bottomNav,{backgroundColor:theme.card}]}>
+        <TouchableOpacity onPress={()=>setScreen('home')} style={styles.navItem}><Text style={styles.navIcon}>🏠</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>setScreen('friends')} style={styles.navItem}><Text style={styles.navIcon}>👥</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>setScreen('w3')} style={styles.navItem}><View><Text style={[styles.navIcon,{color:'#1877F2'}]}>🌐</Text><View style={styles.newBadge}><Text style={{color:'white',fontSize:8}}>NEW</Text></View></View></TouchableOpacity>
+        <TouchableOpacity onPress={()=>setScreen('live')} style={[styles.navItem,styles.liveBtn]}><Text style={styles.navIcon}>🔴</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>setScreen('market')} style={styles.navItem}><Text style={styles.navIcon}>🛒</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>setScreen('wallet')} style={styles.navItem}><Text style={styles.navIcon}>💰</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>setScreen('settings')} style={styles.navItem}><Text style={styles.navIcon}>⚙️</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>{setSelectedUser(USERS[0]);setScreen('profile');}} style={styles.navItem}><Text style={styles.navIcon}>👤</Text></TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
