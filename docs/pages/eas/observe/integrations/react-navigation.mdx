@@ -137,6 +137,8 @@ export default function Home() {
 
 ## Filter sensitive route parameters
 
+> **info** Available in **SDK 57 and later**.
+
 By default, the integration includes all serializable focused route parameters in `routeParams`. If your app includes sensitive values in route parameters, pass their keys to `filteredParams`:
 
 ```tsx App.tsx
@@ -150,6 +152,8 @@ Observe.configure({
   },
 });
 ```
+
+The integration removes filtered keys from `routeParams` and includes `urlHidden: true` on the event. `routeName` is not affected because it is built from route names and never contains parameter values.
 
 ## Metrics
 
