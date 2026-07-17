@@ -56,13 +56,51 @@ function convertError(error: any) {
   return new Error(String(error));
 }
 
+/**
+ * On Android, `RNCWebViewClient.onPageStarted` evaluates
+ * `injectedJavaScriptBeforeContentLoaded` through `WebView.evaluateJavascript`, which races the
+ * HTML parser. The document's own script can therefore run before `$$EXPO_DOM_HOST_OS` and
+ * `$$EXPO_INITIAL_PROPS` are defined. Throwing in that case kills the bundle during module
+ * evaluation, leaving a permanently blank WebView, so wait for the globals instead.
+ */
+const HOST_GLOBALS_TIMEOUT_MS = 10000;
+const HOST_GLOBALS_POLL_MS = 16;
+
+function areHostGlobalsReady() {
+  return (
+    typeof window.$$EXPO_DOM_HOST_OS !== 'undefined' &&
+    typeof window.$$EXPO_INITIAL_PROPS !== 'undefined'
+  );
+}
+
 export function registerDOMComponent(AppModule: any) {
-  if (typeof window.$$EXPO_DOM_HOST_OS === 'undefined') {
-    throw new Error(
-      'Top OS ($$EXPO_DOM_HOST_OS) is not defined. This is a bug in the DOM Component runtime.'
-    );
+  if (areHostGlobalsReady()) {
+    registerDOMComponentWithHostGlobals(AppModule);
+    return;
   }
-  process.env.EXPO_DOM_HOST_OS = window.$$EXPO_DOM_HOST_OS;
+
+  const startedAt = Date.now();
+
+  const poll = () => {
+    if (areHostGlobalsReady()) {
+      registerDOMComponentWithHostGlobals(AppModule);
+      return;
+    }
+
+    if (Date.now() - startedAt >= HOST_GLOBALS_TIMEOUT_MS) {
+      throw new Error(
+        'Top OS ($$EXPO_DOM_HOST_OS) is not defined. This is a bug in the DOM Component runtime.'
+      );
+    }
+
+    setTimeout(poll, HOST_GLOBALS_POLL_MS);
+  };
+
+  setTimeout(poll, HOST_GLOBALS_POLL_MS);
+}
+
+function registerDOMComponentWithHostGlobals(AppModule: any) {
+  process.env.EXPO_DOM_HOST_OS = window.$$EXPO_DOM_HOST_OS as string;
 
   function DOMComponentRoot(props: Record<string, unknown>) {
     // Props listeners
