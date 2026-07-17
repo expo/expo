@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `import.meta.url` being `null` on web when read after the bundle's synchronous execution (from effects, async code, or dynamic imports). ([#47802](https://github.com/expo/expo/pull/47802) by [@zoontek](https://github.com/zoontek))
-
 ### 💡 Others
+
+## 57.0.7 — 2026-07-17
+
+### 🐛 Bug fixes
+
+- Fix `import.meta.url` being `null` on web when read after the bundle's synchronous execution (from effects, async code, or dynamic imports). ([#47802](https://github.com/expo/expo/pull/47802) by [@zoontek](https://github.com/zoontek))
 
 ## 57.0.6 — 2026-07-15
 

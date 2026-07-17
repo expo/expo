@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix the `community/datetime-picker` (and Jetpack Compose `DateTimePicker`) year-selector chevron always rendering black regardless of `navigationContentColor` or dark mode — Material3 tints it from the ambient `LocalContentColor` (which defaults to black) instead of the navigation color — and let the `accentColor`/`color` prop tint the date/time dialog's confirm and dismiss buttons. ([#47773](https://github.com/expo/expo/issues/47773) by [@fwielstra](https://github.com/fwielstra)) ([#47817](https://github.com/expo/expo/pull/47817) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-
 ### 💡 Others
+
+## 57.0.7 — 2026-07-17
+
+### 🐛 Bug fixes
+
+- [Android] Fix the `community/datetime-picker` (and Jetpack Compose `DateTimePicker`) year-selector chevron always rendering black regardless of `navigationContentColor` or dark mode — Material3 tints it from the ambient `LocalContentColor` (which defaults to black) instead of the navigation color — and let the `accentColor`/`color` prop tint the date/time dialog's confirm and dismiss buttons. ([#47773](https://github.com/expo/expo/issues/47773) by [@fwielstra](https://github.com/fwielstra)) ([#47817](https://github.com/expo/expo/pull/47817) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 57.0.6 — 2026-07-15
 
