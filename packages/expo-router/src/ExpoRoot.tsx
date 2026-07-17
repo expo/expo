@@ -182,7 +182,7 @@ function Content() {
   // Render exactly the screens the compiler emitted at the root level, in the same order: the
   // top-level keys of the linking config are `[__root, +not-found?, _sitemap?]`. Deriving from this
   // one source keeps the rendered `<Screen>` order identical to the seed's root `routeNames`, so
-  // `useNavigationBuilder` never fires `getStateForRouteNamesChange` to reconcile them. In
+  // `useNavigationBuilder` never dispatches a `RECONCILE_ROUTE_NAMES` action to reconcile them. In
   // particular, when the app declares its own root-level catch-all the compiler omits the internal
   // `+not-found`, so we must not render the internal NOT_FOUND screen here either.
   const rootScreens = store.linking?.config?.screens ?? {};

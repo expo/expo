@@ -7,6 +7,7 @@ import {
   getRouteKey,
   getStateKey,
 } from './getRouteKey';
+import { asReconcileRouteNamesAction, isUnhandledStateRestore } from './reconcileRouteNames';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -16,6 +17,7 @@ import type {
   ParamListBase,
   PartialState,
   Route,
+  RouterConfigOptions,
 } from './types';
 
 export type StackActionType =
@@ -210,10 +212,101 @@ export function getRoutesForRouteNames(
  * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
  */
 export function StackRouter(options: StackRouterOptions) {
-  const router: InternalRouter<
-    StackNavigationState<ParamListBase>,
-    CommonNavigationAction | StackActionType
-  > = {
+  type State = StackNavigationState<ParamListBase>;
+
+  // Rebuild a complete keyed state from a partial one: keep only declared routes, mint missing keys,
+  // apply route param defaults, and ensure at least the initial route. Used by the reconcile case's
+  // unhandled-state-restore branch.
+  function getRehydratedState(
+    partialState: PartialState<State> | State,
+    { routeNames, parentRouteKey, routeParamList }: RouterConfigOptions
+  ): State {
+    const state = partialState;
+
+    if (state.stale === false) {
+      return state;
+    }
+
+    const key = getStateKey(parentRouteKey);
+
+    const routes = state.routes
+      .filter((route) => routeNames.includes(route.name))
+      .reduce<Route<string>[]>((built, route) => {
+        const routeKey =
+          route.key ||
+          getNextRouteKeyFromState({ stateKey: key, name: route.name, state: { routes: built } });
+        built.push({
+          ...route,
+          key: routeKey,
+          params:
+            routeParamList[route.name] !== undefined
+              ? {
+                  ...routeParamList[route.name],
+                  ...route.params,
+                }
+              : route.params,
+        });
+        return built;
+      }, []);
+
+    if (routes.length === 0) {
+      const initialRouteName =
+        options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0]!;
+
+      routes.push({
+        key: getRouteKey({ stateKey: key, name: initialRouteName }),
+        name: initialRouteName,
+        params: routeParamList[initialRouteName],
+      });
+    }
+
+    return {
+      stale: false,
+      key,
+      index: routes.length - 1,
+      routeNames,
+      routes,
+    };
+  }
+
+  // Reconcile a committed state against a changed set of declared route names: drop routes whose name
+  // is gone or whose key changed, keep the rest in place, and ensure at least the initial route.
+  function getStateForRouteNamesChange(
+    state: State,
+    {
+      routeNames,
+      routeParamList,
+      routeKeyChanges,
+    }: RouterConfigOptions & { routeKeyChanges: string[] }
+  ): State {
+    const keep = (route: Route<string>) =>
+      routeNames.includes(route.name) && !routeKeyChanges.includes(route.name);
+
+    const activeRoutes = getActiveRoutes(state).filter(keep);
+    const inactiveRoutes = getInactiveRoutes(state).filter(keep);
+
+    if (activeRoutes.length === 0) {
+      const initialRouteName =
+        options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
+          ? options.initialRouteName
+          : routeNames[0]!;
+
+      activeRoutes.push({
+        key: getRouteKey({ stateKey: state.key, name: initialRouteName }),
+        name: initialRouteName,
+        params: routeParamList[initialRouteName],
+      });
+    }
+
+    return {
+      ...state,
+      routeNames,
+      index: activeRoutes.length - 1,
+      routes: [...activeRoutes, ...inactiveRoutes],
+    };
+  }
+
+  const router: InternalRouter<State, CommonNavigationAction | StackActionType> = {
     ...BaseRouter,
 
     getInitialState({ routeNames, parentRouteKey, routeParamList }) {
@@ -239,83 +332,6 @@ export function StackRouter(options: StackRouterOptions) {
       };
     },
 
-    getRehydratedState(partialState, { routeNames, parentRouteKey, routeParamList }) {
-      const state = partialState;
-
-      if (state.stale === false) {
-        return state;
-      }
-
-      const key = getStateKey(parentRouteKey);
-
-      const routes = state.routes
-        .filter((route) => routeNames.includes(route.name))
-        .reduce<Route<string>[]>((built, route) => {
-          const routeKey =
-            route.key ||
-            getNextRouteKeyFromState({ stateKey: key, name: route.name, state: { routes: built } });
-          built.push({
-            ...route,
-            key: routeKey,
-            params:
-              routeParamList[route.name] !== undefined
-                ? {
-                    ...routeParamList[route.name],
-                    ...route.params,
-                  }
-                : route.params,
-          });
-          return built;
-        }, []);
-
-      if (routes.length === 0) {
-        const initialRouteName =
-          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0]!;
-
-        routes.push({
-          key: getRouteKey({ stateKey: key, name: initialRouteName }),
-          name: initialRouteName,
-          params: routeParamList[initialRouteName],
-        });
-      }
-
-      return {
-        stale: false,
-        key,
-        index: routes.length - 1,
-        routeNames,
-        routes,
-      };
-    },
-
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      const keep = (route: Route<string>) =>
-        routeNames.includes(route.name) && !routeKeyChanges.includes(route.name);
-
-      const activeRoutes = getActiveRoutes(state).filter(keep);
-      const inactiveRoutes = getInactiveRoutes(state).filter(keep);
-
-      if (activeRoutes.length === 0) {
-        const initialRouteName =
-          options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
-            ? options.initialRouteName
-            : routeNames[0]!;
-
-        activeRoutes.push({
-          key: getRouteKey({ stateKey: state.key, name: initialRouteName }),
-          name: initialRouteName,
-          params: routeParamList[initialRouteName],
-        });
-      }
-
-      return {
-        ...state,
-        routeNames,
-        index: activeRoutes.length - 1,
-        routes: [...activeRoutes, ...inactiveRoutes],
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const activeRoutes = getActiveRoutes(state);
       const index = activeRoutes.findIndex((r) => r.key === key);
@@ -332,6 +348,18 @@ export function StackRouter(options: StackRouterOptions) {
     },
 
     getStateForAction(state, action, options) {
+      const reconcile = asReconcileRouteNamesAction(action);
+      if (reconcile) {
+        if (reconcile.target !== state.key) {
+          return null;
+        }
+
+        const config = reconcile.payload;
+        return isUnhandledStateRestore(state, config.routeNames, config.unhandledState)
+          ? getRehydratedState(config.unhandledState, config)
+          : getStateForRouteNamesChange(state, config);
+      }
+
       const { routeParamList } = options;
 
       switch (action.type) {

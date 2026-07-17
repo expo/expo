@@ -18,6 +18,7 @@ import {
   type NavigationState,
   type ParamListBase,
   type PartialState,
+  RECONCILE_ROUTE_NAMES,
   type Route,
   type RouterConfigOptions,
   type RouterFactory,
@@ -68,16 +69,6 @@ PrivateValueStore;
 type NavigatorRoute = {
   key: string;
   params?: NavigatorScreenParams<ParamListBase>;
-};
-
-const RECONCILE_ROUTE_NAMES = '__unsafe_reconcile_route_names__';
-
-type ReconcileRouteNamesAction = NavigationAction & {
-  type: typeof RECONCILE_ROUTE_NAMES;
-  payload: RouterConfigOptions & {
-    routeKeyChanges: string[];
-    unhandledState?: NavigationState | PartialState<NavigationState>;
-  };
 };
 
 const isScreen = (
@@ -279,10 +270,6 @@ const getRouteConfigsFromChildren = <
 
   return configs;
 };
-
-const isReconcileRouteNamesAction = (
-  action: NavigationAction
-): action is ReconcileRouteNamesAction => action.type === RECONCILE_ROUTE_NAMES;
 
 function getStateForRenderableRoutes<State extends NavigationState>(
   state: State,
@@ -655,34 +642,12 @@ export function useNavigationBuilder<
 
   const reducerRegistry = use(ReducerRegistryContext);
   const registryReducer = React.useCallback<NavigationReducer>(
-    (state, action) => {
-      if (isReconcileRouteNamesAction(action)) {
-        if (action.target !== state.key) {
-          return null;
-        }
-
-        const config = action.payload;
-        const nextState =
-          config.unhandledState != null &&
-          config.unhandledState.routes.every((r) => config.routeNames.includes(r.name)) &&
-          state.routes.every((r) => !config.routeNames.includes(r.name))
-            ? router.getRehydratedState(config.unhandledState as PartialState<State>, config)
-            : router.getStateForRouteNamesChange(state as State, config);
-
-        return router.getRehydratedState(nextState, config) as ReturnType<NavigationReducer>;
-      }
-
-      const nextState = router.getStateForAction(state as State, action, latestConfigRef.current);
-
-      if (nextState == null || nextState.stale === false) {
-        return nextState as ReturnType<NavigationReducer>;
-      }
-
-      return router.getRehydratedState(
-        nextState,
+    (state, action) =>
+      router.getStateForAction(
+        state as State,
+        action,
         latestConfigRef.current
-      ) as ReturnType<NavigationReducer>;
-    },
+      ) as ReturnType<NavigationReducer>,
     [router]
   );
   const registryEntry = React.useMemo<NavigatorRegistryEntry>(

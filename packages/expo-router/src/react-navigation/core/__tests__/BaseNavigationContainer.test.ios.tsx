@@ -403,8 +403,13 @@ test('handle resetting state with ref', () => {
 
   render(element).update(element);
 
+  // `resetRoot` requires a complete state: the reset payload is committed verbatim (routes re-keyed
+  // only if keyless), not rehydrated. It must carry the root key, full routeNames, and stale: false.
   const state = {
     index: 1,
+    key: '3',
+    routeNames: ['foo', 'foo2', 'bar', 'baz'],
+    stale: false as const,
     routes: [
       {
         key: 'baz',
@@ -417,6 +422,7 @@ test('handle resetting state with ref', () => {
             { key: 'qux2', name: 'qux2' },
             { key: 'lex2', name: 'lex2' },
           ],
+          stale: false as const,
         },
       },
       { key: 'bar', name: 'bar' },

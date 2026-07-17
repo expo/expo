@@ -162,24 +162,6 @@ export type InternalRouter<State extends NavigationState, Action extends Navigat
   getInitialState: (options: RouterConfigOptions) => State;
 
   /**
-   * Rehydrate the full navigation state from a given partial state.
-   */
-  getRehydratedState: (
-    partialState: PartialState<State> | State,
-    options: RouterConfigOptions
-  ) => State;
-
-  /**
-   * Take the current state and updated list of route names, and return a new state.
-   */
-  getStateForRouteNamesChange: (
-    state: State,
-    options: RouterConfigOptions & {
-      routeKeyChanges: string[];
-    }
-  ) => State;
-
-  /**
    * Take the current state and key of a route, and return a new state with the route focused.
    */
   getStateForRouteFocus: (state: State, key: string) => State;

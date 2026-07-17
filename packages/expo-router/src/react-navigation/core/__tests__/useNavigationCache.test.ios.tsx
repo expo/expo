@@ -1,6 +1,7 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import { asReconcileRouteNamesAction } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useEventEmitter } from '../useEventEmitter';
@@ -126,21 +127,27 @@ test('returns correct value for isFocused after changing screens', () => {
     return {
       ...router,
 
-      getStateForRouteNamesChange(state, { routeNames }) {
-        const routes = routeNames.map(
-          (name) =>
-            state.routes.find((r) => r.name === name) || {
-              name,
-              key: name,
-            }
-        );
+      getStateForAction(state, action, options) {
+        const reconcile = asReconcileRouteNamesAction(action);
+        if (reconcile) {
+          const { routeNames } = reconcile.payload;
+          const routes = routeNames.map(
+            (name) =>
+              state.routes.find((r) => r.name === name) || {
+                name,
+                key: name,
+              }
+          );
 
-        return {
-          ...state,
-          routeNames,
-          routes,
-          index: routes.length - 1,
-        };
+          return {
+            ...state,
+            routeNames,
+            routes,
+            index: routes.length - 1,
+          };
+        }
+
+        return router.getStateForAction(state, action, options);
       },
     };
   };

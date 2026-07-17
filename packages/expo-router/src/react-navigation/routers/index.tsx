@@ -26,4 +26,10 @@ export type {
   TabRouterOptions,
 } from './TabRouter';
 export { TabActions, TabRouter } from './TabRouter';
+export {
+  asReconcileRouteNamesAction,
+  isUnhandledStateRestore,
+  RECONCILE_ROUTE_NAMES,
+  type ReconcileRouteNamesAction,
+} from './reconcileRouteNames';
 export * from './types';

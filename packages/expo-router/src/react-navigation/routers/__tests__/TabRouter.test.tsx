@@ -2,13 +2,69 @@ import { expect, test } from '@jest/globals';
 
 import {
   CommonActions,
+  type NavigationState,
   type ParamListBase,
+  type PartialState,
+  RECONCILE_ROUTE_NAMES,
+  type ReconcileRouteNamesAction,
   type RouterConfigOptions,
   StackActions,
   TabActions,
   type TabNavigationState,
   TabRouter,
 } from '../index';
+
+type ReconcileConfig = RouterConfigOptions & { routeKeyChanges?: string[] };
+
+// Route-names reconciliation moved into `getStateForAction` as a `RECONCILE_ROUTE_NAMES` case. These
+// helpers dispatch that action instead of calling the former standalone methods.
+//
+// `reconcileRouteNames` (former `getStateForRouteNamesChange`): the route-names-change branch runs on
+// the committed `state` when no unhandled state is supplied.
+function reconcileRouteNames(
+  router: ReturnType<typeof TabRouter>,
+  state: NavigationState,
+  config: ReconcileConfig
+) {
+  const action: ReconcileRouteNamesAction = {
+    type: RECONCILE_ROUTE_NAMES,
+    target: state.key,
+    payload: { routeKeyChanges: [], ...config },
+  };
+  return router.getStateForAction(
+    state,
+    action as unknown as Parameters<typeof router.getStateForAction>[1],
+    config
+  );
+}
+
+// `restoreUnhandled` (former `getRehydratedState`): the unhandled-state-restore branch runs only when
+// the committed routes are disjoint from the new route names, so we reduce against a synthetic
+// committed state with a single absent route. Rehydration keys off `config.parentRouteKey`, so the
+// synthetic state's own key never appears in the output.
+function restoreUnhandled(
+  router: ReturnType<typeof TabRouter>,
+  unhandledState: PartialState<NavigationState> | NavigationState,
+  config: ReconcileConfig
+) {
+  const committed: NavigationState = {
+    stale: false,
+    key: '__committed__',
+    index: 0,
+    routeNames: ['__absent__'],
+    routes: [{ key: '__absent__', name: '__absent__' }],
+  };
+  const action: ReconcileRouteNamesAction = {
+    type: RECONCILE_ROUTE_NAMES,
+    target: committed.key,
+    payload: { routeKeyChanges: [], ...config, unhandledState },
+  };
+  return router.getStateForAction(
+    committed,
+    action as unknown as Parameters<typeof router.getStateForAction>[1],
+    config
+  );
+}
 
 // New model: a route's presence in `state.routes` IS the loaded/preloaded signal, so `routes` is a
 // SUBSET of `routeNames`. getInitialState materializes only the focused route (plus the back-stack
@@ -176,7 +232,8 @@ test('rehydrates the persisted subset without appending undeclared-yet-absent ta
   // Persisted [bar, qux] (baz never loaded). routes stays the persisted subset; firstRoute
   // keeps the anchor (bar) leading. Focused falls back to first -> [bar, qux] index 0.
   expect(
-    router.getRehydratedState(
+    restoreUnhandled(
+      router,
       {
         routes: [
           { key: 'bar-0', name: 'bar' },
@@ -199,7 +256,8 @@ test('rehydrates the persisted subset without appending undeclared-yet-absent ta
   // Single persisted tab baz. firstRoute anchor = first declared (bar) is added in front of
   // the focused baz -> subset [bar, baz] index 1.
   expect(
-    router.getRehydratedState(
+    restoreUnhandled(
+      router,
       {
         routes: [{ key: 'baz-0', name: 'baz' }],
       },
@@ -232,7 +290,8 @@ test('rehydrates with history, preserving the persisted subset and indexing by f
 
   // history keeps the persisted subset verbatim; focused persisted index 0 = qux -> position 0.
   expect(
-    router.getRehydratedState(
+    restoreUnhandled(
+      router,
       {
         index: 0,
         routes: [
@@ -255,7 +314,8 @@ test('rehydrates with history, preserving the persisted subset and indexing by f
 
   // Focused persisted index 1 = bar -> resolves to bar's position 1.
   expect(
-    router.getRehydratedState(
+    restoreUnhandled(
+      router,
       {
         index: 1,
         routes: [
@@ -278,7 +338,8 @@ test('rehydrates with history, preserving the persisted subset and indexing by f
 
   // Empty persisted routes -> materialize the first declared route, index 0.
   expect(
-    router.getRehydratedState(
+    restoreUnhandled(
+      router,
       {
         index: 4,
         routes: [],
@@ -294,7 +355,7 @@ test('rehydrates with history, preserving the persisted subset and indexing by f
   });
 });
 
-test("doesn't rehydrate state if it's not stale", () => {
+test('restores an already-complete unhandled state verbatim', () => {
   const router = TabRouter({});
 
   const state: TabNavigationState<ParamListBase> = {
@@ -309,9 +370,10 @@ test("doesn't rehydrate state if it's not stale", () => {
     stale: false,
   };
 
+  // A complete unhandled state is returned by identity — nothing to rebuild.
   expect(
-    router.getRehydratedState(state, {
-      routeNames: [],
+    restoreUnhandled(router, state, {
+      routeNames: state.routeNames,
       routeParamList: {},
       parentRouteKey: undefined,
       routeGetIdList: {},
@@ -330,7 +392,8 @@ test('rehydrates with history, dropping persisted routes whose name no longer ex
   };
 
   expect(
-    router.getRehydratedState(
+    restoreUnhandled(
+      router,
       {
         index: 2,
         routes: [
@@ -361,15 +424,12 @@ test('rehydrates empty persisted state honoring initialRouteName/back behavior (
   // must match getInitialState: focus the initial route, no extra anchor route.
   const router = TabRouter({ backBehavior: 'initialRoute', initialRouteName: 'b' });
 
-  const state = router.getRehydratedState(
-    { stale: true, routes: [] },
-    {
-      routeNames: ['a', 'b', 'c'],
-      routeParamList: {},
-      parentRouteKey: undefined,
-      routeGetIdList: {},
-    }
-  );
+  const state = restoreUnhandled(router, { stale: true, routes: [] }, {
+    routeNames: ['a', 'b', 'c'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  }) as TabNavigationState<ParamListBase>;
 
   expect(names(state)).toEqual(['b']);
   expect(state.index).toBe(0);
@@ -384,7 +444,11 @@ test('rehydrates empty persisted state with firstRoute matching getInitialState'
     routeGetIdList: {},
   };
 
-  const rehydrated = router.getRehydratedState({ stale: true, routes: [] }, options);
+  const rehydrated = restoreUnhandled(
+    router,
+    { stale: true, routes: [] },
+    options
+  ) as TabNavigationState<ParamListBase>;
   const initial = router.getInitialState(options);
 
   // firstRoute anchor (a) + initial focused (c) -> subset [a, c] index 1, same as a fresh start.
@@ -402,7 +466,8 @@ test('keeps the surviving subset and drops removed tabs on route names change wi
   // Surviving tabs (baz, qux) keep their existing order; new tabs are NOT materialized (presence
   // is the loaded signal). Focused bar removed -> fall back to the first surviving tab (baz).
   expect(
-    router.getStateForRouteNamesChange(
+    reconcileRouteNames(
+      router,
       {
         index: 0,
         key: 'tab-test',
@@ -438,7 +503,8 @@ test('keeps the surviving subset and drops removed tabs on route names change wi
 
   // No surviving tabs -> materialize the first declared route.
   expect(
-    router.getStateForRouteNamesChange(
+    reconcileRouteNames(
+      router,
       {
         index: 0,
         key: 'tab-test',
@@ -472,7 +538,8 @@ test('preserves the focused route and indexes by name on route names change with
   // Focused baz survives; surviving baz, qux keep their old order (baz then qux), so the
   // focused baz lands at index 0.
   expect(
-    router.getStateForRouteNamesChange(
+    reconcileRouteNames(
+      router,
       {
         index: 1,
         key: 'tab-test',
@@ -514,7 +581,8 @@ test('drops key-changed tabs from the subset on route names change', () => {
   // (it can be re-created on the next navigate). Focused name was bar -> falls back to the first
   // surviving route (baz).
   expect(
-    router.getStateForRouteNamesChange(
+    reconcileRouteNames(
+      router,
       {
         index: 0,
         key: 'tab-test',
@@ -553,7 +621,8 @@ test('re-arranges the present subset around the anchor on route names change wit
   // present route. Declaration order is [qux, baz, foo, fiz]; among the present subset, qux comes
   // first, so anchor = qux, focused = baz -> [qux, baz] index 1.
   expect(
-    router.getStateForRouteNamesChange(
+    reconcileRouteNames(
+      router,
       {
         index: 1,
         key: 'tab-test',
@@ -589,7 +658,8 @@ test('falls back to the first surviving tab when the focused route is removed on
   const router = TabRouter({ backBehavior: 'history' });
 
   expect(
-    router.getStateForRouteNamesChange(
+    reconcileRouteNames(
+      router,
       {
         index: 1,
         key: 'tab-test',
@@ -626,7 +696,8 @@ test('route names change with no survivors honors initialRouteName/back behavior
   // result must match getInitialState: focus the initial route, no extra anchor route.
   const router = TabRouter({ backBehavior: 'initialRoute', initialRouteName: 'b' });
 
-  const state = router.getStateForRouteNamesChange(
+  const state = reconcileRouteNames(
+    router,
     {
       index: 0,
       key: 'tab-test',
@@ -644,7 +715,7 @@ test('route names change with no survivors honors initialRouteName/back behavior
       routeGetIdList: {},
       routeKeyChanges: [],
     }
-  );
+  ) as TabNavigationState<ParamListBase>;
 
   expect(names(state)).toEqual(['b']);
   expect(state.index).toBe(0);
@@ -653,7 +724,8 @@ test('route names change with no survivors honors initialRouteName/back behavior
 test('route names change with no survivors and firstRoute focuses the first declared route', () => {
   const router = TabRouter({ backBehavior: 'firstRoute', initialRouteName: 'c' });
 
-  const state = router.getStateForRouteNamesChange(
+  const state = reconcileRouteNames(
+    router,
     {
       index: 0,
       key: 'tab-test',
@@ -668,7 +740,7 @@ test('route names change with no survivors and firstRoute focuses the first decl
       routeGetIdList: {},
       routeKeyChanges: [],
     }
-  );
+  ) as TabNavigationState<ParamListBase>;
 
   // firstRoute anchor (a) + initial focused (c) -> subset [a, c] index 1.
   expect(names(state)).toEqual(['a', 'c']);

@@ -17,7 +17,7 @@ import { resetRouterSpies, routerSpyCalls } from './routerSpies';
 // navigable afterwards, and the render path performs no structural repair.
 //
 // Spy mechanism (see ./routerSpies): the leaf router modules are `jest.mock`ed with a pass-through
-// wrapper recording every `getInitialState` / `getRehydratedState` / `getStateForRouteNamesChange`.
+// wrapper recording every `getInitialState` and `RECONCILE_ROUTE_NAMES` reduction.
 jest.mock('../../react-navigation/routers/StackRouter', () => {
   const actual = jest.requireActual(
     '../../react-navigation/routers/StackRouter'
@@ -119,5 +119,5 @@ it('does not trigger route-name repair when navigating into a nested navigator',
   act(() => router.navigate('/feed/42'));
 
   // Route names are static; a root-dispatched nested navigation must not reconcile them.
-  expect(routerSpyCalls.getStateForRouteNamesChange).toHaveLength(0);
+  expect(routerSpyCalls.reconcileRouteNames).toHaveLength(0);
 });

@@ -6,8 +6,8 @@ import { renderRouter } from '../../testing-library';
 import { resetRouterSpies, routerSpyCalls } from './routerSpies';
 
 // Guards that the compiled `routeNames` order (sibling order in the seed) matches the rendered
-// `<Screen>` order end-to-end. If they diverged, `useNavigationBuilder` would fire
-// `getStateForRouteNamesChange` on mount to reconcile — so asserting it never fires proves the
+// `<Screen>` order end-to-end. If they diverged, `useNavigationBuilder` would dispatch a
+// `RECONCILE_ROUTE_NAMES` action on mount to reconcile — so asserting it never fires proves the
 // compiled order is authoritative and the seed can be committed verbatim (Step 3).
 //
 // Step 3's container change (seed `store.state` verbatim, no staling) is already present in the
@@ -46,7 +46,7 @@ it('does not reorder route names for a stack nested in tabs', () => {
     { initialUrl: '/feed/42' }
   );
 
-  expect(routerSpyCalls.getStateForRouteNamesChange).toHaveLength(0);
+  expect(routerSpyCalls.reconcileRouteNames).toHaveLength(0);
 });
 
 it('does not reorder route names when deep linking through a route group', () => {
@@ -60,7 +60,7 @@ it('does not reorder route names when deep linking through a route group', () =>
     { initialUrl: '/detail' }
   );
 
-  expect(routerSpyCalls.getStateForRouteNamesChange).toHaveLength(0);
+  expect(routerSpyCalls.reconcileRouteNames).toHaveLength(0);
 });
 
 it('does not reorder route names when a deep link falls through to +not-found', () => {
@@ -73,5 +73,5 @@ it('does not reorder route names when a deep link falls through to +not-found', 
     { initialUrl: '/does-not-exist' }
   );
 
-  expect(routerSpyCalls.getStateForRouteNamesChange).toHaveLength(0);
+  expect(routerSpyCalls.reconcileRouteNames).toHaveLength(0);
 });

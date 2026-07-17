@@ -1,6 +1,11 @@
-import type { InternalRouter, NavigationState, ParamListBase } from '../../react-navigation/routers';
+import {
+  asReconcileRouteNamesAction,
+  type InternalRouter,
+  type NavigationState,
+  type ParamListBase,
+} from '../../react-navigation/routers';
 
-// Shared recorder for the router "repair" methods that rebuild a navigator's slice at render time.
+// Shared recorder for the router state-seeding paths that rebuild a navigator's slice at render time.
 //
 // Spy mechanism: each test file `jest.mock`s the leaf router modules
 // (`react-navigation/routers/StackRouter`, `.../TabRouter`, `.../DrawerRouter`) and replaces the
@@ -11,8 +16,9 @@ import type { InternalRouter, NavigationState, ParamListBase } from '../../react
 // `useNavigationBuilder` invokes on mount without touching production code.
 //
 // Step 3 goal these guard: the compiled `getStateFromPath` state seeds the container verbatim, so on
-// a deep-link startup `getRehydratedState` must behave as identity (output deep-equals input) rather
-// than re-minting `stack-/tab-<nanoid>` keys, and `getStateForRouteNamesChange` must never fire.
+// a deep-link startup no route-names reconciliation fires — the `RECONCILE_ROUTE_NAMES` case of
+// `getStateForAction` (which absorbed the former `getRehydratedState` / `getStateForRouteNamesChange`)
+// must never run.
 
 type AnyRouterState = NavigationState<ParamListBase>;
 // The concrete router options/actions differ per navigator; the wrapper is agnostic to them.
@@ -27,14 +33,12 @@ export type MethodCall = {
 
 export const routerSpyCalls = {
   getInitialState: [] as MethodCall[],
-  getRehydratedState: [] as MethodCall[],
-  getStateForRouteNamesChange: [] as MethodCall[],
+  reconcileRouteNames: [] as MethodCall[],
 };
 
 export function resetRouterSpies() {
   routerSpyCalls.getInitialState.length = 0;
-  routerSpyCalls.getRehydratedState.length = 0;
-  routerSpyCalls.getStateForRouteNamesChange.length = 0;
+  routerSpyCalls.reconcileRouteNames.length = 0;
 }
 
 export function wrapRouterFactory<F extends AnyRouterFactory>(name: string, factory: F): F {
@@ -48,18 +52,13 @@ export function wrapRouterFactory<F extends AnyRouterFactory>(name: string, fact
         routerSpyCalls.getInitialState.push({ router: name, input: args[0], output });
         return output;
       },
-      getRehydratedState(...args: Parameters<AnyRouter['getRehydratedState']>) {
-        const output = router.getRehydratedState(...args);
-        routerSpyCalls.getRehydratedState.push({ router: name, input: args[0], output });
-        return output;
-      },
-      getStateForRouteNamesChange(
-        ...args: Parameters<AnyRouter['getStateForRouteNamesChange']>
-      ) {
-        const output = router.getStateForRouteNamesChange(...args);
-        routerSpyCalls.getStateForRouteNamesChange.push({ router: name, input: args[0], output });
+      getStateForAction(...args: Parameters<AnyRouter['getStateForAction']>) {
+        const output = router.getStateForAction(...args);
+        if (asReconcileRouteNamesAction(args[1])) {
+          routerSpyCalls.reconcileRouteNames.push({ router: name, input: args[0], output });
+        }
         return output;
       },
     };
-  }) as F;
+  }) as unknown as F;
 }

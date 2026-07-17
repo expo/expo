@@ -3,7 +3,9 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import {
+  asReconcileRouteNamesAction,
   type DefaultRouterOptions,
+  isUnhandledStateRestore,
   type NavigationState,
   type ParamListBase,
   StackRouter,
@@ -29,23 +31,22 @@ function PhaseProbeMockRouter(options: DefaultRouterOptions) {
 
   return {
     ...router,
-    getRehydratedState(...args: Parameters<typeof router.getRehydratedState>) {
-      if (
-        isBuildingNavigator &&
-        args[0].stale !== false &&
-        args[0].routes.some((route) => route.name === 'qux')
-      ) {
-        renderPhaseCalls.push('getRehydratedState');
+    // Route-names reconciliation is now a `RECONCILE_ROUTE_NAMES` case of `getStateForAction`. Record
+    // which branch fires if it ever runs during the render phase (it must not — the action is
+    // dispatched from an effect). The unhandled-state-restore branch stands in for the former
+    // `getRehydratedState`; the route-names-change branch for `getStateForRouteNamesChange`.
+    getStateForAction(...args: Parameters<typeof router.getStateForAction>) {
+      const reconcile = asReconcileRouteNamesAction(args[1]);
+      if (isBuildingNavigator && reconcile) {
+        const config = reconcile.payload;
+        renderPhaseCalls.push(
+          isUnhandledStateRestore(args[0], config.routeNames, config.unhandledState)
+            ? 'getRehydratedState'
+            : 'getStateForRouteNamesChange'
+        );
       }
 
-      return router.getRehydratedState(...args);
-    },
-    getStateForRouteNamesChange(...args: Parameters<typeof router.getStateForRouteNamesChange>) {
-      if (isBuildingNavigator) {
-        renderPhaseCalls.push('getStateForRouteNamesChange');
-      }
-
-      return router.getStateForRouteNamesChange(...args);
+      return router.getStateForAction(...args);
     },
   };
 }

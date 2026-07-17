@@ -5,6 +5,7 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
+import { asReconcileRouteNamesAction, isUnhandledStateRestore } from './reconcileRouteNames';
 import type { CommonNavigationAction, InternalRouter, ParamListBase } from './types';
 
 export type DrawerStatus = 'open' | 'closed';
@@ -87,17 +88,6 @@ export function DrawerRouter({
       return withDrawerStatus(tabRouter.getInitialState(config), defaultStatus);
     },
 
-    getRehydratedState(partialState, config) {
-      const drawerStatus =
-        (partialState as Partial<DrawerNavigationState<ParamListBase>>).drawerStatus ??
-        defaultStatus;
-      return withDrawerStatus(tabRouter.getRehydratedState(partialState, config), drawerStatus);
-    },
-
-    getStateForRouteNamesChange(state, config) {
-      return withDrawerStatus(tabRouter.getStateForRouteNamesChange(state, config), defaultStatus);
-    },
-
     getStateForRouteFocus(state, key) {
       return withDrawerStatus(tabRouter.getStateForRouteFocus(state, key), defaultStatus);
     },
@@ -105,6 +95,35 @@ export function DrawerRouter({
     getStateForAction(state, action, config) {
       if (action.target && action.target !== state.key) {
         return null;
+      }
+
+      // Reconcile delegates to the tab router's handling, then re-applies drawerStatus the same way
+      // the tab-shaped result is wrapped elsewhere: the route-names-change branch spreads the current
+      // state (so it already carries `drawerStatus`), while the unhandled-restore branch produces a
+      // fresh state whose status comes from the restored unhandled state (default when absent).
+      const reconcile = asReconcileRouteNamesAction(action);
+      if (reconcile) {
+        // The reconcile action is handled by every router's `getStateForAction` but isn't part of any
+        // router's public action union, so it needs a cast to reach the tab router's handling.
+        const tabResult = tabRouter.getStateForAction(
+          state,
+          reconcile as unknown as CommonNavigationAction,
+          config
+        );
+        if (tabResult == null) {
+          return null;
+        }
+        const source = isUnhandledStateRestore(
+          state,
+          reconcile.payload.routeNames,
+          reconcile.payload.unhandledState
+        )
+          ? reconcile.payload.unhandledState
+          : state;
+        return withDrawerStatus(
+          tabResult as DrawerNavigationState<ParamListBase>,
+          (source as Partial<DrawerNavigationState<ParamListBase>>).drawerStatus ?? defaultStatus
+        );
       }
 
       // Compiler-seeded complete states omit `drawerStatus` (navigator kind lives only in React), so

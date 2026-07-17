@@ -1,6 +1,67 @@
 import { expect, test } from '@jest/globals';
 
-import { CommonActions, type RouterConfigOptions, StackActions, StackRouter } from '..';
+import {
+  CommonActions,
+  type NavigationState,
+  type PartialState,
+  RECONCILE_ROUTE_NAMES,
+  type ReconcileRouteNamesAction,
+  type RouterConfigOptions,
+  StackActions,
+  StackRouter,
+} from '..';
+
+type ReconcileConfig = RouterConfigOptions & { routeKeyChanges?: string[] };
+
+// Route-names reconciliation moved into `getStateForAction` as a `RECONCILE_ROUTE_NAMES` case. These
+// helpers dispatch that action instead of calling the former standalone methods.
+//
+// `reconcileRouteNames` (former `getStateForRouteNamesChange`): the route-names-change branch runs on
+// the committed `state` when no unhandled state is supplied.
+function reconcileRouteNames(
+  router: ReturnType<typeof StackRouter>,
+  state: NavigationState,
+  config: ReconcileConfig
+) {
+  const action: ReconcileRouteNamesAction = {
+    type: RECONCILE_ROUTE_NAMES,
+    target: state.key,
+    payload: { routeKeyChanges: [], ...config },
+  };
+  return router.getStateForAction(
+    state,
+    action as unknown as Parameters<typeof router.getStateForAction>[1],
+    config
+  ) as NavigationState;
+}
+
+// `restoreUnhandled` (former `getRehydratedState`): the unhandled-state-restore branch runs only when
+// the committed routes are disjoint from the new route names, so we reduce against a synthetic
+// committed state with a single absent route. Rehydration keys off `config.parentRouteKey`, so the
+// synthetic state's own key never appears in the output.
+function restoreUnhandled(
+  router: ReturnType<typeof StackRouter>,
+  unhandledState: PartialState<NavigationState> | NavigationState,
+  config: ReconcileConfig
+) {
+  const committed: NavigationState = {
+    stale: false,
+    key: '__committed__',
+    index: 0,
+    routeNames: ['__absent__'],
+    routes: [{ key: '__absent__', name: '__absent__' }],
+  };
+  const action: ReconcileRouteNamesAction = {
+    type: RECONCILE_ROUTE_NAMES,
+    target: committed.key,
+    payload: { routeKeyChanges: [], ...config, unhandledState },
+  };
+  return router.getStateForAction(
+    committed,
+    action as unknown as Parameters<typeof router.getStateForAction>[1],
+    config
+  ) as NavigationState;
+}
 
 test('gets initial state from route names and params with initialRouteName', () => {
   const router = StackRouter({ initialRouteName: 'baz' });
@@ -51,7 +112,8 @@ test('rehydrates keyless same-name routes to sequential free keys', () => {
 
   // Each keyless route derives its key against the routes already built, so repeated same-name
   // routes land on the next free index instead of colliding.
-  const state = router.getRehydratedState(
+  const state = restoreUnhandled(
+    router,
     {
       index: 2,
       routes: [{ name: 'a' }, { name: 'a' }, { name: 'a' }],
@@ -78,7 +140,8 @@ test('gets rehydrated state from partial state', () => {
   };
 
   expect(
-    router.getRehydratedState(
+    restoreUnhandled(
+      router,
       {
         routes: [
           { key: 'bar-0', name: 'bar' },
@@ -99,7 +162,8 @@ test('gets rehydrated state from partial state', () => {
   });
 
   expect(
-    router.getRehydratedState(
+    restoreUnhandled(
+      router,
       {
         index: 2,
         routes: [
@@ -123,7 +187,8 @@ test('gets rehydrated state from partial state', () => {
   });
 
   expect(
-    router.getRehydratedState(
+    restoreUnhandled(
+      router,
       {
         index: 4,
         routes: [],
@@ -139,7 +204,7 @@ test('gets rehydrated state from partial state', () => {
   });
 });
 
-test("doesn't rehydrate state if it's not stale", () => {
+test('restores an already-complete unhandled state verbatim', () => {
   const router = StackRouter({});
 
   const state = {
@@ -150,9 +215,10 @@ test("doesn't rehydrate state if it's not stale", () => {
     stale: false as const,
   };
 
+  // A complete unhandled state is returned by identity — nothing to rebuild.
   expect(
-    router.getRehydratedState(state, {
-      routeNames: [],
+    restoreUnhandled(router, state, {
+      routeNames: ['bar', 'baz', 'qux'],
       routeParamList: {},
       parentRouteKey: undefined,
       routeGetIdList: {},
@@ -164,7 +230,8 @@ test('gets state on route names change', () => {
   const router = StackRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    reconcileRouteNames(
+    router,
       {
         index: 2,
         key: 'stack-test',
@@ -199,7 +266,8 @@ test('gets state on route names change', () => {
   });
 
   expect(
-    router.getStateForRouteNamesChange(
+    reconcileRouteNames(
+    router,
       {
         index: 1,
         key: 'stack-test',
@@ -233,7 +301,8 @@ test('gets state on route names change with initialRouteName', () => {
   const router = StackRouter({ initialRouteName: 'qux' });
 
   expect(
-    router.getStateForRouteNamesChange(
+    reconcileRouteNames(
+    router,
       {
         index: 1,
         key: 'stack-test',

@@ -150,7 +150,7 @@ test("doesn't handle REPLACE_PARAMS if source key isn't present", () => {
   expect(result).toBeNull();
 });
 
-test('resets state to new state with RESET', () => {
+test('resets state to a new complete state with RESET', () => {
   const routes = [
     { key: 'foo', name: 'foo' },
     { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
@@ -161,12 +161,35 @@ test('resets state to new state with RESET', () => {
   const result = BaseRouter.getStateForAction(
     STATE,
     CommonActions.reset({
+      stale: false,
+      key: 'root',
       index: 0,
+      routeNames: ['foo', 'bar', 'baz', 'qux'],
       routes,
     })
   );
 
-  expect(result).toEqual({ index: 0, routes });
+  expect(result).toEqual({
+    stale: false,
+    key: 'root',
+    index: 0,
+    routeNames: ['foo', 'bar', 'baz', 'qux'],
+    routes,
+  });
+});
+
+test("doesn't handle RESET for a stale/partial state", () => {
+  // RESET requires a complete state; a partial payload is unhandled (the compiler is the only state
+  // source, so there is no router-level rehydration).
+  const result = BaseRouter.getStateForAction(
+    STATE,
+    CommonActions.reset({
+      index: 0,
+      routes: [{ name: 'foo' }, { name: 'bar' }],
+    })
+  );
+
+  expect(result).toBeNull();
 });
 
 test('adds keys to routes missing keys during RESET', () => {
@@ -194,6 +217,7 @@ test("doesn't handle RESET if routes don't match routeNames", () => {
   const result = BaseRouter.getStateForAction(
     STATE,
     CommonActions.reset({
+      ...STATE,
       index: 0,
       routes,
     })
@@ -218,6 +242,7 @@ test("doesn't handle RESET if there are no routes", () => {
   const result = BaseRouter.getStateForAction(
     STATE,
     CommonActions.reset({
+      ...STATE,
       index: 0,
       routes: [],
     })

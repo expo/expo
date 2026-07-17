@@ -234,10 +234,10 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
 >(NativeTabsContent, NativeBottomTabsRouter, {
   // Trigger routes are runtime knowledge, so this navigator's `routeNames` can be a subset of what
   // the compiler emitted for this level (all sibling files). On a seeded mount with non-trigger
-  // siblings, `useNavigationBuilder` fires one legitimate `getStateForRouteNamesChange` repair —
-  // a deliberate exception to Step 3's "seed commits verbatim" contract until the seed and triggers
-  // are reconciled (global-state RFC, Steps 6/10). `usePreloadRoutes` self-heals any preload that
-  // repair clobbers.
+  // siblings, `useNavigationBuilder` dispatches one legitimate `RECONCILE_ROUTE_NAMES` repair (the
+  // route-names-change branch of `getStateForAction`) — a deliberate exception to Step 3's "seed
+  // commits verbatim" contract until the seed and triggers are reconciled (global-state RFC, Steps
+  // 6/10). `usePreloadRoutes` self-heals any preload that repair clobbers.
   useOnlyUserDefinedScreens: true,
   createProps: ({ state, dispatch, describe, getKey }) => {
     const { routeNames, routes } = state;

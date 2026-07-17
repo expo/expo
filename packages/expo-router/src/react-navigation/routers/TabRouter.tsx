@@ -7,6 +7,7 @@ import {
   getRouteKey,
   getStateKey,
 } from './getRouteKey';
+import { asReconcileRouteNamesAction, isUnhandledStateRestore } from './reconcileRouteNames';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -15,6 +16,7 @@ import type {
   ParamListBase,
   PartialState,
   Route,
+  RouterConfigOptions,
 } from './types';
 
 export type TabActionType =
@@ -267,10 +269,160 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
     backBehavior = 'history';
   }
 
-  const router: InternalRouter<
-    TabNavigationState<ParamListBase>,
-    TabActionType | CommonNavigationAction
-  > = {
+  type State = TabNavigationState<ParamListBase>;
+
+  // Rebuild a complete keyed state from a partial one, honoring initialRouteName/back behavior. Used
+  // by the reconcile case's unhandled-state-restore branch.
+  function getRehydratedState(
+    partialState: PartialState<State> | State,
+    { routeNames, parentRouteKey, routeParamList }: RouterConfigOptions
+  ): State {
+    const state = partialState;
+
+    if (state.stale === false) {
+      return state;
+    }
+
+    const key = getStateKey(parentRouteKey);
+
+    const partialRoutes = (state as PartialState<TabNavigationState<ParamListBase>>).routes;
+
+    const buildRoute = (name: string, route: Route<string> | undefined) =>
+      ({
+        ...route,
+        name,
+        key:
+          route && route.name === name && route.key
+            ? route.key
+            : getRouteKey({ stateKey: key, name }),
+        params:
+          routeParamList[name] !== undefined
+            ? {
+                ...routeParamList[name],
+                ...(route ? route.params : undefined),
+              }
+            : route
+              ? route.params
+              : undefined,
+      }) as Route<string>;
+
+    const seen = new Set<string>();
+    const rebuilt: Route<string>[] = [];
+
+    // Keep only the persisted subset whose names are still declared — presence is the loaded
+    // signal, so undeclared-yet-absent routes are NOT materialized here.
+    for (const route of partialRoutes) {
+      if (routeNames.includes(route.name) && !seen.has(route.name)) {
+        seen.add(route.name);
+        rebuilt.push(buildRoute(route.name, route as Route<string>));
+      }
+    }
+
+    // Nothing persisted survived: fall back to the fresh-start subset so the focused route and
+    // anchor honor initialRouteName/back behavior (instead of hardcoding the first declared route).
+    if (rebuilt.length === 0 && routeNames.length > 0) {
+      const { routes, index } = buildInitialSubset(
+        routeNames,
+        backBehavior,
+        initialRouteName,
+        (name) => buildRoute(name, undefined)
+      );
+      return { stale: false, key, index, routeNames, routes };
+    }
+
+    const persistedFocusedName = partialRoutes[state?.index ?? 0]?.name;
+    const focusedName =
+      persistedFocusedName !== undefined && seen.has(persistedFocusedName)
+        ? persistedFocusedName
+        : rebuilt[0]!.name;
+
+    // firstRoute/initialRoute need the back-stack anchor present; add it if it wasn't persisted.
+    const anchorName =
+      backBehavior === 'firstRoute'
+        ? routeNames[0]
+        : backBehavior === 'initialRoute' &&
+            initialRouteName !== undefined &&
+            routeNames.includes(initialRouteName)
+          ? initialRouteName
+          : undefined;
+
+    if (anchorName !== undefined && !seen.has(anchorName)) {
+      seen.add(anchorName);
+      rebuilt.push(buildRoute(anchorName, undefined));
+    }
+
+    const { routes, index } =
+      backBehavior === 'history'
+        ? { routes: rebuilt, index: rebuilt.findIndex((route) => route.name === focusedName) }
+        : arrangeBackStack(rebuilt, focusedName, backBehavior, initialRouteName, routeNames);
+
+    return {
+      stale: false,
+      key,
+      index,
+      routeNames,
+      routes,
+    };
+  }
+
+  // Reconcile a committed state against a changed set of declared route names.
+  function getStateForRouteNamesChange(
+    state: State,
+    {
+      routeNames,
+      routeParamList,
+      routeKeyChanges,
+    }: RouterConfigOptions & { routeKeyChanges: string[] }
+  ): State {
+    const seen = new Set<string>();
+    const rebuilt: Route<string>[] = [];
+
+    // Keep only the present routes whose names survived and whose key didn't change — presence is
+    // the loaded signal, so newly-declared routes are NOT materialized here.
+    for (const route of state.routes) {
+      if (
+        routeNames.includes(route.name) &&
+        !routeKeyChanges.includes(route.name) &&
+        !seen.has(route.name)
+      ) {
+        seen.add(route.name);
+        rebuilt.push(route);
+      }
+    }
+
+    // Nothing survived: fall back to the fresh-start subset so the focused route and anchor honor
+    // initialRouteName/back behavior (instead of hardcoding the first declared route).
+    if (rebuilt.length === 0 && routeNames.length > 0) {
+      const { routes, index } = buildInitialSubset(
+        routeNames,
+        backBehavior,
+        initialRouteName,
+        (name) => ({
+          name,
+          key: getRouteKey({ stateKey: state.key, name }),
+          params: routeParamList[name],
+        })
+      );
+      return { ...state, routeNames, routes, index };
+    }
+
+    const previousFocusedName = state.routes[state.index]!.name;
+    const focusedName = seen.has(previousFocusedName) ? previousFocusedName : rebuilt[0]!.name;
+
+    const { routes, index } =
+      backBehavior === 'history'
+        ? { routes: rebuilt, index: rebuilt.findIndex((route) => route.name === focusedName) }
+        : arrangeBackStack(rebuilt, focusedName, backBehavior, initialRouteName, routeNames);
+
+    return {
+      ...state,
+      routeNames,
+      routes,
+      index,
+    };
+  }
+
+  const router: InternalRouter<State, TabActionType | CommonNavigationAction> = {
     ...BaseRouter,
 
     getInitialState({ routeNames, parentRouteKey, routeParamList }) {
@@ -300,144 +452,6 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       };
     },
 
-    getRehydratedState(partialState, { routeNames, parentRouteKey, routeParamList }) {
-      const state = partialState;
-
-      if (state.stale === false) {
-        return state;
-      }
-
-      const key = getStateKey(parentRouteKey);
-
-      const partialRoutes = (state as PartialState<TabNavigationState<ParamListBase>>).routes;
-
-      const buildRoute = (name: string, route: Route<string> | undefined) =>
-        ({
-          ...route,
-          name,
-          key:
-            route && route.name === name && route.key
-              ? route.key
-              : getRouteKey({ stateKey: key, name }),
-          params:
-            routeParamList[name] !== undefined
-              ? {
-                  ...routeParamList[name],
-                  ...(route ? route.params : undefined),
-                }
-              : route
-                ? route.params
-                : undefined,
-        }) as Route<string>;
-
-      const seen = new Set<string>();
-      const rebuilt: Route<string>[] = [];
-
-      // Keep only the persisted subset whose names are still declared — presence is the loaded
-      // signal, so undeclared-yet-absent routes are NOT materialized here.
-      for (const route of partialRoutes) {
-        if (routeNames.includes(route.name) && !seen.has(route.name)) {
-          seen.add(route.name);
-          rebuilt.push(buildRoute(route.name, route as Route<string>));
-        }
-      }
-
-      // Nothing persisted survived: fall back to the fresh-start subset so the focused route and
-      // anchor honor initialRouteName/back behavior (instead of hardcoding the first declared route).
-      if (rebuilt.length === 0 && routeNames.length > 0) {
-        const { routes, index } = buildInitialSubset(
-          routeNames,
-          backBehavior,
-          initialRouteName,
-          (name) => buildRoute(name, undefined)
-        );
-        return { stale: false, key, index, routeNames, routes };
-      }
-
-      const persistedFocusedName = partialRoutes[state?.index ?? 0]?.name;
-      const focusedName =
-        persistedFocusedName !== undefined && seen.has(persistedFocusedName)
-          ? persistedFocusedName
-          : rebuilt[0]!.name;
-
-      // firstRoute/initialRoute need the back-stack anchor present; add it if it wasn't persisted.
-      const anchorName =
-        backBehavior === 'firstRoute'
-          ? routeNames[0]
-          : backBehavior === 'initialRoute' &&
-              initialRouteName !== undefined &&
-              routeNames.includes(initialRouteName)
-            ? initialRouteName
-            : undefined;
-
-      if (anchorName !== undefined && !seen.has(anchorName)) {
-        seen.add(anchorName);
-        rebuilt.push(buildRoute(anchorName, undefined));
-      }
-
-      const { routes, index } =
-        backBehavior === 'history'
-          ? { routes: rebuilt, index: rebuilt.findIndex((route) => route.name === focusedName) }
-          : arrangeBackStack(rebuilt, focusedName, backBehavior, initialRouteName, routeNames);
-
-      return {
-        stale: false,
-        key,
-        index,
-        routeNames,
-        routes,
-      };
-    },
-
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      const seen = new Set<string>();
-      const rebuilt: Route<string>[] = [];
-
-      // Keep only the present routes whose names survived and whose key didn't change — presence is
-      // the loaded signal, so newly-declared routes are NOT materialized here.
-      for (const route of state.routes) {
-        if (
-          routeNames.includes(route.name) &&
-          !routeKeyChanges.includes(route.name) &&
-          !seen.has(route.name)
-        ) {
-          seen.add(route.name);
-          rebuilt.push(route);
-        }
-      }
-
-      // Nothing survived: fall back to the fresh-start subset so the focused route and anchor honor
-      // initialRouteName/back behavior (instead of hardcoding the first declared route).
-      if (rebuilt.length === 0 && routeNames.length > 0) {
-        const { routes, index } = buildInitialSubset(
-          routeNames,
-          backBehavior,
-          initialRouteName,
-          (name) => ({
-            name,
-            key: getRouteKey({ stateKey: state.key, name }),
-            params: routeParamList[name],
-          })
-        );
-        return { ...state, routeNames, routes, index };
-      }
-
-      const previousFocusedName = state.routes[state.index]!.name;
-      const focusedName = seen.has(previousFocusedName) ? previousFocusedName : rebuilt[0]!.name;
-
-      const { routes, index } =
-        backBehavior === 'history'
-          ? { routes: rebuilt, index: rebuilt.findIndex((route) => route.name === focusedName) }
-          : arrangeBackStack(rebuilt, focusedName, backBehavior, initialRouteName, routeNames);
-
-      return {
-        ...state,
-        routeNames,
-        routes,
-        index,
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const fromIndex = state.routes.findIndex((r) => r.key === key);
 
@@ -458,7 +472,17 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       return { ...state, routes, index };
     },
 
-    getStateForAction(state, action, { routeNames, routeParamList, routeGetIdList }) {
+    getStateForAction(state, action, options) {
+      const reconcile = asReconcileRouteNamesAction(action);
+      if (reconcile) {
+        const config = reconcile.payload;
+        return isUnhandledStateRestore(state, config.routeNames, config.unhandledState)
+          ? getRehydratedState(config.unhandledState, config)
+          : getStateForRouteNamesChange(state, config);
+      }
+
+      const { routeNames, routeParamList, routeGetIdList } = options;
+
       switch (action.type) {
         case 'JUMP_TO':
         case 'NAVIGATE':

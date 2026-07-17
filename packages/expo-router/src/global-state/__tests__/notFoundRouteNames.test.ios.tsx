@@ -7,7 +7,7 @@ import { resetRouterSpies, routerSpyCalls } from './routerSpies';
 
 // The compiled root `routeNames` (the internal-slot / `__root` stack level) must exactly equal the
 // rendered `<Screen>` order at that level for EVERY not-found configuration. When they diverge,
-// `useNavigationBuilder` fires `router.getStateForRouteNamesChange` on mount to reconcile — which
+// `useNavigationBuilder` dispatches a `RECONCILE_ROUTE_NAMES` action on mount to reconcile — which
 // self-heals but violates the Step-3 contract that the seed commits verbatim. Asserting it never
 // fires proves the invariant holds.
 //
@@ -42,7 +42,7 @@ describe('root routeNames match the rendered order for every not-found configura
       { initialUrl: '/does-not-exist' }
     );
 
-    expect(routerSpyCalls.getStateForRouteNamesChange).toHaveLength(0);
+    expect(routerSpyCalls.reconcileRouteNames).toHaveLength(0);
   });
 
   // App-defined ROOT-level `+not-found`: the app's catch-all lives nested under `__root` and already
@@ -59,7 +59,7 @@ describe('root routeNames match the rendered order for every not-found configura
       { initialUrl: '/does-not-exist' }
     );
 
-    expect(routerSpyCalls.getStateForRouteNamesChange).toHaveLength(0);
+    expect(routerSpyCalls.reconcileRouteNames).toHaveLength(0);
   });
 
   // App-defined NESTED-group `+not-found`: a nested-group catch-all is NOT a top-level screen, so it
@@ -76,7 +76,7 @@ describe('root routeNames match the rendered order for every not-found configura
       { initialUrl: '/does-not-exist' }
     );
 
-    expect(routerSpyCalls.getStateForRouteNamesChange).toHaveLength(0);
+    expect(routerSpyCalls.reconcileRouteNames).toHaveLength(0);
   });
 });
 

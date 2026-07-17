@@ -3,8 +3,12 @@ import {
   type CommonNavigationAction,
   type DefaultRouterOptions,
   type InternalRouter,
+  asReconcileRouteNamesAction,
+  isUnhandledStateRestore,
   type NavigationState,
+  type PartialState,
   type Route,
+  type RouterConfigOptions,
 } from '../../../routers';
 
 export type MockActions = CommonNavigationAction | { type: 'NOOP' | 'UPDATE' };
@@ -12,6 +16,82 @@ export type MockActions = CommonNavigationAction | { type: 'NOOP' | 'UPDATE' };
 export const MockRouterKey = { current: 0 };
 
 export function MockRouter(options: DefaultRouterOptions) {
+  function getRehydratedState(
+    partialState: PartialState<NavigationState> | NavigationState,
+    { routeNames, routeParamList }: RouterConfigOptions
+  ): NavigationState {
+    const state = partialState;
+
+    if (state.stale === false) {
+      return state;
+    }
+
+    const routes = state.routes
+      .filter((route) => routeNames.includes(route.name))
+      .map(
+        (route) =>
+          ({
+            ...route,
+            key: route.key || `${route.name}-${MockRouterKey.current++}`,
+            params:
+              routeParamList[route.name] !== undefined
+                ? {
+                    ...routeParamList[route.name],
+                    ...route.params,
+                  }
+                : route.params,
+          }) as Route<string>
+      );
+
+    if (routes.length === 0) {
+      routes.push({
+        name: routeNames[0]!,
+        key: `${routeNames[0]}-${MockRouterKey.current++}`,
+        params: routeParamList[routeNames[0]!],
+      });
+    }
+
+    const previousIndex = state.index;
+    const index = Math.min(
+      Math.max(
+        previousIndex != null
+          ? routes.findIndex((route) => route.name === state.routes[previousIndex]?.name)
+          : 0,
+        0
+      ),
+      routes.length - 1
+    );
+
+    return {
+      stale: false,
+      key: String(MockRouterKey.current++),
+      index,
+      routeNames,
+      routes,
+    };
+  }
+
+  function getStateForRouteNamesChange(
+    state: NavigationState,
+    { routeNames }: RouterConfigOptions & { routeKeyChanges: string[] }
+  ): NavigationState {
+    const routes = state.routes.filter((route) => routeNames.includes(route.name));
+
+    if (routes.length === 0) {
+      routes.push({
+        name: routeNames[0]!,
+        key: `${routeNames[0]}-${MockRouterKey.current++}`,
+      });
+    }
+
+    return {
+      ...state,
+      routeNames,
+      routes,
+      index: Math.min(state.index, routes.length - 1),
+    };
+  }
+
   const router: InternalRouter<NavigationState, MockActions> = {
     getInitialState({ routeNames, routeParamList }) {
       const index =
@@ -30,76 +110,6 @@ export function MockRouter(options: DefaultRouterOptions) {
       };
     },
 
-    getRehydratedState(partialState, { routeNames, routeParamList }) {
-      const state = partialState;
-
-      if (state.stale === false) {
-        return state as NavigationState;
-      }
-
-      const routes = state.routes
-        .filter((route) => routeNames.includes(route.name))
-        .map(
-          (route) =>
-            ({
-              ...route,
-              key: route.key || `${route.name}-${MockRouterKey.current++}`,
-              params:
-                routeParamList[route.name] !== undefined
-                  ? {
-                      ...routeParamList[route.name],
-                      ...route.params,
-                    }
-                  : route.params,
-            }) as Route<string>
-        );
-
-      if (routes.length === 0) {
-        routes.push({
-          name: routeNames[0]!,
-          key: `${routeNames[0]}-${MockRouterKey.current++}`,
-          params: routeParamList[routeNames[0]!],
-        });
-      }
-
-      const previousIndex = state.index;
-      const index = Math.min(
-        Math.max(
-          previousIndex != null
-            ? routes.findIndex((route) => route.name === state.routes[previousIndex]?.name)
-            : 0,
-          0
-        ),
-        routes.length - 1
-      );
-
-      return {
-        stale: false,
-        key: String(MockRouterKey.current++),
-        index,
-        routeNames,
-        routes,
-      };
-    },
-
-    getStateForRouteNamesChange(state, { routeNames }) {
-      const routes = state.routes.filter((route) => routeNames.includes(route.name));
-
-      if (routes.length === 0) {
-        routes.push({
-          name: routeNames[0]!,
-          key: `${routeNames[0]}-${MockRouterKey.current++}`,
-        });
-      }
-
-      return {
-        ...state,
-        routeNames,
-        routes,
-        index: Math.min(state.index, routes.length - 1),
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
 
@@ -110,7 +120,21 @@ export function MockRouter(options: DefaultRouterOptions) {
       return { ...state, index };
     },
 
-    getStateForAction(state, action, { routeParamList }) {
+    getStateForAction(state, action, options) {
+      const reconcile = asReconcileRouteNamesAction(action);
+      if (reconcile) {
+        if (reconcile.target !== state.key) {
+          return null;
+        }
+
+        const config = reconcile.payload;
+        return isUnhandledStateRestore(state, config.routeNames, config.unhandledState)
+          ? getRehydratedState(config.unhandledState, config)
+          : getStateForRouteNamesChange(state, config);
+      }
+
+      const { routeParamList } = options;
+
       switch (action.type) {
         case 'UPDATE':
           return { ...state };
