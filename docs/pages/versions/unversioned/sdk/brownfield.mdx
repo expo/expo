@@ -227,20 +227,20 @@ The `expo-brownfield` package provides a [config plugin](/config-plugins/introdu
 
 ## Publishing artifacts
 
-Brownfield Android artifacts are pushed to one or more Maven repositories declared via `android.publishing` in your app config. The repository types supported are:
+The `expo-brownfield` CLI pushes Android artifacts to one or more Maven repositories, declared via `android.publishing` in your app config. The supported repository types are:
 
 | `type`            | Description                                                                                                              |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `localMaven`      | Publishes to `~/.m2/repository`. Default. Useful for local host-app integration during development.                       |
+| `localMaven`      | Publishes to **~/.m2/repository**. Default. Useful for local host-app integration during development.                       |
 | `localDirectory`  | Publishes to a local filesystem path (`path` field). Useful for checking artifacts into a sibling git repository.        |
 | `remotePublic`    | Publishes to a public Maven repository with no authentication.                                                            |
 | `remotePrivate`   | Publishes to an authenticated remote Maven repository (GitHub Packages, JFrog Artifactory, AWS CodeArtifact, Sonatype Nexus…). Credentials can be inline strings or environment-variable references. |
 
-`url`, `username`, and `password` on `remotePrivate` accept either a plain string or an `EnvValue` object — `{ "variable": "SOME_ENV_VAR" }` — that resolves the value at build time via Gradle's `providers.environmentVariable(...)`. Pin secrets to env vars so they don't end up in your committed app config.
+`url`, `username`, and `password` on `remotePrivate` accept either a plain string or an `EnvValue` object (`{ "variable": "SOME_ENV_VAR" }`) that resolves the value at build time via Gradle's `providers.environmentVariable(...)`. Pin secrets to env vars so they don't end up in your committed app config.
 
 ### Publishing to GitHub Packages
 
-GitHub Packages hosts a private Maven repository scoped to a GitHub repo. Authentication is `GITHUB_ACTOR` (the user/bot name) + a [personal access token](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#authenticating-to-github-packages) with `write:packages` and `read:packages` scopes (in GitHub Actions, the workflow's `GITHUB_TOKEN` already has the right scopes for the workflow's own repo).
+GitHub Packages hosts a private Maven repository scoped to a GitHub repo. Authentication uses `GITHUB_ACTOR` (the user or bot name) and a [personal access token (PAT)](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#authenticating-to-github-packages) with the `write:packages` and `read:packages` scopes. In GitHub Actions, the workflow's `GITHUB_TOKEN` already has the right scopes for the workflow's own repo.
 
 Add a `remotePrivate` entry to `android.publishing` pointing at the GitHub Packages URL for your test repository:
 
@@ -278,7 +278,7 @@ The `name` field controls both the Gradle Maven repo name and the `--repo` CLI f
 
 ### Publishing only the fused artifacts
 
-The non-fused publish flow emits one Maven coordinate per autolinked Expo Android module (typically 20–40 artifacts per release). To publish a small, curated set instead, use `--fused` — the fused mode short-circuits the publish plugin's per-module re-publish loop and only emits the fat-AAR sibling(s):
+The non-fused publish flow emits one Maven coordinate per autolinked Expo Android module (typically 20 to 40 artifacts per release). To publish a small, curated set instead, use `--fused`. The fused mode short-circuits the publish plugin's per-module re-publish loop and only emits the fat AAR sibling(s):
 
 | Invocation                                   | Coordinates published                                                                                                   |
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
@@ -286,7 +286,7 @@ The non-fused publish flow emits one Maven coordinate per autolinked Expo Androi
 | `--fused --debug`                            | `<group>:<libraryName>-fused-debug:<version>`                                                                            |
 | `--fused --all` (default with `--fused`)     | Both of the above (two Gradle invocations under the hood, one per variant)                                              |
 
-That's at most two Maven coordinates published per release — independent of how many Expo modules your project autolinks. Everything else (per-module AARs, transitive Maven deps) stays out of your remote repo. Foundational libraries (AndroidX, RN runtime, Kotlin stdlib, Glide alternatives the host already has) stay external in the POM rather than fusing into the AAR; see [Fused mode](#fused-mode) for the full denylist + allowlist.
+That's at most two Maven coordinates published per release, independent of how many Expo modules your project autolinks. Everything else (per-module AARs, transitive Maven deps) stays out of your remote repo. Foundational libraries (AndroidX, RN runtime, Kotlin stdlib, Glide alternatives the host already has) stay external in the POM rather than fusing into the AAR.
 
 ### Sample GitHub Actions workflow
 
@@ -327,7 +327,7 @@ Trigger via `git tag brownfield-v1.0.0 && git push --tags` (or manually via the 
 
 ### Consumer setup (host Android app)
 
-The host app's `settings.gradle.kts` (or per-module `build.gradle.kts`) declares the same GitHub Packages URL + credentials. The host app's CI/local builds must have `GITHUB_ACTOR` + `GITHUB_TOKEN` env vars set or pulled from `~/.gradle/gradle.properties`.
+The host app's **settings.gradle.kts** (or per-module **build.gradle.kts**) declares the same GitHub Packages URL and credentials. The host app's CI/local builds must have the `GITHUB_ACTOR` and `GITHUB_TOKEN` env vars set or pulled from **~/.gradle/gradle.properties**.
 
 ```kotlin android/settings.gradle.kts
 dependencyResolutionManagement {
@@ -354,7 +354,7 @@ dependencies {
 }
 ```
 
-`releaseImplementation` / `debugImplementation` pair the variants automatically — Gradle picks the matching sibling per host build type. If your host only ships release builds, you can drop the `debugImplementation` line and just publish the release sibling with `--fused --release`.
+`releaseImplementation`/`debugImplementation` pair the variants automatically. Gradle picks the matching sibling per host build type. If your host only ships release builds, you can drop the `debugImplementation` line and publish only the release sibling with `--fused --release`.
 
 ## CLI
 
