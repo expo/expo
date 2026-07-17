@@ -93,13 +93,12 @@ internal class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
   }
 }
 
-/// Task executor dedicated to a specific JavaScript runtime.
+/// Executor dedicated to a specific JavaScript runtime.
 ///
 /// Unlike ``JavaScriptExecutor``, which only provides actor isolation and runs jobs inline,
-/// this executor routes every job through the runtime scheduler. Using it as a task's executor
-/// preference makes that task re-enter through the runtime's JavaScript thread after suspension
-/// points.
-internal final class JavaScriptRuntimeTaskExecutor: TaskExecutor, @unchecked Sendable {
+/// this executor routes every job through the runtime scheduler. It can be used as both a serial
+/// executor and a task executor preference.
+internal final class JavaScriptRuntimeExecutor: JavaScriptExecutor, TaskExecutor, @unchecked Sendable {
   private weak let runtime: JavaScriptRuntime?
 
   init(runtime: JavaScriptRuntime) {
@@ -108,7 +107,7 @@ internal final class JavaScriptRuntimeTaskExecutor: TaskExecutor, @unchecked Sen
 
   // MARK: - TaskExecutor
 
-  func enqueue(_ job: UnownedJob) {
+  override func enqueue(_ job: UnownedJob) {
     runtime?.runOrSchedule(priority: .immediate) {
       if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
         job.runSynchronously(on: self.asUnownedTaskExecutor())
@@ -117,7 +116,7 @@ internal final class JavaScriptRuntimeTaskExecutor: TaskExecutor, @unchecked Sen
         // so fall back to running the job on a serial executor. The executor passed here only
         // affects isolation checks; the job already runs on the runtime's JavaScript thread
         // because `runOrSchedule` routed it there.
-        job.runSynchronously(on: JavaScriptActor.shared.unownedExecutor)
+        job.runSynchronously(on: self.asUnownedSerialExecutor())
       }
     }
   }
