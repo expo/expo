@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `openAuthSessionAsync` hanging forever when the authentication session fails to start. ([#47653](https://github.com/expo/expo/issues/47653))
+
 ### 💡 Others
 
 ## 56.0.5 — 2026-05-21
