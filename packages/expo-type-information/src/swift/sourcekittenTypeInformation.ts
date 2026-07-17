@@ -675,11 +675,10 @@ async function parseModuleAsyncFunctionSubstructure(
     return functionDeclaration;
   }
 
-  const isPromiseName = lastArgument.name === 'promise';
   const isPromiseType =
     lastArgument.type.kind === TypeKind.IDENTIFIER &&
     (lastArgument.type.type as TypeIdentifier) === 'Promise';
-  if (isPromiseName || isPromiseType) {
+  if (isPromiseType) {
     functionDeclaration.arguments.pop();
   }
   return functionDeclaration;
