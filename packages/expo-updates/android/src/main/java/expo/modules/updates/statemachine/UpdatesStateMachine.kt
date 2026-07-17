@@ -215,7 +215,7 @@ class UpdatesStateMachine(
         is UpdatesStateEvent.DownloadComplete -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
-          isUpdatePending = true,
+          isUpdatePending = false,
           downloadProgress = 1.0,
           downloadStartTime = null,
           downloadFinishTime = null
