@@ -229,12 +229,12 @@ The `expo-brownfield` package provides a [config plugin](/config-plugins/introdu
 
 The `expo-brownfield` CLI pushes Android artifacts to one or more Maven repositories, declared via `android.publishing` in your app config. The supported repository types are:
 
-| `type`           | Description                                                                                                                                                                                          |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `localMaven`     | Publishes to **~/.m2/repository**. Default. Useful for local host-app integration during development.                                                                                                |
-| `localDirectory` | Publishes to a local filesystem path (`path` field). Useful for checking artifacts into a sibling git repository.                                                                                    |
-| `remotePublic`   | Publishes to a public Maven repository with no authentication.                                                                                                                                       |
-| `remotePrivate`  | Publishes to an authenticated remote Maven repository (GitHub Packages, JFrog Artifactory, AWS CodeArtifact, etc). Credentials can be inline strings or environment-variable references. |
+| `type`           | Description                                                                                                                  |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `localMaven`     | Publishes to **~/.m2/repository**. Default. Useful for local host-app integration during development.                        |
+| `localDirectory` | Publishes to a local filesystem path (`path` field). Useful for checking artifacts into a sibling git repository.            |
+| `remotePublic`   | Publishes to a public Maven repository with no authentication.                                                               |
+| `remotePrivate`  | Publishes to an authenticated remote Maven repository. Credentials can be inline strings or environment-variable references. |
 
 `url`, `username`, and `password` on `remotePrivate` accept either a plain string or an `EnvValue` object (`{ "variable": "SOME_ENV_VAR" }`) that resolves the value at build time via Gradle's `providers.environmentVariable(...)`. Pin secrets to env vars so they don't end up in your committed app config.
 
