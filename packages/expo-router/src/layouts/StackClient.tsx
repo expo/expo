@@ -7,7 +7,7 @@ import {
   createStandardNativeStackNavigator,
   type ExtendedStackNavigationOptions,
   type NativeStackContentProps,
-} from '../fork/native-stack/createStandardNativeStackNavigator';
+} from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import {
   getInternalExpoRouterParams,
@@ -50,7 +50,7 @@ import {
   validateStackPresentation,
 } from './stack-utils';
 
-export type { ExtendedStackNavigationOptions } from '../fork/native-stack/createStandardNativeStackNavigator';
+export type { ExtendedStackNavigationOptions } from '../fork/native-stack/createNativeStackNavigator';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 

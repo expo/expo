@@ -1,4 +1,5 @@
 'use client';
+// TODO: move to createStandardNativeStackNavigator.tsx
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
