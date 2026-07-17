@@ -19,14 +19,15 @@ extension Task where Failure == any Error {
     }
   }
 
-  /// Starts a task that prefers the JavaScript runtime's executor when executor preferences are
-  /// available, synchronously on the caller context when the platform supports `Task.immediate`.
+  /// Starts a task that returns to the JavaScript runtime's executor after suspension points.
+  /// Uses a task executor preference when available and a runtime-specific actor executor on older
+  /// systems. Starts synchronously on the caller context when the platform supports `Task.immediate`.
   @discardableResult
   internal static func immediate_polyfill(
     name: String? = nil,
     priority: TaskPriority? = nil,
     executorPreference runtimeExecutor: JavaScriptRuntimeExecutor,
-    @_inheritActorContext @_implicitSelfCapture operation: sending @escaping @isolated(any) () async throws -> Success
+    @_inheritActorContext @_implicitSelfCapture operation: @escaping @isolated(any) @Sendable () async throws -> Success
   ) -> Task<Success, any Error> {
     if #available(macOS 26.0, iOS 26.0, watchOS 26.0, tvOS 26.0, visionOS 26.0, *) {
       return Task.immediate(
@@ -44,7 +45,9 @@ extension Task where Failure == any Error {
         operation: operation
       )
     } else {
-      return Task(name: name, priority: .high, operation: operation)
+      return JavaScriptRuntimeExecutorContext.$executor.withValue(runtimeExecutor) {
+        Task(name: name, priority: .high, operation: operation)
+      }
     }
   }
 }
