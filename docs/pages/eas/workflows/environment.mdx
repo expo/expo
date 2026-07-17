@@ -33,7 +33,7 @@ The variables available in a job are merged from three sources. When the same na
 | [**eas.json** build profile `env`](/build/eas-json/#environment-variables) | For [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs, the `env` from the profile selected by `params.profile` in **eas.json**.  |
 | [EAS environment variables](/eas/environment-variables/)                   | Variable names and values stored on EAS for the job's [environment](#the-job-environment) (`production`, `preview`, or `development`). |
 
-On top of these, the worker sets a number of [built-in variables](#built-in-environment-variables) such as `EAS_BUILD_ID` and `CI`. Avoid naming your own variables with the `EAS_` prefix so they aren't shadowed by the built-in ones.
+On top of these, the worker sets a number of [built-in variables](#built-in-environment-variables) such as `EAS_BUILD_ID` and `CI`. Avoid naming your own variables with the `EAS_` prefix so the built-in ones don't shadow them.
 
 ## The job environment
 
