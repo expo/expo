@@ -1,0 +1,31 @@
+appId: com.expo.routere2e
+name: Material dynamic colors
+jsEngine: graaljs
+---
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - runFlow:
+          file: ../set-material-you-color.yml
+          env:
+            COLOR_INDEX: "0"
+      - stopApp
+      - openLink: router-e2e://color
+      - runFlow: ../close-warning.yml
+      - assertVisible: "status: initial"
+      - copyTextFrom:
+          id: dynamic-primary-hex
+      - evalScript: ${output.initialPrimary = maestro.copiedText}
+      - runFlow:
+          file: ../set-material-you-color.yml
+          env:
+            COLOR_INDEX: "3"
+      - launchApp:
+          stopApp: false
+      - extendedWaitUntil:
+          visible: "status: updated"
+          timeout: 15000
+      - copyTextFrom:
+          id: dynamic-primary-hex
+      - assertTrue: ${maestro.copiedText != output.initialPrimary}
