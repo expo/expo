@@ -21,9 +21,7 @@ sealed class UpdatesStateEvent(val type: UpdatesStateEventType) {
   }
   class Download : UpdatesStateEvent(UpdatesStateEventType.Download)
   class DownloadProgress(val progress: Double) : UpdatesStateEvent(UpdatesStateEventType.DownloadProgress)
-
   class DownloadCompleteUnavailable : UpdatesStateEvent(UpdatesStateEventType.DownloadCompleteUnavailable)
-
   class DownloadCompleteWithUpdate(val manifest: JSONObject) : UpdatesStateEvent(UpdatesStateEventType.DownloadCompleteUnavailable)
   class DownloadCompleteWithRollback : UpdatesStateEvent(UpdatesStateEventType.DownloadCompleteUnavailable)
   class DownloadError(private val errorMessage: String) : UpdatesStateEvent(UpdatesStateEventType.DownloadError) {

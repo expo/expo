@@ -33,9 +33,7 @@ internal enum UpdatesStateEvent {
   case checkCompleteWithRollback(rollbackCommitTime: Date)
   case checkError(errorMessage: String)
   case download
-
   case downloadCompleteUnavailable
-
   case downloadCompleteWithUpdate(manifest: [String: Any])
   case downloadCompleteWithRollback
   case downloadError(errorMessage: String)
