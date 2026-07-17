@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Added support for bounded decoding to `loadImageForManipulationFromURL` so that large images can be downsampled while decoding. ([#TBD](https://github.com/expo/expo/pull/TBD) by [@jiunshinn](https://github.com/jiunshinn))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

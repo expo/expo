@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.kotlin.services.ServiceInterface
@@ -75,20 +76,46 @@ class ImageLoaderService(val context: Context) : ImageLoaderInterface {
       .diskCacheStrategy(DiskCacheStrategy.NONE)
       .skipMemoryCache(true)
       .load(normalizedUrl)
-      .into(object : CustomTarget<Bitmap>() {
-        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-          resultListener.onSuccess(resource)
-        }
+      .into(resultListenerTarget(resultListener))
+  }
 
-        override fun onLoadCleared(placeholder: Drawable?) {
-          // no op
-        }
+  override fun loadImageForManipulationFromURL(
+    url: String,
+    maxWidth: Int,
+    maxHeight: Int,
+    resultListener: ImageLoaderInterface.ResultListener
+  ) {
+    val normalizedUrl = normalizeAssetsUrl(url)
 
-        override fun onLoadFailed(errorDrawable: Drawable?) {
-          super.onLoadFailed(errorDrawable)
-          resultListener.onFailure(Exception("Loading bitmap failed"))
-        }
-      })
+    Glide.with(context)
+      .asBitmap()
+      .diskCacheStrategy(DiskCacheStrategy.NONE)
+      .skipMemoryCache(true)
+      // Downsample during decoding so that large images don't need to be fully decoded into memory.
+      .centerInside()
+      .load(normalizedUrl)
+      .into(resultListenerTarget(resultListener, maxWidth, maxHeight))
+  }
+
+  private fun resultListenerTarget(
+    resultListener: ImageLoaderInterface.ResultListener,
+    maxWidth: Int = Target.SIZE_ORIGINAL,
+    maxHeight: Int = Target.SIZE_ORIGINAL
+  ): CustomTarget<Bitmap> {
+    return object : CustomTarget<Bitmap>(maxWidth, maxHeight) {
+      override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+        resultListener.onSuccess(resource)
+      }
+
+      override fun onLoadCleared(placeholder: Drawable?) {
+        // no op
+      }
+
+      override fun onLoadFailed(errorDrawable: Drawable?) {
+        super.onLoadFailed(errorDrawable)
+        resultListener.onFailure(Exception("Loading bitmap failed"))
+      }
+    }
   }
 
   private fun normalizeAssetsUrl(url: String): String {

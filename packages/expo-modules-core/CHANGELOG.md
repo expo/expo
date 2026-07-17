@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- [Android] Added a `loadImageForManipulationFromURL` overload to `ImageLoaderInterface` that decodes the image within the given `maxWidth`/`maxHeight` bounds. ([#TBD](https://github.com/expo/expo/pull/TBD) by [@jiunshinn](https://github.com/jiunshinn))
 - [iOS] `ExpoSwiftUI.IgnoreSafeArea` that ignores the device and container safe area regions. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added the `@Event` macro that turns a function-typed `var` on a module or shared object into a typed JavaScript event. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))

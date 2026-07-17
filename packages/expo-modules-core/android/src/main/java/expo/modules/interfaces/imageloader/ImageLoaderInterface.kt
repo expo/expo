@@ -30,4 +30,12 @@ interface ImageLoaderInterface : Service {
    * Loads full-sized image with no caching.
    */
   fun loadImageForManipulationFromURL(url: String, resultListener: ResultListener)
+
+  /**
+   * Loads image with no caching, decoded to fit within `maxWidth`×`maxHeight` while preserving
+   * the aspect ratio, so that large images don't need to be fully decoded into memory.
+   * Implementations that don't support bounded decoding fall back to the full-sized image.
+   */
+  fun loadImageForManipulationFromURL(url: String, maxWidth: Int, maxHeight: Int, resultListener: ResultListener) =
+    loadImageForManipulationFromURL(url, resultListener)
 }
