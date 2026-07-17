@@ -81,6 +81,10 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       render(UnevenRoundedRectangleView.self, UnevenRoundedRectangleViewProps.self)
     case "GaugeView":
       render(GaugeView.self, GaugeProps.self)
+    case "GridView":
+      render(GridView.self, GridProps.self, updateProps: updateChildren)
+    case "GridRowView":
+      render(WidgetGridRowView.self, WidgetGridRowProps.self, updateProps: updateChildren)
     case "ChartView":
       render(ChartView.self, ChartProps.self)
     case "Button":
@@ -156,6 +160,24 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       } else if let child = props["children"] as? [String: Any] {
         initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString)]
       }
+    }
+  }
+}
+
+// ExpoUI's GridRowProps is not a UIBaseViewProps, which the render/updateChildren
+// machinery requires, so GridRow gets a widgets-local wrapper.
+final class WidgetGridRowProps: UIBaseViewProps {}
+
+struct WidgetGridRowView: ExpoSwiftUI.View {
+  @ObservedObject var props: WidgetGridRowProps
+
+  var body: some View {
+    if #available(iOS 16.0, *) {
+      GridRow {
+        Children()
+      }
+    } else {
+      EmptyView()
     }
   }
 }
