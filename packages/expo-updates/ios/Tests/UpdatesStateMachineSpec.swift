@@ -106,7 +106,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.context.isUpdatePending) == false
       }
 
-      it("should handle download and downloadComplete") {
+      it("should handle a completed download with an update") {
         let testStateChangeEventManager = TestStateChangeEventManager()
         let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
 
@@ -136,7 +136,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.getStateForTesting()) == .downloading
         expect(testStateChangeEventManager.lastContext?.downloadProgress) == 0.5
 
-        machine.processEventForTesting(.downloadComplete)
+        machine.processEventForTesting(.downloadCompleteUnavailable)
         expect(machine.getStateForTesting()) == .idle
         expect(testStateChangeEventManager.lastContext?.downloadProgress) == 1
       }
@@ -194,7 +194,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.processEventForTesting(.download)).to(throwAssertion())
         expect(machine.getStateForTesting()) == .restarting
 
-        expect(machine.processEventForTesting(.downloadComplete)).to(throwAssertion())
+        expect(machine.processEventForTesting(.downloadCompleteUnavailable)).to(throwAssertion())
         expect(machine.getStateForTesting()) == .restarting
       }
 

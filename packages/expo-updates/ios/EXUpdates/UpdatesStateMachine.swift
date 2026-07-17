@@ -34,8 +34,7 @@ internal enum UpdatesStateEvent {
   case checkError(errorMessage: String)
   case download
 
-  // download finished with no update available, so nothing is pending
-  case downloadComplete
+  case downloadCompleteUnavailable
 
   case downloadCompleteWithUpdate(manifest: [String: Any])
   case downloadCompleteWithRollback
@@ -52,7 +51,7 @@ internal enum UpdatesStateEvent {
     case checkError
     case download
     case downloadProgress
-    case downloadComplete
+    case downloadCompleteUnavailable
     case downloadError
     case restart
   }
@@ -77,12 +76,12 @@ internal enum UpdatesStateEvent {
       return .download
     case .downloadProgress:
       return .downloadProgress
-    case .downloadComplete:
-      return .downloadComplete
+    case .downloadCompleteUnavailable:
+      return .downloadCompleteUnavailable
     case .downloadCompleteWithUpdate:
-      return .downloadComplete
+      return .downloadCompleteUnavailable
     case .downloadCompleteWithRollback:
-      return .downloadComplete
+      return .downloadCompleteUnavailable
     case .downloadError:
       return .downloadError
     case .restart:
@@ -110,7 +109,7 @@ internal enum UpdatesStateEvent {
       fallthrough
     case .download:
       fallthrough
-    case .downloadComplete:
+    case .downloadCompleteUnavailable:
       fallthrough
     case .downloadCompleteWithRollback:
       fallthrough
@@ -496,7 +495,7 @@ internal class UpdatesStateMachine {
       return context.copyAndIncrementSequenceNumber {
         $0.downloadProgress = progress
       }
-    case .downloadComplete:
+    case .downloadCompleteUnavailable:
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
@@ -556,7 +555,7 @@ internal class UpdatesStateMachine {
   private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEvent.InternalType>] = [
     .idle: [.startStartup, .endStartup, .check, .download, .restart],
     .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
-    .downloading: [.downloadComplete, .downloadError, .downloadProgress],
+    .downloading: [.downloadCompleteUnavailable, .downloadError, .downloadProgress],
     .restarting: []
   ]
 
@@ -573,7 +572,7 @@ internal class UpdatesStateMachine {
     .checkError: .idle,
     .download: .downloading,
     .downloadProgress: .downloading,
-    .downloadComplete: .idle,
+    .downloadCompleteUnavailable: .idle,
     .downloadError: .idle,
     .restart: .restarting
   ]

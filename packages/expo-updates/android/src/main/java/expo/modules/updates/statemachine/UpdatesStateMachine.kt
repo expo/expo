@@ -79,7 +79,7 @@ class UpdatesStateMachine(
       is UpdatesStateEvent.Check -> mapOf("type" to event.type.type)
       is UpdatesStateEvent.CheckCompleteUnavailable -> mapOf("type" to event.type.type)
       is UpdatesStateEvent.Download -> mapOf("type" to event.type.type)
-      is UpdatesStateEvent.DownloadComplete -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.DownloadCompleteUnavailable -> mapOf("type" to event.type.type)
       is UpdatesStateEvent.DownloadCompleteWithRollback -> mapOf("type" to event.type.type)
       is UpdatesStateEvent.Restart -> mapOf("type" to event.type.type)
       is UpdatesStateEvent.StartStartup -> mapOf("type" to event.type.type)
@@ -137,7 +137,7 @@ class UpdatesStateMachine(
     val updatesStateAllowedEvents: Map<UpdatesStateValue, Set<UpdatesStateEventType>> = mapOf(
       UpdatesStateValue.Idle to setOf(UpdatesStateEventType.StartStartup, UpdatesStateEventType.EndStartup, UpdatesStateEventType.Check, UpdatesStateEventType.Download, UpdatesStateEventType.Restart),
       UpdatesStateValue.Checking to setOf(UpdatesStateEventType.CheckCompleteAvailable, UpdatesStateEventType.CheckCompleteUnavailable, UpdatesStateEventType.CheckError),
-      UpdatesStateValue.Downloading to setOf(UpdatesStateEventType.DownloadComplete, UpdatesStateEventType.DownloadError, UpdatesStateEventType.DownloadProgress),
+      UpdatesStateValue.Downloading to setOf(UpdatesStateEventType.DownloadCompleteUnavailable, UpdatesStateEventType.DownloadError, UpdatesStateEventType.DownloadProgress),
       UpdatesStateValue.Restarting to setOf()
     )
 
@@ -154,7 +154,7 @@ class UpdatesStateMachine(
       UpdatesStateEventType.CheckError to UpdatesStateValue.Idle,
       UpdatesStateEventType.Download to UpdatesStateValue.Downloading,
       UpdatesStateEventType.DownloadProgress to UpdatesStateValue.Downloading,
-      UpdatesStateEventType.DownloadComplete to UpdatesStateValue.Idle,
+      UpdatesStateEventType.DownloadCompleteUnavailable to UpdatesStateValue.Idle,
       UpdatesStateEventType.DownloadError to UpdatesStateValue.Idle,
       UpdatesStateEventType.Restart to UpdatesStateValue.Restarting
     )
@@ -212,7 +212,7 @@ class UpdatesStateMachine(
         is UpdatesStateEvent.DownloadProgress -> context.copyAndIncrementSequenceNumber(
           downloadProgress = event.progress
         )
-        is UpdatesStateEvent.DownloadComplete -> context.copyAndIncrementSequenceNumber(
+        is UpdatesStateEvent.DownloadCompleteUnavailable -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
           isUpdatePending = false,
