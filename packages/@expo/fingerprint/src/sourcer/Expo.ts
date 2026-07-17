@@ -6,6 +6,7 @@ import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 import path from 'path';
 import semver from 'semver';
 
+import type { LoadedModuleSource } from '../ExpoConfigLoader';
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
@@ -22,7 +23,7 @@ const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 export async function getExpoConfigSourcesAsync(
   projectRoot: string,
   config: ProjectConfig | null,
-  loadedModules: string[] | null,
+  loadedModules: LoadedModuleSource[] | null,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
   if (options.sourceSkips & SourceSkips.ExpoConfigAll) {
@@ -111,11 +112,20 @@ export async function getExpoConfigSourcesAsync(
   });
 
   // config plugins
-  const configPluginModules: HashSource[] = (loadedModules ?? []).map((modulePath) => ({
-    type: 'file',
-    filePath: toPosixPath(modulePath),
-    reasons: ['expoConfigPlugins'],
-  }));
+  const configPluginModules: HashSource[] = (loadedModules ?? []).map((loadedModule) =>
+    loadedModule.type === 'file'
+      ? {
+          type: 'file',
+          filePath: loadedModule.path,
+          reasons: ['expoConfigPlugins'],
+        }
+      : {
+          type: 'contents',
+          id: loadedModule.id,
+          contents: loadedModule.contents,
+          reasons: ['expoConfigPlugins'],
+        }
+  );
   results.push(...configPluginModules);
 
   return results;

@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Added more default `getConfig` exclusion packages. ([#47503](https://github.com/expo/expo/pull/47503) by [@kudo](https://github.com/kudo))
+- Reworked config-plugin module capture with a `Module.prototype._compile` hook. ([#47666](https://github.com/expo/expo/pull/47666) by [@kudo](https://github.com/kudo))
 
 ## 0.19.3 — 2026-05-26
 

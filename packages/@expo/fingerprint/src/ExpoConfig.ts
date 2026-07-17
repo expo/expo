@@ -4,7 +4,7 @@ import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
+import { getExpoConfigLoaderPath, type LoadedModuleSource } from './ExpoConfigLoader';
 import type { NormalizedOptions } from './Fingerprint.types';
 import { spawnWithIpcAsync } from './utils/SpawnIPC';
 
@@ -16,7 +16,7 @@ export async function getExpoConfigAsync(
   options: NormalizedOptions
 ): Promise<{
   config: ProjectConfig | null;
-  loadedModules: string[] | null;
+  loadedModules: LoadedModuleSource[] | null;
 }> {
   const result = {
     config: null,
