@@ -10,7 +10,7 @@ class ShareIntoViewController: SLComposeServiceViewController {
   // is not possible for our users to handle them at runtime.
   private var hostAppScheme: String {
     guard let _hostAppScheme = Bundle.main.object(forInfoDictionaryKey: "MainTargetUrlScheme") as? String else {
-      fatalError("Expo-sharing has failed to to load the app scheme from `Info.plist`. Make sure the `expo-sharing` config plugin is configured correctly.")
+      fatalError("Expo-sharing has failed to load the app scheme from `Info.plist`. Make sure the `expo-sharing` config plugin is configured correctly.")
     }
     return _hostAppScheme
   }
