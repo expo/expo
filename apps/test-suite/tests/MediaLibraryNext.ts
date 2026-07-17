@@ -271,6 +271,39 @@ export async function test(t: any) {
     });
   });
 
+  t.describe('Album getAllMetadata', () => {
+    t.it('includes metadata for a newly created album', async () => {
+      // given
+      const albumName = createAlbumName('getAllMetadata includes new album');
+      const album = await Album.create(albumName, [jpgFileLocalUri], true);
+      albumsContainer.push(album);
+
+      // when
+      const metadata = await Album.getAllMetadata();
+
+      // then
+      const entry = metadata.find((m) => m.id === album.id);
+      t.expect(entry).toBeDefined();
+      t.expect(entry?.title).toBe(albumName);
+      t.expect(entry?.type).toBe(Platform.OS === 'ios' ? AlbumType.ALBUM : null);
+    });
+  });
+
+  t.describe('Album getAssetCount', () => {
+    t.it('returns the number of assets in the album', async () => {
+      // given
+      const albumName = createAlbumName('getAssetCount');
+      const album = await Album.create(albumName, [jpgFileLocalUri, pngFileLocalUri], true);
+      albumsContainer.push(album);
+
+      // when
+      const count = await album.getAssetCount();
+
+      // then
+      t.expect(count).toBe(2);
+    });
+  });
+
   if (Platform.OS === 'ios') {
     t.describe('Album getType', () => {
       t.it('returns ALBUM for a user album', async () => {

@@ -10,6 +10,7 @@
 - Add filtering by `isFavorite` to `Query` ([#45769](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
 - Add `Query.exeForMetadata()` for cheap bulk fetch ([#46485](https://github.com/expo/expo/pull/46485) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Add `Album.getSmartAlbums()` and `Album.getType()`. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
+- Add `album.getAlbumsMetadata()` for cheap bulk album listing and `album.getAssetCount()`. ([#47836](https://github.com/expo/expo/pull/47836) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🐛 Bug fixes
 

@@ -209,6 +209,10 @@ class MediaLibraryNextModule : Module() {
         self.getAssets()
       }
 
+      AsyncFunction("getAssetCount") Coroutine { self: Album ->
+        self.getAssetCount()
+      }
+
       AsyncFunction("add") Coroutine { self: Album, assets: List<Asset> ->
         self.add(assets)
       }
@@ -223,6 +227,10 @@ class MediaLibraryNextModule : Module() {
 
       StaticAsyncFunction("getAll") Coroutine { ->
         albumQuery.getAllAlbums()
+      }
+
+      StaticAsyncFunction("getAlbumsMetadata") Coroutine { ->
+        albumQuery.getAlbumsMetadata()
       }
 
       StaticAsyncFunction("delete") Coroutine { albums: List<Album>, deleteAssets: Boolean? ->
