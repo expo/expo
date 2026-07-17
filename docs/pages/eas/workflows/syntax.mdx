@@ -448,11 +448,11 @@ jobs:
 
 Sets the [EAS environment variable](/eas/environment-variables/) environment for the job. There are three possible values:
 
-- `production` (default)
+- `production`
 - `preview`
 - `development`
 
-The `environment` key is available on all jobs.
+The `environment` key is available on all jobs. When you omit it, the default depends on the job type: `build` jobs infer it from the build profile's `environment` in **eas.json**, `submit` jobs inherit it from the submitted build, `maestro` and `maestro-cloud` jobs default to `preview`, and all other jobs default to `production`. See [The job environment](/eas/workflows/environment/#the-job-environment) for details.
 
 ```yaml
 jobs:

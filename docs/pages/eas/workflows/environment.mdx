@@ -253,7 +253,7 @@ For the event domains that populate each field and full examples, see [`app_stor
 
 ## Built-in environment variables
 
-The worker sets the following variables on every job that runs on a virtual machine (VM). These are read at runtime, so reference them from within a `run` step.
+Workflow jobs run on EAS Build infrastructure, so they receive the same built-in variables as EAS Build. The most useful ones in a workflow are listed below. The worker sets them on every job that runs on a virtual machine (VM), and they are read at runtime, so reference them from within a `run` step. For the complete list, see [Using environment variables with EAS Build](/eas/environment-variables/usage/#using-environment-variables-with-eas-build).
 
 | Variable               | Example value                          | Description                                                  |
 | ---------------------- | -------------------------------------- | ------------------------------------------------------------ |
@@ -273,7 +273,7 @@ The following variables are populated from build metadata and are available in [
 
 Workers also expose standard toolchain variables such as `HOME`, `PATH`, `LANG`, `ANDROID_HOME`, `ANDROID_SDK_ROOT`, and `JAVA_HOME`. Their exact values depend on the worker [image](/eas/workflows/syntax/#jobsjob_idimage) and are subject to change.
 
-> **warning** Variables prefixed with `__` (for example, `__WORKFLOW_JOB_ID`) are internal implementation details. They can change or be removed at any time, so don't depend on them.
+> **warning** If you print the full environment (for example, by running `env` in a step), you will also see variables prefixed with `__`, such as `__WORKFLOW_JOB_ID`. These are internal implementation details, are not surfaced in the dashboard, and can change or be removed at any time, so don't depend on them.
 
 ## Setting environment variables in a job
 
