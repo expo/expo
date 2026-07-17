@@ -5,14 +5,6 @@ import expo.modules.kotlin.services.Service
 import java.util.concurrent.Future
 
 interface ImageLoaderInterface : Service {
-  companion object {
-    /**
-     * Indicates that the image should keep its original size on the given axis.
-     * Matches the value of Glide's `Target.SIZE_ORIGINAL`.
-     */
-    const val SIZE_ORIGINAL = Int.MIN_VALUE
-  }
-
   interface ResultListener {
     fun onSuccess(bitmap: Bitmap)
 
@@ -42,8 +34,9 @@ interface ImageLoaderInterface : Service {
   /**
    * Loads image with no caching, decoded to fit within `maxWidth`×`maxHeight` while preserving
    * the aspect ratio, so that large images don't need to be fully decoded into memory.
+   * A `null` bound means the image keeps its original size on that axis.
    * Implementations that don't support bounded decoding fall back to the full-sized image.
    */
-  fun loadImageForManipulationFromURL(url: String, maxWidth: Int, maxHeight: Int, resultListener: ResultListener) =
+  fun loadImageForManipulationFromURL(url: String, maxWidth: Int?, maxHeight: Int?, resultListener: ResultListener) =
     loadImageForManipulationFromURL(url, resultListener)
 }

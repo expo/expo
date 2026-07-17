@@ -81,8 +81,8 @@ class ImageLoaderService(val context: Context) : ImageLoaderInterface {
 
   override fun loadImageForManipulationFromURL(
     url: String,
-    maxWidth: Int,
-    maxHeight: Int,
+    maxWidth: Int?,
+    maxHeight: Int?,
     resultListener: ImageLoaderInterface.ResultListener
   ) {
     val normalizedUrl = normalizeAssetsUrl(url)
@@ -94,7 +94,7 @@ class ImageLoaderService(val context: Context) : ImageLoaderInterface {
       // Downsample during decoding so that large images don't need to be fully decoded into memory.
       .centerInside()
       .load(normalizedUrl)
-      .into(resultListenerTarget(resultListener, maxWidth, maxHeight))
+      .into(resultListenerTarget(resultListener, maxWidth ?: Target.SIZE_ORIGINAL, maxHeight ?: Target.SIZE_ORIGINAL))
   }
 
   private fun resultListenerTarget(
