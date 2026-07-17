@@ -454,6 +454,7 @@ async function action({ packageName, sdk }: ActionOptions) {
     for (const { key, reason } of failures) {
       logger.error(`💥 Failed to generate docs API data for '${key}':`, reason);
     }
+    process.exitCode = 1;
     return;
   }
   logger.log(

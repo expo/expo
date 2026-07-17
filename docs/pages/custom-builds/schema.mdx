@@ -1963,6 +1963,209 @@ build:
   href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
 />
 
+#### `eas/posthog_capture_event`
+
+Sends an analytics event to [PostHog](https://posthog.com/). Use it to mark builds, releases, and other milestones on your PostHog timeline. Run `eas integrations:posthog:connect` to link a PostHog project and set the environment variables these functions read. `eas/posthog_capture_event` uses your public project API key. The other PostHog functions use a personal API key with the scope noted for each one. When you do not provide a `distinct_id`, the event is sent anonymously and does not create a PostHog [person profile](https://posthog.com/docs/data/persons).
+
+```yaml posthog-capture-event.yml
+build:
+  name: Build and mark the release in PostHog
+  steps:
+    - eas/build
+    - eas/posthog_capture_event:
+        name: Capture a PostHog event
+        inputs:
+          event: store_build_finished
+          properties:
+            platform: ios
+            profile: production
+```
+
+| Input          | Type      | Description                                                                                                                                                                                  |
+| -------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `event`        | `string`  | Required. The name of the event to send.                                                                                                                                                     |
+| `distinct_id`  | `string`  | The person to attribute the event to. When omitted, the event is sent anonymously and does not create a person profile.                                                                      |
+| `properties`   | `json`    | Properties to attach to the event.                                                                                                                                                           |
+| `api_key`      | `string`  | PostHog project API key. Defaults to the `EXPO_PUBLIC_POSTHOG_API_KEY` environment variable set by `eas integrations:posthog:connect`, falling back to `POSTHOG_API_KEY` if that is not set. |
+| `host`         | `string`  | PostHog host. Defaults to the `EXPO_PUBLIC_POSTHOG_HOST` environment variable, or `https://us.posthog.com`.                                                                                  |
+| `ignore_error` | `boolean` | When `true`, a failure to send the event is logged but does not fail the step. Defaults to `false`.                                                                                          |
+
+<BoxLink
+  title="eas/posthog_capture_event source code"
+  description="View the source code for the eas/posthog_capture_event function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/capturePosthogEvent.ts"
+/>
+
+#### `eas/posthog_flag_rollout`
+
+Enables, disables, or rolls out a [PostHog feature flag](https://posthog.com/docs/feature-flags). The function looks up the flag by key and then updates it. Provide at least one of `active`, `rollout_percentage`, or `payload`.
+
+```yaml posthog-flag-rollout.yml
+build:
+  name: Roll out a PostHog feature flag
+  steps:
+    - eas/posthog_flag_rollout:
+        name: Roll out the flag to 25 percent
+        inputs:
+          flag: new-checkout
+          rollout_percentage: 25
+```
+
+| Input                | Type      | Description                                                                                                                                                                                                                                                             |
+| -------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flag`               | `string`  | Required. The key of the feature flag to update.                                                                                                                                                                                                                        |
+| `active`             | `boolean` | Whether the flag is enabled.                                                                                                                                                                                                                                            |
+| `rollout_percentage` | `number`  | Percentage of users the flag rolls out to, as an integer from `0` to `100`. The function applies it to the flag's catch-all release condition and preserves other conditions. When the flag has no catch-all condition, the function applies it to the first condition. |
+| `payload`            | `json`    | Payload to attach to the flag.                                                                                                                                                                                                                                          |
+| `variant`            | `string`  | Variant key to store the `payload` under on a multivariate flag. Defaults to the flag's `true` payload.                                                                                                                                                                 |
+| `api_key`            | `string`  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `feature_flag:read` and `feature_flag:write` scopes.                                                                                                                 |
+| `project_id`         | `string`  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                                                                                                                                      |
+| `ignore_error`       | `boolean` | When `true`, a network error, a missing flag, or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error, or invalid input such as an out-of-range `rollout_percentage`, always fails the step.                           |
+
+<BoxLink
+  title="eas/posthog_flag_rollout source code"
+  description="View the source code for the eas/posthog_flag_rollout function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/rolloutPosthogFlag.ts"
+/>
+
+#### `eas/posthog_wait_for_metric`
+
+Pauses the build until a [HogQL](https://posthog.com/docs/hogql) query returns a number that satisfies a comparison. Use it to gate on a metric, such as holding until the error count over the last few minutes stays low. The function runs the query every `interval_seconds` until the comparison is true or `timeout_seconds` elapses.
+
+> **info** This step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
+
+```yaml posthog-wait-for-metric.yml
+build:
+  name: Gate on the error count
+  steps:
+    - eas/posthog_wait_for_metric:
+        name: Wait for the error count to stay low
+        inputs:
+          query: SELECT count() FROM events WHERE event = '$exception' AND timestamp > now() - INTERVAL 15 MINUTE
+          operator: lt
+          threshold: 10
+```
+
+| Input              | Type     | Description                                                                                                                       |
+| ------------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `query`            | `string` | Required. A HogQL query. The first column of the first row must be a single number.                                               |
+| `operator`         | `string` | Required. Comparison operator. One of `lt`, `lte`, `gt`, `gte`, or `eq`. The step clears when `value <operator> threshold` holds. |
+| `threshold`        | `number` | Required. The value to compare the query result against.                                                                          |
+| `timeout_seconds`  | `number` | Maximum time to wait, in seconds. Defaults to `600`.                                                                              |
+| `interval_seconds` | `number` | Time between checks, in seconds. Defaults to `30`.                                                                                |
+| `api_key`          | `string` | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `query:read` scope.            |
+| `project_id`       | `string` | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                |
+
+This function sets the following output:
+
+| Output  | Type     | Description                                     |
+| ------- | -------- | ----------------------------------------------- |
+| `value` | `string` | The metric value that satisfied the comparison. |
+
+<BoxLink
+  title="eas/posthog_wait_for_metric source code"
+  description="View the source code for the eas/posthog_wait_for_metric function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/waitForPosthogMetric.ts"
+/>
+
+#### `eas/posthog_wait_for_query`
+
+Pauses the build until a [HogQL](https://posthog.com/docs/hogql) query returns true. Use it when the condition is easier to express in the query itself. For a numeric comparison with an explicit threshold, use [`eas/posthog_wait_for_metric`](#easposthog_wait_for_metric) instead. The step clears when the first column of the first row is `true` or a nonzero number.
+
+> **info** Like `eas/posthog_wait_for_metric`, this step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
+
+```yaml posthog-wait-for-query.yml
+build:
+  name: Wait for a smoke test event
+  steps:
+    - eas/posthog_wait_for_query:
+        name: Wait for the smoke test to pass
+        inputs:
+          query: SELECT count() > 0 FROM events WHERE event = 'smoke_test_passed' AND timestamp > now() - INTERVAL 30 MINUTE
+```
+
+| Input              | Type     | Description                                                                                                            |
+| ------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `query`            | `string` | Required. A HogQL query. The step clears when the first column of the first row is `true` or a nonzero number.         |
+| `timeout_seconds`  | `number` | Maximum time to wait, in seconds. Defaults to `600`.                                                                   |
+| `interval_seconds` | `number` | Time between checks, in seconds. Defaults to `30`.                                                                     |
+| `api_key`          | `string` | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `query:read` scope. |
+| `project_id`       | `string` | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                     |
+
+<BoxLink
+  title="eas/posthog_wait_for_query source code"
+  description="View the source code for the eas/posthog_wait_for_query function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/waitForPosthogQuery.ts"
+/>
+
+#### `eas/posthog_annotation`
+
+Creates a [PostHog annotation](https://posthog.com/docs/data/annotations) on the project timeline. Annotations show up on your PostHog charts, which makes them useful for marking builds and releases next to the metrics they affect.
+
+```yaml posthog-annotation.yml
+build:
+  name: Annotate the release in PostHog
+  steps:
+    - eas/posthog_annotation:
+        name: Create a PostHog annotation
+        inputs:
+          content: Published a production build
+```
+
+| Input          | Type      | Description                                                                                                                                                  |
+| -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `content`      | `string`  | Required. The annotation text.                                                                                                                               |
+| `date_marker`  | `string`  | The ISO 8601 timestamp the annotation is pinned to. Defaults to the current time.                                                                            |
+| `api_key`      | `string`  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `annotation:write` scope.                                 |
+| `project_id`   | `string`  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                           |
+| `ignore_error` | `boolean` | When `true`, a network error or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error always fails the step. |
+
+<BoxLink
+  title="eas/posthog_annotation source code"
+  description="View the source code for the eas/posthog_annotation function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/createPosthogAnnotation.ts"
+/>
+
+#### `eas/posthog_upload_sourcemaps`
+
+Uploads JavaScript source maps to PostHog so that PostHog symbolicates stack traces in [error tracking](/guides/using-posthog/#error-tracking). Run it after the step that produces your bundle, in the same job, so the bundle and source maps are on disk. Configure the PostHog Metro config from the [Source maps guide](/guides/using-posthog/#source-maps) so bundles carry the chunk IDs that match them to their source maps.
+
+> **warning** This step runs the PostHog CLI, which cannot tell a permissions error apart from any other failure. Unlike the other PostHog functions, setting `ignore_error: true` also hides authentication and scope errors.
+
+```yaml posthog-upload-sourcemaps.yml
+build:
+  name: Export and upload source maps
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - run:
+        name: Export the bundle and source maps
+        command: npx expo export --source-maps --platform ios
+    - eas/posthog_upload_sourcemaps:
+        name: Upload source maps to PostHog
+        inputs:
+          directory: dist
+```
+
+| Input          | Type      | Description                                                                                                              |
+| -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `directory`    | `string`  | The directory that contains the bundle and source maps, relative to the working directory. Defaults to `dist`.           |
+| `api_key`      | `string`  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires source map upload access. |
+| `project_id`   | `string`  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                       |
+| `ignore_error` | `boolean` | When `true`, a failed upload is logged but does not fail the step. Defaults to `false`.                                  |
+
+<BoxLink
+  title="eas/posthog_upload_sourcemaps source code"
+  description="View the source code for the eas/posthog_upload_sourcemaps function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadPosthogSourcemaps.ts"
+/>
+
 ### Using built-in EAS functions to build an app
 
 Using the built-in EAS functions you can recreate the default EAS Build process for different build types.

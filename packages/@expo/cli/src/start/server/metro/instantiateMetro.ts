@@ -371,6 +371,8 @@ export async function instantiateMetroAsync(
   const projectRoot = metroBundler.projectRoot;
   const getMetroBundler = () => metro.getBundler().getBundler();
 
+  const doneInstantiate = event.span();
+
   const {
     config: metroConfig,
     setEventReporter,
@@ -484,7 +486,7 @@ export async function instantiateMetroAsync(
     );
   });
 
-  event('instantiate', {
+  doneInstantiate('instantiate', {
     atlas: env.EXPO_ATLAS,
     workers: metroConfig.maxWorkers ?? null,
     host: address?.address ?? null,

@@ -8,8 +8,7 @@ import {
 import { hasCredentials } from '../../api/user/UserSettings';
 import { env } from '../../utils/env';
 import * as ProjectDevices from '../project/devices';
-
-const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
+import { debugEvent } from './events';
 
 export class DevelopmentSession {
   /** If the `startAsync` was successfully called. Underscored + public so tests can observe when
@@ -41,11 +40,6 @@ export class DevelopmentSession {
     runtime: 'native' | 'web';
   }): Promise<void> {
     if (env.CI || env.EXPO_OFFLINE) {
-      debug(
-        env.CI
-          ? 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in CI.'
-          : 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in offline-mode.'
-      );
       return;
     }
 
@@ -54,14 +48,11 @@ export class DevelopmentSession {
         const deviceIds = await this.getDeviceInstallationIdsAsync();
 
         if (!hasCredentials() && !deviceIds?.length) {
-          debug(
-            'Development session will not ping because the user is not authenticated and there are no devices.'
-          );
           return;
         }
 
         if (this.url) {
-          debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
+          debugEvent('session_ping', { runtime, url: this.url });
           this.abortController = new AbortController();
           await updateDevelopmentSessionAsync({
             url: this.url,
@@ -73,7 +64,7 @@ export class DevelopmentSession {
           this._hasActiveSession = true;
         }
       } catch (error: any) {
-        debug(`Error updating development session API: ${error}`);
+        debugEvent('session_ping_failed', { error: debugEvent.error(error as Error) });
       } finally {
         this.abortController = undefined;
       }
@@ -121,7 +112,7 @@ export class DevelopmentSession {
 
       return true;
     } catch (error: any) {
-      debug(`Error closing development session API: ${error}`);
+      debugEvent('session_close_failed', { error: debugEvent.error(error as Error) });
       return false;
     }
   }

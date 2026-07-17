@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Add `redirectTo` to protected routes and render guarded screens as redirects instead of removing them from navigators. ([#47744](https://github.com/expo/expo/pull/47744) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
 - [android] Support `Stack.Toolbar.Badge` in header left/right placements ([#46537](https://github.com/expo/expo/pull/46537) by [@benjaminkomen](https://github.com/benjaminkomen))
@@ -31,6 +33,7 @@
 
 ### 💡 Others
 
+- Move `@testing-library/jest-dom` and `@testing-library/user-event` from `dependencies` to `devDependencies` ([#47820](https://github.com/expo/expo/pull/47820) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Rewrite native tabs using standard-navigation ([#46457](https://github.com/expo/expo/pull/46457) by [@Ubax](https://github.com/Ubax))
 - [Internal] Split `useLoaderData()` into a document cache and a per-mount Suspense store ([#47365](https://github.com/expo/expo/pull/47365) by [@hassankhan](https://github.com/hassankhan))
 

@@ -17,7 +17,6 @@ export default function SecondRoute() {
       <SecondScreen />
     </Suspense>
   );
-
 }
 
 const SecondScreen = () => {
@@ -41,4 +40,4 @@ const SecondScreen = () => {
       </SiteLinks>
     </>
   );
-}
+};

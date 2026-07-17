@@ -145,7 +145,7 @@ module Expo
 
     # Spawns `expo-module-autolinking generate-modules-provider` command.
     public def generate_modules_provider(target_name, target_path)
-      Process.wait IO.popen(generate_modules_provider_command_args(target_path)).pid
+      Process.wait IO.popen(generate_modules_provider_command_args(target_name, target_path)).pid
     end
 
     # If there is any package to autolink.
@@ -253,8 +253,8 @@ module Expo
       node_command_args('resolve').concat(resolve_command_args)
     end
 
-    public def generate_modules_provider_command_args(target_path)
-      command_args = ['--target', target_path, "--podfile-properties-file-path", "\"#{@podfile_properties_path}\""]
+    public def generate_modules_provider_command_args(target_name, target_path)
+      command_args = ['--target', target_path, '--target-name', target_name, "--podfile-properties-file-path", "\"#{@podfile_properties_path}\""]
 
       if !custom_app_root.nil?
         command_args.concat(['--app-root', custom_app_root])

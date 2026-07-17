@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-07-14T08:46:05.593Z"
+    "fetchedAt": "2026-07-15T08:48:49.153Z"
   },
-  "totalSkills": 20,
+  "totalSkills": 21,
   "skills": [
     {
       "name": "eas-app-stores",
@@ -89,6 +89,12 @@
       "category": "framework",
       "description": "Build beautiful, native-feeling Expo screens. Covers Apple HIG styling, semantic colors, native controls, SF Symbols, media, animations, visual effects, gradients, storage, and responsive layout. For routing and navigation, use the expo-router skill.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-native-ui/SKILL.md"
+    },
+    {
+      "name": "expo-project-structure",
+      "category": "framework",
+      "description": "Folder structure for a new Expo app. Use when scaffolding or laying out a new Expo project with Expo Router, or deciding where a file should live in one. For new projects only — never restructure an existing app to match.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-project-structure/SKILL.md"
     },
     {
       "name": "expo-router",

@@ -1,6 +1,6 @@
 import AVFoundation
 
-struct BarcodeUtils {
+public struct BarcodeUtils {
   static func getResultFrom(_ features: [CIFeature]) -> [[AnyHashable: Any]?] {
     var result = [[AnyHashable: Any]?]()
 
@@ -22,31 +22,13 @@ struct BarcodeUtils {
     result["data"] = codeFeature.messageString
 
     if !codeFeature.bounds.isEmpty {
-      result["cornerPoints"] = [
+      result["cornerPoints"] = cornerPoints(from: [
         codeFeature.topLeft,
         codeFeature.topRight,
         codeFeature.bottomRight,
         codeFeature.bottomLeft
-      ].map { point in
-        [
-          "x": point.x,
-          "y": point.y
-        ]
-      }
-
-      let origin = codeFeature.bounds.origin
-      let size = codeFeature.bounds.size
-
-      result["bounds"] = [
-        "origin": [
-          "x": origin.x,
-          "y": origin.y
-        ],
-        "size": [
-          "width": size.width,
-          "height": size.height
-        ]
-      ]
+      ])
+      result["bounds"] = bounds(from: codeFeature.bounds)
     } else {
       addEmptyCornerPoints(to: &result)
     }
@@ -54,17 +36,19 @@ struct BarcodeUtils {
     return result
   }
 
-  static func addEmptyCornerPoints(to result: inout [String: Any]) {
-    result["cornerPoints"] = []
-    result["bounds"] = [
-      "origin": [
-        "x": 0,
-        "y": 0
-      ],
-      "size": [
-        "width": 0,
-        "height": 0
-      ]
+  static func cornerPoints(from points: [CGPoint]) -> [[String: Any]] {
+    points.map { ["x": $0.x, "y": $0.y] }
+  }
+
+  static func bounds(from rect: CGRect) -> [String: Any] {
+    [
+      "origin": ["x": rect.origin.x, "y": rect.origin.y],
+      "size": ["width": rect.size.width, "height": rect.size.height]
     ]
+  }
+
+  public static func addEmptyCornerPoints(to result: inout [String: Any]) {
+    result["cornerPoints"] = []
+    result["bounds"] = bounds(from: .zero)
   }
 }

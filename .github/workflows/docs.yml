@@ -59,6 +59,12 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
+      - name: 🛠 Build packages required by docs API data generation
+        if: steps.expo-caches.outputs.docs-api-data-hit != 'true'
+        run: pnpm turbo build --filter expo-task-manager
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 📝 Regenerate `unversioned` data for Docs
         if: steps.expo-caches.outputs.docs-api-data-hit != 'true'
         run: expotools generate-docs-api-data

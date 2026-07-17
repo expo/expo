@@ -22,6 +22,7 @@
 - Fix `asyncRoutes` failing on Android and iOS with `Requiring unknown module` ([#46870](https://github.com/expo/expo/pull/46870) by [@hassankhan](https://github.com/hassankhan))
 - Fix `Response.blob()` in `expo/fetch` throwing when the global `Blob` is react-native's implementation. ([#47538](https://github.com/expo/expo/pull/47538) by [@kudo](https://github.com/kudo))
 - [iOS] Fix `Linking.getInitialURL()` returning `null` and deep links being dropped when a URL cold-starts an app on the UIKit scene life cycle. ([#47628](https://github.com/expo/expo/pull/47628) by [@tsapeta](https://github.com/tsapeta))
+- Fix `import.meta.url` being `null` on web when read after the bundle's synchronous execution (from effects, async code, or dynamic imports). ([#47802](https://github.com/expo/expo/pull/47802) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 
@@ -31,6 +32,7 @@
 - [Internal] Return thenable with sync-bailout for async require calls ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
 - [Internal] Update logbox imports ([#46640](https://github.com/expo/expo/pull/46640) by [@kitten](https://github.com/kitten))
 - Re-export more expo-modules-core APIs ([#45987](https://github.com/expo/expo/pull/45987) by [@Wenszel](https://github.com/Wenszel))
+- Update `URL` and `URLSearchParams` implementation to support IDNA/TR-46 and improve performance. Spec-adherance has increased and few gaps should now be noticeable compared to browsers ([#47813](https://github.com/expo/expo/pull/47813) by [@kitten](https://github.com/kitten))
 
 ## 56.0.5 — 2026-05-26
 

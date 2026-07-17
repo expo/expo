@@ -376,6 +376,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     if photoOutput.isFastCapturePrioritizationSupported {
       photoOutput.isFastCapturePrioritizationEnabled = true
     }
+    photoOutput.isAutoDeferredPhotoDeliveryEnabled = false
   }
 
   private func startSession() {

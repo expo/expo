@@ -85,9 +85,13 @@ export const home = [
         expanded: false,
       }
     ),
-    makeGroup('Agent toolkits', [makePage('agents/argent.mdx')], {
-      expanded: false,
-    }),
+    makeGroup(
+      'Agent toolkits',
+      [makePage('agents/agent-device.mdx'), makePage('agents/argent.mdx')],
+      {
+        expanded: false,
+      }
+    ),
     makePage('llms.mdx'),
   ]),
   makeSection('Develop', [
@@ -376,7 +380,11 @@ export const general = [
       makePage('guides/using-bugsnag.mdx'),
       makePage('guides/using-logrocket.mdx'),
       makePage('guides/using-vexo.mdx'),
-      makePage('guides/using-posthog.mdx'),
+      makeGroup(
+        'Using PostHog',
+        [makePage('guides/using-posthog/index.mdx'), makePage('guides/using-posthog/recipes.mdx')],
+        { expanded: false }
+      ),
     ]),
     makeGroup('Authentication', [
       makePage('guides/using-authentication.mdx'),
@@ -546,9 +554,10 @@ export const eas = [
     ),
   ]),
   makeSection('EAS Submit', [
-    makePage('submit/introduction.mdx'),
     makePage('submit/android.mdx'),
     makePage('submit/ios.mdx'),
+    makePage('submit/android-manual.mdx'),
+    makePage('submit/ios-manual.mdx'),
     makePage('submit/eas-json.mdx'),
   ]),
   makeSection('EAS Hosting', [

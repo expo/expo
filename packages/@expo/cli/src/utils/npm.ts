@@ -9,9 +9,8 @@ import slugify from 'slugify';
 import { Readable } from 'stream';
 
 import { CommandError } from './errors';
+import { event } from './events';
 import { extractStream } from './tar';
-
-const debug = require('debug')('expo:utils:npm') as typeof console.log;
 
 export function sanitizeNpmPackageName(name: string): string {
   // https://github.com/npm/validate-npm-package-name/#naming-rules
@@ -46,7 +45,7 @@ export async function npmViewAsync(...props: string[]): Promise<JSONValue> {
   const cmd = ['view', ...props, '--json'];
   const results = (await spawnAsync('npm', cmd)).stdout?.trim();
   const cmdString = `npm ${cmd.join(' ')}`;
-  debug('Run:', cmdString);
+  event('npm_run', { command: cmdString });
   if (!results) {
     return null;
   }
@@ -152,7 +151,7 @@ export async function downloadAndExtractNpmModuleAsync(
   props: ExtractProps
 ): Promise<string> {
   const url = await getNpmUrlAsync(npmName);
-  debug('Fetch from URL:', url);
+  event('npm_fetch_url', { url });
   return await extractNpmTarballFromUrlAsync(url, output, props);
 }
 

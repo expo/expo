@@ -6,12 +6,15 @@
 
 ### 🎉 New features
 
+- [Android] Set `CMAKE_OBJECT_PATH_MAX=1024` by default for the app and all library subprojects that build native code with CMake, so long object file paths (for example in pnpm monorepos on Windows) no longer fail the build. Configurable with the `expo.android.cmakeObjectPathMax` Gradle property. ([#47791](https://github.com/expo/expo/pull/47791) by [@ide](https://github.com/ide))
 - [Android] Apply the `android.cmakeVersion` build property to the app and all library subprojects. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
 - Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
 - Added support for compile-only inline module files, which are compiled into the target without being registered as Expo modules. ([#46969](https://github.com/expo/expo/pull/46969) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
+- [iOS] Pass target name to the generateModulesProviderCommand to match it against inline modules targets, when checking if inline modules should be autolinked with that target. ([#47502](https://github.com/expo/expo/pull/47502) by [@HubertBer](https://github.com/HubertBer))
+- [Android] Scan the whole Kotlin file for its `package` declaration when registering inline modules, so modules with long comments (for example, a license header) before the `package` declaration are no longer silently skipped. ([#47656](https://github.com/expo/expo/pull/47656) by [@HubertBer](https://github.com/HubertBer))
 - [iOS] Fix a duplicate pod error (`multiple dependencies with different sources`) for precompiled modules in a Podfile with multiple targets. `prebuilt_react_active?` now mirrors React Native's default for `RCT_USE_PREBUILT_RNCORE` (prebuilt unless explicitly `0`), since `use_react_native!` only sets it after `use_expo_modules!` has run. ([#47329](https://github.com/expo/expo/pull/47329) by [@janicduplessis](https://github.com/janicduplessis))
 - [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.4.1` upstream defaults, adding the `CSS/core/transition` and `PseudoStyles` header mappings along with the missing `IOS_CSS_CORE_ANIMATION` and `USE_ANIMATION_BACKEND` feature flags so its XCFramework builds. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 - Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))

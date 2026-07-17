@@ -2,8 +2,6 @@ import { loadModule } from '@expo/require-utils';
 import type { IncomingMessage } from 'node:http';
 import { type WebSocket, WebSocketServer } from 'ws';
 
-const debug = require('debug')('expo:start:server:devtools') as typeof console.log;
-
 /**
  * Handler default-exported by a plugin's `serverEntryPoint`. Receives a fetch API `Request`
  * with the plugin endpoint prefix stripped from the URL. Returning `null`/`undefined` falls
@@ -49,7 +47,6 @@ export async function loadRequestHandlerAsync({
   packageName: string;
   serverEntryPoint: string;
 }): Promise<DevToolsPluginRequestHandler> {
-  debug('Loading DevTools plugin server module: %s', serverEntryPoint);
   const serverModule = (await loadModule(serverEntryPoint)) as
     | DevToolsPluginRequestHandler
     | { default?: DevToolsPluginRequestHandler };
@@ -72,7 +69,6 @@ export async function loadWebSocketServerAsync({
   packageName: string;
   serverEntryPoint: string;
 }): Promise<Record<string, WebSocketServer>> {
-  debug('Loading DevTools plugin WebSocket server module: %s', serverEntryPoint);
   const serverModule = (await loadModule(serverEntryPoint)) as {
     webSocketHandlers?: Record<string, DevToolsPluginWebSocketHandler>;
   };

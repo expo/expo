@@ -50,8 +50,6 @@ interface ModuleDescription {
   moduleTestRe: RegExp;
 }
 
-const debug = require('debug')('expo:start:server:metro:fallback-resolver') as typeof console.log;
-
 /** Converts a list of module names to a regex that may either match bare module names or sub-modules of modules */
 const dependenciesToRegex = (dependencies: string[]) =>
   new RegExp(`^(?:${dependencies.join('|')})(?:$|/)`);
@@ -67,7 +65,6 @@ const getModuleDescriptionWithResolver = (
   try {
     const resolution = resolve(path.join(originModuleName, 'package.json'));
     if (resolution.type !== 'sourceFile') {
-      debug(`Fallback module resolution failed for origin module: ${originModuleName})`);
       return null;
     }
     filePath = resolution.filePath;
@@ -77,9 +74,6 @@ const getModuleDescriptionWithResolver = (
       return null;
     }
   } catch (error: any) {
-    debug(
-      `Fallback module resolution threw: ${error.constructor.name}. (module: ${filePath || originModuleName})`
-    );
     return null;
   }
   let dependencies: string[] = [];
@@ -179,7 +173,6 @@ export function createFallbackModuleResolver({
           originModulePath: path.join(projectRoot, 'index.js'),
         };
         const res = getStrictResolver(context, platform)('./App');
-        debug(`"../../App" resolution for ${platform}: "./App" -> from origin: ${projectRoot}`);
         return res;
       } else {
         return null;
@@ -206,9 +199,6 @@ export function createFallbackModuleResolver({
           originModulePath: path.join(moduleDescription.originModulePath, 'index.js'),
         };
         const res = getStrictResolver(context, platform)(moduleName);
-        debug(
-          `Fallback resolution for ${platform}: ${moduleName} -> from origin: ${originModuleName}`
-        );
         return res;
       }
     }
@@ -227,7 +217,6 @@ export function createFallbackModuleResolver({
         },
       };
       const res = getStrictResolver(context, platform)(moduleName);
-      debug(`Self resolution for ${platform}: ${moduleName} -> from origin: ${pkg.rootPath}`);
       return res;
     }
 
