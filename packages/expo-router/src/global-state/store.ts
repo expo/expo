@@ -5,7 +5,6 @@ import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
 import type { Href } from '../types';
-import * as SplashScreen from '../views/Splash';
 import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
 import { getCachedRouteInfo, routeInfoSubscribers } from './routeInfoCache';
 import type {
@@ -33,21 +32,6 @@ type StoreRef = {
 export const storeRef = {
   current: {} as StoreRef,
 };
-
-let splashScreenAnimationFrame: number | undefined;
-let hasAttemptedToHideSplash = false;
-
-export function getSplashScreenAnimationFrame() {
-  return splashScreenAnimationFrame;
-}
-
-export function setSplashScreenAnimationFrame(value: number | undefined) {
-  splashScreenAnimationFrame = value;
-}
-
-export function setHasAttemptedToHideSplash(value: boolean) {
-  hasAttemptedToHideSplash = value;
-}
 
 // Dev-only invariant: assert a committed state is complete at every level (stale: false, keyed,
 // explicit in-range index, non-empty routeNames), recursing into every route's nested state. Throws
@@ -131,18 +115,6 @@ export const store = {
   setFocusedState(state: FocusedRouteState) {
     const routeInfo = getCachedRouteInfo(state);
     storeRef.current.routeInfo = routeInfo;
-  },
-  // TODO(@ubax): Refactor onReady logic as it probably should live somewhere else then store
-  onReady() {
-    if (!hasAttemptedToHideSplash) {
-      setHasAttemptedToHideSplash(true);
-      // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-      setSplashScreenAnimationFrame(
-        requestAnimationFrame(() => {
-          SplashScreen._internal_maybeHideAsync?.();
-        })
-      );
-    }
   },
   onStateChange(newState: ReactNavigationState | undefined) {
     if (!newState) {

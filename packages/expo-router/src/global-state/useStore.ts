@@ -11,18 +11,14 @@ import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConf
 import { getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
+import { cancelSplashScreenAnimationFrame } from '../navigationEvents/splash';
 import { useNavigationContainerRef } from '../react-navigation/native';
 import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 import { getRouteInfoFromState } from './getRouteInfoFromState';
 import { getCachedRouteInfo, setCachedRouteInfo } from './routeInfoCache';
-import {
-  store,
-  storeRef,
-  getSplashScreenAnimationFrame,
-  setSplashScreenAnimationFrame,
-} from './store';
+import { store, storeRef } from './store';
 import type { ReactNavigationState, StoreRedirects } from './types';
 
 export function useStore(
@@ -156,13 +152,7 @@ export function useStore(
 
   useEffect(() => {
     return () => {
-      // listener();
-
-      const animationFrame = getSplashScreenAnimationFrame();
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-        setSplashScreenAnimationFrame(undefined);
-      }
+      cancelSplashScreenAnimationFrame();
     };
   });
 

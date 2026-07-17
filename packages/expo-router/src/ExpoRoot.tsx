@@ -15,6 +15,7 @@ import { StoreContext } from './global-state/storeContext';
 import { useStore } from './global-state/useStore';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { handleNavigationOnReady } from './navigationEvents/navigation';
+import { handleSplashScreenOnReady } from './navigationEvents/splash';
 import { Screen } from './primitives';
 import type { LinkingOptions, NavigationAction } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
@@ -89,10 +90,9 @@ const initialUrl =
     ? new URL(window.location.href)
     : undefined;
 
-// TODO(@ubax): Refactor onReady logic and use listeners pattern
 function onNavigationReady() {
   handleNavigationOnReady();
-  store.onReady();
+  handleSplashScreenOnReady();
 }
 
 function ContextNavigator({
