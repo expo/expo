@@ -291,7 +291,7 @@ jobs:
 
 ### Share a value with later steps in the same job
 
-To compute a value in one step and read it in later steps of the same job, use the `set-env` command, which is available on the worker's `PATH`. It's the environment-variable counterpart to [`set-output`](/eas/workflows/syntax/#set-output): `set-output` exposes a named job output, while `set-env` exposes an environment variable to the job's subsequent steps.
+Use the [`set-env`](/eas/workflows/syntax/#set-env) command to compute a value in one step and read it in later steps of the same job. The command is available on the worker's `PATH`. It's the environment-variable counterpart to [`set-output`](/eas/workflows/syntax/#set-output): `set-output` exposes a named job output, while `set-env` exposes an environment variable to the job's subsequent steps.
 
 ```yaml
 jobs:
