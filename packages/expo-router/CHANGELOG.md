@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Upgrade react-native-screens to 4.26.0 ([#47770](https://github.com/expo/expo/pull/47770) by [@Ubax](https://github.com/Ubax))
+
 ## 57.0.7 — 2026-07-17
 
 _This version does not introduce any user-facing changes._

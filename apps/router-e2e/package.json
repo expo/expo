@@ -85,7 +85,7 @@
     "react-native-gesture-handler": "~2.32.0",
     "react-native-pager-view": "^8.0.2",
     "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.25.2",
+    "react-native-screens": "4.26.0",
     "react-native-tab-view": "^4.3.0",
     "react-native-web": "^0.21.0",
     "react-native-webview": "13.16.1"
