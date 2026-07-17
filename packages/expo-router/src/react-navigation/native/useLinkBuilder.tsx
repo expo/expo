@@ -48,8 +48,28 @@ export function useBuildHref() {
             navigation.getState().routes.some((r) => r.key === route.key)
           : false;
 
+      // Decompose the legacy nested `{ screen, params }` form into real nested `state` so the state
+      // handed to `getPathFromState` is wire-free — `getPathFromState` walks `route.state` and never
+      // reads `params.screen`. This is the contained navigate/Link compat for the retired
+      // structure-param shape (this builder is the only remaining producer of that shape).
+      const stateFromScreenParams = (value: object | undefined): MinimalState | undefined => {
+        if (value == null || !('screen' in value) || typeof value.screen !== 'string') {
+          return undefined;
+        }
+        const inner = 'params' in value ? (value.params as object | undefined) : undefined;
+        return {
+          routes: [{ name: value.screen, params: inner, state: stateFromScreenParams(inner) }],
+        };
+      };
+      const ownParams = params
+        ? Object.fromEntries(
+            Object.entries(params).filter(
+              ([key]) => key !== 'screen' && key !== 'params' && key !== 'initial'
+            )
+          )
+        : undefined;
       const stateForRoute: MinimalState = {
-        routes: [{ name, params }],
+        routes: [{ name, params: ownParams, state: stateFromScreenParams(params) }],
       };
 
       const constructState = (state: MinimalState | undefined): MinimalState => {

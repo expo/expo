@@ -190,13 +190,11 @@ export function getPathDataFromState<ParamList extends object>(
         // route.push('/home/(profile)')  --> This should navigate to /home/(profile)/me
         const screens = currentOptions[route.name]!.screens;
 
-        // Determine what screen the user wants to navigate to. If no screen is specified, assume there is an index screen
-        // In the examples above, this ensures that /home/(a) navigates to /home/(a)/index
-        const targetScreen =
-          // This is typed as unknown, so we need to add these extra assertions
-          route.params && 'screen' in route.params && typeof route.params.screen === 'string'
-            ? route.params.screen
-            : 'index';
+        // A group navigator reached without a nested state defaults to its `index` screen (e.g.
+        // `/home/(a)` → `/home/(a)/index`). A nested target is now always carried as real
+        // `route.state` (a navigate to a specific screen decomposes `{ screen }` into state in the
+        // navigate/Link compat builder), so there is no `params.screen` to read here.
+        const targetScreen = 'index';
 
         // If the target screen is not in the screens object, default to the first screen
         // In the examples above, this ensures that /home/(profile) navigates to /home/(profile)/me
