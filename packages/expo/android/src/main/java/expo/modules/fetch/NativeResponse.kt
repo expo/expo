@@ -8,6 +8,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -141,8 +142,15 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
 
     coroutineScope.launch {
       val stream = response.body?.source() ?: return@launch
-      pumpResponseBodyStream(stream)
-      response.close()
+      try {
+        pumpResponseBodyStream(stream)
+      } finally {
+        // Close off the modules queue so the blocking call doesn't stall it.
+        // NonCancellable guarantees the response is released even if the scope is canceled mid-stream.
+        withContext(NonCancellable + Dispatchers.IO) {
+          response.close()
+        }
+      }
 
       if (this@NativeResponse.state == ResponseState.BODY_STREAMING_STARTED) {
         emit("didComplete")
