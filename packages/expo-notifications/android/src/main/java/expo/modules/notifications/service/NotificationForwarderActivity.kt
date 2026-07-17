@@ -23,9 +23,17 @@ class NotificationForwarderActivity : Activity() {
       sendBroadcast(broadcastIntent)
     } catch (e: IllegalArgumentException) {
       Log.e("expo-notifications", "Failed to handle notification response: could not recover notification data from intent extras. This may happen on some Android versions. Opening app to foreground.", e)
-      // Open the app anyway so the user isn't stuck
-      packageManager.getLaunchIntentForPackage(packageName)?.let {
-        startActivity(it)
+      // Open the app anyway so the user isn't stuck. `getLaunchIntentForPackage`
+      // can itself throw on some OEM ROMs (observed as NullPointerException
+      // "class name is null" when no launcher activity resolves for the package),
+      // so guard the fallback too — a failed notification forward must never crash
+      // the app on tap.
+      try {
+        packageManager.getLaunchIntentForPackage(packageName)?.let {
+          startActivity(it)
+        }
+      } catch (fallbackError: Exception) {
+        Log.e("expo-notifications", "Failed to open app to foreground after a notification response failure.", fallbackError)
       }
     }
     finish()
