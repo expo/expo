@@ -89,7 +89,7 @@
     "react-native-pager-view": "8.0.2",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.26.0-nightly-20260625-9b9b39fa5",
+    "react-native-screens": "4.26.0",
     "react-native-svg": "15.15.4",
     "react-native-view-shot": "4.0.3",
     "react-native-webview": "13.16.1",
