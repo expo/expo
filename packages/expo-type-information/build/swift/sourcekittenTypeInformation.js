@@ -513,6 +513,19 @@ async function parseModuleFunctionSubstructure(substructure, file, options, isSt
         isStatic,
     };
 }
+async function parseModuleAsyncFunctionSubstructure(substructure, file, options, isStatic) {
+    const functionDeclaration = await parseModuleFunctionSubstructure(substructure, file, options, isStatic);
+    const lastArgument = functionDeclaration.arguments[functionDeclaration.arguments.length - 1];
+    if (!lastArgument) {
+        return functionDeclaration;
+    }
+    const isPromiseType = lastArgument.type.kind === typeInformation_1.TypeKind.IDENTIFIER &&
+        lastArgument.type.type === 'Promise';
+    if (isPromiseType) {
+        functionDeclaration.arguments.pop();
+    }
+    return functionDeclaration;
+}
 async function parseModulePropDeclaration(substructure, file, options) {
     const definitionParams = substructure['key.substructure'];
     const nameSubstrucutre = definitionParams[0];
@@ -678,10 +691,10 @@ async function parseModuleStructure(moduleStructure, name, definitionOffset, opt
                 break;
             }
             case 'AsyncFunction':
-                moduleClassDeclaration.asyncFunctions.push(await parseModuleFunctionSubstructure(structure, file, options, false));
+                moduleClassDeclaration.asyncFunctions.push(await parseModuleAsyncFunctionSubstructure(structure, file, options, false));
                 break;
             case 'StaticAsyncFunction':
-                moduleClassDeclaration.asyncFunctions.push(await parseModuleFunctionSubstructure(structure, file, options, true));
+                moduleClassDeclaration.asyncFunctions.push(await parseModuleAsyncFunctionSubstructure(structure, file, options, true));
                 break;
             case 'StaticFunction':
                 moduleClassDeclaration.functions.push(await parseModuleFunctionSubstructure(structure, file, options, true));
