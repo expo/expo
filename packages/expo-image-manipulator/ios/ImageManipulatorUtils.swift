@@ -7,15 +7,24 @@ internal typealias SaveImageResult = (url: URL, data: Data)
 /**
  Loads the image from given URL.
  */
-internal func loadImage(atUrl url: URL, appContext: AppContext) async throws -> UIImage {
+internal func loadImage(atUrl url: URL, appContext: AppContext, options loadOptions: ImageLoadOptions? = nil) async throws -> UIImage {
+  let maxWidth = loadOptions?.maxWidth.map(Double.init)
+  let maxHeight = loadOptions?.maxHeight.map(Double.init)
+
   if url.scheme == "data" {
-    guard let data = try? Data(contentsOf: url), let image = UIImage(data: data) else {
+    guard let data = try? Data(contentsOf: url) else {
+      throw CorruptedImageDataException()
+    }
+    if let image = decodeDownsampledImage(data: data, maxWidth: maxWidth, maxHeight: maxHeight) {
+      return image
+    }
+    guard let image = UIImage(data: data) else {
       throw CorruptedImageDataException()
     }
     return image
   }
   if url.scheme == "ph" || url.scheme == "assets-library" {
-    return try await loadImageFromPhotoLibrary(url: url)
+    return try await loadImageFromPhotoLibrary(url: url, maxWidth: maxWidth, maxHeight: maxHeight)
   }
 
   guard FileSystemUtilities.isReadableFile(appContext, url) else {
@@ -25,13 +34,18 @@ internal func loadImage(atUrl url: URL, appContext: AppContext) async throws -> 
 
     do {
       if let result = try await imageLoader.loadImage(for: url) {
-        return result
+        // The image loader interface can't decode within bounds, so apply them after loading.
+        return downscaledIfExceedsBounds(result, maxWidth: maxWidth, maxHeight: maxHeight)
       }
     } catch {
       throw ImageLoadingFailedException((error as NSError).debugDescription)
     }
 
     throw ImageLoadingFailedException("")
+  }
+
+  if let image = decodeDownsampledImage(at: url, maxWidth: maxWidth, maxHeight: maxHeight) {
+    return image
   }
 
   // Read local files directly so UIKit preserves HEIC/EXIF orientation metadata.
@@ -44,11 +58,19 @@ internal func loadImage(atUrl url: URL, appContext: AppContext) async throws -> 
 /**
  Loads the image from user's photo library.
  */
-internal func loadImageFromPhotoLibrary(url: URL) async throws -> UIImage {
+internal func loadImageFromPhotoLibrary(url: URL, maxWidth: Double? = nil, maxHeight: Double? = nil) async throws -> UIImage {
   guard let asset = retrieveAsset(from: url) else {
     throw ImageNotFoundException()
   }
-  let size = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
+  let assetWidth = Double(asset.pixelWidth)
+  let assetHeight = Double(asset.pixelHeight)
+  let size: CGSize
+  if let maxPixelSize = downsampledMaxPixelSize(width: assetWidth, height: assetHeight, maxWidth: maxWidth, maxHeight: maxHeight) {
+    let scale = maxPixelSize / max(assetWidth, assetHeight)
+    size = CGSize(width: (assetWidth * scale).rounded(), height: (assetHeight * scale).rounded())
+  } else {
+    size = CGSize(width: assetWidth, height: assetHeight)
+  }
   let options = PHImageRequestOptions()
 
   options.resizeMode = .exact

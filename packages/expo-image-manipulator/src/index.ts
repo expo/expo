@@ -3,7 +3,7 @@ export { ImageManipulator, manipulateAsync, useImageManipulator } from './ImageM
 // SaveFormat and FlipType are enums
 export { SaveFormat, FlipType } from './ImageManipulator.types';
 
-export type { SaveOptions, ImageResult } from './ImageManipulator.types';
+export type { SaveOptions, ImageResult, ImageLoadOptions } from './ImageManipulator.types';
 
 // Export types that are deprecated as of SDK 52
 export type {
