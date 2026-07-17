@@ -18,17 +18,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    packagingOptions {
-        pickFirsts.addAll(
-            listOf(
-                "lib/arm64-v8a/libc++_shared.so",
-                "lib/armeabi-v7a/libc++_shared.so",
-                "lib/x86/libc++_shared.so",
-                "lib/x86_64/libc++_shared.so",
-                "**/libworklets.so"
+        packagingOptions {
+            pickFirsts.addAll(
+                listOf(
+                    "lib/arm64-v8a/libc++_shared.so",
+                    "lib/armeabi-v7a/libc++_shared.so",
+                    "lib/x86/libc++_shared.so",
+                    "lib/x86_64/libc++_shared.so",
+                    "**/libworklets.so",
+                    // libfbjni.so ships in both the fused brownfield AAR (via expo-modules-core)
+                    // and `com.facebook.react:react-android`. Same library, picking either copy.
+                    "**/libfbjni.so"
+                )
             )
-        )
-    }
+        }
 
     buildTypes {
         release {
@@ -62,8 +65,11 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.brownfield)
-    implementation(libs.expo.brownfield)
+    // Single fat AAR per buildType — `brownfield-fused-release` strips dev tooling
+    // (expo-dev-menu / launcher / client); `brownfield-fused-debug` keeps them so
+    // the dev menu, Metro reload, and red-box error overlay work locally.
+    releaseImplementation(libs.brownfield.release)
+    debugImplementation(libs.brownfield.debug)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

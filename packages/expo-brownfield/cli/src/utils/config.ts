@@ -18,12 +18,15 @@ import type {
 const HOST_PROVIDED_FRAMEWORKS_KEY = 'ios.brownfieldHostProvidedFrameworks';
 
 export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig => {
-  const variant = resolveVariant(options);
+  const fused = !!options.fused;
+  const variant: BuildVariant = resolveVariant(options);
+  const library = resolveLibrary(options);
   return {
     ...resolveCommonConfig(options),
-    library: resolveLibrary(options),
-    tasks: resolveTaskArray(options, variant),
+    library,
+    tasks: resolveTaskArray(options, variant, { fused, library }),
     variant,
+    fused,
   };
 };
 
@@ -159,10 +162,19 @@ const resolveLibrary = (options: OptionValues): string => {
   return options.library || findBrownfieldLibrary();
 };
 
-const resolveTaskArray = (options: OptionValues, variant: BuildVariant): string[] => {
+const resolveTaskArray = (
+  options: OptionValues,
+  variant: BuildVariant,
+  fusedOpts: { fused: boolean; library: string }
+): string[] => {
   const tasks: string[] = options.task ?? [];
-  const repoTasks = (options.repository ?? []).map((repo: string) =>
-    buildPublishingTask(variant, repo)
+  const repositories: string[] = options.repository ?? [];
+  // In `--fused` mode, `--all` expands to separate Debug + Release task
+  // invocations against the matching sibling subprojects.
+  const variantsForRepoTasks: BuildVariant[] =
+    fusedOpts.fused && variant === 'All' ? ['Debug', 'Release'] : [variant];
+  const repoTasks = repositories.flatMap((repo) =>
+    variantsForRepoTasks.map((v) => buildPublishingTask(v, repo, fusedOpts))
   );
 
   return Array.from(new Set([...tasks, ...repoTasks]));

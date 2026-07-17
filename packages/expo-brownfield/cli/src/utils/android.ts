@@ -7,9 +7,20 @@ import CLIError from './error';
 import { withSpinner } from './spinner';
 import type { AndroidConfig, BuildVariant } from './types';
 
-export const buildPublishingTask = (variant: BuildVariant, repository: string): string => {
+export const buildPublishingTask = (
+  variant: BuildVariant,
+  repository: string,
+  fusedOpts: { fused: boolean; library: string } = { fused: false, library: '' }
+): string => {
   const repositoryName = repository === 'MavenLocal' ? repository : `${repository}Repository`;
-  return `publishBrownfield${variant}PublicationTo${repositoryName}`;
+  const task = `publishBrownfield${variant}PublicationTo${repositoryName}`;
+  // In `--fused` mode, route the task to the matching sibling subproject:
+  // `:<lib>-fused-release` for Release, `:<lib>-fused-debug` for Debug.
+  if (fusedOpts.fused) {
+    const siblingSuffix = variant === 'Debug' ? 'debug' : 'release';
+    return `:${fusedOpts.library}-fused-${siblingSuffix}:${task}`;
+  }
+  return task;
 };
 
 export const findBrownfieldLibrary = (): string | undefined => {
@@ -93,15 +104,28 @@ export const processTasks = (stdout: string): string[] => {
   );
 };
 
-export const runTask = async (task: string, verbose: boolean, dryRun: boolean) => {
+export const runTask = async (
+  task: string,
+  verbose: boolean,
+  dryRun: boolean,
+  extraGradleArgs: string[] = []
+) => {
+  // For fused tasks, forward the variant as a Gradle property so
+  // `setupFusedModeStripping` applies the right strip prefixes.
+  const fusedVariantMatch = task.match(/:[^:]+-fused-(release|debug):/);
+  const perTaskArgs = fusedVariantMatch
+    ? [...extraGradleArgs, `-Pbrownfield.fused.variant=${fusedVariantMatch[1]}`]
+    : extraGradleArgs;
+
+  const args = [task, ...perTaskArgs];
   if (dryRun) {
-    console.log(`./gradlew ${task}`);
+    console.log(`./gradlew ${args.join(' ')}`);
     return;
   }
 
   return withSpinner({
     operation: () =>
-      spawnAsync('./gradlew', [task], {
+      spawnAsync('./gradlew', args, {
         cwd: path.join(process.cwd(), 'android'),
         stdio: verbose ? 'inherit' : 'pipe',
       }),

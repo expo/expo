@@ -14,7 +14,7 @@ dependencies {
   implementation("expo.modules:expo-autolinking-plugin-shared")
   implementation("org.json:json:20250517")
   implementation(gradleApi())
-  compileOnly("com.android.tools.build:gradle:8.5.0")
+  compileOnly("com.android.tools.build:gradle:9.0.0")
 }
 
 java {
