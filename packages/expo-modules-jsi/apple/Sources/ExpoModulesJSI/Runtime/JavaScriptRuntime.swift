@@ -53,8 +53,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return id
   }()
 
-  /// Actor for running runtime work.
-  lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
+  /// Executor preference for tasks that must return to this runtime's JavaScript thread.
+  private lazy var taskExecutor = JavaScriptRuntimeTaskExecutor(runtime: self)
 
   /// Creates a runtime from the JSI runtime. The scheduler runs tasks synchronously
   /// on the caller's thread — for the React-backed runtime, use
@@ -470,7 +470,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> Void
   ) {
     schedule(priority: priority) {
-      Task.immediate_polyfill {
+      Task.immediate_polyfill(executorPreference: taskExecutor) {
         try await closure()
       }
     }
@@ -531,7 +531,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     let callerRunLoop = NonisolatedUnsafeVar(CFRunLoopGetCurrent())
 
     func body() {
-      Task.immediate_polyfill(priority: .high) {
+      Task.immediate_polyfill(priority: .high, executorPreference: taskExecutor) {
         do {
           result.value = .success(try await closure())
         } catch {
@@ -583,11 +583,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> R
   ) async throws -> sending R {
     if isOnJavaScriptThread() {
-      return try await Task.immediate_polyfill(priority: .high, operation: closure).value
+      return try await Task.immediate_polyfill(
+        priority: .high,
+        executorPreference: taskExecutor,
+        operation: closure
+      ).value
     }
     return try await withUnsafeThrowingContinuation { continuation in
       scheduler.scheduleTask(.ImmediatePriority) {
-        Task.immediate_polyfill(priority: .high) { @JavaScriptActor in
+        Task.immediate_polyfill(priority: .high, executorPreference: self.taskExecutor) { @JavaScriptActor in
           do {
             continuation.resume(returning: try await closure())
           } catch {
