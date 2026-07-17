@@ -5,7 +5,12 @@ import {
   diffFingerprints,
   diffFingerprintChangesAsync,
 } from '../Fingerprint';
-import type { Fingerprint, FingerprintDiffItem, Options } from '../Fingerprint.types';
+import type {
+  Fingerprint,
+  FingerprintDiffItem,
+  FingerprintSource,
+  Options,
+} from '../Fingerprint.types';
 import { normalizeOptionsAsync } from '../Options';
 
 jest.mock('fs');
@@ -50,20 +55,16 @@ describe(diffFingerprintChangesAsync, () => {
     // As long as we bumping package versions like react-native, we will break the snapshot.
     // Removing packages from the diff will make the test stable.
 
+    const hasPackageReason = (source: FingerprintSource): boolean =>
+      source.reasons.some((reason) => reason.startsWith('package:'));
     function isPackage(item: FingerprintDiffItem): boolean {
       switch (item.op) {
         case 'added':
-          return item.addedSource.type === 'contents' && item.addedSource.id.startsWith('package:');
+          return hasPackageReason(item.addedSource);
         case 'removed':
-          return (
-            item.removedSource.type === 'contents' && item.removedSource.id.startsWith('package:')
-          );
+          return hasPackageReason(item.removedSource);
         case 'changed':
-          return (
-            (item.beforeSource.type === 'contents' &&
-              item.beforeSource.id.startsWith('package:')) ||
-            (item.afterSource.type === 'contents' && item.afterSource.id.startsWith('package:'))
-          );
+          return hasPackageReason(item.beforeSource) || hasPackageReason(item.afterSource);
       }
     }
 

@@ -55,7 +55,9 @@ describe('default template ignore paths', () => {
   it('should not contain non-native node modules', async () => {
     const fingerprint = await createFingerprintAsync(projectRoot);
     for (const source of fingerprint.sources) {
-      if (source.type === 'contents') {
+      // `contents` and `package` sources are hashed by value/identity, not by including a module's
+      // files, so they're not subject to this check (e.g. the `react-native` package source).
+      if (source.type === 'contents' || source.type === 'package') {
         continue;
       }
       const { filePath } = source;
