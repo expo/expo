@@ -78,6 +78,18 @@ struct ExpoCameraUtils {
     }
   }
 
+  // When responsive orientation is off, capture must follow the interface orientation,
+  // which respects the app/device orientation lock, instead of the physical device rotation.
+  static func captureOrientation(
+    responsiveWhenOrientationLocked: Bool,
+    physicalOrientation: UIDeviceOrientation,
+    interfaceOrientation: UIInterfaceOrientation
+  ) -> AVCaptureVideoOrientation {
+    return responsiveWhenOrientationLocked
+      ? videoOrientation(for: physicalOrientation)
+      : videoOrientation(for: interfaceOrientation)
+  }
+
   static func toOrientationString(orientation: UIDeviceOrientation) -> String {
     switch orientation {
     case .portrait:
