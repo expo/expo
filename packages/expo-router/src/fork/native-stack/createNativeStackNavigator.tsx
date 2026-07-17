@@ -4,10 +4,12 @@ import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
+import { useClearGuardedRoutes } from '../../layouts/useClearGuardedRoutes';
 import {
   INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
   type InternalNavigationOptions,
 } from '../../navigationParams';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
@@ -77,6 +79,10 @@ export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
  * forwarding to `NativeStackView`.
  */
 export interface NativeStackContentProps {
+  guardedRoutesConfig?: {
+    state: StackNavigationState<ParamListBase>;
+    navigation: Parameters<typeof useClearGuardedRoutes>[1];
+  };
   /** Pops `count` screens starting from the screen identified by `sourceRouteKey`. */
   pop?: (count: number, sourceRouteKey: string) => void;
   /**
@@ -96,6 +102,7 @@ function NativeStackContent({
   state,
   descriptors,
   emitter,
+  guardedRoutesConfig,
   pop,
   subscribeTabPressPopToTop,
 }: ContentArgs) {
@@ -103,6 +110,8 @@ function NativeStackContent({
   // forwards the real react-navigation descriptors at runtime (including the ones it describes for
   // the preloaded routes), so headers/screens can read `.navigation`/`.route`.
   const rnDescriptors = descriptors as unknown as NativeStackDescriptorMap;
+
+  useClearGuardedRoutes(guardedRoutesConfig!.state, guardedRoutesConfig!.navigation);
 
   // When user taps on already focused tab and we're inside the tab, reset the stack to replicate
   // native behaviour. The subscription is built in `createProps`, where the parent navigation and

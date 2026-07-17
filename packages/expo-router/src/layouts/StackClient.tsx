@@ -64,6 +64,7 @@ const RNStack = unstable_integrateWithRouter<
   createProps: ({ state, dispatch, navigation }) => {
     const target = state.key;
     return {
+      guardedRoutesConfig: { state, navigation },
       pop: (count: number, sourceRouteKey: string) =>
         dispatch({ ...StackActions.pop(count), source: sourceRouteKey, target }),
       subscribeTabPressPopToTop: () =>
