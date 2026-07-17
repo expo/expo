@@ -1,10 +1,78 @@
 'use client';
 
+import { useMemo } from 'react';
+
+import {
+  navigate as hrefNavigate,
+  push as hrefPush,
+  replace as hrefReplace,
+} from './global-state/routing';
 import { getRootStackRouteNames } from './global-state/utils';
 import { resolveHref } from './link/href';
+import { useIsPreview } from './link/preview/PreviewRouteContext';
 import type { NavigationProp, NavigationState } from './react-navigation/native';
-import { useNavigation as useUpstreamNavigation, useStateForPath } from './react-navigation/native';
+import {
+  useNavigation as useUpstreamNavigation,
+  useLinkBuilder,
+  useStateForPath,
+} from './react-navigation/native';
 import type { Href } from './types';
+
+// Route the current route's `navigate`/`push`/`replace` through the href pipeline
+// (`router.*` → `getNavigateAction` → `payload.state`) so all navigation shares one path under the
+// hood. `useLinkBuilder().buildHref` reuses the same name-relative-to-current-route resolution that
+// `<Link>` uses — it substitutes the current navigator's focused route (see `useBuildHref`) rather
+// than appending to the URL. Only the current-route navigation object is wrapped: `buildHref`
+// resolves relative to the current route, so a `getParent()` target keeps the upstream methods.
+// Navigate options (merge/pop) aren't forwarded — the href pipeline owns that behavior. When
+// linking is disabled `buildHref` returns `undefined`, so we fall back to the upstream method.
+function withHrefNavigation<T extends { navigate: (...args: any[]) => void }>(
+  navigation: T,
+  buildHref: (name: string, params?: object) => string | undefined
+): T {
+  const resolveHrefFromArgs = (nameOrOptions: unknown, params?: object): string | undefined => {
+    if (typeof nameOrOptions === 'string') {
+      return buildHref(nameOrOptions, params);
+    }
+    if (
+      nameOrOptions != null &&
+      typeof nameOrOptions === 'object' &&
+      'name' in nameOrOptions &&
+      typeof nameOrOptions.name === 'string'
+    ) {
+      return buildHref(
+        nameOrOptions.name,
+        'params' in nameOrOptions ? (nameOrOptions.params as object) : undefined
+      );
+    }
+    return undefined;
+  };
+
+  const throughHref =
+    (hrefFn: (href: Href) => void, fallback: (...args: any[]) => void) =>
+    (...args: any[]) => {
+      const href = resolveHrefFromArgs(args[0], args[1] as object);
+      if (href != null) {
+        hrefFn(href);
+        return;
+      }
+      fallback(...args);
+    };
+
+  const wrapped = {
+    ...navigation,
+    navigate: throughHref(hrefNavigate, navigation.navigate.bind(navigation)),
+  } as T & { push?: unknown; replace?: unknown };
+
+  if (typeof (navigation as { push?: unknown }).push === 'function') {
+    wrapped.push = throughHref(hrefPush, (navigation as any).push.bind(navigation));
+  }
+  if (typeof (navigation as { replace?: unknown }).replace === 'function') {
+    wrapped.replace = throughHref(hrefReplace, (navigation as any).replace.bind(navigation));
+  }
+
+  return wrapped;
+}
 
 /**
  * Returns the navigation object for the current route. Mirrors the React Navigation
@@ -61,12 +129,22 @@ export function useNavigation<
   },
 >(parent?: string | Href): T {
   const rnNavigation = useUpstreamNavigation<any>();
+  const { buildHref } = useLinkBuilder();
+  // Inside a preview, `useUpstreamNavigation` yields a guarded no-op navigation object (see
+  // `HrefPreview`); leave it untouched so navigation stays a no-op-with-warning during a preview.
+  const isPreview = useIsPreview();
   let navigation = rnNavigation;
   let state = useStateForPath();
 
+  const currentNavigation = useMemo(
+    () => (isPreview ? rnNavigation : withHrefNavigation(rnNavigation, buildHref)),
+    [isPreview, rnNavigation, buildHref]
+  );
+
   if (parent === undefined) {
-    // If no parent is provided, return the current navigation object
-    return navigation;
+    // If no parent is provided, return the current navigation object (navigate/push/replace routed
+    // through the href pipeline).
+    return currentNavigation as T;
   }
 
   // Check for the top-level navigator - we cannot fetch anything higher!
