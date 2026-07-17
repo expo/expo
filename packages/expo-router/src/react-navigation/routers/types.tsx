@@ -152,12 +152,10 @@ export type Router<State extends NavigationState, Action extends NavigationActio
   actionCreators?: ActionCreators<Action>;
 };
 
+// Transitional alias: the store refactor folded every former router-specific method into
+// `getStateForAction` or the compiler/PRELOAD wire, so a router is now exactly the north-star
+// `Router`. Kept as an alias until the impls are repointed to `Router` directly.
 export type InternalRouter<State extends NavigationState, Action extends NavigationAction> = Router<
   State,
   Action
-> & {
-  /**
-   * Initialize the navigation state.
-   */
-  getInitialState: (options: RouterConfigOptions) => State;
-};
+>;

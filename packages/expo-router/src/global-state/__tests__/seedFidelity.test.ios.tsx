@@ -9,8 +9,7 @@ import { resetRouterSpies, routerSpyCalls } from './routerSpies';
 
 // Step 3 of the "global navigation state" refactor: the compiled state from `getStateFromPath`
 // seeds the container VERBATIM. The first committed state must deep-equal the compiled seed, so no
-// navigator falls back to `getInitialState` and no `RECONCILE_ROUTE_NAMES` reduction rebuilds a
-// slice at render.
+// `RECONCILE_ROUTE_NAMES` reduction rebuilds a slice at render.
 //
 // Fixture choice matters for an EXACT toEqual: the live tree must not gain routes the compiled seed
 // lacks. The JS bottom-tab navigator preloads its implicit back-stack anchor at effect time and
@@ -22,7 +21,7 @@ import { resetRouterSpies, routerSpyCalls } from './routerSpies';
 //
 // Spy mechanism (see ./routerSpies): each test file `jest.mock`s the leaf router modules
 // (`react-navigation/routers/StackRouter`, `.../TabRouter`) and replaces the exported factory with a
-// pass-through wrapper that records every `getInitialState` call and `RECONCILE_ROUTE_NAMES`
+// pass-through wrapper that records every `RECONCILE_ROUTE_NAMES`
 // reduction. Every navigator imports these factories through the `native`
 // -> `core` -> `routers` barrel chain, so wrapping the leaf module intercepts the whole tree. The
 // wrapper delegates to the real router, so behavior is unchanged — it only observes what
@@ -93,15 +92,11 @@ it('commits the compiled seed verbatim for a declared-anchor tabs deep link', ()
   expect(store.navigationRef.current?.getRootState()).toEqual(compiled);
 });
 
-// Test B: on a verbatim-seeded mount no navigator rebuilds its slice, so none of the router's
-// repair functions run. Every navigator reads its committed slice straight from the store; there is
-// no init/rehydrate/route-names-change pass over the seed.
+// Test B: on a verbatim-seeded mount no navigator rebuilds its slice, so no route-names
+// reconciliation runs. Every navigator reads its committed slice straight from the store; the
+// compiled `routeNames` order matches the rendered order, so nothing rewrites the verbatim seed.
 it('does not rebuild navigator slices when seeding a deep link', () => {
   renderRouter(nestedStacksApp, { initialUrl: '/settings/profile/42' });
 
-  // A complete nested seed means no navigator falls back to `getInitialState`, and compiled
-  // `routeNames` order matches the rendered order so no route-names reconciliation fires over the
-  // verbatim-committed slice.
-  expect(routerSpyCalls.getInitialState).toHaveLength(0);
   expect(routerSpyCalls.reconcileRouteNames).toHaveLength(0);
 });

@@ -6,7 +6,12 @@ import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Group } from '../Group';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+import {
+  type MockActions,
+  MockRouter,
+  MockRouterKey,
+  mockInitialState,
+} from './__fixtures__/MockRouter';
 
 jest.useFakeTimers();
 
@@ -38,7 +43,7 @@ test('sets options with options prop as an object', () => {
   const TestScreen = (): any => 'Test screen';
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo', 'bar'] })}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} options={{ title: 'Hello world' }} />
         <Screen name="bar" component={React.Fragment} />
@@ -82,7 +87,11 @@ test('sets options with options prop as a fuction', () => {
   const TestScreen = (): any => 'Test screen';
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({
+        routeNames: ['foo', 'bar'],
+        routeParamList: { foo: { author: 'Jane' } },
+      })}>
       <TestNavigator>
         <Screen
           name="foo"
@@ -138,7 +147,7 @@ test('sets options with screenOptions prop as an object', () => {
   const TestScreenB = (): any => 'Test screen B';
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo', 'bar'] })}>
       <TestNavigator screenOptions={{ title: 'Hello world' }}>
         <Screen name="foo" component={TestScreenA} />
         <Screen name="bar" component={TestScreenB} />
@@ -199,7 +208,11 @@ test('sets options with screenOptions prop as a fuction', () => {
   const TestScreenB = (): any => 'Test screen B';
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({
+        routeNames: ['foo', 'bar'],
+        routeParamList: { foo: { author: 'Jane' }, bar: { fruit: 'Apple' } },
+      })}>
       <TestNavigator
         screenOptions={({ route }: any) => ({
           title: `${route.name}: ${route.params.author || route.params.fruit}`,
@@ -267,7 +280,7 @@ test('sets initial options with setOptions', () => {
   };
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo', 'bar'] })}>
       <TestNavigator>
         <Screen name="foo" options={{ color: 'blue' }}>
           {(props) => <TestScreen {...props} />}
@@ -335,7 +348,7 @@ test('updates options with setOptions', () => {
   };
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo', 'bar'] })}>
       <TestNavigator>
         <Screen name="foo" options={{ color: 'blue' }}>
           {(props) => <TestScreen {...props} />}
@@ -390,7 +403,7 @@ test('renders layout defined for the screen', () => {
   };
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo', 'bar'] })}>
       <TestNavigator screenLayout={({ children }: any) => <main>{children}</main>}>
         <Group screenLayout={({ children }) => <section>{children}</section>}>
           <Screen
@@ -432,7 +445,7 @@ test('renders layout defined for the group', () => {
   };
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo', 'bar'] })}>
       <TestNavigator screenLayout={({ children }: any) => <main>{children}</main>}>
         <Group screenLayout={({ children }) => <section>{children}</section>}>
           <Screen name="foo" component={TestScreen} />
@@ -470,7 +483,7 @@ test('renders layout defined for the navigator', () => {
   };
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo', 'bar'] })}>
       <TestNavigator screenLayout={({ children }: any) => <main>{children}</main>}>
         <Screen name="foo" component={TestScreen} />
         <Screen name="bar" component={React.Fragment} />
@@ -519,7 +532,7 @@ test("returns correct value for canGoBack when it's not overridden", () => {
   };
 
   const root = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo', 'bar'] })}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} options={{ title: 'Hello world' }} />
         <Screen name="bar" component={React.Fragment} />
@@ -574,7 +587,7 @@ test(`returns false for canGoBack when current router doesn't handle GO_BACK`, (
   };
 
   const root = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['baz'] })}>
       <TestNavigator>
         <Screen name="baz" component={TestScreen} />
       </TestNavigator>
@@ -641,7 +654,26 @@ test('returns true for canGoBack when current router handles GO_BACK', () => {
   };
 
   const root = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false,
+        key: '0',
+        index: 0,
+        routeNames: ['baz'],
+        routes: [
+          {
+            key: 'baz',
+            name: 'baz',
+            state: {
+              stale: false,
+              key: '1',
+              index: 0,
+              routeNames: ['qux'],
+              routes: [{ key: 'qux', name: 'qux' }],
+            },
+          },
+        ],
+      }}>
       <ParentNavigator>
         <Screen name="baz">
           {() => (
@@ -714,7 +746,37 @@ test('returns true for canGoBack when parent router handles GO_BACK', () => {
   };
 
   const root = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false,
+        key: '0',
+        index: 0,
+        routeNames: ['foo', 'baz'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false,
+              key: '1',
+              index: 0,
+              routeNames: ['bar'],
+              routes: [{ key: 'bar', name: 'bar' }],
+            },
+          },
+          {
+            key: 'baz',
+            name: 'baz',
+            state: {
+              stale: false,
+              key: '2',
+              index: 0,
+              routeNames: ['qux'],
+              routes: [{ key: 'qux', name: 'qux' }],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (

@@ -85,10 +85,6 @@ export function DrawerRouter({
   return {
     ...tabRouter,
 
-    getInitialState(config) {
-      return withDrawerStatus(tabRouter.getInitialState(config), defaultStatus);
-    },
-
     getStateForAction(state, action, config) {
       if (action.target && action.target !== state.key) {
         return null;

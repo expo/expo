@@ -32,12 +32,10 @@ export type MethodCall = {
 };
 
 export const routerSpyCalls = {
-  getInitialState: [] as MethodCall[],
   reconcileRouteNames: [] as MethodCall[],
 };
 
 export function resetRouterSpies() {
-  routerSpyCalls.getInitialState.length = 0;
   routerSpyCalls.reconcileRouteNames.length = 0;
 }
 
@@ -47,11 +45,6 @@ export function wrapRouterFactory<F extends AnyRouterFactory>(name: string, fact
 
     return {
       ...router,
-      getInitialState(...args: Parameters<AnyRouter['getInitialState']>) {
-        const output = router.getInitialState(...args);
-        routerSpyCalls.getInitialState.push({ router: name, input: args[0], output });
-        return output;
-      },
       getStateForAction(...args: Parameters<AnyRouter['getStateForAction']>) {
         const output = router.getStateForAction(...args);
         if (asReconcileRouteNamesAction(args[1])) {

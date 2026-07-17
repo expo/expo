@@ -117,6 +117,13 @@ export type BottomTabNavigationOptions = HeaderOptions & {
   unstable_tabBarNavigateAction?: () => NavigationAction | null | undefined;
 
   /**
+   * Internal: supplied by Expo Router. The compiled href for this tab, used by `usePreloadRoutes` to
+   * preload the tab with its full subtree (via `getNavigateAction`) rather than a bare route that
+   * would leave a nested navigator uncommitted.
+   */
+  unstable_preloadHref?: string;
+
+  /**
    * Title string of a tab displayed in the tab bar
    * or a function that given { focused: boolean, color: ColorValue, position: 'below-icon' | 'beside-icon', children: string } returns a React.Node to display in tab bar.
    *

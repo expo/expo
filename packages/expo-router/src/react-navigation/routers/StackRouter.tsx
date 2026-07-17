@@ -327,29 +327,6 @@ export function StackRouter(options: StackRouterOptions) {
   const router: InternalRouter<State, CommonNavigationAction | StackActionType> = {
     ...BaseRouter,
 
-    getInitialState({ routeNames, parentRouteKey, routeParamList }) {
-      const initialRouteName =
-        options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
-          ? options.initialRouteName
-          : routeNames[0]!;
-
-      const key = getStateKey(parentRouteKey);
-
-      return {
-        stale: false,
-        key,
-        index: 0,
-        routeNames,
-        routes: [
-          {
-            key: getRouteKey({ stateKey: key, name: initialRouteName }),
-            name: initialRouteName,
-            params: routeParamList[initialRouteName],
-          },
-        ],
-      };
-    },
-
     getStateForAction(state, action, options) {
       const reconcile = asReconcileRouteNamesAction(action);
       if (reconcile) {

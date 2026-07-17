@@ -91,143 +91,6 @@ function focusRouteByKey(
 // rehydration/route-name-change are kept as-is.
 const names = (state: { routes: { name: string }[] }) => state.routes.map((r) => r.name);
 
-// --- getInitialState ---------------------------------------------------------
-
-test('gets initial state materializing only the focused route', () => {
-  const router = TabRouter({});
-
-  expect(
-    router.getInitialState({
-      routeNames: ['bar', 'baz', 'qux'],
-      routeParamList: {
-        baz: { answer: 42 },
-        qux: { name: 'Jane' },
-      },
-      parentRouteKey: undefined,
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    index: 0,
-    key: '@',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: '@:bar:0', name: 'bar' }],
-    stale: false,
-  });
-});
-
-test('gets initial state with initialRouteName, anchoring the first route', () => {
-  // anchor = first route (bar), focused = baz -> [bar, baz] index 1 (subset of routeNames).
-  const router = TabRouter({ initialRouteName: 'baz' });
-
-  expect(
-    router.getInitialState({
-      routeNames: ['bar', 'baz', 'qux'],
-      routeParamList: {
-        baz: { answer: 42 },
-        qux: { name: 'Jane' },
-      },
-      parentRouteKey: undefined,
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    index: 1,
-    key: '@',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: '@:bar:0', name: 'bar' },
-      { key: '@:baz:0', name: 'baz', params: { answer: 42 } },
-    ],
-    stale: false,
-  });
-});
-
-test('gets initial state placing the initial route after the firstRoute anchor', () => {
-  // declaration [bar, baz, qux], anchor = bar, focused = qux -> subset [bar, qux] index 1.
-  const router = TabRouter({ backBehavior: 'firstRoute', initialRouteName: 'qux' });
-
-  const state = router.getInitialState({
-    routeNames: ['bar', 'baz', 'qux'],
-    routeParamList: {},
-    parentRouteKey: undefined,
-    routeGetIdList: {},
-  });
-
-  expect(names(state)).toEqual(['bar', 'qux']);
-  expect(state.index).toBe(1);
-});
-
-test('gets initial state anchored on the initial route with initialRoute back behavior', () => {
-  // declaration [a, b, c], initialRoute b, focused = b (initial === anchor) -> subset [b] index 0.
-  const router = TabRouter({ backBehavior: 'initialRoute', initialRouteName: 'b' });
-
-  const state = router.getInitialState({
-    routeNames: ['a', 'b', 'c'],
-    routeParamList: {},
-    parentRouteKey: undefined,
-    routeGetIdList: {},
-  });
-
-  expect(names(state)).toEqual(['b']);
-  expect(state.index).toBe(0);
-});
-
-test('gets initial state with only the focused route for order and none back behaviors', () => {
-  // declaration [a, b, c], initial c -> subset [c], index 0.
-  for (const backBehavior of ['order', 'none'] as const) {
-    const router = TabRouter({ backBehavior, initialRouteName: 'c' });
-
-    expect(
-      router.getInitialState({
-        routeNames: ['a', 'b', 'c'],
-        routeParamList: {},
-        parentRouteKey: undefined,
-        routeGetIdList: {},
-      })
-    ).toEqual({
-      index: 0,
-      key: '@',
-      routeNames: ['a', 'b', 'c'],
-      routes: [{ key: '@:c:0', name: 'c' }],
-      stale: false,
-    });
-  }
-});
-
-test('gets initial state with only the focused route for history', () => {
-  // declaration [a, b, c], initial c, history -> subset [c] index 0.
-  const router = TabRouter({ backBehavior: 'history', initialRouteName: 'c' });
-
-  expect(
-    router.getInitialState({
-      routeNames: ['a', 'b', 'c'],
-      routeParamList: {},
-      parentRouteKey: undefined,
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    index: 0,
-    key: '@',
-    routeNames: ['a', 'b', 'c'],
-    routes: [{ key: '@:c:0', name: 'c' }],
-    stale: false,
-  });
-});
-
-test('derives deterministic route keys from the navigator parentRouteKey so tabs are precomputable', () => {
-  const router = TabRouter({});
-
-  const state = router.getInitialState({
-    routeNames: ['home', 'settings'],
-    parentRouteKey: '/(tabs)',
-    routeParamList: {},
-    routeGetIdList: {},
-  });
-
-  // The focused tab's key is a stable function of the navigator's state key + name — a tab bar can
-  // compute `/(tabs):home:0` before the route is materialized.
-  expect(state.routes.map((r) => r.key)).toEqual(['/(tabs):home:0']);
-});
-
 // --- getRehydratedState ------------------------------------------------------
 
 test('rehydrates the persisted subset without appending undeclared-yet-absent tabs', () => {
@@ -449,7 +312,7 @@ test('rehydrates empty persisted state honoring initialRouteName/back behavior (
   expect(state.index).toBe(0);
 });
 
-test('rehydrates empty persisted state with firstRoute matching getInitialState', () => {
+test('rehydrates empty persisted state with firstRoute matching a fresh start', () => {
   const router = TabRouter({ backBehavior: 'firstRoute', initialRouteName: 'c' });
   const options: RouterConfigOptions = {
     routeNames: ['a', 'b', 'c'],
@@ -463,13 +326,10 @@ test('rehydrates empty persisted state with firstRoute matching getInitialState'
     { stale: true, routes: [] },
     options
   ) as TabNavigationState<ParamListBase>;
-  const initial = router.getInitialState(options);
 
   // firstRoute anchor (a) + initial focused (c) -> subset [a, c] index 1, same as a fresh start.
   expect(names(rehydrated)).toEqual(['a', 'c']);
   expect(rehydrated.index).toBe(1);
-  expect(names(rehydrated)).toEqual(names(initial));
-  expect(rehydrated.index).toBe(initial.index);
 });
 
 // --- getStateForRouteNamesChange ---------------------------------------------
@@ -1199,7 +1059,13 @@ test('navigates splicing the target into the back-stack with history', () => {
   };
 
   // Start: only A is materialized (focused).
-  let state = router.getInitialState(options) as TabNavigationState<ParamListBase>;
+  let state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    key: '@',
+    index: 0,
+    routeNames: ['A', 'B', 'C', 'D', 'E'],
+    routes: [{ key: '@:A:0', name: 'A' }],
+  };
   expect(names(state)).toEqual(['A']);
   expect(state.index).toBe(0);
 
@@ -1251,7 +1117,13 @@ test('walks the visit order on back with history', () => {
     routeGetIdList: {},
   };
 
-  let state = router.getInitialState(options) as TabNavigationState<ParamListBase>;
+  let state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    key: '@',
+    index: 0,
+    routeNames: ['A', 'B', 'C', 'D', 'E'],
+    routes: [{ key: '@:A:0', name: 'A' }],
+  };
   for (const name of ['B', 'C', 'A', 'D']) {
     state = router.getStateForAction(
       state,
@@ -1287,7 +1159,13 @@ test('walks back then navigates with history', () => {
     routeGetIdList: {},
   };
 
-  let state = router.getInitialState(options) as TabNavigationState<ParamListBase>;
+  let state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    key: '@',
+    index: 0,
+    routeNames: ['A', 'B', 'C'],
+    routes: [{ key: '@:A:0', name: 'A' }],
+  };
   for (const name of ['B', 'C']) {
     state = router.getStateForAction(
       state,
@@ -1336,7 +1214,13 @@ test('returns null on back when at index 0 with history', () => {
     routeGetIdList: {},
   };
 
-  const state = router.getInitialState(options) as TabNavigationState<ParamListBase>;
+  const state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    key: '@',
+    index: 0,
+    routeNames: ['bar', 'baz', 'qux'],
+    routes: [{ key: '@:bar:0', name: 'bar' }],
+  };
   expect(state.index).toBe(0);
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 });
@@ -1554,7 +1438,13 @@ test('drops the replaced route so back skips it with history', () => {
   };
 
   // Start present [one] focus one. navigate two -> [one, two] index 1.
-  let state = router.getInitialState(options) as TabNavigationState<ParamListBase>;
+  let state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    key: '@',
+    index: 0,
+    routeNames: ['one', 'two', 'three'],
+    routes: [{ key: '@:one:0', name: 'one' }],
+  };
   state = router.getStateForAction(
     state,
     CommonActions.navigate('two'),
@@ -1621,18 +1511,9 @@ test('replace preserves the firstRoute back-stack anchor', () => {
 
 test('warns and falls back to history for removed fullHistory back behavior', () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  const router = TabRouter({ backBehavior: 'fullHistory' });
-  const options: RouterConfigOptions = {
-    routeNames: ['one', 'two'],
-    routeParamList: {},
-    parentRouteKey: undefined,
-    routeGetIdList: {},
-  };
-
-  const state = router.getInitialState(options);
+  TabRouter({ backBehavior: 'fullHistory' });
 
   expect(warn).toHaveBeenCalledTimes(1);
-  expect(names(state)).toEqual(['one']);
   warn.mockRestore();
 });
 

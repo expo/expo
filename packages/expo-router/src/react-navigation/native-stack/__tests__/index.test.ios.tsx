@@ -415,7 +415,20 @@ describe('useHeaderHeight in native-stack', () => {
           key: 'stack-0',
           index: 0,
           routeNames: ['A', 'B'],
-          routes: [{ key: 'A-0', name: 'A' }],
+          routes: [
+            { key: 'A-0', name: 'A' },
+            {
+              key: 'B-0',
+              name: 'B',
+              state: {
+                stale: false as const,
+                key: 'nested-stack-0',
+                index: 0,
+                routeNames: ['C'],
+                routes: [{ key: 'C-0', name: 'C' }],
+              },
+            },
+          ],
         }}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -456,7 +469,20 @@ describe('useHeaderHeight in native-stack', () => {
           key: 'stack-0',
           index: 0,
           routeNames: ['A', 'B'],
-          routes: [{ key: 'A-0', name: 'A' }],
+          routes: [
+            { key: 'A-0', name: 'A' },
+            {
+              key: 'B-0',
+              name: 'B',
+              state: {
+                stale: false as const,
+                key: 'nested-stack-0',
+                index: 0,
+                routeNames: ['C'],
+                routes: [{ key: 'C-0', name: 'C' }],
+              },
+            },
+          ],
         }}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -497,7 +523,20 @@ describe('useHeaderHeight in native-stack', () => {
           key: 'stack-0',
           index: 0,
           routeNames: ['A', 'B'],
-          routes: [{ key: 'A-0', name: 'A' }],
+          routes: [
+            { key: 'A-0', name: 'A' },
+            {
+              key: 'B-0',
+              name: 'B',
+              state: {
+                stale: false as const,
+                key: 'nested-stack-0',
+                index: 0,
+                routeNames: ['C'],
+                routes: [{ key: 'C-0', name: 'C' }],
+              },
+            },
+          ],
         }}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="A" component={Test} />
@@ -538,7 +577,20 @@ describe('useHeaderHeight in native-stack', () => {
           key: 'stack-0',
           index: 0,
           routeNames: ['A', 'B'],
-          routes: [{ key: 'A-0', name: 'A' }],
+          routes: [
+            { key: 'A-0', name: 'A' },
+            {
+              key: 'B-0',
+              name: 'B',
+              state: {
+                stale: false as const,
+                key: 'nested-stack-0',
+                index: 0,
+                routeNames: ['C'],
+                routes: [{ key: 'C-0', name: 'C' }],
+              },
+            },
+          ],
         }}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -579,7 +631,20 @@ describe('useHeaderHeight in native-stack', () => {
           key: 'stack-0',
           index: 0,
           routeNames: ['A', 'B'],
-          routes: [{ key: 'A-0', name: 'A' }],
+          routes: [
+            { key: 'A-0', name: 'A' },
+            {
+              key: 'B-0',
+              name: 'B',
+              state: {
+                stale: false as const,
+                key: 'nested-stack-0',
+                index: 0,
+                routeNames: ['C'],
+                routes: [{ key: 'C-0', name: 'C' }],
+              },
+            },
+          ],
         }}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -620,7 +685,20 @@ describe('useHeaderHeight in native-stack', () => {
           key: 'stack-0',
           index: 0,
           routeNames: ['A', 'B'],
-          routes: [{ key: 'A-0', name: 'A' }],
+          routes: [
+            { key: 'A-0', name: 'A' },
+            {
+              key: 'B-0',
+              name: 'B',
+              state: {
+                stale: false as const,
+                key: 'nested-stack-0',
+                index: 0,
+                routeNames: ['C'],
+                routes: [{ key: 'C-0', name: 'C' }],
+              },
+            },
+          ],
         }}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="A" component={Test} />
@@ -661,7 +739,20 @@ describe('useHeaderHeight in native-stack', () => {
           key: 'stack-0',
           index: 0,
           routeNames: ['A', 'B'],
-          routes: [{ key: 'A-0', name: 'A' }],
+          routes: [
+            { key: 'A-0', name: 'A' },
+            {
+              key: 'B-0',
+              name: 'B',
+              state: {
+                stale: false as const,
+                key: 'nested-stack-0',
+                index: 0,
+                routeNames: ['C'],
+                routes: [{ key: 'C-0', name: 'C' }],
+              },
+            },
+          ],
         }}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -702,7 +793,20 @@ describe('useHeaderHeight in native-stack', () => {
           key: 'stack-0',
           index: 0,
           routeNames: ['A', 'B'],
-          routes: [{ key: 'A-0', name: 'A' }],
+          routes: [
+            { key: 'A-0', name: 'A' },
+            {
+              key: 'B-0',
+              name: 'B',
+              state: {
+                stale: false as const,
+                key: 'nested-stack-0',
+                index: 0,
+                routeNames: ['C'],
+                routes: [{ key: 'C-0', name: 'C' }],
+              },
+            },
+          ],
         }}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -743,7 +847,20 @@ describe('useHeaderHeight in native-stack', () => {
           key: 'stack-0',
           index: 0,
           routeNames: ['A', 'B'],
-          routes: [{ key: 'A-0', name: 'A' }],
+          routes: [
+            { key: 'A-0', name: 'A' },
+            {
+              key: 'B-0',
+              name: 'B',
+              state: {
+                stale: false as const,
+                key: 'nested-stack-0',
+                index: 0,
+                routeNames: ['C'],
+                routes: [{ key: 'C-0', name: 'C' }],
+              },
+            },
+          ],
         }}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="A" component={Test} />

@@ -18,7 +18,12 @@ import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import type { EventListenerCallback, NavigationContainerEventMap } from '../types';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+import {
+  type MockActions,
+  MockRouter,
+  MockRouterKey,
+  mockInitialState,
+} from './__fixtures__/MockRouter';
 
 // Deterministic structural keys for the option-events tests' `foo`/`bar`/`baz` root (TabRouter and
 // StackRouter both mint keys via `getRouteKey`/`getStateKey`, not the `MockRouterKey` counter).
@@ -599,14 +604,20 @@ test('emits ready event when the container is ready with asynchronous content', 
     listener(ref.isReady(), ref.getCurrentRoute()?.name);
   });
 
-  const wrapper = render(<BaseNavigationContainer ref={ref}>{null}</BaseNavigationContainer>);
+  const seed = mockInitialState({ routeNames: ['foo', 'bar'] });
+
+  const wrapper = render(
+    <BaseNavigationContainer ref={ref} initialState={seed}>
+      {null}
+    </BaseNavigationContainer>
+  );
 
   expect(listener).not.toHaveBeenCalled();
 
   await Promise.resolve();
 
   wrapper.update(
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer ref={ref} initialState={seed}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -699,7 +710,7 @@ test('emits state events when the state changes', () => {
   });
 });
 
-test('emits state events when new navigator mounts', () => {
+test('does not re-commit a pre-seeded nested navigator when it mounts', () => {
   jest.useFakeTimers();
 
   const TestNavigator = (props: any) => {
@@ -737,19 +748,34 @@ test('emits state events when new navigator mounts', () => {
 
   MockRouterKey.current = 1;
 
+  const seededState = {
+    stale: false as const,
+    index: 0,
+    key: '0',
+    routeNames: ['foo', 'bar'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      {
+        key: 'bar',
+        name: 'bar',
+        state: {
+          stale: false as const,
+          index: 0,
+          key: '1',
+          routeNames: ['baz', 'bax'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bax', name: 'bax' },
+          ],
+        },
+      },
+    ],
+  };
+
   const element = (
     <BaseNavigationContainer
       ref={ref}
-      initialState={{
-        stale: false as const,
-        index: 0,
-        key: '0',
-        routeNames: ['foo', 'bar'],
-        routes: [
-          { key: 'foo', name: 'foo' },
-          { key: 'bar', name: 'bar' },
-        ],
-      }}
+      initialState={seededState}
       onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
@@ -772,35 +798,13 @@ test('emits state events when new navigator mounts', () => {
     jest.runAllTimers();
   });
 
-  const resultState = {
-    stale: false,
-    index: 0,
-    key: '0',
-    routeNames: ['foo', 'bar'],
-    routes: [
-      { key: 'foo', name: 'foo' },
-      {
-        key: 'bar',
-        name: 'bar',
-        state: {
-          stale: false,
-          index: 0,
-          key: '1',
-          routeNames: ['baz', 'bax'],
-          routes: [
-            { key: 'baz', name: 'baz' },
-            { key: 'bax', name: 'bax' },
-          ],
-        },
-      },
-    ],
-  };
-
-  expect(listener).toHaveBeenCalledTimes(1);
-  expect(listener.mock.calls[0]![0].data.state).toEqual(resultState);
-
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenLastCalledWith(resultState);
+  // The nested navigator's slice is committed up front (production always seeds a mounted navigator
+  // via the compiler/PRELOAD wire; there is no self-seed anymore). So when it finally renders it
+  // reads its already-committed slice verbatim — no new commit, hence no `state`/`onStateChange`
+  // event — and the committed tree still equals the seed.
+  expect(listener).not.toHaveBeenCalled();
+  expect(onStateChange).not.toHaveBeenCalled();
+  expect(ref.current?.getRootState()).toEqual(seededState);
 });
 
 test('emits option events when options change with tab router', () => {
@@ -1021,42 +1025,21 @@ test('throws if there is no navigator rendered', () => {
   spy.mockRestore();
 });
 
-test("throws if the ref hasn't finished initializing", () => {
+test("logs an error when dispatched through before the container's ref is initialized", () => {
   expect.assertions(1);
 
+  // Before any container mounts, the ref's `current` is null; dispatching through it logs the
+  // not-initialized error rather than acting. (Previously this was observed from a screen's mount
+  // effect, which relied on the removed self-seed's extra commit delaying the ref attach; the ref
+  // now attaches via `useImperativeHandle` before passive effects, so exercise the guard directly.)
   const ref = createNavigationContainerRef<ParamListBase>();
+  const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+  ref.dispatch({ type: 'WHATEVER' });
 
-    return (
-      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
-    );
-  };
+  expect(spy.mock.calls[0]![0]).toMatch("The 'navigation' object hasn't been initialized yet.");
 
-  const TestScreen = () => {
-    React.useEffect(() => {
-      const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-      ref.current?.dispatch({ type: 'WHATEVER' });
-
-      expect(spy.mock.calls[0]![0]).toMatch("The 'navigation' object hasn't been initialized yet.");
-
-      spy.mockRestore();
-    }, []);
-
-    return null;
-  };
-
-  const element = (
-    <BaseNavigationContainer ref={ref}>
-      <TestNavigator>
-        <Screen name="foo" component={TestScreen} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  render(element);
+  spy.mockRestore();
 });
 
 test('fires onReady after navigator is rendered', () => {
@@ -1071,9 +1054,10 @@ test('fires onReady after navigator is rendered', () => {
   };
 
   const onReady = jest.fn();
+  const seed = mockInitialState({ routeNames: ['foo'] });
 
   const element = (
-    <BaseNavigationContainer ref={ref} onReady={onReady}>
+    <BaseNavigationContainer ref={ref} onReady={onReady} initialState={seed}>
       {null}
     </BaseNavigationContainer>
   );
@@ -1084,7 +1068,7 @@ test('fires onReady after navigator is rendered', () => {
   expect(ref.current?.isReady()).toBe(false);
 
   root.rerender(
-    <BaseNavigationContainer ref={ref} onReady={onReady}>
+    <BaseNavigationContainer ref={ref} onReady={onReady} initialState={seed}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
       </TestNavigator>

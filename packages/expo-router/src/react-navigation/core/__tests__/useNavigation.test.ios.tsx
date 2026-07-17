@@ -4,7 +4,7 @@ import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useNavigation } from '../useNavigation';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+import { MockRouter, MockRouterKey, mockInitialState } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
@@ -32,7 +32,7 @@ test('gets navigation prop from context', () => {
   };
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo'] })}>
       <TestNavigator>
         <Screen name="foo" component={Test} />
       </TestNavigator>
@@ -62,7 +62,26 @@ test("gets navigation's parent from context", () => {
   };
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false,
+        key: '0',
+        index: 0,
+        routeNames: ['foo'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false,
+              key: '1',
+              index: 0,
+              routeNames: ['bar'],
+              routes: [{ key: 'bar', name: 'bar' }],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (
@@ -100,7 +119,38 @@ test("gets navigation's parent's parent from context", () => {
   };
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false,
+        key: '0',
+        index: 0,
+        routeNames: ['foo'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false,
+              key: '1',
+              index: 0,
+              routeNames: ['bar'],
+              routes: [
+                {
+                  key: 'bar',
+                  name: 'bar',
+                  state: {
+                    stale: false,
+                    key: '2',
+                    index: 0,
+                    routeNames: ['quo'],
+                    routes: [{ key: 'quo', name: 'quo' }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (
@@ -142,7 +192,7 @@ test('gets navigation from container from context', () => {
   };
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo'] })}>
       <Test />
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>

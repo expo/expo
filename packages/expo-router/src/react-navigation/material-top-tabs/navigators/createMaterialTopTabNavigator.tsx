@@ -1,3 +1,5 @@
+import { useCallback } from 'react';
+
 import {
   NavigatorTypeContext,
   useNavigatorTypeContextValue,
@@ -56,9 +58,6 @@ function MaterialTopTabNavigator({
     UNSTABLE_router,
   });
 
-  // Material top tabs stay fully eager: preload every declared route.
-  usePreloadRoutes(state, navigation, state.routeNames);
-
   // Placeholders reuse the key the router will assign (derived from `state.key`), so the real route
   // reconciles onto its placeholder instead of remounting.
   const [tabState, tabDescriptors] = useTabPlaceholders(
@@ -67,6 +66,18 @@ function MaterialTopTabNavigator({
     describe,
     state.routeNames
   );
+
+  // The compiled href per route is attached to its (placeholder or real) descriptor options by
+  // `TopTabsClient`, so a preload carries the route's full subtree instead of a bare route.
+  const resolveHref = useCallback(
+    (name: string) => {
+      const route = tabState.routes.find((candidate) => candidate.name === name);
+      return route ? tabDescriptors[route.key]?.options.unstable_preloadHref : undefined;
+    },
+    [tabState, tabDescriptors]
+  );
+  // Material top tabs stay fully eager: preload every declared route.
+  usePreloadRoutes(state, navigation, state.routeNames, resolveHref);
 
   const navigatorTypeValue = useNavigatorTypeContextValue('tab', state.key);
 

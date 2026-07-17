@@ -63,7 +63,27 @@ test('registers fresh router-generated deterministic state keys', () => {
   }
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false,
+        index: 1,
+        key: rootKey,
+        routeNames: ['foo', 'baz'],
+        routes: [
+          { key: fooKey, name: 'foo' },
+          {
+            key: bazKey,
+            name: 'baz',
+            state: {
+              stale: false,
+              index: 0,
+              key: bazChildKey,
+              routeNames: ['qux'],
+              routes: [{ key: getRouteKey({ stateKey: bazChildKey, name: 'qux' }), name: 'qux' }],
+            },
+          },
+        ],
+      }}>
       <RegistryProbe />
       <TestNavigator initialRouteName="baz">
         <Screen name="foo">{() => null}</Screen>

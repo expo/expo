@@ -15,7 +15,7 @@ import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigation } from '../useNavigation';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+import { MockRouter, MockRouterKey, mockInitialState } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
@@ -86,7 +86,7 @@ test('initializes state for a navigator on navigation', () => {
   });
 });
 
-test("doesn't crash when initialState is null", () => {
+test("doesn't crash when initialState is seeded", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -98,8 +98,7 @@ test("doesn't crash when initialState is null", () => {
   const TestScreen = () => null;
 
   const element = (
-    // @ts-expect-error: we're explicitly passing null for state
-    <BaseNavigationContainer initialState={null}>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo'] })}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} />
       </TestNavigator>
@@ -134,7 +133,8 @@ test('throws for incorrect initialRouteName', () => {
 
   expect(() =>
     render(
-      <BaseNavigationContainer>
+      <BaseNavigationContainer
+        initialState={mockInitialState({ routeNames: ['foo', 'bar', 'baz'] })}>
         <TestNavigator initialRouteName="bar">
           <Screen name="foo" component={TestScreen} />
           <Screen name="bar" component={TestScreen} />
@@ -1339,7 +1339,39 @@ test('gets immediate parent with getParent()', () => {
   const onStateChange = jest.fn();
 
   const element = render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false,
+        index: 0,
+        key: '0',
+        routeNames: ['foo'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false,
+              index: 0,
+              key: '1',
+              routeNames: ['foo-a'],
+              routes: [
+                {
+                  key: 'foo-a',
+                  name: 'foo-a',
+                  state: {
+                    stale: false,
+                    index: 0,
+                    key: '2',
+                    routeNames: ['bar'],
+                    routes: [{ key: 'bar', name: 'bar' }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (
@@ -1380,7 +1412,39 @@ test('gets parent with a ID with getParent(id)', () => {
   const onStateChange = jest.fn();
 
   const element = render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false,
+        index: 0,
+        key: '0',
+        routeNames: ['foo'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false,
+              index: 0,
+              key: '1',
+              routeNames: ['foo-a'],
+              routes: [
+                {
+                  key: 'foo-a',
+                  name: 'foo-a',
+                  state: {
+                    stale: false,
+                    index: 0,
+                    key: '2',
+                    routeNames: ['bar'],
+                    routes: [{ key: 'bar', name: 'bar' }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator id="Test">
         <Screen name="foo">
           {() => (
@@ -1421,7 +1485,39 @@ test('gets self with a ID with getParent(id)', () => {
   const onStateChange = jest.fn();
 
   const element = render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false,
+        index: 0,
+        key: '0',
+        routeNames: ['foo'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false,
+              index: 0,
+              key: '1',
+              routeNames: ['foo-a'],
+              routes: [
+                {
+                  key: 'foo-a',
+                  name: 'foo-a',
+                  state: {
+                    stale: false,
+                    index: 0,
+                    key: '2',
+                    routeNames: ['bar'],
+                    routes: [{ key: 'bar', name: 'bar' }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (
@@ -1458,7 +1554,39 @@ test('returns undefined when ID is not found with getParent(id)', () => {
   const onStateChange = jest.fn();
 
   const element = render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false,
+        index: 0,
+        key: '0',
+        routeNames: ['foo'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false,
+              index: 0,
+              key: '1',
+              routeNames: ['foo-a'],
+              routes: [
+                {
+                  key: 'foo-a',
+                  name: 'foo-a',
+                  state: {
+                    stale: false,
+                    index: 0,
+                    key: '2',
+                    routeNames: ['bar'],
+                    routes: [{ key: 'bar', name: 'bar' }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (
@@ -1498,7 +1626,7 @@ test('gives access to internal state', () => {
   };
 
   const root = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['bar'] })}>
       <TestNavigator initialRouteName="bar">
         <Screen name="bar" component={Test} />
       </TestNavigator>
@@ -1631,7 +1759,7 @@ test('throws if multiple navigators rendered under one container', () => {
   };
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo'] })}>
       <TestNavigator>
         <Screen name="foo" component={React.Fragment} />
       </TestNavigator>
@@ -1740,7 +1868,7 @@ test("doesn't throw when direct children is Screen or empty element", () => {
   };
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo'] })}>
       <TestNavigator>
         <Screen name="foo" component={React.Fragment} />
         {null}
@@ -1780,7 +1908,7 @@ test('switches rendered navigators', () => {
   };
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo'] })}>
       <TestNavigator key="a">
         <Screen name="foo" component={React.Fragment} />
       </TestNavigator>
@@ -1789,7 +1917,7 @@ test('switches rendered navigators', () => {
 
   expect(() =>
     root.update(
-      <BaseNavigationContainer>
+      <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo'] })}>
         <TestNavigator key="b">
           <Screen name="foo" component={React.Fragment} />
         </TestNavigator>
@@ -1990,7 +2118,7 @@ test("doesn't throw if children is null", () => {
   };
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo'] })}>
       <TestNavigator>
         <Screen name="foo" component={React.Fragment}>
           {null as any}

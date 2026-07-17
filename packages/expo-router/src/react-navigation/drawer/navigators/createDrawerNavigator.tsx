@@ -92,8 +92,17 @@ function DrawerNavigator({
     () => nonLazyRouteNames.filter((name) => name !== anchorName),
     [nonLazyRouteNames, anchorName]
   );
-  usePreloadRoutes(state, navigation, nonAnchorRouteNames);
-  usePreloadAnchor(state, navigation, backBehavior, initialRouteName);
+  // The compiled href per route is attached to its (placeholder or real) descriptor options by
+  // `DrawerClient`, so a preload carries the route's full subtree instead of a bare route.
+  const resolveHref = React.useCallback(
+    (name: string) => {
+      const route = tabState.routes.find((candidate) => candidate.name === name);
+      return route ? tabDescriptors[route.key]?.options.unstable_preloadHref : undefined;
+    },
+    [tabState, tabDescriptors]
+  );
+  usePreloadRoutes(state, navigation, nonAnchorRouteNames, resolveHref);
+  usePreloadAnchor(state, navigation, backBehavior, initialRouteName, resolveHref);
 
   const navigatorTypeValue = useNavigatorTypeContextValue('drawer', state.key);
 

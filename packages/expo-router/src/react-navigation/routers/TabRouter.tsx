@@ -448,33 +448,6 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
   const router: InternalRouter<State, TabActionType | CommonNavigationAction> = {
     ...BaseRouter,
 
-    getInitialState({ routeNames, parentRouteKey, routeParamList }) {
-      const key = getStateKey(parentRouteKey);
-
-      const buildRoute = (name: string) => ({
-        name,
-        key: getRouteKey({ stateKey: key, name }),
-        params: routeParamList[name],
-      });
-
-      // Presence is the loaded signal: materialize only the focused route (plus the firstRoute/
-      // initialRoute anchor).
-      const { routes, index } = buildInitialSubset(
-        routeNames,
-        backBehavior,
-        initialRouteName,
-        buildRoute
-      );
-
-      return {
-        stale: false,
-        key,
-        index,
-        routeNames,
-        routes,
-      };
-    },
-
     getStateForAction(state, action, options) {
       const reconcile = asReconcileRouteNamesAction(action);
       if (reconcile) {

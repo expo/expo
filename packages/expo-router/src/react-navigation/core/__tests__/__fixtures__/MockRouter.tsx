@@ -16,6 +16,33 @@ export type MockActions = CommonNavigationAction | { type: 'NOOP' | 'UPDATE' };
 
 export const MockRouterKey = { current: 0 };
 
+// The state a `MockRouter` navigator used to self-seed via `getInitialState` (now removed with the
+// self-seed). Tests seed the container with this so a bare `<BaseNavigationContainer>` mounts with a
+// committed slice, matching production where the compiler/PRELOAD wire always supplies one.
+export function mockInitialState({
+  routeNames,
+  routeParamList = {},
+  initialRouteName,
+}: {
+  routeNames: string[];
+  routeParamList?: Record<string, object | undefined>;
+  initialRouteName?: string;
+}): NavigationState {
+  const index = initialRouteName === undefined ? 0 : routeNames.indexOf(initialRouteName);
+
+  return {
+    stale: false,
+    key: String(MockRouterKey.current++),
+    index,
+    routeNames,
+    routes: routeNames.map((name) => ({
+      name,
+      key: name,
+      params: routeParamList[name],
+    })),
+  };
+}
+
 export function MockRouter(options: DefaultRouterOptions) {
   function getRehydratedState(
     partialState: PartialState<NavigationState> | NavigationState,
@@ -104,23 +131,6 @@ export function MockRouter(options: DefaultRouterOptions) {
   }
 
   const router: InternalRouter<NavigationState, MockActions> = {
-    getInitialState({ routeNames, routeParamList }) {
-      const index =
-        options.initialRouteName === undefined ? 0 : routeNames.indexOf(options.initialRouteName);
-
-      return {
-        stale: false,
-        key: String(MockRouterKey.current++),
-        index,
-        routeNames,
-        routes: routeNames.map((name) => ({
-          name,
-          key: name,
-          params: routeParamList[name],
-        })),
-      };
-    },
-
     getStateForAction(state, action, options) {
       const reconcile = asReconcileRouteNamesAction(action);
       if (reconcile) {

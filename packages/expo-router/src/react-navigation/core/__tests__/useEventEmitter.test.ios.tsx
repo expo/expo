@@ -5,7 +5,7 @@ import type { InternalRouter, NavigationState } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+import { MockRouter, MockRouterKey, mockInitialState } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
@@ -352,26 +352,6 @@ test('fires blur event when a route is removed with a delay', async () => {
     return {
       ...router,
 
-      getInitialState({ routeNames, routeParamList }) {
-        const initialRouteName =
-          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0];
-
-        return {
-          stale: false,
-          type: 'test',
-          key: 'stack',
-          index: 0,
-          routeNames,
-          routes: [
-            {
-              key: initialRouteName,
-              name: initialRouteName,
-              params: routeParamList[initialRouteName],
-            },
-          ],
-        };
-      },
-
       getStateForAction(state, action, options) {
         switch (action.type) {
           case 'PUSH':
@@ -513,7 +493,8 @@ test('fires custom events added with addListener', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['first', 'second', 'third'] })}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={createComponent(firstCallback)} />
         <Screen name="second" component={createComponent(secondCallback)} />
@@ -589,7 +570,8 @@ test("doesn't call same listener multiple times with addListener", () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['first', 'second', 'third'] })}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={Test} />
         <Screen name="second" component={Test} />
@@ -627,7 +609,8 @@ test('fires custom events added with listeners prop', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['first', 'second', 'third'] })}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"
@@ -700,7 +683,8 @@ test("doesn't call same listener multiple times with listeners", () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['first', 'second', 'third'] })}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"
@@ -750,7 +734,8 @@ test('fires listeners when callback is provided for listeners prop', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['first', 'second', 'third'] })}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"
@@ -853,7 +838,7 @@ test('has option to prevent default', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['first'] })}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={Test} />
       </TestNavigator>
@@ -908,7 +893,7 @@ test('removes only one listener when unsubscribe is called multiple times', () =
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['first'] })}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={Test} />
       </TestNavigator>

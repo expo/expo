@@ -1,14 +1,20 @@
 'use client';
 import * as React from 'react';
 
-import type { NavigationState } from './routers';
+import { getPreloadAction } from '../global-state/getNavigationAction';
+import type { NavigationAction, NavigationState } from './routers';
 
 /**
  * After mount, preload the navigator's other routes per a caller-supplied policy. A route's
- * presence in `state.routes` is the loaded signal, so this dispatches `preload` for every name in
+ * presence in `state.routes` is the loaded signal, so this dispatches a PRELOAD for every name in
  * `routeNamesToPreload` that isn't present yet (inserting it at the end of `routes` without changing
  * focus). The caller decides the policy — e.g. native/material-top preload all tabs, bottom-tabs and
  * drawer only their non-lazy ones.
+ *
+ * When `resolveHref` returns an href for a name, the PRELOAD is compiled via `getNavigateAction` so
+ * it carries the route's full `payload.state` subtree — the child navigator commits already seeded
+ * instead of mounting with a null slice. Without an href (a route absent from the compiled tree, or
+ * a navigator rendered outside the router) it falls back to a bare-name PRELOAD.
  *
  * Self-healing: every run dispatches for every absent name — no pending marks. A dispatched preload
  * can be LOST without the routes identity ever changing (StrictMode's double-invoked mount effects
@@ -20,19 +26,36 @@ import type { NavigationState } from './routers';
  * this can't loop.
  */
 export function usePreloadRoutes(
-  state: Pick<NavigationState, 'routes'>,
-  navigation: { preload: (name: string, params?: object) => void },
-  routeNamesToPreload: readonly string[]
+  state: Pick<NavigationState, 'routes' | 'key'>,
+  navigation: {
+    preload: (name: string, params?: object) => void;
+    dispatch: (action: NavigationAction) => void;
+  },
+  routeNamesToPreload: readonly string[],
+  resolveHref?: (name: string) => string | undefined
 ): void {
   React.useEffect(() => {
     const present = new Set(state.routes.map((route) => route.name));
 
     for (const name of routeNamesToPreload) {
-      if (!present.has(name)) {
+      if (present.has(name)) {
+        continue;
+      }
+
+      const href = resolveHref?.(name);
+      if (href == null) {
         navigation.preload(name);
+        continue;
+      }
+
+      // A resolved href but no action means the compiler dropped it (e.g. a redirect already
+      // handled the navigation) — skip rather than bare-preload a route with no valid target.
+      const action = getPreloadAction(state.key, href, name, false);
+      if (action != null) {
+        navigation.dispatch(action);
       }
     }
-    // Re-runs when the present routes, navigation, or policy list change identity, so
+    // Re-runs when the present routes, navigation, policy list, or href resolver change identity, so
     // re-preload-after-removal (hidden tab shown again) and re-preload-after-loss both fire.
-  }, [state.routes, navigation, routeNamesToPreload]);
+  }, [state.routes, state.key, navigation, routeNamesToPreload, resolveHref]);
 }

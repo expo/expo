@@ -90,6 +90,7 @@ const ExpoTabs = withLayoutContext<
             options: {
               ...screen.options,
               unstable_tabBarNavigateAction: () => getNavigateAction(derivedHref, {}),
+              unstable_preloadHref: derivedHref,
             },
           };
         }
@@ -119,6 +120,7 @@ const ExpoTabs = withLayoutContext<
         options: (args: any) => ({
           ...options(args),
           unstable_tabBarNavigateAction: () => getNavigateAction(href, {}),
+          unstable_preloadHref: href,
         }),
       });
     });

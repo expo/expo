@@ -12,6 +12,26 @@ import type { LinkingOptions } from './react-navigation/native';
 import { getActionFromState } from './react-navigation/native';
 import type { NativeIntent, RequireContext } from './types';
 
+// Run a native `redirectSystemPath`, but never let a rejected or throwing redirect crash startup.
+// A failed redirect logs the error and falls back to the un-redirected `path` (the default route) —
+// without this the initial state would resolve to `undefined` and the root navigator would mount
+// with no committed slice.
+function redirectSystemPathWithFallback(nativeLinking: NativeIntent, path: string) {
+  try {
+    const result = nativeLinking.redirectSystemPath!({ path, initial: true });
+    if (result != null && typeof (result as PromiseLike<unknown>).then === 'function') {
+      return Promise.resolve(result).catch((error) => {
+        console.error(error);
+        return path;
+      });
+    }
+    return result;
+  } catch (error) {
+    console.error(error);
+    return path;
+  }
+}
+
 export function getNavigationConfig(
   routes: RouteNode,
   metaOnly: boolean,
@@ -122,13 +142,13 @@ export function getLinkingConfig(
           if (typeof initialUrl === 'string') {
             initialUrl = applyRedirects(initialUrl, redirects);
             if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
-              initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
+              initialUrl = redirectSystemPathWithFallback(nativeLinking, initialUrl);
             }
           } else if (initialUrl) {
             initialUrl = initialUrl.then((url) => {
               url = applyRedirects(url, redirects);
               if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
-                return nativeLinking.redirectSystemPath({ path: url, initial: true });
+                return redirectSystemPathWithFallback(nativeLinking, url);
               }
               return url;
             });

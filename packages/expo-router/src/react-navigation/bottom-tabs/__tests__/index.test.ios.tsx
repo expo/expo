@@ -164,6 +164,13 @@ test('tab bars render appropriate hrefs on web', () => {
 
   const { getByText } = render(
     <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'tab',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}
       linking={{
         prefixes: [],
         config: {

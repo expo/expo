@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactElement, ReactNode, PropsWithChildren } from 'react';
-import { Children, Fragment, isValidElement, use, useMemo } from 'react';
+import { Children, Fragment, isValidElement, use, useCallback, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
@@ -26,6 +26,7 @@ import { useTabPlaceholders } from '../react-navigation/useTabPlaceholders';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
 import { NavigatorContext } from '../views/Navigator';
+import { getRouteNodeHrefMap } from '../views/useSitemap';
 import type { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
 import { TabTriggerMapContext } from './TabContext';
 import { isTabList } from './TabList';
@@ -219,8 +220,17 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     () => nonLazyRouteNames.filter((name) => name !== anchorName),
     [nonLazyRouteNames, anchorName]
   );
-  usePreloadRoutes(state, navigation, nonAnchorRouteNames);
-  usePreloadAnchor(state, navigation, rest.backBehavior, initialRouteName);
+  // Resolve each child's compiled href so preloaded/anchor tabs carry their subtree.
+  const hrefMap = useMemo(() => getRouteNodeHrefMap(), [routeNode]);
+  const resolvePreloadHref = useCallback(
+    (name: string) => {
+      const child = routeNode.children.find((candidate) => candidate.route === name);
+      return child ? hrefMap.get(child) : undefined;
+    },
+    [routeNode, hrefMap]
+  );
+  usePreloadRoutes(state, navigation, nonAnchorRouteNames, resolvePreloadHref);
+  usePreloadAnchor(state, navigation, rest.backBehavior, initialRouteName, resolvePreloadHref);
 
   const navigatorContextValue = useMemo<NavigatorContextValue>(
     () =>

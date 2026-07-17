@@ -93,8 +93,23 @@ function NativeTabsContent({
 
   // TODO: Consider supporting lazy routes here (preload only non-lazy tabs, like the JS navigators)
   // instead of always mounting every tab - would defer offscreen tab cost on the native side.
-  const preloadNavigation = useMemo(() => ({ preload }), [preload]);
-  usePreloadRoutes(state, preloadNavigation, routesOrderNames);
+  const preloadNavigation = useMemo(() => ({ preload, dispatch }), [preload, dispatch]);
+  // Resolve each tab's compiled href so the preload carries its subtree (same lookup `onTabChange`
+  // uses for first-visit navigation below).
+  const resolveHref = useCallback(
+    (name: string) => {
+      const child = routeNode?.children.find((candidate) => candidate.route === name);
+      return child ? hrefMap.get(child) : undefined;
+    },
+    [routeNode, hrefMap]
+  );
+  // The standard-navigation `state` omits its key; `stateKey` carries it (see `NativeTabsCreatedProps`).
+  usePreloadRoutes(
+    { routes: state.routes, key: stateKey },
+    preloadNavigation,
+    routesOrderNames,
+    resolveHref
+  );
 
   const combinedDescriptors = useMemo(
     () => ({ ...lazyDescriptors, ...descriptors }),

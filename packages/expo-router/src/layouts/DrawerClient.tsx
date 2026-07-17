@@ -3,6 +3,7 @@
 import type { DrawerNavigationOptions, DrawerNavigationEventMap } from '../react-navigation/drawer';
 import { createDrawerNavigator } from '../react-navigation/drawer';
 import type { DrawerNavigationState, ParamListBase } from '../react-navigation/native';
+import { attachPreloadHrefs } from './preloadHref';
 import { withLayoutContext } from './withLayoutContext';
 
 const DrawerNavigator = createDrawerNavigator().Navigator;
@@ -12,6 +13,6 @@ export const Drawer = withLayoutContext<
   typeof DrawerNavigator,
   DrawerNavigationState<ParamListBase>,
   DrawerNavigationEventMap
->(DrawerNavigator);
+>(DrawerNavigator, attachPreloadHrefs);
 
 export default Drawer;

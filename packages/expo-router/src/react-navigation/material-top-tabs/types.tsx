@@ -84,6 +84,13 @@ export type MaterialTopTabNavigationOptions = {
   title?: string;
 
   /**
+   * Internal: supplied by Expo Router. The compiled href for this route, used by `usePreloadRoutes`
+   * to preload it with its full subtree (via `getNavigateAction`) rather than a bare route that
+   * would leave a nested navigator uncommitted.
+   */
+  unstable_preloadHref?: string;
+
+  /**
    * Title string of a tab displayed in the tab bar
    * or a function that given { focused: boolean, color: ColorValue } returns a React.Node, to display in tab bar.
    *

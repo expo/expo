@@ -53,76 +53,6 @@ function restoreUnhandled(
 // delegates entirely to the tab router (no dedicated drawer key). In the new model `routes` is a
 // SUBSET of `routeNames` (presence is the loaded signal) and there is no `preloadedRouteKeys` field.
 
-test('gets initial state materializing the anchor and the initial route with initialRouteName', () => {
-  const router = DrawerRouter({ initialRouteName: 'baz' });
-
-  // firstRoute (default) anchor = first declared (bar), focused = baz -> subset [bar, baz] index 1.
-  expect(
-    router.getInitialState({
-      routeNames: ['bar', 'baz', 'qux'],
-      routeParamList: {
-        baz: { answer: 42 },
-        qux: { name: 'Jane' },
-      },
-      parentRouteKey: undefined,
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    drawerStatus: 'closed',
-    index: 1,
-    key: '@',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: '@:bar:0', name: 'bar' },
-      { key: '@:baz:0', name: 'baz', params: { answer: 42 } },
-    ],
-    stale: false,
-  });
-});
-
-test('gets initial state materializing only the focused route without initialRouteName', () => {
-  const router = DrawerRouter({});
-
-  expect(
-    router.getInitialState({
-      routeNames: ['bar', 'baz', 'qux'],
-      routeParamList: {
-        baz: { answer: 42 },
-        qux: { name: 'Jane' },
-      },
-      parentRouteKey: undefined,
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    drawerStatus: 'closed',
-    index: 0,
-    key: '@',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: '@:bar:0', name: 'bar' }],
-    stale: false,
-  });
-});
-
-test('defaultStatus seeds drawerStatus', () => {
-  const router = DrawerRouter({ defaultStatus: 'open' });
-
-  expect(
-    router.getInitialState({
-      routeNames: ['bar', 'baz'],
-      routeParamList: {},
-      parentRouteKey: undefined,
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    drawerStatus: 'open',
-    index: 0,
-    key: '@',
-    routeNames: ['bar', 'baz'],
-    routes: [{ key: '@:bar:0', name: 'bar' }],
-    stale: false,
-  });
-});
-
 test('rehydrates preserving the persisted subset and appending the anchor', () => {
   const router = DrawerRouter({});
 
@@ -365,12 +295,14 @@ test('GO_BACK closes an open drawer before delegating to tab history', () => {
 
 test('handles drawer open, close, and toggle actions', () => {
   const router = DrawerRouter({});
-  const state = router.getInitialState({
+  const state: DrawerNavigationState<ParamListBase> = {
+    stale: false,
+    drawerStatus: 'closed',
+    key: '@',
+    index: 0,
     routeNames: ['bar'],
-    routeParamList: {},
-    parentRouteKey: undefined,
-    routeGetIdList: {},
-  });
+    routes: [{ key: '@:bar:0', name: 'bar' }],
+  };
   const options: RouterConfigOptions = {
     routeNames: ['bar'],
     routeParamList: {},

@@ -1,7 +1,18 @@
 import { renderHook } from '@testing-library/react-native';
 
+import { getPreloadAction } from '../../global-state/getNavigationAction';
 import type { ParamListBase, TabNavigationState } from '../routers';
 import { usePreloadRoutes } from '../usePreloadRoutes';
+
+jest.mock('../../global-state/getNavigationAction', () => ({
+  getPreloadAction: jest.fn(),
+}));
+
+const mockGetPreloadAction = getPreloadAction as jest.MockedFunction<typeof getPreloadAction>;
+
+beforeEach(() => {
+  mockGetPreloadAction.mockReset();
+});
 
 const makeState = (routesPresent: string[], routeNames: string[]): TabNavigationState<ParamListBase> => ({
   stale: false,
@@ -12,7 +23,7 @@ const makeState = (routesPresent: string[], routeNames: string[]): TabNavigation
 });
 
 function makeNavigation() {
-  return { preload: jest.fn() };
+  return { preload: jest.fn(), dispatch: jest.fn() };
 }
 
 test('preloads only the absent routes from the policy list', () => {
@@ -111,6 +122,46 @@ test('does not re-dispatch on an unrelated re-render (same state.routes / naviga
   // Re-render with identical references: the effect must not run again.
   rerender({ s: state, n: names });
   expect(navigation.preload).toHaveBeenCalledTimes(1);
+});
+
+test('compiles a subtree-carrying PRELOAD targeted at the calling navigator when an href resolves', () => {
+  const navigation = makeNavigation();
+  const state = makeState(['home'], ['home', 'a', 'b']);
+  const action = {
+    type: 'PRELOAD' as const,
+    payload: { name: 'a', params: undefined },
+  };
+  mockGetPreloadAction.mockReturnValue(action);
+
+  const resolveHref = (name: string) => `/${name}`;
+  renderHook(() => usePreloadRoutes(state, navigation, ['a'], resolveHref));
+
+  expect(mockGetPreloadAction).toHaveBeenCalledWith('tab', '/a', 'a', false);
+  expect(navigation.dispatch).toHaveBeenCalledWith(action);
+  expect(navigation.preload).not.toHaveBeenCalled();
+});
+
+test('falls back to a bare preload when the href does not resolve', () => {
+  const navigation = makeNavigation();
+  const state = makeState(['home'], ['home', 'a']);
+
+  renderHook(() => usePreloadRoutes(state, navigation, ['a'], () => undefined));
+
+  expect(navigation.preload).toHaveBeenCalledWith('a');
+  expect(mockGetPreloadAction).not.toHaveBeenCalled();
+  expect(navigation.dispatch).not.toHaveBeenCalled();
+});
+
+test('skips a route whose compiled action is undefined (redirect already handled)', () => {
+  const navigation = makeNavigation();
+  const state = makeState(['home'], ['home', 'a']);
+  mockGetPreloadAction.mockReturnValue(undefined);
+
+  renderHook(() => usePreloadRoutes(state, navigation, ['a'], (name) => `/${name}`));
+
+  expect(mockGetPreloadAction).toHaveBeenCalled();
+  expect(navigation.dispatch).not.toHaveBeenCalled();
+  expect(navigation.preload).not.toHaveBeenCalled();
 });
 
 test('reacts to a name being added to the policy list later', () => {

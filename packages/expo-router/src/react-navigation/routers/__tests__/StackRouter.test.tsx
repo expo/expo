@@ -63,50 +63,6 @@ function restoreUnhandled(
   ) as NavigationState;
 }
 
-test('gets initial state from route names and params with initialRouteName', () => {
-  const router = StackRouter({ initialRouteName: 'baz' });
-
-  expect(
-    router.getInitialState({
-      routeNames: ['bar', 'baz', 'qux'],
-      routeParamList: {
-        baz: { answer: 42 },
-        qux: { name: 'Jane' },
-      },
-      parentRouteKey: undefined,
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    index: 0,
-    key: '@',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: '@:baz:0', name: 'baz', params: { answer: 42 } }],
-    stale: false,
-  });
-});
-
-test('gets initial state from route names and params without initialRouteName', () => {
-  const router = StackRouter({});
-
-  expect(
-    router.getInitialState({
-      routeNames: ['bar', 'baz', 'qux'],
-      routeParamList: {
-        baz: { answer: 42 },
-        qux: { name: 'Jane' },
-      },
-      parentRouteKey: undefined,
-      routeGetIdList: {},
-    })
-  ).toEqual({
-    index: 0,
-    key: '@',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: '@:bar:0', name: 'bar' }],
-    stale: false,
-  });
-});
-
 test('rehydrates keyless same-name routes to sequential free keys', () => {
   const router = StackRouter({});
 

@@ -334,6 +334,17 @@ test('renders back button in the nested stack', async () => {
               routes: [{ key: 'C', name: 'C' }],
             },
           },
+          {
+            key: 'B',
+            name: 'B',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: 'B',
+              routeNames: ['C'],
+              routes: [{ key: 'C', name: 'C' }],
+            },
+          },
         ],
       }}>
       <StackB.Navigator screenOptions={{ headerShown: false }}>

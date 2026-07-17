@@ -126,3 +126,72 @@ export function getNavigateAction(
     payload,
   };
 }
+
+// Find the sub-state whose key matches `stateKey` anywhere in a (compiled) tree. Keys are structural
+// and deterministic (see `getRouteKey`), so a navigator's live state key locates the same level in a
+// freshly compiled state.
+function findSubStateByKey(
+  state: { key?: string; routes: readonly { state?: any }[] } | undefined,
+  stateKey: string
+): { index?: number; routes: readonly any[] } | undefined {
+  if (state == null) {
+    return undefined;
+  }
+  if (state.key === stateKey) {
+    return state as { index?: number; routes: readonly any[] };
+  }
+  for (const route of state.routes) {
+    const found = findSubStateByKey(route.state, stateKey);
+    if (found != null) {
+      return found;
+    }
+  }
+  return undefined;
+}
+
+// Build a PRELOAD (or FRONT_PRELOAD) action for a route named `routeName` inside the navigator whose
+// state key is `navigatorStateKey`, carrying that route's full compiled subtree as `payload.state`.
+//
+// Unlike `getNavigateAction`, this does NOT resolve a divergent target from the live tree — it aims
+// at the calling navigator (the dispatcher tags the action with that navigator's `originKey`) and
+// extracts the subtree by the navigator's own state key. That keeps preload correct at mount time,
+// when it runs before intermediate ancestors have registered their reducers (so a divergence-based
+// target would stop too high). Returns `undefined` when the href can't be compiled or the route
+// isn't present in the compiled level (e.g. a redirect already consumed it).
+export function getPreloadAction(
+  navigatorStateKey: string,
+  baseHref: string,
+  routeName: string,
+  front: boolean
+) {
+  const navigationRef = store.navigationRef.current;
+  if (navigationRef == null || !store.linking) {
+    return undefined;
+  }
+
+  let href: string | undefined = resolveHrefStringWithSegments(baseHref, store.getRouteInfo(), {});
+  href = applyRedirects(href, store.redirects) ?? undefined;
+  if (!href) {
+    return undefined;
+  }
+
+  const compiled = store.linking.getStateFromPath!(href, store.linking.config);
+  if (!compiled || compiled.routes.length === 0) {
+    return undefined;
+  }
+
+  const level = findSubStateByKey(compiled, navigatorStateKey);
+  const route = level?.routes.find((candidate) => candidate.name === routeName);
+  if (route == null) {
+    return undefined;
+  }
+
+  return {
+    type: front ? 'FRONT_PRELOAD' : 'PRELOAD',
+    payload: {
+      name: routeName,
+      params: route.params,
+      ...(route.state != null ? { state: route.state } : null),
+    },
+  };
+}

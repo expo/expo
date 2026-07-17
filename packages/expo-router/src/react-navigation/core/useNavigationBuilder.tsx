@@ -442,38 +442,17 @@ export function useNavigationBuilder<
   // The committed store is the single source of truth. The parent (or the container) hands this
   // navigator its committed slice as `currentState`; we take the slice key from it and subscribe to
   // that slice in the store directly (see `state` below), so a change to this navigator's slice
-  // re-renders it even when an ancestor is memoized. There is no compose-up — the root reducer is
-  // the only writer, and a navigator whose slice isn't committed yet seeds its own initial state
-  // into the store (see the self-seed effect below).
+  // re-renders it even when an ancestor is memoized. There is no compose-up — the root reducer is the
+  // only writer, and every navigator's slice reaches the store as a compiled subtree: the container
+  // seed for the focused path, and `payload.state` on a PRELOAD/navigate for the rest (a navigator
+  // never mounts without a committed slice).
   const store = use(NavigationSyncStateContext);
 
   if (store == null) {
     throw new Error("Couldn't find a navigation store. Is your component inside a navigator?");
   }
 
-  // This navigator's initial state, computed ONLY when its slice isn't committed yet — an
-  // unvisited/preloaded nested navigator, or a container mounted without a compiler seed. It seeds
-  // the store (see the self-seed effect) and renders until the seed lands. When the slice is already
-  // committed (the compiler seeded it, or a dispatch created it) this stays `undefined` so
-  // `getInitialState` is never called on the seeded path.
-  const isCommitted = currentState != null;
-  const initialState = React.useMemo(
-    () =>
-      isCommitted
-        ? undefined
-        : (router.getInitialState({
-            routeNames,
-            parentRouteKey,
-            routeParamList,
-            routeGetIdList,
-          }) as State),
-    // Recomputes when committed-ness flips or the router changes; routeNames/param changes are
-    // reconciled through the store, not by recomputing the seed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isCommitted, router]
-  );
-
-  const key = currentState?.key ?? initialState?.key;
+  const key = currentState?.key;
 
   const previousRouteKeyListRef = React.useRef(routeKeyList);
   const previousRouteKeyList = previousRouteKeyListRef.current;
@@ -493,9 +472,8 @@ export function useNavigationBuilder<
 
   const storeSlice = useStoreSlice(key);
   // Prefer the subscribed store slice. Fall back to the slice the parent handed down (covers a
-  // committed navigator whose subscription hasn't observed the latest commit yet), then to the
-  // initial state for a navigator that isn't committed at all (it seeds itself below).
-  let state = (storeSlice ?? currentState ?? initialState) as State;
+  // committed navigator whose subscription hasn't observed the latest commit yet).
+  let state = (storeSlice ?? currentState) as State;
 
   const reconciliationState = state;
   state = getStateForRenderableRoutes(
@@ -599,7 +577,7 @@ export function useNavigationBuilder<
     latestConfigRef.current = routerConfigOptions;
   });
 
-  const { dispatchRoot, seedNavigatorState } = use(NavigationBuilderContext);
+  const { dispatchRoot } = use(NavigationBuilderContext);
   const needsRouteNamesReconcile =
     !isArrayEqual(reconciliationState.routeNames, routeNames) ||
     !isRecordEqual(routeKeyList, previousRouteKeyList);
@@ -674,18 +652,6 @@ export function useNavigationBuilder<
       reducerRegistry?.removeEntry(state.key, registryEntry);
     };
   }, [backBehavior, reducerRegistry, registryEntry, state.key]);
-
-  // Seed this navigator's slice into the store when it isn't committed yet — the root container
-  // with no compiler seed, or an unvisited/preloaded nested navigator whose parent route carries no
-  // `state`. Idempotent: it only writes when the slice is absent, so once committed (here, by the
-  // compiler, or by a dispatch) it never runs again. This is the sole path by which a navigator's
-  // initial state reaches the store; there is no render-time compose-up.
-  useClientLayoutEffect(() => {
-    if (storeSlice == null && initialState != null) {
-      seedNavigatorState?.(parentRouteKey, initialState as NavigationState);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storeSlice, parentRouteKey, initialState, seedNavigatorState]);
 
   useClientLayoutEffect(() => {
     if (!needsRouteNamesReconcile && !shouldRestoreUnhandledState) {

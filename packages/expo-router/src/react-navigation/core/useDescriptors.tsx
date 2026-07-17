@@ -109,7 +109,6 @@ export function useDescriptors<
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
   const {
     dispatchRoot,
-    seedNavigatorState,
     onDispatchAction,
     onOptionsChange,
     scheduleUpdate,
@@ -124,7 +123,6 @@ export function useDescriptors<
       addListener,
       addKeyedListener,
       dispatchRoot,
-      seedNavigatorState,
       onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
@@ -137,7 +135,6 @@ export function useDescriptors<
       addListener,
       addKeyedListener,
       dispatchRoot,
-      seedNavigatorState,
       onDispatchAction,
       onOptionsChange,
       scheduleUpdate,

@@ -223,10 +223,10 @@ it('does not pop stack on repeated tab press', async () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('a-index')).toBeVisible();
-  // Eager preload renders both tabs; the preloaded `a` tab's nested Stack has no compiled slice
-  // yet, so it seeds its initial state into the store on mount (one extra commit) and renders an
-  // additional pass.
-  expect(TabsScreen).toHaveBeenCalledTimes(6);
+  // Eager preload renders both tabs. The preloaded `a` tab now commits its compiled nested subtree
+  // directly (the PRELOAD carries `payload.state`), so its Stack mounts already seeded — no extra
+  // self-seed commit and re-render pass.
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
   expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)index:\d+$/);
   expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)a:\d+$/);
 
