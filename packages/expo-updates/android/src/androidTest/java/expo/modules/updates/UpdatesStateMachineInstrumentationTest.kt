@@ -199,6 +199,21 @@ class UpdatesStateMachineInstrumentationTest {
   }
 
   @Test
+  fun should_handle_completed_download_with_rollback() {
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.entries.toSet())
+
+    machine.processEventTest(UpdatesStateEvent.Download())
+    Assert.assertEquals(UpdatesStateValue.Downloading, machine.getState())
+
+    machine.processEventTest(UpdatesStateEvent.DownloadCompleteWithRollback())
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
+    Assert.assertFalse(machine.context.isDownloading)
+    Assert.assertNull(machine.context.downloadError)
+    Assert.assertTrue(machine.context.isUpdatePending)
+  }
+
+  @Test
   fun test_handleDownloadProgress() {
     val testStateChangeEventManager = TestStateChangeEventManager()
     val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.entries.toSet())

@@ -124,6 +124,20 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.context.rollback) == nil
       }
 
+      it("should handle a completed download with a rollback") {
+        let testStateChangeEventManager = TestStateChangeEventManager()
+        let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+        machine.processEventForTesting(.download)
+        expect(machine.getStateForTesting()) == .downloading
+
+        machine.processEventForTesting(.downloadCompleteWithRollback)
+        expect(machine.getStateForTesting()) == .idle
+        expect(machine.context.isDownloading) == false
+        expect(machine.context.downloadError).to(beNil())
+        expect(machine.context.isUpdatePending) == true
+      }
+
       it("should handle download progress") {
         let testStateChangeEventManager = TestStateChangeEventManager()
         let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
