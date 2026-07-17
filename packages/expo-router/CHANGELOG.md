@@ -21,6 +21,7 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Keep `Link.Preview` triggers visible to the accessibility tree. ([#46875](https://github.com/expo/expo/issues/46875) by [@vivekjm](https://github.com/vivekjm))
 - [android] Disable safe area insets in Native Tabs on Android when tab bar is hidden. ([#47611](https://github.com/expo/expo/pull/47611) by [@debitan](https://github.com/debitan))
 - Sync config plugin `Props` type with the options schema, adding the missing `redirects`, `rewrites`, `platformRoutes`, and `disableSynchronousScreensUpdates` options. ([#46677](https://github.com/expo/expo/pull/46677) by [@zoontek](https://github.com/zoontek))
 - [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))
