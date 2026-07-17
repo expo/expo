@@ -322,6 +322,8 @@ PODS:
     - ExpoModulesCore
   - ExpoAudio (56.0.11):
     - ExpoModulesCore
+  - ExpoAudio/Tests (56.0.11):
+    - ExpoModulesCore
   - ExpoBackgroundFetch (56.0.15):
     - ExpoModulesCore
   - ExpoBackgroundTask (56.0.15):
@@ -3353,6 +3355,7 @@ DEPENDENCIES:
   - ExpoAppMetrics/Tests (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
+  - ExpoAudio/Tests (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
   - ExpoBackgroundTask/Tests (from `../../../packages/expo-background-task/ios`)
@@ -4033,7 +4036,7 @@ SPEC CHECKSUMS:
   ExpoAppleAuthentication: 3dd8ddd3016396a8171f06af8cc5e3e008e8eaf4
   ExpoAppMetrics: 5cdb64cf96504ddef0aa2b87e0be3c337416c75d
   ExpoAsset: c2e7b5ba1fe75be683282d6264e38fd7cd8defbb
-  ExpoAudio: 7774082d316ceecc2b26efeb10480bea2fa4d67e
+  ExpoAudio: 828b0248bfa4597468f69891aee39d444539d8bb
   ExpoBackgroundFetch: eff0b77ce55180ad479c5091616d6d2c3bf5ca58
   ExpoBackgroundTask: d2ab6bf83921dc84ad3995fed08d56491ca8cba8
   ExpoBattery: a42e918404ceee07a957db4312918ec0c52bc0d6
