@@ -529,8 +529,10 @@ private fun ReadableMap.children(): List<ReadableMap> {
 private fun ReadableArray.children(): List<ReadableMap> {
   return buildList {
     for (index in 0 until size()) {
-      if (getType(index) == ReadableType.Map) {
-        getMap(index)?.let(::add)
+      when (getType(index)) {
+        ReadableType.Map -> getMap(index)?.let(::add)
+        ReadableType.Array -> getArray(index)?.let { addAll(it.children()) }
+        else -> Unit
       }
     }
   }
