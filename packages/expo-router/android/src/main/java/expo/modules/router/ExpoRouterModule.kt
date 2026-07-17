@@ -3,6 +3,7 @@ package expo.modules.router
 import android.app.Application
 import android.content.ComponentCallbacks
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Color
 import expo.modules.kotlin.exception.Exceptions
@@ -13,10 +14,6 @@ import com.google.android.material.color.MaterialColors
 
 private const val COLOR_PALETTE_CHANGED_EVENT = "onColorPaletteChanged"
 
-// `ActivityInfo.CONFIG_ASSETS_PATHS` — inlined because the constant is public API
-// only since compileSdk 36, while the framework sets the bit since API 26.
-private const val CONFIG_ASSETS_PATHS = 0x80000000.toInt()
-
 class ExpoRouterModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -24,17 +21,15 @@ class ExpoRouterModule : Module() {
   @Volatile
   private var lastConfiguration: Configuration? = null
 
-  // Kept so unregistration works even after the react context is gone.
-  // Only touched on the modules queue (start/stop observing, destroy), so not volatile.
+  // Retained for cleanup after the React context is destroyed.
   private var registeredApplication: Application? = null
 
-  // Android delivers a Material You palette change as an assets-path configuration
-  // change (the dynamic-color overlay is swapped), so emit only on that diff bit.
+  // Dynamic color overlays change the assets path.
   private val componentCallbacks = object : ComponentCallbacks {
     override fun onConfigurationChanged(newConfig: Configuration) {
       val previous = lastConfiguration
       lastConfiguration = Configuration(newConfig)
-      if (previous != null && previous.diff(newConfig) and CONFIG_ASSETS_PATHS != 0) {
+      if (previous != null && previous.diff(newConfig) and ActivityInfo.CONFIG_ASSETS_PATHS != 0) {
         sendEvent(COLOR_PALETTE_CHANGED_EVENT)
       }
     }
@@ -55,8 +50,6 @@ class ExpoRouterModule : Module() {
       dynamicColor(name, scheme)
     }
 
-    // If the react context is unexpectedly null here, registration is skipped for the
-    // session — accepted risk, since a JS listener implies a live react context.
     OnStartObserving(COLOR_PALETTE_CHANGED_EVENT) {
       unregisterComponentCallbacks()
       registeredApplication = (appContext.reactContext?.applicationContext as? Application)?.also {
@@ -69,8 +62,6 @@ class ExpoRouterModule : Module() {
       unregisterComponentCallbacks()
     }
 
-    // JS never removes listeners on react-instance teardown (for example, a reload),
-    // so clean up here to avoid leaking the callback on the application context.
     OnDestroy {
       unregisterComponentCallbacks()
     }

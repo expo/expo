@@ -73,7 +73,6 @@ function NativeMaterialColor(name: string, scheme: SchemeName): string | null {
   return getNativeModule().Material3Color(name, scheme);
 }
 
-// Fires when the system Material You palette changes (for example after a wallpaper change).
 export function addColorPaletteListener(listener: () => void): () => void {
   const subscription = getNativeModule().addListener('onColorPaletteChanged', listener);
   return () => subscription.remove();

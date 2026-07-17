@@ -1,21 +1,9 @@
-import { useEffect, useReducer, useState } from 'react';
-import { useColorScheme, type ColorSchemeName } from 'react-native';
+import { useEffect, useState } from 'react';
+import { useColorScheme } from 'react-native';
 
 import { type ColorType } from './color';
 import { createColor } from './createColor';
 import { addColorPaletteListener } from './materialColor';
-
-/**
- * Re-renders on light/dark scheme changes and on native Material You palette
- * change events, without exposing any value.
- *
- * @internal
- */
-export function useColorPaletteVersion(): void {
-  useColorScheme();
-  const [, increment] = useReducer((current: number) => current + 1, 0);
-  useEffect(() => addColorPaletteListener(increment), []);
-}
 
 /**
  * Returns the [`Color`](#color) API object and re-renders whenever system colors change:
@@ -47,12 +35,11 @@ export function useColorPaletteVersion(): void {
 export function useRouterColor(): ColorType {
   const colorScheme = useColorScheme();
   const [color, setColor] = useState<ColorType>(createColor);
-  // Adjust state during render on scheme changes (avoids an extra effect pass).
-  const [previousScheme, setPreviousScheme] = useState<ColorSchemeName>(colorScheme);
-  if (previousScheme !== colorScheme) {
-    setPreviousScheme(colorScheme);
+
+  useEffect(() => {
     setColor(createColor());
-  }
+  }, [colorScheme]);
   useEffect(() => addColorPaletteListener(() => setColor(createColor())), []);
+
   return color;
 }

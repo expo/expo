@@ -1,3 +1,4 @@
+import { useLayoutEffect } from 'react';
 import { act, render, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
@@ -58,7 +59,6 @@ it('keeps stable nested identities across re-renders', () => {
   rerender({});
   expect(result.current.android).toBe(android);
   expect(result.current.android.dynamic).toBe(dynamic);
-  // Repeated reads of the same object return the same nested references.
   expect(result.current.android.dynamic).toBe(result.current.android.dynamic);
 });
 
@@ -86,14 +86,26 @@ it('returns a new object when the native palette change event fires', () => {
   expect(result.current.android.dynamic.primary).toBe('#changed-primary');
 });
 
-it('returns a new object when the color scheme changes', () => {
-  const { result, rerender } = renderHook(() => useRouterColor());
-  const first = result.current;
+it('updates colors in an effect when the color scheme changes', () => {
+  const committedColors: object[] = [];
+  function Consumer() {
+    const color = useRouterColor();
+    useLayoutEffect(() => {
+      committedColors.push(color);
+    });
+    return null;
+  }
+
+  const { rerender } = render(<Consumer />);
+  const first = committedColors.at(-1);
+  committedColors.length = 0;
 
   mockColorScheme = 'dark';
-  rerender({});
+  rerender(<Consumer />);
 
-  expect(result.current).not.toBe(first);
+  expect(committedColors.length).toBe(2);
+  expect(committedColors[0]).toBe(first);
+  expect(committedColors[1]).not.toBe(first);
 });
 
 it('removes the native listener on unmount', () => {

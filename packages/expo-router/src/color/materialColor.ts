@@ -53,7 +53,6 @@ export function Material3Color(name: string): string | null {
   return null;
 }
 
-// Only Android emits palette change events; other platforms never call the listener.
 export function addColorPaletteListener(_listener: () => void): () => void {
   return () => {};
 }
