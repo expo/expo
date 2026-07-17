@@ -93,7 +93,7 @@ internal func downscaledIfExceedsBounds(_ image: UIImage, maxWidth: Double?, max
     return image
   }
   let scale = maxPixelSize / max(width, height)
-  let targetSize = CGSize(width: (width * scale).rounded(), height: (height * scale).rounded())
+  let targetSize = CGSize(width: max(1, (width * scale).rounded()), height: max(1, (height * scale).rounded()))
 
   return drawInNewContext(size: targetSize) { _ in
     image.draw(in: CGRect(origin: .zero, size: targetSize))

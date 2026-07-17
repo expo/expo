@@ -116,6 +116,17 @@ struct ImageDownsamplingTests {
     #expect(downscaledIfExceedsBounds(image, maxWidth: 100, maxHeight: 50) === image)
   }
 
+  @Test
+  func `never rounds a downscaled dimension to zero`() throws {
+    // 400×2 bounded to maxWidth 50 → scale 0.125 → height 0.25 would round to 0.
+    let image = makeImage(width: 400, height: 2)
+    let result = downscaledIfExceedsBounds(image, maxWidth: 50, maxHeight: nil)
+    let cgImage = try #require(result.cgImage)
+
+    #expect(cgImage.width == 50)
+    #expect(cgImage.height == 1)
+  }
+
   // MARK: - Helpers
 
   private func makeImage(width: Int, height: Int) -> UIImage {

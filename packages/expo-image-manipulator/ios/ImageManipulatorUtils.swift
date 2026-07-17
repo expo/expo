@@ -67,7 +67,7 @@ internal func loadImageFromPhotoLibrary(url: URL, maxWidth: Double? = nil, maxHe
   let size: CGSize
   if let maxPixelSize = downsampledMaxPixelSize(width: assetWidth, height: assetHeight, maxWidth: maxWidth, maxHeight: maxHeight) {
     let scale = maxPixelSize / max(assetWidth, assetHeight)
-    size = CGSize(width: (assetWidth * scale).rounded(), height: (assetHeight * scale).rounded())
+    size = CGSize(width: max(1, (assetWidth * scale).rounded()), height: max(1, (assetHeight * scale).rounded()))
   } else {
     size = CGSize(width: assetWidth, height: assetHeight)
   }
