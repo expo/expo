@@ -41,7 +41,7 @@ export interface ExpoConfigOptions {
   decorators: { legacy?: boolean; version?: number } | false | undefined;
   /** Whether the selected engine preset does not compile class features (class
    * properties, private methods), so they must be compiled here for files that
-   * use decorators. */
+   * contain decorated class properties. */
   needsClassFeaturesForDecorators: boolean | undefined;
   reanimated: boolean | undefined;
   worklets: boolean | undefined;
