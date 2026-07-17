@@ -5,6 +5,7 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
+import { asFocusChildAction } from './focusChild';
 import { asReconcileRouteNamesAction, isUnhandledStateRestore } from './reconcileRouteNames';
 import type { CommonNavigationAction, InternalRouter, ParamListBase } from './types';
 
@@ -88,13 +89,23 @@ export function DrawerRouter({
       return withDrawerStatus(tabRouter.getInitialState(config), defaultStatus);
     },
 
-    getStateForRouteFocus(state, key) {
-      return withDrawerStatus(tabRouter.getStateForRouteFocus(state, key), defaultStatus);
-    },
-
     getStateForAction(state, action, config) {
       if (action.target && action.target !== state.key) {
         return null;
+      }
+
+      // Focus delegates to the tab router's handling, then re-applies drawerStatus the same way the
+      // former `getStateForRouteFocus` did.
+      const focusChildAction = asFocusChildAction(action);
+      if (focusChildAction) {
+        const tabResult = tabRouter.getStateForAction(
+          state,
+          action as unknown as CommonNavigationAction,
+          config
+        );
+        return tabResult == null
+          ? null
+          : withDrawerStatus(tabResult as DrawerNavigationState<ParamListBase>, defaultStatus);
       }
 
       // Reconcile delegates to the tab router's handling, then re-applies drawerStatus the same way

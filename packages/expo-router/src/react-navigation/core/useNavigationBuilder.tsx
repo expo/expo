@@ -653,8 +653,6 @@ export function useNavigationBuilder<
   const registryEntry = React.useMemo<NavigatorRegistryEntry>(
     () => ({
       reduce: registryReducer,
-      focusRoute: (state, routeKey) => router.getStateForRouteFocus(state as State, routeKey),
-      shouldActionChangeFocus: router.shouldActionChangeFocus,
       shouldPreventRemove: (currentState, nextState, action) =>
         shouldPreventRemove(
           emitter,

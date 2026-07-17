@@ -160,14 +160,4 @@ export type InternalRouter<State extends NavigationState, Action extends Navigat
    * Initialize the navigation state.
    */
   getInitialState: (options: RouterConfigOptions) => State;
-
-  /**
-   * Take the current state and key of a route, and return a new state with the route focused.
-   */
-  getStateForRouteFocus: (state: State, key: string) => State;
-
-  /**
-   * Whether the action should also change focus in parent navigator.
-   */
-  shouldActionChangeFocus(action: NavigationAction): boolean;
 };

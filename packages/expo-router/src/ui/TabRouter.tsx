@@ -9,6 +9,7 @@ import {
   type NavigationAction,
   TabRouter as RNTabRouter,
 } from '../react-navigation/native';
+import { focusChild } from '../react-navigation/routers';
 import { pruneReplacedRoute } from '../react-navigation/routers/TabRouter';
 import type { TriggerMap } from './common';
 
@@ -111,7 +112,11 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
         }
         nextState = rnTabRouter.getStateForAction(state, jumpToAction, options);
       } else {
-        nextState = rnTabRouter.getStateForRouteFocus(state, route!.key);
+        nextState = rnTabRouter.getStateForAction(
+          state,
+          focusChild(route!.key) as unknown as CommonNavigationAction,
+          options
+        );
       }
 
       // A REPLACE drops the route it replaced from the back stack.

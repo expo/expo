@@ -1,6 +1,7 @@
 import type { StackActionType } from '../core';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
+import { asFocusChildAction } from './focusChild';
 import {
   assertSubtreeKeyMatchesRoute,
   getNextRouteKeyFromState,
@@ -422,6 +423,28 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
     };
   }
 
+  // Focus the route with `key`, rearranging the back stack per `backBehavior`. A no-op focus (key
+  // absent or already focused) returns `state` unchanged.
+  function getStateForRouteFocus(state: State, key: string): State {
+    const fromIndex = state.routes.findIndex((r) => r.key === key);
+
+    if (fromIndex === -1 || fromIndex === state.index) {
+      return state;
+    }
+
+    const { routes, index } = focusRoute(
+      state.routes,
+      state.routes[fromIndex]!,
+      fromIndex,
+      state.index,
+      backBehavior,
+      initialRouteName,
+      state.routeNames
+    );
+
+    return { ...state, routes, index };
+  }
+
   const router: InternalRouter<State, TabActionType | CommonNavigationAction> = {
     ...BaseRouter,
 
@@ -452,26 +475,6 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       };
     },
 
-    getStateForRouteFocus(state, key) {
-      const fromIndex = state.routes.findIndex((r) => r.key === key);
-
-      if (fromIndex === -1 || fromIndex === state.index) {
-        return state;
-      }
-
-      const { routes, index } = focusRoute(
-        state.routes,
-        state.routes[fromIndex]!,
-        fromIndex,
-        state.index,
-        backBehavior,
-        initialRouteName,
-        state.routeNames
-      );
-
-      return { ...state, routes, index };
-    },
-
     getStateForAction(state, action, options) {
       const reconcile = asReconcileRouteNamesAction(action);
       if (reconcile) {
@@ -479,6 +482,11 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
         return isUnhandledStateRestore(state, config.routeNames, config.unhandledState)
           ? getRehydratedState(config.unhandledState, config)
           : getStateForRouteNamesChange(state, config);
+      }
+
+      const focusChildAction = asFocusChildAction(action);
+      if (focusChildAction) {
+        return getStateForRouteFocus(state, focusChildAction.payload.key);
       }
 
       const { routeNames, routeParamList, routeGetIdList } = options;

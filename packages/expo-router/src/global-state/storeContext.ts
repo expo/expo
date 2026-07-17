@@ -16,11 +16,6 @@ export type NavigationReducer = (
 
 export type NavigatorRegistryEntry = {
   reduce: NavigationReducer;
-  focusRoute?: (
-    state: NavigationState,
-    routeKey: string
-  ) => NavigationState | PartialState<NavigationState>;
-  shouldActionChangeFocus?: (action: NavigationAction) => boolean;
   shouldPreventRemove?: (
     currentState: NavigationState,
     nextState: NavigationState,

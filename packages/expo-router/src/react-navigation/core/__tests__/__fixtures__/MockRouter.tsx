@@ -3,6 +3,7 @@ import {
   type CommonNavigationAction,
   type DefaultRouterOptions,
   type InternalRouter,
+  asFocusChildAction,
   asReconcileRouteNamesAction,
   isUnhandledStateRestore,
   type NavigationState,
@@ -92,6 +93,16 @@ export function MockRouter(options: DefaultRouterOptions) {
     };
   }
 
+  function getStateForRouteFocus(state: NavigationState, key: string): NavigationState {
+    const index = state.routes.findIndex((r) => r.key === key);
+
+    if (index === -1 || index === state.index) {
+      return state;
+    }
+
+    return { ...state, index };
+  }
+
   const router: InternalRouter<NavigationState, MockActions> = {
     getInitialState({ routeNames, routeParamList }) {
       const index =
@@ -110,16 +121,6 @@ export function MockRouter(options: DefaultRouterOptions) {
       };
     },
 
-    getStateForRouteFocus(state, key) {
-      const index = state.routes.findIndex((r) => r.key === key);
-
-      if (index === -1 || index === state.index) {
-        return state;
-      }
-
-      return { ...state, index };
-    },
-
     getStateForAction(state, action, options) {
       const reconcile = asReconcileRouteNamesAction(action);
       if (reconcile) {
@@ -131,6 +132,11 @@ export function MockRouter(options: DefaultRouterOptions) {
         return isUnhandledStateRestore(state, config.routeNames, config.unhandledState)
           ? getRehydratedState(config.unhandledState, config)
           : getStateForRouteNamesChange(state, config);
+      }
+
+      const focusChildAction = asFocusChildAction(action);
+      if (focusChildAction) {
+        return getStateForRouteFocus(state, focusChildAction.payload.key);
       }
 
       const { routeParamList } = options;
@@ -206,10 +212,6 @@ export function MockRouter(options: DefaultRouterOptions) {
         default:
           return BaseRouter.getStateForAction(state, action);
       }
-    },
-
-    shouldActionChangeFocus(action: CommonNavigationAction) {
-      return action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED';
     },
   };
 

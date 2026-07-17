@@ -32,4 +32,11 @@ export {
   RECONCILE_ROUTE_NAMES,
   type ReconcileRouteNamesAction,
 } from './reconcileRouteNames';
+export {
+  asFocusChildAction,
+  FOCUS_CHILD,
+  focusChild,
+  type FocusChildAction,
+  isFocusChangingAction,
+} from './focusChild';
 export * from './types';

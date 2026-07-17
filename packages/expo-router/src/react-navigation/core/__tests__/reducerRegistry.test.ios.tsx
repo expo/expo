@@ -153,10 +153,6 @@ test('registers mounted navigator reducers by state key without leaking in Stric
   expect(new Set(keys).size).toBe(2);
   expect(reducers).toHaveLength(2);
   expect(reducers.every(([, entry]) => typeof entry.reduce === 'function')).toBe(true);
-  expect(reducers.every(([, entry]) => typeof entry.focusRoute === 'function')).toBe(true);
-  expect(reducers.every(([, entry]) => typeof entry.shouldActionChangeFocus === 'function')).toBe(
-    true
-  );
   expect(reducers.every(([, entry]) => typeof entry.shouldPreventRemove === 'function')).toBe(true);
 
   result.unmount();

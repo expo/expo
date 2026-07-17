@@ -1,4 +1,6 @@
 import {
+  asFocusChildAction,
+  focusChild,
   TabActions,
   TabRouter,
   type NavigationAction,
@@ -164,7 +166,7 @@ describe(rootReducer, () => {
       payload: { name: 'home', state: payloadState },
     };
 
-    registry.addEntry('root-state', { reduce: jest.fn(() => rootState) });
+    registry.addEntry('root-state', { reduce: jest.fn((state, action) => (asFocusChildAction(action) ? state : rootState)) });
     registry.addEntry('home-state', { reduce: jest.fn(() => rootState.routes[0]!.state!) });
 
     const result = rootReducer(rootState, action, registry);
@@ -189,7 +191,7 @@ describe(rootReducer, () => {
     const childState = rootState.routes[0]!.state as NavigationState;
     const focusedChild = { ...childState, index: 1 };
 
-    registry.addEntry('root-state', { reduce: jest.fn(() => rootState) });
+    registry.addEntry('root-state', { reduce: jest.fn((state, action) => (asFocusChildAction(action) ? state : rootState)) });
     registry.addEntry('home-state', { reduce: jest.fn(() => focusedChild) });
 
     const result = rootReducer(rootState, action, registry);
@@ -257,20 +259,19 @@ describe(rootReducer, () => {
     const childState = tree.routes[0]!.state as NavigationState;
     const nextChildState = { ...childState, index: 1 };
     const registry = createReducerRegistry();
-    const focusRoute = jest.fn((state) => ({ ...state, index: 0 }));
+    // Ancestor refocus is now a FOCUS_CHILD reduction: the root focuses the child route it carries.
+    const reduceRoot = jest.fn((state: NavigationState, reduceAction: NavigationAction) =>
+      asFocusChildAction(reduceAction) ? { ...state, index: 0 } : null
+    );
 
-    registry.addEntry('root-state', {
-      reduce: jest.fn(() => null),
-      focusRoute,
-    });
+    registry.addEntry('root-state', { reduce: reduceRoot });
     registry.addEntry('home-state', {
       reduce: jest.fn(() => nextChildState),
-      shouldActionChangeFocus: () => true,
     });
 
     const result = rootReducer(tree, action, registry);
 
-    expect(focusRoute).toHaveBeenCalledWith(expect.any(Object), 'home-route');
+    expect(reduceRoot).toHaveBeenCalledWith(expect.any(Object), focusChild('home-route'));
     expect(result.state.index).toBe(0);
     expect(result.state.routes[0]!.state).toBe(nextChildState);
   });
@@ -403,7 +404,7 @@ describe(rootReducer, () => {
       payload: { name: 'home', params: { screen: 'invalid' } },
     };
 
-    registry.addEntry('root-state', { reduce: jest.fn(() => rootState) });
+    registry.addEntry('root-state', { reduce: jest.fn((state, action) => (asFocusChildAction(action) ? state : rootState)) });
     registry.addEntry('home-state', {
       reduce: jest.fn((state, nested) => (nested.type === 'NAVIGATE' ? null : state)),
     });
@@ -430,7 +431,7 @@ describe(rootReducer, () => {
     };
     const childState = rootState.routes[0]!.state as NavigationState;
 
-    registry.addEntry('root-state', { reduce: jest.fn(() => rootState) });
+    registry.addEntry('root-state', { reduce: jest.fn((state, action) => (asFocusChildAction(action) ? state : rootState)) });
     registry.addEntry('home-state', {
       reduce: jest.fn((state, nested) => (nested.type === 'NAVIGATE' ? { ...state, index: 1 } : state)),
     });

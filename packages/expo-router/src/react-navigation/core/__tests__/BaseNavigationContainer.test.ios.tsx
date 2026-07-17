@@ -103,10 +103,6 @@ test('handle dispatching with ref', () => {
     const RootRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
-      shouldActionChangeFocus() {
-        return true;
-      },
-
       getStateForAction(state, action, options) {
         if (action.type === 'REVERSE') {
           return {

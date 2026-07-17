@@ -4,6 +4,7 @@ import {
   CommonActions,
   type DrawerNavigationState,
   DrawerRouter,
+  focusChild,
   type NavigationState,
   type ParamListBase,
   type PartialState,
@@ -426,13 +427,19 @@ test('REPLACE drops the replaced route from the back stack (inherited from the t
   expect(router.getStateForAction(replaced, CommonActions.goBack(), options)).toBeNull();
 });
 
-test('getStateForRouteFocus focuses the route in place', () => {
+test('FOCUS_CHILD focuses the route in place', () => {
   const router = DrawerRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    parentRouteKey: undefined,
+    routeGetIdList: {},
+  };
 
   // Default `firstRoute` back behavior: present `routes` stay in declaration order and focus
   // just moves to the route's index.
   expect(
-    router.getStateForRouteFocus(
+    router.getStateForAction(
       {
         index: 0,
         drawerStatus: 'closed',
@@ -445,7 +452,8 @@ test('getStateForRouteFocus focuses the route in place', () => {
         ],
         stale: false,
       },
-      'baz-0'
+      focusChild('baz-0') as unknown as Parameters<typeof router.getStateForAction>[1],
+      options
     )
   ).toEqual({
     index: 1,

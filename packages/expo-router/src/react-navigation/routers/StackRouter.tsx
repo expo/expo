@@ -1,6 +1,7 @@
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import { createRouteFromAction } from './createRouteFromAction';
+import { asFocusChildAction } from './focusChild';
 import {
   assertSubtreeKeyMatchesRoute,
   getNextRouteKeyFromState,
@@ -306,6 +307,23 @@ export function StackRouter(options: StackRouterOptions) {
     };
   }
 
+  // Focus the active route with `key` by moving it to the front of the active routes. A no-op focus
+  // (key absent or already focused) returns `state` unchanged.
+  function getStateForRouteFocus(state: State, key: string): State {
+    const activeRoutes = getActiveRoutes(state);
+    const index = activeRoutes.findIndex((r) => r.key === key);
+
+    if (index === -1 || index === state.index) {
+      return state;
+    }
+
+    return {
+      ...state,
+      index,
+      routes: [...activeRoutes.slice(0, index + 1), ...getInactiveRoutes(state)],
+    };
+  }
+
   const router: InternalRouter<State, CommonNavigationAction | StackActionType> = {
     ...BaseRouter,
 
@@ -332,21 +350,6 @@ export function StackRouter(options: StackRouterOptions) {
       };
     },
 
-    getStateForRouteFocus(state, key) {
-      const activeRoutes = getActiveRoutes(state);
-      const index = activeRoutes.findIndex((r) => r.key === key);
-
-      if (index === -1 || index === state.index) {
-        return state;
-      }
-
-      return {
-        ...state,
-        index,
-        routes: [...activeRoutes.slice(0, index + 1), ...getInactiveRoutes(state)],
-      };
-    },
-
     getStateForAction(state, action, options) {
       const reconcile = asReconcileRouteNamesAction(action);
       if (reconcile) {
@@ -358,6 +361,11 @@ export function StackRouter(options: StackRouterOptions) {
         return isUnhandledStateRestore(state, config.routeNames, config.unhandledState)
           ? getRehydratedState(config.unhandledState, config)
           : getStateForRouteNamesChange(state, config);
+      }
+
+      const focusChildAction = asFocusChildAction(action);
+      if (focusChildAction) {
+        return getStateForRouteFocus(state, focusChildAction.payload.key);
       }
 
       const { routeParamList } = options;

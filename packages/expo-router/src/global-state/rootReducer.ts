@@ -1,6 +1,12 @@
 import isEqual from 'fast-deep-equal';
 
-import type { NavigationAction, NavigationState, PartialState } from '../react-navigation/routers';
+import {
+  focusChild,
+  isFocusChangingAction,
+  type NavigationAction,
+  type NavigationState,
+  type PartialState,
+} from '../react-navigation/routers';
 import type { NavigatorRegistryEntry, ReducerRegistry } from './storeContext';
 
 type PayloadState = NavigationState | PartialState<NavigationState>;
@@ -156,7 +162,7 @@ export function rootReducer(
     }
     currentTree = replacePathState(currentTree, currentPath.slice(0, pathIndex + 1), nextState);
 
-    if (entry.shouldActionChangeFocus?.(currentAction)) {
+    if (isFocusChangingAction(currentAction)) {
       const focusResult = focusAncestors(
         currentTree,
         currentPath.slice(0, pathIndex + 1),
@@ -293,13 +299,18 @@ function focusAncestors(
     const childRouteKey = routeIndex == null ? undefined : parentState.routes[routeIndex]?.key;
     const parentEntry = registry.getEntry(parentState.key);
 
-    if (childRouteKey == null || parentEntry?.focusRoute == null) {
+    if (childRouteKey == null || parentEntry == null) {
       continue;
     }
 
-    const focusedState = parentEntry.focusRoute(parentState, childRouteKey) as NavigationState;
+    // Refocus the ancestor by reducing a synthetic FOCUS_CHILD action through its registered reducer.
+    // A router that doesn't focus-change returns `null` (unhandled) or `parentState` (no-op).
+    const focusedState = parentEntry.reduce(
+      parentState,
+      focusChild(childRouteKey)
+    ) as NavigationState | null;
 
-    if (focusedState === parentState) {
+    if (focusedState == null || focusedState === parentState) {
       continue;
     }
 

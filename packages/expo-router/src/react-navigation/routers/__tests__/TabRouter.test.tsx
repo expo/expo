@@ -2,6 +2,7 @@ import { expect, test } from '@jest/globals';
 
 import {
   CommonActions,
+  focusChild,
   type NavigationState,
   type ParamListBase,
   type PartialState,
@@ -64,6 +65,19 @@ function restoreUnhandled(
     action as unknown as Parameters<typeof router.getStateForAction>[1],
     config
   );
+}
+
+// Route focus moved into `getStateForAction` as a `FOCUS_CHILD` case (former `getStateForRouteFocus`).
+function focusRouteByKey(
+  router: ReturnType<typeof TabRouter>,
+  state: TabNavigationState<ParamListBase>,
+  key: string
+) {
+  return router.getStateForAction(
+    state,
+    focusChild(key) as unknown as Parameters<typeof router.getStateForAction>[1],
+    { routeNames: state.routeNames, routeParamList: {}, parentRouteKey: undefined, routeGetIdList: {} }
+  ) as TabNavigationState<ParamListBase>;
 }
 
 // New model: a route's presence in `state.routes` IS the loaded/preloaded signal, so `routes` is a
@@ -1640,14 +1654,14 @@ test('focuses a route arranging [anchor, focused, ...] with firstRoute', () => {
   };
 
   // Focus c -> [a, c, b] index 1.
-  const next = router.getStateForRouteFocus(state, 'c-test');
+  const next = focusRouteByKey(router, state, 'c-test');
   expect(names(next)).toEqual(['a', 'c', 'b']);
   expect(next.index).toBe(1);
 
   // Unknown key -> same state.
-  expect(router.getStateForRouteFocus(state, 'missing')).toBe(state);
+  expect(focusRouteByKey(router, state, 'missing')).toBe(state);
   // Already focused -> same state.
-  expect(router.getStateForRouteFocus(state, 'a-test')).toBe(state);
+  expect(focusRouteByKey(router, state, 'a-test')).toBe(state);
 });
 
 test('focuses a route splicing into the back-stack with history', () => {
@@ -1669,12 +1683,12 @@ test('focuses a route splicing into the back-stack with history', () => {
     ],
   };
 
-  const next = router.getStateForRouteFocus(state, 'A-test');
+  const next = focusRouteByKey(router, state, 'A-test');
   expect(names(next)).toEqual(['B', 'C', 'A', 'D', 'E']);
   expect(next.index).toBe(2);
 
   // Already focused -> same state.
-  expect(router.getStateForRouteFocus(state, 'C-test')).toBe(state);
+  expect(focusRouteByKey(router, state, 'C-test')).toBe(state);
 });
 
 // --- SET_PARAMS --------------------------------------------------------------

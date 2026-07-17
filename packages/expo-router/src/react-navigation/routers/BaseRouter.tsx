@@ -70,8 +70,4 @@ export const BaseRouter = {
         return null;
     }
   },
-
-  shouldActionChangeFocus(action: CommonNavigationAction) {
-    return action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED';
-  },
 };

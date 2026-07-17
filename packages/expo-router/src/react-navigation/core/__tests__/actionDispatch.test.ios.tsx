@@ -140,10 +140,6 @@ test("does not down-bubble actions with navigationInChildEnabled on the root red
     const ChildRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
-      shouldActionChangeFocus() {
-        return true;
-      },
-
       getStateForAction(state, action, options) {
         if (action.type === 'REVERSE') {
           return {
@@ -337,10 +333,6 @@ test('does not use target parent bubbling before the root reducer is initialized
     const TestRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
-      shouldActionChangeFocus() {
-        return true;
-      },
-
       getStateForAction(state, action, options) {
         if (action.type === 'REVERSE') {
           return {
@@ -431,10 +423,6 @@ test('action goes to correct child navigator if target is specified', () => {
     const TestRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
-      shouldActionChangeFocus() {
-        return true;
-      },
-
       getStateForAction(state, action, options) {
         if (action.type === 'REVERSE') {
           return {
@@ -514,10 +502,13 @@ test('action goes to correct child navigator if target is specified', () => {
     ref.dispatch({ type: 'REVERSE', target: '1' });
   });
 
+  // A custom (non-NAVIGATE) action reaches the targeted child and reverses it, but does not bubble
+  // focus to the root — focus-change is now the fixed NAVIGATE-type rule, not a per-router hook, so
+  // the root index stays put.
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
-    index: 2,
+    index: 0,
     key: '0',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
@@ -548,10 +539,6 @@ test("action doesn't bubble if target is specified", () => {
     const CurrentMockRouter = MockRouter(options);
     const ChildRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
-
-      shouldActionChangeFocus() {
-        return true;
-      },
 
       getStateForAction(state, action, options) {
         if (action.type === 'REVERSE') {
