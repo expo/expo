@@ -99,6 +99,7 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 // MARK: - Launch options & routing helpers
 
+@available(iOSApplicationExtension, unavailable)
 extension ExpoAppSceneDelegate {
   /// Rebuilds the launch options that `Linking.getInitialURL()` reads from a scene's connection
   /// options. Returns `nil` when the app wasn't cold-started by a URL or a browsing-web activity,
