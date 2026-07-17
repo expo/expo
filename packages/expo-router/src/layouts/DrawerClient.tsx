@@ -1,12 +1,14 @@
 'use client';
 
+import type { ComponentProps } from 'react';
+
 import {
   createStandardDrawerNavigator,
   type DrawerNavigationOptions,
 } from '../react-navigation/drawer';
 import type {
   DrawerNavigatorCreateProps,
-  DrawerNavigatorProps,
+  DrawerNavigatorConfig,
   StandardDrawerNavigationEventMap,
 } from '../react-navigation/drawer/navigators/createDrawerNavigator';
 import type { DrawerNavigationHelpers } from '../react-navigation/drawer/types';
@@ -22,7 +24,7 @@ export const Drawer = unstable_integrateWithRouter<
   DrawerNavigationOptions,
   DrawerNavigationState<ParamListBase>,
   StandardDrawerNavigationEventMap,
-  DrawerNavigatorProps,
+  DrawerNavigatorConfig,
   DrawerRouterOptions,
   DrawerNavigatorCreateProps
 >(createStandardDrawerNavigator, DrawerRouter, {
@@ -32,5 +34,7 @@ export const Drawer = unstable_integrateWithRouter<
     navigation: navigation as DrawerNavigationHelpers,
   }),
 });
+
+export type DrawerNavigatorProps = ComponentProps<typeof Drawer>;
 
 export default Drawer;

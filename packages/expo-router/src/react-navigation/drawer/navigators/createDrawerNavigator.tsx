@@ -18,11 +18,11 @@ export interface DrawerNavigatorCreateProps {
   navigation: DrawerNavigationHelpers;
 }
 
-export interface DrawerNavigatorProps extends DrawerNavigationConfig {
+export interface DrawerNavigatorConfig extends DrawerNavigationConfig {
   defaultStatus?: 'open' | 'closed';
 }
 
-export type DrawerNavigatorContentProps = DrawerNavigatorProps & DrawerNavigatorCreateProps;
+export type DrawerNavigatorContentProps = DrawerNavigatorConfig & DrawerNavigatorCreateProps;
 
 export type StandardDrawerNavigationEventMap = {
   [Event in keyof DrawerNavigationEventMap]: DrawerNavigationEventMap[Event] & {
@@ -48,6 +48,8 @@ function DrawerNavigatorContent({
     <DrawerView
       state={drawerState}
       navigation={navigation}
+      // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
+      // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.
       descriptors={descriptors as unknown as DrawerDescriptorMap}
       defaultStatus={defaultStatus}
       drawerContent={drawerContent}

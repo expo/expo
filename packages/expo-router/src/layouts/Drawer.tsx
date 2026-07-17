@@ -1,5 +1,7 @@
 import Drawer from './DrawerClient';
 
+export type { DrawerNavigatorProps } from './DrawerClient';
+
 // Re-export the drawer building blocks (content components, items, types, etc.) from the
 // vendored react-navigation so apps can build custom `drawerContent` without depending on
 // `@react-navigation/drawer` directly. See https://github.com/expo/expo/issues/46161
@@ -23,7 +25,6 @@ export type {
   DrawerNavigationEventMap,
   DrawerNavigationOptions,
   DrawerNavigationProp,
-  DrawerNavigatorProps,
   DrawerOptionsArgs,
   DrawerScreenProps,
 } from '../react-navigation/drawer';
