@@ -83,6 +83,48 @@ describe('legacy decorators on class properties', () => {
     expect(code).toMatch(/class Plain\s*\{\s*greeting\s*=/);
   });
 
+  it('preserves native class fields when `@word` only appears in a comment (hermes-v1)', () => {
+    // A JSDoc tag matches the `@word` fast-path but is not a decorator, so the
+    // class-feature transforms must not activate.
+    const code = transform(
+      HERMES_V1_CALLER,
+      `
+      /** @param {string} name */
+      export function greet(name) { return name; }
+      export class Plain {
+        greeting = 'plain field';
+      }
+      `
+    );
+    expect(code).toMatch(/class Plain\s*\{\s*greeting\s*=/);
+  });
+
+  it('preserves native class fields when only methods or the class are decorated (hermes-v1)', () => {
+    // Decorated methods and class-level decorators don't need the
+    // class-properties transform, so plain fields must stay native.
+    const code = transform(
+      HERMES_V1_CALLER,
+      `
+      function log(target, key, descriptor) { return descriptor; }
+      function tag(target) { return target; }
+      @tag
+      export class Model {
+        greeting = 'plain field';
+        shout() { return this.greeting + '!'; }
+      }
+      export class Other {
+        greeting = 'plain field';
+        @log shout() { return this.greeting + '!'; }
+      }
+      `
+    );
+    expect(code).toMatch(/greeting\s*=\s*'plain field'/);
+    expect(code).not.toContain('initializerDefineProperty');
+    const { Model, Other } = execute(code);
+    expect(new Model().shout()).toBe('plain field!');
+    expect(new Other().shout()).toBe('plain field!');
+  });
+
   it('does not reference the initializer warning helper for decorated properties (hermes-v1)', () => {
     const code = transform(HERMES_V1_CALLER, DECORATED_CLASS);
     expect(code).toContain('initializerDefineProperty');

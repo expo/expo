@@ -1,4 +1,4 @@
-import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
+import type { BabelFile, ConfigAPI, PluginObj, PluginPass } from '@babel/core';
 
 // Matches `@` followed by a word character — the minimal syntactic
 // requirement for any decorator. False positives (JSDoc @tags, email
@@ -11,15 +11,16 @@ interface LazyDecoratorsState extends PluginPass {
 }
 
 /**
- * Wraps a plugin so that its transform visitors only run when the source
- * contains a potential decorator pattern (`@word`).
+ * Wraps a plugin so that its transform visitors only run when `detect`
+ * returns true for the file being transformed.
  *
  * Any syntax plugin is always inherited so that files parse correctly
- * regardless of the heuristic result.
+ * regardless of the detection result.
  */
-function wrapPluginLazyOnDecorators(
+function wrapPluginLazy(
   realPlugin: PluginObj,
-  name: string
+  name: string,
+  detect: (file: BabelFile) => boolean
 ): PluginObj<LazyDecoratorsState> {
   // Wrap every visitor method to bail out when no decorators are detected.
   const visitor: PluginObj<LazyDecoratorsState>['visitor'] = {};
@@ -54,7 +55,7 @@ function wrapPluginLazyOnDecorators(
     name,
     inherits: realPlugin.inherits,
     pre(file) {
-      this.decoratorsDetected = DECORATOR_PATTERN.test(file.code);
+      this.decoratorsDetected = detect(file);
       if (this.decoratorsDetected && realPlugin.pre) {
         realPlugin.pre.call(this, file);
       }
@@ -68,6 +69,41 @@ function wrapPluginLazyOnDecorators(
   };
 }
 
+function containsDecoratorLikeSource(file: BabelFile): boolean {
+  return DECORATOR_PATTERN.test(file.code);
+}
+
+// Cached so the three class-feature wrappers below traverse each file at most once.
+const decoratedClassFieldsCache = new WeakMap<BabelFile, boolean>();
+
+/**
+ * Whether the file contains an actually decorated class property. The regex is
+ * only a fast path to skip the AST traversal: unlike the decorators transform,
+ * where a false positive is a no-op, activating the class-feature transforms on
+ * a false positive (e.g. a JSDoc `@param` tag) would downlevel every class
+ * field in the file. Runs in `pre`, before any transform has removed decorators
+ * from the AST.
+ */
+function hasDecoratedClassFields(file: BabelFile): boolean {
+  const cached = decoratedClassFieldsCache.get(file);
+  if (cached !== undefined) {
+    return cached;
+  }
+  let detected = false;
+  if (containsDecoratorLikeSource(file)) {
+    file.path.traverse({
+      'ClassProperty|ClassPrivateProperty'(path: any) {
+        if (path.node.decorators?.length) {
+          detected = true;
+          path.stop();
+        }
+      },
+    });
+  }
+  decoratedClassFieldsCache.set(file, detected);
+  return detected;
+}
+
 /**
  * Wraps `@babel/plugin-proposal-decorators` so that its transform visitors
  * only run when the source contains a potential decorator pattern (`@word`).
@@ -78,7 +114,7 @@ export function lazyDecoratorsPlugin(
 ): PluginObj<LazyDecoratorsState> {
   const decoratorsFactory = require('@babel/plugin-proposal-decorators');
   const realPlugin: PluginObj = (decoratorsFactory.default ?? decoratorsFactory)(api, options);
-  return wrapPluginLazyOnDecorators(realPlugin, 'expo-lazy-decorators');
+  return wrapPluginLazy(realPlugin, 'expo-lazy-decorators', containsDecoratorLikeSource);
 }
 
 function createLazyClassFeaturePlugin(moduleId: string, name: string) {
@@ -88,7 +124,7 @@ function createLazyClassFeaturePlugin(moduleId: string, name: string) {
   ): PluginObj<LazyDecoratorsState> {
     const pluginFactory = require(moduleId);
     const realPlugin: PluginObj = (pluginFactory.default ?? pluginFactory)(api, options);
-    return wrapPluginLazyOnDecorators(realPlugin, name);
+    return wrapPluginLazy(realPlugin, name, hasDecoratedClassFields);
   };
 }
 
@@ -97,9 +133,10 @@ function createLazyClassFeaturePlugin(moduleId: string, name: string) {
 // it, otherwise the output throws `Decorating class property failed` at
 // runtime. Engine presets that preserve class fields (`hermes-v1`, web) don't
 // include the class-feature transforms, so these lazy variants compile class
-// features only in files that contain decorators. The private-class transforms
-// come along because `plugin-transform-class-properties` refuses to compile a
-// class whose private members it cannot also compile.
+// features only in files that contain a decorated class property (decorated
+// methods and class-level decorators don't need them). The private-class
+// transforms come along because `plugin-transform-class-properties` refuses to
+// compile a class whose private members it cannot also compile.
 export const lazyClassPropertiesPlugin = createLazyClassFeaturePlugin(
   '@babel/plugin-transform-class-properties',
   'expo-lazy-class-properties'
