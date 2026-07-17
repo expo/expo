@@ -13,6 +13,7 @@ enum class UpdatesStateEventType(val type: String) {
   CheckError("checkError"),
   Download("download"),
   DownloadProgress("downloadProgress"),
+  DownloadComplete("downloadComplete"),
   DownloadCompleteUnavailable("downloadCompleteUnavailable"),
   DownloadError("downloadError"),
   Restart("restart")

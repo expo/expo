@@ -49,6 +49,7 @@ internal enum UpdatesStateEvent {
     case checkError
     case download
     case downloadProgress
+    case downloadComplete
     case downloadCompleteUnavailable
     case downloadError
     case restart
@@ -77,9 +78,9 @@ internal enum UpdatesStateEvent {
     case .downloadCompleteUnavailable:
       return .downloadCompleteUnavailable
     case .downloadCompleteWithUpdate:
-      return .downloadCompleteUnavailable
+      return .downloadComplete
     case .downloadCompleteWithRollback:
-      return .downloadCompleteUnavailable
+      return .downloadComplete
     case .downloadError:
       return .downloadError
     case .restart:
@@ -553,7 +554,7 @@ internal class UpdatesStateMachine {
   private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEvent.InternalType>] = [
     .idle: [.startStartup, .endStartup, .check, .download, .restart],
     .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
-    .downloading: [.downloadCompleteUnavailable, .downloadError, .downloadProgress],
+    .downloading: [.downloadComplete, .downloadCompleteUnavailable, .downloadError, .downloadProgress],
     .restarting: []
   ]
 
@@ -570,6 +571,7 @@ internal class UpdatesStateMachine {
     .checkError: .idle,
     .download: .downloading,
     .downloadProgress: .downloading,
+    .downloadComplete: .idle,
     .downloadCompleteUnavailable: .idle,
     .downloadError: .idle,
     .restart: .restarting
