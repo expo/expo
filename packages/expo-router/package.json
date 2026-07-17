@@ -136,11 +136,11 @@
     },
     "./head": {
       "types": {
-        "expo-source": "./src/head/ExpoHead.tsx",
-        "default": "./build/head/ExpoHead.d.ts"
+        "expo-source": "./src/head/index.ts",
+        "default": "./build/head/index.d.ts"
       },
-      "expo-source": "./src/head/ExpoHead.tsx",
-      "default": "./build/head/ExpoHead.js"
+      "expo-source": "./src/head/index.ts",
+      "default": "./build/head/index.js"
     },
     "./html": {
       "types": {
@@ -176,11 +176,11 @@
     },
     "./stack": {
       "types": {
-        "expo-source": "./src/layouts/Stack.tsx",
-        "default": "./build/layouts/Stack.d.ts"
+        "expo-source": "./src/stack.ts",
+        "default": "./build/stack.d.ts"
       },
-      "expo-source": "./src/layouts/Stack.tsx",
-      "default": "./build/layouts/Stack.js"
+      "expo-source": "./src/stack.ts",
+      "default": "./build/stack.js"
     },
     "./tabs": {
       "types": {
