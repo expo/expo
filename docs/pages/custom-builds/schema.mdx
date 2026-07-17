@@ -993,12 +993,12 @@ build:
     # @end #
 ```
 
-| Property              | Type     | Required    | Description                                                                                                                                                |
-| --------------------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                | -        | <NoIcon />  | The name of the step in the reusable function that shows in the build logs. Defaults to `Restore build cache`.                                             |
-| `inputs.key`          | `string` | <YesIcon /> | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.                |
-| `inputs.restore_keys` | `string` | <NoIcon />  | A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix.   |
-| `inputs.path`         | `string` | <YesIcon /> | The path where the cache should be restored. This should match the path used when saving the cache.                                                        |
+| Property              | Type     | Required    | Description                                                                                                                                              |
+| --------------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                | -        | <NoIcon />  | The name of the step in the reusable function that shows in the build logs. Defaults to `Restore build cache`.                                           |
+| `inputs.key`          | `string` | <YesIcon /> | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |
+| `inputs.restore_keys` | `string` | <NoIcon />  | A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix. |
+| `inputs.path`         | `string` | <YesIcon /> | The path where the cache should be restored. This should match the path used when saving the cache.                                                      |
 
 <BoxLink
   title="eas/restore_build_cache source code"
@@ -1031,11 +1031,11 @@ build:
     # @end #
 ```
 
-| Property      | Type     | Required    | Description                                                                                                                                                                                                     |
-| ------------- | -------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`        | -        | <NoIcon />  | The name of the step in the reusable function that shows in the build logs. Defaults to `Save build cache`.                                                                                                     |
+| Property      | Type     | Required    | Description                                                                                                                                                                                                       |
+| ------------- | -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`        | -        | <NoIcon />  | The name of the step in the reusable function that shows in the build logs. Defaults to `Save build cache`.                                                                                                       |
 | `inputs.key`  | `string` | <YesIcon /> | The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |
-| `inputs.path` | `string` | <YesIcon /> | The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                             |
+| `inputs.path` | `string` | <YesIcon /> | The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                               |
 
 <BoxLink
   title="eas/save_build_cache source code"
@@ -1082,10 +1082,10 @@ build:
           apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
 ```
 
-| Property             | Type     | Required   | Description                                                                                                                                                                                     |
-| -------------------- | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`               | `string` | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Resolve Apple team ID from credentials`.                                                               |
-| `inputs.credentials` | `json`   | <NoIcon /> | The app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                         |
+| Property             | Type     | Required   | Description                                                                                                                                                             |
+| -------------------- | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`               | `string` | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Resolve Apple team ID from credentials`.                                       |
+| `inputs.credentials` | `json`   | <NoIcon /> | The app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS. |
 
 <BoxLink
   title="eas/resolve_apple_team_id_from_credentials source code"
@@ -1160,11 +1160,11 @@ build:
     # @end #
 ```
 
-| Property                 | Type     | Required   | Description                                                                                                                                                  |
-| ------------------------ | -------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `name`                   | -        | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure EAS Update`.                                              |
-| `inputs.runtime_version` | `string` | <NoIcon /> | Runtime version which should be configured for the build. Defaults to `${ eas.job.version.runtimeVersion }` or natively defined runtime version.             |
-| `inputs.channel`         | `string` | <NoIcon /> | Channel which should be configured for the build. Defaults to `${ eas.job.updates.channel }`.                                                                |
+| Property                 | Type     | Required   | Description                                                                                                                                      |
+| ------------------------ | -------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`                   | -        | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure EAS Update`.                                  |
+| `inputs.runtime_version` | `string` | <NoIcon /> | Runtime version which should be configured for the build. Defaults to `${ eas.job.version.runtimeVersion }` or natively defined runtime version. |
+| `inputs.channel`         | `string` | <NoIcon /> | Channel which should be configured for the build. Defaults to `${ eas.job.updates.channel }`.                                                    |
 
 <BoxLink
   title="eas/configure_eas_update source code"
@@ -1191,10 +1191,10 @@ build:
     # @end #
 ```
 
-| Property             | Type   | Required   | Description                                                                                                                                                                                 |
-| -------------------- | ------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`               | -      | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Inject Android credentials`.                                                                       |
-| `inputs.credentials` | `json` | <NoIcon /> | The app credentials for your Android build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for Android.             |
+| Property             | Type   | Required   | Description                                                                                                                                                                     |
+| -------------------- | ------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`               | -      | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Inject Android credentials`.                                                           |
+| `inputs.credentials` | `json` | <NoIcon /> | The app credentials for your Android build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for Android. |
 
 <BoxLink
   title="eas/inject_android_credentials source code"
@@ -1226,11 +1226,11 @@ build:
     # @end #
 ```
 
-| Property                     | Type     | Required   | Description                                                                                                                                                                                                     |
-| ---------------------------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                       | -        | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure iOS credentials`.                                                                                            |
-| `inputs.build_configuration` | `string` | <NoIcon /> | The Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds.                         |
-| `inputs.credentials`         | `json`   | <NoIcon /> | The app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                                         |
+| Property                     | Type     | Required   | Description                                                                                                                                                                             |
+| ---------------------------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                       | -        | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure iOS credentials`.                                                                    |
+| `inputs.build_configuration` | `string` | <NoIcon /> | The Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. |
+| `inputs.credentials`         | `json`   | <NoIcon /> | The app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                 |
 
 <BoxLink
   title="eas/configure_ios_credentials source code"
@@ -1340,13 +1340,13 @@ build:
     # @end #
 ```
 
-| Property                     | Type     | Required   | Description                                                                                                                                                                                                     |
-| ---------------------------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                       | -        | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure iOS version`.                                                                                                |
-| `inputs.build_number`        | `string` | <NoIcon /> | The build number (`CFBundleVersion`) of your iOS build. Defaults to `${ eas.job.version.buildNumber }`.                                                                                                         |
-| `inputs.app_version`         | `string` | <NoIcon /> | The app version (`CFBundleShortVersionString`) of your iOS build. Defaults to `${ eas.job.version.appVersion }`.                                                                                                |
-| `inputs.build_configuration` | `string` | <NoIcon /> | The Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds.                         |
-| `inputs.credentials`         | `json`   | <NoIcon /> | The app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                                         |
+| Property                     | Type     | Required   | Description                                                                                                                                                                             |
+| ---------------------------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                       | -        | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure iOS version`.                                                                        |
+| `inputs.build_number`        | `string` | <NoIcon /> | The build number (`CFBundleVersion`) of your iOS build. Defaults to `${ eas.job.version.buildNumber }`.                                                                                 |
+| `inputs.app_version`         | `string` | <NoIcon /> | The app version (`CFBundleShortVersionString`) of your iOS build. Defaults to `${ eas.job.version.appVersion }`.                                                                        |
+| `inputs.build_configuration` | `string` | <NoIcon /> | The Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. |
+| `inputs.credentials`         | `json`   | <NoIcon /> | The app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                 |
 
 <BoxLink
   title="eas/configure_ios_version source code"
@@ -1391,10 +1391,10 @@ build:
     # @end #
 ```
 
-| Property         | Type     | Required   | Description                                                                                                                                                                     |
-| ---------------- | -------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`           | -        | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Run gradle`.                                                                           |
-| `inputs.command` | `string` | <NoIcon /> | The Gradle command to run to build the Android app. If not specified it is resolved based on the build configuration and contents of the `${ eas.job }` object.                 |
+| Property         | Type     | Required   | Description                                                                                                                                                     |
+| ---------------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`           | -        | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Run gradle`.                                                           |
+| `inputs.command` | `string` | <NoIcon /> | The Gradle command to run to build the Android app. If not specified it is resolved based on the build configuration and contents of the `${ eas.job }` object. |
 
 <BoxLink
   title="eas/run_gradle source code"
@@ -1543,15 +1543,15 @@ build:
         # @end #
 ```
 
-| Property                     | Type      | Required   | Description                                                                                                                                                                                                                                                              |
-| ---------------------------- | --------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `name`                       | -         | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Generate Gymfile from template`.                                                                                                                                                |
-| `inputs.template`            | `string`  | <NoIcon /> | The Gymfile template which should be used. If not specified one out of two default templates will be used depending on whether the `inputs.credentials` value is specified.                                                                                               |
-| `inputs.credentials`         | `json`    | <NoIcon /> | The app credentials for your iOS build. If specified `KEYCHAIN_PATH`, `EXPORT_METHOD`, and `PROFILES` values will be provided to the template.                                                                                                                           |
-| `inputs.build_configuration` | `string`  | <NoIcon /> | The Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. Corresponds to the `BUILD_CONFIGURATION` template value.                         |
-| `inputs.scheme`              | `string`  | <NoIcon /> | The Xcode project's scheme which should be used for the build. Defaults to `${ eas.job.scheme }` or if not specified is resolved to the first scheme found in the Xcode project. Corresponds to the `SCHEME` template value.                                             |
-| `inputs.clean`               | `boolean` | <NoIcon /> | Whether the Xcode project should be cleaned before the build. Defaults to `true`. Corresponds to `CLEAN` template variable.                                                                                                                                              |
-| `inputs.extra`               | `json`    | <NoIcon /> | Extra values which should be provided to the template.                                                                                                                                                                                                                   |
+| Property                     | Type      | Required   | Description                                                                                                                                                                                                                                      |
+| ---------------------------- | --------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`                       | -         | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Generate Gymfile from template`.                                                                                                                        |
+| `inputs.template`            | `string`  | <NoIcon /> | The Gymfile template which should be used. If not specified one out of two default templates will be used depending on whether the `inputs.credentials` value is specified.                                                                      |
+| `inputs.credentials`         | `json`    | <NoIcon /> | The app credentials for your iOS build. If specified `KEYCHAIN_PATH`, `EXPORT_METHOD`, and `PROFILES` values will be provided to the template.                                                                                                   |
+| `inputs.build_configuration` | `string`  | <NoIcon /> | The Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. Corresponds to the `BUILD_CONFIGURATION` template value. |
+| `inputs.scheme`              | `string`  | <NoIcon /> | The Xcode project's scheme which should be used for the build. Defaults to `${ eas.job.scheme }` or if not specified is resolved to the first scheme found in the Xcode project. Corresponds to the `SCHEME` template value.                     |
+| `inputs.clean`               | `boolean` | <NoIcon /> | Whether the Xcode project should be cleaned before the build. Defaults to `true`. Corresponds to `CLEAN` template variable.                                                                                                                      |
+| `inputs.extra`               | `json`    | <NoIcon /> | Extra values which should be provided to the template.                                                                                                                                                                                           |
 
 <BoxLink
   title="eas/generate_gymfile_from_template source code"
