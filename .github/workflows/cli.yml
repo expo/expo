@@ -5,6 +5,7 @@ on:
     branches: [main, 'sdk-*']
     paths:
       - .github/workflows/cli.yml
+      - apps/router-e2e/**
       - packages/@expo/cli/**
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/src/**
@@ -27,6 +28,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/cli.yml
+      - apps/router-e2e/**
       - packages/@expo/cli/**
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/src/**
