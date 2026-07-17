@@ -34,8 +34,13 @@ open class BrownfieldActivity : AppCompatActivity(), DefaultHardwareBackBtnHandl
     (this as Activity).showReactNativeFragment(rootComponent, additionalPackages)
   }
 
-  @Suppress("DEPRECATION")
+  // React Native calls this when JS has no back handler. Don't call
+  // super.onBackPressed() here: it re-dispatches through the
+  // OnBackPressedDispatcher, whose RN callback (setUpNativeBackHandling)
+  // forwards back to JS — an infinite native <-> JS ping-pong that makes the
+  // back button dead. Finishing the activity is the default back action for a
+  // brownfield React Native screen: it returns to the previous host screen.
   override fun invokeDefaultOnBackPressed() {
-    super.onBackPressed()
+    finish()
   }
 }

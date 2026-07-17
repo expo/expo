@@ -50,6 +50,64 @@ describe('plugin templates', () => {
 
   /**
    * Expected behavior:
+   * - Both fused sibling subprojects are emitted, one per variant, with
+   *   interpolated values resolved and the inert-by-default property guard
+   * - settings.gradle includes the fused siblings
+   * - gradle.properties contains the Fused Library preview opt-ins
+   * - The root build.gradle contains the conditional AGP force-bump
+   */
+  it('emits inert fused sibling projects for android', async () => {
+    const PACKAGE = 'com.example.test.mybrownfield';
+    const GROUP = 'io.example.test';
+    const VERSION = '2.56.173';
+    await setupAndroidPlugin(TEMP_DIR, {
+      package: PACKAGE,
+      group: GROUP,
+      version: VERSION,
+    });
+
+    for (const variant of ['release', 'debug']) {
+      expectFile({
+        projectRoot: TEMP_DIR,
+        filePath: `android/brownfield-fused-${variant}/build.gradle.kts`,
+        content: [
+          `group = "${GROUP}"`,
+          `version = "${VERSION}"`,
+          `namespace = "${PACKAGE}.fused.${variant}"`,
+          `val fusedVariant = "${variant}"`,
+          // Inert unless the CLI passes -Pbrownfield.fused=true — a plain
+          // `expo run:android` must not resolve the fused dependency graph
+          `findProperty("brownfield.fused") == "true"`,
+        ],
+      });
+    }
+
+    expectFile({
+      projectRoot: TEMP_DIR,
+      filePath: 'android/settings.gradle',
+      content: [
+        `include ':brownfield'`,
+        `include ':brownfield-fused-release'`,
+        `include ':brownfield-fused-debug'`,
+      ],
+    });
+    expectFile({
+      projectRoot: TEMP_DIR,
+      filePath: 'android/gradle.properties',
+      content: [
+        'android.experimental.fusedLibrarySupport=true',
+        'android.experimental.fusedLibrarySupport.publicationOnly=false',
+      ],
+    });
+    expectFile({
+      projectRoot: TEMP_DIR,
+      filePath: 'android/build.gradle',
+      content: [`findProperty('brownfield.fused') == 'true'`, 'com.android.tools.build:gradle'],
+    });
+  });
+
+  /**
+   * Expected behavior:
    * - All interpolated values are resolved in the templates for ios
    */
   it('resolves all interpolated values in templates for ios', async () => {

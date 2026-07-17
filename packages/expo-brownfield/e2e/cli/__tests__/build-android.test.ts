@@ -363,6 +363,54 @@ describe('build:android command', () => {
     });
 
     /**
+     * Command: npx expo-brownfield build:android --repo MavenLocal --fused --dry-run
+     * Expected behavior: With --fused, repo tasks are routed to the per-variant
+     * fused sibling subprojects and -Pbrownfield.fused=true is forwarded to Gradle
+     */
+    it('should properly handle --fused option', async () => {
+      // Default variant (--all) expands to one task per fused sibling
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--fused', '--dry-run'],
+        stdout: [
+          BUILD_ANDROID.FUSED,
+          `./gradlew :brownfield-fused-debug:publishBrownfieldDebugPublicationToMavenLocal -Pbrownfield.fused=true`,
+          `./gradlew :brownfield-fused-release:publishBrownfieldReleasePublicationToMavenLocal -Pbrownfield.fused=true`,
+        ],
+      });
+
+      // Single variant targets a single sibling
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--fused', '--release', '--dry-run'],
+        stdout: [
+          BUILD_ANDROID.BUILD_VARIANT_RELEASE,
+          `./gradlew :brownfield-fused-release:publishBrownfieldReleasePublicationToMavenLocal -Pbrownfield.fused=true`,
+        ],
+      });
+    });
+
+    /**
+     * Command: npx expo-brownfield build:android -t <fused task> --dry-run (no --fused)
+     * Expected behavior: A fused task passed manually still activates fused mode in
+     * Gradle — without -Pbrownfield.fused=true the fused subprojects are inert and
+     * the AGP force-bump never applies
+     */
+    it('should forward the fused property for manually passed fused tasks', async () => {
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: [
+          '-t',
+          ':brownfield-fused-release:publishBrownfieldReleasePublicationToMavenLocal',
+          '--dry-run',
+        ],
+        stdout: [
+          `./gradlew :brownfield-fused-release:publishBrownfieldReleasePublicationToMavenLocal -Pbrownfield.fused=true`,
+        ],
+      });
+    });
+
+    /**
      * Command: npx expo-brownfield build:android
      * Expected behavior: The CLI should print an error message and exit
      */

@@ -18,14 +18,6 @@ dependencyResolutionManagement {
         mavenCentral()
         mavenLocal()
         maven { url = uri("https://www.jitpack.io") }
-        // maven {
-        //     url = uri("https://maven.pkg.github.com/gabrieldonadel/brownfield-fused-test")
-        //     credentials {
-        //         username = System.getenv("GITHUB_ACTOR") ?: "gabrieldonadel"
-        //         password = System.getenv("GITHUB_TOKEN") ?: ""
-        //     }
-        // }
-
     }
 }
 

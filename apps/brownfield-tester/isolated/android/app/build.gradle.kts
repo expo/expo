@@ -18,20 +18,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-        packagingOptions {
-            pickFirsts.addAll(
-                listOf(
-                    "lib/arm64-v8a/libc++_shared.so",
-                    "lib/armeabi-v7a/libc++_shared.so",
-                    "lib/x86/libc++_shared.so",
-                    "lib/x86_64/libc++_shared.so",
-                    "**/libworklets.so",
-                    // libfbjni.so ships in both the fused brownfield AAR (via expo-modules-core)
-                    // and `com.facebook.react:react-android`. Same library, picking either copy.
-                    "**/libfbjni.so"
-                )
+    packagingOptions {
+        pickFirsts.addAll(
+            listOf(
+                "lib/arm64-v8a/libc++_shared.so",
+                "lib/armeabi-v7a/libc++_shared.so",
+                "lib/x86/libc++_shared.so",
+                "lib/x86_64/libc++_shared.so",
+                "**/libworklets.so",
+                // libfbjni.so ships in both the fused brownfield AAR (via expo-modules-core)
+                // and `com.facebook.react:react-android`. Same library, picking either copy.
+                "**/libfbjni.so"
             )
-        }
+        )
+    }
 
     buildTypes {
         release {
