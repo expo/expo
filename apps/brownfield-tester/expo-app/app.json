@@ -43,14 +43,7 @@
           },
           "android": {
             "publishing": [
-              { "type": "localMaven" },
-              {
-                "type": "remotePrivate",
-                "name": "GitHubPackages",
-                "url": "https://maven.pkg.github.com/<owner>/<repo>",
-                "username": { "variable": "GITHUB_ACTOR" },
-                "password": { "variable": "GITHUB_TOKEN" }
-              }
+              { "type": "localMaven" }
             ]
           }
         }
