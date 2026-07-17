@@ -1,3 +1,4 @@
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
@@ -40,11 +41,21 @@ Run the following command in your project's root directory:
   }}
 />
 
+<Collapsible summary="Are you using this library in an existing React Native project?">
+
+Apps that don't use [Continuous Native Generation](/workflow/continuous-native-generation/) or are created with `npx react-native`, require further configuration after installing this library. See steps 1 and 2 from [Install `expo-dev-client` in an existing React Native project](/bare/install-dev-builds-in-bare/).
+
+</Collapsible>
+
+<Collapsible summary="What does a development build look like?">
+
 <ContentSpotlight
   alt="expo-dev-client launcher and menu UIs on Android and iOS."
   src="/static/images/dev-client/launcher-screen-android-ios.webp"
   caption={`When you run a development build it will look like this, only with your app name and icon included rather than "RHT". The launcher UI is pictured in iOS on the left and Android on the right. In between, you can see an app running inside of the development build, with the customizable developer menu open.`}
 />
+
+</Collapsible>
 
 > It is possible to use development builds without the `expo-dev-client` library. In that case, start the development server with `npx expo start --dev-client` to target your development build instead of Expo Go.
 
