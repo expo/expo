@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix a typo in the `hideAsync` documentation ("compatability" → "compatibility"). ([#47922](https://github.com/expo/expo/pull/47922) by [@chinesepowered](https://github.com/chinesepowered))
+
 ### 💡 Others
 
 ## 56.0.10 — 2026-05-23
