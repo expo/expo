@@ -190,13 +190,17 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
   ];
   const cwd = Directories.getExpoRepositoryRootDir();
 
+  // Without NSUnbufferedIO, xcodebuild buffers its output when writing to a pipe, so test
+  // results would show up in delayed bursts instead of streaming line by line.
+  const env = { ...process.env, NSUnbufferedIO: 'YES' };
+
   if (useXcbeautify) {
     // Pipe through xcbeautify while preserving xcodebuild's exit code.
     const command =
       ['xcodebuild', ...args].map((arg) => `'${arg}'`).join(' ') + ' 2>&1 | xcbeautify';
-    await spawnAsync('bash', ['-o', 'pipefail', '-c', command], { cwd, stdio: 'inherit' });
+    await spawnAsync('bash', ['-o', 'pipefail', '-c', command], { cwd, env, stdio: 'inherit' });
   } else {
-    await spawnAsync('xcodebuild', args, { cwd, stdio: 'inherit' });
+    await spawnAsync('xcodebuild', args, { cwd, env, stdio: 'inherit' });
   }
 }
 
