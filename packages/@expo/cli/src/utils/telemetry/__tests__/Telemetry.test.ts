@@ -21,7 +21,7 @@ beforeEach(() => {
   getAgentTelemetryContextMock.mockReset();
   getAgentTelemetryContextMock.mockReturnValue(null);
   getSandboxTelemetryContextMock.mockReset();
-  getSandboxTelemetryContextMock.mockReturnValue('unknown');
+  getSandboxTelemetryContextMock.mockReturnValue(null);
 });
 
 it('starts with default detached client', () => {
@@ -48,7 +48,10 @@ it('waits until telemetry is initialized', () => {
   expect(client.record).toHaveBeenCalledWith([
     expect.objectContaining({
       userHash: null,
-      context: expect.not.objectContaining({ agent: expect.anything() }),
+      context: expect.not.objectContaining({
+        agent: expect.anything(),
+        sandbox_id: expect.anything(),
+      }),
     }),
   ]);
 });
@@ -71,11 +74,11 @@ it('preprocesses all records', () => {
       userHash: expect.any(String),
       context: expect.objectContaining({
         sessionId: expect.any(String),
-        sandbox_id: 'unknown',
       }),
     }),
   ]);
   expect(client.record.mock.calls[0][0][0].context).not.toHaveProperty('agent');
+  expect(client.record.mock.calls[0][0][0].context).not.toHaveProperty('sandbox_id');
 
   // Ensure the user hash was used instead of the actual user id
   expect(client.record).toHaveBeenCalledWith([
