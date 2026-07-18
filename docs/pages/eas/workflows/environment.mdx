@@ -253,23 +253,7 @@ For the event domains that populate each field and full examples, see [`app_stor
 
 ## Additional environment variables
 
-In addition to the variables you set, the worker provides a number of variables on every job that runs on a virtual machine (VM). The most useful ones in a workflow are listed below. They are read at runtime, so reference them from within a `run` step. For the complete list, see [Using environment variables with EAS Build](/eas/environment-variables/usage/#using-environment-variables-with-eas-build).
-
-| Variable               | Example value                          | Description                                                  |
-| ---------------------- | -------------------------------------- | ------------------------------------------------------------ |
-| `CI`                   | `1`                                    | Indicates the job runs in a CI environment.                  |
-| `EAS_BUILD_ID`         | `019f57e8-f497-723e-a351-7f63c5974f43` | The unique ID of the current job.                            |
-| `EAS_BUILD_PROJECT_ID` | `f486dc93-eb27-4b7c-bc94-752965edce8b` | The EAS project ID.                                          |
-| `EAS_BUILD_WORKINGDIR` | `/home/expo/workingdir/build`          | The absolute path to your checked-out project on the worker. |
-
-The following variables are populated from build metadata and are available in [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs. They may be empty in other job types:
-
-| Variable                    | Example value                              | Description                                                             |
-| --------------------------- | ------------------------------------------ | ----------------------------------------------------------------------- |
-| `EAS_BUILD_PLATFORM`        | `android`                                  | The platform being built, either `android` or `ios`.                    |
-| `EAS_BUILD_PROFILE`         | `production`                               | The name of the build profile from **eas.json**.                        |
-| `EAS_BUILD_GIT_COMMIT_HASH` | `88f28ab5fa39108ade970de2d0d1adeedf0ece76` | The hash of the Git commit the job is running against.                  |
-| `EAS_BUILD_USERNAME`        | `meowlivia`                                | The username of the user who initiated the run. Empty for robot actors. |
+In addition to the variables you set, the worker provides a number of variables on every job that runs on a virtual machine (VM), such as `EAS_BUILD_ID`, `EAS_BUILD_PROJECT_ID`, and `CI`. They are read at runtime, so reference them from within a `run` step. For the full list, see [Built-in environment variables](/eas/environment-variables/usage/#built-in-environment-variables).
 
 Workers also expose standard toolchain variables such as `HOME`, `PATH`, `LANG`, `ANDROID_HOME`, `ANDROID_SDK_ROOT`, and `JAVA_HOME`. Their exact values depend on the worker [image](/eas/workflows/syntax/#jobsjob_idimage) and are subject to change.
 
