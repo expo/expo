@@ -1890,8 +1890,8 @@ importers:
         specifier: ^1.3.8
         version: 1.3.8
       agent-cli-detector:
-        specifier: ^0.1.3
-        version: 0.1.3
+        specifier: ^0.1.4
+        version: 0.1.4
       arg:
         specifier: ^5.0.2
         version: 5.0.2
@@ -6362,8 +6362,8 @@ importers:
         specifier: ^0.38.3
         version: 0.38.4
       agent-cli-detector:
-        specifier: ^0.1.3
-        version: 0.1.3
+        specifier: ^0.1.4
+        version: 0.1.4
       arg:
         specifier: ^5.0.2
         version: 5.0.2
@@ -10060,8 +10060,8 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
-  agent-cli-detector@0.1.3:
-    resolution: {integrity: sha512-XjBe6lT5sK9xhAn0ToFvdwicsaGvzZkax1iviPnL8sFFYHoagnTTn2E4YTFiyM956iqkOkFcgcWCiER0kkShbQ==}
+  agent-cli-detector@0.1.4:
+    resolution: {integrity: sha512-qPgevFvpaQoBaRJVKzr8R7h1WPvV3DtbgRIQlne4le66KBzXx5hNBwo/+NTw67LgkKBlhCzksrdautpUdlls0Q==}
     engines: {node: '>=18.18'}
     hasBin: true
 
@@ -19197,7 +19197,7 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  agent-cli-detector@0.1.3: {}
+  agent-cli-detector@0.1.4: {}
 
   aggregate-error@3.1.0:
     dependencies:
