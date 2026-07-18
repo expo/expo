@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- [jetpack-compose] Added the `primaryEditable` and `secondaryEditable` anchor types to the `menuAnchor` modifier, so an editable text field (autocomplete) gets a non-focusable menu popup and keeps the cursor and IME key events while the menu is open. ([#47930](https://github.com/expo/expo/pull/47930) by [@yassineDr12](https://github.com/yassineDr12))
 - [iOS] Added the `ignoreSafeArea="container"` option to `<Host>`, which ignores the device and container safe area insets (notch, home indicator, status and navigation bars) while still avoiding the keyboard. Use it to keep a `matchContents` host pinned to a screen edge interactive. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `redacted`, `unredacted`, `privacySensitive`, and `invalidatableContent` modifiers, mapping SwiftUI's redaction family for native skeleton-loading and sensitive-content states. ([#47269](https://github.com/expo/expo/pull/47269) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added a `modifiers` prop to `ListItem` to override its default `buttonStyle(.plain)`. ([#47124](https://github.com/expo/expo/pull/47124) by [@nishan](https://github.com/intergalacticspacehighway))
