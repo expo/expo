@@ -166,6 +166,38 @@ describe('project metadata', () => {
       reactNativePackageVersion: '0.85.3',
     });
   });
+
+  it('includes a trimmed feedback subject when provided', async () => {
+    projectRoot = createTempDir();
+    writeJson(path.join(projectRoot, 'package.json'), {
+      name: 'not-an-expo-app',
+      version: '1.0.0',
+    });
+
+    await expect(
+      createFeedbackMetadataAsync(
+        projectRoot,
+        null,
+        'docs',
+        ' https://docs.expo.dev/router/introduction/ '
+      )
+    ).resolves.toMatchObject({
+      category: 'docs',
+      subject: 'https://docs.expo.dev/router/introduction/',
+    });
+  });
+
+  it('omits an empty feedback subject', async () => {
+    projectRoot = createTempDir();
+    writeJson(path.join(projectRoot, 'package.json'), {
+      name: 'not-an-expo-app',
+      version: '1.0.0',
+    });
+
+    const metadata = await createFeedbackMetadataAsync(projectRoot, null, 'docs', '   ');
+
+    expect(metadata).not.toHaveProperty('subject');
+  });
 });
 
 describe('user metadata', () => {
@@ -232,7 +264,7 @@ describe('feedback submission', () => {
       userId: 'user-id',
       username: 'expo-user',
     };
-    const metadata = await createFeedbackMetadataAsync(projectRoot, session, 'mcp');
+    const metadata = await createFeedbackMetadataAsync(projectRoot, session, 'mcp', 'expo-mcp');
 
     await sendFeedbackAsync({
       feedback: 'please make errors clearer',
@@ -256,6 +288,7 @@ describe('feedback submission', () => {
     expect(AbortSignal.timeout).toHaveBeenCalledWith(15_000);
     expect(metadata).toMatchObject({
       category: 'mcp',
+      subject: 'expo-mcp',
       agentEnvironment: {
         detected: true,
         agent: {
