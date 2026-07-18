@@ -123,6 +123,10 @@ async function isXcbeautifyAvailableAsync(): Promise<boolean> {
   }
 }
 
+// On GitHub Actions, use workflow commands to fold each target's output into a collapsible
+// group and surface failures as annotations. https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands
+const isGithubActions = process.env.GITHUB_ACTIONS === 'true';
+
 async function runTestsAsync(scheme: string, destination: string, useXcbeautify: boolean) {
   const args = [
     'test',
@@ -141,9 +145,12 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
   ];
 
   if (useXcbeautify) {
+    // The github-actions renderer emits `::error`/`::warning` annotations with file and line
+    // for compile errors and test failures.
+    const xcbeautify = isGithubActions ? 'xcbeautify --renderer github-actions' : 'xcbeautify';
     // Pipe through xcbeautify while preserving xcodebuild's exit code.
     const command = ['xcodebuild', ...args].map((arg) => `'${arg}'`).join(' ');
-    await spawnAsync('bash', ['-o', 'pipefail', '-c', `${command} 2>&1 | xcbeautify`], {
+    await spawnAsync('bash', ['-o', 'pipefail', '-c', `${command} 2>&1 | ${xcbeautify}`], {
       cwd: Directories.getExpoRepositoryRootDir(),
       stdio: 'inherit',
     });
@@ -207,12 +214,28 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
   // heavy common dependencies build once and later schemes only build their own pods.
   const failedTargets: string[] = [];
   for (const target of targetsToTest) {
-    console.log(chalk.cyan.bold(`\n▶︎ ${target}\n`));
+    if (isGithubActions) {
+      console.log(`::group::🧪 ${target}`);
+    } else {
+      console.log(chalk.cyan.bold(`\n▶︎ ${target}\n`));
+    }
+    let failed = false;
     try {
       await runTestsAsync(target, destination, useXcbeautify);
     } catch {
+      failed = true;
       failedTargets.push(target);
-      console.error(chalk.red(`\n✖ Tests failed for target ${target}`));
+    }
+    if (isGithubActions) {
+      console.log('::endgroup::');
+    }
+    if (failed) {
+      // Printed after `::endgroup::` so the failure stays visible when the group is collapsed.
+      if (isGithubActions) {
+        console.log(`::error title=iOS unit tests::Tests failed for target ${target}`);
+      } else {
+        console.error(chalk.red(`\n✖ Tests failed for target ${target}`));
+      }
     }
   }
 
