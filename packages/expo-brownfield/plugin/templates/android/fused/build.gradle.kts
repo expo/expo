@@ -148,13 +148,27 @@ if (findProperty("brownfield.fused") == "true") {
       ?.toSet()
       ?: emptySet()
 
+  // Groups the HOST app already ships at its own version (e.g. Glide, Compose).
+  // Like exclude-transitive these stay out of the fused AAR, but they are also
+  // NOT re-declared in the published POM/module metadata — re-declaring them at
+  // Expo's resolved version would force-upgrade the host's copy during its own
+  // dependency resolution:
+  //   brownfield.fused.host-provided=com.github.bumptech.glide,androidx.compose
+  val hostProvidedGroups: Set<String> =
+    (project.findProperty("brownfield.fused.host-provided") as? String)
+      ?.split(',')
+      ?.map { it.trim() }
+      ?.filter { it.isNotEmpty() }
+      ?.toSet()
+      ?: emptySet()
+
   // Populated below by walking the aggregator's resolution and detecting KMP-style
   // pom-only umbrellas that trip AGP fused-library's "parent dependency not
   // included" validation. A function rather than a val: `autoExcludedGroups` keeps
   // growing during the walk and lazy consumers (configureEach) need the live view.
   val autoExcludedGroups = mutableSetOf<String>()
   fun effectiveExcludedGroups(): Set<String> =
-    hostPlatformBaseline + excludedGroupsExtra + autoExcludedGroups
+    hostPlatformBaseline + excludedGroupsExtra + hostProvidedGroups + autoExcludedGroups
 
   // True → coord stays external in the POM. AndroidX uses an allowlist; the
   // RN runtime baseline + user-excluded + auto-detected KMP umbrellas form the
@@ -312,11 +326,14 @@ if (findProperty("brownfield.fused") == "true") {
   // modules (okhttp, okio, kotlin-stdlib, annotation artifacts) are captured too;
   // the AAR-filtered artifactView walk below never sees them. Pure umbrellas are
   // skipped (their `-android` children carry the content) and so are BOM/platform
-  // modules, which aren't plain runtime dependencies.
+  // modules, which aren't plain runtime dependencies. Host-provided groups are
+  // skipped entirely: the host ships its own version, and re-declaring ours would
+  // force-upgrade it.
   expoAggregator.incoming.resolutionResult.allComponents.forEach { component ->
     val id = component.id
     if (id !is org.gradle.api.artifacts.component.ModuleComponentIdentifier) return@forEach
     if (id.group !in effectiveExcludedGroups()) return@forEach
+    if (hostProvidedGroups.any { id.group == it || id.group.startsWith("$it.") }) return@forEach
     if ((id.group to id.module) in pureUmbrellaComponents) return@forEach
     if (id.module.endsWith("-bom")) return@forEach
     externalDepsForConsumer.add(Triple(id.group, id.module, id.version))
@@ -495,11 +512,25 @@ if (findProperty("brownfield.fused") == "true") {
             val deps = (runtimeVariant["dependencies"] as? MutableList<MutableMap<String, Any?>>)
               ?: mutableListOf<MutableMap<String, Any?>>().also { runtimeVariant["dependencies"] = it }
             externalDepsForConsumer.forEach { (group, module, version) ->
-              deps.add(mutableMapOf(
+              val entry = mutableMapOf<String, Any?>(
                 "group" to group,
                 "module" to module,
                 "version" to mutableMapOf("requires" to version),
-              ))
+              )
+              // react-android / hermes-android reach the metadata through this
+              // injection (the natural edges are excluded from the fused
+              // configurations), so the BuildTypeAttr annotation MUST be applied
+              // here — the annotate-in-place loop above never sees them. Without
+              // it, a debug host consuming a release fused AAR resolves debug RN
+              // against the AAR's release-linked codegen `.so` files and crashes
+              // at startup (SIGSEGV in folly RawProps).
+              if ((group to module) in perVariantAbiCoords) {
+                entry["attributes"] = mutableMapOf<String, Any?>(
+                  "com.android.build.api.attributes.BuildTypeAttr" to fusedVariant
+                )
+                annotatedCount++
+              }
+              deps.add(entry)
             }
           } else {
             logger.warn(

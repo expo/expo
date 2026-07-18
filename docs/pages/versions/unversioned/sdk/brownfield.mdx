@@ -298,14 +298,17 @@ Not everything is fused into the AAR. The build keeps three kinds of dependencie
 - **`androidx.*` libraries** — AGP Fused Library's class rewriter can't resolve `android:` framework attributes in their styleables, so all of AndroidX stays external except chains that must be fused for validation reasons (`androidx.camera`, `androidx.media3` by default).
 - **Auto-detected KMP umbrella modules** — pom-only coordinates whose variants all redirect to a platform module.
 
-Four Gradle properties tune this behavior when a project's dependency graph needs it:
+The published metadata also annotates the `react-android` and `hermes-android` dependency edges with the sibling's build type, so a host app always resolves the same React Native variant the fused AAR's native libraries were linked against, even when a debug host consumes the release AAR.
 
-| Property                              | Effect                                                                                                                                                                   |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `brownfield.fused.skip`               | Comma-separated Gradle project names to leave out of the fat AAR entirely.                                                                                               |
-| `brownfield.fused.strip-packages`     | Comma-separated package prefixes to remove from the generated `ExpoModulesPackageList`. Pair with `skip` to avoid `NoClassDefFoundError` for skipped modules at startup. |
-| `brownfield.fused.androidx-fuse`      | Extra `androidx.*` group prefixes to fuse into the AAR instead of keeping external.                                                                                      |
-| `brownfield.fused.exclude-transitive` | Extra dependency groups to keep external (declared in the POM instead of fused).                                                                                         |
+Five Gradle properties tune this behavior when a project's dependency graph needs it:
+
+| Property                              | Effect                                                                                                                                                                                             |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `brownfield.fused.skip`               | Comma-separated Gradle project names to leave out of the fat AAR entirely.                                                                                                                         |
+| `brownfield.fused.strip-packages`     | Comma-separated package prefixes to remove from the generated `ExpoModulesPackageList`. Pair with `skip` to avoid `NoClassDefFoundError` for skipped modules at startup.                           |
+| `brownfield.fused.androidx-fuse`      | Extra `androidx.*` group prefixes to fuse into the AAR instead of keeping external.                                                                                                                |
+| `brownfield.fused.exclude-transitive` | Extra dependency groups to keep external (declared in the POM instead of fused).                                                                                                                   |
+| `brownfield.fused.host-provided`      | Dependency groups the host app already ships (Glide, Compose, and so on). Kept out of the AAR like `exclude-transitive`, but also not declared in the POM, so the host's own version is untouched. |
 
 Pass them as `-P` Gradle properties when invoking a fused publish task directly from the **android** directory:
 
@@ -317,6 +320,8 @@ Pass them as `-P` Gradle properties when invoking a fused publish task directly 
     '    -Pbrownfield.fused.strip-packages=expo.modules.camera.',
   ]}
 />
+
+> **Note**: Before fusing, check which libraries your host app already uses. If the host ships its own Glide (`expo-image` fuses Glide), Jetpack Compose (`@expo/ui`), or similar, the fused AAR's copy will collide with the host's at build time (duplicate classes) or force-upgrade it through the POM. Prefer leaving those Expo modules out of the project, or mark the shared groups as `brownfield.fused.host-provided` and align versions manually.
 
 ### Sample GitHub Actions workflow
 
