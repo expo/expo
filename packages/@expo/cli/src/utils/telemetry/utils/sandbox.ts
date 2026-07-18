@@ -2,7 +2,7 @@ import { detectSandbox } from 'sandbox-cli-detector';
 
 import { debugEvent as event } from '../events';
 
-type SandboxTelemetryContext = string | 'unknown';
+type SandboxTelemetryContext = string | null;
 
 let sandboxTelemetryContext: SandboxTelemetryContext | undefined;
 
@@ -16,9 +16,13 @@ export function getSandboxTelemetryContext(): SandboxTelemetryContext {
 
 function resolveSandboxTelemetryContext(): SandboxTelemetryContext {
   try {
-    return detectSandbox().sandbox?.id ?? 'unknown';
+    const { detected, sandbox } = detectSandbox();
+    if (!detected || sandbox == null) {
+      return null;
+    }
+    return sandbox.id;
   } catch (error: any) {
     event('sandbox_detect_failed', { error: event.error(error as Error) });
-    return 'unknown';
+    return null;
   }
 }

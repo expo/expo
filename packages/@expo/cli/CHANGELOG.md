@@ -36,6 +36,7 @@
 
 ### 💡 Others
 
+- Add sandbox detection to telemetry context ([#47928](https://github.com/expo/expo/pull/47928) by [@davidmokos](https://github.com/davidmokos))
 - Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 - [Internal] Unify favicon injection between SPA, SSG and SSR pipelines ([#46586](https://github.com/expo/expo/pull/46586) by [@hassankhan](https://github.com/hassankhan))
 - Bump to `@expo/ws-tunnel@^2.0.0` ([#46696](https://github.com/expo/expo/pull/46696) by [@kitten](https://github.com/kitten))
