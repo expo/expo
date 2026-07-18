@@ -170,8 +170,6 @@ async function isXcbeautifyAvailableAsync(): Promise<boolean> {
   }
 }
 
-// On GitHub Actions, use workflow commands to fold each target's output into a collapsible
-// group and surface failures as annotations. https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands
 const isGithubActions = process.env.GITHUB_ACTIONS === 'true';
 
 async function runTestsAsync(scheme: string, destination: string, useXcbeautify: boolean) {
@@ -190,25 +188,15 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
     'CODE_SIGN_IDENTITY=',
     'CODE_SIGNING_REQUIRED=NO',
   ];
+  const cwd = Directories.getExpoRepositoryRootDir();
 
   if (useXcbeautify) {
-    // The github-actions renderer emits `::error`/`::warning` annotations with file and line
-    // for compile errors and test failures, and `--quieter` reduces the log to just errors
-    // and test results.
-    const xcbeautify = isGithubActions
-      ? 'xcbeautify --quieter --renderer github-actions'
-      : 'xcbeautify';
     // Pipe through xcbeautify while preserving xcodebuild's exit code.
-    const command = ['xcodebuild', ...args].map((arg) => `'${arg}'`).join(' ');
-    await spawnAsync('bash', ['-o', 'pipefail', '-c', `${command} 2>&1 | ${xcbeautify}`], {
-      cwd: Directories.getExpoRepositoryRootDir(),
-      stdio: 'inherit',
-    });
+    const command =
+      ['xcodebuild', ...args].map((arg) => `'${arg}'`).join(' ') + ' 2>&1 | xcbeautify';
+    await spawnAsync('bash', ['-o', 'pipefail', '-c', command], { cwd, stdio: 'inherit' });
   } else {
-    await spawnAsync('xcodebuild', args, {
-      cwd: Directories.getExpoRepositoryRootDir(),
-      stdio: 'inherit',
-    });
+    await spawnAsync('xcodebuild', args, { cwd, stdio: 'inherit' });
   }
 }
 
