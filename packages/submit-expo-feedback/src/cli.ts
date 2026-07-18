@@ -34,6 +34,7 @@ type ConfigFilePaths = {
 
 type FeedbackMetadata = {
   category: FeedbackCategory;
+  subject?: string;
   cli: {
     name: typeof CLI_NAME;
     version: string;
@@ -90,9 +91,11 @@ async function runAsync(): Promise<void> {
       '--help': Boolean,
       '--version': Boolean,
       '--category': String,
+      '--subject': String,
       '-h': '--help',
       '-v': '--version',
       '-c': '--category',
+      '-s': '--subject',
     },
     {
       argv: process.argv.slice(2),
@@ -112,7 +115,12 @@ async function runAsync(): Promise<void> {
 
   const { category, feedback } = await resolveFeedbackAsync(args._, args['--category']);
   const session = getSession();
-  const metadata = await createFeedbackMetadataAsync(process.cwd(), session, category);
+  const metadata = await createFeedbackMetadataAsync(
+    process.cwd(),
+    session,
+    category,
+    args['--subject']
+  );
 
   console.log(
     chalk.dim(
@@ -180,10 +188,14 @@ export async function resolveFeedbackAsync(
 export async function createFeedbackMetadataAsync(
   projectRoot: string,
   session = getSession(),
-  category: FeedbackCategory = 'unknown'
+  category: FeedbackCategory = 'unknown',
+  subjectValue?: string
 ): Promise<FeedbackMetadata> {
+  const subject = normalizeSubject(subjectValue);
+
   return {
     category,
+    ...(subject ? { subject } : {}),
     cli: {
       name: CLI_NAME,
       version: getPackageVersion(),
@@ -439,6 +451,8 @@ function printHelp(): void {
 
   {bold Options}
     --category, -c <category>  Feedback category (${FEEDBACK_CATEGORIES.join(', ')})
+    --subject, -s <subject>    Specific docs URL, skill, CLI command, MCP server, or other subject
+                               the feedback is about
     --version, -v              Version number
     --help, -h                 Usage info
 `);
@@ -452,6 +466,11 @@ function resolveFeedbackCategory(value?: string): FeedbackCategory {
   throw new CommandError(
     `Invalid feedback category "${value}". Expected one of: ${FEEDBACK_CATEGORIES.join(', ')}.`
   );
+}
+
+function normalizeSubject(value?: string): string | undefined {
+  const subject = value?.trim();
+  return subject || undefined;
 }
 
 function getPackageVersion(): string {
