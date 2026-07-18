@@ -1,7 +1,7 @@
 ---
 title: Environment variables in EAS Workflows
 sidebar_title: Environment variables
-description: Reference for the environment variables available inside EAS Workflows jobs, including the env context and built-in worker variables.
+description: Reference for the environment variables available inside EAS Workflows jobs, including the env context and additional worker variables.
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -33,7 +33,7 @@ The variables available in a job are merged from three sources. When the same na
 | [**eas.json** build profile `env`](/build/eas-json/#environment-variables) | For [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs, the `env` from the profile selected by `params.profile` in **eas.json**.  |
 | [EAS environment variables](/eas/environment-variables/)                   | Variable names and values stored on EAS for the job's [environment](#the-job-environment) (`production`, `preview`, or `development`). |
 
-On top of these, the worker sets a number of [built-in variables](#built-in-environment-variables) such as `EAS_BUILD_ID` and `CI`. Avoid naming your own variables with the `EAS_` prefix so the built-in ones don't shadow them.
+On top of these, the worker sets a number of [additional variables](#additional-environment-variables) such as `EAS_BUILD_ID` and `CI`. Avoid naming your own variables with the `EAS_` prefix so these don't shadow them.
 
 ## The job environment
 
@@ -64,10 +64,10 @@ jobs:
 
 Interpolation happens in two places, which changes what `${{ env.NAME }}` can resolve:
 
-- **Job configuration** (`params`, `if`, `outputs`, and the value of `env` itself) is interpolated before the job is dispatched to a worker. At this point, `env` contains your [EAS environment variables](/eas/environment-variables/) for the resolved [environment](#the-job-environment). Built-in worker variables and the job's own `env` values are not yet available here.
-- **`run` commands** are interpolated on the worker, where `env` reflects the full runtime environment: EAS environment variables, the job's `env`, and the [built-in variables](#built-in-environment-variables).
+- **Job configuration** (`params`, `if`, `outputs`, and the value of `env` itself) is interpolated before the job is dispatched to a worker. At this point, `env` contains your [EAS environment variables](/eas/environment-variables/) for the resolved [environment](#the-job-environment). The additional worker variables and the job's own `env` values are not yet available here.
+- **`run` commands** are interpolated on the worker, where `env` reflects the full runtime environment: EAS environment variables, the job's `env`, and the [additional variables](#additional-environment-variables).
 
-Because of this, read built-in variables like `EAS_BUILD_ID` inside a `run` step rather than in a job's `params`. Inside a `run` step, `${{ env.EAS_BUILD_ID }}` and `$EAS_BUILD_ID` are equivalent.
+Because of this, read variables like `EAS_BUILD_ID` inside a `run` step rather than in a job's `params`. Inside a `run` step, `${{ env.EAS_BUILD_ID }}` and `$EAS_BUILD_ID` are equivalent.
 
 > **info** Values interpolated from EAS environment variables of type secret or sensitive are redacted in workflow logs.
 
@@ -251,9 +251,9 @@ jobs:
 
 For the event domains that populate each field and full examples, see [`app_store_connect`](/eas/workflows/syntax/#app_store_connect) in the Syntax guide.
 
-## Built-in environment variables
+## Additional environment variables
 
-Workflow jobs run on the same worker infrastructure as EAS Build, so they get the same built-in variables. The most useful ones in a workflow are listed below. The worker sets them on every job that runs on a virtual machine (VM), and they are read at runtime, so reference them from within a `run` step. For the complete list, see [Using environment variables with EAS Build](/eas/environment-variables/usage/#using-environment-variables-with-eas-build).
+In addition to the variables you set, the worker provides a number of variables on every job that runs on a virtual machine (VM). The most useful ones in a workflow are listed below. They are read at runtime, so reference them from within a `run` step. For the complete list, see [Using environment variables with EAS Build](/eas/environment-variables/usage/#using-environment-variables-with-eas-build).
 
 | Variable               | Example value                          | Description                                                  |
 | ---------------------- | -------------------------------------- | ------------------------------------------------------------ |
