@@ -21,12 +21,9 @@ sealed class UpdatesStateEvent(val type: UpdatesStateEventType) {
   }
   class Download : UpdatesStateEvent(UpdatesStateEventType.Download)
   class DownloadProgress(val progress: Double) : UpdatesStateEvent(UpdatesStateEventType.DownloadProgress)
-
-  // download finished with no update available, so nothing is pending
-  class DownloadComplete : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)
-
-  class DownloadCompleteWithUpdate(val manifest: JSONObject) : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)
-  class DownloadCompleteWithRollback : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)
+  class DownloadCompleteUnavailable : UpdatesStateEvent(UpdatesStateEventType.DownloadCompleteUnavailable)
+  class DownloadCompleteWithUpdate(val manifest: JSONObject) : UpdatesStateEvent(UpdatesStateEventType.DownloadCompleteWithUpdate)
+  class DownloadCompleteWithRollback : UpdatesStateEvent(UpdatesStateEventType.DownloadCompleteWithRollback)
   class DownloadError(private val errorMessage: String) : UpdatesStateEvent(UpdatesStateEventType.DownloadError) {
     val error: UpdatesStateError
       get() {

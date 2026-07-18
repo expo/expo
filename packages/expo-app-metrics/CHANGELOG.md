@@ -22,6 +22,7 @@
 
 ### 💡 Others
 
+- Rename the no-update `downloadComplete` state event to `downloadCompleteUnavailable`. ([#47902](https://github.com/expo/expo/pull/47902) by [@kudo](https://github.com/kudo))
 - [iOS] Measure the JS bundle load time against the app startup end marker to stay compatible with upcoming React Native versions. ([#47782](https://github.com/expo/expo/pull/47782) by [@tsapeta](https://github.com/tsapeta))
 - Remove the unstable, development-only `triggerCrash` and `simulateCrashReport` APIs. ([#46924](https://github.com/expo/expo/pull/46924) by [@Ubax](https://github.com/Ubax))
 - Add private `getForegroundSession` ([#46657](https://github.com/expo/expo/pull/46657) by [@Ubax](https://github.com/Ubax))
