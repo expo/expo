@@ -73,8 +73,10 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
+      # Always run pod install (the restored Pods cache only speeds it up) — it generates
+      # files outside the Pods dir that the cache doesn't carry, e.g. ReactCodegen sources
+      # in `ios/build/generated` and expo-updates' vendored bspatch.c.
       - name: 🥥 Install CocoaPods in `apps/bare-expo/ios`
-        if: steps.expo-caches.outputs.bare-expo-pods-hit != 'true'
         run: pod install
         working-directory: apps/bare-expo/ios
       - name: 🧪 Run native iOS unit tests

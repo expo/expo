@@ -37,26 +37,34 @@ function getUnitTestTargets(pkg: Packages.Package): string[] {
   return targets;
 }
 
+const PODS_PROJECT_DIR = path.join(BARE_EXPO_IOS_DIR, 'Pods', 'Pods.xcodeproj');
+const MERGED_SCHEME_NAME = 'ExpoUnitTests-generated';
+
 // CocoaPods writes a scheme for every test spec target during `pod install` — into the
 // current user's `xcuserdata` by default, or `xcshareddata` when scheme sharing is enabled.
-// `xcodebuild` sees both. Verifying them on disk up front (instead of letting `xcodebuild`
+// `xcodebuild` sees both. Resolving them on disk up front (instead of letting `xcodebuild`
 // fail one by one) catches missing/outdated `pod install` and pods whose test specs were
 // dropped by autolinking (e.g. precompiled pods — see `should_include_test_specs?` in
 // precompiled_modules.rb).
-function assertSchemesExist(schemes: string[]) {
-  const podsProjectDir = path.join(BARE_EXPO_IOS_DIR, 'Pods', 'Pods.xcodeproj');
+function resolveSchemeFiles(schemes: string[]): Map<string, string> {
   // Only the current user's schemes are visible to xcodebuild, so don't scan other users'.
   const schemesDirs = [
-    path.join(podsProjectDir, 'xcshareddata', 'xcschemes'),
-    path.join(podsProjectDir, 'xcuserdata', `${os.userInfo().username}.xcuserdatad`, 'xcschemes'),
+    path.join(PODS_PROJECT_DIR, 'xcshareddata', 'xcschemes'),
+    path.join(PODS_PROJECT_DIR, 'xcuserdata', `${os.userInfo().username}.xcuserdatad`, 'xcschemes'),
   ];
-  const missing = schemes.filter(
-    (scheme) =>
-      !schemesDirs.some((schemesDir) => fs.existsSync(path.join(schemesDir, `${scheme}.xcscheme`)))
-  );
+  const schemeFiles = new Map<string, string>();
+  for (const scheme of schemes) {
+    const schemeFile = schemesDirs
+      .map((schemesDir) => path.join(schemesDir, `${scheme}.xcscheme`))
+      .find((filePath) => fs.existsSync(filePath));
+    if (schemeFile) {
+      schemeFiles.set(scheme, schemeFile);
+    }
+  }
+  const missing = schemes.filter((scheme) => !schemeFiles.has(scheme));
   if (missing.length > 0) {
     throw new Error(
-      `Couldn't find test schemes in ${podsProjectDir}:\n- ${missing.join('\n- ')}\n` +
+      `Couldn't find test schemes in ${PODS_PROJECT_DIR}:\n- ${missing.join('\n- ')}\n` +
         `CocoaPods generates these schemes during \`pod install\`, so the pods in ` +
         `${BARE_EXPO_IOS_DIR} are probably missing or outdated — run \`pod install\` there ` +
         `and try again. If a scheme is still missing, its pod's test specs may have been ` +
@@ -64,6 +72,45 @@ function assertSchemesExist(schemes: string[]) {
         `\`should_include_test_specs?\` in expo-modules-autolinking.`
     );
   }
+  return schemeFiles;
+}
+
+// Merges the per-test-spec schemes into a single scheme so that all targets build and test
+// in one `xcodebuild` invocation — one build graph and one test session instead of paying
+// workspace loading and build-graph computation per target (~1 minute each on CI). The
+// CocoaPods-generated schemes already contain the `<TestableReference>` blocks (with target
+// UUIDs), so this just concatenates them — no Xcode project parsing needed.
+function generateMergedScheme(schemeFiles: Map<string, string>): string {
+  const testables = [...schemeFiles.entries()]
+    .map(([scheme, schemeFile]) => {
+      const contents = fs.readFileSync(schemeFile, 'utf8');
+      const match = contents.match(/<TestableReference[\s\S]*?<\/TestableReference>/);
+      if (!match) {
+        throw new Error(`No testable reference found in the scheme ${scheme} (${schemeFile})`);
+      }
+      return match[0];
+    })
+    .join('\n         ');
+
+  const mergedScheme = `<?xml version="1.0" encoding="UTF-8"?>
+<Scheme LastUpgradeVersion="1500" version="1.3">
+   <BuildAction parallelizeBuildables="YES" buildImplicitDependencies="YES">
+   </BuildAction>
+   <TestAction buildConfiguration="Debug" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv="YES">
+      <Testables>
+         ${testables}
+      </Testables>
+   </TestAction>
+</Scheme>
+`;
+  const mergedSchemePath = path.join(
+    PODS_PROJECT_DIR,
+    'xcshareddata',
+    'xcschemes',
+    `${MERGED_SCHEME_NAME}.xcscheme`
+  );
+  fs.outputFileSync(mergedSchemePath, mergedScheme);
+  return MERGED_SCHEME_NAME;
 }
 
 type Simulator = {
@@ -146,8 +193,11 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
 
   if (useXcbeautify) {
     // The github-actions renderer emits `::error`/`::warning` annotations with file and line
-    // for compile errors and test failures.
-    const xcbeautify = isGithubActions ? 'xcbeautify --renderer github-actions' : 'xcbeautify';
+    // for compile errors and test failures, and `--quieter` reduces the log to just errors
+    // and test results.
+    const xcbeautify = isGithubActions
+      ? 'xcbeautify --quieter --renderer github-actions'
+      : 'xcbeautify';
     // Pipe through xcbeautify while preserving xcodebuild's exit code.
     const command = ['xcodebuild', ...args].map((arg) => `'${arg}'`).join(' ');
     await spawnAsync('bash', ['-o', 'pipefail', '-c', `${command} 2>&1 | ${xcbeautify}`], {
@@ -197,10 +247,15 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
     );
   }
 
-  assertSchemesExist(targetsToTest);
+  const schemeFiles = resolveSchemeFiles(targetsToTest);
 
   // xcodebuild fails if a result bundle already exists at the given path.
   await fs.remove(RESULTS_DIR);
+
+  // A single target runs its CocoaPods-generated scheme directly. Multiple targets are
+  // merged into one generated scheme so everything builds and tests in one `xcodebuild`
+  // invocation.
+  const scheme = targetsToTest.length === 1 ? targetsToTest[0] : generateMergedScheme(schemeFiles);
 
   const destination = await findSimulatorDestinationAsync();
   const useXcbeautify = await isXcbeautifyAvailableAsync();
@@ -210,37 +265,13 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
 
   console.log(`Running tests for targets:\n- ${targetsToTest.join('\n- ')}\n`);
 
-  // Schemes run sequentially within the same workspace, so they share derived data — the
-  // heavy common dependencies build once and later schemes only build their own pods.
-  const failedTargets: string[] = [];
-  for (const target of targetsToTest) {
+  try {
+    await runTestsAsync(scheme, destination, useXcbeautify);
+  } catch {
     if (isGithubActions) {
-      console.log(`::group::🧪 ${target}`);
-    } else {
-      console.log(chalk.cyan.bold(`\n▶︎ ${target}\n`));
+      console.log(`::error title=iOS unit tests::Unit tests failed, see the log for details`);
     }
-    let failed = false;
-    try {
-      await runTestsAsync(target, destination, useXcbeautify);
-    } catch {
-      failed = true;
-      failedTargets.push(target);
-    }
-    if (isGithubActions) {
-      console.log('::endgroup::');
-    }
-    if (failed) {
-      // Printed after `::endgroup::` so the failure stays visible when the group is collapsed.
-      if (isGithubActions) {
-        console.log(`::error title=iOS unit tests::Tests failed for target ${target}`);
-      } else {
-        console.error(chalk.red(`\n✖ Tests failed for target ${target}`));
-      }
-    }
-  }
-
-  if (failedTargets.length > 0) {
-    throw new Error(`iOS unit tests failed for targets: ${failedTargets.join(', ')}`);
+    throw new Error(`iOS unit tests failed for packages: ${packagesToTest.join(', ')}`);
   }
   console.log('✅ All unit tests passed for the following packages:', packagesToTest.join(', '));
 }
