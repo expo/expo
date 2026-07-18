@@ -273,8 +273,6 @@ The following variables are populated from build metadata and are available in [
 
 Workers also expose standard toolchain variables such as `HOME`, `PATH`, `LANG`, `ANDROID_HOME`, `ANDROID_SDK_ROOT`, and `JAVA_HOME`. Their exact values depend on the worker [image](/eas/workflows/syntax/#jobsjob_idimage) and are subject to change.
 
-> **warning** The environment also includes internal variables, all prefixed with `__`. These are implementation details that can change or be removed at any time, so don't depend on them.
-
 ## Setting environment variables in a job
 
 To define your own variables, use the [`env` key](/eas/workflows/syntax/#jobsjob_idenv) on a job. Values can reference other context properties.
