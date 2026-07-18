@@ -32,7 +32,9 @@ Swift/Kotlin unit tests live in `packages/<pkg>/ios/Tests/` and `android/`, and 
 On iOS/macOS (Android needs no pod step), install pods before running native tests or building,
 and again after adding or changing an iOS `test_spec`. Run `pod install` directly in the relevant
 `apps/*/ios` or `apps/*/macos` directory rather than `et pod-install` — running it directly is
-faster and avoids installing for apps you aren't working on, like Expo Go.
+faster and avoids installing for apps you aren't working on, like Expo Go. iOS unit tests run
+against `apps/bare-expo/ios/BareExpo.xcworkspace` (via the CocoaPods-generated
+`<PodName>-Unit-<TestSpecName>` schemes), so that's the directory to `pod install` in.
 
 Running native tests:
 `et native-unit-tests` — run native unit tests for all packages that provide them. Scope to
