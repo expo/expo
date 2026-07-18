@@ -5,32 +5,21 @@ on:
   pull_request:
     paths:
       - .github/workflows/ios-unit-tests.yml
-      - apps/expo-go/ios/**
       - packages/**/ios/**
       - packages/**/apple/**
-      - apps/native-tests/ios/**
-      - tools/src/dynamic-macros/**
-      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - apps/bare-expo/ios/**
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
-      - secrets/**
-      - fastlane/**
-      - Gemfile.lock
       - '!packages/@expo/cli/**'
   push:
     branches: [main]
     paths:
       - .github/workflows/ios-unit-tests.yml
-      - apps/expo-go/ios/**
       - packages/**/ios/**
       - packages/**/apple/**
-      - tools/src/dynamic-macros/**
-      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - apps/bare-expo/ios/**
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
-      - secrets/**
-      - fastlane/**
-      - Gemfile.lock
       - '!packages/@expo/cli/**'
 
 concurrency:
@@ -76,7 +65,7 @@ jobs:
         id: expo-caches
         with:
           ccache: 'true'
-          native-tests-pods: 'true'
+          bare-expo-pods: 'true'
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules
@@ -84,19 +73,12 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
-      - name: 🥥 Install CocoaPods in `apps/native-tests/ios`
+      - name: 🥥 Install CocoaPods in `apps/bare-expo/ios`
         if: steps.expo-caches.outputs.bare-expo-pods-hit != 'true'
         run: pod install
-        env:
-          RCT_USE_PREBUILT_RNCORE: 1
-          RCT_USE_RN_DEP: 1
-        working-directory: apps/native-tests/ios
+        working-directory: apps/bare-expo/ios
       - name: 🧪 Run native iOS unit tests
-        timeout-minutes: 30
-        env:
-          FASTLANE_SKIP_UPDATE_CHECK: '1'
-          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 30
-          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 8
+        timeout-minutes: 60
         run: pnpm expotools native-unit-tests --platform ios
       - name: Show ccache stats
         if: always()

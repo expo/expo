@@ -1,16 +1,19 @@
 import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
 
-async function runTests(testTargets: string[]) {
-  await spawnAsync('fastlane', ['ios', 'unit_tests', `targets:${testTargets.join(',')}`], {
-    cwd: Directories.getExpoRepositoryRootDir(),
-    stdio: 'inherit',
-  });
-}
+// Unit tests run against the bare-expo workspace — its Podfile links every package with
+// `use_expo_modules!(includeTests: true)`, so CocoaPods autogenerates a shared
+// `<PodName>-Unit-<TestSpecName>` scheme for each test spec. We invoke those schemes with
+// `xcodebuild` directly: no Fastlane, no generated aggregate scheme, and the default
+// derived data folder so local runs share build products with regular Xcode builds.
+const BARE_EXPO_IOS_DIR = path.join(Directories.getAppsDir(), 'bare-expo', 'ios');
+const WORKSPACE_PATH = path.join(BARE_EXPO_IOS_DIR, 'BareExpo.xcworkspace');
+const RESULTS_DIR = '/tmp/ios-unit-tests-results';
 
 // Computes the Xcode unit-test target names for a package by scanning every podspec it
 // declares — a package like expo-modules-core ships several (ExpoModulesCore,
@@ -31,6 +34,122 @@ function getUnitTestTargets(pkg: Packages.Package): string[] {
     }
   }
   return targets;
+}
+
+// CocoaPods writes a shared scheme for every test spec target to the Pods project.
+// Verifying them on disk up front (instead of letting `xcodebuild` fail one by one) catches
+// missing/outdated `pod install` and pods whose test specs were dropped by autolinking
+// (e.g. precompiled pods — see `should_include_test_specs?` in precompiled_modules.rb).
+function assertSchemesExist(schemes: string[]) {
+  const schemesDir = path.join(
+    BARE_EXPO_IOS_DIR,
+    'Pods',
+    'Pods.xcodeproj',
+    'xcshareddata',
+    'xcschemes'
+  );
+  const missing = schemes.filter(
+    (scheme) => !fs.existsSync(path.join(schemesDir, `${scheme}.xcscheme`))
+  );
+  if (missing.length > 0) {
+    throw new Error(
+      `Couldn't find test schemes in ${schemesDir}:\n- ${missing.join('\n- ')}\n` +
+        `CocoaPods generates these schemes during \`pod install\`, so the pods in ` +
+        `${BARE_EXPO_IOS_DIR} are probably missing or outdated — run \`pod install\` there ` +
+        `and try again. If a scheme is still missing, its pod's test specs may have been ` +
+        `dropped by autolinking because the pod is precompiled — see ` +
+        `\`should_include_test_specs?\` in expo-modules-autolinking.`
+    );
+  }
+}
+
+type Simulator = {
+  udid: string;
+  name: string;
+  state: string;
+};
+
+// Picks the simulator to test on: an already-booted iPhone if there is one, otherwise an
+// iPhone from the newest available iOS runtime. Resolving to a concrete udid avoids
+// device-name assumptions that break across Xcode versions and local machines.
+async function findSimulatorDestinationAsync(): Promise<string> {
+  const { stdout } = await spawnAsync('xcrun', [
+    'simctl',
+    'list',
+    'devices',
+    'available',
+    '--json',
+  ]);
+  const { devices } = JSON.parse(stdout) as { devices: Record<string, Simulator[]> };
+
+  const runtimeVersion = (runtime: string): number[] =>
+    runtime
+      .replace(/^.*SimRuntime\.iOS-/, '')
+      .split('-')
+      .map(Number);
+
+  const iosRuntimes = Object.keys(devices)
+    .filter((runtime) => runtime.includes('SimRuntime.iOS'))
+    .sort((a, b) => {
+      const [aMajor = 0, aMinor = 0] = runtimeVersion(a);
+      const [bMajor = 0, bMinor = 0] = runtimeVersion(b);
+      return bMajor - aMajor || bMinor - aMinor;
+    });
+
+  const iphones = iosRuntimes.flatMap(
+    (runtime) => devices[runtime]?.filter((device) => device.name.includes('iPhone')) ?? []
+  );
+  const simulator = iphones.find((device) => device.state === 'Booted') ?? iphones[0];
+  if (!simulator) {
+    throw new Error(
+      'No available iPhone simulator found — unit tests need one to run on. ' +
+        'Install an iOS simulator runtime in Xcode (Settings → Components) and check ' +
+        '`xcrun simctl list devices available`.'
+    );
+  }
+  console.log(`Using simulator: ${simulator.name} (${simulator.udid})\n`);
+  return `id=${simulator.udid}`;
+}
+
+async function isXcbeautifyAvailableAsync(): Promise<boolean> {
+  try {
+    await spawnAsync('which', ['xcbeautify']);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function runTestsAsync(scheme: string, destination: string, useXcbeautify: boolean) {
+  const args = [
+    'test',
+    '-workspace',
+    WORKSPACE_PATH,
+    '-scheme',
+    scheme,
+    '-configuration',
+    'Debug',
+    '-destination',
+    destination,
+    '-resultBundlePath',
+    path.join(RESULTS_DIR, `${scheme}.xcresult`),
+    'CODE_SIGN_IDENTITY=',
+    'CODE_SIGNING_REQUIRED=NO',
+  ];
+
+  if (useXcbeautify) {
+    // Pipe through xcbeautify while preserving xcodebuild's exit code.
+    const command = ['xcodebuild', ...args].map((arg) => `'${arg}'`).join(' ');
+    await spawnAsync('bash', ['-o', 'pipefail', '-c', `${command} 2>&1 | xcbeautify`], {
+      cwd: Directories.getExpoRepositoryRootDir(),
+      stdio: 'inherit',
+    });
+  } else {
+    await spawnAsync('xcodebuild', args, {
+      cwd: Directories.getExpoRepositoryRootDir(),
+      stdio: 'inherit',
+    });
+  }
 }
 
 export async function iosNativeUnitTests({ packages }: { packages?: string }) {
@@ -68,14 +187,34 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
     );
   }
 
-  try {
-    console.log(`Running tests for targets:\n- ${targetsToTest.join('\n- ')}\n`);
-    await runTests(targetsToTest);
-  } catch (error) {
-    console.error('iOS unit tests failed:');
-    console.error('stdout >', error.stdout);
-    console.error('stderr >', error.stderr);
-    throw new Error('iOS Unit tests failed');
+  assertSchemesExist(targetsToTest);
+
+  // xcodebuild fails if a result bundle already exists at the given path.
+  await fs.remove(RESULTS_DIR);
+
+  const destination = await findSimulatorDestinationAsync();
+  const useXcbeautify = await isXcbeautifyAvailableAsync();
+  if (!useXcbeautify) {
+    console.log(chalk.yellow('xcbeautify not found, falling back to raw xcodebuild output.\n'));
+  }
+
+  console.log(`Running tests for targets:\n- ${targetsToTest.join('\n- ')}\n`);
+
+  // Schemes run sequentially within the same workspace, so they share derived data — the
+  // heavy common dependencies build once and later schemes only build their own pods.
+  const failedTargets: string[] = [];
+  for (const target of targetsToTest) {
+    console.log(chalk.cyan.bold(`\n▶︎ ${target}\n`));
+    try {
+      await runTestsAsync(target, destination, useXcbeautify);
+    } catch {
+      failedTargets.push(target);
+      console.error(chalk.red(`\n✖ Tests failed for target ${target}`));
+    }
+  }
+
+  if (failedTargets.length > 0) {
+    throw new Error(`iOS unit tests failed for targets: ${failedTargets.join(', ')}`);
   }
   console.log('✅ All unit tests passed for the following packages:', packagesToTest.join(', '));
 }
