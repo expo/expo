@@ -5,9 +5,9 @@ export type WidgetConfig = {
   displayName: string;
   description: string;
   // @deprecated: use `ios.supportedFamilies` instead.
-  supportedFamilies: WidgetFamily[];
+  supportedFamilies?: WidgetFamily[];
   // @deprecated: use `ios.contentMarginsDisabled` instead.
-  contentMarginsDisabled: boolean;
+  contentMarginsDisabled?: boolean;
   // @deprecated: use `ios.configuration` instead.
   configuration?: {
     title: string;
@@ -15,7 +15,7 @@ export type WidgetConfig = {
     parameters: Record<string, WidgetParameter>;
   };
   ios?: {
-    supportedFamilies: WidgetFamily[];
+    supportedFamilies?: WidgetFamily[];
     contentMarginsDisabled?: boolean;
     initialLayout?: string;
     configuration?: {
@@ -32,7 +32,10 @@ export type WidgetConfig = {
     resizeMode?: 'none' | 'horizontal' | 'vertical' | 'both';
     initialLayout?: string;
   } | null;
-};
+} & (
+  | { supportedFamilies: WidgetFamily[] }
+  | { ios: { supportedFamilies: WidgetFamily[] } }
+);
 
 export type WidgetParameterString = {
   title: string;
