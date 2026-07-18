@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import os from 'os';
 import path from 'path';
 
 import * as Directories from '../Directories';
@@ -36,24 +37,26 @@ function getUnitTestTargets(pkg: Packages.Package): string[] {
   return targets;
 }
 
-// CocoaPods writes a shared scheme for every test spec target to the Pods project.
-// Verifying them on disk up front (instead of letting `xcodebuild` fail one by one) catches
-// missing/outdated `pod install` and pods whose test specs were dropped by autolinking
-// (e.g. precompiled pods — see `should_include_test_specs?` in precompiled_modules.rb).
+// CocoaPods writes a scheme for every test spec target during `pod install` — into the
+// current user's `xcuserdata` by default, or `xcshareddata` when scheme sharing is enabled.
+// `xcodebuild` sees both. Verifying them on disk up front (instead of letting `xcodebuild`
+// fail one by one) catches missing/outdated `pod install` and pods whose test specs were
+// dropped by autolinking (e.g. precompiled pods — see `should_include_test_specs?` in
+// precompiled_modules.rb).
 function assertSchemesExist(schemes: string[]) {
-  const schemesDir = path.join(
-    BARE_EXPO_IOS_DIR,
-    'Pods',
-    'Pods.xcodeproj',
-    'xcshareddata',
-    'xcschemes'
-  );
+  const podsProjectDir = path.join(BARE_EXPO_IOS_DIR, 'Pods', 'Pods.xcodeproj');
+  // Only the current user's schemes are visible to xcodebuild, so don't scan other users'.
+  const schemesDirs = [
+    path.join(podsProjectDir, 'xcshareddata', 'xcschemes'),
+    path.join(podsProjectDir, 'xcuserdata', `${os.userInfo().username}.xcuserdatad`, 'xcschemes'),
+  ];
   const missing = schemes.filter(
-    (scheme) => !fs.existsSync(path.join(schemesDir, `${scheme}.xcscheme`))
+    (scheme) =>
+      !schemesDirs.some((schemesDir) => fs.existsSync(path.join(schemesDir, `${scheme}.xcscheme`)))
   );
   if (missing.length > 0) {
     throw new Error(
-      `Couldn't find test schemes in ${schemesDir}:\n- ${missing.join('\n- ')}\n` +
+      `Couldn't find test schemes in ${podsProjectDir}:\n- ${missing.join('\n- ')}\n` +
         `CocoaPods generates these schemes during \`pod install\`, so the pods in ` +
         `${BARE_EXPO_IOS_DIR} are probably missing or outdated — run \`pod install\` there ` +
         `and try again. If a scheme is still missing, its pod's test specs may have been ` +
