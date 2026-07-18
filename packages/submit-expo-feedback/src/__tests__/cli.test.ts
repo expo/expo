@@ -22,6 +22,15 @@ jest.mock('agent-cli-detector', () => ({
     },
   })),
 }));
+jest.mock('sandbox-cli-detector', () => ({
+  detectSandbox: jest.fn(() => ({
+    detected: true,
+    sandbox: {
+      id: 'e2b',
+      name: 'E2B',
+    },
+  })),
+}));
 jest.mock('ci-info', () => ({
   ...jest.requireActual('ci-info'),
   isCI: false,
@@ -322,6 +331,13 @@ describe('feedback submission', () => {
           id: 'codex',
           name: 'Codex',
           sessionId: 'test-session',
+        },
+      },
+      sandboxEnvironment: {
+        detected: true,
+        sandbox: {
+          id: 'e2b',
+          name: 'E2B',
         },
       },
       project: {
