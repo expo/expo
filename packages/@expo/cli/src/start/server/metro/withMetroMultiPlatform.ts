@@ -100,8 +100,6 @@ function resolveWithPlatformExtensions(
   return resolver(platformContext, moduleName, null);
 }
 
-const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
-
 function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
   return input;
 }
@@ -195,9 +193,6 @@ function withWebPolyfills(
         if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
           // If react-native is not installed, because we're targeting web, we still continue
           // This should be rare, but we add it so we don't unnecessarily have a fixed peer dependency on react-native
-          debug(
-            'Skipping react-native/rn-get-polyfills from getPolyfills. react-native is not installed.'
-          );
           return virtualModulesPolyfills;
         } else {
           throw error;
@@ -293,12 +288,10 @@ export function withExtendedResolver(
 
     // This package is currently always installed as it is included in the `expo` package.
     if (resolveFrom(config.projectRoot, '@expo/vector-icons/package.json')) {
-      debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
       _universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
     }
     if (isReactServerComponentsEnabled) {
       if (resolveFrom(config.projectRoot, 'expo-router/rsc')) {
-        debug('Enabling bridge alias: expo-router -> expo-router/rsc');
         _universalAliases.push([/^expo-router$/, 'expo-router/rsc']);
         // Bridge the internal entry point which is a standalone import to ensure package.json resolution works as expected.
         _universalAliases.push([/^expo-router\/entry-classic$/, 'expo-router/rsc/entry']);
@@ -481,7 +474,6 @@ export function withExtendedResolver(
           // Match if the import originated from a react package.
           context.originModulePath.match(/[\\/]node_modules[\\/](react[-\\/]|scheduler[\\/])/))
       ) {
-        debug(`Skipping production module: ${moduleName}`);
         // /Users/path/to/expo/node_modules/react/index.js ./cjs/react.production.min.js
         // /Users/path/to/expo/node_modules/react/jsx-dev-runtime.js ./cjs/react-jsx-dev-runtime.production.min.js
         // /Users/path/to/expo/node_modules/react-is/index.js ./cjs/react-is.production.min.js
@@ -541,7 +533,6 @@ export function withExtendedResolver(
         );
       }
       const contents = `module.exports=$$require_external('node:${moduleId}');`;
-      debug(`Virtualizing Node.js "${moduleId}"`);
       const virtualModuleId = `\0node:${moduleId}`;
       getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
         virtualModuleId,
@@ -571,7 +562,6 @@ export function withExtendedResolver(
       for (const external of externals) {
         if (external.match(context, moduleName, platform)) {
           if (external.replace === 'empty') {
-            debug(`Redirecting external "${moduleName}" to "${external.replace}"`);
             return {
               type: external.replace,
             };
@@ -590,7 +580,6 @@ export function withExtendedResolver(
             // const contents = `module.exports=/*${moduleName}*/__r(require.resolveWeak('${moduleName}'))`;
             // const generatedModuleId = fastHashMemoized(contents);
             const virtualModuleId = `\0weak:${opaqueId}`;
-            debug('Virtualizing module:', moduleName, '->', virtualModuleId);
             getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
               virtualModuleId,
               contents
@@ -616,7 +605,6 @@ export function withExtendedResolver(
             }
             const contents = `module.exports=$$require_external('${moduleName}')`;
             const virtualModuleId = `\0node:${moduleName}`;
-            debug('Virtualizing Node.js (custom):', moduleName, '->', virtualModuleId);
             getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
               virtualModuleId,
               contents
@@ -650,7 +638,6 @@ export function withExtendedResolver(
             (_, index) => match[parseInt(index, 10)] ?? ''
           );
           const doResolve = getStrictResolver(context, platform);
-          debug(`Alias "${moduleName}" to "${aliasedModule}"`);
           return doResolve(aliasedModule);
         }
       }
@@ -728,7 +715,6 @@ export function withExtendedResolver(
           'expo-router/build/layouts/ExperimentalModalStack.js'
         );
         if (webModalModule) {
-          debug('Using `_unstable-web-modal` implementation.');
           return webModalModule;
         }
       }
@@ -739,9 +725,6 @@ export function withExtendedResolver(
           'expo-router/build/native-tabs/utils/materialIconConverter-not-implemented.js'
         );
         if (materialIconConverterModule) {
-          debug(
-            'Disabling md support in NativeTabs to tree-shake `expo-symbols` from the Android bundle.'
-          );
           return materialIconConverterModule;
         }
       }
@@ -811,8 +794,6 @@ export function withExtendedResolver(
             if (!bundler.hasVirtualModule(virtualId)) {
               bundler.setVirtualModule(virtualId, fs.readFileSync(shimFile, 'utf8'));
             }
-            debug(`Redirecting module "${result.filePath}" to shim`);
-
             return {
               ...result,
               filePath: virtualId,
@@ -832,7 +813,6 @@ export function withExtendedResolver(
             undefined
           );
           if (emptyModule) {
-            debug('Shimming out InitializeCore for React Native in native SSR bundle');
             return emptyModule;
           }
         }
@@ -968,7 +948,6 @@ function doReplaceHelper(
   try {
     const hmrModule = doResolve(to);
     if (hmrModule.type === 'sourceFile') {
-      debug(`Using \`${to}\` implementation.`);
       return hmrModule;
     }
   } catch (resolutionError) {
@@ -977,8 +956,6 @@ function doReplaceHelper(
         cause: resolutionError,
       });
     }
-
-    debug(`Failed to resolve ${to} when swapping from ${from}: ${resolutionError}`);
   }
   return undefined;
 }

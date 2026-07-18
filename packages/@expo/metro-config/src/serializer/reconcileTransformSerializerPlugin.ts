@@ -18,7 +18,6 @@ import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrap
 import { locToKey } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import assert from 'assert';
-import util from 'node:util';
 
 import type { Dependency, DependencyData } from '../transform-worker/collect-dependencies';
 import collectDependencies, {
@@ -45,8 +44,6 @@ import { type BabelSourceMapSegment } from './sourceMap';
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
 type SerializerParameters = Parameters<Serializer>;
-
-const debug = require('debug')('expo:treeshaking') as typeof console.log;
 
 const FORCE_REQUIRE_NAME_HINTS = false;
 
@@ -98,12 +95,6 @@ export function sortDependencies(
     if (dep.data.isOptional) {
       return null;
     }
-
-    debug(
-      'failed to finding matching dependency',
-      util.inspect(dep, { colors: true, depth: 6 }),
-      util.inspect(accordingTo, { colors: true, depth: 6 })
-    );
 
     throw new Error(
       `Dependency ${dep.data.key} (${dep.name}) not found in the original module during optimization pass. Available keys: ${Array.from(
@@ -181,7 +172,6 @@ export async function reconcileTransformSerializerPlugin(
       value.path.endsWith('.json') ||
       value.path.match(/\.(s?css|sass)$/)
     ) {
-      debug('Skipping post transform for non-js/module: ' + value.path);
       return outputItem;
     }
 

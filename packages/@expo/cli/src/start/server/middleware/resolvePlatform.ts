@@ -4,10 +4,6 @@ import { parse } from 'url';
 import { CommandError } from '../../../utils/errors';
 import type { ServerRequest } from './server.types';
 
-const debug = require('debug')(
-  'expo:start:server:middleware:resolvePlatform'
-) as typeof console.log;
-
 /** Supported native runtime platforms. */
 export type RuntimePlatform = NativePlatform;
 
@@ -39,7 +35,6 @@ export function resolvePlatformFromUserAgentHeader(req: ServerRequest): string |
   if (userAgent?.match(/iPhone|iPad/i)) {
     platform = 'ios';
   }
-  debug(`Resolved platform ${platform} from user-agent header: ${userAgent}`);
   return platform;
 }
 

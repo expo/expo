@@ -1,9 +1,7 @@
 import { unstable_transformerPath, internal_supervisingTransformerPath } from '@expo/metro-config';
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 
-const debug = require('debug')(
-  'expo:metro:withMetroSupervisingTransformWorker'
-) as typeof console.log;
+import { debugEvent } from './metroDebugEvents';
 
 declare module '@expo/metro/metro-transform-worker' {
   export interface JsTransformerConfig {
@@ -56,7 +54,7 @@ export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroC
 
   // DEBUGGING: When set to false the supervisor is disabled for debugging
   if (config.transformer?.expo_customTransformerPath === false) {
-    debug('Skipping transform worker supervisor: transformer.expo_customTransformerPath is false');
+    debugEvent('transform_worker_supervisor_skipped', {});
     return config;
   }
 
@@ -65,13 +63,13 @@ export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroC
   // NOTE: It's not a bad thing if we load the superivising transformer even if
   // we don't need to. It will do nothing to our transformer
   if (!hasDefaultTransformerPath) {
-    debug('Detected customized "transformerPath"');
+    debugEvent('transform_worker_supervisor_custom_transformer', {});
   }
   if (!hasDefaultBabelTransformerPath) {
-    debug('Detected customized "transformer.babelTransformerPath"');
+    debugEvent('transform_worker_supervisor_custom_babel_transformer', {});
   }
 
-  debug('Applying transform worker supervisor to "transformerPath"');
+  debugEvent('transform_worker_supervisor_applied', {});
   return {
     ...config,
     transformerPath: internal_supervisingTransformerPath,

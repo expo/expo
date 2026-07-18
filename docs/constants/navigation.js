@@ -85,9 +85,13 @@ export const home = [
         expanded: false,
       }
     ),
-    makeGroup('Agent toolkits', [makePage('agents/argent.mdx')], {
-      expanded: false,
-    }),
+    makeGroup(
+      'Agent toolkits',
+      [makePage('agents/agent-device.mdx'), makePage('agents/argent.mdx')],
+      {
+        expanded: false,
+      }
+    ),
     makePage('llms.mdx'),
   ]),
   makeSection('Develop', [
@@ -112,12 +116,10 @@ export const home = [
       'Development builds',
       [
         makePage('develop/development-builds/introduction.mdx'),
-        makePage('develop/development-builds/expo-go-to-dev-build.mdx'),
-        makePage('develop/development-builds/create-a-build.mdx'),
         makePage('develop/development-builds/use-development-builds.mdx'),
         makePage('develop/development-builds/share-with-your-team.mdx'),
         makePage('develop/development-builds/development-workflows.mdx'),
-        makePage('develop/development-builds/next-steps.mdx'),
+        makePage('develop/development-builds/faq.mdx'),
       ],
       { expanded: false }
     ),
@@ -376,7 +378,11 @@ export const general = [
       makePage('guides/using-bugsnag.mdx'),
       makePage('guides/using-logrocket.mdx'),
       makePage('guides/using-vexo.mdx'),
-      makePage('guides/using-posthog.mdx'),
+      makeGroup(
+        'Using PostHog',
+        [makePage('guides/using-posthog/index.mdx'), makePage('guides/using-posthog/recipes.mdx')],
+        { expanded: false }
+      ),
     ]),
     makeGroup('Authentication', [
       makePage('guides/using-authentication.mdx'),
@@ -473,6 +479,7 @@ export const eas = [
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
     makePage('eas/workflows/rest-api.mdx'),
+    makePage('eas/workflows/troubleshooting.mdx'),
     makePage('eas/workflows/limitations.mdx'),
     makeGroup('Examples', [
       makePage('eas/workflows/examples/introduction.mdx'),
@@ -545,9 +552,10 @@ export const eas = [
     ),
   ]),
   makeSection('EAS Submit', [
-    makePage('submit/introduction.mdx'),
     makePage('submit/android.mdx'),
     makePage('submit/ios.mdx'),
+    makePage('submit/android-manual.mdx'),
+    makePage('submit/ios-manual.mdx'),
     makePage('submit/eas-json.mdx'),
   ]),
   makeSection('EAS Hosting', [

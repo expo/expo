@@ -1,0 +1,45 @@
+import { events } from '2g';
+import type { SerializedError } from '2g';
+
+declare module '2g' {
+  interface EventRegistry {
+    'transform:failed': { file: string; error: SerializedError };
+    'transform:custom_transformer:loaded': { path: string };
+    'transform:custom_transformer:failed': { path: string; error: SerializedError };
+
+    'transform:file': {
+      file: string;
+      platform: string | null;
+      environment: string | null;
+      type: string;
+      deps: number;
+      cached: false;
+    };
+
+    // per-file sub-phase spans (nested under transform:file)
+    'transform:babel': { file: string };
+    'transform:import_support': { file: string };
+    'transform:constant_folding': { file: string };
+    'transform:collect_dependencies': { file: string; count: number };
+    'transform:codegen': { file: string };
+    'transform:minify': { file: string };
+
+    // debug keys
+    'transform:browserslist:targets': { targets: Record<string, unknown> };
+    'transform:collect_deps:magic_comment_ignored': { line: number | string; code: string };
+    'transform:client_boundaries:parsed': { boundaries: string[] };
+    'transform:postcss:config_loaded': { path: string };
+    'transform:postcss:plugin_loaded': { plugin: string };
+    'transform:module_mapper:request_redirected': { request: string; resolved: string };
+    'transform:module_mapper:redirect_failed': { request: string; error: SerializedError };
+    'transform:import_export:unexpected_object_pattern': { node: string };
+    'transform:import_export:unexpected_array_pattern': { node: string };
+    'transform:import_export:unexpected_identifier': { node: string };
+    'transform:import_export:unexpected_declaration': { node: string };
+    'transform:import_export:unexpected_specifier': { node: string };
+    'transform:babel:missing_router_root': { message: string };
+  }
+}
+
+export const event = events('transform');
+export const debugEvent = events.debug('transform');

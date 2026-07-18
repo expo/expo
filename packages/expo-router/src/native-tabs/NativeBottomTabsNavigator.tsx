@@ -174,7 +174,8 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
 
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
   const triggerChildren = useMemo(
-    () => getAllChildrenOfType(props.children, NativeTabTrigger),
+    () =>
+      getAllChildrenOfType(props.children, NativeTabTrigger).filter((child) => !child.props.hidden),
     [props.children]
   );
   const nonTriggerChildren = useMemo(

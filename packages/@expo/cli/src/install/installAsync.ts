@@ -12,6 +12,7 @@ import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { joinWithCommasAnd } from '../utils/strings';
 import { applyPluginsAsync } from './applyPlugins';
 import { checkPackagesAsync } from './checkPackages';
+import { event } from './events';
 import { installExpoPackageAsync } from './installExpoPackage';
 import type { Options } from './resolveOptions';
 import { checkPackagesCompatibility } from './utils/checkPackagesCompatibility';
@@ -195,11 +196,17 @@ export async function installPackagesAsync(
     });
   }
 
+  const done = event.span();
   if (dev) {
     await packageManager.addDevAsync([...packageManagerArguments, ...versioning.packages]);
   } else {
     await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
   }
+  done('done', {
+    packages: versioning.packages,
+    dev: !!dev,
+    packageManager: packageManager.name,
+  });
 
   await applyPluginsAsync(projectRoot, versioning.packages);
 }

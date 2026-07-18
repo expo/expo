@@ -69,13 +69,15 @@ node_modules/some-package/**/*
 
 ### fingerprint.config.js
 
-Placed in your project root, **fingerprint.config.js** allows you to specify custom hash calculation configuration beyond what is configurable in the **.fingerprintignore**. For supported configurations, see [Config](#config) and [`SourceSkips`](#sourceskips).
+Placed in your project root, **fingerprint.config.js** allows you to specify custom hash calculation configuration beyond what is configurable in the **.fingerprintignore**. For supported configurations, see [Config](#config), [`FingerprintPreset`](#fingerprintpreset), and [`SourceSkips`](#sourceskips).
 
 Below is an example **fingerprint.config.js** configuration, assuming you have `@expo/fingerprint` installed as a direct dependency:
 
 ```js fingerprint.config.js
 /** @type {import('@expo/fingerprint').Config} */
 const config = {
+  // Uncomment to switch presets (the default is 'balanced'). See FingerprintPreset for the options.
+  // preset: 'strict',
   sourceSkips: [
     'ExpoConfigRuntimeVersionIfString',
     'ExpoConfigVersions',

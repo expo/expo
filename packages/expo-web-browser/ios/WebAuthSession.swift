@@ -61,7 +61,10 @@ final internal class WebAuthSession {
 
   func open(_ promise: Promise) {
     authSession?.presentationContextProvider = presentationContextProvider
-    authSession?.start()
+    guard authSession?.start() == true else {
+      promise.reject(WebAuthSessionFailedToStartException())
+      return
+    }
     self.promise = promise
   }
 

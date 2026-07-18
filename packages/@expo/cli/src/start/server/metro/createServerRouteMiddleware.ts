@@ -20,8 +20,7 @@ import {
   warnInvalidMiddlewareOutput,
   warnInvalidMiddlewareMatcherSettings,
 } from './router';
-
-const debug = require('debug')('expo:start:server:metro') as typeof console.log;
+import { event } from './routerEvents';
 
 export function createRouteHandlerMiddleware(
   projectRoot: string,
@@ -62,7 +61,7 @@ export function createRouteHandlerMiddleware(
     {
       async getRoutesManifest() {
         const manifest = await fetchManifest(projectRoot, options);
-        debug('manifest', manifest);
+        event('manifest_fetched', {});
 
         // TODO(@hassankhan): Invert the conditionals for an early return if no manifest if found
 
@@ -142,7 +141,7 @@ export function createRouteHandlerMiddleware(
               }
             );
           } catch (staticError: any) {
-            debug('Failed to render static error overlay:', staticError);
+            event('static_overlay_failed', { error: String(staticError?.message ?? staticError) });
             // Fallback error for when Expo Router is misconfigured in the project.
             return new Response(
               '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
@@ -198,7 +197,7 @@ export function createRouteHandlerMiddleware(
           ? route.file
           : path.join(options.appDir, route.file);
         try {
-          debug(`Bundling API route at: ${resolvedFunctionPath}`);
+          event('api_route_bundling', { path: event.path(resolvedFunctionPath) });
           return await options.bundleApiRoute(resolvedFunctionPath!);
         } catch (error: any) {
           return new Response(
@@ -241,7 +240,7 @@ export function createRouteHandlerMiddleware(
           ? route.file
           : path.join(options.appDir, route.file);
         try {
-          debug(`Bundling middleware at: ${resolvedFunctionPath}`);
+          event('middleware_bundling', { path: event.path(resolvedFunctionPath) });
           const middlewareModule = (await options.bundleApiRoute(resolvedFunctionPath!)) as any;
 
           if ((middlewareModule.unstable_settings as MiddlewareSettings)?.matcher) {

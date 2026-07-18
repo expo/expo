@@ -10,6 +10,7 @@ import path from 'path';
 import type { AcceptedPlugin, ProcessOptions, Processor } from 'postcss';
 import resolveFrom from 'resolve-from';
 
+import { debugEvent } from './events';
 import { tryRequireThenImport } from './utils/require';
 
 type PostCSSInputConfig = {
@@ -23,8 +24,6 @@ type PostCSSInputConfig = {
 };
 
 const CONFIG_FILE_NAME = 'postcss.config';
-
-const debug = require('debug')('expo:metro:transformer:postcss');
 
 interface LoadedPipeline {
   processor: Processor;
@@ -44,9 +43,6 @@ const loadPostcssPipelineAsync = (function () {
           config: inputConfig,
           resourcePath: projectRoot,
         });
-
-        debug('options:', processOptions);
-        debug('plugins:', plugins);
 
         const postcss = require('postcss') as typeof import('postcss');
         const { from: _from, to: _to, map: _map, ...baseOptions } = processOptions;
@@ -169,7 +165,7 @@ async function parsePostcssConfigAsync(
 
 function loadPlugin(projectRoot: string, plugin: string, options: unknown, file: string) {
   try {
-    debug('load plugin:', plugin);
+    debugEvent('postcss:plugin_loaded', { plugin });
 
     // e.g. `tailwindcss`
     let loadedPlugin = require(resolveFrom(projectRoot, plugin));
@@ -258,7 +254,7 @@ export async function resolvePostcssConfig(
   for (const ext of ['.mjs', '.js']) {
     const configPath = path.join(projectRoot, CONFIG_FILE_NAME + ext);
     if (fs.existsSync(configPath)) {
-      debug('load file:', configPath);
+      debugEvent('postcss:config_loaded', { path: configPath });
       const config = await tryRequireThenImport<
         PostCSSInputConfig | Record<'default', PostCSSInputConfig>
       >(configPath);
@@ -268,7 +264,7 @@ export async function resolvePostcssConfig(
 
   const jsonConfigPath = path.join(projectRoot, CONFIG_FILE_NAME + '.json');
   if (fs.existsSync(jsonConfigPath)) {
-    debug('load file:', jsonConfigPath);
+    debugEvent('postcss:config_loaded', { path: jsonConfigPath });
     return JsonFile.read(jsonConfigPath, { json5: true });
   }
 

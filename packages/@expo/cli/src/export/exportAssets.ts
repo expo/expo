@@ -6,10 +6,9 @@ import picomatch from 'picomatch';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
+import { debugEvent } from './events';
 import { getAssetIdForLogGrouping, persistMetroAssetsAsync } from './persistMetroAssets';
 import type { Asset, BundleAssetWithFileHashes, BundleOutput, ExportAssetMap } from './saveAssets';
-
-const debug = require('debug')('expo:export:exportAssets') as typeof console.log;
 
 function mapAssetHashToAssetString(asset: Asset, hash: string) {
   return 'asset_' + hash + ('type' in asset && asset.type ? '.' + asset.type : '');
@@ -76,7 +75,7 @@ function setOfAssetsToBeBundled(
     .map((asset) => {
       const shouldBundle = shouldBundleAsset(asset, matches);
       if (shouldBundle) {
-        debug(`${shouldBundle ? 'Include' : 'Exclude'} asset ${asset.files?.[0]}`);
+        debugEvent('assets:asset_filter', { file: asset.files?.[0] ?? '', include: true });
         return asset.fileHashes.map((hash) => mapAssetHashToAssetString(asset, hash));
       }
       return [];
@@ -178,12 +177,14 @@ export async function exportAssetsAsync(
   const embeddedHashSet: Set<string> = new Set();
 
   if (assets[0]?.fileHashes) {
-    debug(`Assets = ${JSON.stringify(assets, null, 2)}`);
+    debugEvent('assets:all', { assets: JSON.stringify(assets, null, 2) });
     // Updates the manifest to reflect additional asset bundling + configs
     // Get only asset strings for assets we will save
     bundledAssetsSet = resolveAssetPatternsToBeBundled(projectRoot, exp, assets);
     if (bundledAssetsSet) {
-      debug(`Bundled assets = ${JSON.stringify([...bundledAssetsSet], null, 2)}`);
+      debugEvent('assets:bundled', {
+        bundledAssets: JSON.stringify([...bundledAssetsSet], null, 2),
+      });
       // Filter asset objects to only ones that include assetPatternsToBeBundled matches
       filteredAssets = assets.filter((asset) => {
         const shouldInclude = assetShouldBeIncludedInExport(asset, bundledAssetsSet);
@@ -192,7 +193,7 @@ export async function exportAssetsAsync(
         }
         return shouldInclude;
       });
-      debug(`Filtered assets count = ${filteredAssets.length}`);
+      debugEvent('assets:filtered_count', { count: filteredAssets.length });
     }
 
     const hashes = new Set<string>();

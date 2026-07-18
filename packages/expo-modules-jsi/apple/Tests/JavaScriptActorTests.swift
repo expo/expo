@@ -59,6 +59,17 @@ struct JavaScriptActorTests {
   }
 
   @Test
+  func `assumeIsolated preserves typed error`() {
+    struct CustomError: Error {}
+
+    #expect(throws: CustomError.self) {
+      try JavaScriptActor.assumeIsolated { () throws(CustomError) -> Int in
+        throw CustomError()
+      }
+    }
+  }
+
+  @Test
   func `assumeIsolated can modify captured variables`() {
     var counter = 0
     JavaScriptActor.assumeIsolated {

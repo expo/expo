@@ -78,8 +78,10 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.io.File
@@ -134,7 +136,11 @@ class ExpoCameraView(
   private var previewView = PreviewView(context).apply {
     elevation = 0f
   }
-  private val scope = CoroutineScope(Dispatchers.Main)
+  private val scope = CoroutineScope(
+    Dispatchers.Main + SupervisorJob() + CoroutineExceptionHandler { _, throwable ->
+      Log.e(CameraViewModule.TAG, "Unhandled exception in camera coroutine", throwable)
+    }
+  )
   private var shouldCreateCamera = false
   private var previewPaused = false
 
@@ -430,12 +436,25 @@ class ExpoCameraView(
     }
   }
 
-  @SuppressLint("UnsafeOptInUsageError")
   private suspend fun createCamera() {
     if (!shouldCreateCamera || previewPaused) {
       return
     }
     shouldCreateCamera = false
+    try {
+      configureAndBindCamera()
+    } catch (e: Exception) {
+      shouldCreateCamera = true
+      onMountError(
+        CameraMountErrorEvent(
+          "Camera could not be started, it may be unavailable or in use by another app: ${e.message ?: e.javaClass.simpleName}"
+        )
+      )
+    }
+  }
+
+  @SuppressLint("UnsafeOptInUsageError")
+  private suspend fun configureAndBindCamera() {
     val cameraProvider = ProcessCameraProvider.awaitInstance(context)
 
     ratio?.let {
@@ -514,20 +533,14 @@ class ExpoCameraView(
       }
     }.build()
 
-    try {
-      cameraProvider.unbindAll()
-      camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
-      camera?.let {
-        observeCameraState(it.cameraInfo)
-      }
-      // Set the previous zoom level after recreating the camera
-      setCameraZoom(zoom)
-      this.cameraProvider = cameraProvider
-    } catch (_: Exception) {
-      onMountError(
-        CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
-      )
+    cameraProvider.unbindAll()
+    camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
+    camera?.let {
+      observeCameraState(it.cameraInfo)
     }
+    // Set the previous zoom level after recreating the camera
+    setCameraZoom(zoom)
+    this.cameraProvider = cameraProvider
   }
 
   private fun createImageAnalyzer(): ImageAnalysis =

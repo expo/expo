@@ -108,6 +108,12 @@ class MainRuntime(
   }
 
   override fun deallocate() {
-    deallocator.deallocate()
+    try {
+      if (isJSIContextInitialized()) {
+        jsiContext.getJSHeapAccessExecutor()?.invalidate()
+      }
+    } finally {
+      deallocator.deallocate()
+    }
   }
 }
