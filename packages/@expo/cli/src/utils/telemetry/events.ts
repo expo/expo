@@ -8,6 +8,7 @@ declare module '2g' {
     'telemetry:strategy_changed': { from: string; to: string };
     'telemetry:flush_error': { error: SerializedError };
     'telemetry:agent_detect_failed': { error: SerializedError };
+    'telemetry:sandbox_detect_failed': { error: SerializedError };
   }
 }
 
