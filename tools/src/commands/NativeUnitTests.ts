@@ -11,10 +11,14 @@ async function thisAction({
   platform,
   type = 'local',
   packages,
+  affected,
+  since,
 }: {
   platform?: PlatformName;
   type: TestType;
   packages?: string;
+  affected?: boolean;
+  since?: string;
 }) {
   if (!platform) {
     console.log(chalk.yellow("You haven't specified platform to run unit tests for!"));
@@ -32,7 +36,7 @@ async function thisAction({
   const runAndroid = platform === 'android' || platform === 'both';
   const runIos = platform === 'ios' || platform === 'both';
   if (runIos) {
-    await iosNativeUnitTests({ packages });
+    await iosNativeUnitTests({ packages, affected, since });
   }
   if (runAndroid) {
     await androidNativeUnitTests({ type, packages });
@@ -53,6 +57,16 @@ export default (program: any) => {
     .option(
       '--packages <string>',
       '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'
+    )
+    .option(
+      '--affected',
+      '[optional] Only test packages affected by changes since `--since`, including their dependents. iOS only for now. Ignored when `--packages` is passed.',
+      false
+    )
+    .option(
+      '-s, --since <ref>',
+      '[optional] Git ref to diff against for `--affected`. Defaults to `main`.',
+      'main'
     )
     .description('Runs native unit tests for each unimodules that provides them.')
     .asyncAction(thisAction);
