@@ -4,8 +4,10 @@ sidebar_title: TestFlight
 description: Learn how to get an iOS build onto tester's devices with TestFlight, and when to use internal versus external TestFlight testing.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { NoIcon } from '~/ui/components/DocIcons';
+import { FAQ } from '~/ui/components/FAQ';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -216,3 +218,98 @@ Once approved, invite by email, import a CSV, or turn on a public link. A public
 />
 
 </Step>
+
+## FAQs
+
+<FAQ>
+
+<Collapsible summary="Do I need a Mac to distribute an app with TestFlight?">
+
+No. Both `eas build` and `eas submit` run on macOS, Linux, and Windows. The build runs on EAS Build infrastructure and EAS Submit uploads the **.ipa** to App Store Connect for you.
+
+</Collapsible>
+
+<Collapsible summary="Do I need a new build to move from internal to external testing?">
+
+No. Add the build that is already in App Store Connect to an external group and submit it for Beta App Review. You only need a new build when the app itself changes.
+
+</Collapsible>
+
+<Collapsible summary="Why can't a teammate add a build to an external group?">
+
+Their App Store Connect role does not allow it. A **Developer** or **Marketing** role can manage internal testing but not external testing, which requires **Account Holder**, **Admin**, or **App Manager**.
+
+The same restriction applies to credentials. Only an **Account Holder** or **Admin** can create the App Store Connect API key that EAS Submit uses. See [Apple Developer Program roles and permissions](/app-signing/apple-developer-program-roles-and-permissions/) for the complete matrix.
+
+</Collapsible>
+
+<Collapsible summary="Does a TestFlight build get released on the App Store?">
+
+No. Releasing to the App Store is a separate submission that you start manually in App Store Connect. A build in TestFlight stays in TestFlight.
+
+Testing also does not stop when you release. If you do not expire a build before it goes live on the App Store, testers who already have an invitation can keep testing it. To stop them, go to **TestFlight** > select the build > **Expire Build**.
+
+</Collapsible>
+
+<Collapsible summary="Why is my build stuck on Missing Compliance?">
+
+App Store Connect is waiting for an answer to the export compliance question and cannot distribute the build to testers until you answer it. Instead of answering it on every upload, answer it once in your app config:
+
+```json app.json
+{
+  "ios": {
+    "config": {
+      "usesNonExemptEncryption": false
+    }
+  }
+}
+```
+
+Set [`usesNonExemptEncryption`](/versions/latest/config/app/#usesnonexemptencryption) to `false` only when your app uses no encryption beyond what Apple exempts, such as HTTPS through the operating system. The declaration also covers third-party libraries your app links against, and it applies to TestFlight builds, not only App Store releases.
+
+</Collapsible>
+
+<Collapsible summary="Can I add a build to a TestFlight group from the command line?">
+
+Yes, for internal groups. Pass `--groups` with the name of an existing internal group and use `--what-to-test` to set the test notes:
+
+<Terminal
+  cmd={['eas submit --platform ios --groups "QA Team" --what-to-test "New onboarding flow"']}
+/>
+
+`--groups` accepts **internal** group names only. To add a build to an external group, use EAS Workflows.
+
+</Collapsible>
+
+<Collapsible summary="Can I automate distributing a build to external groups?">
+
+Yes, with the pre-packaged [`testflight` job](/eas/workflows/pre-packaged-jobs/#testflight) in EAS Workflows. It adds a build to internal and external groups, sets the "What to Test" notes, and submits for Beta App Review:
+
+```yaml .eas/workflows/testflight.yml
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  testflight:
+    name: Distribute to TestFlight
+    type: testflight
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      internal_groups: ['QA Team']
+      external_groups: ['Public Beta']
+      changelog: |
+        What's new in this release:
+        - New features
+        - Bug fixes
+```
+
+`submit_beta_review` defaults to `true` when `external_groups` is provided. Complete the TestFlight test information in App Store Connect before you run the job with external groups.
+
+</Collapsible>
+
+</FAQ>
