@@ -53,12 +53,14 @@ export type FontFaceDefinition = {
   /**
    * Maps to the CSS `font-weight` property. Has no effect on native platforms, where only the
    * first `fontDefinitions` entry of a given `fontFamily` can be loaded.
+   * @default 400
    * @platform web
    */
   weight?: number | string;
   /**
    * Maps to the CSS `font-style` property. Has no effect on native platforms, where only the
    * first `fontDefinitions` entry of a given `fontFamily` can be loaded.
+   * @default 'normal'
    * @platform web
    */
   style?: 'normal' | 'italic' | 'oblique';
