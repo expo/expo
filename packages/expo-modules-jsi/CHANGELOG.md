@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed a use-after-free when a non-owning `JavaScriptRuntime` wrapper outlives its runtime (e.g. it is captured by a task abandoned on reload): its cached `jsi::PropNameID`s were destroyed against the freed runtime when the wrapper deallocated. The teardown sweep now flushes the cache on the JavaScript thread while the runtime is still valid. ([#47927](https://github.com/expo/expo/pull/47927) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a use-after-free when a `JavaScriptPromise` outlives its runtime (e.g. an async function's promise held by a completion handler that fires after `reloadAsync()`) by having the runtime's `LongLivedObjectCollection` own its JSI values and release them on the JavaScript thread when the wrapper is dropped or at teardown, instead of against a freed runtime. ([#47521](https://github.com/expo/expo/pull/47521) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add `JavaScriptRuntime.longLivedObjects`, a `LongLivedObjectCollection` that keeps `LongLivedObject`s (such as in-flight promises) alive across asynchronous boundaries and releases any that remain when the runtime is torn down. ([#47511](https://github.com/expo/expo/pull/47511) by [@tsapeta](https://github.com/tsapeta))
 
