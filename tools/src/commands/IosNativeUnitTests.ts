@@ -80,6 +80,8 @@ function resolveSchemeFiles(schemes: string[]): Map<string, string> {
 // workspace loading and build-graph computation per target (~1 minute each on CI). The
 // CocoaPods-generated schemes already contain the `<TestableReference>` blocks (with target
 // UUIDs), so this just concatenates them — no Xcode project parsing needed.
+// Testables are marked parallelizable so that Xcode distributes them across simulator
+// clones instead of spawning a test runner per bundle sequentially (~15-20s each).
 function generateMergedScheme(schemeFiles: Map<string, string>): string {
   const testables = [...schemeFiles.entries()]
     .map(([scheme, schemeFile]) => {
@@ -88,7 +90,10 @@ function generateMergedScheme(schemeFiles: Map<string, string>): string {
       if (!match) {
         throw new Error(`No testable reference found in the scheme ${scheme} (${schemeFile})`);
       }
-      return match[0];
+      return match[0].replace(
+        '<TestableReference',
+        '<TestableReference\n            parallelizable = "YES"'
+      );
     })
     .join('\n         ');
 
