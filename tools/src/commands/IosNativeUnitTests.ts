@@ -195,9 +195,12 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
   const env = { ...process.env, NSUnbufferedIO: 'YES' };
 
   if (useXcbeautify) {
+    // The github-actions renderer emits `::error`/`::warning` annotations with file and line
+    // for compile errors and test failures.
+    const xcbeautify = isGithubActions ? 'xcbeautify --renderer github-actions' : 'xcbeautify';
     // Pipe through xcbeautify while preserving xcodebuild's exit code.
     const command =
-      ['xcodebuild', ...args].map((arg) => `'${arg}'`).join(' ') + ' 2>&1 | xcbeautify';
+      ['xcodebuild', ...args].map((arg) => `'${arg}'`).join(' ') + ` 2>&1 | ${xcbeautify}`;
     await spawnAsync('bash', ['-o', 'pipefail', '-c', command], { cwd, env, stdio: 'inherit' });
   } else {
     await spawnAsync('xcodebuild', args, { cwd, env, stdio: 'inherit' });
