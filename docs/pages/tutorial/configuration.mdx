@@ -1,0 +1,125 @@
+---
+title: Configure status bar, splash screen and app icon
+description: In this tutorial, learn the basics of how to configure a status bar, app icon, and splash screen.
+hasVideoLink: true
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+In this chapter, we'll address some app details before deploying our app to an app store, such as theming the status bar, customizing the app icon, and splash screen.
+
+<VideoBoxLink
+  videoId="OgGCYdElcZo"
+  title="Watch: Adding the finishing touches to your universal Expo app"
+  description="Configure the status bar, customize your app icon, and set up the splash screen before deploying to the app store."
+/>
+
+---
+
+<Step label="1">
+
+## Configure the status bar
+
+[`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `create-expo-app`. This library provides a `StatusBar` component to configure the app's status bar style.
+
+Inside **app/\_layout.tsx**:
+
+1. Import `StatusBar` from `expo-status-bar`.
+2. Group the `StatusBar` and existing `Stack` components with [React's Fragment component](https://react.dev/reference/react/Fragment).
+
+{/* prettier-ignore */}
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+/* @tutinfo */
+import { StatusBar } from 'expo-status-bar';
+/* @end */
+
+export default function RootLayout() {
+  return (
+    /* @tutinfo Group the `StatusBar` and existing `Stack` components with React's Fragment component. */
+    <>
+    /* @end */
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+      /* @tutinfo */<StatusBar style="light" />
+    </>
+    /* @end */
+  );
+}
+```
+
+Let's take a look at our app now on Android, and iOS:
+
+<ContentSpotlight
+  alt="StatusBar with light style shown on both Android and iOS."
+  src="/static/images/tutorial/statusbar-example.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+<Step label="2">
+
+## App icon
+
+Inside the project, there's an **icon.png** file inside the **assets/images** directory. This is our app icon. It's a 1024px by 1024px image and looks as shown below:
+
+<ContentSpotlight
+  alt="The default app icon: a dark rounded square showing a white photo glyph with a yellow smiley face."
+  src="/static/images/tutorial/icon.webp"
+  className="max-w-[150px]"
+/>
+
+Like the splash screen image, the `"icon"` property in the **app.json** file configures the app icon's path. By default, a new Expo project defines the correct path to `"./assets/images/icon.png"`. We don't have to change anything.
+
+> Eventually, when you'll build your app for the app stores, [Expo Application Services (EAS)](/eas/) will take this image and create optimized icon for every device.
+
+You can see the icon in various places in Expo Go. Here is an example of the app icon displayed in the developer menu of Expo Go:
+
+<ContentSpotlight
+  alt="Splash screen on Developer Menu in Expo Go app."
+  src="/static/images/tutorial/app-icon-visible.webp"
+  className="max-w-[240px]"
+/>
+
+</Step>
+
+<Step label="3">
+
+## Splash screen
+
+A splash screen is visible before the app's content is loaded. It uses a smaller image, such as an app's icon, which is centered. It hides once the app's content is ready to be displayed.
+
+The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) plugin already comes pre-installed in every project created using `create-expo-app`. This library provides a config plugin to configure the splash screen.
+
+In **app.json**, the `expo-splash-screen` plugin is already configured to use the app's icon as the splash screen image (provided in the [downloadable assets](/tutorial/create-your-first-app/#download-assets)) with the following snippet so we don't have to change anything:
+
+```json app.json
+{
+  "plugins": [
+    /* @hide ... */ /* @end */
+    [
+      "expo-splash-screen",
+      {
+        "image": "./assets/images/splash-icon.png"
+        /* @hide ... */ /* @end */
+      }
+    ]
+  ]
+}
+```
+
+However, **to test the splash screen, we cannot use Expo Go or a [development build](/develop/development-builds/introduction/)**. To test it, we need to create a preview or a production build of our app. We recommend going through the following resources to learn more about the splash screen configuration and how to test it:
+
+- [Create a splash screen icon](/develop/user-interface/splash-screen-and-app-icon/#splash-screen) guide to learn how splash screen icon is configured.
+- To learn how to create a preview build, see [Internal distribution](/tutorial/eas/internal-distribution-builds/) guide in EAS Tutorial, or to create production builds see guides for [Android](/tutorial/eas/android-production-build/) and [iOS](/tutorial/eas/ios-production-build/).
+
+</Step>
+
+## Summary
+
+<ProgressTracker name="GET_STARTED" currentChapterSlug="/tutorial/configuration" />

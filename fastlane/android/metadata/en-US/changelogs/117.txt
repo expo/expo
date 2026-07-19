@@ -1,0 +1,1 @@
+Fixed some bugs that may have impeded your work with SDK34.

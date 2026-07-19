@@ -1,0 +1,45 @@
+{
+  "name": "expo-store-review",
+  "version": "56.0.3",
+  "description": "Provides access to native APIs for in-app reviews.",
+  "keywords": [
+    "app-store",
+    "expo",
+    "expo-store-review",
+    "google-play-store",
+    "react-native",
+    "reviews"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-store-review"
+  },
+  "main": "build/StoreReview.js",
+  "types": "build/StoreReview.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "expo": "workspace:*",
+    "expo-constants": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react-native": "*"
+  }
+}

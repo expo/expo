@@ -1,0 +1,11 @@
+namespace ReactNativeWebView
+{
+    [default_interface]
+    [allowforweb]
+    runtimeclass WebBridge
+    {
+        WebBridge();
+        void PostMessage(String message);
+        event Windows.Foundation.EventHandler<String> MessagePostEvent;
+    }
+}

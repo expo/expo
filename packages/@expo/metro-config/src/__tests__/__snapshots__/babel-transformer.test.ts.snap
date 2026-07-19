@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`passes the environment as isReactServer to the babel preset 1`] = `
+"Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = App;
+var _reactNative = require("react-native");
+var _jsxRuntime = require("react/jsx-runtime");
+function App() {
+  return (0, _jsxRuntime.jsx)("div", {
+    children: "Hello"
+  });
+}"
+`;
+
+exports[`passes the environment as isServer to the babel preset 1`] = `
+"Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = App;
+var _reactNative = require("react-native");
+var _jsxRuntime = require("react/jsx-runtime");
+function App() {
+  return (0, _jsxRuntime.jsx)("div", {
+    children: "Hello"
+  });
+}"
+`;

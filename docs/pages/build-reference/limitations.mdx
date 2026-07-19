@@ -1,0 +1,39 @@
+---
+title: EAS Build Limitations
+sidebar_title: Limitations
+description: Learn about the current limitations of EAS Build.
+---
+
+EAS Build is designed to work for any React Native project. However, it is good to be aware of certain limitations that we plan to address since they could prevent you from being able to use the service for your applications or might cause an inconvenience.
+
+## Fixed memory and CPU limits on build worker servers
+
+The resources available might be insufficient to build your app if your build process requires a significant amount of memory. In this case, consider using a [`large` resource class](/eas/json/#resourceclass) in the **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations).
+
+See [Server infrastructure reference](/build-reference/infrastructure) for more information. It contains the most up-to-date information about the current specifications of the Android (Ubuntu) and iOS (macOS) build servers.
+
+## Limited dependency caching
+
+Build jobs for Android install npm and Maven dependencies from a local cache. Build jobs for iOS install npm dependencies from a local cache, and CocoaPods artifacts from a cache server.
+
+Intermediate artifacts like **node_modules** directories are not cached and restored (for example, based on **package-lock.json** or **yarn.lock**), but if you commit them to your Git repository then they will be uploaded to build servers.
+
+See [dependency caching](/build-reference/caching) for more information.
+
+## Maximum build duration of 2 hours
+
+If your build takes longer than 2 hours to run, it will be canceled. This limit is lower on the free plan, and the limit is subject to change in the future.
+
+## Maximum number of pending builds is 50 per platform per account
+
+If you have more than 50 builds pending for a platform, new builds will be rejected until the number of pending builds drops below the limit.
+
+## Package managers with workspaces support may require special setup
+
+> **Note**: Official guidance for package managers other than Bun, npm, pnpm, and Yarn is limited.
+
+EAS Build supports monorepos managed with package managers supporting workspaces. However, third-party monorepo or workspaces tooling may not work as expected or require additional setup. Increased complexity is common when setting up and configuring monorepos and workspaces. Check whether your tools and libraries work well within a monorepo before setting one up. See [Work with monorepos](/guides/monorepos/).
+
+## Get notified about changes
+
+To be notified as progress is made on these items, you can subscribe to the EAS newsletter on [expo.dev/eas](https://expo.dev/eas).

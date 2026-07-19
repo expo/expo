@@ -1,0 +1,18 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.12'
+
+android {
+  namespace "expo.modules.linking"
+  defaultConfig {
+    versionCode 1
+    versionName "56.0.12"
+  }
+  lintOptions {
+    abortOnError false
+  }
+}

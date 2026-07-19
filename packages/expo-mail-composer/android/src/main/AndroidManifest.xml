@@ -1,0 +1,22 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
+        <provider android:name=".MailComposerFileProvider" android:authorities="${applicationId}.MailComposerFileProvider" android:exported="false" android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/mail_composer_provider_paths"/>
+        </provider>
+    </application>
+
+    <queries>
+        <intent>
+            <!-- Required for sending mails if targeting API 30 -->
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="mailto" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SEND_MULTIPLE" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="*/*" />
+        </intent>
+    </queries>
+</manifest>

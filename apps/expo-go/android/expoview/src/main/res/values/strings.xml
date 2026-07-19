@@ -1,0 +1,50 @@
+<resources>
+  <string name="app_name">Exponent</string>
+  <string name="preference_file_key">host.exp.exponent.SharedPreferences</string>
+  <string name="error_header">Something went wrong.</string>
+  <string name="error_default_client">Sorry about that. You can go back to Expo home or try to reload the Experience.</string>
+  <string name="error_default_shell">Sorry about that. Press the reload button to try again.</string>
+  <string name="error_unable_to_load_experience">Unable to load Experience.</string>
+  <string name="error_uncaught">Uncaught Error: %s</string>
+  <string name="view_error_log">View error log</string>
+  <string name="cardNumber">Card Number</string>
+  <string name="save">Save</string>
+  <string name="cvc">CVC</string>
+  <string name="android_pay_unavaliable">Android Pay unavailable on your device.</string>
+  <string name="user_cancel_dialog">User cancel dialog. No card added!</string>
+  <string name="experience_needs_permissions">%1$s needs permissions for %2$s. You\'ve already granted permission to another Expo experience. Allow %1$s to also use it?</string>
+  <string name="allow_experience_permissions">Allow</string>
+  <string name="deny_experience_permissions">Deny</string>
+  <string name="perm_audio_recording">audio recording</string>
+  <string name="perm_calendar_read">reading calendars</string>
+  <string name="perm_calendar_write">modifying calendars</string>
+  <string name="perm_camera">accessing camera</string>
+  <string name="perm_camera_roll_read">reading camera roll</string>
+  <string name="perm_camera_roll_write">modifying camera roll</string>
+  <string name="perm_access_media_location">accessing media location</string>
+  <string name="perm_contacts_read">reading contacts</string>
+  <string name="perm_contacts_write">modifying contacts</string>
+  <string name="perm_fine_location">fine location</string>
+  <string name="perm_coarse_location">coarse location</string>
+  <string name="perm_background_location">background location</string>
+  <string name="perm_read_phone_state">reading phone state</string>
+  <string name="perm_read_media_images">reading images from external storage</string>
+  <string name="perm_read_media_videos">reading videos from external storage</string>
+  <string name="perm_read_media_audio">reading audio files from external storage</string>
+  <string name="perm_notifications">posting notifications</string>
+  <string name="perm_system_brightness">system brightness</string>
+  <string name="perm_hzos_use_avatar_camera">accessing the avatar camera</string>
+  <string name="perm_hzos_use_headset_camera">accessing the headset camera</string>
+  <string name="default_notification_channel_group">Default</string>
+  <string name="persistent_notification_channel_group">Expo</string>
+  <string name="persistent_notification_channel_name">Experience notifications</string>
+  <string name="persistent_notification_channel_desc">Persistent notifications that provide debug info about open experiences</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="help_dialog">Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of Expo CLI. Pull to refresh to update.</string>
+
+  <string-array name="currency_array">
+    <item>Currency (optional)</item>
+    <item>Unspecified</item>
+    <item>USD</item>
+  </string-array>
+</resources>

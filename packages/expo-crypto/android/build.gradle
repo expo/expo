@@ -1,0 +1,23 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.4'
+
+android {
+  namespace "expo.modules.crypto"
+  defaultConfig {
+    versionCode 25
+    versionName "56.0.4"
+  }
+}
+
+dependencies {
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
+  }
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation "org.robolectric:robolectric:4.16"
+}

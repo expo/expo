@@ -1,0 +1,110 @@
+import { ThemeProvider } from 'ThemeProvider';
+import BenchmarkHelper from 'benchmark-helper';
+import * as DevMenu from 'expo-dev-menu';
+import { Observe, ObserveRoot } from 'expo-observe';
+import * as Splashscreen from 'expo-splash-screen';
+import React from 'react';
+
+import MainNavigator, { optionalRequire } from './MainNavigator';
+
+let Notifications;
+try {
+  Notifications = require('expo-notifications');
+} catch {
+  // do nothing
+}
+
+DevMenu.registerDevMenuItems([
+  {
+    name: 'Action 1',
+    callback: () => {
+      console.log('Action 1 executed');
+    },
+    shouldCollapse: true,
+  },
+  {
+    name: 'Action 2',
+    callback: () => {
+      console.log('Action 2 executed');
+    },
+    shouldCollapse: false,
+  },
+]);
+
+Splashscreen.setOptions({ fade: true, duration: 800 });
+
+// Require the `BackgroundTaskScreen` component from `native-component-list` if it's available
+// so that we load the module and register its background task on startup.
+optionalRequire(() => require('native-component-list/src/screens/BackgroundTaskScreen'));
+
+// Require the `BackgroundFetchScreen` component from `native-component-list` if it's available
+// so that we load the module and register its background task on startup.
+optionalRequire(() => require('native-component-list/src/screens/BackgroundFetchScreen'));
+
+const loadAssetsAsync =
+  optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ??
+  (async () => null);
+
+function useLoaded() {
+  const [isLoaded, setLoaded] = React.useState(false);
+  React.useEffect(() => {
+    let isMounted = true;
+    // @ts-ignore
+    loadAssetsAsync()
+      .then(() => {
+        if (isMounted) setLoaded(true);
+        Splashscreen.hide();
+      })
+      .catch((e) => {
+        console.warn('Error loading assets: ' + e.message);
+        if (isMounted) setLoaded(true);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+  return isLoaded;
+}
+
+Observe.configure({
+  dispatchingEnabled: true,
+  sampleRate: 0.9,
+  integrations: {
+    'react-navigation': { filteredParams: ['accountId', 'firstName'] },
+  },
+});
+
+export default function Main() {
+  React.useEffect(() => {
+    try {
+      const subscription = Notifications.addNotificationResponseReceivedListener(
+        ({ notification, actionIdentifier }) => {
+          console.info(
+            `User interacted with a notification (action = ${actionIdentifier}): ${JSON.stringify(
+              notification,
+              null,
+              2
+            )}`
+          );
+        }
+      );
+      return () => subscription?.remove();
+    } catch (e) {
+      console.debug('Could not have added a listener for received notification responses.', e);
+    }
+  }, []);
+
+  const isLoaded = useLoaded();
+
+  React.useEffect(() => {
+    if (isLoaded) {
+      BenchmarkHelper.reportFullyDrawn();
+    }
+  }, [isLoaded]);
+
+  return (
+    <ObserveRoot>
+      <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>
+    </ObserveRoot>
+  );
+}

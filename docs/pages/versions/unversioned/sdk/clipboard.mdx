@@ -1,0 +1,103 @@
+---
+title: Clipboard
+description: A universal library that allows getting and setting Clipboard content.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-clipboard'
+packageName: 'expo-clipboard'
+iconUrl: '/static/images/packages/expo-clipboard.png'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { SnackInline } from '~/ui/components/Snippet';
+
+`expo-clipboard` provides an interface for getting and setting Clipboard content on Android, iOS, and Web.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<SnackInline label='Clipboard' dependencies={['expo-clipboard']} platforms={['ios', 'android', 'web']}>
+
+```tsx
+import { useState } from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+
+export default function App() {
+  const [copiedText, setCopiedText] = useState('');
+
+  const copyToClipboard = async () => {
+    /* @info Copy the text to the clipboard */
+    await Clipboard.setStringAsync('hello world');
+    /* @end */
+  };
+
+  const fetchCopiedText = async () => {
+    const text = /* @info Paste the text from the clipboard */ await Clipboard.getStringAsync();
+    /* @end */
+    setCopiedText(text);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Button title="Click here to copy to Clipboard" onPress={copyToClipboard} />
+      <Button title="View copied text" onPress={fetchCopiedText} />
+      <Text style={styles.copiedText}>{copiedText}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  copiedText: {
+    marginTop: 10,
+    color: 'red',
+  },
+});
+```
+
+</SnackInline>
+
+## Mark clipboard content as sensitive (Android)
+
+When you copy sensitive data such as passwords, one-time passwords (OTPs), access tokens, payment details, or personally identifiable information (PII), set `android.isSensitive` in `setStringAsync` and `setImageAsync`.
+
+Setting `android.isSensitive: true` marks clipboard content as sensitive, based on Android guidance for [secure clipboard handling](https://developer.android.com/privacy-and-security/risks/secure-clipboard-handling#flag-sensitive-data). This can help:
+
+- Obfuscate clipboard previews shown by keyboards
+- Hide clipboard preview overlays on Android 13 and later
+- Reduce accidental exposure from shoulder surfing
+
+```ts
+import * as Clipboard from 'expo-clipboard';
+
+// Sensitive text
+await Clipboard.setStringAsync('my-secret-token', {
+  android: { isSensitive: true },
+});
+
+// Sensitive image
+await Clipboard.setImageAsync(base64Image, {
+  android: { isSensitive: true },
+});
+```
+
+## API
+
+```ts
+import * as Clipboard from 'expo-clipboard';
+```
+
+> **warning** On Web, this module uses the [`AsyncClipboard` API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API),
+> which might behave differently between browsers or not be fully supported.
+> Especially on WebKit, there's an issue which makes this API unusable in asynchronous code.
+> [Click here for more details](https://bugs.webkit.org/show_bug.cgi?id=222262).
+
+<APISection packageName="expo-clipboard" />

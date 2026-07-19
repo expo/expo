@@ -1,0 +1,222 @@
+---
+title: React Compiler
+description: Learn how to enable and use the React Compiler in Expo apps.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+The new [React Compiler](https://react.dev/learn/react-compiler) automatically memoizes components and hooks to enable fine-grained reactivity. This can lead to significant performance improvements in your app. You can enable it in your app by following the instructions below.
+
+## Enabling React Compiler
+
+<Step label="1">
+
+[Check how compatible](https://react.dev/learn/react-compiler#checking-compatibility) your project is with the React Compiler.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx react-compiler-healthcheck@latest'],
+    yarn: ['$ yarn dlx react-compiler-healthcheck@latest'],
+    pnpm: ['$ pnpm dlx react-compiler-healthcheck@latest'],
+    bun: ['$ bunx react-compiler-healthcheck@latest'],
+  }}
+/>
+
+This will generally verify if your app is following the [**rules of React**](https://react.dev/reference/rules).
+
+</Step>
+
+<Step label="2">
+
+Install `babel-plugin-react-compiler` and the React compiler runtime in your project:
+
+<Tabs tabs={['SDK 54 and later', 'SDK 53', 'SDK 52 and earlier']}>
+  <Tab>
+
+    Babel is automatically configured in Expo SDK 54 and later.
+
+  </Tab>
+  <Tab>
+    <Terminal
+      cmd={{
+        npm: ['$ npx expo install babel-plugin-react-compiler@beta'],
+        yarn: ['$ yarn expo install babel-plugin-react-compiler@beta'],
+        pnpm: ['$ pnpm expo install babel-plugin-react-compiler@beta'],
+        bun: ['$ bun expo install babel-plugin-react-compiler@beta'],
+      }}
+    />
+  </Tab>
+  <Tab>
+    <Terminal
+      cmd={{
+        npm: ['$ npx expo install babel-plugin-react-compiler@beta react-compiler-runtime@beta'],
+        yarn: ['$ yarn expo install babel-plugin-react-compiler@beta react-compiler-runtime@beta'],
+        pnpm: ['$ pnpm expo install babel-plugin-react-compiler@beta react-compiler-runtime@beta'],
+        bun: ['$ bun expo install babel-plugin-react-compiler@beta react-compiler-runtime@beta'],
+      }}
+    />
+  </Tab>
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+Toggle on the React Compiler experiment in your app config file:
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "reactCompiler": true
+    }
+  }
+}
+```
+
+</Step>
+
+### Enabling the linter
+
+Run [`npx expo lint`](/guides/using-eslint/#eslint) to set up ESLint in your app, then follow the instructions for your SDK version:
+
+<Tabs tabs={['SDK 55 and later', 'SDK 54 and earlier']}>
+  <Tab>
+
+    React Compiler lint rules are included by default with `eslint-config-expo` in SDK 55 and later.
+
+    If you previously installed `eslint-plugin-react-compiler`, you can uninstall it and remove it from your ESLint configuration.
+
+  </Tab>
+  <Tab>
+
+    Install the ESLint plugin for React Compiler:
+
+    <Terminal
+      cmd={{
+        npm: ['$ npx expo install eslint-plugin-react-compiler -- -D'],
+        yarn: ['$ yarn expo install eslint-plugin-react-compiler -- -D'],
+        pnpm: ['$ pnpm expo install eslint-plugin-react-compiler -- -D'],
+        bun: ['$ bun expo install eslint-plugin-react-compiler -- -D'],
+      }}
+    />
+
+    Update your [ESLint configuration](/guides/using-eslint/) to include the plugin:
+
+    ```js eslint.config.js
+    // https://docs.expo.dev/guides/using-eslint/
+    const { defineConfig } = require('eslint/config');
+    const expoConfig = require('eslint-config-expo/flat');
+    const reactCompiler = require('eslint-plugin-react-compiler');
+
+    module.exports = defineConfig([
+      expoConfig,
+      reactCompiler.configs.recommended,
+      {
+        ignores: ['dist/*'],
+      },
+    ]);
+    ```
+
+  </Tab>
+</Tabs>
+
+## Incremental adoption
+
+You can incrementally adopt the React Compiler in your app using a few strategies:
+
+<Step label="1">
+
+Configure the Babel plugin to only run on specific files or components. To do this:
+
+1. If your project doesn't have [**babel.config.js**](/versions/latest/config/babel/), create one by running `npx expo customize babel.config.js`.
+2. Add the following configuration to **babel.config.js**:
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+
+  return {
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          'react-compiler': {
+            sources: filename => {
+              // Match file names to include in the React Compiler.
+              return filename.includes('src/path/to/dir');
+            },
+          },
+        },
+      ],
+    ],
+  };
+};
+```
+
+Whenever you change your **babel.config.js** file, you need to restart the Metro bundler to apply the changes:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --clear'],
+    yarn: ['$ yarn expo start --clear'],
+    pnpm: ['$ pnpm expo start --clear'],
+    bun: ['$ bun expo start --clear'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+Use the `"use no memo"` directive to opt out of the React Compiler for specific components or files.
+
+```jsx
+function MyComponent() {
+  'use no memo';
+
+  return <Text>Will not be optimized</Text>;
+}
+```
+
+</Step>
+
+## Usage
+
+> To better understand how React Compiler works, check out the [React Playground](https://playground.react.dev/).
+
+Improvements are primarily automatic. You can remove instances of `useCallback`, `useMemo`, and `React.memo` in favor of the automatic memoization. Class components will not be optimized. Instead, migrate to function components.
+
+Expo's implementation of the React Compiler will only run on application code (no node modules), and only when bundling for the client (disabled in server rendering).
+
+## Configuration
+
+You can pass additional settings to the React Compiler Babel plugin by using the `react-compiler` object in the Babel configuration:
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+
+  return {
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          'react-compiler': {
+            // Passed directly to the React Compiler Babel plugin.
+            compilationMode: 'all',
+            panicThreshold: 'all_errors',
+          },
+          web: {
+            'react-compiler': {
+              // Web-only settings...
+            },
+          },
+        },
+      ],
+    ],
+  };
+};
+```

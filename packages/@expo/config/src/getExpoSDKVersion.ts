@@ -1,0 +1,43 @@
+import JsonFile from '@expo/json-file';
+import { resolveFrom } from '@expo/require-utils';
+
+import type { ExpoConfig } from './Config.types';
+import { ConfigError } from './Errors';
+
+/**
+ * Resolve the Expo SDK Version either from the input Expo config or from the installed
+ * version of the `expo` package.
+ */
+export function getExpoSDKVersion(
+  projectRoot: string,
+  exp: Pick<ExpoConfig, 'sdkVersion'> = {}
+): string {
+  return exp?.sdkVersion ?? getExpoSDKVersionFromPackage(projectRoot);
+}
+
+/**
+ * Resolve the Expo SDK Version either from the input Expo config or from the installed
+ * version of the `expo` package.
+ */
+function getExpoSDKVersionFromPackage(projectRoot: string): string {
+  const packageJsonPath = resolveFrom(projectRoot, 'expo/package.json');
+  if (!packageJsonPath) {
+    throw new ConfigError(
+      `Cannot determine the project's Expo SDK version because the module \`expo\` is not installed. Install it with \`npm install expo\` and try again.`,
+      'MODULE_NOT_FOUND'
+    );
+  }
+  const expoPackageJson = JsonFile.read(packageJsonPath, { json5: true });
+  const { version: packageVersion } = expoPackageJson;
+
+  if (!(typeof packageVersion === 'string')) {
+    // This is technically impossible.
+    throw new ConfigError(
+      `Cannot determine the project's Expo SDK version because the module \`expo\` has an invalid package.json (missing \`version\` field). Try reinstalling node modules and trying again.`,
+      'MODULE_NOT_FOUND'
+    );
+  }
+
+  const majorVersion = packageVersion.split('.').shift();
+  return `${majorVersion}.0.0`;
+}

@@ -1,0 +1,31 @@
+#include <NamespaceRedirect.h>
+
+namespace ReactNativeWebView{
+#if !defined(USE_WINUI3)
+    [default_interface]
+    runtimeclass ReactWebView : Windows.UI.Xaml.Controls.ContentPresenter{
+        ReactWebView(Microsoft.ReactNative.IReactContext context);
+        Boolean MessagingEnabled;
+        void SetInjectedJavascript(String payload);
+        void RequestFocus();
+        void PostMessage(String message);
+    };
+#endif
+#if __has_include(<VersionMacros.h>)
+#include <VersionMacros.h>
+#else
+#define RNW_VERSION_AT_LEAST(x,y,z) false
+#endif
+
+#if RNW_VERSION_AT_LEAST(0,68,0) && (defined(WINUI2_HAS_WEBVIEW2) || defined(USE_WINUI3))
+    [default_interface]
+    runtimeclass ReactWebView2 : XAML_NAMESPACE.Controls.ContentPresenter{
+        ReactWebView2(Microsoft.ReactNative.IReactContext context);
+        void NavigateToHtml(String html);
+        void NavigateWithWebResourceRequest(Microsoft.ReactNative.IJSValueReader request);
+        String InjectedJavascript;
+        Boolean MessagingEnabled;
+        Boolean LinkHandlingEnabled;
+    };
+#endif
+} // namespace ReactNativeWebView

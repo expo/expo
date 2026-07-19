@@ -1,0 +1,86 @@
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import * as React from 'react';
+import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useTheme } from '../../../common/ThemeProvider';
+import Screens from './MainNavigators';
+import createTabNavigator from './createTabNavigator';
+
+const Tab = createTabNavigator();
+
+const Drawer = createDrawerNavigator();
+
+export default function MainTabbedNavigator(props: any) {
+  const { width } = useWindowDimensions();
+  const { left } = useSafeAreaInsets();
+  const { theme } = useTheme();
+  const isMobile = width <= 640;
+  const isTablet = !isMobile && width <= 960;
+  const isLargeScreen = !isTablet && !isMobile;
+
+  // Use a tab bar on all except web desktop.
+  // NOTE(brentvatne): if you navigate to an example screen and then resize your
+  // browser such that the navigator changes from tab to drawer or drawer to tab
+  // then it will reset to the list because the navigator has changed and the state
+  // of its children will be reset.
+  if (Platform.OS !== 'web' || isMobile) {
+    return (
+      <Tab.Navigator
+        // @ts-ignore: Tab.Navigator can be either bottom-tabs navigator
+        // or material-bottom-tabs navigator
+        // material-bottom-tabs props
+        shifting
+        activeTintColor={theme.icon.info}
+        inactiveTintColor={theme.icon.default}
+        barStyle={{
+          backgroundColor: theme.background.default,
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: theme.border.secondary,
+        }}
+        // bottom-tabs props
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: theme.icon.info,
+          tabBarInactiveTintColor: theme.icon.default,
+          tabBarStyle: [
+            {
+              backgroundColor: theme.background.default,
+            },
+          ],
+        }}>
+        {Object.entries(Screens).map(([name, Screen]) => (
+          <Tab.Screen
+            name={name}
+            key={name}
+            component={Screen.navigator}
+            options={Screen.navigator.navigationOptions}
+          />
+        ))}
+      </Tab.Navigator>
+    );
+  }
+
+  return (
+    <Drawer.Navigator
+      {...props}
+      screenOptions={
+        isTablet
+          ? {
+              drawerLabel: () => null,
+            }
+          : {}
+      }
+      drawerStyle={{ width: isLargeScreen ? undefined : 64 + left }}
+      drawerType="permanent">
+      {Object.entries(Screens).map(([name, Screen]) => (
+        <Tab.Screen
+          name={name}
+          key={name}
+          component={Screen.navigator}
+          options={Screen.navigator.navigationOptions}
+        />
+      ))}
+    </Drawer.Navigator>
+  );
+}

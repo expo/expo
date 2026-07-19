@@ -1,0 +1,658 @@
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Slider from '@react-native-community/slider';
+import {
+  BarcodeScanningResult,
+  CameraView,
+  CameraCapturedPicture,
+  CameraMode,
+  CameraType,
+  FlashMode,
+  PermissionStatus,
+  Camera,
+  FocusMode,
+  VideoStabilization,
+} from 'expo-camera';
+import * as FileSystem from 'expo-file-system/legacy';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  GestureDetector,
+  useCompetingGestures,
+  useLongPressGesture,
+  useTapGesture,
+} from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+
+import GalleryScreen from './GalleryScreen';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('screen');
+
+const flashModeOrder: Record<string, FlashMode> = {
+  off: 'on',
+  on: 'auto',
+  auto: 'screen',
+  screen: 'off',
+};
+
+const flashIcons: Record<string, string> = {
+  off: 'flash-off',
+  on: 'flash',
+  auto: 'flash-outline',
+  screen: 'sunny',
+};
+
+const volumeIcons: Record<string, string> = {
+  on: 'volume-high',
+  off: 'volume-mute',
+};
+
+const videoStabilizationModeOrder: Record<string, VideoStabilization> = {
+  off: 'standard',
+  standard: 'cinematic',
+  cinematic: 'auto',
+  auto: 'off',
+};
+
+const photos: CameraCapturedPicture[] = [];
+
+interface State {
+  flash: FlashMode;
+  zoom: number;
+  facing: CameraType;
+  barcodeScanning: boolean;
+  mute: boolean;
+  torchEnabled: boolean;
+  mirror?: boolean;
+  autoFocus: FocusMode;
+  newPhotos: boolean;
+  previewPaused: boolean;
+  permissionsGranted: boolean;
+  micPermissionsGranted: boolean;
+  permission?: PermissionStatus;
+  micPermission?: PermissionStatus;
+  pictureSize?: string;
+  pictureSizes: string[];
+  pictureSizeId: number;
+  showGallery: boolean;
+  showMoreOptions: boolean;
+  mode: CameraMode;
+  recording: boolean;
+  videoStabilizationMode: VideoStabilization;
+}
+
+function Gestures({ children }: { children: React.ReactNode }) {
+  const doubleTapGesture = useTapGesture({
+    numberOfTaps: 2,
+    maxDuration: 250,
+    onActivate: () => {
+      console.log('doubleTapGesture > onActivate');
+    },
+  });
+
+  const longPressGesture = useLongPressGesture({
+    minDuration: 750,
+    onActivate: () => {
+      console.log('longPressGesture > onActivate');
+    },
+  });
+
+  const gesture = useCompetingGestures(doubleTapGesture, longPressGesture);
+
+  if (Platform.OS === 'web') {
+    return children;
+  }
+
+  return <GestureDetector gesture={gesture}>{children}</GestureDetector>;
+}
+
+export default function CameraScreen() {
+  const camera = useRef<CameraView>(null);
+  const [state, setState] = useState<State>({
+    flash: 'off',
+    zoom: 0,
+    facing: 'back',
+    barcodeScanning: false,
+    torchEnabled: false,
+    mute: false,
+    mirror: false,
+    autoFocus: 'off',
+    newPhotos: false,
+    previewPaused: false,
+    permissionsGranted: false,
+    micPermissionsGranted: false,
+    showGallery: false,
+    showMoreOptions: false,
+    pictureSizes: [],
+    pictureSizeId: 0,
+    mode: 'picture',
+    recording: false,
+    videoStabilizationMode: 'auto',
+  });
+
+  const barcodeBounds = useSharedValue({ x: 0, y: 0, w: 0, h: 0 });
+  const barcodeOpacity = useSharedValue(0);
+  const [barcodeData, setBarcodeData] = useState('');
+
+  const barcodeOverlayStyle = useAnimatedStyle(() => ({
+    position: 'absolute' as const,
+    left: barcodeBounds.value.x,
+    top: barcodeBounds.value.y,
+    width: barcodeBounds.value.w,
+    height: barcodeBounds.value.h,
+    borderWidth: 2,
+    borderColor: 'red',
+    backgroundColor: 'black',
+    opacity: barcodeOpacity.value,
+  }));
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      ensureDirectoryExistsAsync();
+    }
+    Camera.requestCameraPermissionsAsync().then(({ status }) => {
+      setState((state) => ({
+        ...state,
+        permission: status,
+        permissionsGranted: status === 'granted',
+      }));
+    });
+
+    Camera.requestMicrophonePermissionsAsync().then(({ status }) => {
+      setState((state) => ({
+        ...state,
+        micPermission: status,
+        micPermissionsGranted: status === 'granted',
+      }));
+    });
+  }, []);
+
+  const ensureDirectoryExistsAsync = async () => {
+    try {
+      await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos');
+    } catch {
+      // Directory exists
+    }
+  };
+
+  const toggleView = () =>
+    setState((state) => ({ ...state, showGallery: !state.showGallery, newPhotos: false }));
+
+  const toggleMoreOptions = () =>
+    setState((state) => ({ ...state, showMoreOptions: !state.showMoreOptions }));
+
+  const toggleFacing = () =>
+    setState((state) => ({ ...state, facing: state.facing === 'back' ? 'front' : 'back' }));
+
+  const toggleFlash = () => setState((state) => ({ ...state, flash: flashModeOrder[state.flash] }));
+
+  const togglePreviewPaused = () =>
+    setState((state) => ({ ...state, previewPaused: !state.previewPaused }));
+
+  const toggleTorch = () => setState((state) => ({ ...state, torchEnabled: !state.torchEnabled }));
+
+  const toggleMute = () => setState((state) => ({ ...state, mute: !state.mute }));
+
+  const toggleMirror = () => setState((state) => ({ ...state, mirror: !state.mirror }));
+
+  const toggleBarcodeScanning = () =>
+    setState((state) => ({ ...state, barcodeScanning: !state.barcodeScanning }));
+
+  const toggleFocus = () =>
+    setState((state) => ({
+      ...state,
+      autoFocus: state.autoFocus === 'on' ? 'off' : 'on',
+    }));
+
+  const toggleVideoStabilization = () =>
+    setState((state) => ({
+      ...state,
+      videoStabilizationMode: videoStabilizationModeOrder[state.videoStabilizationMode],
+    }));
+
+  const collectPictureSizes = async () => {
+    if (state.pictureSizes.length > 0) {
+      return;
+    }
+    const pictureSizes = (await camera?.current?.getAvailablePictureSizesAsync()) || [];
+    let pictureSizeId = 0;
+    if (Platform.OS === 'ios') {
+      pictureSizeId = pictureSizes.indexOf('Photo');
+    } else {
+      pictureSizeId = pictureSizes.length - 1;
+    }
+    setState((state) => ({
+      ...state,
+      pictureSizes,
+      pictureSizeId,
+      pictureSize: pictureSizes[pictureSizeId],
+    }));
+  };
+
+  const previousPictureSize = () => changePictureSize(1);
+  const nextPictureSize = () => changePictureSize(-1);
+
+  const changePictureSize = (direction: number) => {
+    setState((state) => {
+      let newId = state.pictureSizeId + direction;
+      const length = state.pictureSizes.length;
+      if (newId >= length) {
+        newId = 0;
+      } else if (newId < 0) {
+        newId = length - 1;
+      }
+      return {
+        ...state,
+        pictureSize: state.pictureSizes[newId],
+        pictureSizeId: newId,
+      };
+    });
+  };
+
+  const takePicture = async () => {
+    await camera?.current?.takePictureAsync({
+      onPictureSaved,
+      shutterSound: !state.mute,
+    });
+  };
+
+  const recordVideo = async () => {
+    setState((state) => ({ ...state, recording: !state.recording }));
+    if (state.recording) {
+      camera?.current?.stopRecording();
+      return Promise.resolve();
+    } else {
+      return camera?.current?.recordAsync();
+    }
+  };
+
+  const takeVideo = async () => {
+    try {
+      const result = await recordVideo();
+      setState((state) => ({ ...state, recording: !state.recording }));
+      if (result?.uri) {
+        await FileSystem.moveAsync({
+          from: result.uri,
+          to: `${FileSystem.documentDirectory}photos/${Date.now()}.${result.uri.split('.')[1]}`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      setState((state) => ({ ...state, recording: false }));
+    }
+  };
+
+  const updatePreviewState = () => {
+    if (state.previewPaused) {
+      camera?.current?.resumePreview();
+    } else {
+      camera?.current?.pausePreview();
+    }
+    togglePreviewPaused();
+  };
+
+  const changeMode = () => {
+    setState((state) => ({ ...state, mode: state.mode === 'picture' ? 'video' : 'picture' }));
+  };
+
+  const handleMountError = ({ message }: { message: string }) => console.error(message);
+
+  const onPictureSaved = async (photo: CameraCapturedPicture) => {
+    if (Platform.OS === 'web') {
+      photos.push(photo);
+    } else {
+      await FileSystem.moveAsync({
+        from: photo.uri,
+        to: `${FileSystem.documentDirectory}photos/${Date.now()}.${photo.format}`,
+      });
+    }
+    setState((state) => ({ ...state, newPhotos: true }));
+  };
+
+  const onBarcodeScanned = useCallback(
+    (code: BarcodeScanningResult) => {
+      const { origin, size } = code.bounds;
+      const spring = { damping: 30, stiffness: 90 };
+      barcodeBounds.value = withSpring(
+        { x: origin.x, y: origin.y, w: size.width, h: size.height },
+        spring
+      );
+      barcodeOpacity.value = size.width > 0 && size.height > 0 ? 1 : 0;
+      setBarcodeData(code.data);
+    },
+    [barcodeBounds, barcodeOpacity]
+  );
+
+  const renderGallery = () => {
+    return <GalleryScreen onPress={toggleView} photos={photos} />;
+  };
+
+  const renderNoPermissions = () => (
+    <View style={styles.noPermissions}>
+      {state.permission && (
+        <View>
+          <Text style={{ color: '#4630ec', fontWeight: 'bold', textAlign: 'center', fontSize: 24 }}>
+            Permission {state.permission.toLowerCase()}!
+          </Text>
+          <Text style={{ color: '#595959', textAlign: 'center', fontSize: 20 }}>
+            You'll need to enable the camera permission to continue.
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+
+  const renderTopBar = () => (
+    <View style={styles.topBar}>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleFacing}>
+        <Ionicons name="camera-reverse" size={32} color="white" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleFlash}>
+        <Ionicons name={flashIcons[state.flash] as any} size={28} color="white" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleMute}>
+        <Ionicons name={volumeIcons[state.mute ? 'off' : 'on'] as any} size={28} color="white" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleTorch}>
+        <Ionicons name="flashlight" size={28} color={state.torchEnabled ? 'white' : '#858585'} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleFocus}>
+        <Text
+          style={[
+            styles.autoFocusLabel,
+            { color: state.autoFocus === 'on' ? 'white' : '#6b6b6b' },
+          ]}>
+          AF
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleMirror}>
+        <MaterialCommunityIcons
+          name="mirror"
+          size={24}
+          color={state.mirror ? 'white' : '#858585'}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={updatePreviewState}>
+        {state.previewPaused ? (
+          <AntDesign name="play-circle" size={24} color="white" />
+        ) : (
+          <AntDesign name="pause-circle" size={24} color="white" />
+        )}
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={toggleMoreOptions}>
+        <MaterialCommunityIcons name="dots-horizontal" size={32} color="white" />
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderBottomBar = () => (
+    <View style={{ alignItems: 'center' }}>
+      <View style={styles.bottomBar}>
+        <TouchableOpacity style={styles.bottomButton} onPress={changeMode}>
+          <MaterialCommunityIcons
+            name={state.mode === 'picture' ? 'image' : 'video'}
+            size={32}
+            color="white"
+          />
+        </TouchableOpacity>
+        <View style={{ flex: 0.4 }}>
+          <TouchableOpacity
+            onPress={state.mode === 'picture' ? takePicture : takeVideo}
+            style={{ alignSelf: 'center' }}>
+            {state.recording ? (
+              <MaterialCommunityIcons name="stop-circle" size={64} color="red" />
+            ) : (
+              <Ionicons
+                name="radio-button-on"
+                size={64}
+                color={state.mode === 'picture' ? 'white' : 'red'}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.bottomButton} onPress={toggleView}>
+          <View>
+            <MaterialCommunityIcons name="apps" size={32} color="white" />
+            {state.newPhotos && <View style={styles.newPhotosDot} />}
+          </View>
+        </TouchableOpacity>
+      </View>
+      <Slider
+        minimumValue={0}
+        maximumValue={1.0}
+        step={0.1}
+        style={{ width: SCREEN_WIDTH - 20, height: 30 }}
+        onValueChange={(v) => setState((s) => ({ ...s, zoom: parseFloat(v.toFixed(1)) }))}
+      />
+    </View>
+  );
+
+  const renderMoreOptions = () => (
+    <View style={styles.options}>
+      <View style={styles.detectors}>
+        <TouchableOpacity onPress={toggleBarcodeScanning}>
+          <MaterialCommunityIcons
+            name="barcode-scan"
+            size={32}
+            color={state.barcodeScanning ? 'white' : '#858585'}
+          />
+          <Text style={{ color: state.barcodeScanning ? 'white' : '#858585' }}>Code</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.pictureSizeContainer}>
+        <Text style={styles.pictureQualityLabel}>Picture quality</Text>
+        <View style={styles.pictureSizeChooser}>
+          <TouchableOpacity onPress={previousPictureSize} style={{ padding: 6 }}>
+            <Ionicons name="arrow-back" size={14} color="white" />
+          </TouchableOpacity>
+          <View style={styles.pictureSizeLabel}>
+            <Text style={{ color: 'white' }}>{state.pictureSize}</Text>
+          </View>
+          <TouchableOpacity onPress={nextPictureSize} style={{ padding: 6 }}>
+            <Ionicons name="arrow-forward" size={14} color="white" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.pictureSizeContainer}>
+        <Text style={styles.pictureQualityLabel}>Video Stabilization</Text>
+        <TouchableOpacity onPress={toggleVideoStabilization} style={styles.stabilizationButton}>
+          <Text style={{ color: 'white', textTransform: 'capitalize' }}>
+            {state.videoStabilizationMode}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const renderBarcode = () => (
+    <View style={styles.barcode} pointerEvents="none">
+      <Animated.View style={barcodeOverlayStyle} />
+      {barcodeData ? (
+        <View style={styles.barcodeDataLabel}>
+          <Text style={styles.barcodeDataText}>{barcodeData}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+
+  const renderCamera = () => (
+    <View style={{ flex: 1 }}>
+      <Gestures>
+        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+          <CameraView
+            ref={camera}
+            style={StyleSheet.absoluteFill}
+            onCameraReady={collectPictureSizes}
+            responsiveOrientationWhenOrientationLocked
+            enableTorch={state.torchEnabled}
+            autofocus={state.autoFocus}
+            facing={state.facing}
+            animateShutter
+            mirror={state.mirror}
+            pictureSize={state.pictureSize}
+            flash={state.flash}
+            active
+            mode={state.mode}
+            mute={state.mute}
+            zoom={state.zoom}
+            videoQuality="1080p"
+            videoStabilizationMode={state.videoStabilizationMode}
+            onMountError={handleMountError}
+            barcodeScannerSettings={{
+              barcodeTypes: ['pdf417', 'codabar', 'code39'],
+            }}
+            onBarcodeScanned={state.barcodeScanning ? onBarcodeScanned : undefined}
+          />
+          {renderTopBar()}
+          {renderBottomBar()}
+        </View>
+      </Gestures>
+      {state.barcodeScanning && renderBarcode()}
+      {state.showMoreOptions && renderMoreOptions()}
+    </View>
+  );
+
+  const cameraScreenContent = state.permissionsGranted ? renderCamera() : renderNoPermissions();
+  const content = state.showGallery ? renderGallery() : cameraScreenContent;
+  return <View style={styles.container}>{content}</View>;
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  topBar: {
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  bottomBar: {
+    paddingBottom: 12,
+    backgroundColor: 'transparent',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  noPermissions: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    backgroundColor: '#f8fdff',
+  },
+  gallery: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  toggleButton: {
+    flex: 0.25,
+    height: 40,
+    marginHorizontal: 2,
+    marginBottom: 10,
+    marginTop: 20,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  autoFocusLabel: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  bottomButton: {
+    flex: 0.3,
+    height: 58,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  newPhotosDot: {
+    position: 'absolute',
+    top: 0,
+    right: -5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#4630EB',
+  },
+  options: {
+    position: 'absolute',
+    top: 84,
+    right: 24,
+    width: 200,
+    backgroundColor: '#000000BA',
+    borderRadius: 4,
+    padding: 16,
+  },
+  detectors: {
+    flex: 0.5,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  pictureQualityLabel: {
+    fontSize: 10,
+    marginVertical: 3,
+    color: 'white',
+  },
+  pictureSizeContainer: {
+    flex: 0.5,
+    alignItems: 'center',
+    paddingTop: 10,
+  },
+  pictureSizeChooser: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  pictureSizeLabel: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stabilizationButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: '#4630EB',
+    borderRadius: 4,
+  },
+  facesContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    left: 0,
+    top: 0,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  barcode: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  barcodeDataLabel: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  barcodeDataText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+});

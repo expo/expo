@@ -1,0 +1,80 @@
+{
+  "name": "@expo/router-server",
+  "version": "56.0.12",
+  "description": "Expo Router is a file-based router for React Native and web applications.",
+  "keywords": [
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/routing/introduction/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/router-server"
+  },
+  "files": [
+    "build",
+    "node"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "debug": "^4.3.4"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "@types/react-dom": "^19.1.7",
+    "@typescript/vfs": "^1.6.4",
+    "expect-type": "^1.3.0",
+    "expo-module-scripts": "workspace:*",
+    "expo-router": "workspace:*",
+    "react-server-dom-webpack": "~19.0.6"
+  },
+  "peerDependencies": {
+    "@expo/metro-runtime": "workspace:^56.0.13",
+    "expo": "*",
+    "expo-constants": "workspace:^56.0.16",
+    "expo-font": "workspace:^56.0.5",
+    "expo-router": "*",
+    "expo-server": "workspace:^56.0.4",
+    "react": "*",
+    "react-dom": "*",
+    "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
+  },
+  "peerDependenciesMeta": {
+    "@expo/metro-runtime": {
+      "optional": true
+    },
+    "expo-router": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "react-server-dom-webpack": {
+      "optional": true
+    }
+  }
+}

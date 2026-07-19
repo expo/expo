@@ -1,0 +1,32 @@
+export {
+  Asset,
+  Album,
+  Query,
+  requestPermissionsAsync,
+  getPermissionsAsync,
+  usePermissions,
+  presentPermissionsPicker,
+  addListener,
+  removeAllListeners,
+} from './js';
+
+export {
+  AssetField,
+  MediaSubtype,
+  MediaType,
+  type Shape,
+  type Location,
+  type AssetFieldValueMap,
+  type AssetInfo,
+  type GranularPermission,
+  type MediaLibraryAssetsChangeEvent,
+  type MediaTypeFilter,
+  PermissionStatus,
+  type EventSubscription,
+  type PermissionExpiration,
+  type PermissionHookOptions,
+  type PermissionResponse,
+  type EXPermissionResponse,
+  type SortDescriptor,
+  type Subscription,
+} from './types';

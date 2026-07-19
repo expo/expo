@@ -1,0 +1,42 @@
+buildscript {
+
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+group = 'host.exp.exponent'
+version = '56.0.6'
+
+android {
+  namespace "expo.modules.maps"
+  defaultConfig {
+    versionCode 1
+    versionName "56.0.6"
+  }
+  buildFeatures {
+    compose true
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  implementation 'androidx.compose.foundation:foundation-android:1.9.1'
+  implementation 'androidx.compose.ui:ui-android:1.9.1'
+  implementation "androidx.compose.material3:material3:1.3.2"
+  implementation 'androidx.lifecycle:lifecycle-runtime:2.9.3'
+  implementation 'androidx.fragment:fragment-ktx:1.8.9'
+  implementation 'androidx.compose.material3:material3-android:1.3.2'
+
+  implementation 'com.google.maps.android:maps-compose:6.10.0'
+}

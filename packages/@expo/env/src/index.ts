@@ -1,0 +1,463 @@
+import chalk from 'chalk';
+import { boolish } from 'getenv';
+import console from 'node:console';
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { isIgnoredEnvKey, isLocalEnvKey, isUnsafeAllowedEnvKey } from './constants';
+import { parse, expand, type EnvOutput } from './parse';
+
+const debug = require('debug')('expo:env') as typeof console.log;
+
+type EnvBackupStore = WeakMap<EnvOutput, Map<string, string | undefined>>;
+
+const ORIGINAL_ENV_BACKUP_KEY = Symbol.for('@expo/env.originalEnvBackup.v1');
+const globalStore = globalThis as Record<symbol, EnvBackupStore | undefined>;
+const originalEnvBackup: EnvBackupStore =
+  globalStore[ORIGINAL_ENV_BACKUP_KEY] ?? (globalStore[ORIGINAL_ENV_BACKUP_KEY] = new WeakMap());
+
+function rememberOriginal(systemEnv: EnvOutput, key: string): void {
+  if (isUnsafeAllowedEnvKey(key)) return;
+  let backup = originalEnvBackup.get(systemEnv);
+  if (!backup) {
+    backup = new Map();
+    originalEnvBackup.set(systemEnv, backup);
+  }
+  if (!backup.has(key)) {
+    backup.set(key, systemEnv[key]);
+  }
+}
+
+/** Determine if the `.env` files are enabled or not, through `EXPO_NO_DOTENV` */
+export function isEnabled() {
+  return !boolish('EXPO_NO_DOTENV', false);
+}
+
+/** All conventional modes that should not cause warnings */
+export const KNOWN_MODES = ['development', 'test', 'production'];
+
+/** The environment variable name to use when marking the environment as loaded */
+export const LOADED_ENV_NAME = '__EXPO_ENV_LOADED';
+
+/**
+ * Get a list of all `.env*` files based on the `NODE_ENV` mode.
+ * This returns a list of files, in order of highest priority to lowest priority.
+ *
+ * @see https://github.com/bkeepers/dotenv/tree/v3.1.4#customizing-rails
+ */
+export function getEnvFiles({
+  mode = process.env.NODE_ENV,
+  silent,
+}: {
+  /** The mode to use when creating the list of `.env*` files, defaults to `NODE_ENV` */
+  mode?: string;
+  /** If possible misconfiguration warnings should be logged, or only logged as debug log */
+  silent?: boolean;
+} = {}) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return [];
+  }
+
+  const logError = silent ? debug : console.error;
+  const logWarning = silent ? debug : console.warn;
+
+  if (!mode) {
+    logError(
+      `The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set. Using only .env.local and .env`
+    );
+    return ['.env.local', '.env'];
+  }
+
+  if (!KNOWN_MODES.includes(mode)) {
+    logWarning(
+      `NODE_ENV="${mode}" is non-conventional and might cause development code to run in production. Use "development", "test", or "production" instead. Continuing with non-conventional mode`
+    );
+  }
+
+  // see: https://github.com/bkeepers/dotenv/tree/v3.1.4#customizing-rails
+  return [
+    `.env.${mode}.local`,
+    // Don't include `.env.local` for `test` environment
+    // since normally you expect tests to produce the same
+    // results for everyone
+    mode !== 'test' && `.env.local`,
+    `.env.${mode}`,
+    `.env`,
+  ].filter(Boolean) as string[];
+}
+
+/**
+ * Parse all environment variables using the list of `.env*` files, in order of higest priority to lowest priority.
+ * This does not check for collisions of existing system environment variables, or mutates the system environment variables.
+ */
+export function parseEnvFiles(
+  envFiles: string[],
+  {
+    systemEnv = process.env,
+  }: {
+    /** The system environment to use when expanding environment variables, defaults to `process.env` */
+    systemEnv?: EnvOutput;
+  } = {}
+) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return { env: {}, files: [], sensitiveLoadedKeys: [] as string[] };
+  }
+
+  // Load environment variables from .env* files. Suppress warnings using silent
+  // if this file is missing. Dotenv will only parse the environment variables,
+  // `@expo/env` will set the resulting variables to the current process.
+  // Variable expansion is supported in .env files, and executed as final step.
+  // https://github.com/motdotla/dotenv
+  // https://github.com/motdotla/dotenv-expand
+  const loadedEnvVars: EnvOutput = {};
+  const loadedEnvFiles: string[] = [];
+  const blockedByFile: Record<string, string[]> = {};
+  const localOnlyByFile: Record<string, string[]> = {};
+  const sensitive = new Set<string>();
+
+  // Iterate over each dotenv file in lowest prio to highest prio order.
+  // This step won't write to the process.env, but will overwrite the parsed envs.
+  [...envFiles].reverse().forEach((envFile) => {
+    try {
+      const envFileContent = fs.readFileSync(envFile, 'utf8');
+      const envFileParsed = parse(envFileContent);
+      const isLocalFile = path.basename(envFile).endsWith('.local');
+
+      loadedEnvFiles.push(envFile);
+      debug(`Loaded environment variables from: ${envFile}`);
+
+      for (const key of Object.keys(envFileParsed)) {
+        if (isIgnoredEnvKey(key)) {
+          (blockedByFile[envFile] ||= []).push(key);
+          debug(`"${key}" is blocked from dotenv files, skipping in: ${envFile}`);
+          continue;
+        }
+        if (!isLocalFile && isLocalEnvKey(key)) {
+          (localOnlyByFile[envFile] ||= []).push(key);
+          debug(`"${key}" is only allowed in .local env files, skipping in: ${envFile}`);
+          continue;
+        }
+        if (isLocalFile && isLocalEnvKey(key)) {
+          sensitive.add(key);
+        }
+        if (typeof loadedEnvVars[key] !== 'undefined') {
+          debug(`"${key}" is already defined and overwritten by: ${envFile}`);
+        }
+
+        loadedEnvVars[key] = envFileParsed[key];
+      }
+    } catch (error: any) {
+      if ('code' in error && error.code === 'ENOENT') {
+        return debug(`${envFile} does not exist, skipping this env file`);
+      }
+      if ('code' in error && error.code === 'EISDIR') {
+        return debug(`${envFile} is a directory, skipping this env file`);
+      }
+      if ('code' in error && error.code === 'EACCES') {
+        return debug(`No permission to read ${envFile}, skipping this env file`);
+      }
+
+      throw error;
+    }
+  });
+
+  const violations: string[] = [];
+  if (Object.keys(blockedByFile).length > 0) {
+    violations.push(formatBlockedViolation(blockedByFile));
+  }
+  if (Object.keys(localOnlyByFile).length > 0) {
+    violations.push(formatLocalOnlyViolation(localOnlyByFile));
+  }
+  if (violations.length > 0) {
+    throw new Error(violations.join('\n\n'));
+  }
+
+  const env = expand(loadedEnvVars, systemEnv);
+  for (const key in env) {
+    rememberOriginal(systemEnv, key);
+  }
+
+  return {
+    env,
+    files: loadedEnvFiles.reverse(),
+    sensitiveLoadedKeys: [...sensitive],
+  };
+}
+
+function formatViolationFiles(byFile: Record<string, string[]>): string {
+  return Object.entries(byFile)
+    .map(([file, keys]) => `  ${path.basename(file)}: ${keys.join(', ')}`)
+    .join('\n');
+}
+
+function formatBlockedViolation(byFile: Record<string, string[]>): string {
+  return [
+    'Refused to load dangerous environment variables from .env files.',
+    'Opt in via EXPO_UNSAFE_DOTENV_KEYS in your shell environment if you truly need them.',
+    '',
+    formatViolationFiles(byFile),
+  ].join('\n');
+}
+
+function formatLocalOnlyViolation(byFile: Record<string, string[]>): string {
+  return [
+    'Refused to load personal environment variables from a non-.local env file.',
+    'Move them to a .local env file.',
+    '',
+    formatViolationFiles(byFile),
+  ].join('\n');
+}
+
+/**
+ * Parse all environment variables using the list of `.env*` files, and mutate the system environment with these variables.
+ * This won't override existing environment variables defined in the system environment.
+ * Once the mutations are done, this will also set a propert `__EXPO_ENV=true` on the system env to avoid multiple mutations.
+ * This check can be disabled through `{ force: true }`.
+ */
+export function loadEnvFiles(
+  envFiles: string[],
+  {
+    force,
+    silent = false,
+    systemEnv = process.env,
+  }: Parameters<typeof parseEnvFiles>[1] & {
+    /** If the environment variables should be applied to the system environment, regardless of previous mutations */
+    force?: boolean;
+    /** If possible misconfiguration warnings should be logged, or only logged as debug log */
+    silent?: boolean;
+  } = {}
+) {
+  if (!force && systemEnv[LOADED_ENV_NAME]) {
+    return { result: 'skipped' as const, loaded: JSON.parse(systemEnv[LOADED_ENV_NAME]) };
+  }
+
+  const parsed = parseEnvFiles(envFiles, { systemEnv });
+  const loadedEnvKeys: string[] = [];
+
+  for (const key in parsed.env) {
+    if (typeof systemEnv[key] !== 'undefined') {
+      debug(`"${key}" is already defined and IS NOT overwritten`);
+    } else {
+      rememberOriginal(systemEnv, key);
+      systemEnv[key] = parsed.env[key];
+      loadedEnvKeys.push(key);
+    }
+  }
+
+  // Mark the environment as loaded
+  rememberOriginal(systemEnv, LOADED_ENV_NAME);
+  systemEnv[LOADED_ENV_NAME] = JSON.stringify(loadedEnvKeys);
+
+  return { result: 'loaded' as const, ...parsed, loaded: loadedEnvKeys };
+}
+
+/**
+ * Parse all environment variables using the detected list of `.env*` files from a project.
+ * This does not check for collisions of existing system environment variables, or mutates the system environment variables.
+ */
+export function parseProjectEnv(
+  projectRoot: string,
+  options?: Parameters<typeof getEnvFiles>[0] & Parameters<typeof parseEnvFiles>[1]
+) {
+  return parseEnvFiles(
+    getEnvFiles(options).map((envFile) => path.join(projectRoot, envFile)),
+    options
+  );
+}
+
+/**
+ * Parse all environment variables using the detected list of `.env*` files from a project.
+ * This won't override existing environment variables defined in the system environment.
+ * Once the mutations are done, this will also set a propert `__EXPO_ENV=true` on the system env to avoid multiple mutations.
+ * This check can be disabled through `{ force: true }`.
+ */
+export function loadProjectEnv(
+  projectRoot: string,
+  options?: Parameters<typeof getEnvFiles>[0] & Parameters<typeof loadEnvFiles>[1]
+) {
+  return loadEnvFiles(
+    getEnvFiles(options).map((envFile) => path.join(projectRoot, envFile)),
+    options
+  );
+}
+
+/**
+ * Get a fresh clone of the system environment with all `@expo/env`-applied
+ * mutations reverted to their pre-load values. The result is intended to be
+ * passed as the `env` option of `child_process.spawn` / `@expo/spawn-async`
+ * when a subprocess should observe the environment as it was before any
+ * `.env*` files were loaded — for example, when resolving SDK tooling paths
+ * that should not be influenced by project-controlled `.env` values.
+ *
+ * Allocates lazily: nothing is held until this function is called, and each
+ * call returns a new object so callers may mutate it freely.
+ *
+ * @param systemEnv The env to revert against; defaults to `process.env`.
+ */
+export function getOriginalEnv(systemEnv: EnvOutput = process.env): EnvOutput {
+  const result: EnvOutput = { ...systemEnv };
+  const backup = originalEnvBackup.get(systemEnv);
+  if (backup) {
+    for (const [key, original] of backup) {
+      if (original === undefined) {
+        delete result[key];
+      } else {
+        result[key] = original;
+      }
+    }
+  }
+  return result;
+}
+
+/**
+ * Get the pre-load value of a single environment variable as recorded by
+ * `@expo/env`. Falls through to the value in `systemEnv` for keys that
+ * `@expo/env` never touched. O(1) and allocation-free, intended for read-sites
+ * that resolve filesystem paths or executables from a single env var.
+ *
+ * Honors `EXPO_UNSAFE_DOTENV_KEYS`: keys the caller has explicitly opted into
+ * via the escape hatch return their currently loaded value, not the original.
+ *
+ * @param key The environment variable to read.
+ * @param systemEnv The env to read against; defaults to `process.env`.
+ */
+export function getOriginalEnvValue(
+  key: string,
+  systemEnv: EnvOutput = process.env
+): string | undefined {
+  const backup = originalEnvBackup.get(systemEnv);
+  if (backup && backup.has(key)) {
+    return backup.get(key);
+  }
+  return systemEnv[key];
+}
+
+/** Log the loaded environment info from the loaded results */
+export function logLoadedEnv(
+  envInfo: ReturnType<typeof loadEnvFiles>,
+  options: Parameters<typeof loadEnvFiles>[1] = {}
+) {
+  // Skip when running in force mode, or no environment variables are loaded
+  if (options.force || options.silent || !envInfo.loaded.length) return envInfo;
+
+  // Log the loaded environment files, when not skipped
+  if (envInfo.result === 'loaded') {
+    console.log(
+      chalk.gray('env: load', envInfo.files.map((file) => path.basename(file)).join(' '))
+    );
+  }
+
+  // Log the loaded environment variables
+  console.log(chalk.gray('env: export', envInfo.loaded.join(' ')));
+
+  // Highlight developer-tool roots / secrets that were loaded from a .local file —
+  // the same keys would be refused from any non-.local file. Surfacing them here
+  // tells the user which "sensitive" values are influencing the build.
+  if (envInfo.result === 'loaded' && envInfo.sensitiveLoadedKeys?.length) {
+    console.log(chalk.yellow('env: export (sensitive)', envInfo.sensitiveLoadedKeys.join(' ')));
+  }
+
+  return envInfo;
+}
+
+// Legacy API - for backwards compatibility
+
+let memo: ReturnType<typeof parseEnvFiles> | null = null;
+
+/**
+ * Get the environment variables without mutating the environment.
+ * This returns memoized values unless the `force` property is provided.
+ *
+ * @deprecated use {@link parseProjectEnv} instead
+ */
+export function get(
+  projectRoot: string,
+  {
+    force,
+    silent,
+  }: {
+    force?: boolean;
+    silent?: boolean;
+  } = {}
+) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return { env: {}, files: [], sensitiveLoadedKeys: [] as string[] };
+  }
+  if (force || !memo) {
+    memo = parseProjectEnv(projectRoot, { silent });
+  }
+  return memo;
+}
+
+/**
+ * Load environment variables from .env files and mutate the current `process.env` with the results.
+ *
+ * @deprecated use {@link loadProjectEnv} instead
+ */
+export function load(
+  projectRoot: string,
+  options: {
+    force?: boolean;
+    silent?: boolean;
+  } = {}
+) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return process.env;
+  }
+
+  const envInfo = get(projectRoot, options);
+  const loadedEnvKeys: string[] = [];
+
+  for (const key in envInfo.env) {
+    if (typeof process.env[key] !== 'undefined') {
+      debug(`"${key}" is already defined and IS NOT overwritten`);
+    } else {
+      // Avoid creating a new object, mutate it instead as this causes problems in Bun
+      rememberOriginal(process.env, key);
+      process.env[key] = envInfo.env[key];
+      loadedEnvKeys.push(key);
+    }
+  }
+
+  // Port the result of `get` to the newer result object
+  logLoadedEnv({ ...envInfo, result: 'loaded', loaded: loadedEnvKeys }, options);
+
+  return process.env;
+}
+
+/**
+ * Get a list of all `.env*` files based on the `NODE_ENV` mode.
+ * This returns a list of files, in order of highest priority to lowest priority.
+ *
+ * @deprecated use {@link getEnvFiles} instead
+ * @see https://github.com/bkeepers/dotenv/tree/v3.1.4#customizing-rails
+ */
+export function getFiles(mode: string | undefined, { silent = false }: { silent?: boolean } = {}) {
+  if (!isEnabled()) {
+    debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
+    return [];
+  }
+
+  return getEnvFiles({ mode, silent });
+}
+
+/**
+ * Parses the contents of a single `.env` file, optionally expanding it immediately.
+ */
+export function parseEnv(contents: string, sourceEnv?: EnvOutput): EnvOutput {
+  try {
+    const env = parse(contents);
+    for (const key in env) {
+      if (isIgnoredEnvKey(key)) {
+        delete env[key];
+      }
+    }
+    return expand(env, sourceEnv || {});
+  } catch {
+    return {};
+  }
+}

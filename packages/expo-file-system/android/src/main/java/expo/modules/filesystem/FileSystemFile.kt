@@ -1,0 +1,227 @@
+package expo.modules.filesystem
+
+import android.net.Uri
+import android.util.Base64
+import expo.modules.filesystem.unifiedfile.ContentProviderFile
+import expo.modules.filesystem.unifiedfile.JavaFile
+import expo.modules.filesystem.unifiedfile.SAFDocumentFile
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.jni.NativeArrayBuffer
+import expo.modules.kotlin.services.FilePermissionService
+import java.io.FileOutputStream
+import java.security.MessageDigest
+
+internal fun FileMode.requiredPermissions(): List<FilePermissionService.Permission> = when (this) {
+  FileMode.READ -> listOf(FilePermissionService.Permission.READ)
+  FileMode.WRITE, FileMode.APPEND, FileMode.TRUNCATE -> listOf(FilePermissionService.Permission.WRITE)
+  FileMode.READ_WRITE -> listOf(FilePermissionService.Permission.READ, FilePermissionService.Permission.WRITE)
+}
+
+class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
+  private val contentResolver
+    get() = appContext?.reactContext?.contentResolver ?: throw Exceptions.ReactContextLost()
+
+  // Kept empty for now, but can be used to validate if the uri is a valid file uri. // TODO: Move to the constructor once also moved on iOS
+  fun validatePath() {
+  }
+
+  // This makes sure that if a file already exists at a location, it is the correct type so that all available operations perform as expected.
+  // After calling this function, we can use the `isDirectory` and `isFile` functions safely as they will match the shared class used.
+  override fun validateType() {
+    validatePermission(FilePermissionService.Permission.READ)
+    if (file.exists() && file.isDirectory()) {
+      throw InvalidTypeFileException()
+    }
+  }
+
+  val exists: Boolean get() {
+    return if (checkPermission(FilePermissionService.Permission.READ)) {
+      file.isFile()
+    } else {
+      false
+    }
+  }
+
+  fun create(options: CreateOptions = CreateOptions()) {
+    if (uri.isContentUri) {
+      throw UnableToCreateException("File.create function does not work with SAF content:// uris, use `Directory.createFile` instead")
+    }
+    validateType()
+    validatePermission(FilePermissionService.Permission.WRITE)
+    validateCanCreate(options)
+    if (options.overwrite && exists) {
+      javaFile.delete()
+    }
+    if (options.intermediates) {
+      javaFile.parentFile?.mkdirs()
+    }
+    val created = javaFile.createNewFile()
+    if (!created) {
+      throw UnableToCreateException("file already exists or could not be created")
+    }
+  }
+
+  fun openHandle(mode: FileMode?): FileSystemFileHandle {
+    val fileImpl = file
+    val resolvedMode = mode ?: when (fileImpl) {
+      is SAFDocumentFile, is ContentProviderFile -> FileMode.READ
+      else -> FileMode.READ_WRITE
+    }
+    for (permission in resolvedMode.requiredPermissions()) {
+      validatePermission(permission)
+    }
+    return when (fileImpl) {
+      is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, resolvedMode)
+      is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
+      is ContentProviderFile -> {
+        if (resolvedMode == FileMode.READ_WRITE) {
+          throw UnsupportedContentUriReadWriteException()
+        }
+        try {
+          FileSystemFileHandle.forContentURI(fileImpl.uri, resolvedMode, contentResolver)
+        } catch (e: Exception) {
+          throw Exceptions.IllegalStateException(
+            "Failed to open file handle for content:// URI: ${fileImpl.uri}. " +
+              "The content provider may not support random access. " +
+              "Try reading the file using File.text() or File.bytes() instead.",
+            e
+          )
+        }
+      }
+      else -> throw Exceptions.IllegalStateException("File handle is not supported for ${file.uri}")
+    }
+  }
+
+  fun write(content: String, append: Boolean = false) {
+    validateType()
+    validatePermission(FilePermissionService.Permission.WRITE)
+    if (!exists) {
+      create()
+    }
+    file.outputStream(append).use { outputStream ->
+      outputStream.write(content.toByteArray())
+    }
+  }
+
+  fun write(content: NativeArrayBuffer, append: Boolean = false) {
+    validateType()
+    validatePermission(FilePermissionService.Permission.WRITE)
+    if (!exists) {
+      create()
+    }
+    if (uri.isContentUri) {
+      file.outputStream(append).use { outputStream ->
+        val array = ByteArray(content.size())
+        content.toDirectBuffer().get(array)
+        outputStream.write(array)
+      }
+    } else {
+      FileOutputStream(javaFile, append).use {
+        it.channel.write(content.toDirectBuffer())
+      }
+    }
+  }
+
+  fun write(content: ByteArray, append: Boolean = false) {
+    validateType()
+    validatePermission(FilePermissionService.Permission.WRITE)
+    if (!exists) {
+      create()
+    }
+    if (uri.isContentUri) {
+      file.outputStream(append).use { outputStream ->
+        outputStream.write(content)
+      }
+    } else {
+      FileOutputStream(javaFile, append).use {
+        it.write(content)
+      }
+    }
+  }
+
+  fun asString(): String {
+    val uriString = file.uri.toString()
+    return if (uriString.endsWith("/")) uriString.dropLast(1) else uriString
+  }
+
+  fun text(): String {
+    validateType()
+    validatePermission(FilePermissionService.Permission.READ)
+    return file.inputStream().use { inputStream ->
+      inputStream.bufferedReader().use { it.readText() }
+    }
+  }
+
+  fun base64(): String {
+    validateType()
+    validatePermission(FilePermissionService.Permission.READ)
+    file.inputStream().use {
+      return Base64.encodeToString(it.readBytes(), Base64.NO_WRAP)
+    }
+  }
+
+  fun bytes(): ByteArray {
+    validateType()
+    validatePermission(FilePermissionService.Permission.READ)
+    file.inputStream().use {
+      return it.readBytes()
+    }
+  }
+
+  fun asContentUri(): Uri {
+    validateType()
+    validatePermission(FilePermissionService.Permission.READ)
+    return file.getContentUri(appContext ?: throw MissingAppContextException())
+  }
+
+  @OptIn(ExperimentalStdlibApi::class)
+  val md5: String get() {
+    val bufferSize = 65536
+
+    validatePermission(FilePermissionService.Permission.READ)
+    val md = MessageDigest.getInstance("MD5")
+    file.inputStream().use { stream ->
+      val buffer = ByteArray(bufferSize)
+      var bytesRead: Int
+      while (stream.read(buffer).also { bytesRead = it } != -1) {
+        md.update(buffer, 0, bytesRead)
+      }
+      return md.digest().toHexString()
+    }
+  }
+
+  val size: Long? get() {
+    return if (file.exists()) {
+      file.length()
+    } else {
+      null
+    }
+  }
+
+  val type: String? get() {
+    return file.type
+  }
+
+  fun info(options: InfoOptions?): FileInfo {
+    validateType()
+    validatePermission(FilePermissionService.Permission.READ)
+    if (!file.exists()) {
+      val fileInfo = FileInfo(
+        exists = false,
+        uri = slashifyFilePath(file.uri.toString())
+      )
+      return fileInfo
+    }
+    val fileInfo = FileInfo(
+      exists = true,
+      uri = slashifyFilePath(file.uri.toString()),
+      size = size,
+      modificationTime = modificationTime,
+      creationTime = creationTime
+    )
+    if (options != null && options.md5 == true) {
+      fileInfo.md5 = md5
+    }
+    return fileInfo
+  }
+}

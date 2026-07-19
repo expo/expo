@@ -1,0 +1,12 @@
+# force ignore local-only symlink
+/local-template
+
+
+# Exclude all top-level hidden directories by convention
+/.*/
+
+__mocks__
+__tests__
+
+/babel.config.js
+/oxlint.config.mjs

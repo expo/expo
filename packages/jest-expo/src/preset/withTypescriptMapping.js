@@ -1,0 +1,108 @@
+const fs = require('fs');
+const JSON5 = require('json5');
+const path = require('path');
+
+const { toPosixPath } = require('../filePath');
+
+/**
+ * Convert typescript paths to jest module mapping.
+ *
+ * @param {Record<string, string[]>} paths
+ * @param {string} [prefix="<rootDir>"]
+ * @return {Record<string, string>}
+ */
+function jestMappingFromTypescriptPaths(paths, prefix = '<rootDir>') {
+  const mapping = {};
+
+  for (const path in paths) {
+    // Abort when path is just a wildcard
+    if (path === '*') continue;
+
+    if (!paths[path].length) {
+      console.warn(`Skipping empty typescript path map: ${path}`);
+      continue;
+    }
+
+    const jestRegex = convertTypescriptMatchToJestRegex(path);
+    const jestTarget = paths[path].map((target) =>
+      convertTypescriptTargetToJestTarget(target, prefix)
+    );
+
+    mapping[jestRegex] = jestTarget.length === 1 ? jestTarget[0] : jestTarget;
+  }
+
+  return mapping;
+}
+
+/** Convert a typescript match rule key to jest regex */
+function convertTypescriptMatchToJestRegex(match) {
+  const regex = match
+    .split('/')
+    .map((segment) =>
+      segment.trim() === '*' ? '(.*)' : segment.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&')
+    )
+    .join('/');
+
+  return `^${regex}$`;
+}
+
+/** Convert a typescript match rule value to jest regex target */
+function convertTypescriptTargetToJestTarget(target, prefix = '<rootDir>') {
+  const segments = target.split('/').map((segment) => (segment.trim() === '*' ? '$1' : segment));
+  return toPosixPath([prefix, ...segments].join(path.sep));
+}
+
+function mutateJestMappingFromConfig(jestConfig, configFile) {
+  try {
+    // The path to jsconfig.json or tsconfig.json is resolved relative to cwd
+    // See: _createTypeScriptConfiguration() in `createJestPreset`
+    const configPath = path.resolve(configFile);
+    const configText = fs.readFileSync(configPath, 'utf8');
+    const config = JSON5.parse(configText);
+    let pathPrefix = '<rootDir>';
+
+    if (config?.compilerOptions?.baseUrl) {
+      pathPrefix = path.join(pathPrefix, config.compilerOptions.baseUrl);
+    }
+
+    if (config?.compilerOptions?.paths) {
+      jestConfig.moduleNameMapper = {
+        ...jestMappingFromTypescriptPaths(config.compilerOptions.paths || {}, pathPrefix),
+        ...(jestConfig.moduleNameMapper || {}),
+      };
+    }
+
+    return true;
+  } catch (error) {
+    // If the user is not using typescript, we can safely ignore this error
+    if (error.code === 'MODULE_NOT_FOUND' || error.code === 'ENOENT') {
+      return undefined;
+    }
+
+    // Other errors are unexpected, but should not block the jest configuration
+    return false;
+  }
+}
+
+/** Try to add the `moduleNameMapper` configuration from the typescript `paths` configuration. */
+function withTypescriptMapping(jestConfig) {
+  const fromTsConfig = mutateJestMappingFromConfig(jestConfig, 'tsconfig.json');
+  const fromJsConfig = !fromTsConfig
+    ? mutateJestMappingFromConfig(jestConfig, 'jsconfig.json')
+    : undefined;
+
+  if (fromTsConfig === false || fromJsConfig === false) {
+    console.warn('Failed to set custom typescript paths for jest.');
+    console.warn('You need to configure jest moduleNameMapper manually.');
+    console.warn(
+      'See: https://jestjs.io/docs/configuration#modulenamemapper-objectstring-string--arraystring'
+    );
+  }
+
+  return jestConfig;
+}
+
+module.exports = {
+  _jestMappingFromTypescriptPaths: jestMappingFromTypescriptPaths, // Exported for testing
+  withTypescriptMapping,
+};

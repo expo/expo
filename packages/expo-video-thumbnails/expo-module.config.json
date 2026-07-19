@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["VideoThumbnailsModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.videothumbnails.VideoThumbnailsModule"]
+  }
+}

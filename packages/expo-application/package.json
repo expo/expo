@@ -1,0 +1,51 @@
+{
+  "name": "expo-application",
+  "version": "56.0.3",
+  "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
+  "keywords": [
+    "expo",
+    "expo-application",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/application/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-application"
+  },
+  "main": "build/Application.js",
+  "types": "build/Application.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/Application.ts",
+        "default": "./build/Application.d.ts"
+      },
+      "expo-source": "./src/Application.ts",
+      "default": "./build/Application.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

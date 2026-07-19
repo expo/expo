@@ -1,0 +1,100 @@
+import ExpoModulesCore
+
+internal final class CacheVideoAssetTransportProvider: VideoAssetTransportProvider {
+  let identifier = "expo-video.cache"
+  let priority = -100
+
+  func makeLoadPlan(for source: VideoAssetSourceDescriptor) -> VideoAssetLoadPlan? {
+    guard source.usesCaching else {
+      return nil
+    }
+
+    guard canCache(source: source) else {
+      log.warn("[expo-video] Provided source with uri: \(source.url.absoluteString) cannot be cached. Caching will be disabled")
+      return nil
+    }
+
+    let cacheRequestHeaders = CacheVariantIndex.normalizedRequestHeaders(forUrl: source.url, requestHeaders: source.headers)
+    let sourceExtension = source.url.pathExtension.isEmpty ? nil : source.url.pathExtension
+    let variantKey = CacheVariantIndex.storageKey(
+      forUrl: source.url,
+      requestHeaders: cacheRequestHeaders,
+      fileExtension: sourceExtension
+    )
+    let cachedMimeType = MediaInfo(forResourceUrl: source.url, variantKey: variantKey)?.mimeType ??
+      MediaInfo(forResourceUrl: source.url)?.mimeType
+    let cachedExtension = mimeTypeToExtension(mimeType: cachedMimeType) ?? ""
+    let fileExtension = source.url.pathExtension.isEmpty ? cachedExtension : source.url.pathExtension
+    guard let variantFilePath = VideoAsset.pathForUrl(url: source.url, fileExtension: fileExtension, variantKey: variantKey),
+      let legacyFilePath = VideoAsset.pathForUrl(url: source.url, fileExtension: fileExtension) else {
+      log.warn("[expo-video] Failed to create a cache file path for the provided source with uri: \(source.url.absoluteString)")
+      return nil
+    }
+    let shouldUseLegacyCache = hasUsableLegacyCache(
+      forUrl: source.url,
+      variantKey: variantKey,
+      cacheRequestHeaders: cacheRequestHeaders,
+      legacyFilePath: legacyFilePath
+    )
+    let effectiveVariantKey = shouldUseLegacyCache ? "" : variantKey
+    let saveFilePath = shouldUseLegacyCache ? legacyFilePath : variantFilePath
+
+    guard let urlWithCustomScheme = source.url.withScheme(VideoCacheManager.expoVideoCacheScheme) else {
+      log.warn("[expo-video] CachingPlayerItem error: Urls without a scheme are not supported, the resource won't be cached")
+      return nil
+    }
+
+    VideoCacheManager.shared.ensureCacheIntegrity(forSavePath: saveFilePath)
+    VideoAsset.createCacheDirectoryIfNeeded()
+
+    let delegate = ResourceLoaderDelegate(
+      url: source.url,
+      saveFilePath: saveFilePath,
+      fileExtension: fileExtension,
+      urlRequestHeaders: source.headers,
+      cacheRequestHeaders: cacheRequestHeaders,
+      variantKey: effectiveVariantKey
+    )
+
+    return VideoAssetLoadPlan(
+      assetURL: urlWithCustomScheme,
+      assetOptions: VideoAsset.assetOptions(headers: source.headers),
+      resourceLoaderDelegate: delegate,
+      resourceLoaderQueue: VideoCacheManager.shared.cacheQueue,
+      attachErrorHandler: { errorHandler in
+        delegate.onError = errorHandler
+      },
+      onAssetDeinit: {
+        if let cachedFileUrl = URL(string: saveFilePath) {
+          VideoCacheManager.shared.unregisterOpenFile(at: cachedFileUrl)
+        }
+        VideoCacheManager.shared.ensureCacheSize()
+      }
+    )
+  }
+
+  private func canCache(source: VideoAssetSourceDescriptor) -> Bool {
+    guard source.url.scheme?.starts(with: "http") == true else {
+      return false
+    }
+
+    return !source.hasDRM
+  }
+
+  private func cacheFilesExist(at path: String) -> Bool {
+    return FileManager.default.fileExists(atPath: path) ||
+      FileManager.default.fileExists(atPath: path + VideoCacheManager.mediaInfoSuffix)
+  }
+
+  private func hasUsableLegacyCache(
+    forUrl url: URL,
+    variantKey: String,
+    cacheRequestHeaders: [String: String],
+    legacyFilePath: String
+  ) -> Bool {
+    return !variantKey.isEmpty &&
+      CacheVariantIndex.load(forUrl: url).isEmpty &&
+      !CacheVariantIndex.hasIdentityHeaders(cacheRequestHeaders) &&
+      cacheFilesExist(at: legacyFilePath)
+  }
+}

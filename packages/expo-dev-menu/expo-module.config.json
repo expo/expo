@@ -1,0 +1,12 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "podspecPath": "expo-dev-menu.podspec",
+    "swiftModuleName": "EXDevMenu",
+    "modules": ["DevMenuModule", "DevMenuPreferences"],
+    "debugOnly": true
+  },
+  "android": {
+    "modules": ["expo.modules.devmenu.modules.DevMenuModule"]
+  }
+}

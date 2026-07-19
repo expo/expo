@@ -1,0 +1,65 @@
+import { requireNativeView } from 'expo';
+import type { NativeSyntheticEvent } from 'react-native';
+
+import { Slot } from '../SlotView';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import type { CommonViewModifierProps } from '../types';
+
+export interface PopoverViewProps extends CommonViewModifierProps {
+  children: React.ReactNode;
+  /**
+   * Whether the popover is presented.
+   */
+  isPresented?: boolean;
+  /**
+   * A callback that is called when the `isPresented` state changes.
+   */
+  onIsPresentedChange?: (isPresented: boolean) => void;
+  /**
+   * The positioning anchor that defines the attachment point of the popover.
+   */
+  attachmentAnchor?: 'leading' | 'trailing' | 'center' | 'top' | 'bottom';
+  /**
+   * The edge of the `attachmentAnchor` that defines the location of the popover's arrow. The default is `none`, which results in the system allowing any arrow edge.
+   * @default 'none'
+   */
+  arrowEdge?: 'leading' | 'trailing' | 'top' | 'bottom' | 'none';
+}
+
+type NativePopoverViewProps = Omit<PopoverViewProps, 'onIsPresentedChange'> & {
+  onIsPresentedChange?: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
+};
+
+const PopoverNativeView: React.ComponentType<NativePopoverViewProps> = requireNativeView(
+  'ExpoUI',
+  'PopoverView'
+);
+
+function PopoverTrigger(props: { children: React.ReactNode }) {
+  return <Slot name="trigger">{props.children}</Slot>;
+}
+
+function PopoverContent(props: { children: React.ReactNode }) {
+  return <Slot name="popover">{props.children}</Slot>;
+}
+
+Popover.Trigger = PopoverTrigger;
+Popover.Content = PopoverContent;
+
+export function Popover(props: PopoverViewProps) {
+  const { onIsPresentedChange, modifiers, children, isPresented, ...restProps } = props;
+
+  const handleIsPresentedChange = (event: NativeSyntheticEvent<{ isPresented: boolean }>) => {
+    onIsPresentedChange?.(event.nativeEvent.isPresented);
+  };
+
+  return (
+    <PopoverNativeView
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      isPresented={isPresented}
+      onIsPresentedChange={handleIsPresentedChange}>
+      {children}
+    </PopoverNativeView>
+  );
+}

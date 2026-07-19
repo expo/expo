@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ScreenCaptureModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.screencapture.ScreenCaptureModule"]
+  }
+}

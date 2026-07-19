@@ -1,0 +1,41 @@
+# Changelog
+
+## Unpublished
+
+### 🛠 Breaking changes
+
+- Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.4 — 2026-05-15
+
+### 💡 Others
+
+- Fixed unit test failure on Windows. ([#45777](https://github.com/expo/expo/pull/45777) by [@kudo](https://github.com/kudo))
+
+## 56.0.3 — 2026-05-11
+
+### 🎉 New features
+
+- Warn when no paths are specified ([#45411](https://github.com/expo/expo/pull/45411) by [@Ubax](https://github.com/Ubax))
+
+## 56.0.2 — 2026-05-08
+
+### 🎉 New features
+
+- Improve the visiblity of errors for native-stack and drawer imports ([#45546](https://github.com/expo/expo/pull/45546) by [@Ubax](https://github.com/Ubax))
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🎉 New features
+
+- Initial version of `expo-codemod` with the `sdk-56-expo-router-react-navigation-replace` transform for migrating React Navigation imports to Expo Router. ([#45324](https://github.com/expo/expo/pull/45324) by [@Ubax](https://github.com/Ubax))

@@ -1,0 +1,166 @@
+---
+title: create-expo-app
+maxHeadingDepth: 4
+description: A command-line tool to create a new Expo and React Native project.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+`create-expo-app` is a command-line tool to create and set up a new Expo and React Native project. This tool simplifies the initialization process by providing various templates to get started quickly without the need for manual configuration.
+
+## Create a new project
+
+To create a new project, run the following command:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
+    yarn: ['$ yarn create expo-app --template default@sdk-57'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
+    bun: ['$ bun create expo --template default@sdk-57'],
+  }}
+/>
+
+> **Note:** During the SDK 57 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-57` to create an SDK 57 project.
+
+Running the above command will prompt you to enter the app name of your project. This app name is also used in the app config's [`name`](/versions/latest/config/app/#name) property.
+
+<Terminal cmd={['What is your app named? my-app']} />
+
+## Options
+
+Uses the following options to customize the command behavior.
+
+### `--yes`
+
+Uses the default options to create a new project.
+
+### `--no-install`
+
+Skips installing npm dependencies or CocoaPods.
+
+### `--no-agents-md`
+
+Skips generating **AGENTS.md**, **CLAUDE.md**, and **.claude/settings.json**. By default, `create-expo-app` generates these files so AI coding agents (such as Claude Code) have Expo-specific context and the [`expo` skills plugin](https://expo.dev/expo-skills) configured automatically. The generated **AGENTS.md** points to the versioned Expo docs matching your project's SDK version.
+
+### `--template`
+
+Running `create-expo-app` with a [Node Package Manager](#node-package-managers-support) initializes and sets up a new Expo project using the default template.
+
+You can use the `--template` option to select one of the following templates or pass it as an argument to the option. For example, `--template default`.
+
+> **info** Looking for more templates? Check out the [`--example`](#--example) option to initialize your project with one of the example apps that demonstrate specific features and integrations.
+
+| Template                                                                                              | Description                                                                                                                                                                           |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`default`](https://github.com/expo/expo/tree/main/templates/expo-template-default)                   | Default template. Designed to build multi-screen apps. Includes recommended tools such as Expo CLI, Expo Router library and TypeScript configuration enabled. Suitable for most apps. |
+| [`blank`](https://github.com/expo/expo/tree/main/templates/expo-template-blank)                       | Installs minimum required npm dependencies without configuring navigation.                                                                                                            |
+| [`blank-typescript`](https://github.com/expo/expo/tree/main/templates/expo-template-blank-typescript) | A Blank template with TypeScript enabled.                                                                                                                                             |
+| [`tabs`](https://github.com/expo/expo/tree/main/templates/expo-template-tabs)                         | Installs and configures file-based routing with Expo Router and TypeScript enabled.                                                                                                   |
+| [`bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum)         | A Blank template with native directories (**android** and **ios**) generated. Runs [`npx expo prebuild`](/workflow/continuous-native-generation) during the setup.                    |
+
+### `--example`
+
+Use this option to initialize a project using an example from [expo/examples](https://github.com/expo/examples).
+
+For example:
+
+- Running `npx create-expo-app --example` shows an interactive list of available examples to choose from
+- Running `npx create-expo-app --example with-router` sets up a project with the Expo Router library
+- Running `npx create-expo-app --example with-react-navigation` sets up a project similar to the default template, but configured with plain React Navigation library
+
+### `--version`
+
+Prints the version number and exits.
+
+### `--help`
+
+Prints the list of available options and exits.
+
+## Node Package Managers support
+
+Creating a new project with `create-expo-app` also handles setting up additional configuration needed for a specific Node Package Manager.
+
+**If you are migrating from one package manager to another**, you've to manually carry out the additional configuration in your project. **If you are using [EAS](/eas/)**, you also have to configure your project for any additional required steps manually.
+
+All the additional steps for each package manager are listed below.
+
+### npm
+
+#### Local installation
+
+npm is installed as part of Node.js installation. See [Node.js documentation](https://nodejs.org/en/download/package-manager) for installation instructions.
+
+#### EAS installation
+
+Supported by default if the project directory contains **package-lock.json**.
+
+### Yarn 1 (Classic)
+
+#### Local installation
+
+Yarn 1 (Classic) is usually installed as a global dependency of npm. See [Yarn 1 documentation](https://classic.yarnpkg.com/en/docs/getting-started) for installation instructions.
+
+#### EAS installation
+
+Supported by default if the project directory contains **yarn.lock**.
+
+### Yarn 2+ (Modern)
+
+#### Local installation
+
+See [Yarn documentation](https://yarnpkg.com/getting-started/install) for installation instructions.
+
+Yarn 2+ handles package management differently than Yarn 1. One of the core changes in Yarn 2+ is the [Plug'n'Play (PnP)](https://yarnpkg.com/features/pnp) node linking model that does not work with React Native.
+
+By default, a project created with `create-expo-app` and Yarn 2+ uses [`nodeLinker`](https://yarnpkg.com/features/linkers#nodelinker-node-modules) with its value set to `node-modules` to install dependencies.
+
+```yaml .yarnrc.yml
+nodeLinker: node-modules
+```
+
+#### EAS installation
+
+Yarn Modern on EAS requires enabling [Corepack](https://github.com/nodejs/corepack) for the build. Set [`corepack`](/eas/json/#corepack) to `true` in your build profile in **eas.json**:
+
+```json eas.json
+{
+  "build": {
+    "production": {
+      "corepack": true
+    }
+  }
+}
+```
+
+Then, pin the Yarn version in your project's **package.json** using the [`packageManager`](https://nodejs.org/api/packages.html#packagemanager) field. Running `yarn set version <version>` locally will update this field for you:
+
+```json package.json
+{
+  "packageManager": "yarn@4.14.1"
+}
+```
+
+After adding both of the above configurations, Corepack automatically downloads and uses the pinned Yarn version when EAS installs dependencies.
+
+### pnpm
+
+#### Local installation
+
+Requires installing Node.js. See [pnpm documentation](https://pnpm.io/installation) for installation instructions.
+
+By default, a project created with `create-expo-app` and pnpm uses [`nodeLinker`](https://pnpm.io/settings#nodelinker) with its value set to `hoisted` to install dependencies.
+
+```yaml pnpm-workspace.yaml
+nodeLinker: hoisted
+```
+
+> **info** In **SDK 54** and later, Expo supports isolated installations, and you can delete the `nodeLinker` setting if you prefer to use isolated dependencies.
+
+#### EAS installation
+
+Supported by default if the project directory contains **pnpm-lock.yaml**.
+
+### Bun
+
+See [Bun](/guides/using-bun/) guide for details on creating a new Expo project with `bun`, migration from another package manager, and usage with EAS.

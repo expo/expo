@@ -1,0 +1,49 @@
+{
+  "name": "react-helmet-async",
+  "version": "2.0.4",
+  "description": "React Native fork of thread-safe Helmet for React 16+ and friends",
+  "sideEffects": false,
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "typings": "./lib/index.d.ts",
+  "repository": "http://github.com/staylor/react-helmet-async",
+  "author": "Scott Taylor <scott.c.taylor@mac.com>",
+  "license": "Apache-2.0",
+  "files": [
+    "lib/"
+  ],
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "react-fast-compare": "^3.2.2",
+    "shallowequal": "^1.1.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "18.4.3",
+    "@commitlint/config-conventional": "18.4.3",
+    "@remix-run/eslint-config": "2.3.1",
+    "@testing-library/jest-dom": "6.1.5",
+    "@testing-library/react": "14.1.2",
+    "@types/eslint": "8.44.8",
+    "@types/invariant": "2.2.37",
+    "@types/jsdom": "21.1.6",
+    "@types/react": "18.2.39",
+    "@types/shallowequal": "1.1.5",
+    "@vitejs/plugin-react": "4.2.0",
+    "esbuild": "0.19.8",
+    "eslint": "8.54.0",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-plugin-prettier": "5.0.1",
+    "husky": "8.0.3",
+    "jsdom": "22.1.0",
+    "prettier": "3.1.0",
+    "raf": "3.4.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "rimraf": "5.0.5",
+    "tsx": "4.6.1",
+    "typescript": "5.2.2",
+    "vite": "4.5.0",
+    "vitest": "0.34.6"
+  },
+  "peerDependencies": {}
+}

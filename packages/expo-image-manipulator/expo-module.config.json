@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["ImageManipulatorModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.imagemanipulator.ImageManipulatorModule"]
+  }
+}

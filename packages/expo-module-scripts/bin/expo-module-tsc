@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+import { getArgs, packageManagerExecAsync } from '../utils/commandUtils.js';
+
+const args = getArgs();
+
+await packageManagerExecAsync(['tsc', ...args]);

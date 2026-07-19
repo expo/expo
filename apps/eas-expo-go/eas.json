@@ -1,0 +1,168 @@
+{
+  "cli": {
+    "version": ">= 0.52.0",
+    "requireCommit": true,
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "base": {
+      "node": "22.17.1",
+      "pnpm": "10.33.0",
+      "credentialsSource": "local",
+      "android": {
+        "image": "ubuntu-24.04-jdk-17-ndk-r27b-sdk-55",
+        "resourceClass": "large",
+        "env": {
+          "EAS_BUILD_PLATFORM": "android",
+          "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent",
+          "EXPO_ROOT_DIR": "/home/expo/workingdir/build",
+          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
+          "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1",
+          "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-Xmx12g -XX:MaxMetaspaceSize=1g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.vfs.watch=false -Dorg.gradle.daemon=false",
+          "EAS_RESTORE_CACHE": "0"
+        }
+      },
+      "ios": {
+        "image": "macos-sequoia-15.6-xcode-26.2",
+        "cocoapods": "1.16.2",
+        "resourceClass": "medium",
+        "env": {
+          "EAS_BUILD_PLATFORM": "ios",
+          "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
+          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
+          "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1",
+          "EAS_RESTORE_CACHE": "0",
+          "USE_CCACHE": "0"
+        }
+      }
+    },
+    "versioned-client": {
+      "extends": "base",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleMobileDebug -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "scheme": "Expo Go",
+        "simulator": true,
+        "buildConfiguration": "Release"
+      }
+    },
+    "versioned-client-add-sdk": {
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client-add-sdk"
+      }
+    },
+    "unversioned-client": {
+      "extends": "base",
+      "env": {
+        "EAS_BUILD_PROFILE": "unversioned-client"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleMobileDebug -PreactNativeArchitectures=arm64-v8a -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "scheme": "Expo Go",
+        "simulator": true,
+        "buildConfiguration": "Release"
+      }
+    },
+    "release-client": {
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "release-client"
+      },
+      "android": {
+        "autoIncrement": "versionCode",
+        "cache": {
+          "disabled": true
+        },
+        "withoutCredentials": false,
+        "gradleCommand": ":app:bundleMobileRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
+      },
+      "ios": {
+        "autoIncrement": "buildNumber",
+        "resourceClass": "large",
+        "cache": {
+          "disabled": true
+        },
+        "simulator": false
+      }
+    },
+    "publish-client": {
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "publish-client"
+      },
+      "android": {
+        "autoIncrement": "versionCode",
+        "cache": {
+          "disabled": true
+        },
+        "withoutCredentials": false,
+        "gradleCommand": ":app:assembleMobileRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
+      },
+      "ios": {
+        "resourceClass": "large",
+        "autoIncrement": "buildNumber",
+        "cache": {
+          "disabled": true
+        },
+        "simulator": true
+      }
+    },
+    "versioned-quest-client": {
+      "extends": "versioned-client",
+      "android": {
+        "gradleCommand": ":app:assembleQuestDebug -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
+      }
+    },
+    "versioned-quest-client-add-sdk": {
+      "extends": "versioned-quest-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client-add-sdk"
+      }
+    },
+    "unversioned-quest-client": {
+      "extends": "unversioned-client",
+      "android": {
+        "gradleCommand": ":app:assembleQuestDebug -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
+      }
+    },
+    "release-quest-client": {
+      "extends": "release-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "release-client"
+      },
+      "android": {
+        "gradleCommand": ":app:bundleQuestRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
+      }
+    },
+    "publish-quest-client": {
+      "extends": "publish-client",
+      "android": {
+        "gradleCommand": ":app:assembleQuestRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
+      }
+    }
+  },
+  "submit": {
+    "release-client": {
+      "ios": {
+        "ascApiKeyPath": "./credentials/secrets/ios-AuthKey-2A94XP6D72.p8",
+        "ascApiKeyId": "2A94XP6D72",
+        "ascApiKeyIssuerId": "69a6de7e-ee52-47e3-e053-5b8c7c11a4d1",
+        "ascAppId": "982107779"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./credentials/secrets/android-service-account-key.json",
+        "track": "production"
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "name": "@expo/dom-webview",
+  "version": "56.0.5",
+  "description": "A WebView specifically designed for Expo DOM components",
+  "keywords": [
+    "dom",
+    "expo",
+    "react-native",
+    "webview"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/dom-webview",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/dom-webview"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "syncBrowserScripts": "./scripts/buildBrowserScripts.ts",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/react": "~19.2.0",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
+  }
+}

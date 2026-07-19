@@ -1,0 +1,178 @@
+import { loadModuleSync, resolveFrom } from '@expo/require-utils';
+import assert from 'assert';
+
+import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
+import { PluginError } from './errors';
+
+// Re-exported for back-compat with external consumers.
+export const pluginFileName = 'app.plugin.js';
+
+// `.js` first keeps the published-artifact case at one stat.
+const pluginExtensions = ['.js', '.cjs', '.mjs', '.ts', '.cts', '.mts'];
+
+/**
+ * Resolve the config plugin from a node module or package.
+ * If the module or package does not include a config plugin, this function throws a `PluginError`.
+ * The resolution is done in following order:
+ *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
+ *     - Resolve the config plugin as-is
+ *   2. If the reference a module? e.g. `expo-font`
+ *     - Resolve the root `app.plugin.{js,cjs,mjs,ts,cts,mts}` file within the module
+ *   3. Does the module have a valid config plugin in the `main` field?
+ *     - Resolve the `main` entry point as config plugin
+ */
+export function resolvePluginForModule(
+  projectRoot: string,
+  pluginReference: string
+): { filePath: string; isPluginFile: boolean } {
+  if (moduleNameIsDirectFileReference(pluginReference)) {
+    const pluginScriptFile = resolveFrom(projectRoot, pluginReference, {
+      extensions: pluginExtensions,
+    });
+    if (pluginScriptFile) {
+      return { isPluginFile: false, filePath: pluginScriptFile };
+    }
+  } else if (moduleNameIsPackageReference(pluginReference)) {
+    const pluginPackageFile = resolveFrom(projectRoot, `${pluginReference}/app.plugin`, {
+      extensions: pluginExtensions,
+    });
+    if (pluginPackageFile) {
+      return { isPluginFile: true, filePath: pluginPackageFile };
+    }
+    // Skip the extension/index probes — Node's resolver (step 4) handles `main`.
+    const packageMainEntry = resolveFrom(projectRoot, pluginReference, { extensions: [] });
+    if (packageMainEntry) {
+      return { isPluginFile: false, filePath: packageMainEntry };
+    }
+  }
+
+  throw new PluginError(
+    `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}". Do you have node modules installed?`,
+    'PLUGIN_NOT_FOUND'
+  );
+}
+
+// TODO: Test windows
+function pathIsFilePath(name: string): boolean {
+  // Matches lines starting with: . / ~/
+  return !!name.match(/^(\.|~\/|\/)/g);
+}
+
+export function moduleNameIsDirectFileReference(name: string): boolean {
+  if (pathIsFilePath(name)) {
+    return true;
+  }
+
+  const slashCount = name.split('/')?.length;
+  // Orgs (like @expo/config ) should have more than one slash to be a direct file.
+  if (name.startsWith('@')) {
+    return slashCount > 2;
+  }
+
+  // Regular packages should be considered direct reference if they have more than one slash.
+  return slashCount > 1;
+}
+
+export function moduleNameIsPackageReference(name: string): boolean {
+  const slashCount = name.split('/')?.length;
+  return name.startsWith('@') ? slashCount === 2 : slashCount === 1;
+}
+
+export function normalizeStaticPlugin(plugin: StaticPlugin | ConfigPlugin | string): StaticPlugin {
+  if (Array.isArray(plugin)) {
+    assert(
+      plugin.length > 0 && plugin.length < 3,
+      `Wrong number of arguments provided for static config plugin, expected either 1 or 2, got ${plugin.length}`
+    );
+    return plugin;
+  }
+  return [plugin, undefined];
+}
+
+export function assertInternalProjectRoot(projectRoot?: string): asserts projectRoot {
+  assert(
+    projectRoot,
+    `Unexpected: Config \`_internal.projectRoot\` isn't defined by expo-cli, this is a bug.`
+  );
+}
+
+// Resolve the module function and assert type
+export function resolveConfigPluginFunction(projectRoot: string, pluginReference: string) {
+  const { plugin } = resolveConfigPluginFunctionWithInfo(projectRoot, pluginReference);
+  return plugin;
+}
+
+// Resolve the module function and assert type
+export function resolveConfigPluginFunctionWithInfo(projectRoot: string, pluginReference: string) {
+  const { filePath: pluginFile, isPluginFile } = resolvePluginForModule(
+    projectRoot,
+    pluginReference
+  );
+  let result: any;
+  try {
+    result = loadModuleSync(pluginFile);
+  } catch (error) {
+    let message = error instanceof Error ? error.message : String(error);
+    // Don't clobber `loadModuleSync`'s code-framed error
+    if (!isPluginFile && !moduleNameIsDirectFileReference(pluginReference)) {
+      message += `\n\nNo "app.plugin.{js,cjs,mjs,ts,cts,mts}" file was found in "${pluginReference}", so the package's main entry was loaded instead. Config plugins are typically exported from an "${pluginFileName}" file in the package root.\nLearn more: https://docs.expo.dev/guides/config-plugins/`;
+    }
+
+    const pluginError = new PluginError(message, 'INVALID_PLUGIN_IMPORT');
+    if (error instanceof Error && error.stack) {
+      pluginError.stack = error.stack;
+    }
+    throw pluginError;
+  }
+
+  const plugin = resolveConfigPluginExport({
+    plugin: result,
+    pluginFile,
+    pluginReference,
+    isPluginFile,
+  });
+  return { plugin, pluginFile, pluginReference, isPluginFile };
+}
+
+/**
+ * - Resolve the exported contents of an Expo config (be it default or module.exports)
+ * - Assert no promise exports
+ * - Return config type
+ * - Serialize config
+ *
+ * @param props.plugin plugin results
+ * @param props.pluginFile plugin file path
+ * @param props.pluginReference the string used to reference the plugin
+ * @param props.isPluginFile is file path from the app.plugin.js module root
+ */
+export function resolveConfigPluginExport({
+  plugin,
+  pluginFile,
+  pluginReference,
+  isPluginFile,
+}: {
+  plugin: any;
+  pluginFile: string;
+  pluginReference: string;
+  isPluginFile: boolean;
+}): ConfigPlugin<unknown> {
+  if (plugin.default != null) {
+    plugin = plugin.default;
+  }
+  if (typeof plugin !== 'function') {
+    const learnMoreLink = `Learn more: https://docs.expo.dev/guides/config-plugins/`;
+    // If the plugin reference is a node module, and that node module does not export a function then it probably doesn't have a config plugin.
+    if (!isPluginFile && !moduleNameIsDirectFileReference(pluginReference)) {
+      throw new PluginError(
+        `Package "${pluginReference}" does not contain a valid config plugin. Module must export a function from file: ${pluginFile}\n${learnMoreLink}`,
+        'INVALID_PLUGIN_TYPE'
+      );
+    }
+    throw new PluginError(
+      `Plugin "${pluginReference}" must export a function from file: ${pluginFile}. ${learnMoreLink}`,
+      'INVALID_PLUGIN_TYPE'
+    );
+  }
+
+  return plugin;
+}

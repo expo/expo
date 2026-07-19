@@ -1,0 +1,200 @@
+package expo.modules.audio
+
+import android.media.MediaRecorder
+import android.os.Build
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
+import java.net.URL
+import expo.modules.kotlin.types.OptimizedRecord
+
+@OptimizedRecord
+class AudioSource(
+  @Field val uri: String?,
+  @Field val headers: Map<String, String>?,
+  @Field val name: String? = null
+) : Record
+
+enum class LoopMode(val value: String) : Enumerable {
+  NONE("none"),
+  SINGLE("single"),
+  ALL("all")
+}
+
+@OptimizedRecord
+class AudioMode(
+  @Field val shouldPlayInBackground: Boolean = false,
+  @Field val shouldRouteThroughEarpiece: Boolean?,
+  @Field val interruptionMode: InterruptionMode?,
+  @Field val allowsBackgroundRecording: Boolean = false,
+  @Field val playsInSilentMode: Boolean = true
+) : Record
+
+// Data class because we want `equals`
+@OptimizedRecord
+data class RecordingOptions(
+  @Field val extension: String,
+  @Field val sampleRate: Double?,
+  @Field val numberOfChannels: Double?,
+  @Field val bitRate: Double?,
+  @Field val outputFormat: AndroidOutputFormat?,
+  @Field val audioEncoder: AndroidAudioEncoder?,
+  @Field val maxFileSize: Int?,
+  @Field val isMeteringEnabled: Boolean = false,
+  @Field val audioSource: RecordingSource?,
+  @Field val directory: RecordingDirectory?
+) : Record
+
+enum class RecordingDirectory(val value: String) : Enumerable {
+  CACHE("cache"),
+  DOCUMENT("document")
+}
+
+@OptimizedRecord
+class Metadata(
+  @Field val title: String?,
+  @Field val artist: String?,
+  @Field val albumTitle: String?,
+  @Field val artworkUrl: URL?
+) : Record
+
+enum class AndroidOutputFormat(val value: String) : Enumerable {
+  DEFAULT("default"),
+  THREE_GP("3gp"),
+  MPEG_4("mpeg4"),
+  AMR_NB("amrnb"),
+  AMR_WB("amrwb"),
+  AAC_ADTS("aac_adts"),
+  MPEG2TS("mpeg2ts"),
+  WEBM("webm");
+
+  fun toMediaOutputFormat(): Int {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      if (this == MPEG2TS) {
+        return MediaRecorder.OutputFormat.MPEG_2_TS
+      }
+    }
+
+    return when (this) {
+      DEFAULT -> MediaRecorder.OutputFormat.DEFAULT
+      THREE_GP -> MediaRecorder.OutputFormat.THREE_GPP
+      MPEG_4 -> MediaRecorder.OutputFormat.MPEG_4
+      AMR_NB -> MediaRecorder.OutputFormat.AMR_NB
+      AMR_WB -> MediaRecorder.OutputFormat.AMR_WB
+      AAC_ADTS -> MediaRecorder.OutputFormat.AAC_ADTS
+      WEBM -> MediaRecorder.OutputFormat.WEBM
+      else -> MediaRecorder.OutputFormat.DEFAULT
+    }
+  }
+}
+
+enum class AndroidAudioEncoder(val value: String) : Enumerable {
+  DEFAULT("default"),
+  AMR_NB("amr_nb"),
+  AMR_WB("amr_wb"),
+  AAC("aac"),
+  HE_AAC("he_aac"),
+  AAC_ELD("aac_eld");
+
+  fun toMediaEncoding() = when (this) {
+    DEFAULT -> MediaRecorder.AudioEncoder.DEFAULT
+    AMR_NB -> MediaRecorder.AudioEncoder.AMR_NB
+    AMR_WB -> MediaRecorder.AudioEncoder.AMR_WB
+    AAC -> MediaRecorder.AudioEncoder.AAC
+    HE_AAC -> MediaRecorder.AudioEncoder.HE_AAC
+    AAC_ELD -> MediaRecorder.AudioEncoder.AAC_ELD
+  }
+}
+
+@OptimizedRecord
+class AudioLockScreenOptions(
+  @Field val showSeekForward: Boolean,
+  @Field val showSeekBackward: Boolean,
+  @Field val showNextTrack: Boolean = false,
+  @Field val showPreviousTrack: Boolean = false,
+  @Field val isLiveStream: Boolean? = null
+) : Record
+
+enum class InterruptionMode(val value: String) : Enumerable {
+  DO_NOT_MIX("doNotMix"),
+  DUCK_OTHERS("duckOthers"),
+  MIX_WITH_OTHERS("mixWithOthers")
+}
+
+@OptimizedRecord
+class RecordOptions(
+  @Field val atTime: Double?,
+  @Field val forDuration: Double?
+) : Record
+
+enum class AudioStreamEncoding(val value: String) : Enumerable {
+  FLOAT32("float32"),
+  INT16("int16")
+}
+
+@OptimizedRecord
+class AudioStreamOptions : Record {
+  @Field var sampleRate: Int = 48000
+
+  @Field var channels: Int = 1
+
+  @Field var encoding: AudioStreamEncoding = AudioStreamEncoding.FLOAT32
+}
+
+enum class RecordingSource(val value: String) : Enumerable {
+  CAMCORDER("camcorder"),
+  DEFAULT("default"),
+  MIC("mic"),
+  REMOTE_SUBMIX("remote_submix"),
+  UNPROCESSED("unprocessed"),
+  VOICE_COMMUNICATION("voice_communication"),
+  VOICE_PERFORMANCE("voice_performance"),
+  VOICE_RECOGNITION("voice_recognition");
+
+  fun toAudioSource() = when (this) {
+    CAMCORDER -> MediaRecorder.AudioSource.CAMCORDER
+    DEFAULT -> MediaRecorder.AudioSource.DEFAULT
+    MIC -> MediaRecorder.AudioSource.MIC
+    REMOTE_SUBMIX -> MediaRecorder.AudioSource.REMOTE_SUBMIX
+    UNPROCESSED -> MediaRecorder.AudioSource.UNPROCESSED
+    VOICE_COMMUNICATION -> MediaRecorder.AudioSource.VOICE_COMMUNICATION
+    VOICE_PERFORMANCE -> MediaRecorder.AudioSource.VOICE_PERFORMANCE
+    VOICE_RECOGNITION -> MediaRecorder.AudioSource.VOICE_RECOGNITION
+  }
+}
+
+enum class AudioStreamFileFormat(val value: String) : Enumerable {
+  WAV("wav"),
+  PCM("pcm");
+
+  val fileExtension: String get() = value
+}
+
+@OptimizedRecord
+class AudioStreamFileRecordingOptions : Record {
+  @Field var uri: URL? = null
+
+  @Field var directory: RecordingDirectory? = null
+
+  @Field var format: AudioStreamFileFormat = AudioStreamFileFormat.WAV
+}
+
+@OptimizedRecord
+class AudioStreamFileRecordingStartResult : Record {
+  @Field var uri: URL? = null
+}
+
+@OptimizedRecord
+class AudioStreamFileRecordingResult : Record {
+  @Field var uri: URL? = null
+
+  @Field var duration: Double = 0.0
+
+  @Field var size: Long = 0L
+
+  @Field var sampleRate: Int = 0
+
+  @Field var channels: Int = 0
+
+  @Field var encoding: AudioStreamEncoding = AudioStreamEncoding.FLOAT32
+}

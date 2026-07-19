@@ -1,0 +1,20 @@
+import { UnavailabilityError } from 'expo';
+
+import NotificationCategoriesModule from './NotificationCategoriesModule';
+import type { NotificationCategory } from './Notifications.types';
+
+/**
+ * Fetches information about all known notification categories.
+ * @return A Promise which resolves to an array of `NotificationCategory`s. On platforms that do not support notification channels,
+ * it will always resolve to an empty array.
+ * @platform android
+ * @platform ios
+ * @header categories
+ */
+export async function getNotificationCategoriesAsync(): Promise<NotificationCategory[]> {
+  if (!NotificationCategoriesModule.getNotificationCategoriesAsync) {
+    throw new UnavailabilityError('Notifications', 'getNotificationCategoriesAsync');
+  }
+
+  return await NotificationCategoriesModule.getNotificationCategoriesAsync();
+}

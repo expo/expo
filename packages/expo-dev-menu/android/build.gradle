@@ -1,0 +1,143 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+group = 'host.exp.exponent'
+version = '56.0.15'
+
+def hasDevLauncher = findProject(":expo-dev-launcher") != null
+def configureInRelease = findProperty("expo.devmenu.configureInRelease") == "true"
+if (configureInRelease) {
+  println("expo-dev-menu will be enabled in release")
+}
+
+expoModule {
+  canBePublished false
+}
+
+android {
+  namespace "expo.modules.devmenu"
+
+  defaultConfig {
+    versionCode 10
+    versionName '56.0.15'
+  }
+
+  buildTypes {
+    create("debugOptimized") {
+      initWith(buildTypes.debug)
+      matchingFallbacks += ["release"]
+    }
+
+    buildTypes.each {
+      it.buildConfigField 'boolean', 'AUTO_INITIALIZATION', "${!hasDevLauncher}"
+    }
+  }
+
+  sourceSets {
+    debugOptimized {
+      setRoot 'src/debug'
+    }
+
+    release {
+      if (configureInRelease) {
+        java.srcDir 'src/debug/java'
+        res.srcDir 'src/debug/res'
+      } else {
+        java.srcDir 'src/disableInRelease/java'
+        res.srcDir 'src/disableInRelease/res'
+      }
+    }
+  }
+
+  buildFeatures {
+    compose true
+    buildConfig true
+  }
+}
+
+repositories {
+  // ref: https://www.baeldung.com/maven-local-repository
+  mavenLocal()
+  maven {
+    // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+    url "$rootDir/../node_modules/react-native/android"
+  }
+  maven {
+    // Android JSC is installed from npm
+    url "$rootDir/../node_modules/jsc-android/dist"
+  }
+}
+
+dependencies {
+  def debugOnly = { notation ->
+    //noinspection DependencyNotationArgument
+    debugImplementation notation
+    //noinspection DependencyNotationArgument
+    debugOptimizedImplementation notation
+
+    if (configureInRelease) {
+      //noinspection DependencyNotationArgument
+      releaseImplementation notation
+    }
+  }
+
+  def debugOnlyApi = { notation ->
+    //noinspection DependencyNotationArgument
+    debugApi notation
+    //noinspection DependencyNotationArgument
+    debugOptimizedApi notation
+
+    if (configureInRelease) {
+      //noinspection DependencyNotationArgument
+      releaseApi notation
+    }
+  }
+
+  debugOnly project(":expo-manifests")
+
+  debugOnly 'androidx.coordinatorlayout:coordinatorlayout:1.3.0'
+
+  debugOnly project(":expo-dev-menu-interface")
+
+  debugOnly 'com.squareup.okhttp3:okhttp:4.9.2'
+  debugOnly 'com.google.code.gson:gson:2.13.2'
+
+  debugOnly 'com.facebook.react:react-android'
+  debugOnly 'com.facebook.soloader:soloader:0.11.0'
+
+  debugOnlyApi "androidx.appcompat:appcompat:1.7.1"
+  debugOnlyApi "androidx.lifecycle:lifecycle-extensions:2.2.0"
+
+  def fragmentVersion = "1.8.9"
+
+  debugOnly "androidx.fragment:fragment:$fragmentVersion"
+  debugOnly "androidx.fragment:fragment-ktx:$fragmentVersion"
+
+  debugOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
+  debugOnly 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+
+  def composeVersion = "1.9.0"
+
+  // it's needed by the compose compiler plugin, but it won't leak to the app module
+  releaseCompileOnly "androidx.compose.foundation:foundation-android:$composeVersion"
+  debugOnly "androidx.compose.foundation:foundation-android:$composeVersion"
+
+  debugOnly "androidx.compose.ui:ui:$composeVersion"
+  debugOnly "androidx.compose.ui:ui-tooling:$composeVersion"
+
+  debugOnly("com.composables:core:1.49.9")
+
+  debugOnlyApi 'io.github.lukmccall:radix-ui-colors:1.0.1'
+
+  debugOnlyApi "androidx.browser:browser:1.9.0"
+}

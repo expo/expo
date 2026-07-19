@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["TrackingTransparencyModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.trackingtransparency.TrackingTransparencyModule"]
+  }
+}

@@ -1,0 +1,271 @@
+/**
+ * Copyright © 2024 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import { INTERNAL_CALLSITES_REGEX } from '@expo/metro-config';
+import chalk from 'chalk';
+import path from 'path';
+import * as stackTraceParser from 'stacktrace-parser';
+
+import { env } from '../../utils/env';
+import { memoize } from '../../utils/fn';
+import { LogBoxLog } from './metro/log-box/LogBoxLog';
+import type { StackFrame } from './metro/log-box/LogBoxSymbolication';
+import { parseErrorStack } from './metro/log-box/LogBoxSymbolication';
+import { getStackAsFormattedLog } from './metro/metroErrorInterface';
+
+const CONSOLE_METHODS = [
+  'trace',
+  'info',
+  'error',
+  'warn',
+  'log',
+  'group',
+  'groupCollapsed',
+  'groupEnd',
+  'debug',
+] as const;
+
+type ConsoleMethod = (typeof CONSOLE_METHODS)[number];
+
+const groupStack: any = [];
+let collapsedGuardTimer: ReturnType<typeof setTimeout> | undefined;
+
+export function logLikeMetro(
+  originalLogFunction: (...args: any[]) => void,
+  level: ConsoleMethod,
+  platform: string | null,
+  ...data: any[]
+) {
+  const logFunction = console[level] && level !== 'trace' ? level : 'log';
+  const color =
+    level === 'error'
+      ? chalk.inverse.red
+      : level === 'warn'
+        ? chalk.inverse.yellow
+        : chalk.inverse.white;
+
+  if (level === 'group') {
+    groupStack.push(level);
+  } else if (level === 'groupCollapsed') {
+    groupStack.push(level);
+    clearTimeout(collapsedGuardTimer);
+    // Inform users that logs get swallowed if they forget to call `groupEnd`.
+    collapsedGuardTimer = setTimeout(() => {
+      if (groupStack.includes('groupCollapsed')) {
+        originalLogFunction(
+          chalk.inverse.yellow.bold(' WARN '),
+          'Expected `console.groupEnd` to be called after `console.groupCollapsed`.'
+        );
+        groupStack.length = 0;
+      }
+    }, 3000);
+    return;
+  } else if (level === 'groupEnd') {
+    groupStack.pop();
+    if (!groupStack.length) {
+      clearTimeout(collapsedGuardTimer);
+    }
+    return;
+  }
+
+  if (!groupStack.includes('groupCollapsed')) {
+    // Remove excess whitespace at the end of a log message, if possible.
+    const lastItem = data[data.length - 1];
+    if (typeof lastItem === 'string') {
+      data[data.length - 1] = lastItem.trimEnd();
+    }
+
+    const modePrefix =
+      platform && platform !== 'BRIDGE' && platform !== 'NOBRIDGE' ? chalk.bold`${platform} ` : '';
+    originalLogFunction(
+      modePrefix +
+        color.bold(` ${logFunction.toUpperCase()} `) +
+        ''.padEnd(groupStack.length * 2, ' '),
+      ...data
+    );
+  }
+}
+
+const escapedPathSep = path.sep === '\\' ? '\\\\' : path.sep;
+const SERVER_STACK_MATCHER = new RegExp(
+  `${escapedPathSep}(react-dom|metro-runtime|expo-router)${escapedPathSep}`
+);
+
+export async function maybeSymbolicateAndFormatJSErrorStackLogAsync(
+  projectRoot: string,
+  level: 'error' | 'warn' | (string & {}),
+  error: {
+    message: string;
+    stack: StackFrame[];
+  }
+): Promise<{
+  isFallback: boolean;
+  stack: string;
+}> {
+  const log = new LogBoxLog({
+    level: level as 'error' | 'warn',
+    message: {
+      content: error.message,
+      substitutions: [],
+    },
+    isComponentError: false,
+    stack: error.stack,
+    category: 'static',
+    componentStack: [],
+  });
+
+  await new Promise((res) => log.symbolicate('stack', res));
+
+  const formatted = getStackAsFormattedLog(projectRoot, {
+    stack: log.symbolicated?.stack?.stack ?? [],
+    codeFrame: log.codeFrame,
+  });
+
+  // NOTE: Message is printed above stack by the default Metro logic. So we don't need to include it here.
+  const symbolicatedErrorStackLog = `\n\n${formatted.stack}`;
+
+  return {
+    isFallback: formatted.isFallback,
+    stack: symbolicatedErrorStackLog,
+  };
+}
+
+/**
+ * Attempt to parse an error message string to an unsymbolicated stack.
+ */
+export function parseErrorStringToObject(errorString: string) {
+  // Find the first line of the possible stack trace
+  const stackStartIndex = errorString.indexOf('\n    at ');
+  if (stackStartIndex === -1) {
+    // No stack trace found, return the original error string
+    return null;
+  }
+  const message = errorString.slice(0, stackStartIndex).trim();
+  const stack = errorString.slice(stackStartIndex + 1);
+
+  try {
+    const parsedStack = parseErrorStack(stack);
+
+    return {
+      message,
+      stack: parsedStack,
+    };
+  } catch {
+    // If parsing fails, return the original error string
+    return null;
+  }
+}
+
+type ConsoleLogAugmented = typeof console.log & {
+  __polyfilled?: typeof console.log;
+};
+
+function augmentLogsInternal(projectRoot: string) {
+  const augmentLog = (name: ConsoleMethod, fn: ConsoleLogAugmented) => {
+    if (fn.__polyfilled) {
+      return fn;
+    }
+    const originalFn = fn.bind(console);
+    function logWithStack(...args: any[]) {
+      const stack = new Error().stack;
+      // Check if the log originates from the server.
+      const isServerLog = !!stack?.match(SERVER_STACK_MATCHER);
+
+      if (isServerLog) {
+        if (name === 'error' || name === 'warn') {
+          if (
+            args.length === 2 &&
+            typeof args[1] === 'string' &&
+            args[1].trim().startsWith('at ')
+          ) {
+            // react-dom custom stacks which are always broken.
+            // A stack string like:
+            //    at div
+            //    at http://localhost:8081/node_modules/expo-router/node/render.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app&resolver.environment=node&transform.environment=node:38008:27
+            //    at Background (http://localhost:8081/node_modules/expo-router/node/render.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app&resolver.environment=node&transform.environment=node:151009:7)
+            const customStack = args[1];
+
+            try {
+              // `error.stack` is already symbolicated by Node's source map support
+              // (registered by `@expo/require-utils` when the SSR bundle is compiled), so the
+              // parsed frames already point at original sources. We just reformat them.
+              const parsedStack = parseErrorStack(customStack);
+              args[1] = '\n' + formatParsedStackLikeMetro(projectRoot, parsedStack, true);
+            } catch {
+              // If parsing fails, log the original stack.
+              args.push('\n' + formatStackLikeMetro(projectRoot, customStack));
+            }
+          } else {
+            args.push('\n' + formatStackLikeMetro(projectRoot, stack!));
+          }
+        }
+
+        logLikeMetro(originalFn, name, 'λ', ...args);
+      } else {
+        originalFn(...args);
+      }
+    }
+    logWithStack.__polyfilled = true;
+    return logWithStack;
+  };
+
+  for (const name of CONSOLE_METHODS) {
+    console[name] = augmentLog(name, console[name]);
+  }
+}
+
+export function formatStackLikeMetro(projectRoot: string, stack: string) {
+  // Remove `Error: ` from the beginning of the stack trace.
+  // Dim traces that match `INTERNAL_CALLSITES_REGEX`
+
+  const stackTrace = stackTraceParser.parse(stack);
+  return formatParsedStackLikeMetro(projectRoot, stackTrace);
+}
+
+function formatParsedStackLikeMetro(
+  projectRoot: string,
+  stackTrace: stackTraceParser.StackFrame[],
+  isComponentStack = false
+) {
+  // Remove `Error: ` from the beginning of the stack trace.
+  // Dim traces that match `INTERNAL_CALLSITES_REGEX`
+
+  return stackTrace
+    .filter(
+      (line) =>
+        line.file &&
+        // Ignore unsymbolicated stack frames. It's not clear how this is possible but it sometimes happens when the graph changes.
+        !/^https?:\/\//.test(line.file) &&
+        (isComponentStack ? true : line.file !== '<anonymous>')
+    )
+    .map((line) => {
+      // Use the same regex we use in Metro config to filter out traces:
+      const isCollapsed = INTERNAL_CALLSITES_REGEX.test(line.file!);
+      if (!isComponentStack && isCollapsed && !env.EXPO_DEBUG) {
+        return null;
+      }
+      // If a file is collapsed, print it with dim styling.
+      const style = isCollapsed ? chalk.dim : chalk.gray;
+      // Use the `at` prefix to match Node.js
+      let fileName = line.file!;
+      if (fileName.startsWith(path.sep)) {
+        fileName = path.relative(projectRoot, fileName);
+      }
+      if (line.lineNumber != null) {
+        fileName += `:${line.lineNumber}`;
+        if (line.column != null) {
+          fileName += `:${line.column}`;
+        }
+      }
+
+      return style(`  ${line.methodName} (${fileName})`);
+    })
+    .filter(Boolean)
+    .join('\n');
+}
+
+/** Augment console logs to check the stack trace and format like Metro logs if we think the log came from the SSR renderer or an API route. */
+export const augmentLogs = memoize(augmentLogsInternal);

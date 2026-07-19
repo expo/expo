@@ -1,0 +1,21 @@
+import { UnavailabilityError } from 'expo';
+
+import NotificationPresenter from './NotificationPresenterModule';
+import type { Notification } from './Notifications.types';
+import { mapNotification } from './utils/mapNotificationResponse';
+
+/**
+ * Fetches information about all notifications present in the notification tray (Notification Center).
+ * > This method is not supported on Android below 6.0 (API level 23) – on these devices it will resolve to an empty array.
+ * @return A Promise which resolves with a list of notifications ([`Notification`](#notification)) currently present in the notification tray (Notification Center).
+ * @header dismiss
+ */
+export async function getPresentedNotificationsAsync(): Promise<Notification[]> {
+  if (!NotificationPresenter.getPresentedNotificationsAsync) {
+    throw new UnavailabilityError('Notifications', 'getPresentedNotificationsAsync');
+  }
+
+  return (await NotificationPresenter.getPresentedNotificationsAsync()).map((notification) =>
+    mapNotification(notification)
+  );
+}

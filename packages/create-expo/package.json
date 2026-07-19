@@ -1,0 +1,68 @@
+{
+  "name": "create-expo",
+  "version": "4.0.2",
+  "description": "Create universal Expo apps",
+  "keywords": [
+    "expo",
+    "react",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev",
+  "license": "BSD-3-Clause",
+  "author": "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/create-expo"
+  },
+  "bin": "./bin/create-expo.js",
+  "files": [
+    "bin",
+    "build",
+    "template"
+  ],
+  "main": "build",
+  "scripts": {
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
+    "test:e2e": "jest --config e2e/jest.config.js --runInBand",
+    "sync-agent-templates": "node scripts/sync-agent-templates.js",
+    "prepublishOnly": "pnpm run sync-agent-templates && pnpm run clean && pnpm run build:prod"
+  },
+  "devDependencies": {
+    "@expo/config": "workspace:*",
+    "@expo/json-file": "workspace:*",
+    "@expo/package-manager": "workspace:*",
+    "@expo/spawn-async": "^1.8.0",
+    "@octokit/types": "^13.5.0",
+    "@types/debug": "^4.1.7",
+    "@types/getenv": "^1.0.0",
+    "@types/node": "^22.14.0",
+    "@types/picomatch": "^2.3.3",
+    "@types/prompts": "2.0.14",
+    "@vercel/ncc": "^0.38.3",
+    "arg": "^5.0.2",
+    "chalk": "^4.0.0",
+    "debug": "^4.3.4",
+    "expo-module-scripts": "workspace:*",
+    "getenv": "^2.0.0",
+    "glob": "^13.0.0",
+    "memfs": "^3.2.0",
+    "multitars": "^1.0.0",
+    "nock": "^14.0.10",
+    "ora": "3.4.0",
+    "picomatch": "^2.3.2",
+    "prompts": "^2.4.2",
+    "resolve-workspace-root": "^2.0.0",
+    "update-check": "^1.5.4"
+  },
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
+  }
+}

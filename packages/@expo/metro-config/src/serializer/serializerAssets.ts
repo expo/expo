@@ -1,0 +1,27 @@
+export type SerialAsset = {
+  // 'styles.css'
+  originFilename: string;
+  // '_expo/static/css/bc6aa0a69dcebf8e8cac1faa76705756.css'
+  filename: string;
+  // '\ndiv {\n    background: cyan;\n}\n\n'
+  source: string;
+  type: 'css-external' | 'css' | 'js' | 'map' | 'json';
+
+  metadata: {
+    hmrId?: string;
+    /** Media query baked into a `css-external` `<link>` tag (e.g. `screen and (min-width: 900px)`). */
+    media?: string;
+    isAsync?: boolean;
+    modulePaths?: string[];
+    paths?: Record<string, Record<string, string>>;
+    // React server action reference from the static babel pass of client modules.
+    reactServerReferences?: string[];
+    // React client reference from the static babel pass.
+    reactClientReferences?: string[];
+    // DOM Component references from the static babel pass.
+    expoDomComponentReferences?: string[];
+    // File paths of route modules that have loader exports.
+    loaderReferences?: string[];
+    requires?: string[];
+  };
+};

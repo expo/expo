@@ -1,0 +1,70 @@
+{
+  "name": "create-expo-module",
+  "version": "56.0.3",
+  "description": "The script to create the Expo module",
+  "keywords": [
+    "expo",
+    "library",
+    "module",
+    "modules",
+    "native",
+    "react"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/create-expo-module"
+  },
+  "bin": "bin/create-expo-module.js",
+  "files": [
+    "bin",
+    "build"
+  ],
+  "main": "build/index.js",
+  "scripts": {
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
+    "test:e2e": "jest --config e2e/jest.config.js --runInBand",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
+  },
+  "devDependencies": {
+    "@expo/json-file": "workspace:*",
+    "@expo/rudder-sdk-node": "^1.1.1",
+    "@expo/spawn-async": "^1.8.0",
+    "@octokit/types": "^15.0.0",
+    "@types/cross-spawn": "^6.0.6",
+    "@types/ejs": "^3.1.5",
+    "@types/getenv": "^1.0.0",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "@types/prompts": "^2.4.9",
+    "@types/validate-npm-package-name": "^4.0.2",
+    "@vercel/ncc": "^0.38.4",
+    "chalk": "^4.1.2",
+    "commander": "^8.3.0",
+    "cross-spawn": "^7.0.5",
+    "debug": "^4.3.4",
+    "ejs": "^3.1.10",
+    "expo-module-scripts": "workspace:*",
+    "getenv": "^2.0.0",
+    "multitars": "^1.0.0",
+    "ora": "^5.4.1",
+    "prompts": "^2.4.2",
+    "validate-npm-package-name": "^6.0.2"
+  },
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
+  }
+}

@@ -1,0 +1,4 @@
+#!/bin/sh
+# $3 is 1 only for branch checkouts, not file checkouts.
+[ "$3" = "1" ] || exit 0
+./scripts/check-cocoapods-lockfiles.sh "$1" "$2"

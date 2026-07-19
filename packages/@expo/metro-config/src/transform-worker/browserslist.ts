@@ -1,0 +1,32 @@
+/**
+ * Copyright © 2025 650 Industries.
+ */
+
+import { debugEvent } from './events';
+
+const browserslistCache: Record<string, import('lightningcss').Targets> = {};
+
+// Suppress `browserslist`'s own "data is X months old" warning in transform workers.
+process.env.BROWSERSLIST_IGNORE_OLD_DATA = '1';
+
+export async function getBrowserslistTargets(
+  projectRoot: string
+): Promise<import('lightningcss').Targets> {
+  if (browserslistCache[projectRoot]) {
+    return browserslistCache[projectRoot];
+  }
+  const browserslist = await import('browserslist');
+  const { browserslistToTargets } = await import('lightningcss');
+
+  const targets = browserslistToTargets(
+    browserslist.default(undefined, {
+      throwOnMissing: false,
+      ignoreUnknownVersions: true,
+      path: projectRoot,
+    })
+  );
+
+  debugEvent('browserslist:targets', { targets: targets as Record<string, unknown> });
+  browserslistCache[projectRoot] = targets;
+  return targets;
+}

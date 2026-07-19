@@ -1,0 +1,48 @@
+package expo.modules.blur
+
+import expo.modules.blur.enums.BlurMethod
+import expo.modules.blur.enums.TintStyle
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+
+class BlurModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoBlur")
+
+    View(ExpoBlurView::class) {
+      Name("ExpoBlurView")
+
+      Prop("blurTargetId") { view, blurTargetId: Int? ->
+        view.setBlurTargetId(blurTargetId)
+      }
+
+      Prop("intensity") { view: ExpoBlurView, intensity: Float ->
+        view.setBlurRadius(intensity)
+      }
+
+      Prop("tint") { view: ExpoBlurView, tint: TintStyle ->
+        view.tint = tint
+      }
+
+      Prop("blurReductionFactor") { view: ExpoBlurView, blurReductionFactor: Float ->
+        view.applyBlurReduction(blurReductionFactor)
+      }
+
+      Prop("borderRadii") { view: ExpoBlurView, borderRadii: FloatArray? ->
+        view.setBorderRadii(borderRadii ?: FloatArray(8))
+      }
+
+      Prop("blurMethod") { view: ExpoBlurView, blurMethod: BlurMethod ->
+        view.setBlurMethod(blurMethod)
+      }
+
+      OnViewDidUpdateProps { view: ExpoBlurView ->
+        view.applyTint()
+      }
+    }
+
+    View(ExpoBlurTargetView::class) {
+      Name("ExpoBlurTargetView")
+    }
+  }
+}

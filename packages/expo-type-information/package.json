@@ -1,0 +1,60 @@
+{
+  "name": "expo-type-information",
+  "version": "0.0.5",
+  "keywords": [
+    "expo",
+    "expo-modules",
+    "react-native"
+  ],
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-type-information"
+  },
+  "bin": {
+    "expo-type-information": "./bin/cli.js"
+  },
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "echo \"Tests can only be run on MacOS with sourceKitten installed. Run tests locally instead using local-test script.\"",
+    "local-test": "NODE_OPTIONS=\"--experimental-vm-modules\" jest",
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^12.1.0",
+    "prettier": "^3.8.3",
+    "typescript": "~6.0.3",
+    "yaml": "^2.3.2"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*",
+    "jest": "^29.3.1"
+  }
+}

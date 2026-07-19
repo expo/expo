@@ -1,0 +1,338 @@
+import { createHash } from 'crypto';
+import { createReadStream } from 'fs';
+import fs from 'fs/promises';
+import path from 'path';
+import { pipeline, type Readable } from 'stream';
+
+import type {
+  DebugInfoDir,
+  DebugInfoFile,
+  Fingerprint,
+  FingerprintSource,
+  HashResult,
+  HashResultContents,
+  HashResultDir,
+  HashResultFile,
+  HashResultPackage,
+  HashSource,
+  HashSourceContents,
+  HashSourcePackage,
+  NormalizedOptions,
+} from '../Fingerprint.types';
+import { createLimiter, type Limiter } from '../utils/Concurrency';
+import { isIgnoredPathWithMatchObjects, toPosixPath } from '../utils/Path';
+import { nonNullish } from '../utils/Predicates';
+import { profile } from '../utils/Profile';
+import { FileHookTransform } from './FileHookTransform';
+import { ReactImportsPatchTransform } from './ReactImportsPatcher';
+
+/**
+ * Create a `Fingerprint` from `HashSources` array
+ */
+export async function createFingerprintFromSourcesAsync(
+  sources: HashSource[],
+  projectRoot: string,
+  options: NormalizedOptions
+): Promise<Fingerprint> {
+  const limiter = createLimiter(options.concurrentIoLimit);
+  const fingerprintSources = await Promise.all(
+    sources.map((source) => createFingerprintSourceAsync(source, limiter, projectRoot, options))
+  );
+
+  const hasher = createHash(options.hashAlgorithm);
+  for (const source of fingerprintSources) {
+    if (source.hash != null) {
+      hasher.update(createSourceId(source));
+      hasher.update(source.hash);
+    }
+  }
+  const hash = hasher.digest('hex');
+
+  return {
+    sources: fingerprintSources,
+    hash,
+  };
+}
+
+/**
+ * Create a `FingerprintSource` from a `HashSource`
+ * This function will get a hash value and merge back to original source
+ */
+export async function createFingerprintSourceAsync(
+  source: HashSource,
+  limiter: Limiter,
+  projectRoot: string,
+  options: NormalizedOptions
+): Promise<FingerprintSource> {
+  let result: HashResult | null = null;
+  switch (source.type) {
+    case 'contents':
+      result = await createContentsHashResultsAsync(source, options);
+      break;
+    case 'file':
+      result = await createFileHashResultsAsync(source.filePath, limiter, projectRoot, options);
+      break;
+    case 'dir':
+      result = await profile(
+        options,
+        createDirHashResultsAsync,
+        `createDirHashResultsAsync(${source.filePath})`
+      )(source.filePath, limiter, projectRoot, options);
+      break;
+    case 'package':
+      result = await createPackageHashResultsAsync(source, options);
+      break;
+    default:
+      throw new Error('Unsupported source type');
+  }
+
+  return {
+    ...source,
+    hash: result?.hex ?? null,
+    ...(options.debug ? { debugInfo: result?.debugInfo } : undefined),
+  };
+}
+
+/**
+ * Create a `HashResult` from a file
+ */
+export async function createFileHashResultsAsync(
+  filePath: string,
+  limiter: Limiter,
+  projectRoot: string,
+  options: NormalizedOptions
+): Promise<HashResultFile | null> {
+  // Backup code for faster hashing
+  /*
+  return limiter(async () => {
+    if (isIgnoredPathWithMatchObjects(filePath, options.ignorePathMatchObjects)) {
+      return null;
+    }
+
+    const hasher = createHash(options.hashAlgorithm);
+
+    const stat = await fs.stat(filePath);
+    hasher.update(`${stat.size}`);
+
+    const buffer = Buffer.alloc(4096);
+    const fd = await fs.open(filePath, 'r');
+    await fd.read(buffer, 0, buffer.length, 0);
+    await fd.close();
+    hasher.update(buffer);
+    console.log('stat', filePath, stat.size);
+    return { id: path.relative(projectRoot, filePath), hex: hasher.digest('hex') };
+  });
+  */
+
+  return limiter(() => {
+    return new Promise<HashResultFile | null>((resolve, reject) => {
+      if (isIgnoredPathWithMatchObjects(filePath, options.ignorePathMatchObjects)) {
+        return resolve(null);
+      }
+
+      let resolved = false;
+      const hasher = createHash(options.hashAlgorithm);
+      const fileHookTransform: FileHookTransform | null = options.fileHookTransform
+        ? new FileHookTransform(
+            { type: 'file', filePath },
+            options.fileHookTransform,
+            options.debug
+          )
+        : null;
+      let stream: Readable = createReadStream(path.join(projectRoot, filePath), {
+        highWaterMark: 1024,
+      });
+      if (
+        options.enableReactImportsPatcher &&
+        (filePath.endsWith('.h') || filePath.endsWith('.m') || filePath.endsWith('.mm'))
+      ) {
+        const transform = new ReactImportsPatchTransform();
+        stream = pipeline(stream, transform, (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+      }
+      if (fileHookTransform) {
+        stream = pipeline(stream, fileHookTransform, (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+      }
+      stream.on('close', () => {
+        if (!resolved) {
+          const hex = hasher.digest('hex');
+          const isTransformed = fileHookTransform?.isTransformed;
+          const debugInfo = options.debug
+            ? {
+                path: filePath,
+                hash: hex,
+                ...(isTransformed ? { isTransformed } : undefined),
+              }
+            : undefined;
+          resolve({
+            type: 'file',
+            id: filePath,
+            hex,
+            ...(debugInfo ? { debugInfo } : undefined),
+          });
+          resolved = true;
+        }
+      });
+      stream.on('error', (e) => {
+        reject(e);
+      });
+      stream.on('data', (chunk) => {
+        hasher.update(chunk);
+      });
+    });
+  });
+}
+
+/**
+ * Create `HashResult` for a dir.
+ * If the dir is excluded, returns null rather than a HashResult
+ */
+export async function createDirHashResultsAsync(
+  dirPath: string,
+  limiter: Limiter,
+  projectRoot: string,
+  options: NormalizedOptions,
+  depth: number = 0
+): Promise<HashResultDir | null> {
+  // Using `ignoreDirMatchObjects` as an optimization to skip the whole directory
+  if (isIgnoredPathWithMatchObjects(dirPath, options.ignoreDirMatchObjects)) {
+    return null;
+  }
+  const dirents = (await fs.readdir(path.join(projectRoot, dirPath), { withFileTypes: true })).sort(
+    (a, b) => a.name.localeCompare(b.name)
+  );
+
+  const results = (
+    await Promise.all(
+      dirents.map(async (dirent) => {
+        if (dirent.isDirectory()) {
+          const filePath = toPosixPath(path.join(dirPath, dirent.name));
+          return await createDirHashResultsAsync(
+            filePath,
+            limiter,
+            projectRoot,
+            options,
+            depth + 1
+          );
+        } else if (dirent.isFile()) {
+          const filePath = toPosixPath(path.join(dirPath, dirent.name));
+          return await createFileHashResultsAsync(filePath, limiter, projectRoot, options);
+        }
+
+        return null;
+      })
+    )
+  ).filter(nonNullish);
+  if (results.length === 0) {
+    return null;
+  }
+
+  const hasher = createHash(options.hashAlgorithm);
+
+  const children: (DebugInfoFile | DebugInfoDir | undefined)[] = [];
+  for (const result of results) {
+    hasher.update(result.id);
+    hasher.update(result.hex);
+    children.push(result.debugInfo);
+  }
+  const hex = hasher.digest('hex');
+
+  return {
+    type: 'dir',
+    id: dirPath,
+    hex,
+    ...(options.debug ? { debugInfo: { path: dirPath, children, hash: hex } } : undefined),
+  };
+}
+
+/**
+ * Create `HashResult` for a `HashSourceContents`
+ */
+export async function createContentsHashResultsAsync(
+  source: HashSourceContents,
+  options: NormalizedOptions
+): Promise<HashResultContents> {
+  let isTransformed = undefined;
+  if (options.fileHookTransform) {
+    const transformedContents =
+      options.fileHookTransform(
+        {
+          type: 'contents',
+          id: source.id,
+        },
+        source.contents,
+        true /* isEndOfFile */,
+        'utf8'
+      ) ?? '';
+    if (options.debug) {
+      isTransformed = transformedContents !== source.contents;
+    }
+    source.contents = transformedContents;
+  }
+
+  const hex = createHash(options.hashAlgorithm).update(source.contents).digest('hex');
+  const debugInfo = options.debug
+    ? {
+        hash: hex,
+        ...(isTransformed ? { isTransformed } : undefined),
+      }
+    : undefined;
+  return {
+    type: 'contents',
+    id: source.id,
+    hex,
+    ...(debugInfo ? { debugInfo } : undefined),
+  };
+}
+
+/**
+ * Create a `HashResult` for a package from its embedded `name` and `version`.
+ * The sourcer reads these from the `package.json`, so the hash depends on the package identity
+ * rather than its resolved path or unrelated contents.
+ * Returns null when the package is ignored.
+ */
+export async function createPackageHashResultsAsync(
+  source: HashSourcePackage,
+  options: NormalizedOptions
+): Promise<HashResultPackage | null> {
+  if (isIgnoredPathWithMatchObjects(source.filePath, options.ignorePathMatchObjects)) {
+    return null;
+  }
+
+  const { name, version } = source;
+  const hex = createHash(options.hashAlgorithm)
+    .update(JSON.stringify({ name, version }))
+    .digest('hex');
+  const debugInfo = options.debug ? { path: source.filePath, name, version, hash: hex } : undefined;
+  return {
+    type: 'package',
+    id: createSourceId(source),
+    hex,
+    ...(debugInfo ? { debugInfo } : undefined),
+  };
+}
+
+/**
+ * Create id from given source
+ */
+export function createSourceId(source: HashSource): string {
+  switch (source.type) {
+    case 'contents':
+      return source.id;
+    case 'file':
+      return source.overrideHashKey ?? source.filePath;
+    case 'dir':
+      return source.overrideHashKey ?? source.filePath;
+    case 'package':
+      return source.overrideHashKey ?? `${source.name}@${source.version}`;
+    default:
+      throw new Error('Unsupported source type');
+  }
+}

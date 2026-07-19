@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`matches snapshots 1`] = `
+{
+  "OS": "android",
+  "canUseEventListeners": false,
+  "canUseViewport": false,
+  "isDOMAvailable": false,
+  "isNative": true,
+  "isWeb": false,
+}
+`;

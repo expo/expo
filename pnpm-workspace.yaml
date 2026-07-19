@@ -1,0 +1,64 @@
+packages:
+  - apps/*
+  - packages/*
+  - packages/@expo/*
+  - tools
+  - apps/brownfield-tester/expo-app
+  - apps/bare-expo/e2e/image-comparison
+
+ignoreWorkspaceCycles: true
+
+shellEmulator: true
+
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
+  - core-js
+  - esbuild
+  - fmerge
+  - protobufjs
+  - unrs-resolver
+
+linkWorkspacePackages: deep
+
+loglevel: info
+
+onlyBuiltDependencies:
+  - '@shopify/react-native-skia'
+  - better-sqlite3
+  - fsevents
+  - sharp
+  - workerd
+
+patchedDependencies:
+  '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
+  '@shopify/react-native-skia@2.6.2': patches/@shopify__react-native-skia@2.6.2.patch
+  react-native-reanimated: patches/react-native-reanimated.patch
+  react-native-view-shot: patches/react-native-view-shot.patch
+  react-native-worklets: patches/react-native-worklets.patch
+  react-server-dom-webpack: patches/react-server-dom-webpack.patch
+
+preferWorkspacePackages: true
+
+minimumReleaseAge: 1440
+
+minimumReleaseAgeExclude:
+  - '@expo/*'
+  - '@react-native/*'
+  - '@turbo/*'
+  - 'react-native'
+  - multitars
+  - 'react-native-gesture-handler'
+  - 'react-native-reanimated'
+  - 'react-native-screens'
+  - turbo
+  - 'whatwg-url-minimum'
+  - 'expo'
+  - 'expo-asset'
+  - 'expo-constants'
+  - 'expo-modules-autolinking'
+  - 'expo-modules-core'
+  - 'expo-modules-jsi'
+  - 'babel-preset-expo'
+  - 'jest-expo'
+  - '2g'

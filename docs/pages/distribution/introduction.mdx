@@ -1,0 +1,103 @@
+---
+title: 'Distribution: Overview'
+sidebar_title: Overview
+hideTOC: true
+description: An overview of submitting an app to the app stores or with the internal distribution.
+---
+
+import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
+import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStoreIcon';
+import { Globe04DuotoneIcon } from '@expo/styleguide-icons/duotone/Globe04DuotoneIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+
+Get your app into the hands of users by submitting it to the app stores or with [Internal Distribution](/build/internal-distribution).
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Install the CLI',
+      '$ npm install --global eas-cli',
+      '',
+      '# Build and submit your app',
+      '$ eas build --auto-submit',
+      '',
+      '# OR -- Submit existing binaries',
+      '$ eas submit',
+    ],
+    yarn: [
+      '# Install the CLI',
+      '$ yarn global add eas-cli',
+      '',
+      '# Build and submit your app',
+      '$ eas build --auto-submit',
+      '',
+      '# OR -- Submit existing binaries',
+      '$ eas submit',
+    ],
+    pnpm: [
+      '# Install the CLI',
+      '$ pnpm add --global eas-cli',
+      '',
+      '# Build and submit your app',
+      '$ eas build --auto-submit',
+      '',
+      '# OR -- Submit existing binaries',
+      '$ eas submit',
+    ],
+    bun: [
+      '# Install the CLI',
+      '$ bun add --global eas-cli',
+      '',
+      '# Build and submit your app',
+      '$ eas build --auto-submit',
+      '',
+      '# OR -- Submit existing binaries',
+      '$ eas submit',
+    ],
+  }}
+/>
+
+You can run `eas build --auto-submit` with [EAS CLI](/eas) to build your app and automatically upload the binary for distribution on the Google Play Store and Apple App Store.
+
+This automatically manages **all native code signing** for Android and iOS for any React Native app. Advanced features such as payments, notifications, universal links, and iCloud can be automatically enabled based on your [config plugins](/config-plugins/introduction/) or native entitlements, meaning no more wrestling with slow portals to get libraries set up correctly.
+
+### Get started
+
+<BoxLink
+  title="Submit to the Google Play Store"
+  description="Learn how to submit an Android app to the Google Play Store."
+  href="/submit/android"
+  Icon={GoogleAppStoreIcon}
+/>
+
+<BoxLink
+  title="Submit to the Apple App Store"
+  description="Learn how to submit an iOS or an iPadOS app to the Apple App Store from any operating system."
+  href="/submit/ios"
+  Icon={AppleAppStoreIcon}
+/>
+
+<BoxLink
+  title="Internal Distribution"
+  description="Share your mobile app internally with testers using AdHoc builds."
+  href="/build/internal-distribution"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Publish websites"
+  description="Export your website and upload to any web host."
+  href="/guides/publishing-websites"
+  Icon={Globe04DuotoneIcon}
+/>
+
+<BoxLink
+  title="OTA updates"
+  description="Send over-the-air updates to your users instantly."
+  href="/eas-update/introduction"
+  Icon={LayersTwo02Icon}
+/>

@@ -1,0 +1,101 @@
+package expo.modules.kotlin.functions
+
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.ArgumentCastException
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.InvalidArgsNumberException
+import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.JavaScriptObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
+import expo.modules.kotlin.types.AnyType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
+
+/**
+ * Base class of all exported functions
+ */
+abstract class AnyFunction(
+  protected val name: String,
+  protected val desiredArgsTypes: Array<AnyType>
+) {
+  @PublishedApi
+  internal var canTakeOwner: Boolean = false
+
+  @PublishedApi
+  internal var ownerType: TypeDescriptor? = null
+
+  internal var isEnumerable: Boolean = true
+
+  internal val takesOwner: Boolean
+    get() {
+      if (canTakeOwner) {
+        val firstArgumentType = desiredArgsTypes.firstOrNull()?.typeDescriptor?.jClass
+          ?: return false
+
+        if (firstArgumentType == JavaScriptObject::class.java) {
+          return true
+        }
+
+        val ownerClass = ownerType?.typeInfo?.jClass ?: return false
+
+        return firstArgumentType == ownerClass
+      }
+      return false
+    }
+
+  /**
+   * A minimum number of arguments the functions needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
+   */
+  private val requiredArgumentsCount = run {
+    val nonNullableArgIndex = desiredArgsTypes
+      .reversed()
+      .indexOfFirst { !it.typeDescriptor.isNullable }
+    if (nonNullableArgIndex < 0) {
+      return@run 0
+    }
+
+    return@run desiredArgsTypes.size - nonNullableArgIndex
+  }
+
+  /**
+   * Tries to convert arguments from [Any]? to expected types.
+   *
+   * @return An array of converted arguments
+   * @throws `CodedException` if conversion isn't possible
+   */
+  @Throws(CodedException::class)
+  protected fun convertArgs(args: Array<Any?>, appContext: AppContext? = null, forceConversion: Boolean = false): Array<out Any?> {
+    if (requiredArgumentsCount > args.size || args.size > desiredArgsTypes.size) {
+      throw InvalidArgsNumberException(args.size, desiredArgsTypes.size, requiredArgumentsCount)
+    }
+
+    val finalArgs = if (desiredArgsTypes.size == args.size) {
+      args
+    } else {
+      arrayOfNulls<Any?>(desiredArgsTypes.size)
+    }
+    for (index in args.indices) {
+      val element = args[index]
+      val desiredType = desiredArgsTypes[index]
+      exceptionDecorator({ cause ->
+        ArgumentCastException(desiredType.typeDescriptor, index, element?.javaClass.toString(), cause)
+      }) {
+        finalArgs[index] = desiredType.convert(element, appContext, forceConversion)
+      }
+    }
+    return finalArgs
+  }
+
+  /**
+   * Attaches current function to the provided js object.
+   */
+  abstract fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject, moduleName: String)
+
+  internal fun getCppRequiredTypes(): List<ExpectedType> {
+    return desiredArgsTypes.map { it.getCppRequiredTypes() }
+  }
+
+  fun enumerable(isEnumerable: Boolean = true) = apply {
+    this.isEnumerable = isEnumerable
+  }
+}

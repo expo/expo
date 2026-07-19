@@ -1,0 +1,100 @@
+class FileSystemFile {
+  constructor() {
+    console.warn('expo-file-system is not supported on web');
+  }
+  canPreview(_options?: unknown): Promise<boolean> {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve(false);
+  }
+  preview(_options?: unknown): Promise<void> {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.reject(new Error('File preview is not supported on web'));
+  }
+}
+
+class FileSystemDirectory {
+  constructor() {
+    console.warn('expo-file-system is not supported on web');
+  }
+}
+
+class FileSystemUploadTask {
+  start() {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve({ body: '', status: 0, headers: {} });
+  }
+  addListener() {
+    console.warn('expo-file-system is not supported on web');
+    return { remove: () => {} };
+  }
+  release() {
+    console.warn('expo-file-system is not supported on web');
+  }
+  cancel() {
+    console.warn('expo-file-system is not supported on web');
+  }
+}
+
+class FileSystemDownloadTask {
+  start() {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve(null);
+  }
+  pause() {
+    console.warn('expo-file-system is not supported on web');
+    return { resumeData: '' };
+  }
+  resume() {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve(null);
+  }
+  addListener() {
+    console.warn('expo-file-system is not supported on web');
+    return { remove: () => {} };
+  }
+  release() {
+    console.warn('expo-file-system is not supported on web');
+  }
+  cancel() {
+    console.warn('expo-file-system is not supported on web');
+  }
+}
+
+export default {
+  FileSystemDirectory,
+  FileSystemFile,
+  FileSystemUploadTask,
+  FileSystemDownloadTask,
+  downloadFileAsync: () => {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve();
+  },
+  pickDirectoryAsync: () => {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve();
+  },
+  pickFileAsync: () => {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve();
+  },
+  get totalDiskSpace(): number {
+    console.warn('expo-file-system is not supported on web');
+    return 0;
+  },
+  get availableDiskSpace(): number {
+    console.warn('expo-file-system is not supported on web');
+    return 0;
+  },
+  get documentDirectory(): string {
+    console.warn('expo-file-system is not supported on web');
+    return '';
+  },
+  get cacheDirectory(): string {
+    console.warn('expo-file-system is not supported on web');
+    return '';
+  },
+  get bundleDirectory(): string {
+    console.warn('expo-file-system is not supported on web');
+    return '';
+  },
+};

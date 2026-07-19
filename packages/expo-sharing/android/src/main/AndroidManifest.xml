@@ -1,0 +1,21 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+   <application>
+        <provider
+            android:name=".SharingFileProvider"
+            android:authorities="${applicationId}.SharingFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/sharing_provider_paths"/>
+        </provider>
+   </application>
+
+    <queries>
+        <intent>
+            <!-- Required for file sharing if targeting API 30 -->
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
+        </intent>
+    </queries>
+</manifest>

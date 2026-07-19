@@ -1,0 +1,11 @@
+import { UnavailabilityError } from 'expo';
+
+import NotificationChannelGroupManager from './NotificationChannelGroupManager';
+import type { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
+
+export async function getNotificationChannelGroupsAsync(): Promise<NotificationChannelGroup[]> {
+  if (!NotificationChannelGroupManager.getNotificationChannelGroupsAsync) {
+    throw new UnavailabilityError('Notifications', 'getNotificationChannelGroupsAsync');
+  }
+  return await NotificationChannelGroupManager.getNotificationChannelGroupsAsync();
+}

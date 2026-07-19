@@ -1,0 +1,65 @@
+{
+  "name": "expo-navigation-bar",
+  "version": "56.0.3",
+  "description": "Modify and observe the native navigation bar on Android devices.",
+  "keywords": [
+    "android",
+    "expo",
+    "expo-navigation-bar",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/navigation-bar",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-navigation-bar"
+  },
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./plugin": "./plugin/build/index.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js"
+  },
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
+  "dependencies": {
+    "debug": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

@@ -1,0 +1,69 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { type CommonEnvironment, createEnvironment } from './common';
+import { assertRuntimeFetchAPISupport } from '../../ImmutableRequest';
+import { createRequestScope } from '../../runtime';
+import type { ScopeDefinition } from '../../runtime/scope';
+
+interface NodeEnvParams {
+  build: string;
+  environment?: string | null;
+  isDevelopment?: boolean;
+}
+
+export function createNodeEnv(params: NodeEnvParams): CommonEnvironment {
+  assertRuntimeFetchAPISupport();
+
+  async function readText(request: string) {
+    const filePath = path.join(params.build, request);
+    if (!fs.existsSync(filePath)) {
+      return null;
+    }
+    try {
+      return await fs.promises.readFile(filePath, 'utf-8');
+    } catch {
+      return null;
+    }
+  }
+
+  async function readJson(request: string) {
+    const json = await readText(request);
+    return json != null ? JSON.parse(json) : null;
+  }
+
+  async function loadModule(request: string) {
+    const filePath = path.join(params.build, request);
+    if (!fs.existsSync(filePath)) {
+      return null;
+    } else if (/\.c?js$/.test(filePath)) {
+      return require(filePath);
+    } else {
+      return await import(filePath);
+    }
+  }
+
+  return createEnvironment({
+    readText,
+    readJson,
+    loadModule,
+    isDevelopment: params.isDevelopment ?? false,
+  });
+}
+
+const getRequestURLOrigin = (request: Request) => {
+  try {
+    // NOTE: We don't trust any headers on incoming requests in "raw" environments
+    return new URL(request.url).origin || null;
+  } catch {
+    return null;
+  }
+};
+
+export function createNodeRequestScope(scopeDefinition: ScopeDefinition, params: NodeEnvParams) {
+  return createRequestScope(scopeDefinition, (request: Request) => ({
+    requestHeaders: request.headers,
+    origin: getRequestURLOrigin(request),
+    environment: params.environment ?? process.env.NODE_ENV,
+  }));
+}

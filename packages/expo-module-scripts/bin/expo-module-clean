@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { directoryExistsAsync } from '../utils/fileUtils.js';
+
+async function runAsync() {
+  if (!fs.existsSync(path.join(process.cwd(), 'package.json'))) {
+    console.error("The current working directory is not a package's root directory");
+    process.exit(1);
+  }
+
+  // Support `yarn clean plugin` to delete ./plugin/build/
+  const directory = process.argv[2];
+  if (directory && (await directoryExistsAsync(path.join(process.cwd(), directory)))) {
+    await fs.promises.rm(path.join(process.cwd(), directory, 'build'), {
+      recursive: true,
+      force: true,
+    });
+  } else {
+    await fs.promises.rm(path.join(process.cwd(), 'build'), { recursive: true, force: true });
+  }
+}
+
+(async () => {
+  try {
+    await runAsync();
+  } catch (error) {
+    console.error(error);
+    process.exit(error.status || error.code || 1);
+  }
+})();

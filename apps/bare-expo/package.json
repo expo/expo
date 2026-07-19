@@ -1,0 +1,113 @@
+{
+  "name": "bare-expo",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "android": "NODE_ENV=\"development\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 ./scripts/start-emulator.sh",
+    "android:clean": "pushd android; rm -rf ./.gradle && ./gradlew --configure-on-demand; popd",
+    "ios": "NODE_ENV=\"development\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 ./scripts/start-simulator.sh",
+    "test:ios": "NODE_ENV=\"test\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 ./scripts/start-simulator.sh",
+    "test:android": "NODE_ENV=\"test\" EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 ./scripts/start-emulator.sh",
+    "edit:android": "open -a /Applications/Android\\ Studio.app ./android",
+    "edit:ios": "xed ./ios/BareExpo.xcworkspace",
+    "start": "EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 expo start --reset-cache",
+    "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
+    "clear-ios-build": "rm -rf ios/build/; kill $(lsof -t -i:8081)",
+    "open": "./scripts/deep-link.sh test-suite",
+    "nuke": "rm -rf ios/Pods/ && rm -rf ios/build/ && rm -rf android/.gradle",
+    "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.20.0",
+    "@expo/dom-webview": "workspace:*",
+    "@expo/styleguide-base": "^1.0.1",
+    "@expo/ui": "workspace:*",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/datetimepicker": "8.6.0",
+    "@react-native-community/netinfo": "12.0.1",
+    "@react-native-community/slider": "5.1.2",
+    "@react-native-masked-view/masked-view": "0.3.2",
+    "@react-native-picker/picker": "2.11.4",
+    "@react-native-segmented-control/segmented-control": "2.5.7",
+    "@react-navigation/bottom-tabs": "^7.15.5",
+    "@react-navigation/native": "^7.1.33",
+    "@react-navigation/native-stack": "^7.14.5",
+    "@shopify/flash-list": "2.0.2",
+    "@shopify/react-native-skia": "2.6.2",
+    "expo": "workspace:*",
+    "expo-app-metrics": "workspace:*",
+    "expo-background-fetch": "workspace:*",
+    "expo-brownfield": "workspace:*",
+    "expo-build-properties": "workspace:*",
+    "expo-camera": "workspace:*",
+    "expo-dev-client": "workspace:*",
+    "expo-dev-menu": "workspace:*",
+    "expo-font": "workspace:*",
+    "expo-image": "workspace:*",
+    "expo-insights": "workspace:*",
+    "expo-linking": "workspace:*",
+    "expo-location": "workspace:*",
+    "expo-navigation-bar": "workspace:*",
+    "expo-network-addons": "workspace:*",
+    "expo-notifications": "workspace:*",
+    "expo-observe": "workspace:*",
+    "expo-router": "workspace:*",
+    "expo-splash-screen": "workspace:*",
+    "expo-status-bar": "workspace:*",
+    "expo-tracking-transparency": "workspace:*",
+    "expo-updates": "workspace:*",
+    "expo-video": "workspace:*",
+    "expo-web-browser": "workspace:*",
+    "lottie-react-native": "^7.3.8",
+    "native-component-list": "workspace:*",
+    "react": "^19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.0",
+    "react-native-gesture-handler": "~3.0.2",
+    "react-native-keyboard-controller": "^1.21.9",
+    "react-native-pager-view": "8.0.2",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "5.7.0",
+    "react-native-screens": "4.26.0",
+    "react-native-svg": "15.15.4",
+    "react-native-view-shot": "4.0.3",
+    "react-native-webview": "13.16.1",
+    "react-native-worklets": "0.10.1",
+    "test-suite": "workspace:*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@expo/cli": "workspace:*",
+    "@expo/spawn-async": "^1.8.0",
+    "@types/react": "~19.2.0",
+    "babel-preset-expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "jest": "^29.3.1"
+  },
+  "codegenConfig": {
+    "name": "LocalModules",
+    "type": "all",
+    "jsSrcsDir": "./modules"
+  },
+  "expo": {
+    "autolinking": {
+      "legacy_shallowReactNativeLinking": true,
+      "exclude": [
+        "expo-ads-facebook",
+        "expo-ads-admob",
+        "expo-module-template"
+      ],
+      "ios": {
+        "flags": {
+          "inhibit_warnings": false
+        }
+      },
+      "android": {
+        "buildFromSource": [
+          ".*"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,326 @@
+/* eslint-env jest */
+import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
+import JsonFile from '@expo/json-file';
+import * as htmlParser from 'node-html-parser';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { copySync } from '../../src/utils/dir';
+import { toPosixPath } from '../../src/utils/filePath';
+import { executePnpmAsync } from '../utils/expo';
+import { createVerboseLogger } from '../utils/log';
+import { createPackageLink } from '../utils/package';
+import { getTemporaryPath, TEMP_DIR } from '../utils/path';
+import { executeAsync } from '../utils/process';
+
+export { getTemporaryPath } from '../utils/path';
+
+export const bin = require.resolve('../../bin/cli');
+
+// Set this to true to enable caching and prevent rerunning pnpm installs
+const testingLocally = !process.env.CI;
+
+export const projectRoot = getTemporaryPath();
+
+/** Get the directory relative to the default project root. */
+export function getRoot(...args: string[]) {
+  return path.join(projectRoot, ...args);
+}
+
+/**
+ * @param parentDir Directory to create the project folder in, i.e. os temp directory
+ * @param verbose
+ * @param dirName Name of the project folder, used to prevent recreating the project locally
+ * @param reuseExisting Should reuse the existing project if possible, good for testing locally
+ * @param fixtureName Name of the fixture folder to use, this must map to the directories in the `expo/e2e/fixtures/` folder
+ * @param config Optional extra values to add inside the app.json `expo` object
+ * @param pkg Optional extra values to add to the fixture package.json file before installing
+ * @param linkExpoPackages Note, this is linked by installing the workspace folder as dependency directly.
+ * This may cause other side effects, like resolving monorepo dependencies instead of the test project.
+ * @param linkExpoPackagesDev Note, this is linked by installing the workspace folder as dependency directly.
+ * This may cause other side effects, like resolving monorepo dependencies instead of the test project.
+ * @returns The project root that can be tested inside of
+ */
+export async function createFromFixtureAsync(
+  parentDir: string,
+  {
+    verbose,
+    dirName,
+    reuseExisting,
+    fixtureName,
+    config,
+    pkg,
+    linkExpoPackages = ['expo'],
+    linkExpoPackagesDev = [],
+  }: {
+    verbose?: boolean;
+    dirName: string;
+    reuseExisting?: boolean;
+    fixtureName: string;
+    config?: Partial<ExpoConfig>;
+    pkg?: Partial<PackageJSONConfig>;
+    linkExpoPackages?: string[];
+    linkExpoPackagesDev?: string[];
+  }
+): Promise<string> {
+  const projectRoot = path.join(parentDir, dirName);
+  const log = createVerboseLogger({ verbose, prefix: 'project' });
+
+  log('Creating fixture:', {
+    parentDir,
+    dirName,
+    reuseExisting,
+    fixtureName,
+    config,
+    pkg,
+    linkExpoPackages,
+    linkExpoPackagesDev,
+  });
+
+  if (fs.existsSync(projectRoot)) {
+    if (reuseExisting) {
+      log('Reusing existing fixture project:', projectRoot);
+      log.exit();
+
+      // bail out early, this is good for local testing.
+      return projectRoot;
+    } else {
+      log('Clearing existing fixture project:', projectRoot);
+      // NOTE(@kitten): Rename first to quickly move project out of the way
+      const tempName = getTemporaryPath();
+      await fs.promises.rename(projectRoot, tempName);
+      await fs.promises.rm(tempName, { recursive: true, force: true });
+    }
+  }
+
+  try {
+    const fixturePath = path.join(__dirname, '../fixtures', fixtureName);
+
+    if (!fs.existsSync(fixturePath)) {
+      throw new Error('No fixture project named: ' + fixtureName);
+    }
+
+    // Create the project root
+    fs.mkdirSync(projectRoot, { recursive: true });
+    log('Created fixture project:', projectRoot);
+
+    // Copy all files recursively into the temporary directory
+    copySync(fixturePath, projectRoot);
+
+    // Add additional modifications to the package.json
+    pkg ??= {};
+    if (pkg || linkExpoPackages || linkExpoPackagesDev) {
+      const pkgPath = path.join(projectRoot, 'package.json');
+      const fixturePkg = (await JsonFile.readAsync(pkgPath)) as PackageJSONConfig;
+
+      const dependencies = Object.assign({}, fixturePkg.dependencies, pkg.dependencies);
+      const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
+      const resolutions = Object.assign({}, fixturePkg.resolutions, pkg.resolutions);
+
+      if (dependencies['expo']) linkExpoPackages.push('expo');
+      if (dependencies['expo-router']) linkExpoPackages.push('expo-router');
+
+      for (const pkg of linkExpoPackages) {
+        const link = createPackageLink(projectRoot, `packages/${pkg}`);
+        log('Linked into dependencies', pkg);
+        dependencies[pkg] = '*';
+        resolutions[pkg] = link;
+      }
+
+      for (const pkg of linkExpoPackagesDev) {
+        const link = createPackageLink(projectRoot, `packages/${pkg}`);
+        log('Linked into devDependencies', pkg);
+        devDependencies[pkg] = '*';
+        resolutions[pkg] = link;
+      }
+
+      await JsonFile.writeAsync(pkgPath, {
+        ...pkg,
+        ...fixturePkg,
+        dependencies,
+        devDependencies,
+        resolutions,
+        scripts: Object.assign({}, fixturePkg.scripts, pkg.scripts),
+      });
+    }
+
+    // Add additional modifications to the Expo config
+    if (config) {
+      const { rootConfig, staticConfigPath } = getConfig(projectRoot, {
+        // pkgs not installed yet
+        skipSDKVersionRequirement: true,
+        skipPlugins: true,
+      });
+
+      const modifiedConfig = {
+        ...rootConfig,
+        expo: {
+          ...(rootConfig.expo || {}),
+          ...config,
+        },
+      };
+      assert(staticConfigPath);
+      await JsonFile.writeAsync(staticConfigPath, modifiedConfig as any);
+    }
+
+    // Install the packages for e2e experience.
+    await executePnpmAsync(projectRoot, ['install']);
+  } catch (error) {
+    log.error(error);
+    throw error;
+  } finally {
+    log.exit();
+  }
+
+  return projectRoot;
+}
+
+export async function setupTestProjectWithOptionsAsync(
+  name: string,
+  fixtureName: string,
+  {
+    reuseExisting = testingLocally,
+    linkExpoPackages,
+    linkExpoPackagesDev,
+  }: {
+    reuseExisting?: boolean;
+    linkExpoPackages?: string[];
+    linkExpoPackagesDev?: string[];
+  } = {}
+): Promise<string> {
+  // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
+  const projectRoot = await createFromFixtureAsync(TEMP_DIR, {
+    dirName: name,
+    reuseExisting,
+    fixtureName,
+    linkExpoPackages,
+    linkExpoPackagesDev,
+  });
+  return projectRoot;
+}
+
+/** Returns a list of loaded modules relative to the repo root. Useful for preventing lazy loading from breaking unexpectedly. */
+export async function getLoadedModulesAsync(statement: string): Promise<string[]> {
+  const repoRoot = path.join(__dirname, '../../../../');
+  const results = await executeAsync(__dirname, [
+    'node',
+    '-e',
+    [statement, `console.log(JSON.stringify(Object.keys(require('module')._cache)));`].join(';'),
+  ]);
+  const loadedModules = JSON.parse(results.stdout.trim()) as string[];
+  return loadedModules
+    .map((value) => toPosixPath(path.relative(repoRoot, value)))
+    .filter((value) => !value.includes('/ms-vscode.js-debug/')) // Ignore injected vscode debugger scripts
+    .sort();
+}
+
+export async function getPage(output: string, route: string): Promise<string> {
+  return await fs.promises.readFile(path.join(output, route), 'utf8');
+}
+
+export async function getPageHtml(output: string, route: string) {
+  return htmlParser.parse(await getPage(output, route));
+}
+
+export function getHtml(html: string) {
+  return htmlParser.parse(html);
+}
+
+export function getRouterE2ERoot(): string {
+  return path.join(__dirname, '../../../../../apps/router-e2e');
+}
+
+export function getHtmlHelpers(outputDir: string) {
+  async function getScriptTagsAsync(name: string) {
+    const tags = (await getPageHtml(outputDir, name))
+      .querySelectorAll('script')
+      // Remove scripts without a src attribute
+      .filter((script) => !!script.attributes.src)
+      .map((script) => {
+        expect(fs.existsSync(path.join(outputDir, script.attributes.src ?? ''))).toBe(true);
+
+        return script.attributes.src;
+      });
+
+    ensureEntryChunk(tags[0]);
+
+    return tags;
+  }
+
+  function ensureEntryChunk(relativePath: string | undefined) {
+    expect(fs.readFileSync(path.join(outputDir, relativePath ?? ''), 'utf8')).toMatch(
+      /__BUNDLE_START_TIME__/
+    );
+  }
+
+  return {
+    getScriptTagsAsync,
+  };
+}
+
+export function expectChunkPathMatching(name: string) {
+  return expect.stringMatching(
+    new RegExp(
+      `_expo\\/static\\/js\\/web\\/${name.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
+    )
+  );
+}
+
+/**
+ * Find all project files in the given project root.
+ * This returns all paths in POSIX format, sorted alphabetically, and relative to the project root without any prefix.
+ */
+export function findProjectFiles(projectRoot: string) {
+  const baseDir = path.resolve(projectRoot);
+  const results: string[] = [];
+  function list(dir: string = '') {
+    const target = path.resolve(baseDir, dir);
+    const entries = fs.readdirSync(target, { withFileTypes: true });
+    entries.sort((a, b) => a.name.localeCompare(b.name));
+    for (const entry of entries) {
+      const name = dir ? path.join(dir, entry.name) : entry.name;
+      if (entry.isFile()) {
+        results.push(toPosixPath(name));
+      } else if (entry.isDirectory() && entry.name !== 'node_modules') {
+        list(name);
+      }
+    }
+  }
+  list();
+  return results.sort();
+}
+
+export function stripWhitespace(str: string): string {
+  return str.replace(/\s+/g, '').trim();
+}
+
+/**
+ * Gets the data from a page and its associated loader.
+ *
+ * @remarks We retrieve the loader first to check for a module ID collision between the main and
+ * loader bundles. See https://github.com/expo/expo/pull/42245
+ */
+export function getPageAndLoaderData(url: string, addIndexSuffixToLoaderPath?: boolean) {
+  let effectiveLoaderPath = url === '/' ? '/index' : url;
+  if (addIndexSuffixToLoaderPath) {
+    effectiveLoaderPath += '/index';
+  }
+  return [
+    {
+      name: 'loader endpoint',
+      url: `/_expo/loaders${effectiveLoaderPath}`,
+      getData: (response: Response) => {
+        return response.json();
+      },
+    },
+    {
+      name: 'page',
+      url: `${url}`,
+      getData: async (response: Response) => {
+        const html = getHtml(await response.text());
+        return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
+      },
+    },
+  ];
+}

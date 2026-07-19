@@ -1,0 +1,115 @@
+#!/usr/bin/env bun
+
+import { Command } from 'commander';
+import path from 'node:path';
+import { chalk } from 'zx';
+
+import packageJSON from '../package.json';
+import { packExpoBareTemplateTarballAsync } from './ExpoRepo.js';
+import { getNpmVersionAsync } from './Npm.js';
+import { reinstallPackagesAsync } from './Packages.js';
+import { applyPatchesGlobAsync } from './Patch.js';
+import { setDefaultVerbose } from './Processes.js';
+import {
+  type ProjectProperties,
+  createExpoApp,
+  installCocoaPodsAsync,
+  prebuildAppAsync,
+  setupGradleForNightlyAsync,
+} from './Project.js';
+import { checkRequiredToolsAsync } from './SanityChecks.js';
+
+const PACKAGE_ROOT = path.dirname(import.meta.dirname);
+
+const program = new Command(packageJSON.name)
+  .version(packageJSON.version)
+  .description('Create an app for react-native nightlies testing.')
+  .argument('[path]', 'The output path for the app.', '.')
+  .option('--name <name>', 'The name of the app to create.', 'test-nightlies')
+  .option(
+    '--expo-repo <path>',
+    'The path to the expo repository. (default: Cloning to the "expo" directory in the output app)'
+  )
+  .option('-v, --verbose', 'Verbose output.')
+  .option(
+    '--app-id <name>',
+    'The Android applicationId and iOS bundleIdentifier.',
+    'dev.expo.testnightlies'
+  )
+  .option('--no-install', 'Skip installing CocoaPods.')
+  .parse(process.argv);
+
+async function runAsync(programName: string) {
+  const programOpts = program.opts();
+  setDefaultVerbose(!!programOpts.verbose);
+  await checkRequiredToolsAsync(['bun', 'git', 'npm', 'yarn']);
+
+  const projectName = programOpts.name;
+  const projectRoot = path.join(path.resolve(program.args[0] || '.'), projectName);
+  const nightlyVersion = await getNpmVersionAsync('react-native', 'nightly');
+  const projectProps: ProjectProperties = {
+    appId: programOpts.appId,
+    nightlyVersion,
+    useExpoRepoPath: programOpts.expoRepo,
+  };
+  console.log(
+    chalk.cyan(
+      `Setting up app at ${chalk.bold(projectRoot)} with ${chalk.bold(
+        'react-native@' + nightlyVersion
+      )}`
+    )
+  );
+  const expoRepoPath = await createExpoApp(projectRoot, projectProps);
+
+  console.log(chalk.cyan(`Reinstalling packages`));
+  await reinstallPackagesAsync(projectRoot);
+
+  await applyPatchesGlobAsync({
+    patchGlobPattern: 'packages/**/*.patch',
+    patchRoot: path.join(PACKAGE_ROOT, 'patches'),
+    cwd: expoRepoPath,
+    // Assume the patches have `a/packages/b/c/d.patch` format,
+    // so we need to strip 1 level of prefixes into the expo repo path.
+    stripPrefixNum: 1,
+  });
+  await applyPatchesGlobAsync({
+    patchGlobPattern: 'node_modules/**/*.patch',
+    patchRoot: path.join(PACKAGE_ROOT, 'patches'),
+    cwd: projectRoot,
+    destination: 'node_modules',
+    // Assume the patches have `a/node_modules/b/c/d.patch` format,
+    // so we need to strip 2 levels of prefixes into the node_modules directory.
+    stripPrefixNum: 2,
+  });
+
+  console.log(chalk.cyan(`Creating expo-template-bare-minimum tarball`));
+  const tarballPath = await packExpoBareTemplateTarballAsync(
+    expoRepoPath,
+    path.join(projectRoot, '.expo')
+  );
+  console.log(chalk.cyan(`Running prebuild`));
+  await prebuildAppAsync(projectRoot, tarballPath);
+
+  console.log(chalk.cyan(`Setting up Gradle for nightly`));
+  await setupGradleForNightlyAsync(projectRoot, expoRepoPath);
+
+  if (programOpts.install) {
+    if (process.platform === 'darwin') {
+      await checkRequiredToolsAsync(['pod']);
+      console.log(`Installing CocoaPods dependencies`);
+      console.time('Installed CocoaPods dependencies');
+      await installCocoaPodsAsync(projectRoot);
+      console.timeEnd('Installed CocoaPods dependencies');
+    }
+  }
+}
+
+(async () => {
+  program.parse(process.argv);
+  try {
+    await runAsync(packageJSON.name);
+  } catch (e) {
+    console.error('Uncaught Error', e);
+    process.exit(1);
+  }
+})();

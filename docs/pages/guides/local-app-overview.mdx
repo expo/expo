@@ -1,0 +1,84 @@
+---
+title: 'Build locally: Overview'
+sidebar_title: Overview
+description: An overview of how to build your app locally using your own machine for Expo projects.
+searchRank: 90
+searchPosition: 1
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+
+You can leverage your local development environment to build your app locally by utilizing Android Studio and Xcode. This build process can be done for both debug and release builds. This page provides an overview on different ways to build your app locally using your own machine and references to other guides that might be necessary in this workflow.
+
+## When to build your app locally
+
+There are different scenarios when you want to build your app on your developer machine:
+
+- You want to iterate quickly on native code changes or test platform-specific changes in your debug build
+- You want to manually generate native code to test your debug build
+- Any scenario where you are required to create builds inside an environment where access to a network is restricted.
+- You want to locally manage your own credentials (such as upload key, and so on)
+- You want to test or integrate your own custom build cache provider
+- You want to opt out of prebuilt Expo Modules for Android and compile them from source locally once
+
+> **Note**: Building your app locally complements EAS Build. You can keep using the build service for cloud automation and fall back to local builds for development.
+
+<Prerequisites>
+  <Requirement title="Android Studio">
+    [Set up Android
+    Studio](/get-started/set-up-your-environment/?platform=android&device=physical&mode=development-build&buildEnv=local#set-up-an-android-device-with-a-development-build)
+    to compile and run Android projects on your local machine.
+  </Requirement>
+  <Requirement title="Xcode">
+    [Set up
+    Xcode](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-an-ios-device-with-a-development-build)
+    to compile and run iOS projects on your local machine.
+  </Requirement>
+</Prerequisites>
+
+## Creating your debug build locally
+
+To quickly build and iterate on a debug build, you can use Expo CLI's `npx expo run:[android|ios]` commands. These commands compile your project, using your locally installed Android SDK or Xcode, into a debug build of your app.
+
+<BoxLink
+  title="Create a debug build locally"
+  description="Learn how to create a debug build for your Expo app locally."
+  href="/guides/local-app-development/"
+  Icon={BookOpen02Icon}
+/>
+
+## Creating your release build locally
+
+To create a release build (also known as production build) of your app, you generate signing credentials by utilizing tools provided by Android Studio and Xcode. Then, you can generate a release build and follow the process of manually submitting your app to Google Play Store or Apple App Store.
+
+<BoxLink
+  title="Create a release build locally"
+  description="Generate signed Android App Bundles, archive iOS builds in Xcode, and submit them manually to app stores."
+  href="/guides/local-app-production/"
+  Icon={BookOpen02Icon}
+/>
+
+## Reuse previous builds from a provider
+
+You can accelerate your local development by caching and reusing builds from a provider. You can use EAS as a build provider or create your own custom provider.
+
+<BoxLink
+  title="Use build cache providers"
+  description="Enable EAS build caching or ship a custom provider to shorten local build times."
+  href="/guides/cache-builds-remotely/"
+  Icon={BookOpen02Icon}
+/>
+
+## Prebuilt Expo Modules for Android
+
+Expo ships prebuilt Expo Modules for Android that reduce the work Gradle performs on each build. You can continue using the defaults or selectively opt out when you need to modify a module's source code.
+
+<BoxLink
+  title="Prebuilt Expo Modules for Android"
+  description="Understand how prebuilt modules work and learn how to opt out globally or per package."
+  href="/guides/prebuilt-expo-modules/"
+  Icon={BookOpen02Icon}
+/>

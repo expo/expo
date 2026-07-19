@@ -1,0 +1,139 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+    classpath("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
+
+def configureInRelease = findProperty("expo.devlauncher.configureInRelease") == "true"
+if (configureInRelease) {
+  println("expo-dev-launcher will be enabled in release")
+}
+
+
+expoModule {
+  canBePublished false
+}
+
+group = "host.exp.exponent"
+version = "56.0.16"
+
+android {
+  namespace "expo.modules.devlauncher"
+  defaultConfig {
+    versionCode 9
+    versionName "56.0.16"
+  }
+
+  buildTypes {
+    create("debugOptimized") {
+      initWith(buildTypes.debug)
+      matchingFallbacks += ["release"]
+    }
+
+    buildTypes.each {
+      it.buildConfigField 'String', 'VERSION', "\"${defaultConfig.versionName}\""
+    }
+  }
+
+  sourceSets {
+    debugOptimized {
+      setRoot 'src/debug'
+    }
+
+
+    release {
+      if (configureInRelease) {
+        java.srcDir 'src/debug/java'
+        res.srcDir 'src/debug/res'
+      } else {
+        java.srcDir 'src/disableInRelease/java'
+        res.srcDir 'src/disableInRelease/res'
+      }
+    }
+  }
+
+  buildFeatures {
+    buildConfig true
+    viewBinding true
+  }
+}
+
+repositories {
+  // ref: https://www.baeldung.com/maven-local-repository
+  mavenLocal()
+  maven {
+    // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+    url "$rootDir/../node_modules/react-native/android"
+  }
+  maven {
+    // Android JSC is installed from npm
+    url "$rootDir/../node_modules/jsc-android/dist"
+  }
+  google()
+}
+
+dependencies {
+  def debugOnly = { notation ->
+    //noinspection DependencyNotationArgument
+    debugImplementation notation
+    //noinspection DependencyNotationArgument
+    debugOptimizedImplementation notation
+    //noinspection DependencyNotationArgument
+    testImplementation notation
+
+    if (configureInRelease) {
+      //noinspection DependencyNotationArgument
+      releaseImplementation notation
+    }
+  }
+
+  implementation 'com.facebook.react:react-android'
+  implementation 'androidx.core:core-ktx:1.17.0'
+
+  debugOnly project(":expo-dev-menu-interface")
+  debugOnly project(":expo-manifests")
+  debugOnly project(":expo-updates-interface")
+  debugOnly project(":expo-dev-menu")
+
+  debugOnly 'com.squareup.okhttp3:okhttp:4.9.2'
+  debugOnly 'com.google.code.gson:gson:2.13.2'
+
+  debugOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+  debugOnly("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
+  def composeVersion = "1.9.0"
+
+  // it's needed by the compose compiler plugin, but it won't leak to the app module
+  releaseCompileOnly "androidx.compose.foundation:foundation-android:$composeVersion"
+  debugOnly "androidx.compose.foundation:foundation-android:$composeVersion"
+  debugOnly "androidx.compose.ui:ui:$composeVersion"
+  debugOnly "androidx.compose.ui:ui-tooling:$composeVersion"
+  debugOnly "androidx.navigation:navigation-compose:2.9.4"
+
+  def lifecycleVersion = "2.10.0"
+  debugOnly "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+  debugOnly "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion"
+
+  debugOnly "com.google.android.gms:play-services-code-scanner:16.1.0"
+  debugOnly "com.google.mlkit:barcode-scanning:17.3.0"
+
+  debugOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+
+  debugOnly("com.composables:core:1.49.9")
+
+  testImplementation 'androidx.test:core:1.7.0'
+  testImplementation 'androidx.test:core-ktx:1.7.0'
+  testImplementation "com.google.truth:truth:1.4.5"
+  testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.2'
+  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation "org.robolectric:robolectric:4.16"
+}

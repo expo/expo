@@ -1,0 +1,57 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+  <!-- Required for picking images from camera directly -->
+  <uses-permission android:name="android.permission.CAMERA" />
+
+  <!-- Required for picking images from camera roll -->
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+  <application>
+    <service
+      android:name="com.google.android.gms.metadata.ModuleDependencies"
+      android:enabled="false"
+      android:exported="false"
+      tools:ignore="MissingClass">
+      <intent-filter>
+        <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+      </intent-filter>
+      <meta-data
+        android:name="photopicker_activity:0:required"
+        android:value="" />
+    </service>
+
+    <!-- Prevent external apps from directly invoking the underlying cropper library activity.
+         The library declares this activity with exported="true". -->
+    <activity
+      android:name="com.canhub.cropper.CropImageActivity"
+      android:exported="false"
+      tools:replace="android:exported" />
+    <activity
+      android:name="expo.modules.imagepicker.ExpoCropImageActivity"
+      android:theme="@style/Theme.AppCompat.DayNight"
+      android:exported="false"
+      tools:replace="android:exported" />
+    <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
+    <provider
+      android:name=".fileprovider.ImagePickerFileProvider"
+      android:authorities="${applicationId}.ImagePickerFileProvider"
+      android:exported="false"
+      android:grantUriPermissions="true">
+      <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/image_picker_provider_paths" />
+    </provider>
+  </application>
+
+  <queries>
+    <intent>
+      <!-- Required for picking images from the camera roll if targeting API 30 -->
+      <action android:name="android.media.action.IMAGE_CAPTURE" />
+    </intent>
+    <intent>
+      <!-- Required for picking images from the camera if targeting API 30 -->
+      <action android:name="android.media.action.ACTION_VIDEO_CAPTURE" />
+    </intent>
+  </queries>
+</manifest>

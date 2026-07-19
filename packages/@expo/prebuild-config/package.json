@@ -1,0 +1,58 @@
+{
+  "name": "@expo/prebuild-config",
+  "version": "56.0.12",
+  "description": "Get the prebuild config",
+  "keywords": [
+    "expo",
+    "json",
+    "react",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/prebuild-config#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/prebuild-config"
+  },
+  "files": [
+    "build"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@expo/config": "workspace:~56.0.9",
+    "@expo/config-plugins": "workspace:~56.0.8",
+    "@expo/config-types": "workspace:^56.0.5",
+    "@expo/image-utils": "workspace:^0.10.1",
+    "@expo/json-file": "workspace:^10.2.0",
+    "@react-native/normalize-colors": "0.86.0",
+    "debug": "^4.3.1",
+    "expo-modules-autolinking": "workspace:~56.0.13",
+    "resolve-from": "^5.0.0",
+    "semver": "^7.6.0"
+  },
+  "devDependencies": {
+    "@expo/plist": "workspace:*",
+    "@types/debug": "^4.1.5",
+    "@types/semver": "^7.5.8",
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
+  }
+}

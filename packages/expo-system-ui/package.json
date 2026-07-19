@@ -1,0 +1,57 @@
+{
+  "name": "expo-system-ui",
+  "version": "56.0.5",
+  "description": "Interact with system UI elements",
+  "keywords": [
+    "appearance",
+    "background-color",
+    "expo",
+    "react-native",
+    "user-interface"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/system-ui",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-system-ui"
+  },
+  "main": "build/SystemUI.js",
+  "types": "build/SystemUI.d.ts",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
+  "dependencies": {
+    "@react-native/normalize-colors": "0.86.0",
+    "debug": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-web": {
+      "optional": true
+    }
+  }
+}

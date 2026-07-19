@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <queries>
+    <intent>
+      <!-- Required for opening event in calendar if targeting API 30 -->
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="content" />
+    </intent>
+  </queries>
+</manifest>

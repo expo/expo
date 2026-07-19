@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders static 1`] = `
+<div
+  className="css-view-175oi2r r-pointerEvents-12vffkv"
+  dir={null}
+>
+  <canvas
+    className="r-bottom-1p0dtai r-left-1d2f490 r-position-u8s1d r-right-zchlnj r-top-ipm5af"
+  />
+</div>
+`;

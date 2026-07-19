@@ -1,0 +1,20 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.14'
+
+android {
+  namespace "expo.modules.location"
+  defaultConfig {
+    versionCode 29
+    versionName "56.0.14"
+    consumerProguardFiles("proguard-rules.pro")
+  }
+}
+
+dependencies {
+  api 'com.google.android.gms:play-services-location:21.0.1'
+}

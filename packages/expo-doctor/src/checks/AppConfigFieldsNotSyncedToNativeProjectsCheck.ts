@@ -1,0 +1,97 @@
+import fs from 'fs';
+import path from 'path';
+
+import { learnMore } from '../utils/TerminalLink';
+import { env } from '../utils/env';
+import { existsAndIsNotIgnoredAsync } from '../utils/files';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+
+const appConfigFieldsToSyncWithNative = [
+  'ios',
+  'android',
+  'plugins',
+  'icon',
+  'scheme',
+  'userInterfaceStyle',
+  'splash',
+  'orientation',
+  'backgroundColor',
+  'primaryColor',
+  'notification',
+  'androidStatusBar',
+  'androidNavigationBar',
+  'locales',
+];
+
+export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorCheck {
+  description = 'Check for app config fields that may not be synced in a non-CNG project';
+
+  sdkVersionRange = '*';
+
+  async runAsync({
+    exp,
+    projectRoot,
+    staticConfigPath,
+    dynamicConfigPath,
+  }: DoctorCheckParams): Promise<DoctorCheckResult> {
+    const issues: string[] = [];
+    const advice: string[] = [];
+    const appJsonFields: string[] = Object.keys(exp);
+    const unsyncedFields: string[] = [];
+    const isBuildingOnEAS: boolean = fs.existsSync('eas.json');
+    const prebuildMessage: string = isBuildingOnEAS
+      ? 'EAS Build will not sync the following properties:'
+      : `if you don't run prebuild in your build pipeline, the following properties will not be synced:`;
+    const ignoreFile: string = fs.existsSync('.easignore') ? '.easignore' : '.gitignore';
+
+    // iterate over all fields in app.json and add those that will not be synced to unsyncedFields array
+    for (const field of appJsonFields) {
+      if (appConfigFieldsToSyncWithNative.includes(field)) {
+        unsyncedFields.push(field);
+      }
+    }
+
+    const iosTracked = await existsAndIsNotIgnoredAsync(
+      path.join(projectRoot, 'ios', 'Podfile'),
+      isBuildingOnEAS
+    );
+
+    const androidTracked = await existsAndIsNotIgnoredAsync(
+      path.join(projectRoot, 'android', 'build.gradle'),
+      isBuildingOnEAS
+    );
+
+    if (unsyncedFields.length && (iosTracked || androidTracked)) {
+      // get the name of the config file
+      const configFilePath = dynamicConfigPath ?? staticConfigPath;
+      const configFileName = path.basename(configFilePath ?? 'app.json');
+
+      issues.push(
+        `This project contains native project folders but also has native configuration properties in ${configFileName}, indicating it is configured to use Prebuild. When the android/ios folders are present, ${prebuildMessage} ${unsyncedFields.join(', ')}. \n`
+      );
+
+      const easPlatform = env.EAS_BUILD_PLATFORM;
+
+      if (easPlatform && isBuildingOnEAS) {
+        advice.push(
+          `Add '/${easPlatform}' to your ${ignoreFile} file if you intend to use CNG / Prebuild. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`
+        );
+
+        if (easPlatform === 'android') {
+          const gradleDir = await existsAndIsNotIgnoredAsync(
+            path.join(projectRoot, 'android', '.gradle'),
+            isBuildingOnEAS
+          );
+
+          if (gradleDir) {
+            advice.push(
+              `If you intend to not use CNG, add '/android/.gradle' to your ${ignoreFile} to avoid committing Gradle caches`
+            );
+          }
+        }
+      }
+    }
+
+    return { isSuccessful: issues.length === 0, issues, advice };
+  }
+}

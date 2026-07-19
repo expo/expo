@@ -1,0 +1,113 @@
+package host.exp.exponent.experience
+
+import android.app.Application
+import com.facebook.react.ReactPackage
+import com.facebook.react.defaults.DefaultReactNativeHost
+import com.facebook.react.shell.MainReactPackage
+import com.swmansion.worklets.WorkletsPackage
+import com.swmansion.reanimated.ReanimatedPackage
+import host.exp.exponent.ExponentManifest
+import host.exp.expoview.Exponent
+import versioned.host.exp.exponent.ExpoTurboPackage
+import versioned.host.exp.exponent.ExponentPackage
+
+interface ExpoNativeHost {
+  var devSupportEnabled: Boolean
+  var mainModuleName: String?
+}
+
+class ExpoGoReactNativeHost(
+  application: Application,
+  private val instanceManagerBuilderProperties: Exponent.InstanceManagerBuilderProperties
+) : DefaultReactNativeHost(application), ExpoNativeHost {
+  override var devSupportEnabled = false
+  override var mainModuleName: String? = null
+
+  override fun getUseDeveloperSupport(): Boolean {
+    return devSupportEnabled
+  }
+
+  public override fun getJSMainModuleName(): String {
+    return mainModuleName ?: super.getJSMainModuleName()
+  }
+
+  public override fun getJSBundleFile(): String? {
+    return instanceManagerBuilderProperties.jsBundlePath
+  }
+
+  override val isHermesEnabled = true
+
+  override val isNewArchEnabled = true
+
+  public override fun getPackages(): MutableList<ReactPackage> {
+    return mutableListOf(
+      MainReactPackage(null),
+      WorkletsPackage(),
+      ReanimatedPackage(),
+      ExponentPackage(
+        instanceManagerBuilderProperties.experienceProperties,
+        instanceManagerBuilderProperties.manifest,
+        // DO NOT EDIT THIS COMMENT - used by versioning scripts
+        // When distributing change the following two arguments to nulls
+        instanceManagerBuilderProperties.expoPackages,
+        instanceManagerBuilderProperties.exponentPackageDelegate,
+        instanceManagerBuilderProperties.singletonModules
+      ),
+      ExpoTurboPackage(
+        instanceManagerBuilderProperties.experienceProperties,
+        instanceManagerBuilderProperties.manifest
+      )
+    )
+  }
+}
+
+data class KernelData(
+  val initialURL: String? = null,
+  val localBundlePath: String? = null
+)
+
+class KernelReactNativeHost(
+  application: Application,
+  private val exponentManifest: ExponentManifest,
+  private val data: KernelData?
+) : DefaultReactNativeHost(application), ExpoNativeHost {
+  override var devSupportEnabled = false
+  override var mainModuleName: String? = null
+
+  override fun getUseDeveloperSupport(): Boolean {
+    return devSupportEnabled
+  }
+
+  override val isHermesEnabled = true
+
+  override val isNewArchEnabled = true
+
+  public override fun getJSBundleFile(): String? {
+    return data?.localBundlePath
+  }
+
+  public override fun getJSMainModuleName(): String {
+    return if (devSupportEnabled) {
+      exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
+    } else {
+      mainModuleName ?: super.getJSMainModuleName()
+    }
+  }
+
+  public override fun getPackages(): MutableList<ReactPackage> {
+    return mutableListOf(
+      MainReactPackage(null),
+      WorkletsPackage(),
+      ReanimatedPackage(),
+      ExponentPackage.kernelExponentPackage(
+        application.applicationContext,
+        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,
+        data?.initialURL
+      ),
+      ExpoTurboPackage.kernelExpoTurboPackage(
+        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,
+        data?.initialURL
+      )
+    )
+  }
+}

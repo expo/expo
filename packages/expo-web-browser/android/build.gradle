@@ -1,0 +1,26 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.5'
+
+android {
+  namespace "expo.modules.webbrowser"
+  defaultConfig {
+    versionCode 18
+    versionName '56.0.5'
+  }
+}
+
+dependencies {
+  implementation "androidx.browser:browser:1.6.0"
+
+  implementation "androidx.core:core-ktx:1.17.0"
+
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
+  }
+  testImplementation "org.robolectric:robolectric:4.16"
+}

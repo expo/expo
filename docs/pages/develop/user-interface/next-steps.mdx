@@ -1,0 +1,31 @@
+---
+title: Next steps
+description: A list of useful resources to learn more about implementing navigation and UI in your app.
+hideTOC: true
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Settings02Icon } from '@expo/styleguide-icons/outline/Settings02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+<BoxLink
+  title="Use TypeScript"
+  Icon={Settings02Icon}
+  description="An in-depth guide on configuring an Expo project with TypeScript or migrating an existing JavaScript project."
+  href="/guides/typescript/"
+/>
+
+<BoxLink
+  title="Icons"
+  Icon={BookOpen02Icon}
+  description="Learn how to use various types of icons in your Expo app, including vector icons, custom icon fonts, icon images, and icon buttons."
+  href="/guides/icons/"
+/>
+
+<BoxLink
+  title="ESLint and Prettier"
+  Icon={BookOpen02Icon}
+  description="A guide on configuring ESLint and Prettier to format Expo projects."
+  href="/guides/using-eslint/"
+/>

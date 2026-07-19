@@ -1,0 +1,36 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.7'
+
+android {
+  namespace "expo.modules.filesystem"
+  defaultConfig {
+    versionCode 30
+    versionName "56.0.7"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+  testOptions {
+    unitTests.includeAndroidResources = true
+  }
+}
+
+dependencies {
+  api 'commons-codec:commons-codec:1.10'
+  api 'commons-io:commons-io:1.4'
+  api 'com.squareup.okhttp3:okhttp:4.9.2'
+  api 'com.squareup.okhttp3:okhttp-urlconnection:4.9.2'
+  api 'com.squareup.okio:okio:2.9.0'
+  api "androidx.documentfile:documentfile:1.1.0"
+  implementation 'com.facebook.react:react-android'
+
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.robolectric:robolectric:4.16'
+
+  if (project.findProject(':expo-modules-test-core')) {
+    androidTestImplementation project(':expo-modules-test-core')
+  }
+}

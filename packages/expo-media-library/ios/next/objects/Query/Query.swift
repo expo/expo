@@ -1,0 +1,164 @@
+import Photos
+import ExpoModulesCore
+
+class Query: SharedObject {
+  private let assetMapper: AssetMapper
+  private var predicates: [NSPredicate] = []
+  private var sortDescriptors: [NSSortDescriptor] = []
+  private var album: Album?
+  private var limit: Int?
+  private var offset: Int?
+
+  init(assetMapper: AssetMapper) {
+    self.assetMapper = assetMapper
+  }
+
+  func eq(_ assetField: AssetField, _ value: EitherOfThree<MediaTypeNext, Int, Bool>) throws -> Query {
+    let predicate = try AssetFieldPredicateBuilder.buildPredicate(
+      assetField: assetField,
+      value: value,
+      symbol: "="
+    )
+    predicates.append(predicate)
+    return self
+  }
+
+  func within(_ assetField: AssetField, _ values: EitherOfThree<[MediaTypeNext], [Int], [Bool]>) throws -> Query {
+    let predicate = try AssetFieldPredicateBuilder.buildPredicate(
+      assetField: assetField,
+      values: values,
+      symbol: "IN"
+    )
+    predicates.append(predicate)
+    return self
+  }
+
+  func gt(_ assetField: AssetField, _ value: Int) -> Query {
+    let predicate = AssetFieldPredicateBuilder.buildPredicate(
+      assetField: assetField,
+      value: value,
+      symbol: ">"
+    )
+    predicates.append(predicate)
+    return self
+  }
+
+  func gte(_ assetField: AssetField, _ value: Int) -> Query {
+    let predicate = AssetFieldPredicateBuilder.buildPredicate(
+      assetField: assetField,
+      value: value,
+      symbol: ">="
+    )
+    predicates.append(predicate)
+    return self
+  }
+
+  func lt(_ assetField: AssetField, _ value: Int) -> Query {
+    let predicate = AssetFieldPredicateBuilder.buildPredicate(
+      assetField: assetField,
+      value: value,
+      symbol: "<"
+    )
+    predicates.append(predicate)
+    return self
+  }
+
+  func lte(_ assetField: AssetField, _ value: Int) -> Query {
+    let predicate = AssetFieldPredicateBuilder.buildPredicate(
+      assetField: assetField,
+      value: value,
+      symbol: "<="
+    )
+    predicates.append(predicate)
+    return self
+  }
+
+  func limit(_ limit: Int) throws -> Query {
+    guard limit >= 0 else {
+      throw InvalidQueryArgumentException("limit must be greater than or equal to 0")
+    }
+    self.limit = limit
+    return self
+  }
+
+  func offset(_ offset: Int) throws -> Query {
+    guard offset >= 0 else {
+      throw InvalidQueryArgumentException("offset must be greater than or equal to 0")
+    }
+    self.offset = offset
+    return self
+  }
+
+  func album(_ album: Album) -> Query {
+    self.album = album
+    return self
+  }
+
+  func orderBy(sortDescriptor: SortDescriptor) -> Query {
+    sortDescriptors.append(sortDescriptor.toNSSortDescriptor())
+    return self
+  }
+
+  func exe() async throws -> [Asset] {
+    return try await fetchMatchingPHAssets().map {
+      Asset(localIdentifier: $0.localIdentifier, assetMapper: assetMapper)
+    }
+  }
+
+  func exeForMetadata() async throws -> [AssetMetadata] {
+    return try await fetchMatchingPHAssets().map {
+      assetMapper.toMetadata($0)
+    }
+  }
+
+  private func fetchMatchingPHAssets() async throws -> [PHAsset] {
+    if try await shouldReturnEmpty() {
+      return []
+    }
+    let fetchOptions = constructFetchOptions()
+    let phFetchResult = try await fetch(fetchOptions)
+    return sliceFetchedAssets(from: phFetchResult)
+  }
+
+  private func constructFetchOptions() -> PHFetchOptions {
+    let fetchOptions = PHFetchOptions()
+    fetchOptions.sortDescriptors = sortDescriptors
+    fetchOptions.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+    if let limit {
+      fetchOptions.fetchLimit = limit + (offset ?? 0)
+    }
+    return fetchOptions
+  }
+
+  private func fetch(_ fetchOptions: PHFetchOptions) async throws -> PHFetchResult<PHAsset> {
+    if let album {
+      let collection = try await album.getCollection()
+      return PHAsset.fetchAssets(in: collection, options: fetchOptions)
+    }
+    return PHAsset.fetchAssets(with: fetchOptions)
+  }
+
+  // fetchLimit set to 0 in the Photo Library returns all assets.
+  // The API should return empty array in this scenario.
+  private func shouldReturnEmpty() async throws -> Bool {
+    guard limit == 0 else {
+      return false
+    }
+    // Validates the album and throws if it doesn't exist.
+    if let album {
+      _ = try await album.getCollection()
+    }
+    return true
+  }
+
+  private func sliceFetchedAssets(
+    from phFetchResult: PHFetchResult<PHAsset>,
+  ) -> [PHAsset] {
+    let start = offset ?? 0
+    let end = phFetchResult.count - 1
+    guard start <= end else {
+      return []
+    }
+    return phFetchResult.objects(at: IndexSet(integersIn: start...end))
+  }
+}

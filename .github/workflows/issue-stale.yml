@@ -1,0 +1,24 @@
+name: Close inactive issues
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  close-issues:
+    if: github.repository == 'expo/expo'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899 # v10.3.0
+        with:
+          ascending: false
+          operations-per-run: 300
+          days-before-issue-stale: 90
+          days-before-issue-close: 7
+          stale-issue-label: 'stale'
+          exempt-issue-labels: 'Issue accepted,✋ on hold'
+          stale-issue-message: 'This issue is stale because it has been open for 90 days with no activity. If there is no activity in the next 7 days, the issue will be closed.'
+          close-issue-message: 'This issue was closed because it has been inactive for 7 days since being marked as stale. Please open a new issue if you believe you are encountering a related problem.'
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          enable-statistics: true

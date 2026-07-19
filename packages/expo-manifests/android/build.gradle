@@ -1,0 +1,37 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.4'
+
+expoModule {
+  canBePublished false
+}
+
+android {
+  namespace "expo.modules.manifests"
+  defaultConfig {
+    versionCode 31
+    versionName '56.0.4'
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+  testOptions {
+    unitTests.includeAndroidResources = true
+  }
+  sourceSets {
+    androidTest.assets.srcDirs += files("$projectDir/src/androidTest/schemas".toString())
+  }
+}
+
+dependencies {
+  implementation project(':expo-json-utils')
+
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'io.mockk:mockk:1.13.5'
+  testImplementation 'androidx.test:core:1.7.0'
+  testImplementation 'org.mockito:mockito-core:5.19.0'
+  testImplementation 'org.json:json:20250517'
+  testImplementation "com.google.truth:truth:1.4.5"
+}

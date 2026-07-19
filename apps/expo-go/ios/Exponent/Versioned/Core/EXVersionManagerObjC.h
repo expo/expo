@@ -1,0 +1,45 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+#import <Foundation/Foundation.h>
+#import <React/RCTLog.h>
+#import <React/RCTBridge.h>
+
+@class EXManifestsManifest;
+@class EXAppContext;
+
+@interface EXVersionManagerObjC : NSObject
+
+- (nonnull instancetype)initWithParams:(nonnull NSDictionary *)params
+                              manifest:(nonnull EXManifestsManifest *)manifest
+                          fatalHandler:(void (^ _Nonnull)(NSError * _Nullable))fatalHandler
+                           logFunction:(nonnull RCTLogFunction)logFunction
+                          logThreshold:(RCTLogLevel)logThreshold;
+
+- (void)hostDidStart:(id)instance;
+- (void)hostFinishedLoading:(id)host;
+- (void)invalidate;
+
+- (void)showDevMenuForHost:(id)host;
+- (void)togglePerformanceMonitorForHost:(id)host;
+- (void)toggleElementInspectorForHost:(id)host;
+
+- (NSDictionary<NSString *, NSString *> *)devMenuItemsForHost:(id)host;
+- (void)selectDevMenuItemWithKey:(NSString *)key host:(id)host bundleURL:(NSURL *)bundleURL;
+
+/**
+ *  Provides the extra native modules required to set up a bridge with this version.
+ */
+- (NSArray *)extraModules;
+
+- (void *)versionedJsExecutorFactoryForBridge:(id)bridge;
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass;
+
+- (Class)getModuleClassFromName:(const char *)name;
+
+/**
+ * Creates a new app context configured for Expo Go.
+ */
+- (nonnull EXAppContext *)createExpoGoAppContext;
+
+@end

@@ -1,0 +1,52 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.7'
+
+def barcodeScannerEnabled = findProperty('expo.camera.barcode-scanner-enabled')
+def isBarcodeScannerEnabled = (barcodeScannerEnabled ?: "true").toString() != "false"
+
+def documentScannerEnabled = findProperty('expo.camera.document-scanner-enabled')
+def isDocumentScannerEnabled = (documentScannerEnabled ?: "true").toString() != "false"
+
+android {
+  namespace "expo.modules.camera"
+  defaultConfig {
+    versionCode 32
+    versionName "56.0.7"
+  }
+}
+
+// CameraX 1.6.0 requires listenablefuture:1.0 at compile time, but the React Native
+// Gradle plugin pulls in full Guava which forces listenablefuture to 9999.0-empty
+// (an intentionally empty jar). Override this to restore the real ListenableFuture class.
+configurations.configureEach {
+  resolutionStrategy.force "com.google.guava:listenablefuture:1.0"
+}
+
+dependencies {
+  def camerax_version = "1.6.0"
+
+  api "androidx.exifinterface:exifinterface:1.4.2"
+  api "androidx.appcompat:appcompat:1.7.1"
+
+  implementation "androidx.camera:camera-core:${camerax_version}"
+  implementation "androidx.camera:camera-camera2:${camerax_version}"
+  implementation "androidx.camera:camera-lifecycle:${camerax_version}"
+  implementation "androidx.camera:camera-video:${camerax_version}"
+
+  implementation "androidx.camera:camera-view:${camerax_version}"
+  implementation "androidx.camera:camera-extensions:${camerax_version}"
+  implementation "androidx.core:core-ktx:1.18.0"
+
+  def barcodeDependencyConfiguration = isBarcodeScannerEnabled ? "implementation" : "compileOnly"
+  add(barcodeDependencyConfiguration, "com.google.android.gms:play-services-code-scanner:16.1.0")
+  add(barcodeDependencyConfiguration, "com.google.mlkit:barcode-scanning:17.3.0")
+  add(barcodeDependencyConfiguration, "androidx.camera:camera-mlkit-vision:${camerax_version}")
+
+  def documentScannerDependencyConfiguration = isDocumentScannerEnabled ? "implementation" : "compileOnly"
+  add(documentScannerDependencyConfiguration, "com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
+}

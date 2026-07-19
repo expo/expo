@@ -1,0 +1,50 @@
+{
+  "name": "eslint-plugin-expo",
+  "version": "1.0.2",
+  "description": "ESLint rules for Expo apps",
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "eslintplugin"
+  ],
+  "license": "MIT",
+  "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/eslint-plugin-expo"
+  },
+  "files": [
+    "README.md",
+    "build"
+  ],
+  "main": "./build/index.js",
+  "scripts": {
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "build": "expo-build cjs:src",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@typescript-eslint/types": "^8.59.0",
+    "@typescript-eslint/utils": "^8.59.0",
+    "eslint": "^9.24.0"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.56.12",
+    "@types/jest": "^29.2.1",
+    "@typescript-eslint/rule-tester": "^8.59.0",
+    "eslint-config-universe": "workspace:*",
+    "eslint-plugin-eslint-plugin": "^6.2.0",
+    "expo-module-scripts": "workspace:*",
+    "jest": "^29.7.0"
+  },
+  "peerDependencies": {
+    "eslint": ">=8.10"
+  },
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
+  }
+}

@@ -1,0 +1,598 @@
+package expo.modules.video.player
+
+import android.content.Context
+import android.media.MediaMetadataRetriever
+import androidx.media3.common.C
+import android.webkit.URLUtil
+import androidx.annotation.OptIn
+import androidx.media3.common.Format
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.PlaybackParameters
+import androidx.media3.common.Player
+import androidx.media3.common.Player.STATE_BUFFERING
+import androidx.media3.common.Timeline
+import androidx.media3.common.TrackSelectionParameters
+import androidx.media3.common.Tracks
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DecoderReuseEvaluation
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.hls.HlsManifest
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.session.MediaSession
+import androidx.media3.ui.PlayerView
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.video.IntervalUpdateClock
+import expo.modules.video.IntervalUpdateEmitter
+import expo.modules.video.VideoView
+import expo.modules.video.managers.VideoManager
+import expo.modules.video.delegates.IgnoreSameSet
+import expo.modules.video.enums.AudioMixingMode
+import expo.modules.video.enums.PlayerStatus
+import expo.modules.video.enums.PlayerStatus.*
+import expo.modules.video.getPlaybackServiceErrorMessage
+import expo.modules.video.listeners.VideoPlayerListener
+import expo.modules.video.playbackService.ExpoVideoPlaybackService
+import expo.modules.video.playbackService.PlaybackServiceConnection
+import expo.modules.video.records.BufferOptions
+import expo.modules.video.records.PlaybackError
+import expo.modules.video.records.ScrubbingModeOptions
+import expo.modules.video.records.SeekTolerance
+import expo.modules.video.records.TimeUpdate
+import expo.modules.video.records.VideoSource
+import expo.modules.video.utils.MutableWeakReference
+import expo.modules.video.records.VideoTrack
+import expo.modules.video.utils.buildBasicMediaSession
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.io.FileInputStream
+import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
+
+// https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
+@UnstableApi
+class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?, playerBuilderOptions: expo.modules.video.records.PlayerBuilderOptions? = null) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
+  // This improves the performance of playing DRM-protected content
+  private var renderersFactory = DefaultRenderersFactory(context)
+    .forceEnableMediaCodecAsynchronousQueueing()
+    .setEnableDecoderFallback(true)
+  private val listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
+  private val currentVideoViewRef = MutableWeakReference<VideoView?>(null) { new, old ->
+    sendEvent(PlayerEvent.TargetViewChanged(new, old))
+  }
+  var currentVideoView by currentVideoViewRef
+  val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl()
+  val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
+  val audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(this)
+  val trackSelector = DefaultTrackSelector(context)
+
+  val player = ExoPlayer
+    .Builder(context, renderersFactory)
+    .apply {
+      setLooper(context.mainLooper)
+      setLoadControl(loadControl)
+      playerBuilderOptions?.seekBackwardIncrement?.let {
+        setSeekBackIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
+      }
+      playerBuilderOptions?.seekForwardIncrement?.let {
+        setSeekForwardIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
+      }
+    }.build()
+
+  internal val firstFrameEventGenerator: FirstFrameEventGenerator
+  val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
+  var mediaSession: MediaSession = buildBasicMediaSession(context, player)
+  val intervalUpdateClock = IntervalUpdateClock(this)
+
+  var playing by IgnoreSameSet(false) { new, old ->
+    sendEvent(PlayerEvent.IsPlayingChanged(new, old))
+  }
+
+  var uncommittedSource: VideoSource? = source
+  private var commitedSource by IgnoreSameSet<VideoSource?>(null) { new, old ->
+    sendEvent(PlayerEvent.SourceChanged(new, old))
+  }
+
+  // Volume of the player if there was no mute applied.
+  var userVolume = 1f
+  var status: PlayerStatus = IDLE
+  var requiresLinearPlayback = false
+  var staysActiveInBackground = false
+    set(value) {
+      field = value
+      if (value) {
+        startPlaybackService()
+      }
+    }
+  var preservesPitch = false
+    set(preservesPitch) {
+      field = preservesPitch
+      appContext?.mainQueue?.launch {
+        playbackParameters = applyPitchCorrection(playbackParameters)
+      }
+    }
+  var showNowPlayingNotification = false
+    set(value) {
+      field = value
+      appContext?.mainQueue?.launch {
+        serviceSetShowNotification(value)
+      }
+    }
+  var duration = 0f
+  var isLive = false
+
+  var volume: Float by IgnoreSameSet(1f) { new: Float, old: Float ->
+    appContext.mainQueue.launch {
+      player.volume = if (muted) 0f else new
+    }
+    userVolume = volume
+    sendEvent(PlayerEvent.VolumeChanged(new, old))
+  }
+
+  var muted: Boolean by IgnoreSameSet(false) { new: Boolean, old: Boolean ->
+    appContext.mainQueue.launch {
+      player.volume = if (new) 0f else userVolume
+    }
+    sendEvent(PlayerEvent.MutedChanged(new, old))
+  }
+
+  var playbackParameters by IgnoreSameSet(
+    PlaybackParameters.DEFAULT,
+    propertyMapper = { applyPitchCorrection(it) }
+  ) { new: PlaybackParameters, old: PlaybackParameters ->
+    appContext.mainQueue.launch {
+      player.playbackParameters = new
+    }
+
+    if (old.speed != new.speed) {
+      sendEvent(PlayerEvent.PlaybackRateChanged(new.speed, old.speed))
+    }
+  }
+
+  val currentOffsetFromLive: Float?
+    get() {
+      return if (player.currentLiveOffset == C.TIME_UNSET) {
+        null
+      } else {
+        player.currentLiveOffset / 1000f
+      }
+    }
+
+  val currentLiveTimestamp: Long?
+    get() {
+      val window = Timeline.Window()
+      if (!player.currentTimeline.isEmpty) {
+        player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
+      }
+      if (window.windowStartTimeMs == C.TIME_UNSET) {
+        return null
+      }
+      return window.windowStartTimeMs + player.currentPosition
+    }
+
+  var bufferOptions: BufferOptions = BufferOptions()
+    set(value) {
+      field = value
+      loadControl.applyBufferOptions(value)
+    }
+
+  val bufferedPosition: Double
+    get() {
+      if (player.currentMediaItem == null) {
+        return -1.0
+      }
+      if (player.playbackState == STATE_BUFFERING) {
+        return 0.0
+      }
+      return player.bufferedPosition / 1000.0
+    }
+
+  var audioMixingMode: AudioMixingMode = AudioMixingMode.AUTO
+    set(value) {
+      val old = field
+      field = value
+      sendEvent(PlayerEvent.AudioMixingModeChanged(value, old))
+    }
+
+  var isLoadingNewSource = false
+    private set
+
+  var currentVideoTrack: VideoTrack? = null
+    private set(value) {
+      val old = field
+      field = value
+      sendEvent(PlayerEvent.VideoTrackChanged(value, old))
+    }
+
+  var seekTolerance: SeekTolerance = SeekTolerance()
+    set(value) {
+      field = value
+      appContext?.mainQueue?.launch {
+        seekTolerance.applyToPlayer(this@VideoPlayer)
+      }
+    }
+
+  var scrubbingModeOptions: ScrubbingModeOptions = ScrubbingModeOptions()
+    set(value) {
+      field = value
+      appContext?.mainQueue?.launch {
+        scrubbingModeOptions.applyToPlayer(this@VideoPlayer)
+      }
+    }
+
+  var availableVideoTracks: List<VideoTrack> = emptyList()
+    private set
+
+  var keepScreenOnWhilePlaying by VideoPlayerKeepAwake(this, appContext)
+
+  private val playerListener = object : Player.Listener {
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+      this@VideoPlayer.playing = isPlaying
+    }
+
+    override fun onTracksChanged(tracks: Tracks) {
+      val oldSubtitleTracks = ArrayList(subtitles.availableSubtitleTracks)
+      val oldAudioTracks = ArrayList(audioTracks.availableAudioTracks)
+      val oldCurrentTrack = subtitles.currentSubtitleTrack
+      val oldCurrentAudioTrack = audioTracks.currentAudioTrack
+
+      // Emit the tracks change event to update the subtitles
+      sendEvent(PlayerEvent.TracksChanged(tracks))
+
+      val newSubtitleTracks = subtitles.availableSubtitleTracks
+      val newAudioTracks = audioTracks.availableAudioTracks
+      val newCurrentSubtitleTrack = subtitles.currentSubtitleTrack
+      val newCurrentAudioTrack = audioTracks.currentAudioTrack
+      val hlsManifest = player.currentManifest as? HlsManifest
+      availableVideoTracks = tracks.toVideoTracks(hlsManifest)
+      refreshPlaybackInfo()
+
+      if (isLoadingNewSource) {
+        sendEvent(
+          PlayerEvent.VideoSourceLoaded(
+            commitedSource,
+            duration.toDouble(),
+            availableVideoTracks,
+            newSubtitleTracks,
+            newAudioTracks
+          )
+        )
+        isLoadingNewSource = false
+      }
+
+      if (!oldSubtitleTracks.toArray().contentEquals(newSubtitleTracks.toArray())) {
+        sendEvent(PlayerEvent.AvailableSubtitleTracksChanged(newSubtitleTracks, oldSubtitleTracks))
+      }
+      if (!oldAudioTracks.toArray().contentEquals(newAudioTracks.toArray())) {
+        sendEvent(PlayerEvent.AvailableAudioTracksChanged(newAudioTracks, oldAudioTracks))
+      }
+      if (oldCurrentTrack != newCurrentSubtitleTrack) {
+        sendEvent(PlayerEvent.SubtitleTrackChanged(newCurrentSubtitleTrack, oldCurrentTrack))
+      }
+      if (oldCurrentAudioTrack != newCurrentAudioTrack) {
+        sendEvent(PlayerEvent.AudioTrackChanged(newCurrentAudioTrack, oldCurrentAudioTrack))
+      }
+      super.onTracksChanged(tracks)
+    }
+
+    override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
+      val oldTrack = subtitles.currentSubtitleTrack
+      val oldAudioTrack = audioTracks.currentAudioTrack
+      sendEvent(PlayerEvent.TrackSelectionParametersChanged(parameters))
+
+      val newTrack = subtitles.currentSubtitleTrack
+      val newAudioTrack = audioTracks.currentAudioTrack
+      sendEvent(PlayerEvent.SubtitleTrackChanged(newTrack, oldTrack))
+      sendEvent(PlayerEvent.AudioTrackChanged(newAudioTrack, oldAudioTrack))
+      super.onTrackSelectionParametersChanged(parameters)
+    }
+
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+      if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
+        sendEvent(PlayerEvent.PlayedToEnd())
+      } else {
+        // New playback info is set in the onPlaybackStateChanged event, which occurs after mediaItemTransition.
+        // The onPlaybackStateChanged is not triggered if the video repeats (since the state remains STATE_READY)
+        // That is why the playback info is not reset when the transition reason is MEDIA_ITEM_TRANSITION_REASON_REPEAT.
+        resetPlaybackInfo()
+      }
+      subtitles.setSubtitlesEnabled(false)
+      super.onMediaItemTransition(mediaItem, reason)
+    }
+
+    override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
+      if (playbackState == Player.STATE_IDLE && player.playerError != null) {
+        return
+      }
+      if (playbackState == Player.STATE_READY) {
+        refreshPlaybackInfo()
+      }
+      setStatus(playerStateToPlayerStatus(playbackState), null)
+      super.onPlaybackStateChanged(playbackState)
+    }
+
+    override fun onVolumeChanged(volume: Float) {
+      if (!muted) {
+        this@VideoPlayer.volume = volume
+      }
+    }
+
+    override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+      this@VideoPlayer.playbackParameters = playbackParameters
+      super.onPlaybackParametersChanged(playbackParameters)
+    }
+
+    override fun onPlayerErrorChanged(error: PlaybackException?) {
+      error?.let {
+        resetPlaybackInfo()
+        setStatus(ERROR, error)
+      } ?: run {
+        setStatus(playerStateToPlayerStatus(player.playbackState), null)
+      }
+
+      super.onPlayerErrorChanged(error)
+    }
+  }
+
+  private val analyticsListener = object : AnalyticsListener {
+    override fun onVideoInputFormatChanged(eventTime: AnalyticsListener.EventTime, format: Format, decoderReuseEvaluation: DecoderReuseEvaluation?) {
+      currentVideoTrack = availableVideoTracks.firstOrNull { it.format?.id == format.id }
+      super.onVideoInputFormatChanged(eventTime, format, decoderReuseEvaluation)
+    }
+  }
+
+  init {
+    player.addListener(playerListener)
+    player.addAnalyticsListener(analyticsListener)
+    VideoManager.registerVideoPlayer(this)
+    firstFrameEventGenerator = createFirstFrameEventGenerator()
+    // ExoPlayer will enable subtitles automatically at the start, we want them disabled by default
+    appContext.mainQueue.launch {
+      subtitles.setSubtitlesEnabled(false)
+    }
+  }
+
+  @kotlin.OptIn(DelicateCoroutinesApi::class)
+  override fun close() {
+    // Releases the listeners from VideoPlayerKeepAwake
+    keepScreenOnWhilePlaying = false
+
+    intervalUpdateClock.interval = 0L
+
+    synchronized(listeners) {
+      listeners.clear()
+    }
+
+    if (serviceConnection.isConnected) {
+      appContext?.reactContext?.unbindService(serviceConnection)
+    }
+    serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(player)
+    mediaSession.release()
+
+    VideoManager.unregisterVideoPlayer(this@VideoPlayer)
+
+    // Run on global scope (not appContext.mainQueue) so that reloading doesn't cancel the release process
+    // https://github.com/expo/expo/blob/cdf592a7fea56fc01b0149e9b2e5dbd294bcdc4c/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt#L277-L279
+    GlobalScope.launch(Dispatchers.Main) {
+      firstFrameEventGenerator.release()
+      player.removeListener(playerListener)
+      player.removeAnalyticsListener(analyticsListener)
+      player.release()
+    }
+    uncommittedSource = null
+    commitedSource = null
+  }
+
+  override fun sharedObjectDidRelease() {
+    super.sharedObjectDidRelease()
+    close()
+  }
+
+  /**
+   * Used to notify the player that is has been disconnected from the player view by another player.
+   */
+  fun hasBeenDisconnectedFromVideoView() {
+    if (currentVideoView?.playerView?.player == this.player) {
+      throw IllegalStateException("The player has been notified of disconnection from the player view, even though it's still connected.")
+    }
+    currentVideoView = null
+  }
+
+  fun changeVideoView(videoView: VideoView?) {
+    PlayerView.switchTargetView(player, currentVideoView?.playerView, videoView?.playerView)
+    currentVideoView = videoView
+  }
+
+  fun prepare() {
+    availableVideoTracks = listOf()
+    currentVideoTrack = null
+
+    val newSource = uncommittedSource
+    val mediaSource = newSource?.toMediaSource(context)
+
+    mediaSource?.let {
+      player.setMediaSource(it)
+      player.prepare()
+      commitedSource = newSource
+      uncommittedSource = null
+      isLoadingNewSource = true
+    } ?: run {
+      player.clearMediaItems()
+      player.prepare()
+      isLoadingNewSource = false
+    }
+  }
+
+  private fun applyPitchCorrection(playbackParameters: PlaybackParameters): PlaybackParameters {
+    val speed = playbackParameters.speed
+    val pitch = if (preservesPitch) 1f else speed
+    return PlaybackParameters(speed, pitch)
+  }
+
+  private fun playerStateToPlayerStatus(@Player.State state: Int): PlayerStatus {
+    return when (state) {
+      Player.STATE_IDLE -> IDLE
+      Player.STATE_BUFFERING -> LOADING
+      Player.STATE_READY -> READY_TO_PLAY
+      Player.STATE_ENDED -> {
+        // When an error occurs, the player state changes to ENDED.
+        if (player.playerError != null) {
+          ERROR
+        } else {
+          IDLE
+        }
+      }
+
+      else -> IDLE
+    }
+  }
+
+  private fun setStatus(status: PlayerStatus, error: PlaybackException?) {
+    val oldStatus = this.status
+    this.status = status
+
+    val playbackError = error?.let {
+      PlaybackError(it)
+    }
+
+    if (playbackError == null && player.playbackState == Player.STATE_ENDED) {
+      sendEvent(PlayerEvent.PlayedToEnd())
+    }
+
+    if (this.status != oldStatus) {
+      sendEvent(PlayerEvent.StatusChanged(status, oldStatus, playbackError))
+    }
+  }
+
+  private fun refreshPlaybackInfo() {
+    duration = player.duration / 1000f
+    isLive = player.isCurrentMediaItemLive
+  }
+
+  private fun resetPlaybackInfo() {
+    duration = 0f
+    isLive = false
+  }
+
+  private fun startPlaybackService(): Boolean {
+    if (serviceConnection.playbackServiceBinder?.service != null) {
+      // PlaybackService already running.
+      return true
+    }
+    val appContext = appContext ?: throw Exceptions.AppContextLost()
+    val serviceStarted = ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
+
+    if (!serviceStarted) {
+      appContext.jsLogger?.error(
+        getPlaybackServiceErrorMessage("Expo-video has failed to bind with the playback service binder")
+      )
+    }
+    return serviceStarted
+  }
+
+  private fun serviceSetShowNotification(showNotification: Boolean) {
+    if (showNotification) {
+      startPlaybackService()
+    }
+    serviceConnection.playbackServiceBinder?.service?.setShowNotification(showNotification, this.player)
+  }
+
+  fun addListener(videoPlayerListener: VideoPlayerListener) {
+    synchronized(listeners) {
+      if (listeners.all { it.get() != videoPlayerListener }) {
+        listeners.add(WeakReference(videoPlayerListener))
+      }
+    }
+  }
+
+  fun removeListener(videoPlayerListener: VideoPlayerListener) {
+    synchronized(listeners) {
+      listeners.removeAll { it.get() == videoPlayerListener }
+    }
+  }
+
+  private fun sendEvent(event: PlayerEvent) {
+    val listenersSnapshot = synchronized(listeners) {
+      listeners.mapNotNull { it.get() }
+    }
+    // Emits to the native listeners
+    event.emit(this, listenersSnapshot)
+
+    // Emits to the JS side
+    if (event.emitToJS) {
+      emit(event.name, event.jsEventPayload)
+    }
+  }
+
+  private fun createFirstFrameEventGenerator(): FirstFrameEventGenerator {
+    val appContext = appContext
+      ?: throw Exceptions.AppContextLost()
+
+    return FirstFrameEventGenerator(appContext, this, currentVideoViewRef) {
+      sendEvent(PlayerEvent.RenderedFirstFrame())
+    }
+  }
+
+  // IntervalUpdateEmitter
+  override fun emitTimeUpdate() {
+    appContext?.mainQueue?.launch {
+      val updatePayload = TimeUpdate(player.currentPosition / 1000.0, currentOffsetFromLive, currentLiveTimestamp, bufferedPosition)
+      sendEvent(PlayerEvent.TimeUpdated(updatePayload))
+    }
+  }
+
+  fun toMetadataRetriever(): MediaMetadataRetriever {
+    val source = uncommittedSource ?: commitedSource
+    val uri = source?.uri ?: throw IllegalStateException("Video source is not set")
+    val stringUri = uri.toString()
+
+    val mediaMetadataRetriever = MediaMetadataRetriever()
+    if (URLUtil.isFileUrl(stringUri)) {
+      mediaMetadataRetriever.setDataSource(stringUri.replace("file://", ""))
+    } else if (URLUtil.isContentUrl(stringUri)) {
+      context.contentResolver.openFileDescriptor(uri, "r")?.use { parcelFileDescriptor ->
+        FileInputStream(parcelFileDescriptor.fileDescriptor).use { inputStream ->
+          mediaMetadataRetriever.setDataSource(inputStream.fd)
+        }
+      }
+    } else {
+      mediaMetadataRetriever.setDataSource(stringUri, source.headers ?: emptyMap())
+    }
+    return mediaMetadataRetriever
+  }
+}
+
+// Extension functions
+
+@OptIn(UnstableApi::class)
+private fun Tracks.toVideoTracks(sourceManifest: HlsManifest?): List<VideoTrack> {
+  val videoTracks = mutableListOf<VideoTrack?>()
+  for (group in this.groups) {
+    for (i in 0 until group.length) {
+      val format = group.getTrackFormat(i)
+      val isSupported = group.isTrackSupported(i)
+      val hlsVariant = sourceManifest?.multivariantPlaylist?.variants?.firstOrNull {
+        it.format.id == format.id
+      }
+
+      // We provide the variant url only for HLS sources
+      val variantUrl = hlsVariant?.url
+
+      if (!MimeTypes.isVideo(format.sampleMimeType)) {
+        continue
+      }
+      videoTracks.add(VideoTrack.fromFormat(format, isSupported, variantUrl))
+    }
+  }
+  // For HLS sources with multiple audio renditions, ExoPlayer creates a separate video
+  // track group for each audio variant, which results in the same video formats being
+  // reported multiple times. Deduplicate by format id to expose each variant only once.
+  return videoTracks.filterNotNull().distinctBy { it.format?.id }
+}

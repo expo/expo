@@ -1,0 +1,45 @@
+// Copyright 2022-present 650 Industries. All rights reserved.
+
+#pragma once
+
+#ifdef __cplusplus
+
+#include <folly/dynamic.h>
+#include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/PropsParserContext.h>
+
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
+
+// macOS ViewProps doesn't support filterObjectKeys parameter
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+#define EXPO_VIEW_PROPS_SUPPORTS_FILTER_OBJECT_KEYS 0
+#else
+#define EXPO_VIEW_PROPS_SUPPORTS_FILTER_OBJECT_KEYS 1
+#endif
+
+namespace expo {
+
+class ExpoViewProps : public facebook::react::ViewProps {
+public:
+  ExpoViewProps() = default;
+
+  ExpoViewProps(
+    const facebook::react::PropsParserContext &context,
+    const ExpoViewProps &sourceProps,
+    const facebook::react::RawProps &rawProps,
+    const std::function<bool(const std::string &)> &filterObjectKeys = nullptr
+  );
+
+#pragma mark - Props
+
+  /**
+   A map with props stored as `folly::dynamic` objects.
+   */
+  std::unordered_map<std::string, folly::dynamic> propsMap;
+};
+
+} // namespace expo
+
+#endif // __cplusplus

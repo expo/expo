@@ -1,0 +1,10 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ExpoLinkingModule"],
+    "appDelegateSubscribers": ["LinkingAppDelegateSubscriber"]
+  },
+  "android": {
+    "modules": ["expo.modules.linking.ExpoLinkingModule"]
+  }
+}

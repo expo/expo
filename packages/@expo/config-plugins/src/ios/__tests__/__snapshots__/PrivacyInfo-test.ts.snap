@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`withPrivacyInfo adds PrivacyInfo.xcprivacy file to the project and merges with existing file 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+      <dict>
+        <key>NSPrivacyAccessedAPIType</key>
+        <string>NSPrivacyAccessedAPICategoryFirstTestCategory</string>
+        <key>NSPrivacyAccessedAPITypeReasons</key>
+        <array>
+          <string>ORIGINAL.ORIGINAL</string>
+        </array>
+      </dict>
+      <dict>
+        <key>NSPrivacyAccessedAPIType</key>
+        <string>NSPrivacyAccessedAPICategoryTestCategory</string>
+        <key>NSPrivacyAccessedAPITypeReasons</key>
+        <array>
+          <string>TEST.TEST</string>
+        </array>
+      </dict>
+    </array>
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array/>
+    <key>NSPrivacyTracking</key>
+    <true/>
+    <key>NSPrivacyTrackingDomains</key>
+    <array>
+      <string>test.com</string>
+    </array>
+  </dict>
+</plist>"
+`;

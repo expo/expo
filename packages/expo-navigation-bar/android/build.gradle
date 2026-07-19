@@ -1,0 +1,21 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.3'
+
+android {
+  namespace "expo.modules.navigationbar"
+  defaultConfig {
+    versionCode 1
+    versionName '56.0.3'
+  }
+}
+
+dependencies {
+  implementation 'androidx.core:core:1.17.0'
+  implementation 'androidx.appcompat:appcompat:1.7.1'
+  implementation 'com.facebook.react:react-android'
+}

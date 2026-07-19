@@ -1,0 +1,60 @@
+---
+title: Web deployments with EAS Workflows
+description: Learn how to automate website and server deployments with EAS Hosting and Workflows.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+EAS Workflows is a great way to automate the React Native CI/CD pipeline for deploying your project's website and API routes to EAS Hosting with pull request (PR) previews and production deployments.
+
+## Set up workflows
+
+To use [EAS Workflows](/eas/workflows/get-started/) to automatically deploy your project, follow the instructions in [Get started with EAS Workflows](/eas/workflows/get-started/). You can also add the [GitHub integration](/eas/workflows/get-started/) to connect a GitHub repository to your workflows.
+
+## Create a deployment workflow
+
+Add the following file to **.eas/workflows/deploy.yml**. This will use the production environment variables, export the web bundle, deploy your project and promote it to production whenever you push to the `main` branch.
+
+```yaml .eas/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  deploy:
+    type: deploy
+    name: Deploy
+    environment: production
+    params:
+      prod: true
+```
+
+Now, whenever a commit is pushed to `main` or a PR is merged, the workflow will run to deploy your website.
+
+You can also test this workflow by triggering it manually:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/deploy.yml']} />
+
+## Create a PR preview workflow
+
+Add the following file to **.eas/workflows/pr-preview.yml**. This will automatically deploy a preview of your website whenever a pull request is created or updated, and post a comment to the PR with the deployment details.
+
+```yaml .eas/workflows/pr-preview.yml
+name: PR Preview
+
+on:
+  pull_request: {}
+
+jobs:
+  deploy:
+    type: deploy
+    name: Deploy PR Preview
+
+  comment:
+    needs: [deploy]
+    type: github-comment
+```
+
+This workflow will run whenever a pull request is opened, reopened, or synchronized. The `comment` job will automatically discover the deployment and post its details to the pull request, making it easy for reviewers to test your changes.

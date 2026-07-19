@@ -1,0 +1,15 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.3'
+
+android {
+  namespace "expo.modules.haptics"
+  defaultConfig {
+    versionCode 16
+    versionName '56.0.3'
+  }
+}

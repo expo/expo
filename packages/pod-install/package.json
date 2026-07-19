@@ -1,0 +1,45 @@
+{
+  "name": "pod-install",
+  "version": "1.0.17",
+  "description": "A fast, zero-dependency package for cutting down on common issues developers have when running pod install.",
+  "keywords": [
+    "cocoapods",
+    "ios",
+    "npx",
+    "pod-install"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/pod-install",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo <support@expo.dev>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bin": "./bin/pod-install.js",
+  "files": [
+    "bin",
+    "build"
+  ],
+  "main": "./build/index.js",
+  "scripts": {
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@expo/package-manager": "workspace:*",
+    "chalk": "^4.0.0",
+    "commander": "^12.1.0",
+    "expo-module-scripts": "workspace:*",
+    "terminal-link": "^2.1.1",
+    "update-check": "^1.5.4"
+  }
+}

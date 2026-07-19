@@ -1,0 +1,31 @@
+{
+  "name": "minimal-tester",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "eject": "expo eject"
+  },
+  "dependencies": {
+    "expo": "workspace:*",
+    "expo-apple-authentication": "workspace:*",
+    "expo-blur": "workspace:*",
+    "expo-brownfield": "workspace:*",
+    "expo-build-properties": "workspace:*",
+    "expo-camera": "workspace:*",
+    "expo-dev-client": "workspace:*",
+    "expo-image": "workspace:*",
+    "expo-linear-gradient": "workspace:*",
+    "expo-splash-screen": "workspace:*",
+    "expo-status-bar": "workspace:*",
+    "expo-updates": "workspace:*",
+    "expo-video": "workspace:*",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.0",
+    "react-native-web": "~0.21.0"
+  }
+}

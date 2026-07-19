@@ -1,0 +1,137 @@
+/**
+ * Copyright © 2022 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import { getMetroServerRoot } from '@expo/config/paths';
+import { evalModule } from '@expo/require-utils';
+import fs from 'fs';
+import path from 'path';
+
+import { delayAsync } from '../../utils/delay';
+import { isPathInside } from '../../utils/dir';
+import { SilentError } from '../../utils/errors';
+import { toPosixPath } from '../../utils/filePath';
+import { profile } from '../../utils/profile';
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
+import { event } from './metro/ssrEvents';
+import type { ExpoMetroOptions } from './middleware/metroOptions';
+import { createBundleUrlPath } from './middleware/metroOptions';
+import { augmentLogs } from './serverLogLikeMetro';
+
+/** The list of input keys will become optional, everything else will remain the same. */
+export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
+  // Cannot be accessed using Metro's server API, we need to move the file
+  // into the project root and try again.
+  if (!isPathInside(otherFile, projectRoot)) {
+    return otherFile;
+  }
+
+  // Copy the file into the project to ensure it works in monorepos.
+  // This means the file cannot have any relative imports.
+  const tempDir = path.join(projectRoot, '.expo/static-tmp');
+  await fs.promises.mkdir(tempDir, { recursive: true });
+  const moduleId = path.join(tempDir, path.basename(otherFile));
+  await fs.promises.writeFile(moduleId, await fs.promises.readFile(otherFile, 'utf8'));
+  // Sleep to give watchman time to register the file.
+  await delayAsync(50);
+  return moduleId;
+}
+
+export async function createMetroEndpointAsync(
+  projectRoot: string,
+  devServerUrl: string,
+  absoluteFilePath: string,
+  props: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'bytecode'>
+): Promise<string> {
+  const root = getMetroServerRoot(projectRoot);
+  const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
+  const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '');
+
+  const urlFragment = createBundleUrlPath({
+    mainModuleName: serverPath,
+    lazy: false,
+    asyncRoutes: false,
+    inlineSourceMap: false,
+    engine: 'hermes',
+    minify: false,
+    bytecode: false,
+    ...props,
+  });
+
+  let url: string;
+  if (devServerUrl) {
+    url = new URL(urlFragment.replace(/^\//, ''), devServerUrl).toString();
+  } else {
+    url = '/' + urlFragment.replace(/^\/+/, '');
+  }
+  return url;
+}
+
+export function evalMetroAndWrapFunctions<T = Record<string, any>>(
+  projectRoot: string,
+  script: string,
+  filename: string,
+  sourceMap: string | undefined,
+  isExporting: boolean
+): T {
+  // TODO: Add back stack trace logic that hides traces from metro-runtime and other internal modules.
+  const contents = evalMetroNoHandling(projectRoot, script, filename, sourceMap);
+
+  if (!contents) {
+    // This can happen if ErrorUtils isn't working correctly on web and failing to throw an error when a module throws.
+    // This is unexpected behavior and should not be pretty formatted, therefore we're avoiding CommandError.
+    throw new Error(
+      '[Expo SSR] Module returned undefined, this could be due to a misconfiguration in Metro error handling'
+    );
+  }
+  // wrap each function with a try/catch that uses Metro's error formatter
+  return Object.keys(contents).reduce((acc, key) => {
+    const fn = contents[key];
+    if (typeof fn !== 'function') {
+      return { ...acc, [key]: fn };
+    }
+
+    acc[key] = async function (...props: any[]) {
+      try {
+        return await fn.apply(this, props);
+      } catch (error: any) {
+        await logMetroError(projectRoot, { error });
+
+        if (isExporting || error[IS_METRO_BUNDLE_ERROR_SYMBOL]) {
+          throw error;
+        } else {
+          // TODO: When does this happen?
+          throw new SilentError(error);
+        }
+      }
+    };
+    return acc;
+  }, {} as any);
+}
+
+export function evalMetroNoHandling(
+  projectRoot: string,
+  src: string,
+  filename: string,
+  sourceMap?: string
+) {
+  augmentLogs(projectRoot);
+
+  // NOTE(@kitten): `require-from-string` derives a base path from the filename we pass it,
+  // but doesn't validate that the filename exists. These debug messages should help identify
+  // these problems, if they occur in user projects without reproductions
+  if (!fs.existsSync(path.dirname(filename))) {
+    event('eval_filename_not_in_dir', { filename: event.path(filename) });
+  } else if (!toPosixPath(path.dirname(filename)).startsWith(toPosixPath(projectRoot))) {
+    event('eval_filename_outside_root', { filename: event.path(filename) });
+  }
+
+  return profile(evalModule, 'eval-metro-bundle')(src, filename, {
+    cache: false,
+    sourceMap,
+  });
+}

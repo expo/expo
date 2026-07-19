@@ -1,0 +1,2489 @@
+---
+title: Syntax for EAS Workflows
+sidebar_title: Syntax
+description: Reference guide for the EAS Workflows configuration file syntax.
+maxHeadingDepth: 5
+---
+
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
+
+A workflow is a configurable automated process made up of one or more jobs. You must create a YAML file to define your workflow configuration.
+
+To get started with workflows, see [Get Started with EAS Workflows](/eas/workflows/get-started) or see [Examples](/eas/workflows/examples/introduction) for complete workflow configurations.
+
+## Workflow files
+
+Workflow files use YAML syntax and must have either a `.yml` or `.yaml` file extension. If you're new to YAML and want to learn more, see [Learn YAML in Y minutes](https://learnxinyminutes.com/docs/yaml/).
+
+Workflow files are located in the **.eas/workflows** directory in your project. The **.eas** directory should be at the same level as your [**eas.json**](/build/eas-json/) file.
+
+For example:
+
+<FileTree
+  files={[
+    ['my-app/.eas/workflows/create-development-builds.yml', ''],
+    ['my-app/.eas/workflows/publish-preview-update.yml', ''],
+    ['my-app/.eas/workflows/deploy-to-production.yml', ''],
+    ['my-app/eas.json', ''],
+  ]}
+/>
+
+## Configuration reference
+
+Below is a reference for the syntax of the workflow configuration file.
+
+## `name`
+
+The human-friendly name of the workflow. This is displayed on the EAS dashboard on the workflows list page and is the title of the workflow's detail page.
+
+```yaml
+# @info #
+name: My workflow
+# @end #
+```
+
+## `on`
+
+The `on` key defines which GitHub events trigger the workflow. Any workflow can be triggered with the `eas workflow:run` command, regardless of the `on` key.
+
+```yaml
+on:
+  # Trigger on pushes to main branch
+  push:
+    branches:
+      - main
+  # And on pull requests starting with 'version-'
+  pull_request:
+    branches:
+      - version-*
+```
+
+> **info** You can skip `push` and `pull_request` triggered workflow runs by including `[eas skip]`, `[skip eas]`, or `[no eas]` in the commit message.
+
+### `on.push`
+
+Runs your workflow when you push a commit to matching branches and/or tags.
+
+With the `branches` list, you can trigger the workflow only when those specified branches are pushed to. For example, if you use `branches: ['main']`, only pushes to the `main` branch trigger the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
+
+With the `tags` list, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed triggers the workflow. Supports globs. By using the `!` prefix you can specify tags to ignore (you still need to provide at least one tag pattern without it).
+
+With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory trigger the workflow. Supports globs. By default, changes to any path trigger the workflow.
+
+When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow triggers on push events to all branches and does not trigger on tag pushes. If only one of the two lists is provided the other defaults to `[]`.
+
+```yaml
+on:
+  # @info #
+  push:
+    # @end #
+    branches:
+      - main
+      - feature/**
+      - !feature/test-** # other branch names and globs
+
+
+    tags:
+      - v1
+      - v2*
+      - !v2-preview** # other tag names and globs
+
+
+    paths:
+      - apps/mobile/**
+      - packages/shared/**
+      - !**/*.md # ignore markdown files
+
+```
+
+### `on.ref_delete`
+
+Runs your workflow when a GitHub branch or tag is deleted. Requires a [linked GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events) on your EAS project.
+
+With the `branches` list, you can trigger the workflow only when those specified branches are deleted. For example, if you use `branches: ['feat/**']`, only deletion of branches matching `feat/**` triggers the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it). See [`on.push`](#onpush) for details on glob and negation pattern matching.
+
+With the `tags` list, you can trigger the workflow only when those specified tags are deleted. Supports globs and `!` negation with the same rules as branches.
+
+When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow triggers when any branch is deleted and does not trigger on tag deletions. If only one of the two lists is provided the other defaults to `[]`.
+
+> **info** Workflow files are read from the default branch HEAD at the time of deletion, not from the deleted ref.
+
+Pair this trigger with the [`branch-delete`](/eas/workflows/pre-packaged-jobs#branch-delete) job to remove EAS Update branches when GitHub branches are deleted. See the [Clean up update branches example](/eas/workflows/examples/branch-cleanup) for a complete workflow.
+
+```yaml
+on:
+  # @info #
+  ref_delete:
+    # @end #
+    branches:
+      - feat/**
+      - !main # other branch names and globs
+
+
+    tags:
+      - v*
+      - !v2-preview** # other tag names and globs
+
+```
+
+### `on.pull_request`
+
+Runs your workflow when you create or update a pull request that targets one of the matching branches.
+
+With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow triggers on pull request events to all branches. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
+
+With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) triggers the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
+
+- `opened`
+- `edited`
+- `base_ref_changed`
+- `ready_for_review`
+- `reopened`
+- `synchronize`
+- `labeled`
+
+The `edited` type follows GitHub's `pull_request.edited` behavior and triggers when the pull request title, body, or base branch changes. To trigger only when the pull request's base branch changes, use `base_ref_changed`.
+
+The `branches` filter matches the pull request's current base branch, so retargeting a pull request to a matching branch can trigger a workflow.
+
+With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory trigger the workflow. Supports globs. By default, changes to any path trigger the workflow.
+
+```yaml
+on:
+  # @info #
+  pull_request:
+    # @end #
+    branches:
+      - main
+      - feature/**
+      - !feature/test-** # other branch names and globs
+
+
+    types:
+      - opened
+      # other event types
+
+    paths:
+      - apps/mobile/**
+      - packages/shared/**
+      - !**/*.md # ignore markdown files
+
+```
+
+### `on.pull_request_labeled`
+
+Runs your workflow when a pull request is labeled with a matching label.
+
+With the `labels` list, you can specify which labels, when assigned to your pull request, trigger the workflow. For example, if you use `labels: ['Test']`, only labeling a pull request with the `Test` label triggers the workflow. Defaults to `[]` when not provided, which means no labels trigger the workflow.
+
+You can also provide a list of matching labels directly to `on.pull_request_labeled` for simpler syntax.
+
+```yaml
+on:
+  # @info #
+  pull_request_labeled:
+    # @end #
+    labels:
+      - Test
+      - Preview
+      # other labels
+```
+
+Alternatively:
+
+```yaml
+on:
+  # @info #
+  pull_request_labeled:
+    # @end #
+    - Test
+    - Preview
+    # other labels
+```
+
+### `on.app_store_connect`
+
+Runs your workflow when one of the selected App Store Connect events occurs.
+
+> **info** To use this trigger, configure your App Store Connect connection in the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/settings). For setup steps, see the [App Store Connect trigger setup](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events) section.
+
+When `on.app_store_connect` is present, you must specify at least one event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`). Within a configured event domain, you can specify which states should trigger your workflow.
+
+#### `on.app_store_connect.app_version.states`
+
+Filters app store app version state change events. Defaults to all supported app version states when not provided.
+
+Supported values:
+
+- `accepted`
+- `developer_rejected`
+- `in_review`
+- `invalid_binary`
+- `metadata_rejected`
+- `pending_apple_release`
+- `pending_developer_release`
+- `prepare_for_submission`
+- `processing_for_distribution`
+- `ready_for_distribution`
+- `ready_for_review`
+- `rejected`
+- `replaced_with_new_version`
+- `waiting_for_export_compliance`
+- `waiting_for_review`
+
+#### `on.app_store_connect.build_upload.states`
+
+Filters build upload events by state. Defaults to all supported build upload states when not provided.
+
+Supported values:
+
+- `complete`
+- `failed`
+- `processing`
+- `awaiting_upload`
+
+#### `on.app_store_connect.external_beta.states`
+
+Filters external beta events by state. Defaults to all supported external beta states when not provided.
+
+Supported values:
+
+- `processing`
+- `processing_exception`
+- `missing_export_compliance`
+- `ready_for_beta_testing`
+- `in_beta_testing`
+- `expired`
+- `ready_for_beta_submission`
+- `in_export_compliance_review`
+- `waiting_for_beta_review`
+- `in_beta_review`
+- `beta_rejected`
+- `beta_approved`
+
+#### `on.app_store_connect.beta_feedback.types`
+
+Filters beta feedback reported by testers by its type. Defaults to all supported beta feedback types when not provided.
+
+Supported values:
+
+- `crash`
+- `screenshot`
+
+All filter values must be lowercase and are case-sensitive.
+
+```yaml
+# Triggers when:
+# - the app version enters review,
+# - a build upload completes or fails,
+# - an external beta build is ready for testing or approved,
+# - a tester reports a crash via TestFlight.
+on:
+  app_store_connect:
+    app_version:
+      states:
+        - ready_for_review
+        - waiting_for_review
+    build_upload:
+      states:
+        - complete
+        - failed
+    external_beta:
+      states:
+        - ready_for_beta_testing
+        - beta_approved
+    beta_feedback:
+      types:
+        - crash
+```
+
+```yaml
+# Triggers on any app version or build upload state change.
+on:
+  app_store_connect:
+    app_version: {}
+    build_upload: {}
+```
+
+### `on.schedule.cron`
+
+Runs your workflow on a schedule using [unix-cron](https://www.ibm.com/docs/en/db2/11.5?topic=task-unix-cron-format) syntax. You can use [crontab guru](https://crontab.guru/) and their [examples](https://crontab.guru/examples.html) to generate cron strings.
+
+- Scheduled workflows will only run on the default branch of the repository. In many cases, this means crons inside workflow files on the `main` branch will be scheduled, while crons inside workflow files in feature branches will not be scheduled.
+- Scheduled workflows may be delayed during periods of high load. High load times include the start of every hour. In rare circumstances, jobs may be skipped or run multiple times. Make sure that your workflows are idempotent and do not have harmful side effects.
+- A workflow can have multiple `cron` schedules.
+- Scheduled workflows run in the GMT time zone.
+
+```yaml
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs at midnight GMT every day
+```
+
+### `on.workflow_dispatch.inputs`
+
+Defines inputs that can be provided when manually triggering a workflow using the `eas workflow:run` command. This allows you to create parameterized workflows that can accept different values each time they run.
+
+```yaml
+on:
+  workflow_dispatch:
+    # @info #
+    inputs:
+      name:
+        type: string
+        required: false
+        description: 'Name of the person to greet'
+        default: 'World'
+      choice_example:
+        type: choice
+        options:
+          - to be
+          - not to be
+        required: true
+    # @end #
+```
+
+| Property      | Type       | Required                         | Description                                                                 |
+| ------------- | ---------- | -------------------------------- | --------------------------------------------------------------------------- |
+| `type`        | `string`   | <YesIcon />                      | The input type (`string`, `boolean`, `number`, `choice`, or `environment`). |
+| `description` | `string`   | <NoIcon />                       | Description for the input.                                                  |
+| `required`    | `boolean`  | <NoIcon />                       | Whether the input is required. Defaults to `false`.                         |
+| `default`     | varies     | <NoIcon />                       | Default value for the input. Must match the input type.                     |
+| `options`     | `string[]` | <YesIcon /> (for `type: choice`) | Available options for choice inputs.                                        |
+
+#### Providing inputs
+
+When running a workflow with inputs, you can provide them in several ways:
+
+1. Command-line flags:
+
+   <Terminal
+     cmd={[
+       '$ eas workflow:run .eas/workflows/deploy.yml -F environment=production -F debug=true -F version=1.2.3',
+     ]}
+   />
+
+2. JSON via stdin:
+
+   <Terminal
+     cmd={[
+       `$ echo '{"environment": "production", "debug": true, "version": "1.2.3"}' | eas workflow:run .eas/workflows/deploy.yml`,
+     ]}
+   />
+
+3. Interactive prompts:
+   If required inputs are missing and you're not using `--non-interactive`, the CLI will prompt you for them:
+
+   <Terminal cmd={['$ eas workflow:run .eas/workflows/deploy.yml']} />
+
+#### Usage
+
+Input values are available in your workflow jobs through the `${{ inputs.<input_name> }}` syntax:
+
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: string
+        required: true
+        description: 'Name of the person to greet'
+
+jobs:
+  deploy:
+    steps:
+      - name: Deploy to environment
+        run: |
+          echo "Hello, ${{ inputs.name }}!"
+
+          # Note: you can use `||` to provide a default value
+          #       for non-eas-workflow:run-run workflows.
+          echo "Hello, ${{ inputs.name || 'World' }}!"
+```
+
+## `jobs`
+
+A workflow run is made up of one or more jobs.
+
+```yaml
+jobs:
+  # @info #
+  job_1:
+    # ...
+  job_2:
+    # ...
+  # @end #
+```
+
+### `jobs.<job_id>`
+
+Each job must have an ID. The ID should be unique within the workflow and can contain alphanumeric characters and underscores. For example, `my_job` in the following YAML:
+
+```yaml
+jobs:
+  # @info #
+  my_job:
+    # @end #
+    # ...
+```
+
+### `jobs.<job_id>.name`
+
+The human-friendly name of the job displayed on the workflow's detail page.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    name: Build app
+    # @end #
+```
+
+### `jobs.<job_id>.environment`
+
+Sets the [EAS environment variable](/eas/environment-variables/) environment for the job. There are three possible values:
+
+- `production` (default)
+- `preview`
+- `development`
+
+The `environment` key is available on all jobs.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    environment: production | preview | development
+    # @end #
+```
+
+### `jobs.<job_id>.env`
+
+Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `branch-delete`, `doc`, `get-build`, `github-comment`, `require-approval`, `slack`, and `update-rollout` jobs).
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    env:
+      APP_VARIANT: staging
+      RETRY_COUNT: 3
+      PREV_JOB_OUTPUT: ${{ needs.previous_job.outputs.some_output }}
+    # @end #
+```
+
+### `jobs.<job_id>.hooks`
+
+Some pre-packaged jobs support hooks to run additional steps before or after the main job action (for example, `maestro-cloud`, `maestro`, and `submit`). Hook names are job-specific. See the job's documentation for the available hook keys.
+
+```yaml
+jobs:
+  maestro_test:
+    type: maestro-cloud
+    params:
+      build_id: ${{ needs.build.outputs.build_id }}
+      maestro_project_id: proj_xyz
+      flows: ./maestro/flows
+    hooks:
+      before_maestro_cloud:
+        - run: echo "Before upload"
+      after_maestro_cloud:
+        - run: echo "After upload"
+```
+
+### `jobs.<job_id>.defaults.run.working_directory`
+
+Sets the directory to run commands in for all steps in the job.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    defaults:
+      run:
+        working_directory: ./my-app
+    # @end #
+    steps:
+      - name: My first step
+        run: pwd # prints: /home/expo/workingdir/build/my-app
+```
+
+## `defaults`
+
+Parameters to use as defaults for all jobs defined in the workflow configuration.
+
+### `defaults.image`
+
+Default VM image to use for all jobs in the workflow. Using an `sdk-XX` image tag is recommended. See [Infrastructure](/build-reference/infrastructure/) for available images. Individual jobs can override this value with [`jobs.<job_id>.image`](#jobsjob_idimage).
+
+```yaml
+defaults:
+  image: sdk-57
+```
+
+### `defaults.run.working_directory`
+
+Default working directory to run the scripts in. Relative paths like "./assets" or "assets" are resolved from the app's base directory.
+
+### `defaults.tools`
+
+Specific versions of tools that should be used for jobs defined in this workflow configuration. Follow each tool's documentation for available values.
+
+| Tool        | Description                                                                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node`      | Version of Node.js installed via `nvm`.                                                                                                       |
+| `yarn`      | Version of Yarn installed via `npm -g`.                                                                                                       |
+| `corepack`  | If set to `true`, [corepack](https://github.com/nodejs/corepack#readme) will be enabled at the beginning of build process. Defaults to false. |
+| `pnpm`      | Version of pnpm installed via `npm -g`.                                                                                                       |
+| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script.                                                                    |
+| `ndk`       | Version of Android NDK installed through `sdkmanager`.                                                                                        |
+| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                                                                                   |
+| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.                                                                                  |
+| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.                                                                                 |
+
+Example of workflow using `defaults.tools`:
+
+```yaml .eas/workflows/publish-update.yml
+name: Set up custom versions
+defaults:
+  tools:
+    node: latest
+    yarn: '2'
+    corepack: true
+    pnpm: '8'
+    bun: '1.0.0'
+    fastlane: 2.224.0
+    cocoapods: 1.12.0
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  setup:
+    steps:
+      - name: Check Node version
+        run: node --version # should print a concrete version, like 23.9.0
+      - name: Check Yarn version
+        run: yarn --version # should print a concrete version, like 2.4.3
+```
+
+## `concurrency`
+
+Configuration for concurrency control. Currently only allows setting `cancel_in_progress` for same-branch workflows.
+
+```yaml
+# @info #
+concurrency:
+  cancel_in_progress: true
+  group: ${{ workflow.filename }}-${{ github.ref }}
+# @end #
+```
+
+| Property             | Type     | Description                                                                                                                                             |
+| -------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cancel_in_progress` | `true`   | If true, new workflow runs started from GitHub will cancel current in-progress runs for the same branch.                                                |
+| `group`              | `string` | We do not support custom concurrency groups yet. Set this placeholder value so that when we do support custom groups, your workflow remains compatible. |
+
+## Control flow
+
+You can control when a job runs with the `needs` and `after` keywords. In addition, you can use the `if` keyword to control whether a job should run based on a condition.
+
+### `jobs.<job_id>.needs`
+
+A list of job IDs whose jobs must complete successfully before this job will run.
+
+```yaml
+jobs:
+  test:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: tsc
+        run: yarn tsc
+  build:
+    # @info #
+    needs: [test] # This job will only run if the 'test' job succeeds
+    # @end #
+    type: build
+    params:
+      platform: ios
+```
+
+### `jobs.<job_id>.after`
+
+A list of job IDs that must complete (successfully or not) before this job will run.
+
+```yaml
+jobs:
+  build:
+    type: build
+    params:
+      platform: ios
+  notify:
+    # @info #
+    after: [build] # This job will run after build completes (whether build succeeds or fails)
+    # @end #
+```
+
+### `jobs.<job_id>.if`
+
+The `if` conditional determines if a job should run. When an `if` condition is met, the job will run. When the condition is not met, the job will be skipped. A skipped job won't have completed successfully and any downstream jobs will not run that have this job in their `needs` list.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    if: ${{ github.ref_name == 'main' }}
+    # @end #
+```
+
+## Interpolation
+
+You can customize the behavior of a workflow — commands to execute, control flow, environment variables, build profile, app version, and more — based on the workflow run's context.
+
+Use the `${{ expression }}` syntax to access context properties and functions. For example: `${{ github.ref_name }}` or `${{ needs.build_ios.outputs.build_id }}`.
+
+### Context properties
+
+The following properties are available in interpolation contexts:
+
+#### `after`
+
+A record of all upstream jobs specified in the current job's `after` list. Each job provides:
+
+```json
+{
+  "status": "success" | "failure" | "skipped",
+  /* @info Every job produces a different set of outputs. See the specific job's documentation for details. */
+  "outputs": {}
+  /* @end */
+}
+```
+
+Example:
+
+```yaml
+jobs:
+  build:
+    type: build
+    params:
+      platform: ios
+  notify:
+    after: [build]
+    steps:
+      - run: echo "Build status: ${{ after.build.status }}"
+```
+
+#### `needs`
+
+A record of all upstream jobs specified in the current job's `needs` list. Each job provides:
+
+```json
+{
+  "status": "success" | "failure" | "skipped",
+  /* @info Every job produces a different set of outputs. See the specific job's documentation for details. */
+  "outputs": {}
+  /* @end */
+}
+```
+
+Most pre-packaged jobs expose specific outputs. You can [set outputs in custom jobs using the `set-output` function](#jobsjob_idoutputs).
+
+Example:
+
+```yaml
+jobs:
+  setup:
+    outputs:
+      date: ${{ steps.current_date.outputs.date }}
+    steps:
+      - id: current_date
+        run: |
+          DATE=$(date +"%Y.%-m.%-d")
+          set-output date "$DATE"
+
+  build_ios:
+    needs: [setup]
+    type: build
+    env:
+      # You might use process.env.VERSION_SUFFIX to customize
+      # app version in your dynamic app config.
+      VERSION_SUFFIX: ${{ needs.setup.outputs.date }}
+    params:
+      platform: ios
+      profile: development
+```
+
+#### `steps`
+
+A record of all steps in the current job. Each step provides its outputs set using the [`set-output`](#set-output) function.
+
+> **Note:** The `steps` context is only available within a job's steps, not at the workflow level. To expose a step's output to other jobs, use the [`set-output`](#set-output) function and [`outputs` configuration of the job](#jobsjob_idoutputs).
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    outputs:
+      value: ${{ steps.step_1.outputs.value }}
+    steps:
+      - id: step_1
+        run: set-output value "hello"
+      - run: echo ${{ steps.step_1.outputs.value }}
+
+  another_job:
+    needs: [my_job]
+    steps:
+      - run: echo "Value: ${{ needs.my_job.outputs.value }}"
+```
+
+#### `inputs`
+
+A record of inputs provided when manually triggering a workflow with [`workflow_dispatch`](#onworkflow_dispatchinputs). Available when the workflow is triggered via `eas workflow:run` command with input parameters.
+
+Example:
+
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: string
+        required: true
+
+jobs:
+  greet:
+    steps:
+      - run: echo "Hello, ${{ inputs.name }}!"
+```
+
+#### `github`
+
+To ease the migration from GitHub Actions to EAS Workflows we expose some context fields you may find useful.
+
+```ts
+type GitHubContext = {
+  triggering_actor?: string;
+  event_name: 'pull_request' | 'push' | 'schedule' | 'workflow_dispatch';
+  sha: string;
+  ref: string; // e.g. refs/heads/main
+  ref_name: string; // e.g. main
+  ref_type: 'branch' | 'tag' | 'other';
+  commit_message?: string; // Only available for push and schedule events
+  label?: string;
+  repository?: string;
+  repository_owner?: string;
+  event?: {
+    action?: string;
+    label?: {
+      name: string;
+    };
+    // Only available for push and schedule events
+    head_commit?: {
+      message: string;
+      id: string;
+    };
+    pull_request?: {
+      number: number;
+      title: string;
+      body: string | null;
+      state: 'open' | 'closed';
+      draft: boolean;
+      merged: boolean | null;
+      // ... Other fields from the GitHub Pull Request webhook payload
+    };
+    changes?: {
+      base?: {
+        ref?: {
+          from: string;
+        };
+      };
+    };
+    number?: number;
+    schedule?: string;
+    inputs?: Record<string, string | number | boolean>;
+  };
+};
+```
+
+> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
+
+If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
+
+Example:
+
+```yaml
+jobs:
+  build_ios:
+    type: build
+    # @info #
+    if: ${{ github.ref_name == 'main' }}
+    # @end #
+    params:
+      platform: ios
+      profile: production
+```
+
+<BoxLink
+  title="${{ github }} context"
+  description="View the ${{ github }} definition source code."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/eas-build-job/src/common.ts"
+/>
+
+#### `workflow`
+
+Information about the current workflow.
+
+```ts
+type WorkflowContext = {
+  id: string;
+  name: string;
+  filename: string;
+  url: string;
+};
+```
+
+Example:
+
+```yaml
+jobs:
+  notify_slack:
+    after: [...]
+    type: slack
+    params:
+      message: |
+        Workflow run completed: ${{ workflow.name }}
+        View details: ${{ workflow.url }}
+```
+
+#### `app_store_connect`
+
+Information about App Store Connect entities associated with the workflow run. This context is available only for workflows triggered by an App Store Connect event. See [`on.app_store_connect`](#onapp_store_connect).
+
+```ts
+type AppStoreConnectContext = {
+  app: {
+    id: string;
+  };
+  build_upload?: {
+    id: string;
+    state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
+    cf_bundle_version?: string;
+    build?: {
+      id: string;
+    };
+  };
+  app_version?: {
+    id: string;
+    state: string;
+  };
+  external_beta?: {
+    id: string;
+    state: string;
+  };
+  beta_feedback?: {
+    id: string;
+    type: 'crash' | 'screenshot';
+    url: string;
+  };
+};
+```
+
+The `app_store_connect.build_upload` object is present only when the workflow is triggered by a `build_upload` event domain.
+
+Example:
+
+```yaml
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  notify:
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: |
+        Upload complete for App Store Connect app: ${{ app_store_connect.app.id }}
+        Upload ID: ${{ app_store_connect.build_upload.id }}
+        Upload state: ${{ app_store_connect.build_upload.state }}
+```
+
+Use `build_upload.build.id` as the `asc_build_id` for a `testflight` job:
+
+```yaml .eas/workflows/testflight-after-asc-upload.yml
+name: Distribute to TestFlight after ASC upload
+
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  distribute_to_testflight:
+    name: Distribute to TestFlight
+    type: testflight
+    params:
+      asc_build_id: ${{ app_store_connect.build_upload.build.id }}
+      internal_groups:
+        - QA Team
+      external_groups:
+        - Public Beta
+      changelog: |
+        Build ${{ app_store_connect.build_upload.cf_bundle_version }} is ready for testing.
+      submit_beta_review: true
+```
+
+#### `env`
+
+A record of environment variables available in the current job context.
+
+> **Note:** The `env` context is only available within a job's context, not at the workflow level.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo "API URL: ${{ env.API_URL }}"
+```
+
+### Context functions
+
+The following functions are available in interpolation contexts:
+
+#### `success()`
+
+Returns whether all previous jobs have succeeded.
+
+```yaml
+jobs:
+  notify:
+    if: ${{ success() }}
+    steps:
+      - run: echo "All jobs succeeded"
+```
+
+#### `failure()`
+
+Returns whether any previous job has failed.
+
+```yaml
+jobs:
+  notify:
+    if: ${{ failure() }}
+    steps:
+      - run: echo "A job failed"
+```
+
+#### `fromJSON(value)`
+
+Parses a JSON string. Equivalent to `JSON.parse()`.
+
+Example:
+
+```yaml
+jobs:
+  publish_update:
+    type: update
+
+  print_debug_info:
+    needs: [publish_update]
+    steps:
+      - run: |
+          echo "First update group: ${{ needs.publish_update.outputs.first_update_group_id }}"
+          echo "Second update group: ${{ fromJSON(needs.publish_update.outputs.updates_json || '[]')[1].group }}"
+```
+
+#### `toJSON(value)`
+
+Converts a value to a JSON string. Equivalent to `JSON.stringify()`.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo '${{ toJSON(github.event) }}'
+```
+
+#### `contains(value, substring)`
+
+Checks whether `value` contains `substring`.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    if: ${{ contains(github.ref_name, 'feature') }}
+    steps:
+      - run: echo "Feature branch"
+```
+
+#### `startsWith(value, prefix)`
+
+Checks whether `value` starts with `prefix`.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    if: ${{ startsWith(github.ref_name, 'release') }}
+    steps:
+      - run: echo "Release branch"
+```
+
+#### `endsWith(value, suffix)`
+
+Checks whether `value` ends with `suffix`.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    if: ${{ endsWith(github.ref_name, '-production') }}
+    steps:
+      - run: echo "Production branch"
+```
+
+#### `hashFiles(...globs)`
+
+Returns a hash of files matching the provided glob patterns. Useful for cache keys.
+
+> **Note:** The `hashFiles` function is only available within a job's steps, not at the workflow level.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo "Dependencies hash: ${{ hashFiles('package-lock.json', 'yarn.lock') }}"
+```
+
+#### `replaceAll(input, stringToReplace, replacementString)`
+
+Replaces all occurrences of `stringToReplace` in `input` with `replacementString`.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo "${{ replaceAll(github.ref_name, '/', '-') }}"
+```
+
+#### `substring(input, start, end)`
+
+Extracts a substring from `input` starting at `start` and ending at `end`. If `end` is not provided, the substring is extracted from `start` to the end of `input`. Uses [`String#substring`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substring) under the hood.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo "${{ substring(github.ref_name, 0, 50) }}"
+```
+
+## Pre-packaged jobs
+
+### `jobs.<job_id>.type`
+
+Specifies the type of pre-packaged job to run. Pre-packaged jobs produce specialized UI according to the type of job on the workflow's detail page.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: build
+    # @end #
+```
+
+Learn about the different pre-packaged jobs below.
+
+#### `build`
+
+Creates an Android or iOS build of your project using [EAS Build](/build/introduction/). See [Build job documentation](/eas/workflows/pre-packaged-jobs#build) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: build
+    # @end #
+    params:
+      platform: ios | android # required
+      profile: string # optional, default: production
+      message: string # optional
+      refresh_ad_hoc_provisioning_profile: boolean # optional
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "build_id": string,
+  "app_build_version": string | null,
+  "app_identifier": string | null,
+  "app_version": string | null,
+  "channel": string | null,
+  "distribution": "internal" | "store" | null,
+  "fingerprint_hash": string | null,
+  "git_commit_hash": string | null,
+  "platform": "ios" | "android" | null,
+  "profile": string | null,
+  "runtime_version": string | null,
+  "sdk_version": string | null,
+  "simulator": "true" | "false" | null
+}
+```
+
+#### `deploy`
+
+Deploys your application using [EAS Hosting](/eas/hosting/introduction/). See [Deploy job documentation](/eas/workflows/pre-packaged-jobs#deploy) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: deploy
+    # @end #
+    params:
+      alias: string # optional
+      prod: boolean # optional
+      source_maps: boolean # optional
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "deploy_json": string, // JSON object containing the deployment details (output of `npx eas-cli deploy --json`).
+  "deploy_url": string, // URL to the deployment. It uses production URL if this was a production deployment. Otherwise, it uses the first alias URL or the deployment URL.
+  "deploy_alias_url": string, // Alias URL to the deployment (for example, `https://account-project--alias.expo.app`).
+  "deploy_deployment_url": string, // Unique URL to the deployment (for example, `https://account-project--uniqueid.expo.app`).
+  "deploy_identifier": string, // Identifier of the deployment.
+  "deploy_dashboard_url": string, // URL to the deployment dashboard (for example, `https://expo.dev/projects/[project]/hosting/deployments`).
+}
+```
+
+#### `fingerprint`
+
+Calculates a fingerprint of your project. See [Fingerprint job documentation](/eas/workflows/pre-packaged-jobs#fingerprint) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: fingerprint
+    # @end #
+    environment: production # Should match your build profile
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "android_fingerprint_hash": string,
+  "ios_fingerprint_hash": string,
+}
+```
+
+> **Note:** For accurate fingerprint matching, ensure the fingerprint job's `environment` matches your build profile. Consider using [EAS environment variables](/eas/environment-variables/) instead of `env` for better consistency across jobs.
+
+#### `get-build`
+
+Retrieves an existing build from EAS that matches the provided parameters. See [Get Build job documentation](/eas/workflows/pre-packaged-jobs#get-build) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: get-build
+    # @end #
+    params:
+      platform: ios | android # optional
+      profile: string # optional
+      distribution: store | internal | simulator # optional
+      channel: string # optional
+      app_identifier: string # optional
+      app_build_version: string # optional
+      app_version: string # optional
+      git_commit_hash: string # optional
+      fingerprint_hash: string # optional
+      sdk_version: string # optional
+      runtime_version: string # optional
+      simulator: boolean # optional
+      wait_for_in_progress: boolean # optional
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "build_id": string,
+  "app_build_version": string | null,
+  "app_identifier": string | null,
+  "app_version": string | null,
+  "channel": string | null,
+  "distribution": "internal" | "store" | null,
+  "fingerprint_hash": string | null,
+  "git_commit_hash": string | null,
+  "platform": "ios" | "android" | null,
+  "profile": string | null,
+  "runtime_version": string | null,
+  "sdk_version": string | null,
+  "simulator": "true" | "false" | null
+}
+```
+
+#### `submit`
+
+Submits an Android or iOS build to the app store using [EAS Submit](/deploy/submit-to-app-stores/). See [Submit job documentation](/eas/workflows/pre-packaged-jobs#submit) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: submit
+    # @end #
+    params:
+      build_id: string # required
+      profile: string # optional, default: production
+      groups: string[] # optional
+    hooks:
+      before_submit: step[] # optional
+      after_submit: step[] # optional
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
+  "ios_bundle_identifier": string | null, // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+  "android_package_id": string | null // Submitted Android package ID. https://expo.fyi/android-package
+}
+```
+
+#### `testflight`
+
+Distributes iOS builds to TestFlight internal and external testing groups. Provide exactly one of `build_id` (upload a build and submit to TestFlight) or `asc_build_id` (submit an already uploaded build). See [TestFlight job documentation](/eas/workflows/pre-packaged-jobs#testflight) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: testflight
+    # @end #
+    params:
+      build_id: string # required to upload and submit to TestFlight; mutually exclusive with asc_build_id
+      profile: string # optional, default: production; only when uploading and submitting
+      wait_processing_timeout_seconds: number # optional, default: 1800 (30 minutes); only when uploading and submitting in one job
+      asc_build_id: string # required to submit an already uploaded build; mutually exclusive with build_id
+      internal_groups: string[] # optional
+      external_groups: string[] # optional
+      changelog: string # optional
+      submit_beta_review: boolean # optional
+```
+
+When uploading and submitting with `build_id`, this job outputs the following properties:
+
+```json
+{
+  "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
+  "ios_bundle_identifier": string | null // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+}
+```
+
+When submitting an already uploaded build with `asc_build_id`, this job outputs the following properties:
+
+```json
+{
+  "asc_build_id": string | null // App Store Connect build ID
+}
+```
+
+#### `update`
+
+Publishes an update using [EAS Update](/eas-update/introduction/). See [Update job documentation](/eas/workflows/pre-packaged-jobs#update) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: update
+    # @end #
+    params:
+      message: string # optional
+      platform: string # optional - android | ios | all, defaults to all
+      branch: string # optional
+      channel: string # optional - cannot be used with branch
+      rollout_percentage: number # optional - 0 to 100, defaults to 100
+      private_key_path: string # optional
+      upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "first_update_group_id": string, // ID of the first update group. You can use it to e.g. construct the update URL for a development client deep link.
+  "updates_json": string // Stringified JSON array of update groups. Output of `eas update --json`.
+}
+```
+
+#### `update-rollout`
+
+Increases the rollout percentage of an in-progress EAS Update rollout. See [Update rollout job documentation](/eas/workflows/pre-packaged-jobs#update-rollout) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: update-rollout
+    # @end #
+    params:
+      update_group_id: string # required
+      rollout_percentage: number # optional - 0 to 100, defaults to 100
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "update_group_id": string, // ID of the update group that was rolled out.
+  "rollout_percentage": string, // The rollout percentage that was applied to the update group.
+  "updates_json": string // Stringified JSON array of the updates in the group.
+}
+```
+
+#### `branch-delete`
+
+Deletes an EAS Update branch and all of its updates. See [Branch delete job documentation](/eas/workflows/pre-packaged-jobs#branch-delete) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: branch-delete
+    # @end #
+    params:
+      branch_name: string # required
+      fail_on_missing: boolean # optional, default: false
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "branch_id": string | null,
+  "branch_name": string
+}
+```
+
+#### `maestro`
+
+Runs [Maestro](https://maestro.dev/) tests on a build. See [Maestro job documentation](/eas/workflows/pre-packaged-jobs#maestro) for detailed information and examples.
+
+> **important** Maestro tests are in [alpha](/more/release-statuses/#alpha).
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: maestro
+    # @end #
+    environment: production | preview | development # optional, defaults to preview
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    runs_on: string # optional. Use a linux-*-nested-virtualization worker for Android Emulator tests. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on for available options.
+    params:
+      build_id: string # required
+      flow_path: string | string[] # required
+      shards: number # optional, defaults to 1
+      retries: number # optional, defaults to 0
+      retry_failed_only: boolean # optional, defaults to true. When true, retries will attempt to re-run only the flows that failed on the previous attempt when applicable.
+      record_screen: boolean # optional, defaults to false. If true, uploads a screen recording of the tests.
+      include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
+      exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
+      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
+      android_system_image_package: string # optional. Android Emulator system image package to use.
+      device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
+      output_format: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+      skip_build_check: boolean # optional, defaults to false. Skip validation of the build (whether an iOS build is a simulator build).
+    hooks:
+      before_maestro_tests: step[] # optional
+      after_maestro_tests: step[] # optional
+```
+
+#### `maestro-cloud`
+
+Runs [Maestro](https://maestro.dev/) tests on a build in [Maestro Cloud](https://docs.maestro.dev/maestro-cloud/run-tests-on-maestro-cloud). See [Maestro Cloud job documentation](/eas/workflows/pre-packaged-jobs#maestro-cloud) for detailed information and examples.
+
+> **important** Running tests in Maestro Cloud requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/maestro-cloud/run-tests-on-maestro-cloud) to learn more.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: maestro-cloud
+    # @end #
+    environment: production | preview | development # optional, defaults to preview
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    params:
+      build_id: string # required. ID of the build to test.
+      maestro_project_id: string # required. Maestro Cloud project ID. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`.
+      flows: string # required. Path to the Maestro flow file or directory containing the flows to run. Corresponds to `--flows` param to `maestro cloud`.
+      maestro_api_key: string # optional. The API key to use for the Maestro project. By default, `MAESTRO_CLOUD_API_KEY` environment variable will be used. Corresponds to `--api-key` param to `maestro cloud`.
+      include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
+      exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
+      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
+      maestro_config: string # optional. Path to the Maestro `config.yaml` file to use for the tests. Will be passed to Maestro as `--config`.
+      device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`.
+      device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro list-cloud-devices` for a list of supported values.
+      device_os: string # optional. OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro list-cloud-devices` for a list of supported values.
+      skip_build_check: boolean # optional, defaults to false. Skip validation of the build (whether an iOS build is a simulator build).
+      name: string # optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
+      branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
+      async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, *not* whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
+    hooks:
+      before_maestro_cloud: step[] # optional. Steps to run before the Maestro Cloud upload.
+      after_maestro_cloud: step[] # optional. Steps to run after the Maestro Cloud upload.
+```
+
+#### `slack`
+
+Sends a message to a Slack channel using a webhook URL. See [Slack job documentation](/eas/workflows/pre-packaged-jobs#slack) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: slack
+    # @end #
+    params:
+      webhook_url: string # required
+      message: string # required if payload is not provided
+      payload: object # required if message is not provided
+```
+
+#### `github-comment`
+
+Automatically posts comprehensive reports of your workflow's completed builds, updates, and deployments to GitHub pull requests or content provided by you. See [GitHub Comment job documentation](/eas/workflows/pre-packaged-jobs#github-comment) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: github-comment
+    # @end #
+    params:
+      message: string # optional - custom message to include in the report
+      build_ids: string[] # optional - specific build IDs to include, defaults to all related to the running workflow
+      update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workflow
+      deployment_ids: string[] # optional - specific deployment IDs to include, defaults to all related to the workflow
+
+  # instead of using message and the builds, updates, and deployments table, you can also override the comment contents with `payload`
+  custom_github_comment:
+    type: github-comment
+    params:
+      payload: string # optional - raw markdown/HTML content for fully custom comment
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "comment_url": string | undefined  // URL of the posted GitHub comment
+}
+```
+
+#### `apple-device-registration-request`
+
+Pauses the workflow until an iOS device enrolls for an Apple Team and a team member approves the enrollment. See [Apple device registration request job documentation](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) for detailed information and examples.
+
+```yaml
+jobs:
+  register_device:
+    # @info #
+    type: apple-device-registration-request
+    params:
+      apple_team_identifier: string # optional
+    # @end #
+```
+
+#### `require-approval`
+
+Requires approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job. See [Require Approval job documentation](/eas/workflows/pre-packaged-jobs#require-approval) for detailed information and examples.
+
+```yaml
+jobs:
+  confirm:
+    # @info #
+    type: require-approval
+    # @end #
+```
+
+#### `doc`
+
+Displays a Markdown section in the workflow logs. See [Doc job documentation](/eas/workflows/pre-packaged-jobs#doc) for detailed information and examples.
+
+```yaml
+jobs:
+  next_steps:
+    # @info #
+    type: doc
+    params:
+      md: string
+    # @end #
+```
+
+#### `repack`
+
+Repackages an app from an existing build. This job repackages the app's metadata and JavaScript bundle without performing a full native rebuild, which is useful for creating a faster build compatible with a specific fingerprint. See [Repack job documentation](/eas/workflows/pre-packaged-jobs#repack) for detailed information and examples.
+
+```yaml
+jobs:
+  next_steps:
+    # @info #
+    type: repack
+    params:
+      build_id: string # required
+      profile: string # optional
+      embed_bundle_assets: boolean # optional
+      js_bundle_only: boolean # optional
+      ios_signing_use_source_app_entitlements: boolean # optional
+      ios_signing_app_entitlements_path: string # optional
+      message: string # optional
+      repack_version: string # optional
+      repack_package: string # optional
+    # @end #
+```
+
+## Custom jobs
+
+Runs custom code and can use built-in EAS functions. Does not require a `type` field.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # ...
+```
+
+### `jobs.<job_id>.steps`
+
+A job contains a sequence of tasks called `steps`. Steps can run commands. `steps` may only be provided in custom jobs and `build` jobs.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    steps:
+      - name: My first step
+        run: echo "Hello World"
+    # @end #
+```
+
+### `jobs.<job_id>.outputs`
+
+A list of outputs defined by the job. These outputs are accessible to all downstream jobs that depend on this job. To set outputs, use the [`set-output`](#set-output) function within a job step.
+
+Downstream jobs can access these outputs using the following expressions within [interpolation contexts](#interpolation):
+
+- `needs.<job_id>.outputs.<output_name>`
+- `after.<job_id>.outputs.<output_name>`
+
+Here, `<job_id>` refers to the identifier of the upstream job, and `<output_name>` refers to the specific output variable you want to access.
+
+In the example below, the `set-output` function sets the output named `test` to the value `hello world` in `job_1`'s `step_1` step. Later in `job_2`, it's accessed in `step_2` using `needs.job_1.outputs.output_1`.
+
+```yaml
+jobs:
+  job_1:
+    # @info #
+    outputs:
+      output_1: ${{ steps.step_1.outputs.test }}
+    # @end #
+    steps:
+      - id: step_1
+        # @info #
+        run: set-output test "hello world"
+        # @end #
+  job_2:
+    needs: [job_1]
+    steps:
+      # @info #
+      - id: step_2
+        run: echo ${{ needs.job_1.outputs.output_1 }}
+      # @end #
+```
+
+### `jobs.<job_id>.image`
+
+Specifies the VM image to use for the job. See [Infrastructure](/build-reference/infrastructure/) for available images.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    image: auto | string # optional, defaults to 'auto'
+    # @end #
+```
+
+### `jobs.<job_id>.runs_on`
+
+Specifies the worker that will execute the job. Available on custom jobs and on the `build`, `maestro`, `maestro-cloud`, and `repack` pre-packaged jobs.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    runs_on: linux-medium | linux-large |
+      linux-medium-nested-virtualization |
+      linux-large-nested-virtualization |
+      macos-medium | macos-large # optional, defaults to linux-medium
+    # @end #
+```
+
+{/* vale off */}
+
+| Worker                             | vCPU | Memory (GiB RAM) | SSD (GiB) | Notes                             |
+| ---------------------------------- | ---- | ---------------- | --------- | --------------------------------- |
+| linux-medium                       | 4    | 16               | 14        | Default worker.                   |
+| linux-large                        | 8    | 32               | 28        |                                   |
+| linux-medium-nested-virtualization | 4    | 16               | 14        | Allows running Android Emulators. |
+| linux-large-nested-virtualization  | 4    | 32               | 28        | Allows running Android Emulators. |
+
+| Worker       | Efficiency cores | Unified memory (GiB RAM) | SSD (GiB) | Notes                                |
+| ------------ | ---------------- | ------------------------ | --------- | ------------------------------------ |
+| macos-medium | 5                | 20                       | 125       | Runs iOS jobs, including simulators. |
+| macos-large  | 10               | 40                       | 125       | Runs iOS jobs, including simulators. |
+
+{/* vale on */}
+
+> **Note:** For Android Emulator jobs, you must use a `linux-*-nested-virtualization` worker. For iOS builds and iOS Simulator jobs, you must use a `macos-*` worker.
+
+### `jobs.<job_id>.steps.<step>.id`
+
+The `id` property is used to reference the step in the job. Useful for using the step's output in a downstream job.
+
+```yaml
+jobs:
+  my_job:
+    outputs:
+      test: ${{ steps.step_1.outputs.test }} # References the output from step_1
+    steps:
+      # @info #
+      - id: step_1
+        # @end #
+        run: set-output test "hello world"
+```
+
+### `jobs.<job_id>.steps.<step>.name`
+
+The human-friendly name of the step, which is displayed in the job's logs. When a step's name is not provided, the `run` command is used as the step name.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - name: My first step
+        # @end #
+        run: echo "Hello World"
+```
+
+### `jobs.<job_id>.steps.<step>.run`
+
+The shell command to run in the step.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - run: echo "Hello World"
+        # @end #
+```
+
+### `jobs.<job_id>.steps.<step>.shell`
+
+The shell to use for running the command. Defaults to `bash`.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - run: echo "Hello World"
+        shell: bash
+        # @end #
+```
+
+### `jobs.<job_id>.steps.<step>.working_directory`
+
+The directory to run the command in. When defined at the step level, it overrides the `jobs.<job_id>.defaults.run.working_directory` setting on the job if it is also defined.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - run: pwd # prints: /home/expo/workingdir/build/my-app
+        # @info #
+        working_directory: ./my-app
+        # @end #
+```
+
+### `jobs.<job_id>.steps.<step>.uses`
+
+EAS provides a set of built-in reusable functions that you can use in workflow steps. The `uses` keyword is used to specify the function to use. All built-in functions start with the `eas/` prefix.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      - name: List files
+        run: ls -la
+      # @end #
+```
+
+Below is a list of built-in functions you can use in your workflow steps.
+
+#### `eas/checkout`
+
+Checks out your project source files.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/checkout
+        # @end #
+```
+
+<BoxLink
+  title="eas/checkout source code"
+  description="View the source code for the eas/checkout function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
+/>
+
+#### `eas/install_node_modules`
+
+Installs node_modules using the package manager (bun, npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
+
+```yaml example.yml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      # @info #
+      - uses: eas/install_node_modules
+      # @end #
+```
+
+<BoxLink
+  title="eas/install_node_modules source code"
+  description="View the source code for the eas/install_node_modules function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
+/>
+
+#### `eas/download_build`
+
+Downloads application archive of a given build. By default, the downloaded artifact can be an **.apk**, **.aab**, **.ipa**, or **.app** file, or a **.tar.gz** archive containing one or more of these files. If the artifact is a **.tar.gz** archive, it will be extracted and the first file matching the specified extensions will be returned. If the build produced no application archive, the step will fail.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/download_build
+        with:
+          build_id: string # Required. ID of the build to download.
+          extensions: [apk, aab, ipa, app] # Optional. List of file extensions to look for. Defaults to ["apk", "aab", "ipa", "app"].
+```
+
+| Property     | Type     | Required    | Default                        | Description                                                                |
+| ------------ | -------- | ----------- | ------------------------------ | -------------------------------------------------------------------------- |
+| `build_id`   | string   | <YesIcon /> | –                              | The ID of the build to download. Must be a valid UUID.                     |
+| `extensions` | string[] | <NoIcon />  | `["apk", "aab", "ipa", "app"]` | List of file extensions to look for in the downloaded artifact or archive. |
+
+**Outputs:**
+
+- `artifact_path`: The absolute path to the matching application archive. This output can be used as input into other steps in your workflow. For example, to upload or process the artifact further.
+
+Example usage:
+
+```yaml
+jobs:
+  build_ios:
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  my_job:
+    needs: [build_ios]
+    steps:
+      - uses: eas/download_build
+        id: download_build
+        with:
+          build_id: ${{ needs.build_ios.outputs.build_id }}
+      - name: Print artifact path
+        run: |
+          echo "Artifact path: ${{ steps.download_build.outputs.artifact_path }}"
+```
+
+<BoxLink
+  title="eas/download_build source code"
+  description="View the source code for the eas/download_build function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadBuild.ts"
+/>
+
+#### `eas/prebuild`
+
+Runs the `expo prebuild` command using the package manager (bun, npm, pnpm, or Yarn) detected based on your project with the command best suited for your build type and build environment.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      # @info #
+      - uses: eas/prebuild
+      # @end #
+```
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/resolve_apple_team_id_from_credentials
+        id: resolve_apple_team_id_from_credentials
+      # @info #
+      - uses: eas/prebuild
+        with:
+          clean: false
+          apple_team_id: ${{ steps.resolve_apple_team_id_from_credentials.outputs.apple_team_id }}
+      # @end #
+```
+
+| Property        | Type      | Description                                                                                                                                 |
+| --------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `clean`         | `boolean` | Optional property defining whether the function should use `--clean` flag when running the command. Defaults to false.                      |
+| `apple_team_id` | `string`  | Optional property defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
+
+<BoxLink
+  title="eas/prebuild source code"
+  description="View the source code for the eas/prebuild function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
+/>
+
+#### `eas/restore_cache`
+
+Restores a previously saved cache from a specified key. This is useful for speeding up builds by reusing cached artifacts like compiled dependencies, build tools, or other intermediate build outputs.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      # @info #
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          restore_keys: cache
+          path: /path/to/cache
+      # @end #
+```
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      # @info #
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      # @end #
+```
+
+| Property       | Type     | Required    | Description                                                                                                                                              |
+| -------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`          | `string` | <YesIcon /> | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |
+| `restore_keys` | `string` | <NoIcon />  | A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix. |
+| `path`         | `string` | <YesIcon /> | The path where the cache should be restored. This should match the path used when saving the cache.                                                      |
+
+<BoxLink
+  title="eas/restore_cache source code"
+  description="View the source code for the eas/restore_cache function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/restoreCache.ts"
+/>
+
+#### `eas/save_cache`
+
+Saves a cache to a specified key. This allows you to persist build artifacts, compiled dependencies, or other intermediate outputs that can be reused in subsequent builds to speed up the build process.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      - name: Build Android app
+        run: cd android && ./gradlew assembleRelease
+      # @info #
+      - uses: eas/save_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      # @end #
+```
+
+| Property | Type     | Required    | Description                                                                                                                                                                                                       |
+| -------- | -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`    | `string` | <YesIcon /> | The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |
+| `path`   | `string` | <YesIcon /> | The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                               |
+
+<BoxLink
+  title="eas/save_cache source code"
+  description="View the source code for the eas/save_cache function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/saveCache.ts"
+/>
+
+#### `eas/send_slack_message`
+
+Sends a specified message to a configured [Slack webhook URL](https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks), which then posts it in the related Slack channel. The message can be specified as plaintext or as a [Slack Block Kit](https://docs.slack.dev/block-kit) message.
+
+With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation. For example, `Build URL: https://expo.dev/builds/${{ needs.build_ios.outputs.build_id }}`, `Build finished with status: ${{ after.build_android.status }}`.
+
+Either `message` or `payload` has to be specified, but not both.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/send_slack_message
+        # @end #
+        with:
+          message: 'This is a message sent to a Slack channel'
+          slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}
+```
+
+| Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                  |
+| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://docs.slack.dev/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                |
+| `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. Provide it using [EAS Environment Variables](/eas/environment-variables/manage/#manage-environment-variables) like `slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` Environment Variable, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
+
+<BoxLink
+  title="eas/send_slack_message source code"
+  description="View the source code for the eas/send_slack_message function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
+/>
+
+#### `eas/use_npm_token`
+
+Configures Node package managers (bun, npm, pnpm, or Yarn) for use with private packages, published either to npm or a private registry.
+
+Set `NPM_TOKEN` in your project's secrets, and this function will configure the build environment by creating **.npmrc** with the token.
+
+```yaml example.yml
+jobs:
+  my_job:
+    name: Install private npm modules
+    steps:
+      - uses: eas/checkout
+      # @info #
+      - uses: eas/use_npm_token
+      # @end #
+      - name: Install dependencies
+        run: npm install # <---- Can now install private packages
+```
+
+<BoxLink
+  title="eas/use_npm_token source code"
+  description="View the source code for the eas/use_npm_token function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
+/>
+
+#### `eas/upload_artifact`
+
+Uploads files from the job's workspace as an artifact attached to the workflow run. Uploaded artifacts appear in the run's **Artifacts** section and can be retrieved in a later job with [`eas/download_artifact`](#easdownload_artifact).
+
+> **info** In a custom (non-build) job, set `type: other` to upload a generic artifact. The `application-archive` and `build-artifact` types are reserved for build jobs — using them in a custom job fails with an error like `Uploading application archives outside of builds is not supported`.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - name: Run tests
+        run: ./scripts/run-tests.sh # writes results into ./results
+      # @info Upload whatever the previous step produced. #
+      - uses: eas/upload_artifact
+        # @info `if: always()` uploads results even when a previous step failed. #
+        if: ${{ always() }}
+        with:
+          type: other
+          name: test-results
+          path: |
+            results/**/*
+```
+
+##### Properties
+
+| Property       | Type    | Required    | Description                                                                                                                                                                                                                                                     |
+| -------------- | ------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `path`         | string  | <YesIcon /> | Path or newline-delimited list of paths to upload. Supports `*` and other [glob patterns](https://github.com/isaacs/node-glob#glob-primer).                                                                                                                     |
+| `type`         | string  | <NoIcon />  | Artifact type. In custom jobs use `other` (a generic artifact). Defaults to `other` when the job has no build platform, and to `application-archive` in build jobs. The build-scoped values `application-archive` and `build-artifact` only work in build jobs. |
+| `name`         | string  | <NoIcon />  | Name for the artifact, used to reference it from [`eas/download_artifact`](#easdownload_artifact).                                                                                                                                                              |
+| `metadata`     | json    | <NoIcon />  | Arbitrary metadata to attach to a generic (`other`) artifact.                                                                                                                                                                                                   |
+| `ignore_error` | boolean | <NoIcon />  | When `true`, an upload failure is logged but does not fail the step. Defaults to `false`.                                                                                                                                                                       |
+
+##### Outputs
+
+| Property      | Type   | Description                                                                                         |
+| ------------- | ------ | --------------------------------------------------------------------------------------------------- |
+| `artifact_id` | string | The ID of the uploaded artifact. Can be passed to [`eas/download_artifact`](#easdownload_artifact). |
+
+<BoxLink
+  title="eas/upload_artifact source code"
+  description="View the source code for the eas/upload_artifact function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadArtifact.ts"
+/>
+
+#### `eas/download_artifact`
+
+Downloads an artifact from EAS given an artifact's ID or name. Useful for sending artifacts from previous jobs to other services.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/download_artifact
+        with:
+          name: string # Required if artifact_id is not provided. Name of the artifact to download.
+          artifact_id: string # Required if artifact_name is not provided. ID of the artifact to download.
+```
+
+##### Properties
+
+| Property      | Type   | Required   | Description                                                                      |
+| ------------- | ------ | ---------- | -------------------------------------------------------------------------------- |
+| `name`        | string | <NoIcon /> | The name of the artifact to download. Required if `artifact_id` is not provided. |
+| `artifact_id` | string | <NoIcon /> | The ID of the artifact to download. Required if `name` is not provided.          |
+
+##### Outputs
+
+| Property        | Type   | Description                                                                                                                                            |
+| --------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `artifact_path` | string | The path to the downloaded artifact. This output can be used as input into other steps in your workflow. For example, to send or process the artifact. |
+
+##### Example
+
+```yaml
+jobs:
+  maestro_tests:
+    type: maestro
+    params:
+      build_id: '123-abc'
+      flow_path: 'path/to/flow.yaml'
+  my_job:
+    needs: [maestro_tests]
+    steps:
+      - uses: eas/download_artifact
+        id: download_artifact
+        with:
+          name: 'iOS Maestro Test Report (junit)'
+      - name: Print Maestro output
+        run: echo ${{ steps.download_artifact.outputs.artifact_path }}
+```
+
+<BoxLink
+  title="eas/download_artifact source code"
+  description="View the source code for the eas/download_artifact function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
+/>
+
+The following functions connect your workflow to [PostHog](/guides/using-posthog/). Run `eas integrations:posthog:connect` to link a PostHog project and set the environment variables these functions read. `eas/posthog_capture_event` uses your public project API key, while the other functions use a PostHog personal API key with the scopes noted for each one. For setup, see [Using PostHog](/guides/using-posthog/), and for complete workflows, see [PostHog recipes for EAS Workflows](/guides/using-posthog/recipes).
+
+#### `eas/posthog_capture_event`
+
+Sends an analytics event to PostHog. Use it to mark deploys, updates, and other workflow milestones on your PostHog timeline.
+
+When you do not provide a `distinct_id`, the event is sent anonymously and does not create a PostHog [person profile](https://posthog.com/docs/data/persons), which keeps workflow events out of your list of people.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_capture_event
+        # @end #
+        with:
+          event: ota_update_published
+          properties:
+            branch: main
+```
+
+##### Properties
+
+| Property       | Type    | Required    | Description                                                                                                                                                                                  |
+| -------------- | ------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `event`        | string  | <YesIcon /> | The name of the event to send.                                                                                                                                                               |
+| `distinct_id`  | string  | <NoIcon />  | The person to attribute the event to. When omitted, the event is sent anonymously and does not create a person profile.                                                                      |
+| `properties`   | json    | <NoIcon />  | Properties to attach to the event.                                                                                                                                                           |
+| `api_key`      | string  | <NoIcon />  | PostHog project API key. Defaults to the `EXPO_PUBLIC_POSTHOG_API_KEY` environment variable set by `eas integrations:posthog:connect`, falling back to `POSTHOG_API_KEY` if that is not set. |
+| `host`         | string  | <NoIcon />  | PostHog host. Defaults to the `EXPO_PUBLIC_POSTHOG_HOST` environment variable, or `https://us.posthog.com`.                                                                                  |
+| `ignore_error` | boolean | <NoIcon />  | When `true`, a failure to send the event is logged but does not fail the step. Defaults to `false`.                                                                                          |
+
+<BoxLink
+  title="eas/posthog_capture_event source code"
+  description="View the source code for the eas/posthog_capture_event function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/capturePosthogEvent.ts"
+/>
+
+#### `eas/posthog_flag_rollout`
+
+Enables, disables, or rolls out a [PostHog feature flag](https://posthog.com/docs/feature-flags). The function looks up the flag by key and then updates it. Provide at least one of `active`, `rollout_percentage`, or `payload`.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_flag_rollout
+        # @end #
+        with:
+          flag: new-checkout
+          rollout_percentage: 25
+```
+
+##### Properties
+
+| Property             | Type    | Required    | Description                                                                                                                                                                                                                                                             |
+| -------------------- | ------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flag`               | string  | <YesIcon /> | The key of the feature flag to update.                                                                                                                                                                                                                                  |
+| `active`             | boolean | <NoIcon />  | Whether the flag is enabled.                                                                                                                                                                                                                                            |
+| `rollout_percentage` | number  | <NoIcon />  | Percentage of users the flag rolls out to, as an integer from `0` to `100`. The function applies it to the flag's catch-all release condition and preserves other conditions. When the flag has no catch-all condition, the function applies it to the first condition. |
+| `payload`            | json    | <NoIcon />  | Payload to attach to the flag.                                                                                                                                                                                                                                          |
+| `variant`            | string  | <NoIcon />  | Variant key to store the `payload` under on a multivariate flag. Defaults to the flag's `true` payload.                                                                                                                                                                 |
+| `api_key`            | string  | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `feature_flag:read` and `feature_flag:write` scopes.                                                                                                                 |
+| `project_id`         | string  | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                                                                                                                                      |
+| `ignore_error`       | boolean | <NoIcon />  | When `true`, a network error, a missing flag, or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error, or invalid input such as an out-of-range `rollout_percentage`, always fails the step.                           |
+
+<BoxLink
+  title="eas/posthog_flag_rollout source code"
+  description="View the source code for the eas/posthog_flag_rollout function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/rolloutPosthogFlag.ts"
+/>
+
+#### `eas/posthog_wait_for_metric`
+
+Pauses the workflow until a [HogQL](https://posthog.com/docs/hogql) query returns a number that satisfies a comparison. Use it to gate a rollout on a metric, such as holding until the error count over the last few minutes stays low.
+
+The function runs the query every `interval_seconds` until the comparison is true or `timeout_seconds` elapses. A query that cannot be read, such as invalid HogQL, fails the step immediately, while transient errors are retried until the timeout.
+
+> **info** This step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_wait_for_metric
+        # @end #
+        with:
+          query: SELECT count() FROM events WHERE event = '$exception' AND timestamp > now() - INTERVAL 15 MINUTE
+          operator: lt
+          threshold: 10
+```
+
+##### Properties
+
+| Property           | Type   | Required    | Description                                                                                                             |
+| ------------------ | ------ | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `query`            | string | <YesIcon /> | A HogQL query. The first column of the first row must be a single number.                                               |
+| `operator`         | string | <YesIcon /> | Comparison operator. One of `lt`, `lte`, `gt`, `gte`, or `eq`. The step clears when `value <operator> threshold` holds. |
+| `threshold`        | number | <YesIcon /> | The value to compare the query result against.                                                                          |
+| `timeout_seconds`  | number | <NoIcon />  | Maximum time to wait, in seconds. Defaults to `600`.                                                                    |
+| `interval_seconds` | number | <NoIcon />  | Time between checks, in seconds. Defaults to `30`.                                                                      |
+| `api_key`          | string | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `query:read` scope.  |
+| `project_id`       | string | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                      |
+
+##### Outputs
+
+| Property | Type   | Description                                     |
+| -------- | ------ | ----------------------------------------------- |
+| `value`  | string | The metric value that satisfied the comparison. |
+
+<BoxLink
+  title="eas/posthog_wait_for_metric source code"
+  description="View the source code for the eas/posthog_wait_for_metric function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/waitForPosthogMetric.ts"
+/>
+
+#### `eas/posthog_wait_for_query`
+
+Pauses the workflow until a [HogQL](https://posthog.com/docs/hogql) query returns true. Use it when the condition is easier to express in the query itself. For a numeric comparison with an explicit threshold, use [`eas/posthog_wait_for_metric`](#easposthog_wait_for_metric) instead.
+
+The step clears when the first column of the first row is `true` or a nonzero number, so write the query to select a single boolean, such as `SELECT count() > 100 FROM events`.
+
+> **info** Like `eas/posthog_wait_for_metric`, this step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_wait_for_query
+        # @end #
+        with:
+          query: SELECT count() > 0 FROM events WHERE event = 'smoke_test_passed' AND timestamp > now() - INTERVAL 30 MINUTE
+```
+
+##### Properties
+
+| Property           | Type   | Required    | Description                                                                                                            |
+| ------------------ | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `query`            | string | <YesIcon /> | A HogQL query. The step clears when the first column of the first row is `true` or a nonzero number.                   |
+| `timeout_seconds`  | number | <NoIcon />  | Maximum time to wait, in seconds. Defaults to `600`.                                                                   |
+| `interval_seconds` | number | <NoIcon />  | Time between checks, in seconds. Defaults to `30`.                                                                     |
+| `api_key`          | string | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `query:read` scope. |
+| `project_id`       | string | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                     |
+
+<BoxLink
+  title="eas/posthog_wait_for_query source code"
+  description="View the source code for the eas/posthog_wait_for_query function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/waitForPosthogQuery.ts"
+/>
+
+#### `eas/posthog_annotation`
+
+Creates a [PostHog annotation](https://posthog.com/docs/data/annotations) on the project timeline. Annotations show up on your PostHog charts, which makes them useful for marking deploys and releases next to the metrics they affect.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_annotation
+        # @end #
+        with:
+          content: Published update to production
+```
+
+##### Properties
+
+| Property       | Type    | Required    | Description                                                                                                                                                  |
+| -------------- | ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `content`      | string  | <YesIcon /> | The annotation text.                                                                                                                                         |
+| `date_marker`  | string  | <NoIcon />  | The ISO 8601 timestamp the annotation is pinned to. Defaults to the current time.                                                                            |
+| `api_key`      | string  | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `annotation:write` scope.                                 |
+| `project_id`   | string  | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                           |
+| `ignore_error` | boolean | <NoIcon />  | When `true`, a network error or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error always fails the step. |
+
+<BoxLink
+  title="eas/posthog_annotation source code"
+  description="View the source code for the eas/posthog_annotation function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/createPosthogAnnotation.ts"
+/>
+
+#### `eas/posthog_upload_sourcemaps`
+
+Uploads JavaScript source maps to PostHog so that PostHog symbolicates stack traces in [error tracking](/guides/using-posthog/#error-tracking). Run it after the step that produces your bundle, in the same job, so the bundle and source maps are available on disk. Export with `npx expo export --source-maps`, and configure the PostHog Metro config from the [Source maps guide](/guides/using-posthog/#source-maps) so bundles carry the chunk IDs that match them to their source maps.
+
+> **warning** This step runs the PostHog CLI, which cannot tell a permissions error apart from any other failure. Unlike the other PostHog functions, setting `ignore_error: true` also hides authentication and scope errors.
+
+```yaml
+jobs:
+  publish_update:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - run: npx expo export --source-maps
+      # @info #
+      - uses: eas/posthog_upload_sourcemaps
+        # @end #
+        with:
+          directory: dist
+```
+
+##### Properties
+
+| Property       | Type    | Required   | Description                                                                                                              |
+| -------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `directory`    | string  | <NoIcon /> | The directory that contains the bundle and source maps, relative to the working directory. Defaults to `dist`.           |
+| `api_key`      | string  | <NoIcon /> | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires source map upload access. |
+| `project_id`   | string  | <NoIcon /> | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                       |
+| `ignore_error` | boolean | <NoIcon /> | When `true`, a failed upload is logged but does not fail the step. Defaults to `false`.                                  |
+
+<BoxLink
+  title="eas/posthog_upload_sourcemaps source code"
+  description="View the source code for the eas/posthog_upload_sourcemaps function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadPosthogSourcemaps.ts"
+/>
+
+## Built-in shell functions
+
+EAS Workflows provides the following shell function that you can use in your workflow steps to set variable outputs.
+
+### `set-output`
+
+Sets an output variable that can be accessed by other steps or other jobs in the workflow.
+
+```bash
+set-output <name> <value>
+```
+
+Example usage for sharing a variable with another step:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - id: step_1
+        # @info #
+        run: set-output variable_1 "Variable 1"
+        # @end #
+      - id: step_2
+        run: echo ${{ steps.step_1.outputs.variable_1 }} # prints: Variable 1
+```
+
+Example usage for sharing a variable with another job:
+
+```yaml
+jobs:
+  job_1:
+    outputs:
+      variable_1: ${{ steps.step_1.outputs.variable_1 }}
+    steps:
+      - id: step_1
+        # @info #
+        run: set-output variable_1 "Variable 1"
+        # @end #
+  job_2:
+    needs: [job_1]
+    steps:
+      - run: echo ${{ needs.job_1.outputs.variable_1 }} # prints: Variable 1
+```
+
+### `set-env`
+
+Sets an environment variable that is available to subsequent steps within the same job. Environment variables exported using `export` in one step's command are not automatically exposed to other steps. To share an environment variable with other steps, use the `set-env` executable.
+
+```bash
+set-env <name> <value>
+```
+
+`set-env` expects to be called with two arguments: the environment variable's name and value. For example, `set-env NPM_TOKEN "abcdef"` will expose the `$NPM_TOKEN` variable with the value `abcdef` to subsequent steps.
+
+> **Note:** Variables shared with `set-env` are not automatically exported locally. You need to call `export` yourself if you want to use the variable in the current step.
+
+Example usage for sharing an environment variable with another step:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - name: Set environment variables
+        run: |
+          # Using export only makes it available in the current step
+          export LOCAL_VAR="only in this step"
+
+          # Using set-env makes it available in subsequent steps
+          # @info #
+          set-env SHARED_VAR "available in next steps"
+          # @end #
+
+          # SHARED_VAR is not yet available in current step's environment
+          echo "LOCAL_VAR: $LOCAL_VAR"     # prints: only in this step
+          echo "SHARED_VAR: $SHARED_VAR"   # prints: (empty)
+      - name: Use shared variable
+        run: |
+          # SHARED_VAR is now available
+          # @info #
+          echo "SHARED_VAR: $SHARED_VAR"   # prints: available in next steps
+          # @end #
+```
+
+#### Sharing environment variables between jobs
+
+The `set-env` function only shares environment variables with other steps **within the same job**. To share values between different jobs, use the job's [`outputs`](#jobsjob_idoutputs) with `set-output` and pass them via the [`env`](#jobsjob_idenv) property on the receiving job:
+
+```yaml
+jobs:
+  job_1:
+    # @info Define outputs to expose values to other jobs #
+    outputs:
+      my_value: ${{ steps.step_1.outputs.my_value }}
+    # @end #
+    steps:
+      - id: step_1
+        run: set-output my_value "value from job_1"
+
+  job_2:
+    needs: [job_1]
+    # @info Use env to set environment variables from upstream job outputs #
+    env:
+      MY_VALUE: ${{ needs.job_1.outputs.my_value }}
+    # @end #
+    steps:
+      - run: echo "MY_VALUE: $MY_VALUE"  # prints: value from job_1
+```

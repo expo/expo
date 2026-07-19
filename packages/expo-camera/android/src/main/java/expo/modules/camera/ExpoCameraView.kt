@@ -1,0 +1,880 @@
+package expo.modules.camera
+
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.ImageFormat
+import android.graphics.SurfaceTexture
+import android.hardware.camera2.CameraCharacteristics
+import android.media.AudioManager
+import android.media.MediaActionSound
+import android.os.Bundle
+import android.util.Log
+import android.util.Size
+import android.view.OrientationEventListener
+import android.view.Surface
+import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.OptIn
+import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.camera2.interop.Camera2CameraInfo
+import androidx.camera.camera2.interop.ExperimentalCamera2Interop
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraInfo
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.CameraState
+import androidx.camera.core.DisplayOrientedMeteringPointFactory
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.MirrorMode
+import androidx.camera.core.Preview
+import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.lifecycle.awaitInstance
+import androidx.camera.video.FallbackStrategy
+import androidx.camera.video.FileOutputOptions
+import androidx.camera.video.QualitySelector
+import androidx.camera.video.Recorder
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapture
+import androidx.camera.video.VideoRecordEvent
+import androidx.camera.view.PreviewView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
+import expo.modules.camera.analyzers.BarcodeAnalyzer
+import expo.modules.camera.analyzers.toByteArray
+import expo.modules.camera.common.BarcodeScannedEvent
+import expo.modules.camera.common.CameraMountErrorEvent
+import expo.modules.camera.common.PictureSavedEvent
+import expo.modules.camera.records.BarcodeSettings
+import expo.modules.camera.records.BarcodeType
+import expo.modules.camera.records.CameraMode
+import expo.modules.camera.records.CameraRatio
+import expo.modules.camera.records.CameraType
+import expo.modules.camera.records.FlashMode
+import expo.modules.camera.records.FocusMode
+import expo.modules.camera.records.VideoQuality
+import expo.modules.camera.records.VideoStabilizationMode
+import expo.modules.camera.tasks.ResolveTakenPicture
+import expo.modules.camera.utils.BarCodeScannerResult
+import expo.modules.camera.utils.BarCodeScannerResult.BoundingBox
+import expo.modules.camera.utils.CameraUtils
+import expo.modules.camera.utils.FileSystemUtils
+import expo.modules.camera.utils.mapX
+import expo.modules.camera.utils.mapY
+import expo.modules.core.errors.ModuleDestroyedException
+import expo.modules.interfaces.camera.CameraViewInterface
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.runtime.Runtime
+import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ExpoView
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import java.io.File
+import java.lang.Float.max
+import java.lang.Float.min
+import kotlin.math.roundToInt
+import kotlin.properties.Delegates
+
+const val ANIMATION_FAST_MILLIS = 50L
+const val ANIMATION_SLOW_MILLIS = 100L
+
+@SuppressLint("ViewConstructor")
+class ExpoCameraView(
+  context: Context,
+  appContext: AppContext
+) : ExpoView(context, appContext),
+  CameraViewInterface {
+  private val currentActivity
+    get() = appContext.throwingActivity as AppCompatActivity
+
+  private val orientationEventListener by lazy {
+    object : OrientationEventListener(appContext.throwingActivity) {
+      override fun onOrientationChanged(orientation: Int) {
+        if (orientation == ORIENTATION_UNKNOWN) {
+          return
+        }
+
+        val rotation = when (orientation) {
+          in 45 until 135 -> Surface.ROTATION_270
+          in 135 until 225 -> Surface.ROTATION_180
+          in 225 until 315 -> Surface.ROTATION_90
+          else -> Surface.ROTATION_0
+        }
+
+        imageAnalysisUseCase?.targetRotation = rotation
+        imageCaptureUseCase?.targetRotation = rotation
+      }
+    }
+  }
+
+  var camera: Camera? = null
+  private var activeRecording: Recording? = null
+
+  private var cameraProvider: ProcessCameraProvider? = null
+  private var imageCaptureUseCase: ImageCapture? = null
+  private var imageAnalysisUseCase: ImageAnalysis? = null
+  private var recorder: Recorder? = null
+  private var barcodeFormats: List<BarcodeType> = emptyList()
+  private var glSurfaceTexture: SurfaceTexture? = null
+  private var isRecording = false
+
+  private var previewView = PreviewView(context).apply {
+    elevation = 0f
+  }
+  private val scope = CoroutineScope(
+    Dispatchers.Main + SupervisorJob() + CoroutineExceptionHandler { _, throwable ->
+      Log.e(CameraViewModule.TAG, "Unhandled exception in camera coroutine", throwable)
+    }
+  )
+  private var shouldCreateCamera = false
+  private var previewPaused = false
+
+  var lensFacing = CameraType.BACK
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var flashMode = FlashMode.OFF
+    set(value) {
+      field = value
+      setCameraFlashMode(value)
+    }
+
+  var cameraMode: CameraMode = CameraMode.PICTURE
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var zoom: Float = 0f
+    set(value) {
+      field = value
+      setCameraZoom(value)
+    }
+
+  var autoFocus: FocusMode = FocusMode.OFF
+    set(value) {
+      field = value
+      camera?.cameraControl?.let {
+        if (field == FocusMode.OFF) {
+          it.cancelFocusAndMetering()
+        } else {
+          startFocusMetering()
+        }
+      }
+    }
+
+  var videoQuality: VideoQuality = VideoQuality.VIDEO1080P
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var videoEncodingBitrate: Int? = null
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var videoStabilizationMode: VideoStabilizationMode = VideoStabilizationMode.AUTO
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var ratio: CameraRatio? = null
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var pictureSize: String = ""
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var mirror: Boolean = false
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var mute: Boolean = false
+  var animateShutter: Boolean = true
+  var enableTorch: Boolean by Delegates.observable(false) { _, _, newValue ->
+    setTorchEnabled(newValue)
+  }
+
+  private var lastWidth = 0
+  private var lastHeight = 0
+
+  private val onCameraReady by EventDispatcher<Unit>()
+  private val onMountError by EventDispatcher<CameraMountErrorEvent>()
+  private val onBarcodeScanned by EventDispatcher<BarcodeScannedEvent>(
+    /**
+     * We want every distinct barcode to be reported to the JS listener.
+     * If we return some static value as a coalescing key there may be two barcode events
+     * containing two different barcodes waiting to be transmitted to JS
+     * that would get coalesced (because both of them would have the same coalescing key).
+     * So let's differentiate them with a hash of the contents (mod short's max value).
+     */
+    coalescingKey = { event -> (event.data.hashCode() % Short.MAX_VALUE).toShort() }
+  )
+
+  private val onPictureSaved by EventDispatcher<PictureSavedEvent>(
+    coalescingKey = { event ->
+      val uriHash = event.data.getString("uri")?.hashCode() ?: -1
+      (uriHash % Short.MAX_VALUE).toShort()
+    }
+  )
+
+  // Scanning-related properties
+  private var shouldScanBarcodes = false
+
+  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    measureChild(previewView, widthMeasureSpec, heightMeasureSpec)
+
+    setMeasuredDimension(
+      ViewGroup.resolveSize(previewView.measuredWidth, widthMeasureSpec),
+      ViewGroup.resolveSize(previewView.measuredHeight, heightMeasureSpec)
+    )
+  }
+
+  override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+    val width = right - left
+    val height = bottom - top
+    if (width != lastWidth || height != lastHeight) {
+      previewView.layout(0, 0, width, height)
+      glSurfaceTexture?.setDefaultBufferSize(width, height)
+      lastWidth = width
+      lastHeight = height
+    }
+  }
+
+  override fun onViewAdded(child: View?) {
+    super.onViewAdded(child)
+    if (child == previewView) {
+      return
+    }
+    child?.bringToFront()
+    removeView(previewView)
+    addView(previewView, 0)
+  }
+
+  fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File, runtime: Runtime) {
+    val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+    val hasShutterSound = options.shutterSound
+
+    imageCaptureUseCase?.takePicture(
+      ContextCompat.getMainExecutor(context),
+      object : ImageCapture.OnImageCapturedCallback() {
+        override fun onCaptureStarted() {
+          if (hasShutterSound && volume != 0) {
+            MediaActionSound().play(MediaActionSound.SHUTTER_CLICK)
+          }
+          if (!animateShutter) {
+            return
+          }
+          rootView.postDelayed({
+            rootView.foreground = Color.WHITE.toDrawable()
+            rootView.postDelayed(
+              { rootView.foreground = null },
+              ANIMATION_FAST_MILLIS
+            )
+          }, ANIMATION_SLOW_MILLIS)
+        }
+
+        override fun onCaptureSuccess(image: ImageProxy) {
+          val data = image.planes.toByteArray()
+
+          if (options.fastMode) {
+            promise.resolve(null)
+          }
+
+          cacheDirectory.let {
+            scope.launch {
+              val shouldMirror = mirror && lensFacing == CameraType.FRONT
+              ResolveTakenPicture(data, promise, options, shouldMirror, runtime, it) { response: Bundle ->
+                if (!options.pictureRef) {
+                  onPictureSaved(response)
+                }
+              }.resolve()
+            }
+          }
+          image.close()
+        }
+
+        override fun onError(exception: ImageCaptureException) {
+          promise.reject(CameraExceptions.ImageCaptureFailed())
+        }
+      }
+    )
+  }
+
+  fun setCameraFlashMode(mode: FlashMode) {
+    val currentMode = if (mode == FlashMode.SCREEN && lensFacing != CameraType.FRONT) {
+      FlashMode.ON
+    } else {
+      mode
+    }
+
+    if (currentMode == FlashMode.SCREEN) {
+      appContext.currentActivity?.window?.let { window ->
+        previewView.setScreenFlashWindow(window)
+        imageCaptureUseCase?.screenFlash = previewView.screenFlash
+      }
+    }
+
+    imageCaptureUseCase?.flashMode = currentMode.mapToLens()
+  }
+
+  private fun setTorchEnabled(enabled: Boolean) {
+    if (camera?.cameraInfo?.hasFlashUnit() == true) {
+      camera?.cameraControl?.enableTorch(enabled)
+    }
+  }
+
+  fun record(options: RecordingOptions, promise: Promise, cacheDirectory: File) {
+    val file = FileSystemUtils.generateOutputFile(cacheDirectory, "Camera", ".mp4")
+    val fileOutputOptions = FileOutputOptions.Builder(file)
+      .setFileSizeLimit(options.maxFileSize.toLong())
+      .setDurationLimitMillis(options.maxDuration.toLong() * 1000)
+      .build()
+
+    recorder?.let {
+      if (!mute && ActivityCompat.checkSelfPermission(
+          context,
+          Manifest.permission.RECORD_AUDIO
+        ) != PackageManager.PERMISSION_GRANTED
+      ) {
+        promise.reject(Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO))
+        return
+      }
+      activeRecording = it.prepareRecording(context, fileOutputOptions)
+        .apply {
+          if (!mute) {
+            withAudioEnabled()
+          }
+        }
+        .start(ContextCompat.getMainExecutor(context)) { event ->
+          when (event) {
+            is VideoRecordEvent.Pause -> {
+              isRecording = false
+            }
+            is VideoRecordEvent.Resume -> {
+              isRecording = true
+            }
+            is VideoRecordEvent.Start -> {
+              isRecording = true
+            }
+            is VideoRecordEvent.Finalize -> {
+              when (event.error) {
+                VideoRecordEvent.Finalize.ERROR_FILE_SIZE_LIMIT_REACHED,
+                VideoRecordEvent.Finalize.ERROR_DURATION_LIMIT_REACHED,
+                VideoRecordEvent.Finalize.ERROR_NONE,
+                VideoRecordEvent.Finalize.ERROR_SOURCE_INACTIVE -> {
+                  promise.resolve(
+                    Bundle().apply {
+                      putString("uri", event.outputResults.outputUri.toString())
+                    }
+                  )
+                }
+
+                else -> promise.reject(
+                  CameraExceptions.VideoRecordingFailed(
+                    event.cause?.message ?: "Unknown error"
+                  )
+                )
+              }
+            }
+          }
+        }
+    }
+      ?: promise.reject(
+        "E_RECORDING_FAILED",
+        "Starting video recording failed - could not create video file.",
+        null
+      )
+  }
+
+  fun stopRecording() {
+    isRecording = false
+    activeRecording?.close()
+  }
+
+  fun toggleRecording() {
+    activeRecording?.let {
+      if (isRecording) {
+        it.pause()
+      } else {
+        it.resume()
+      }
+    }
+  }
+
+  fun recreateCamera() {
+    scope.launch {
+      createCamera()
+    }
+  }
+
+  private suspend fun createCamera() {
+    if (!shouldCreateCamera || previewPaused) {
+      return
+    }
+    shouldCreateCamera = false
+    try {
+      configureAndBindCamera()
+    } catch (e: Exception) {
+      shouldCreateCamera = true
+      onMountError(
+        CameraMountErrorEvent(
+          "Camera could not be started, it may be unavailable or in use by another app: ${e.message ?: e.javaClass.simpleName}"
+        )
+      )
+    }
+  }
+
+  @SuppressLint("UnsafeOptInUsageError")
+  private suspend fun configureAndBindCamera() {
+    val cameraProvider = ProcessCameraProvider.awaitInstance(context)
+
+    ratio?.let {
+      previewView.scaleType =
+        if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
+          PreviewView.ScaleType.FIT_CENTER
+        } else {
+          PreviewView.ScaleType.FILL_CENTER
+        }
+    }
+
+    val resolutionSelector = buildResolutionSelector()
+    val preview = Preview.Builder()
+      .setResolutionSelector(resolutionSelector)
+      .build()
+      .also {
+        it.surfaceProvider = previewView.surfaceProvider
+      }
+
+    glSurfaceTexture?.let {
+      it.setDefaultBufferSize(previewView.width, previewView.height)
+      preview.setSurfaceProvider { request ->
+        val surface = Surface(it)
+        request.provideSurface(surface, ContextCompat.getMainExecutor(context)) {
+          surface.release()
+        }
+      }
+    }
+
+    val cameraSelector = CameraSelector.Builder()
+      .requireLensFacing(lensFacing.mapToCharacteristic())
+      .build()
+
+    // Screen flash only works with front camera - fall back to ON for back camera
+    val currentFlashMode = if (flashMode == FlashMode.SCREEN && lensFacing != CameraType.FRONT) {
+      FlashMode.ON
+    } else {
+      flashMode
+    }
+
+    if (currentFlashMode == FlashMode.SCREEN) {
+      appContext.currentActivity?.window?.let { window ->
+        previewView.setScreenFlashWindow(window)
+      }
+    }
+
+    val imageCaptureBuilder = ImageCapture.Builder()
+      .setResolutionSelector(resolutionSelector)
+      .setFlashMode(currentFlashMode.mapToLens())
+
+    if (currentFlashMode == FlashMode.SCREEN) {
+      previewView.screenFlash?.let { screenFlash ->
+        imageCaptureBuilder.setScreenFlash(screenFlash)
+      }
+    }
+
+    imageCaptureUseCase = imageCaptureBuilder.build()
+
+    val selectedCameraInfo = cameraSelector
+      .filter(cameraProvider.availableCameraInfos)
+      .firstOrNull()
+    val videoCapture = createVideoCapture(selectedCameraInfo)
+    imageAnalysisUseCase = createImageAnalyzer()
+
+    val useCases = UseCaseGroup.Builder().apply {
+      addUseCase(preview)
+      if (cameraMode == CameraMode.PICTURE) {
+        imageCaptureUseCase?.let {
+          addUseCase(it)
+        }
+        imageAnalysisUseCase?.let {
+          addUseCase(it)
+        }
+      } else {
+        addUseCase(videoCapture)
+      }
+    }.build()
+
+    cameraProvider.unbindAll()
+    camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
+    camera?.let {
+      observeCameraState(it.cameraInfo)
+    }
+    // Set the previous zoom level after recreating the camera
+    setCameraZoom(zoom)
+    this.cameraProvider = cameraProvider
+  }
+
+  private fun createImageAnalyzer(): ImageAnalysis =
+    ImageAnalysis.Builder()
+      .setResolutionSelector(
+        ResolutionSelector.Builder()
+          .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+          .build()
+      )
+      .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+      .build()
+      .also { analyzer ->
+        if (shouldScanBarcodes && CameraUtils.isMLKitBarcodeScannerAvailable()) {
+          try {
+            analyzer.setAnalyzer(
+              ContextCompat.getMainExecutor(context),
+              BarcodeAnalyzer(barcodeFormats) {
+                onBarcodeScanned(it)
+              }
+            )
+          } catch (e: Exception) {
+            Log.e(CameraViewModule.TAG, "Failed to initialize BarcodeAnalyzer: ${e.message}")
+          }
+        }
+      }
+
+  private fun buildResolutionSelector(): ResolutionSelector {
+    val strategy = if (pictureSize.isNotEmpty()) {
+      val size = parseSizeSafely(pictureSize)
+      size?.let {
+        ResolutionStrategy(size, ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER)
+      } ?: ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
+    } else {
+      ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
+    }
+
+    return if (ratio == CameraRatio.ONE_ONE) {
+      ResolutionSelector.Builder().setResolutionFilter { supportedSizes, _ ->
+        return@setResolutionFilter supportedSizes.filter {
+          it.width == it.height
+        }
+      }.setResolutionStrategy(strategy).build()
+    } else {
+      ResolutionSelector.Builder().apply {
+        ratio?.let {
+          setAspectRatioStrategy(it.mapToStrategy())
+        }
+        setResolutionStrategy(strategy)
+      }.build()
+    }
+  }
+
+  private fun parseSizeSafely(size: String): Size? {
+    val pattern = Regex("\\d+x\\d+")
+    if (!pattern.matches(size)) {
+      return null
+    }
+
+    return try {
+      Size.parseSize(size)
+    } catch (e: Throwable) {
+      null
+    }
+  }
+
+  private fun createVideoCapture(cameraInfo: CameraInfo?): VideoCapture<Recorder> {
+    val preferredQuality = videoQuality.mapToQuality()
+    val fallbackStrategy = FallbackStrategy.higherQualityOrLowerThan(preferredQuality)
+    val qualitySelector = QualitySelector.from(preferredQuality, fallbackStrategy)
+
+    val recorder = Recorder.Builder().apply {
+      videoEncodingBitrate?.let {
+        setTargetVideoEncodingBitRate(it)
+      }
+    }
+      .setExecutor(ContextCompat.getMainExecutor(context))
+      .setQualitySelector(qualitySelector)
+      .build()
+      .also {
+        this.recorder = it
+      }
+
+    return VideoCapture.Builder(recorder).apply {
+      if (mirror) {
+        setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
+      }
+      setVideoStabilizationEnabled(isVideoStabilizationEnabled(cameraInfo))
+    }.build()
+  }
+
+  private fun isVideoStabilizationEnabled(cameraInfo: CameraInfo?): Boolean {
+    val isStabilizationSupported = cameraInfo?.let {
+      Recorder.getVideoCapabilities(it).isStabilizationSupported
+    } ?: false
+
+    return isStabilizationSupported && videoStabilizationMode.isEnabled()
+  }
+
+  private fun startFocusMetering() {
+    camera?.let {
+      val meteringPointFactory = DisplayOrientedMeteringPointFactory(
+        previewView.display,
+        it.cameraInfo,
+        previewView.width.toFloat(),
+        previewView.height.toFloat()
+      )
+      val action = FocusMeteringAction.Builder(
+        meteringPointFactory.createPoint(1f, 1f),
+        FocusMeteringAction.FLAG_AF
+      )
+        .build()
+      it.cameraControl.startFocusAndMetering(action)
+    }
+  }
+
+  private fun setCameraZoom(value: Float) {
+    val maxZoomRatio = camera?.cameraInfo?.zoomState?.value?.maxZoomRatio ?: 1f
+    val targetZoomRatio = max(1f, min(maxZoomRatio, value.coerceIn(0f, 1f) * maxZoomRatio))
+    camera?.cameraControl?.setZoomRatio(targetZoomRatio)
+  }
+
+  private fun observeCameraState(cameraInfo: CameraInfo) {
+    cameraInfo.cameraState.observe(currentActivity) {
+      when (it.type) {
+        CameraState.Type.OPEN -> {
+          onCameraReady(Unit)
+          setTorchEnabled(enableTorch)
+        }
+
+        else -> {}
+      }
+    }
+  }
+
+  @OptIn(ExperimentalCamera2Interop::class)
+  fun getAvailablePictureSizes(): List<String> {
+    return camera?.cameraInfo?.let { cameraInfo ->
+      val info = Camera2CameraInfo.from(cameraInfo)
+        .getCameraCharacteristic(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+      info?.getOutputSizes(ImageFormat.JPEG)?.map { it.toString() }
+    } ?: emptyList()
+  }
+
+  fun resumePreview() {
+    shouldCreateCamera = true
+    previewPaused = false
+    scope.launch {
+      createCamera()
+    }
+  }
+
+  fun pausePreview() {
+    previewPaused = true
+    cameraProvider?.unbindAll()
+  }
+
+  fun setShouldScanBarcodes(shouldScanBarcodes: Boolean) {
+    this.shouldScanBarcodes = shouldScanBarcodes
+    shouldCreateCamera = true
+  }
+
+  fun setBarcodeScannerSettings(settings: BarcodeSettings?) {
+    barcodeFormats = settings?.barcodeTypes ?: emptyList()
+  }
+
+  private fun transformBarcodeScannerResultToViewCoordinates(barcode: BarCodeScannerResult) {
+    val cornerPoints = barcode.cornerPoints
+    val previewWidth = previewView.width.toFloat()
+    val previewHeight = previewView.height.toFloat()
+    val imageWidth = barcode.width.toFloat()
+    val imageHeight = barcode.height.toFloat()
+
+    if (previewWidth <= 0 || previewHeight <= 0 || imageWidth <= 0 || imageHeight <= 0) {
+      return
+    }
+
+    val scaleX: Float
+    val scaleY: Float
+    var offsetX = 0f
+    var offsetY = 0f
+
+    when (previewView.scaleType) {
+      PreviewView.ScaleType.FIT_CENTER -> {
+        val previewAspectRatio = previewWidth / previewHeight
+        val imageAspectRatio = imageWidth / imageHeight
+
+        if (previewAspectRatio > imageAspectRatio) {
+          scaleY = previewHeight / imageHeight
+          scaleX = scaleY
+          offsetX = (previewWidth - imageWidth * scaleX) / 2f
+        } else {
+          scaleX = previewWidth / imageWidth
+          scaleY = scaleX
+          offsetY = (previewHeight - imageHeight * scaleY) / 2f
+        }
+      }
+      PreviewView.ScaleType.FILL_CENTER -> {
+        val previewAspectRatio = previewWidth / previewHeight
+        val imageAspectRatio = imageWidth / imageHeight
+
+        if (previewAspectRatio > imageAspectRatio) {
+          scaleX = previewWidth / imageWidth
+          scaleY = scaleX
+          offsetY = (previewHeight - imageHeight * scaleY) / 2f
+        } else {
+          scaleY = previewHeight / imageHeight
+          scaleX = scaleY
+          offsetX = (previewWidth - imageWidth * scaleX) / 2f
+        }
+      }
+      else -> {
+        scaleX = previewWidth / imageWidth
+        scaleY = previewHeight / imageHeight
+      }
+    }
+
+    cornerPoints.mapX { index ->
+      val originalX = cornerPoints[index]
+      (originalX * scaleX + offsetX).roundToInt()
+    }
+
+    cornerPoints.mapY { index ->
+      val originalY = cornerPoints[index]
+      (originalY * scaleY + offsetY).roundToInt()
+    }
+
+    barcode.cornerPoints = cornerPoints
+    barcode.height = previewHeight.toInt()
+    barcode.width = previewWidth.toInt()
+  }
+
+  private fun getCornerPointsAndBoundingBox(
+    cornerPoints: List<Int>,
+    boundingBox: BoundingBox
+  ): Pair<ArrayList<Bundle>, Bundle> {
+    val density = previewView.resources.displayMetrics.density
+    val convertedCornerPoints = ArrayList<Bundle>()
+    for (i in cornerPoints.indices step 2) {
+      val x = cornerPoints[i].toFloat() / density
+      val y = cornerPoints[i + 1].toFloat() / density
+      convertedCornerPoints.add(
+        Bundle().apply {
+          putFloat("x", x)
+          putFloat("y", y)
+        }
+      )
+    }
+    val boundingBoxBundle = Bundle().apply {
+      putParcelable(
+        "origin",
+        Bundle().apply {
+          putFloat("x", boundingBox.x.toFloat() / density)
+          putFloat("y", boundingBox.y.toFloat() / density)
+        }
+      )
+      putParcelable(
+        "size",
+        Bundle().apply {
+          putFloat("width", boundingBox.width.toFloat() / density)
+          putFloat("height", boundingBox.height.toFloat() / density)
+        }
+      )
+    }
+    return convertedCornerPoints to boundingBoxBundle
+  }
+
+  private fun onBarcodeScanned(barcode: BarCodeScannerResult) {
+    if (shouldScanBarcodes) {
+      transformBarcodeScannerResultToViewCoordinates(barcode)
+
+      val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(
+        barcode.cornerPoints,
+        barcode.boundingBox
+      )
+
+      onBarcodeScanned(
+        BarcodeScannedEvent(
+          target = id,
+          data = barcode.value.toString(),
+          raw = barcode.raw.toString(),
+          type = BarcodeType.mapFormatToString(barcode.type),
+          cornerPoints = cornerPoints,
+          bounds = boundingBox,
+          extra = barcode.extra
+        )
+      )
+    }
+  }
+
+  override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) {
+    glSurfaceTexture = surfaceTexture
+    shouldCreateCamera = true
+    scope.launch {
+      createCamera()
+    }
+  }
+
+  override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)
+
+  init {
+    orientationEventListener.enable()
+    previewView.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
+      override fun onChildViewRemoved(parent: View?, child: View?) = Unit
+      override fun onChildViewAdded(parent: View?, child: View?) {
+        parent?.measure(
+          MeasureSpec.makeMeasureSpec(measuredWidth, MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(measuredHeight, MeasureSpec.EXACTLY)
+        )
+        parent?.layout(0, 0, parent.measuredWidth, parent.measuredHeight)
+      }
+    })
+    addView(
+      previewView,
+      ViewGroup.LayoutParams(
+        LayoutParams.MATCH_PARENT,
+        LayoutParams.MATCH_PARENT
+      )
+    )
+  }
+
+  fun onPictureSaved(response: Bundle) {
+    onPictureSaved(PictureSavedEvent(response.getInt("id"), response.getBundle("data")!!))
+  }
+
+  private fun cancelCoroutineScope() = try {
+    scope.cancel(ModuleDestroyedException())
+  } catch (_: Exception) {
+    Log.e(CameraViewModule.TAG, "The scope does not have a job in it")
+  }
+
+  fun cleanupCamera() {
+    orientationEventListener.disable()
+    cancelCoroutineScope()
+    cameraProvider?.unbindAll()
+    glSurfaceTexture?.release()
+  }
+}

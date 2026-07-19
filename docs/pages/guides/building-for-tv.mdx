@@ -1,0 +1,406 @@
+---
+title: Build Expo apps for TV
+sidebar_title: Build apps for TV
+description: A guide for building an Expo app for an Android TV or Apple TV target.
+---
+
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **Warning** Not all Expo features and SDK libraries are available on TV. For more details, check the [See which libraries are supported](#see-which-libraries-are-supported).
+
+React Native is supported on Android TV and Apple TV through the [React Native TV project](https://github.com/react-native-tvos/react-native-tvos). This technology extends beyond TV, offering a comprehensive core repo fork with support for phone and TV targets, including Hermes and Fabric.
+
+Using the React Native TV library as the `react-native` dependency in an Expo project, it becomes capable of targeting both mobile (Android, iOS) and TV (Android TV, Apple TV) devices.
+
+## Native project changes required
+
+The necessary changes to the native Android and iOS files are minimal and can be automated with a [config plugin](https://github.com/react-native-tvos/config-tv/tree/main/packages/config-tv) if you use [prebuild](/more/glossary-of-terms/#prebuild). Below is a list of changes made by the config plugins, which you can alternatively apply manually:
+
+### Android
+
+- **AndroidManifest.xml** is modified:
+  - The default phone portrait orientation is removed
+  - The required intent for TV apps is added
+- **MainApplication.kt** is modified to remove unsupported Flipper invocations
+
+### iOS
+
+- **ios/Podfile** is modified to target tvOS instead of iOS
+- The Xcode project is modified to target tvOS instead of iOS
+- The splash screen (**SplashScreen.storyboard**) is modified to work on tvOS
+
+## System requirements for TV development
+
+### Android TV
+
+<Prerequisites>
+  <Requirement title="Node.js (LTS)">
+    Install [Node.js (LTS)](https://nodejs.org/en/) on macOS or Linux.
+  </Requirement>
+  <Requirement title="Android Studio (Iguana or later)">
+    Install Android Studio Iguana or later.
+  </Requirement>
+  <Requirement title="Android TV system image">
+    In the Android Studio SDK manager, select the dropdown for the Android SDK you are using (API
+    version 31 or later), and make sure an Android TV system image is selected for installation. For
+    Apple silicon, choose the ARM 64 image. Otherwise, choose the Intel x86_64 image.
+  </Requirement>
+  <Requirement title="Android TV emulator">
+    After installing the Android TV system image, create an Android TV emulator using that image
+    (the process is the same as creating an Android phone emulator).
+  </Requirement>
+</Prerequisites>
+
+### Apple TV
+
+<Prerequisites>
+  <Requirement title="Node.js (LTS)">
+    Install [Node.js (LTS)](https://nodejs.org/en/) on macOS.
+  </Requirement>
+  <Requirement title="Xcode 16 or later">Install Xcode 16 or later.</Requirement>
+  <Requirement title="tvOS SDK 17 or later">
+    tvOS SDK 17 or later is not installed automatically with Xcode. You can install it later with
+    `xcodebuild -downloadAllPlatforms`.
+  </Requirement>
+</Prerequisites>
+
+## Quick start
+
+The fastest way to generate a new project is described in the [TV example](https://github.com/expo/examples/tree/master/with-tv) within the Expo examples repository:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app MyTVProject -e with-tv'],
+    yarn: ['$ yarn create expo-app MyTVProject -e with-tv'],
+    pnpm: ['$ pnpm create expo-app MyTVProject -e with-tv'],
+    bun: ['$ bun create expo MyTVProject -e with-tv'],
+  }}
+/>
+
+You can start with the [TV Router example](https://github.com/expo/examples/tree/master/with-router-tv):
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app MyTVProject -e with-router-tv'],
+    yarn: ['$ yarn create expo-app MyTVProject -e with-router-tv'],
+    pnpm: ['$ pnpm create expo-app MyTVProject -e with-router-tv'],
+    bun: ['$ bun create expo MyTVProject -e with-router-tv'],
+  }}
+/>
+
+This creates a new project that uses [Expo Router](/router/introduction/) for file-based navigation, modeled after the [**create-expo-app** default template](/get-started/create-a-project/).
+
+<Collapsible summary="See which libraries are supported">
+
+At this time, TV applications work with the following libraries and APIs listed below:
+
+- [AppleAuthentication](/versions/latest/sdk/apple-authentication/)
+- [Application](/versions/latest/sdk/application/)
+- [Audio](/versions/latest/sdk/audio)
+- [Asset](/versions/latest/sdk/asset/)
+- [AsyncStorage](/versions/latest/sdk/async-storage/)
+- [AV](/versions/v54.0.0/sdk/av/)
+- [BackgroundTask](/versions/latest/sdk/background-task/)
+- [BlurView](/versions/latest/sdk/blur-view/)
+- [BuildProperties](/versions/latest/sdk/build-properties/)
+- [Constants](/versions/latest/sdk/constants/)
+- [Crypto](/versions/latest/sdk/crypto/)
+- [DevClient](/versions/latest/sdk/dev-client/)
+- [Device](/versions/latest/sdk/device/)
+- [Expo UI](/versions/latest/sdk/ui/)
+- [FileSystem](/versions/latest/sdk/filesystem/)
+- [FlashList](/versions/latest/sdk/flash-list/)
+- [Font](/versions/latest/sdk/font/)
+- [GlassEffect](/versions/latest/sdk/glass-effect/)
+- [Image](/versions/latest/sdk/image)
+- [ImageManipulator](/versions/latest/sdk/imagemanipulator/)
+- [KeepAwake](/versions/latest/sdk/keep-awake/)
+- [LinearGradient](/versions/latest/sdk/linear-gradient/)
+- [Localization](/versions/latest/sdk/localization/)
+- [Manifests](/versions/latest/sdk/manifests/)
+- [MediaLibrary](/versions/latest/sdk/media-library/)
+- [NetInfo](/versions/latest/sdk/netinfo/)
+- [Network](/versions/latest/sdk/network/)
+- [Reanimated](/versions/latest/sdk/reanimated/)
+- [SafeAreaContext](/versions/latest/sdk/safe-area-context/)
+- [SecureStore](/versions/latest/sdk/securestore/)
+- [Skia](/versions/latest/sdk/skia/)
+- [SplashScreen](/versions/latest/sdk/splash-screen/)
+- [SQLite](/versions/latest/sdk/sqlite/)
+- [Svg](/versions/latest/sdk/svg/)
+- [SystemUI](/versions/latest/sdk/system-ui/)
+- [TaskManager](/versions/latest/sdk/task-manager/)
+- [TrackingTransparency](/versions/latest/sdk/tracking-transparency/)
+- [Updates](/versions/latest/sdk/updates/)
+- [Video](/versions/latest/sdk/video/)
+- [VideoThumbnails](/versions/latest/sdk/video-thumbnails/)
+
+TV also works with [React Navigation](https://reactnavigation.org/), [React Native Skia](https://shopify.github.io/react-native-skia/), and many other commonly used third-party React Native libraries. See [React Native directory](https://reactnative.directory/?tvos=true) to learn more about supported third-party libraries.
+
+#### Limitations
+
+- The [Expo DevClient](/versions/latest/sdk/dev-client/) library is only supported in SDK 54 and later:
+  - **Android TV**: All operations are supported, similar to an Android phone.
+  - **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to EAS and listing of EAS builds and updates is not yet supported.
+
+</Collapsible>
+
+## Integration with an existing Expo project
+
+The following walkthrough describes the steps required to modify an Expo project for TV.
+
+<Step label="1">
+
+### Modify dependencies for TV
+
+In **package.json**, modify the `react-native` dependency to use the TV repo.
+
+<Tabs>
+
+<Tab label="SDK 56 and later">
+```json package.json
+{
+  /* @hide ... */ /* @end */
+  "dependencies": {
+    /* @hide ... */ /* @end */
+    "react-native": "npm:react-native-tvos@0.85-stable"
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+The `react-native-tvos` version must match the Expo SDK you are using. For example, Expo SDK 56 uses React Native 0.85, so you should use `react-native-tvos@0.85-stable` (the latest 0.85 version) as shown above. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use.
+
+In SDK 56 and later, [upgrading your project to a newer SDK version](/workflow/upgrading-expo-sdk-walkthrough/#upgrade-the-expo-sdk) also upgrades the TV repo dependency.
+
+</Tab>
+
+<Tab label="SDK 55 and earlier">
+You will need to exclude the `react-native` dependency from [`npx expo install` version validation](/more/expo-cli/#configuring-dependency-validation).
+
+```json package.json
+{
+  /* @hide ... */ /* @end */
+  "dependencies": {
+    /* @hide ... */ /* @end */
+    "react-native": "npm:react-native-tvos@0.83-stable"
+    /* @hide ... */ /* @end */
+  },
+  "expo": {
+    "install": {
+      "exclude": ["react-native"]
+    }
+  }
+}
+```
+
+The `react-native-tvos` version must match the Expo SDK you are using. For example, Expo SDK 55 uses React Native 0.83, so you should use `react-native-tvos@0.83-stable` (the latest 0.83 version) as shown above. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use.
+
+> **Warning** If upgrading an Expo TV project to SDK 55 or earlier, the `react-native-tvos` version **must be upgraded manually**. It will not be automatically updated by `npx expo install expo@latest --fix`.
+
+</Tab>
+
+</Tabs>
+
+> **Warning** If you have more than one Expo project in a monorepo, and one of them is modified for TV, then all of them should be modified to use the React Native TV package as described here, even if some of the projects are not configured to target TV. This avoids possible conflicts between the project dependencies, while still supporting mobile development fully on all the projects.
+> {/* prettier-ignore */}
+
+</Step>
+
+<Step label="2">
+
+### Add the TV config plugin
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @react-native-tvos/config-tv -- --dev'],
+    yarn: ['$ yarn expo install @react-native-tvos/config-tv -- --dev'],
+    pnpm: ['$ pnpm expo install @react-native-tvos/config-tv -- --dev'],
+    bun: ['$ bun expo install @react-native-tvos/config-tv -- --dev'],
+  }}
+/>
+
+When installed, the plugin will modify the project for TV when either:
+
+- The environment variable `EXPO_TV` is set to `1`
+- The plugin parameter `isTV` is set to `true`
+
+Verify that this plugin appears in **app.json**:
+
+```json app.json
+{
+  "plugins": ["@react-native-tvos/config-tv"]
+}
+```
+
+To see additional information on the plugin's actions during prebuild, you can set [debug environment variables](https://github.com/debug-js/debug#conventions) before running prebuild. (See also our documentation on [Expo CLI environment variables](/more/expo-cli/#environment-variables).)
+
+<Terminal
+  cmd={[
+    '# See all Expo CLI and config plugin debug information',
+    '$ export DEBUG=expo:*',
+    '',
+    '# See only debug information for the TV plugin',
+    '$ export DEBUG=expo:react-native-tvos:config-tv',
+  ]}
+/>
+
+</Step>
+
+<Step label="3">
+
+### Run prebuild
+
+Set the `EXPO_TV` environment variable, and run prebuild to make the TV modifications to the project.
+
+<Terminal cmd={['$ export EXPO_TV=1', '$ npx expo prebuild --clean']} />
+
+> **Note**: The `--clean` argument is recommended, and is required if you have existing Android and iOS directories in the project.
+
+</Step>
+
+<Step label="4">
+
+### Build for Android TV
+
+Start an Android TV emulator and use the following command to start the app on the emulator:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
+
+</Step>
+<Step label="5">
+
+### Build for Apple TV
+
+Run the following command to build and run the app on an Apple TV simulator:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
+
+</Step>
+<Step label="6">
+
+### Revert TV changes and build for phone
+
+You can revert the changes for TV and go back to phone development by unsetting `EXPO_TV` and running prebuild again:
+
+<Terminal cmd={['$ unset EXPO_TV', '$ npx expo prebuild --clean']} />
+
+</Step>
+
+<Step label="7">
+
+### Create EAS Build profiles for both TV and phone
+
+Since the TV build can be driven by the value of an environment variable, it is easy to set up EAS Build profiles that build from the same source but target TV instead of phone.
+
+The following example **eas.json** shows how to extend existing profiles (`development` and `preview`) to create TV profiles (`development_tv` and `preview_tv`).
+
+```json eas.json
+{
+  "cli": {
+    "version": ">= 5.2.0"
+  },
+  "build": {
+    "base": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk",
+        "withoutCredentials": true
+      },
+      "channel": "base"
+    },
+    "development": {
+      "extends": "base",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug"
+      },
+      "channel": "development"
+    },
+    "development_tv": {
+      "extends": "development",
+      "env": {
+        "EXPO_TV": "1"
+      },
+      "channel": "development"
+    },
+    "preview": {
+      "extends": "base",
+      "channel": "preview"
+    },
+    "preview_tv": {
+      "extends": "preview",
+      "env": {
+        "EXPO_TV": "1"
+      },
+      "channel": "preview"
+    }
+  },
+  "submit": {}
+}
+```
+
+</Step>
+
+<Step label="8">
+
+### Credentials for tvOS App Store builds
+
+tvOS uses the same bundle IDs and distribution certificates as iOS and other Apple platforms. However, tvOS does not use the same provisioning profiles as iOS.
+
+Since the EAS tooling on the web and in EAS CLI only creates iOS provisioning profiles, some extra steps are required for tvOS projects. There are two ways for you to proceed:
+
+1. If a project is targeting only tvOS, you can have your credentials stored in EAS. Create the bundle ID, and upload the distribution certificate on the project's website, as you would for an iOS project. Then, you should go to Apple's developer web site and create a tvOS provisioning profile there, using the bundle ID that EAS created. Then download that profile to your computer, and upload it to the project at [your EAS project website](https://expo.dev/accounts/[account]/projects/[project]/credentials/). See the [app credentials guide](/app-signing/app-credentials/).
+
+2. If a project is targeting both tvOS and iOS, you should use [local credentials](/app-signing/local-credentials/) for tvOS, as the EAS-stored credentials will be needed by your iOS builds.
+
+</Step>
+
+## Examples and demonstration projects
+
+<BoxLink
+  title="IgniteTV"
+  description="A project generated with the Ignite CLI that can be built for mobile or TV."
+  href="https://github.com/react-native-tvos/IgniteTV"
+  Icon={GithubIcon}
+/>
+
+<BoxLink
+  title="SkiaMultiplatform"
+  description="Demonstrates React Native Skia on mobile, TV, and web."
+  href="https://github.com/react-native-tvos/SkiaMultiplatform"
+  Icon={GithubIcon}
+/>
+
+<BoxLink
+  title="NativewindMultiplatform"
+  description="Demonstrates using TailwindCSS styling on mobile, TV, and web."
+  href="https://github.com/react-native-tvos/NativewindMultiplatform"
+  Icon={GithubIcon}
+/>

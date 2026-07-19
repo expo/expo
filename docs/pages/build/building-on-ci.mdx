@@ -1,0 +1,266 @@
+---
+title: Trigger builds from CI
+description: Learn how to trigger builds on EAS for your app from a CI environment such as GitHub Actions and more.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
+
+<Prerequisites>
+  <Requirement title="A successful build from your local machine">
+    To trigger EAS builds from a CI environment, your app needs to be set up to use EAS Build in non-interactive mode. Run `eas build -p [all|android|ios]` from your local terminal for each platform you want to support on CI, so the `eas build` command can prompt for any additional configuration it needs. That configuration will then be available for future non-interactive runs.
+
+    Running a build locally accomplishes the following critical configuration steps:
+
+    - Initialize the project on EAS by generating a `projectId`.
+    - Add an **eas.json** file defining your build profiles.
+    - Populate critical app config properties for native builds, such as `android.packageName` and `ios.bundleIdentifier`.
+    - Ensure build credentials are created, including Android keystores and iOS distribution certs and provisioning profiles.
+
+    If you haven't done this yet, see the [Create your first build](/build/setup/) guide and return here when you're ready.
+
+  </Requirement>
+</Prerequisites>
+
+## Using EAS Workflows
+
+[EAS Workflows](/eas/workflows/get-started) is a CI/CD service from Expo that allows you to run builds, and many other types of jobs, on EAS. You can use EAS Workflows to automate your development and release processes, like creating development builds or automatically building and submitting to the app stores.
+
+To create a build with EAS Workflows, start by adding the following code in **.eas/workflows/build.yml**:
+
+```yaml
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_android:
+    name: Build Android App
+    type: build
+    params:
+      platform: android
+  build_ios:
+    name: Build iOS App
+    type: build
+    params:
+      platform: ios
+```
+
+When a commit is pushed to the main branch, this workflow will create Android and iOS builds. You can learn how to modify this workflow and sequence other types of jobs in the [EAS Workflows documentation](/eas/workflows/get-started).
+
+## Configuring your app for other CI services
+
+{/* TODO: We can probably leave this out -- users can figure out on their own if they want to do this or use npx */}
+
+{/* ### Make EAS CLI available in your CI environment */}
+
+{/* To interact with the EAS API, we need to install EAS CLI. You can use an environment with this library preinstalled, or you can add it to the project as a development dependency. */}
+
+{/* The latter is the easiest way, but may increase the installation time. */}
+
+{/* For vendors that charge you per minute, it might be worth creating a prebuilt environment. */}
+
+{/* To install EAS CLI in your project, run: */}
+
+{/* ```sh */}
+
+{/* npm install --save-dev eas-cli */}
+
+{/* ``` */}
+
+{/* > **info** Make sure to update this dependency frequently to stay up to date with the EAS API interface. */}
+
+### Provide a personal access token to authenticate with your Expo account on CI
+
+Next, we need to ensure that we can authenticate ourselves on CI as the owner of the app. This is possible by storing a personal access token in the `EXPO_TOKEN` environment variable in the CI settings.
+
+See [personal access tokens](/accounts/programmatic-access/#personal-access-tokens) to learn how to create access tokens.
+
+### (Optional) Provide an ASC API Token for your Apple Team
+
+In the event your iOS credentials need to be repaired, we will need an ASC API key to authenticate ourselves to Apple in CI. A common case is when your provisioning profile needs to be re-signed.
+
+You will need to create an [API Key](https://expo.fyi/creating-asc-api-key). Next, you will need to gather information about your [Apple Team](https://expo.fyi/apple-team).
+
+Using the information you've gathered, pass it into the build command through environment variables. You will need to pass the following:
+
+- `EXPO_ASC_API_KEY_PATH`: The path to your ASC API Key **.p8** file. For example, **/path/to/key/AuthKey_SFB993FB5F.p8**.
+- `EXPO_ASC_KEY_ID`: The key ID of your ASC API Key. For example, `SFB993FB5F`.
+- `EXPO_ASC_ISSUER_ID`: The issuer ID of your ASC API Key. For example, `f9675cff-f45d-4116-bd2c-2372142cee09`.
+- `EXPO_APPLE_TEAM_ID`: Your Apple Team ID. For example, `77KQ969CHE`.
+- `EXPO_APPLE_TEAM_TYPE`: Your Apple Team Type. Valid types are `IN_HOUSE`, `COMPANY_OR_ORGANIZATION`, or `INDIVIDUAL`.
+
+If you run [internal distribution](/build/internal-distribution/) builds on CI with ad hoc provisioning, refresh the ad hoc provisioning profile so registered devices added after the last build are included. For `eas build`, pass [`--refresh-ad-hoc-provisioning-profile`](/eas/cli/#eas-build) with `--non-interactive`. For [EAS Workflows](/eas/workflows/get-started), set `refresh_ad_hoc_provisioning_profile: true` in the build job's `params` ([build job parameters](/eas/workflows/pre-packaged-jobs#build)). See [Automation on CI](/build/internal-distribution/#automation-on-ci-optional) for requirements and an example command.
+
+### Trigger new builds
+
+Now that we're authenticated with Expo CLI, we can create the build step.
+
+To trigger new builds, we will add this script to our configuration:
+
+<Terminal cmd={['$ npx eas-cli build --platform all --non-interactive --no-wait']} />
+
+This will trigger a new build on EAS. A URL will be printed, linking to the build's progress in the EAS dashboard.
+
+> **info** The `--no-wait` flag exits the step once the build has been triggered. You are not billed for CI execution time while EAS performs the build. However, your CI will report that the build job is passing only if triggering EAS Build is successful.
+>
+> If you need to add another CI step to run once the build is complete, remove this flag.
+
+<Collapsible summary="Travis CI">
+
+Add the following code snippet in **.travis.yml** at the root of your project repository.
+
+```yaml travis.yml
+language: node_js
+node_js:
+  - node
+  - lts/*
+cache:
+  directories:
+    - ~/.npm
+before_script:
+  - npm install -g npm@latest
+
+jobs:
+  include:
+    - stage: build
+      node_js: lts/*
+      script:
+        - npm ci
+        - npx eas-cli build --platform all --non-interactive --no-wait
+```
+
+</Collapsible>
+
+<Collapsible summary="GitLab CI">
+
+Add the following code snippet in **.gitlab-ci.yml** at the root of your project repository.
+
+```yaml .gitlab-ci.yml
+image: node:alpine
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm
+    # or with Yarn:
+    #- .yarn
+
+stages:
+  - build
+
+before_script:
+  - npm ci --cache .npm
+  # or with Yarn:
+  #- yarn install --cache-folder .yarn
+
+eas-build:
+  stage: build
+  script:
+    - apk add --no-cache bash
+    - npx eas-cli build --platform all --non-interactive --no-wait
+```
+
+</Collapsible>
+
+<Collapsible summary="Bitbucket Pipelines">
+
+Add the following code snippet in **bitbucket-pipelines.yml** at the root of your project repository.
+
+```yaml bitbucket-pipelines.yml
+image: node:alpine
+
+definitions:
+  caches:
+    npm: ~/.npm
+
+pipelines:
+  default:
+    - step:
+        name: Build app
+        deployment: test
+        caches:
+          - npm
+        script:
+          - apk add --no-cache bash
+          - npm ci
+          - npx eas-cli build --platform all --non-interactive --no-wait
+```
+
+</Collapsible>
+
+<Collapsible summary="CircleCI">
+
+Add the following code snippet in **circleci/config.yml** at the root of your project repository.
+
+```yaml .circleci/config.yml
+version: 2.1
+
+executors:
+  default:
+    docker:
+      - image: cimg/node:lts
+    working_directory: ~/my-app
+
+jobs:
+  eas_build:
+    executor: default
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Trigger build
+          command: npx eas-cli build --platform all --non-interactive --no-wait
+
+workflows:
+  build_app:
+    jobs:
+      - eas_build:
+          filters:
+            branches:
+              only: master
+```
+
+</Collapsible>
+
+<Collapsible summary="GitHub Actions">
+
+Add the following code snippet in **.github/workflows/eas-build.yml** at the root of your project repository.
+
+```yaml .github/workflows/eas-build.yml
+name: EAS Build
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    name: Install and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Build on EAS
+        run: eas build --platform all --non-interactive --no-wait
+```
+
+</Collapsible>

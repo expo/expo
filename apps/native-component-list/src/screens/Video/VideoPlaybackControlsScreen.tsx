@@ -1,0 +1,260 @@
+import Slider from '@react-native-community/slider';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { useVideoPlayer, VideoAirPlayButton, VideoView } from 'expo-video';
+import React, { useCallback } from 'react';
+import { Platform, ScrollView, Text, View } from 'react-native';
+
+import Button from '../../components/Button';
+import TitledSwitch from '../../components/TitledSwitch';
+import { bigBuckBunnySource } from './videoSources';
+import { styles } from './videoStyles';
+
+const playbackRates: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
+
+export default function VideoPlaybackControlsScreen() {
+  const [loop, setLoop] = React.useState(false);
+  const [playbackRateIndex, setPlaybackRateIndex] = React.useState(2);
+  const [preservePitch, setPreservePitch] = React.useState(true);
+  const [volume, setVolume] = React.useState(1);
+  const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
+
+  const [useDefaultControls, setUseDefaultControls] = React.useState(true);
+  const [showNext, setShowNext] = React.useState(true);
+  const [showPrevious, setShowPrevious] = React.useState(true);
+  const [showSeekForward, setShowSeekForward] = React.useState(true);
+  const [showSeekBackward, setShowSeekBackward] = React.useState(true);
+  const [showSubtitles, setShowSubtitles] = React.useState<boolean | null>(null);
+  const [showSettings, setShowSettings] = React.useState(true);
+  const [showPlayPause, setShowPlayPause] = React.useState(true);
+  const [showFullscreen, setShowFullscreen] = React.useState(true);
+  const [showBottomBar, setShowBottomBar] = React.useState(true);
+
+  const player = useVideoPlayer(
+    bigBuckBunnySource,
+    (player) => {
+      player.volume = volume;
+      player.loop = loop;
+      player.preservesPitch = preservePitch;
+      player.showNowPlayingNotification = false;
+      player.allowsExternalPlayback = true;
+      player.play();
+    },
+    {
+      seekBackwardIncrement: 6,
+      seekForwardIncrement: 7,
+    }
+  );
+
+  const togglePlayer = useCallback(() => {
+    if (player.playing) {
+      player.pause();
+    } else {
+      player.play();
+    }
+  }, [player]);
+
+  const toggleMute = useCallback(() => {
+    player.muted = !player.muted;
+  }, [player]);
+
+  const seekBy = useCallback(() => {
+    player.seekBy(10);
+  }, [player]);
+
+  const replay = useCallback(() => {
+    player.replay();
+  }, [player]);
+
+  const updateLoop = useCallback(
+    (loop: boolean) => {
+      player.loop = loop;
+      setLoop(loop);
+    },
+    [loop, player]
+  );
+
+  return (
+    <View style={styles.contentContainer}>
+      <VideoView
+        style={styles.video}
+        player={player}
+        nativeControls
+        requiresLinearPlayback={requiresLinearPlayback}
+        fullscreenOptions={{
+          enable: showFullscreen,
+        }}
+        buttonOptions={
+          useDefaultControls
+            ? undefined
+            : {
+                showNext,
+                showPrevious,
+                showSeekForward,
+                showSeekBackward,
+                showSubtitles,
+                showSettings,
+                showPlayPause,
+                showBottomBar,
+              }
+        }
+      />
+      <ScrollView style={styles.controlsContainer}>
+        <Button style={styles.button} title="Toggle" onPress={togglePlayer} />
+        <Button style={styles.button} title="Seek by 10 seconds" onPress={seekBy} />
+        <Button style={styles.button} title="Replay" onPress={replay} />
+        <Button style={styles.button} title="Toggle mute" onPress={toggleMute} />
+        <Text>Playback Volume: </Text>
+        <Slider
+          style={{ alignSelf: 'stretch' }}
+          minimumValue={0}
+          maximumValue={1}
+          value={volume}
+          onValueChange={(value) => {
+            player.volume = value;
+            setVolume(value);
+          }}
+        />
+        <Text>Playback Speed: </Text>
+        <SegmentedControl
+          values={playbackRates.map((speed) => `${speed}x`)}
+          selectedIndex={playbackRateIndex}
+          onValueChange={(value) => {
+            player.playbackRate = parseFloat(value);
+            setPlaybackRateIndex(playbackRates.indexOf(parseFloat(value)));
+          }}
+          backgroundColor="#e5e5e5"
+        />
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Loop playback"
+            value={loop}
+            setValue={updateLoop}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+          <TitledSwitch
+            title="Preserve pitch"
+            value={preservePitch}
+            setValue={setPreservePitch}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Show Fullscreen"
+            value={showFullscreen}
+            setValue={setShowFullscreen}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+          <TitledSwitch
+            title="Linear Playback"
+            value={requiresLinearPlayback}
+            setValue={setRequiresLinearPlayback}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
+        {Platform.OS === 'android' && (
+          <>
+            <Text style={{ marginTop: 16, marginBottom: 8, fontWeight: 'bold' }}>
+              Button Options (Android only):
+            </Text>
+            <View style={styles.row}>
+              <TitledSwitch
+                title="Use Default Controls"
+                value={useDefaultControls}
+                setValue={setUseDefaultControls}
+                style={styles.switch}
+                titleStyle={styles.switchTitle}
+              />
+            </View>
+            {!useDefaultControls && (
+              <>
+                <View style={styles.row}>
+                  <TitledSwitch
+                    title="Show Next"
+                    value={showNext}
+                    setValue={setShowNext}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                  <TitledSwitch
+                    title="Show Previous"
+                    value={showPrevious}
+                    setValue={setShowPrevious}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <TitledSwitch
+                    title="Show Seek Forward"
+                    value={showSeekForward}
+                    setValue={setShowSeekForward}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                  <TitledSwitch
+                    title="Show Seek Backward"
+                    value={showSeekBackward}
+                    setValue={setShowSeekBackward}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <TitledSwitch
+                    title="Show Settings"
+                    value={showSettings}
+                    setValue={setShowSettings}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                  <TitledSwitch
+                    title="Show Play/Pause"
+                    value={showPlayPause}
+                    setValue={setShowPlayPause}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <TitledSwitch
+                    title="Show Bottom Bar"
+                    value={showBottomBar}
+                    setValue={setShowBottomBar}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <Button
+                    style={styles.button}
+                    title={`Subtitle Button: ${showSubtitles === null ? 'Auto (when available)' : showSubtitles ? 'Always Visible' : 'Never Visible'}`}
+                    onPress={() => {
+                      if (showSubtitles === null) {
+                        setShowSubtitles(true);
+                      } else if (showSubtitles) {
+                        setShowSubtitles(false);
+                      } else {
+                        setShowSubtitles(null);
+                      }
+                    }}
+                  />
+                </View>
+              </>
+            )}
+          </>
+        )}
+        {Platform.OS === 'ios' && (
+          <View style={[styles.row, { alignItems: 'center', justifyContent: 'center' }]}>
+            <Text style={styles.mediumText}>Share video screen:</Text>
+            <VideoAirPlayButton style={{ width: 50, height: 50 }} tint="green" activeTint="red" />
+          </View>
+        )}
+      </ScrollView>
+    </View>
+  );
+}

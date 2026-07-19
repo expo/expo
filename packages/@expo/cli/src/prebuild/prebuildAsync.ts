@@ -1,0 +1,234 @@
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
+import type { ModPlatform } from '@expo/config-plugins';
+import { updateXcodeProject } from '@expo/inline-modules';
+import chalk from 'chalk';
+
+import { installAsync } from '../install/installAsync';
+import { Log } from '../log';
+import { env } from '../utils/env';
+import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
+import { clearNodeModulesAsync } from '../utils/nodeModules';
+import { logNewSection } from '../utils/ora';
+import { profile } from '../utils/profile';
+import { confirmAsync } from '../utils/prompts';
+import {
+  clearNativeFolder,
+  getExistingNativePlatformsAsync,
+  promptToClearMalformedNativeProjectsAsync,
+  maybeBailOnNativeModuleAsync,
+} from './clearNativeFolder';
+import { configureProjectAsync } from './configureProjectAsync';
+import { ensureConfigAsync } from './ensureConfigAsync';
+import { event } from './events';
+import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
+import { updateFromTemplateAsync } from './updateFromTemplate';
+
+export type PrebuildResults = {
+  /** Expo config. */
+  exp: ExpoConfig;
+  /** Indicates if the process created new files. */
+  hasNewProjectFiles: boolean;
+  /** The platforms that were prebuilt. */
+  platforms: ModPlatform[];
+  /** Indicates if pod install was run. */
+  podInstall: boolean;
+  /** Indicates if node modules were installed. */
+  nodeInstall: boolean;
+};
+
+/**
+ * Entry point into the prebuild process, delegates to other helpers to perform various steps.
+ *
+ * 0. Attempt to clean the project folders.
+ * 1. Create native projects (ios, android).
+ * 2. Install node modules.
+ * 3. Apply config to native projects.
+ * 4. Install CocoaPods.
+ */
+export async function prebuildAsync(
+  projectRoot: string,
+  options: {
+    /** Should install node modules and cocoapods. */
+    install?: boolean;
+    /** List of platforms to prebuild. */
+    platforms: ModPlatform[];
+    /** Should delete the native folders before attempting to prebuild. */
+    clean?: boolean;
+    /** URL or file path to the prebuild template. */
+    template?: string;
+    /** Name of the node package manager to install with. */
+    packageManager?: {
+      npm?: boolean;
+      yarn?: boolean;
+      pnpm?: boolean;
+      bun?: boolean;
+    };
+    /** List of node modules to skip updating. */
+    skipDependencyUpdate?: string[];
+  }
+): Promise<PrebuildResults | null> {
+  setNodeEnv('development');
+  loadEnvFiles(projectRoot);
+
+  const { platforms } = getConfig(projectRoot).exp;
+  if (platforms?.length) {
+    // Filter out platforms that aren't in the app.json.
+    const finalPlatforms = options.platforms.filter((platform) => platforms.includes(platform));
+    if (finalPlatforms.length > 0) {
+      options.platforms = finalPlatforms;
+    } else {
+      const requestedPlatforms = options.platforms.join(', ');
+      Log.warn(
+        chalk`⚠️  Requested prebuild for "${requestedPlatforms}", but only "${platforms.join(', ')}" is present in app config ("expo.platforms" entry). Continuing with "${requestedPlatforms}".`
+      );
+    }
+  }
+  if (options.clean) {
+    // Only run the destructive-path guards when there are native folders to delete, so a
+    // first-ever prebuild doesn't prompt on git status or native module detection.
+    const existingPlatforms = await getExistingNativePlatformsAsync(projectRoot, options.platforms);
+    if (existingPlatforms.length) {
+      const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
+      // Clean the project folders...
+      if (await maybeBailOnGitStatusAsync()) {
+        return null;
+      }
+      // Check if the target project is actually a native module, which we don't want to erase
+      if (await maybeBailOnNativeModuleAsync(projectRoot)) {
+        return null;
+      }
+      // Clear the native folders before syncing
+      await clearNativeFolder(projectRoot, options.platforms);
+    }
+  } else {
+    // Check if the existing project folders are malformed.
+    await promptToClearMalformedNativeProjectsAsync(projectRoot, options.platforms);
+  }
+
+  // Warn if the project is attempting to prebuild an unsupported platform (iOS on Windows).
+  options.platforms = ensureValidPlatforms(options.platforms);
+  // Assert if no platforms are left over after filtering.
+  assertPlatforms(options.platforms);
+
+  const donePrebuild = event.span();
+
+  // Get the Expo config, create it if missing.
+  const { exp, pkg } = await ensureConfigAsync(projectRoot, { platforms: options.platforms });
+
+  // Create native projects from template.
+  const { hasNewProjectFiles, needsPodInstall, templateChecksum, changedDependencies } =
+    await updateFromTemplateAsync(projectRoot, {
+      exp,
+      pkg,
+      template: options.template != null ? resolveTemplateOption(options.template) : undefined,
+      platforms: options.platforms,
+      skipDependencyUpdate: options.skipDependencyUpdate,
+    });
+
+  // Install node modules
+  if (options.install) {
+    if (changedDependencies.length) {
+      if (options.packageManager?.npm) {
+        await clearNodeModulesAsync(projectRoot);
+      }
+
+      Log.log(chalk.gray(chalk`Dependencies in the {bold package.json} changed:`));
+      Log.log(chalk.gray('  ' + changedDependencies.join(', ')));
+
+      // Installing dependencies is a legacy feature from the unversioned
+      // command. We know opt to not change dependencies unless a template
+      // indicates a new dependency is required, or if the core dependencies are wrong.
+      if (
+        await confirmAsync({
+          message: `Install the updated dependencies?`,
+          initial: true,
+        })
+      ) {
+        const startedAt = Date.now();
+        await installAsync([], {
+          npm: !!options.packageManager?.npm,
+          yarn: !!options.packageManager?.yarn,
+          pnpm: !!options.packageManager?.pnpm,
+          bun: !!options.packageManager?.bun,
+          silent: !(env.EXPO_DEBUG || env.CI),
+        });
+        event('dependencies:installed', {
+          packageManager: resolvePackageManagerName(options.packageManager),
+          ms: Date.now() - startedAt,
+        });
+      }
+    }
+  }
+
+  // Apply Expo config to native projects. Prevent log-spew from ora when running in debug mode.
+  const configSyncingStep: { succeed(text?: string): unknown; fail(text?: string): unknown } =
+    env.EXPO_DEBUG
+      ? {
+          succeed(text) {
+            Log.log(text!);
+          },
+          fail(text) {
+            Log.error(text!);
+          },
+        }
+      : logNewSection('Running prebuild');
+  try {
+    await profile(configureProjectAsync)(projectRoot, {
+      platforms: options.platforms,
+      exp,
+      templateChecksum,
+    });
+    configSyncingStep.succeed('Finished prebuild');
+  } catch (error) {
+    configSyncingStep.fail('Prebuild failed');
+    throw error;
+  }
+
+  // Install CocoaPods
+  let podsInstalled: boolean = false;
+  // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
+  if (options.platforms.includes('ios') && options.install && needsPodInstall) {
+    const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
+
+    const startedAt = Date.now();
+    podsInstalled = await installCocoaPodsAsync(projectRoot);
+    event('pods:installed', { ms: Date.now() - startedAt, skipped: false });
+  } else {
+    event('pods:installed', { ms: 0, skipped: true });
+  }
+  const inlineModules = exp.experiments?.inlineModules ?? false;
+  if (inlineModules && options.platforms.includes('ios')) {
+    await updateXcodeProject(projectRoot, {
+      watchedDirectories: inlineModules.watchedDirectories ?? [],
+      xcodeProjectTargets: inlineModules.xcodeProjectTargets,
+      name: exp.name,
+    });
+  }
+
+  donePrebuild('done', {
+    platforms: options.platforms,
+    clean: !!options.clean,
+    template: options.template,
+  });
+
+  return {
+    nodeInstall: !!options.install,
+    podInstall: !podsInstalled,
+    platforms: options.platforms,
+    hasNewProjectFiles,
+    exp,
+  };
+}
+
+function resolvePackageManagerName(packageManager?: {
+  npm?: boolean;
+  yarn?: boolean;
+  pnpm?: boolean;
+  bun?: boolean;
+}): string {
+  if (packageManager?.yarn) return 'yarn';
+  if (packageManager?.pnpm) return 'pnpm';
+  if (packageManager?.bun) return 'bun';
+  return 'npm';
+}

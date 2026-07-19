@@ -1,0 +1,50 @@
+package expo.modules.ui
+
+import android.graphics.Color
+import android.util.Log
+import androidx.compose.ui.graphics.vector.ImageVector
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.ColorCompat
+
+fun colorToComposeColorOrNull(color: Color?): androidx.compose.ui.graphics.Color? {
+  return color?.let {
+    androidx.compose.ui.graphics.Color(
+      ColorCompat.red(it),
+      ColorCompat.green(it),
+      ColorCompat.blue(it),
+      ColorCompat.alpha(it)
+    )
+  }
+}
+
+fun colorToComposeColor(color: Color?): androidx.compose.ui.graphics.Color {
+  return colorToComposeColorOrNull(color) ?: androidx.compose.ui.graphics.Color.Unspecified
+}
+
+val Color?.compose: androidx.compose.ui.graphics.Color
+  get() = colorToComposeColor(this)
+
+val Color?.composeOrNull: androidx.compose.ui.graphics.Color?
+  get() = colorToComposeColorOrNull(this)
+
+/**
+ * Gets the ImageVector for a given icon name using reflection.
+ */
+fun getImageVector(icon: String?): ImageVector? {
+  if (icon.isNullOrEmpty()) return null
+  return try {
+    val (theme, name) = icon.split(".")
+    val clazz = Class.forName("androidx.compose.material.icons.$theme.${name}Kt")
+    clazz.declaredMethods[0].invoke(clazz::class, null) as ImageVector
+  } catch (e: Exception) {
+    Log.w("ExpoUI", "The icon $icon couldn't be found.")
+    return null
+  }
+}
+
+// TODO(@lukmccall): Make it work with introspectable
+// @Introspectable
+data class GenericEventPayload1<T>(
+  @Field val value: T
+) : Record

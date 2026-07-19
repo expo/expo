@@ -1,0 +1,28 @@
+// Copyright 2022-present 650 Industries. All rights reserved.
+
+import ExpoModulesCore
+
+final class WebBrowserAlreadyOpenException: Exception {
+  override var reason: String {
+    "Another web browser is already open"
+  }
+}
+
+final class WebBrowserInvalidURLException: Exception {
+  override var reason: String {
+    return "The provided URL is not valid."
+  }
+}
+
+final class WebBrowserNotOpenException: Exception {
+  override var reason: String {
+    "There is no web browser to dismiss"
+  }
+}
+
+final class WebAuthSessionFailedToStartException: Exception {
+  override var reason: String {
+    "The authentication session could not be started."
+  }
+}
+

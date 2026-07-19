@@ -1,0 +1,15 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.1'
+
+android {
+  namespace "org.unimodules.apploader"
+  defaultConfig {
+    versionCode 8
+    versionName '56.0.1'
+  }
+}

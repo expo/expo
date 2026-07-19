@@ -1,0 +1,124 @@
+import { dedupSources } from './Dedup';
+import type { Fingerprint, FingerprintDiffItem, Options } from './Fingerprint.types';
+import { normalizeOptionsAsync } from './Options';
+import { compareSource, sortSources } from './Sort';
+import { createFingerprintFromSourcesAsync } from './hash/Hash';
+import { getHashSourcesAsync } from './sourcer/Sourcer';
+
+/**
+ * Create a fingerprint for a project.
+ * @example
+ * ```js
+ * const fingerprint = await createFingerprintAsync('/app');
+ * console.log(fingerprint);
+ * ```
+ */
+export async function createFingerprintAsync(
+  projectRoot: string,
+  options?: Options
+): Promise<Fingerprint> {
+  const opts = await normalizeOptionsAsync(projectRoot, options);
+  const sources = await getHashSourcesAsync(projectRoot, opts);
+  const normalizedSources = sortSources(dedupSources(sources, projectRoot));
+  const fingerprint = await createFingerprintFromSourcesAsync(normalizedSources, projectRoot, opts);
+  return fingerprint;
+}
+
+/**
+ * Create a native hash value for a project.
+ *
+ * @example
+ * ```ts
+ * const hash = await createProjectHashAsync('/app');
+ * console.log(hash);
+ * ```
+ */
+export async function createProjectHashAsync(
+  projectRoot: string,
+  options?: Options
+): Promise<string> {
+  const fingerprint = await createFingerprintAsync(projectRoot, options);
+  return fingerprint.hash;
+}
+
+/**
+ * Diff the fingerprint with the fingerprint of the provided project.
+ *
+ * @example
+ * ```ts
+ * // Create a fingerprint for the project
+ * const fingerprint = await createFingerprintAsync('/app');
+ *
+ * // Make some changes to the project
+ *
+ * // Calculate the diff
+ * const diff = await diffFingerprintChangesAsync(fingerprint, '/app');
+ * console.log(diff);
+ * ```
+ */
+export async function diffFingerprintChangesAsync(
+  fingerprint: Fingerprint,
+  projectRoot: string,
+  options?: Options
+): Promise<FingerprintDiffItem[]> {
+  const newFingerprint = await createFingerprintAsync(projectRoot, options);
+  if (fingerprint.hash === newFingerprint.hash) {
+    return [];
+  }
+  return diffFingerprints(fingerprint, newFingerprint);
+}
+
+/**
+ * Diff two fingerprints. The implementation assumes that the sources are sorted.
+ *
+ * @example
+ * ```ts
+ * // Create a fingerprint for the project
+ * const fingerprint = await createFingerprintAsync('/app');
+ *
+ * // Make some changes to the project
+ *
+ * // Create a fingerprint again
+ * const fingerprint2 = await createFingerprintAsync('/app');
+ * const diff = await diffFingerprints(fingerprint, fingerprint2);
+ * console.log(diff);
+ * ```
+ */
+export function diffFingerprints(
+  fingerprint1: Fingerprint,
+  fingerprint2: Fingerprint
+): FingerprintDiffItem[] {
+  let index1 = 0;
+  let index2 = 0;
+  let source1 = fingerprint1.sources[index1];
+  let source2 = fingerprint2.sources[index2];
+  const diff: FingerprintDiffItem[] = [];
+
+  while (source1 != null && source2 != null) {
+    const compareResult = compareSource(source1, source2);
+    if (compareResult === 0) {
+      if (source1.hash !== source2.hash) {
+        diff.push({ op: 'changed', beforeSource: source1, afterSource: source2 });
+      }
+      source1 = fingerprint1.sources[++index1];
+      source2 = fingerprint2.sources[++index2];
+    } else if (compareResult < 0) {
+      diff.push({ op: 'removed', removedSource: source1 });
+      source1 = fingerprint1.sources[++index1];
+    } else {
+      diff.push({ op: 'added', addedSource: source2 });
+      source2 = fingerprint2.sources[++index2];
+    }
+  }
+
+  while (source1 != null) {
+    diff.push({ op: 'removed', removedSource: source1 });
+    source1 = fingerprint1.sources[++index1];
+  }
+  while (source2 != null) {
+    diff.push({ op: 'added', addedSource: source2 });
+    source2 = fingerprint2.sources[++index2];
+  }
+
+  return diff;
+}

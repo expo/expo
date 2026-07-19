@@ -1,0 +1,186 @@
+{
+  "name": "@expo/ui",
+  "version": "56.0.14",
+  "description": "A collection of UI components",
+  "keywords": [
+    "Jetpack Compose",
+    "SwiftUI",
+    "UI components",
+    "cross platform",
+    "expo",
+    "react",
+    "react-native",
+    "universal",
+    "web"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/ui/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-ui"
+  },
+  "sideEffects": [
+    "*.fx.js",
+    "*.fx.ts"
+  ],
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/universal/index.ts",
+        "default": "./build/universal/index.d.ts"
+      },
+      "expo-source": "./src/universal/index.ts",
+      "default": "./build/universal/index.js"
+    },
+    "./swift-ui": {
+      "types": {
+        "expo-source": "./src/swift-ui/index.tsx",
+        "default": "./build/swift-ui/index.d.ts"
+      },
+      "expo-source": "./src/swift-ui/index.tsx",
+      "default": "./build/swift-ui/index.js"
+    },
+    "./swift-ui/modifiers": {
+      "types": {
+        "expo-source": "./src/swift-ui/modifiers/index.ts",
+        "default": "./build/swift-ui/modifiers/index.d.ts"
+      },
+      "expo-source": "./src/swift-ui/modifiers/index.ts",
+      "default": "./build/swift-ui/modifiers/index.js"
+    },
+    "./jetpack-compose": {
+      "types": {
+        "expo-source": "./src/jetpack-compose/index.ts",
+        "default": "./build/jetpack-compose/index.d.ts"
+      },
+      "expo-source": "./src/jetpack-compose/index.ts",
+      "default": "./build/jetpack-compose/index.js"
+    },
+    "./jetpack-compose/modifiers": {
+      "types": {
+        "expo-source": "./src/jetpack-compose/modifiers/index.ts",
+        "default": "./build/jetpack-compose/modifiers/index.d.ts"
+      },
+      "expo-source": "./src/jetpack-compose/modifiers/index.ts",
+      "default": "./build/jetpack-compose/modifiers/index.js"
+    },
+    "./community/datetime-picker": {
+      "types": {
+        "expo-source": "./src/community/datetime-picker/index.tsx",
+        "default": "./build/community/datetime-picker/index.d.ts"
+      },
+      "expo-source": "./src/community/datetime-picker/index.tsx",
+      "default": "./build/community/datetime-picker/index.js"
+    },
+    "./community/bottom-sheet": {
+      "types": {
+        "expo-source": "./src/community/bottom-sheet/index.tsx",
+        "default": "./build/community/bottom-sheet/index.d.ts"
+      },
+      "expo-source": "./src/community/bottom-sheet/index.tsx",
+      "default": "./build/community/bottom-sheet/index.js"
+    },
+    "./community/segmented-control": {
+      "types": {
+        "expo-source": "./src/community/segmented-control/index.tsx",
+        "default": "./build/community/segmented-control/index.d.ts"
+      },
+      "expo-source": "./src/community/segmented-control/index.tsx",
+      "default": "./build/community/segmented-control/index.js"
+    },
+    "./community/picker": {
+      "types": {
+        "expo-source": "./src/community/picker/index.tsx",
+        "default": "./build/community/picker/index.d.ts"
+      },
+      "expo-source": "./src/community/picker/index.tsx",
+      "default": "./build/community/picker/index.js"
+    },
+    "./community/slider": {
+      "types": {
+        "expo-source": "./src/community/slider/index.tsx",
+        "default": "./build/community/slider/index.d.ts"
+      },
+      "expo-source": "./src/community/slider/index.tsx",
+      "default": "./build/community/slider/index.js"
+    },
+    "./community/masked-view": {
+      "types": {
+        "expo-source": "./src/community/masked-view/index.tsx",
+        "default": "./build/community/masked-view/index.d.ts"
+      },
+      "expo-source": "./src/community/masked-view/index.tsx",
+      "default": "./build/community/masked-view/index.js"
+    },
+    "./community/menu": {
+      "types": {
+        "expo-source": "./src/community/menu/index.tsx",
+        "default": "./build/community/menu/index.d.ts"
+      },
+      "expo-source": "./src/community/menu/index.tsx",
+      "default": "./build/community/menu/index.js"
+    },
+    "./community/pager-view": {
+      "types": {
+        "expo-source": "./src/community/pager-view/index.tsx",
+        "default": "./build/community/pager-view/index.d.ts"
+      },
+      "expo-source": "./src/community/pager-view/index.tsx",
+      "default": "./build/community/pager-view/index.js"
+    },
+    "./babel-plugin": {
+      "types": "./plugin/babel-plugin.d.ts",
+      "default": "./plugin/babel-plugin.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
+  "dependencies": {
+    "sf-symbols-typescript": "^2.1.0",
+    "vaul": "^1.1.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@testing-library/react-native": "^13.3.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "expo-module-scripts": "workspace:*",
+    "react-native-reanimated": "4.5.1",
+    "react-native-worklets": "0.10.1"
+  },
+  "peerDependencies": {
+    "@babel/core": "*",
+    "expo": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-native": "*",
+    "react-native-worklets": "*"
+  },
+  "peerDependenciesMeta": {
+    "@babel/core": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "react-native-worklets": {
+      "optional": true
+    }
+  }
+}

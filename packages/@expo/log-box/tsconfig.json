@@ -1,0 +1,9 @@
+{
+  "extends": "expo-module-scripts/tsconfig.base",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": ".",
+    "customConditions": ["react-native-strict-api-UNSAFE-ALLOW-SUBPATHS", "expo-source"]
+  },
+  "include": ["src", "app"]
+}

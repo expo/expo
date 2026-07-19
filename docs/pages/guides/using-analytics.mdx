@@ -1,0 +1,79 @@
+---
+title: React Native analytics SDKs and libraries
+sidebar_title: Using Analytics
+hideTOC: true
+description: An overview of analytics services available in the Expo and React Native ecosystem.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+An analytics service allows you to track how users interact with your app. With this data, you can take a measured approach when improving your app.
+
+The following list provides common analytics providers that are available in the Expo and React Native ecosystem.
+
+> Most analytics SDK requires configuring custom native code. Native code is not configurable when using Expo Go. However, you can create a [development build](/develop/development-builds/introduction/), which will allow you to use any of the services below.
+
+<BoxLink
+  title="Google Firebase Analytics"
+  description="Learn how to integrate React Native Firebase Analytics in your project."
+  href="https://rnfirebase.io/analytics/usage"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Segment"
+  description="Learn how to integrate Segment Analytics SDK in your project."
+  href="https://segment.com/docs/connections/sources/catalog/libraries/mobile/react-native/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Amplitude"
+  description="Learn how to integrate Amplitude Analytics SDK in your project."
+  href="https://www.docs.developers.amplitude.com/data/sdks/typescript-react-native/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="AWS Amplify"
+  description="Learn how to integrate AWS Amplify Analytics in your project."
+  href="https://docs.amplify.aws/lib/analytics/getting-started/q/platform/react-native/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Vexo"
+  description="Learn how to integrate Vexo Analytics in your project."
+  href="https://docs.vexo.co/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Aptabase"
+  description="Learn how to integrate Aptabase Analytics in your project. Works with Expo Go."
+  href="https://aptabase.com/for-react-native"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Astrolytics"
+  description="Learn how to integrate Astrolytics in your project. Works with Expo Go."
+  href="https://www.astrolytics.io/react-native"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="PostHog"
+  description="Learn how to integrate PostHog in your project. Works with Expo Go."
+  href="https://posthog.com/docs/libraries/react-native"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Dreambase"
+  description="Learn how to integrate Dreambase Analytics to track user behavior and app performance in your Expo and Supabase project."
+  href="https://dreambase.ai/docs"
+  Icon={BookOpen02Icon}
+/>

@@ -1,0 +1,56 @@
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+
+require 'json'
+podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
+
+ENV['RCT_USE_RN_DEP'] ||= '0' if podfile_properties['ios.buildReactNativeFromSource'] == 'true'
+ENV['RCT_USE_PREBUILT_RNCORE'] ||= '0' if podfile_properties['ios.buildReactNativeFromSource'] == 'true'
+
+prepare_react_native_project!
+
+platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
+
+target 'NativeTests' do
+  pod 'expo-dev-menu-interface', path: '../../../packages/expo-dev-menu-interface/ios'
+
+  # add this manually, because it has UITests too
+  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
+
+  use_expo_modules_tests!
+
+  pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
+
+  config_command = [
+    'node',
+    '--no-warnings',
+    '--eval',
+    'require(\'expo/bin/autolinking\')',
+    'expo-modules-autolinking',
+    'react-native-config',
+    '--json',
+    '--platform',
+    'ios'
+  ]
+  config = use_native_modules!(config_command)
+
+  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      # Set `mac_catalyst_enabled` to `true` in order to apply patches
+      # necessary for Mac Catalyst builds
+      :mac_catalyst_enabled => false
+    )
+  end
+end

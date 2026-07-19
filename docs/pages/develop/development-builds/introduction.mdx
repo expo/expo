@@ -1,0 +1,46 @@
+---
+title: Introduction to development builds
+sidebar_title: Introduction and setup
+description: Learn how to create a development build in your Expo project and why use a development build instead of Expo Go.
+searchRank: 98
+searchPosition: 1
+hideTOC: true
+hasVideoLink: true
+---
+
+import { BuildMethodForm } from '~/scenes/develop/development-builds/BuildMethodForm';
+import { DevelopmentBuildInstructions } from '~/scenes/develop/development-builds/DevelopmentBuildInstructions';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+When you create a new Expo app with [`create-expo-app`](/get-started/create-a-project/), you start with a project where you update TypeScript/JavaScript code on your local machine and view the changes in the Expo Go app. A **development build** is essentially **your own version of Expo Go** where you are free to use any native libraries and change any native configuration.
+
+A **development build is recommended when you want to create your own app and release to app stores**. It includes the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which augments the built-in React Native development tooling. The tooling also includes support for inspecting network requests and a ["launcher" UI](/develop/development-builds/use-development-builds/#the-launcher-screen) that lets you switch between different development servers (such as between a server running on your machine or a teammate's machine) and deployments of your app (such as published updates with [EAS Update](/eas-update/introduction/)).
+
+<VideoBoxLink
+  videoId="FdjczjkwQKE"
+  title="Expo Go & Development Builds: which should you use?"
+  description="In this tutorial video, Beto explains what each of them is and when to choose a development build."
+/>
+
+## How would you like to build your development build?
+
+All three methods produce the same development build. They differ in where the app compiles and what you need to have installed on your machine.
+
+<BuildMethodForm />
+
+---
+
+<DevelopmentBuildInstructions />
+
+---
+
+## After you install the development build
+
+Launch the development build from your device's Home screen and connect to a development server from the launcher screen to start working on your app. To learn how to use your new build, including the launcher screen, rebuilding, and debugging, see [Use a development build](/develop/development-builds/use-development-builds/). For common questions about development builds and Expo Go, including what you can't do in Expo Go and why, see the [FAQ](/develop/development-builds/faq/).
+
+### Related Expo Skills
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it the workflows on this page. The following skills are related to development builds:
+
+<RelatedSkills names={['expo-dev-client', 'eas-simulator']} />

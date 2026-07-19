@@ -1,0 +1,54 @@
+{
+  "name": "expo-checkbox",
+  "version": "56.0.1",
+  "description": "Basic boolean input for Android, iOS and web.",
+  "keywords": [
+    "expo",
+    "expo-checkbox",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/checkbox",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-checkbox"
+  },
+  "main": "build/Checkbox.js",
+  "types": "build/Checkbox.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/react-native": "^13.3.0",
+    "@types/react": "~19.2.0",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-web": {
+      "optional": true
+    }
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
+  }
+}

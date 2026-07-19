@@ -1,0 +1,3 @@
+#!/bin/sh
+# ORIG_HEAD is the pre-merge commit.
+./scripts/check-cocoapods-lockfiles.sh ORIG_HEAD HEAD

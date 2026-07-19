@@ -1,0 +1,46 @@
+{
+  "name": "expo-modules-test-core",
+  "version": "56.0.5",
+  "description": "Module providing native testing utilities for testing Expo modules",
+  "keywords": [
+    "expo",
+    "expo-modules",
+    "expo-modules-core",
+    "expo-modules-test-core",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-test-core",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-modules-test-core"
+  },
+  "bin": {
+    "expo-modules-test-core": "./bin/cli.js"
+  },
+  "main": "./app.plugin.js",
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "clean": "expo-module clean",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@types/node": "^22.14.0",
+    "expo-type-information": "workspace:^0.0.5",
+    "glob": "^13.0.0",
+    "xml-js": "^1.6.11",
+    "yaml": "^2.8.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.1",
+    "expo-module-scripts": "workspace:*"
+  }
+}

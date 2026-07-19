@@ -1,0 +1,76 @@
+import { requireNativeView } from 'expo';
+
+import { Slot } from '../SlotView';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
+
+export interface GaugeProps extends CommonViewModifierProps {
+  /**
+   * The current value of the gauge.
+   */
+  value: number;
+  /**
+   * The minimum value of the gauge range.
+   * @default 0
+   */
+  min?: number;
+  /**
+   * The maximum value of the gauge range.
+   * @default 1
+   */
+  max?: number;
+  /**
+   * A label describing the gauge's purpose.
+   */
+  children?: React.ReactNode;
+  /**
+   * A label showing the current value. Use `Text` or `Label` to display the value.
+   */
+  currentValueLabel?: React.ReactNode;
+  /**
+   * A label showing the minimum value. Use `Text` or `Label` to display the value.
+   */
+  minimumValueLabel?: React.ReactNode;
+  /**
+   * A label showing the maximum value. Use `Text` or `Label` to display the value.
+   */
+  maximumValueLabel?: React.ReactNode;
+}
+
+type NativeGaugeProps = Omit<
+  GaugeProps,
+  'currentValueLabel' | 'minimumValueLabel' | 'maximumValueLabel'
+> & {
+  children?: React.ReactNode;
+};
+
+const GaugeNativeView: React.ComponentType<NativeGaugeProps> = requireNativeView(
+  'ExpoUI',
+  'GaugeView'
+);
+
+/**
+ * Renders a SwiftUI `Gauge` component.
+ */
+export function Gauge(props: GaugeProps) {
+  const {
+    modifiers,
+    children,
+    currentValueLabel,
+    minimumValueLabel,
+    maximumValueLabel,
+    ...restProps
+  } = props;
+
+  return (
+    <GaugeNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}>
+      {children && <Slot name="label">{children}</Slot>}
+      {currentValueLabel && <Slot name="currentValue">{currentValueLabel}</Slot>}
+      {minimumValueLabel && <Slot name="minimumValue">{minimumValueLabel}</Slot>}
+      {maximumValueLabel && <Slot name="maximumValue">{maximumValueLabel}</Slot>}
+    </GaugeNativeView>
+  );
+}

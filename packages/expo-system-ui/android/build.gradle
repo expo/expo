@@ -1,0 +1,21 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.5'
+
+android {
+  namespace "expo.modules.systemui"
+  defaultConfig {
+    versionCode 1
+    versionName '56.0.5'
+  }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+  implementation 'androidx.core:core:1.17.0'
+  implementation 'androidx.appcompat:appcompat:1.7.1'
+}

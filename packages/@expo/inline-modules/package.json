@@ -1,0 +1,44 @@
+{
+  "name": "@expo/inline-modules",
+  "version": "0.0.10",
+  "description": "The Expo inline modules",
+  "keywords": [
+    "expo",
+    "inline",
+    "inline-modules"
+  ],
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/inline-modules"
+  },
+  "files": [
+    "build"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@expo/config-plugins": "workspace:~56.0.8"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "@expo/json-file",
+  "version": "10.2.0",
+  "description": "A module for reading, writing, and manipulating JSON files",
+  "keywords": [
+    "json"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/json-file#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/json-file"
+  },
+  "files": [
+    "build"
+  ],
+  "main": "build/JsonFile.js",
+  "types": "build/JsonFile.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/JsonFile.ts",
+        "default": "./build/JsonFile.d.ts"
+      },
+      "expo-source": "./src/JsonFile.ts",
+      "default": "./build/JsonFile.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@babel/code-frame": "^7.20.0",
+    "json5": "^2.2.3"
+  },
+  "devDependencies": {
+    "@types/babel__code-frame": "^7.27.0",
+    "@types/jest": "^29.2.1",
+    "@types/json5": "^2.2.0",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
+  }
+}

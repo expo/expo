@@ -1,0 +1,12 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["CalendarModule", "CalendarNextModule"]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.calendar.CalendarModule",
+      "expo.modules.calendar.next.CalendarNextModule"
+    ]
+  }
+}

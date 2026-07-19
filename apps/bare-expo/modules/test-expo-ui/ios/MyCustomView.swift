@@ -1,0 +1,25 @@
+// Copyright 2025-present 650 Industries. All rights reserved.
+
+import SwiftUI
+import ExpoModulesCore
+import ExpoUI
+
+final class MyCustomViewProps: UIBaseViewProps {
+  @Field var title: String = ""
+  var onCustomTap = EventDispatcher()
+}
+
+struct MyCustomView: ExpoSwiftUI.View {
+  @ObservedObject public var props: MyCustomViewProps
+
+  var body: some View {
+    VStack {
+      Text(props.title)
+        .font(.headline)
+      Children()
+    }
+    .onTapGesture {
+      props.onCustomTap()
+    }
+  }
+}

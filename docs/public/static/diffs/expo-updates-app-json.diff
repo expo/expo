@@ -1,0 +1,27 @@
+diff --git a/app.json b/app.json
+index 5c2e602..63e62c9 100644
+--- a/app.json
++++ b/app.json
+@@ -1,6 +1,17 @@
+ {
+   "displayName": "MyApp",
++  "expo": {
++    "name": "MyApp",
++    "slug": "MyApp",
++    "ios": {
++      "bundleIdentifier": "com.MyApp"
++    },
++    "android": {
++      "package": "com.MyApp"
++    },
++    "runtimeVersion": "1.0.0",
++    "updates": {
++      "url": "https://u.expo.dev/[your-project-id]"
++    },
++    "extra": {
++      "eas": {
++        "projectId": "[your-project-id]"
++      }
++    }
++  }
+ }

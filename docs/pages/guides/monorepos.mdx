@@ -1,0 +1,285 @@
+---
+title: Work with monorepos
+description: Learn about setting up Expo projects in a monorepo with workspaces.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. They can help speed up development for larger projects, make it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. Expo has first-class support for monorepos managed with package managers supporting workspaces: [Bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), [pnpm](https://pnpm.io/workspaces), and [Yarn](https://yarnpkg.com/features/workspaces) (v1 Classic and Berry). Expo automatically detects monorepos and configures new app projects added to a monorepo. The detection is based on the workspace configuration in your project.
+
+> **info** Monorepos are not for every project. They're useful if multiple apps live in a single repository and share code, or can be helpful to colocate native modules with your app. The tradeoff is increased complexity when setting up and configuring tooling. Check whether your tools and libraries work well within a monorepo before setting one up.
+
+<Collapsible summary="Automatic Configuration (Migrating to SDK 52+)">
+
+<a id="automatic-configuration" />
+
+Expo configures Metro automatically for monorepos. You don't have to manually configure Metro when using monorepos if you use [`expo/metro-config`](/guides/customizing-metro/).
+
+If you previously configured Metro manually for monorepos and have a **metro.config.js** that modifies one of the following properties, delete these from your configuration:
+
+- `watchFolders`
+- `resolver.nodeModulesPath`
+- `resolver.extraNodeModules`
+- `resolver.disableHierarchicalLookup`
+
+After deleting these options, you'll need to run Expo with `npx expo start --clear` once to erase the outdated Metro cache. If your app continues working as expected afterwards, it's a regular Node monorepo and won't need any special configuration going forward.
+
+</Collapsible>
+
+<Collapsible summary="Manual Configuration (Before SDK 52)">
+
+<a id="manual-configuration" />
+
+Expo's Metro config has built-in monorepo support for Bun, npm, pnpm, and Yarn. You don't have to manually configure Metro when using monorepos if you use the config from [`expo/metro-config`](/guides/customizing-metro/).
+
+Before SDK 52, configuring a monorepo with Metro required two manual changes:
+
+1. Metro had to be configured to watch code within the monorepo manually (for example, not just **apps/cool-app**.)
+2. Metro's resolution had to be adjusted to find packages in other workspaces and multiple `node_modules` folders (for example, **apps/cool-app/node_modules** or **node_modules**.)
+
+The configuration was adjusted by [creating a **metro.config.js**](/guides/customizing-metro/#customizing) with the following content:
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+const path = require('path');
+
+// This can be replaced with `find-yarn-workspace-root`
+const monorepoRoot = path.resolve(__dirname, '../..');
+const config = getDefaultConfig(__dirname);
+
+// 1. Watch all files within the monorepo
+config.watchFolders = [monorepoRoot];
+// 2. Let Metro know where to resolve packages and in what order
+config.resolver.nodeModulesPaths = [
+  path.resolve(projectRoot, 'node_modules'),
+  path.resolve(monorepoRoot, 'node_modules'),
+];
+
+module.exports = config;
+```
+
+> Learn more about [customizing Metro](/guides/customizing-metro).
+
+</Collapsible>
+
+## Setting up a monorepo
+
+In a monorepo, your app will typically be a in sub-directory of your repository and your package manager is configured to allow you to add dependencies to other packages from within your monorepo.
+For example, a basic structure of a monorepo containing Expo apps may look like this:
+
+- **apps**: Contains multiple projects, including Expo apps.
+- **packages**: Contains different packages used by apps.
+- **package.json**: Root package file.
+
+All monorepos should have a "root" **package.json** file. It is the main configuration for monorepos and may contain tools installed for all projects in the repository. Depending on which package manager you're using, the steps for setting up workspaces might differ, but for [Bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), and [Yarn](https://yarnpkg.com/features/workspaces), a `workspaces` property should be added to the root **package.json** file that specifies [glob patterns](https://classic.yarnpkg.com/lang/en/docs/workspaces/#toc-tips-tricks) for all workspaces in your monorepo:
+
+```json package.json
+{
+  "name": "monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": ["apps/*", "packages/*"]
+}
+```
+
+For [pnpm](https://pnpm.io/workspaces), you'll have to create a [**pnpm-workspace.yaml**](https://pnpm.io/pnpm-workspace_yaml) instead:
+
+```yaml pnpm-workspace.yaml
+packages:
+  - 'apps/*'
+  - 'packages/*'
+```
+
+### Create your first app
+
+Now that you have the basic monorepo structure set up, add your first app.
+
+Before you create your app, you have to create the **apps** directory. This directory contains all separate apps or websites that belong to this monorepo. Inside this **apps** directory, you can create a sub-directory that contains the Expo app.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-57 apps/cool-app'],
+    yarn: ['$ yarn create expo-app --template default@sdk-57 apps/cool-app'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-57 apps/cool-app'],
+    bun: ['$ bun create expo --template default@sdk-57 apps/cool-app'],
+  }}
+/>
+
+> If you have an existing app, you can copy all those files into a directory inside **apps**.
+
+After copying or creating the first app, install your dependencies with your package manager from the root directory of your monorepo to check for common warnings.
+
+### Create a package
+
+Monorepos can help us group code in a single repository. That includes apps but also separate packages. They also don't need to be published. The [Expo repository](https://github.com/expo/expo) uses this as well. All the Expo SDK packages live inside the [**packages**](https://github.com/expo/expo/tree/main/packages) directory in our repo. It helps us test the code inside one of our [**apps**](https://github.com/expo/expo/tree/main/apps/native-component-list) directory before we publish them.
+
+Let's go back to the root and create the **packages** directory. This directory can contain all the separate packages that you want to make. Once you are inside this directory, we need to add a new sub-directory. The sub-directory is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
+
+<Terminal
+  cmd={{
+    npm: ['$ mkdir -p packages/cool-package && cd packages/cool-package && npm init'],
+    yarn: ['$ mkdir -p packages/cool-package && cd packages/cool-package && yarn init'],
+    pnpm: ['$ mkdir -p packages/cool-package && cd packages/cool-package && pnpm init'],
+    bun: ['$ mkdir -p packages/cool-package && cd packages/cool-package && bun init -y'],
+  }}
+/>
+
+We won't go into too much detail in creating a package. If you are not familiar with this, consider using a simple app without monorepos. But, to make the example complete, let's add an **index.js** file with the following content:
+
+```js index.js
+export const greeting = 'Hello!';
+```
+
+### Using the package
+
+Like standard packages, we need to add our **cool-package** as a dependency to our **cool-app**. The main difference between a standard package, and one from the monorepo, is you'll always want to use the _"current state of the package"_ instead of a version. Let's add **cool-package** to our app by adding `"cool-package": "*"` to our app **package.json** file:
+
+```json package.json
+{
+  "name": "cool-app",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "cool-package": "*",
+    "expo": "~{{expoSdkVersion}}",
+    "expo-status-bar": "~55.0.0",
+    "react": "{{reactVersion}}",
+    "react-native": "{{reactNativeVersion}}"
+  }
+}
+```
+
+Bun, npm, and pnpm support specifying workspace dependencies using `"workspace:*"` instead of `"*"`. This will ensure that the workspace package never resolves a published package of the same name from the npm registry, but is optional.
+
+After adding the package, install your dependencies with your package manager from the root directory of your monorepo to check for common warnings once again.
+
+Now you should be able to use the package inside your app! To test this, let's edit the **App.js** in your app and render the `greeting` text from our **cool-package**.
+
+```jsx App.js
+import { greeting } from 'cool-package';
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { Text, View } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>{greeting}</Text>
+      <StatusBar style="auto" />
+    </View>
+  );
+}
+```
+
+## Common issues
+
+Monorepos may cause resolution and dependency issues that a regular project won't. They require more in-depth knowledge and require specific tooling configuration. You take on increased complexity and will need to solve issues you wouldn't run into without workspaces. Here are a couple of common issues you might encounter.
+
+### Package managers with isolated dependencies
+
+> **info** From **SDK 54**, Expo supports isolated dependencies and isolated installations.<br />
+> With **SDK 53**, disabling isolated dependencies is recommended, or you may encounter native build errors and dependency conflicts.
+
+[Bun](https://bun.com/docs/install/isolated) and [pnpm](https://pnpm.io/settings#nodelinker) have first-class support for isolated installs. For pnpm, this is the default installation strategy unless it's disabled.
+
+With isolated dependencies, package managers don't hoist packages from nested `node_modules` directories into higher ones. Instead, they create a central directory that contains your Node modules and create links to this directory. This dependency structure enforces that packages may only access their explicitly declared dependencies. This is a much stricter installation strategy than the traditional **hoisted** installation strategy, which are npm's and Yarn's default, to install dependencies in a flattened structure.
+
+A side-effect of **hoisted** installations is that you can accidentally depend on Node modules you haven't specified in your own **package.json**'s `dependencies` or `peerDependencies`. Instead, many more dependencies that other packages rely on are hoisted and become accessible to you. This can cause non-deterministic behavior, and allow you to have broken dependency chains, which are more fragile and can cause resolution errors when updating or upgrading packages. This is especially common in monorepos.
+
+**Starting with SDK 54**, Expo supports isolated dependencies. Unfortunately, not all packages you install will work and some React Native libraries may cause build or resolution errors when used with isolated dependencies. If you encounter issues with isolated installations with [pnpm](https://pnpm.io/settings#nodelinker), switch to the **hoisted** installation strategy by changing the `nodeLinker` setting in an **pnpm-workspace.yaml** file in the root of your repository:
+
+```yaml pnpm-workspace.yaml
+nodeLinker: hoisted
+```
+
+### Duplicate native packages within monorepos
+
+Expo has improved support for more complete **node_modules** patterns, such as isolated modules. Unfortunately, if your app contains duplicate dependencies, issues may still occur:
+
+- Duplicate React Native versions in a single monorepo are not supported
+- Duplicate React versions in a single app will cause runtime errors
+- Duplicate versions of Turbo and Expo modules may cause runtime or build errors
+
+You can check if your monorepo has multiple versions of a package, for example, `react-native`, and why they're installed through the package manager you use.
+
+<Terminal
+  cmd={{
+    npm: ['$ npm why react-native'],
+    yarn: ['$ yarn why react-native'],
+    pnpm: ['$ pnpm why --depth=10 react-native'],
+    bun: ['$ bun pm why react-native'],
+  }}
+/>
+
+The output of these commands will be very different from one package manager to another, but you can spot duplicate packages in any of their outputs by looking for multiple versions of the package, for example `react-native@0.79.5` and `react-native@0.81.0`.
+**npm**,
+
+#### Adding dependency resolutions for peer dependencies
+
+If the duplicate dependency is not resolvable by you changing your dependencies, you may have to add a resolution. For example, not all packages have updated their **peerDependencies** to support React 19. To work around this, you can create a resolution to force a single version of `react` to be installed.
+
+```json package.json
+{
+  "name": "monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "resolutions": {
+    "react": "^{{reactVersion}}"
+  }
+}
+```
+
+For [npm](https://docs.npmjs.com/cli/v9/configuring-npm/package-json#overrides), you have to use a property named `overrides` rather than `resolutions`.
+
+#### Deduplicating auto-linked native modules
+
+Often, duplicate dependencies won't cause any problems. However, native modules should never be duplicated, because only one version of a native module can be compiled for an app build at a time. Unlike JavaScript dependencies, native builds cannot contain two conflicting versions of a single native module.
+
+From **SDK 54**, you can set `experiments.autolinkingModuleResolution` to `true` in your **app.json** to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that [autolinking](/modules/autolinking/) links for your native builds.
+
+From **SDK 55**, this is enabled automatically for apps in monorepos.
+
+#### Monorepos with TV projects
+
+See the [Building for TV](/guides/building-for-tv/#modify-dependencies-for-tv) dependencies section for the special `react-native` dependency requirements when a TV project is contained in a monorepo with other Expo projects.
+
+### Script '...' does not exist
+
+React Native uses packages to ship both JavaScript and native files. These native files also need to be linked, like the [**react-native/react.Gradle**](https://github.com/facebook/react-native/blob/v0.70.6/react.gradle) file from **android/app/build.Gradle**. Usually, this path is hardcoded to something like:
+
+**Android** ([source](https://github.com/facebook/react-native/blob/e918362be3cb03ae9dee3b8d50a240c599f6723f/template/android/app/build.gradle#L84))
+
+```groovy
+apply from: "../../node_modules/react-native/react.gradle"
+```
+
+**iOS** ([source](https://github.com/facebook/react-native/blob/e918362be3cb03ae9dee3b8d50a240c599f6723f/template/ios/Podfile#L1))
+
+```ruby
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+```
+
+Unfortunately, this path can be different in monorepos because of [hoisting](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/). It also doesn't use the [Node module resolution](https://nodejs.org/api/modules.html#all-together). You can avoid this issue by using Node to find the location of the package instead of hardcoding this:
+
+**Android** ([source](https://github.com/expo/expo/blob/6877c1f5cdca62b395b0d5f49d87f2f3dbb50bec/templates/expo-template-bare-minimum/android/app/build.gradle#L87))
+
+```groovy
+apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../react.gradle")
+```
+
+**iOS** ([source](https://github.com/expo/expo/blob/61cbd9a5092af319b44c319f7d51e4093210e81b/templates/expo-template-bare-minimum/ios/Podfile#L2))
+
+```ruby
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+```
+
+In the snippets above, you can see that we use Node's own [`require.resolve()`](https://nodejs.org/api/modules.html#requireresolverequest-options) method to find the package location. We explicitly refer to `package.json` because we want to find the root location of the package, not the location of the entry point. And with that root location, we can resolve to the expected relative path within the package. [Learn more about these references here](https://github.com/expo/expo/blob/main/packages/expo-modules-core/README.md).
+
+All Expo SDK modules and templates have these dynamic references and work with monorepos. However, occasionally, you might run into packages that still use the hardcoded path. You can manually edit it with [`patch-package`](https://github.com/ds300/patch-package#readme) or mention this to the package maintainers.

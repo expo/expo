@@ -1,0 +1,23 @@
+{
+  "name": "expo-template-blank-typescript",
+  "description": "The Blank project template includes the minimum dependencies to run and an empty root component.",
+  "license": "0BSD",
+  "version": "56.0.19",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "expo": "~56.0.5",
+    "expo-status-bar": "~56.0.4",
+    "react": "19.2.3",
+    "react-native": "0.86.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  }
+}

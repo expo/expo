@@ -1,0 +1,106 @@
+---
+title: Precompiled Expo Modules
+description: Learn how precompiled Expo Modules reduce native build times on Android and iOS.
+hideTOC: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+Native build times can slow down your development workflow. Expo provides precompiled versions of its most complex modules so your project links precompiled binaries instead of recompiling them from source on every build. On Android, those binaries ship as **.aar** files linked through Gradle. On iOS, they ship as `XCFrameworks` linked through CocoaPods. Both are bundled into the regular Expo npm packages and packages that aren't yet precompiled fall back to building from source automatically — precompiled and source-built modules coexist in the same project.
+
+**Most projects don't need to do anything** — precompiled Expo Modules are enabled automatically in new and existing projects with a supported SDK version.
+
+- **Android**: Enabled by default since SDK 53.
+- **iOS**: enabled by default in SDK 56 and later. In SDK 55, enabled by default only on EAS Build — set `EXPO_USE_PRECOMPILED_MODULES=1` in your shell to opt in for local builds.
+
+<Collapsible summary="Disabling on iOS">
+
+Set the `ios.usePrecompiledModules` property of the [`expo-build-properties`](/versions/latest/sdk/build-properties/) config plugin to `false` to build every Expo Module from source. This applies to both local builds and EAS Build, and takes effect the next time you run `npx expo prebuild`:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "usePrecompiledModules": false
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+Alternatively, you can control this directly with the `EXPO_USE_PRECOMPILED_MODULES` environment variable, which is read during `pod install`. For local builds, export it in your shell before running `pod install` (or `npx expo run:ios`):
+
+<Terminal cmd={['$ export EXPO_USE_PRECOMPILED_MODULES=0']} />
+
+For EAS Build, create an [EAS environment variable](/eas/environment-variables/manage/):
+
+<Terminal
+  cmd={['$ eas env:create --name EXPO_USE_PRECOMPILED_MODULES --value 0 --visibility plaintext']}
+/>
+
+The CLI will prompt you to select which environment(s) (`development`, `preview`, `production`) the variable applies to.
+
+</Collapsible>
+
+<Collapsible summary="Disabling specific modules via Expo Autolinking">
+
+Configure Expo Autolinking with `buildFromSource` in **package.json**. Use `".*"` to opt out of every precompiled module, or list specific package names. The same setting is available for both `android` and `ios`:
+
+{/* prettier-ignore */}
+```json package.json
+{
+  "name": "your-app-name",
+  "expo": {
+    "autolinking": {
+      "android": {
+        "buildFromSource": [".*"]
+      },
+      "ios": {
+        "buildFromSource": [".*"]
+      }
+    }
+  }
+}
+```
+
+This is typically only needed when you're modifying module source code yourself.
+
+</Collapsible>
+
+<Collapsible summary="Troubleshooting EAS Build">
+
+### iOS
+
+On EAS Build, third-party libraries like `react-native-reanimated` and `react-native-worklets` are automatically downloaded as precompiled XCFrameworks. Local `pod install` does not fetch them by default. Those packages build from source locally and pick up any `staticFeatureFlags` overrides automatically, so flag and version mismatches surface primarily on EAS Build. Avoid enabling third-party precompiled downloads for local builds and keep this path scoped to EAS.
+
+#### `react-native-reanimated` and `react-native-worklets`
+
+These two packages are tightly coupled. `react-native-reanimated` links `react-native-worklets` at the native level.
+
+**Opt out of both together.** If you need a source build for either package (for example to apply a patch or modify native code), list both in `buildFromSource`. Source-building only one produces a mixed precompiled/source linkage that fails to resolve the matching framework at runtime:
+
+{/* prettier-ignore */}
+```json package.json
+{
+  "expo": {
+    "autolinking": {
+      "ios": {
+        "buildFromSource": ["react-native-reanimated", "react-native-worklets"]
+      }
+    }
+  }
+}
+```
+
+**Custom feature flags require a source build.** Feature-flag values are baked into the precompiled binary at build time, so any `worklets.staticFeatureFlags` or `reanimated.staticFeatureFlags` overrides in **package.json** are ignored. To apply them, disable precompiled modules with `EXPO_USE_PRECOMPILED_MODULES=0`.
+
+**When to look here.** Runtime errors like `Unable to recognize flag: <NAME>` on EAS Build (but not locally) mean the precompiled artifact's flag list doesn't match your pinned package version. Use `buildFromSource` above and [file an issue on GitHub](https://github.com/expo/expo/issues).
+
+</Collapsible>

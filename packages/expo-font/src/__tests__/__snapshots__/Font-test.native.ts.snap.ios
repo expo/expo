@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`within Expo Go loadAsync completes after loading a font 1`] = `
+[
+  "test-font",
+  "file:/test/test-font.ttf",
+]
+`;
+
+exports[`within Expo Go loadAsync throws if downloading a font fails 1`] = `[Error: Failed to download asset for font "test-font"]`;
+
+exports[`within Expo Go loadAsync throws if loading a downloaded font fails 1`] = `[Error: Intentional error from FontLoader mock]`;

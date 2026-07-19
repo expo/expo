@@ -1,0 +1,19 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.4'
+
+android {
+  namespace "expo.modules.localauthentication"
+  defaultConfig {
+    versionCode 30
+    versionName "56.0.4"
+  }
+}
+
+dependencies {
+  implementation "androidx.biometric:biometric:1.2.0-alpha04"
+}

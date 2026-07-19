@@ -1,0 +1,13 @@
+diff --git a/expo-module.config.json b/expo-module.config.json
+index 0000000..1111111 100644
+--- a/expo-module.config.json
++++ b/expo-module.config.json
+@@ -1,3 +1,9 @@
+    "android": {
++     "gradleAarProjects": [
++       {
++         "name": "test-aar",
++         "aarFilePath": "android/libs/test.aar"
++       }
++     ],
+     "modules": [

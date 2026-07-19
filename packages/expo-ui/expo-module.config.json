@@ -1,0 +1,11 @@
+{
+  "name": "expo-ui",
+  "platforms": ["apple", "android"],
+  "coreFeatures": ["swiftui", "compose"],
+  "apple": {
+    "modules": ["ExpoUIModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.ui.ExpoUIModule"]
+  }
+}

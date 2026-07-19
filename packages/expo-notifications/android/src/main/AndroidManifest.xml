@@ -1,0 +1,39 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+  <application>
+    <service
+      android:name=".service.ExpoFirebaseMessagingService"
+      android:exported="false">
+      <intent-filter android:priority="-1">
+        <action android:name="com.google.firebase.MESSAGING_EVENT" />
+      </intent-filter>
+    </service>
+
+    <receiver
+      android:name=".service.NotificationsService"
+      android:enabled="true"
+      android:exported="false">
+      <intent-filter android:priority="-1">
+        <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
+
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+        <action android:name="android.intent.action.REBOOT" />
+        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+        <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+
+        <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+      </intent-filter>
+    </receiver>
+
+    <activity android:name=".service.NotificationForwarderActivity"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar"
+      android:exported="false"
+      android:excludeFromRecents="true"
+      android:noHistory="true"
+      android:launchMode="standard"
+      android:taskAffinity=""
+      />
+  </application>
+</manifest>

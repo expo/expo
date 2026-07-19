@@ -1,0 +1,17 @@
+import { UnavailabilityError } from 'expo';
+
+import NotificationPresenter from './NotificationPresenterModule';
+
+/**
+ * Removes notification displayed in the notification tray (Notification Center).
+ * @param notificationIdentifier The notification identifier, obtained either via `setNotificationHandler` method or in the listener added with `addNotificationReceivedListener`.
+ * @return A Promise which resolves once the request to dismiss the notification is successfully dispatched to the notifications manager.
+ * @header dismiss
+ */
+export async function dismissNotificationAsync(notificationIdentifier: string): Promise<void> {
+  if (!NotificationPresenter.dismissNotificationAsync) {
+    throw new UnavailabilityError('Notifications', 'dismissNotificationAsync');
+  }
+
+  return await NotificationPresenter.dismissNotificationAsync(notificationIdentifier);
+}

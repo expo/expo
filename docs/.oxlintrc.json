@@ -1,0 +1,297 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["import", "react", "unicorn", "typescript", "nextjs", "node", "oxc"],
+  "jsPlugins": ["eslint-plugin-testing-library", "oxlint-tailwindcss"],
+  "categories": {
+    "correctness": "off"
+  },
+  "env": {
+    "builtin": true,
+    "es2022": true,
+    "browser": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    "**/.cache",
+    "**/.next/",
+    "**/.swc/",
+    "**/.wrangler/",
+    "**/.worker-test/",
+    "**/.vale",
+    "**/node_modules",
+    "**/out",
+    "**/public",
+    "pages/versions/latest",
+    "components/plugins/permissions/data/android.json",
+    "scripts/generate-llms/talks.js",
+    "types/global.d.ts",
+    "README.md",
+    "next-env.d.ts",
+    "**/*.{md,mdx}"
+  ],
+  "rules": {
+    "curly": "error",
+    "eqeqeq": [
+      "error",
+      "always",
+      {
+        "null": "ignore"
+      }
+    ],
+    "no-void": [
+      "error",
+      {
+        "allowAsStatement": true
+      }
+    ],
+    "constructor-super": "error",
+    "no-array-constructor": "error",
+    "no-caller": "error",
+    "no-case-declarations": "error",
+    "no-compare-neg-zero": "error",
+    "no-cond-assign": "error",
+    "no-const-assign": "error",
+    "no-constant-condition": "error",
+    "no-debugger": "error",
+    "no-delete-var": "error",
+    "no-dupe-class-members": "error",
+    "no-dupe-keys": "error",
+    "no-duplicate-case": "error",
+    "no-empty-character-class": "error",
+    "no-empty-pattern": "error",
+    "no-eval": "error",
+    "no-ex-assign": "error",
+    "no-extend-native": "error",
+    "no-extra-boolean-cast": "error",
+    "no-fallthrough": "error",
+    "no-func-assign": "error",
+    "no-global-assign": "error",
+    "no-inner-declarations": "error",
+    "no-invalid-regexp": "error",
+    "no-irregular-whitespace": "error",
+    "no-new": "error",
+    "no-new-func": "error",
+    "no-new-native-nonconstructor": "error",
+    "no-obj-calls": "error",
+    "no-redeclare": "error",
+    "no-return-assign": "error",
+    "no-script-url": "error",
+    "no-self-assign": "error",
+    "no-self-compare": "error",
+    "no-shadow-restricted-names": "error",
+    "no-sparse-arrays": "error",
+    "no-this-before-super": "error",
+    "no-throw-literal": "error",
+    "no-unsafe-negation": "error",
+    "no-unused-expressions": "error",
+    "no-unused-labels": "error",
+    "no-unused-vars": "error",
+    "no-useless-escape": "error",
+    "no-useless-rename": "error",
+    "no-var": "error",
+    "no-with": "error",
+    "prefer-const": "error",
+    "prefer-promise-reject-errors": "error",
+    "radix": "error",
+    "use-isnan": "error",
+    "valid-typeof": "error",
+    "unicorn/new-for-builtins": "error",
+    "unicorn/no-useless-spread": "error",
+    "unicorn/prefer-array-some": "error",
+    "unicorn/prefer-at": "error",
+    "unicorn/prefer-date-now": "error",
+    "unicorn/prefer-includes": "error",
+    "unicorn/prefer-regexp-test": "error",
+    "unicorn/prefer-node-protocol": "error",
+    "unicorn/throw-new-error": "error",
+    "react/jsx-key": [
+      "error",
+      {
+        "checkFragmentShorthand": true,
+        "checkKeyMustBeforeSpread": true,
+        "warnOnDuplicates": true
+      }
+    ],
+    "react/no-unknown-property": [
+      "error",
+      {
+        "ignore": ["css", "mask-type"]
+      }
+    ],
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-undef": "error",
+    "react/no-direct-mutation-state": "error",
+    "react-hooks/rules-of-hooks": "error",
+    "@next/next/google-font-display": "error",
+    "@next/next/google-font-preconnect": "error",
+    "@next/next/no-async-client-component": "error",
+    "@next/next/no-before-interactive-script-outside-document": "error",
+    "@next/next/no-css-tags": "error",
+    "@next/next/no-head-element": "error",
+    "@next/next/no-html-link-for-pages": "error",
+    "@next/next/no-img-element": "off",
+    "@next/next/no-page-custom-font": "error",
+    "@next/next/no-styled-jsx-in-document": "error",
+    "@next/next/no-sync-scripts": "error",
+    "@next/next/no-title-in-document-head": "error",
+    "@next/next/no-typos": "error",
+    "@next/next/no-unwanted-polyfillio": "error",
+    "@next/next/inline-script-id": "error",
+    "@next/next/no-assign-module-variable": "error",
+    "@next/next/no-document-import-in-page": "error",
+    "@next/next/no-duplicate-head": "error",
+    "@next/next/no-head-import-in-document": "error",
+    "@next/next/no-script-component-in-head": "error",
+    "import/no-duplicates": "error",
+    "import/default": "error",
+    "import/namespace": [
+      "error",
+      {
+        "allowComputed": true
+      }
+    ],
+    "import/no-cycle": "error",
+    "node/no-new-require": "error",
+    "node/no-path-concat": "error",
+    "oxc/bad-array-method-on-arguments": "error",
+    "oxc/bad-char-at-comparison": "error",
+    "oxc/bad-comparison-sequence": "error",
+    "oxc/bad-min-max-func": "error",
+    "oxc/bad-object-literal-comparison": "error",
+    "oxc/bad-replace-all-arg": "error",
+    "oxc/const-comparisons": "error",
+    "oxc/double-comparisons": "error",
+    "oxc/erasing-op": "error",
+    "oxc/missing-throw": "error",
+    "oxc/number-arg-out-of-range": "error",
+    "oxc/only-used-in-recursion": "error",
+    "oxc/uninvoked-array-callback": "error",
+    "@typescript-eslint/ban-ts-comment": [
+      "error",
+      {
+        "minimumDescriptionLength": 3,
+        "ts-check": false,
+        "ts-expect-error": "allow-with-description",
+        "ts-ignore": true,
+        "ts-nocheck": true
+      }
+    ],
+    "@typescript-eslint/no-confusing-non-null-assertion": "error",
+    "@typescript-eslint/no-empty-object-type": [
+      "error",
+      {
+        "allowInterfaces": "with-single-extends"
+      }
+    ],
+    "@typescript-eslint/no-extra-non-null-assertion": "error",
+    "@typescript-eslint/no-restricted-types": "error",
+    "@typescript-eslint/no-wrapper-object-types": "error",
+    "@typescript-eslint/prefer-as-const": "error",
+    "@typescript-eslint/await-thenable": "error",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false
+      }
+    ],
+    "@typescript-eslint/return-await": ["error", "always"],
+    "@typescript-eslint/no-unnecessary-type-assertion": "error",
+    "@typescript-eslint/prefer-includes": "error",
+    "@typescript-eslint/prefer-nullish-coalescing": [
+      "error",
+      {
+        "ignoreConditionalTests": true,
+        "ignoreMixedLogicalExpressions": true
+      }
+    ],
+    "@typescript-eslint/no-dupe-class-members": "error",
+    "@typescript-eslint/no-unused-expressions": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "none",
+        "ignoreRestSiblings": true,
+        "caughtErrors": "all"
+      }
+    ],
+    "@typescript-eslint/no-useless-constructor": "error",
+    "@typescript-eslint/no-confusing-void-expression": "error",
+    "@typescript-eslint/no-for-in-array": "error",
+    "@typescript-eslint/only-throw-error": "error",
+    "@typescript-eslint/no-redeclare": "error",
+    "testing-library/await-async-events": [
+      "error",
+      {
+        "eventModule": "userEvent"
+      }
+    ],
+    "testing-library/await-async-queries": "error",
+    "testing-library/await-async-utils": "error",
+    "testing-library/no-await-sync-events": [
+      "error",
+      {
+        "eventModules": ["fire-event"]
+      }
+    ],
+    "testing-library/no-await-sync-queries": "error",
+    "testing-library/no-container": "error",
+    "testing-library/no-dom-import": ["error", "react"],
+    "testing-library/no-global-regexp-flag-in-query": "error",
+    "testing-library/no-manual-cleanup": "error",
+    "testing-library/no-node-access": "error",
+    "testing-library/no-promise-in-fire-event": "error",
+    "testing-library/no-render-in-lifecycle": "error",
+    "testing-library/no-unnecessary-act": "error",
+    "testing-library/no-wait-for-multiple-assertions": "error",
+    "testing-library/no-wait-for-side-effects": "error",
+    "testing-library/no-wait-for-snapshot": "error",
+    "testing-library/prefer-find-by": "error",
+    "testing-library/prefer-presence-queries": "error",
+    "testing-library/prefer-query-by-disappearance": "error",
+    "testing-library/prefer-screen-queries": "error",
+    "testing-library/render-result-naming-convention": "error",
+    "tailwindcss/no-unknown-classes": [
+      "error",
+      {
+        "allowlist": [
+          "dark-theme",
+          "react-player",
+          "table-wrapper",
+          "terminal-snippet",
+          "tutorial-code-annotation"
+        ],
+        "ignorePrefixes": ["diff-", "dialog-", "max-medium:", "[table_&]"]
+      }
+    ],
+    "tailwindcss/no-duplicate-classes": "error",
+    "tailwindcss/no-conflicting-classes": "allow",
+    "tailwindcss/no-deprecated-classes": "error",
+    "tailwindcss/no-unnecessary-whitespace": "error",
+    "tailwindcss/enforce-sort-order": [
+      "error",
+      {
+        "mode": "strict"
+      }
+    ],
+    "tailwindcss/enforce-shorthand": "error",
+    "tailwindcss/enforce-canonical": "error"
+  },
+  "settings": {
+    "tailwindcss": {
+      "entryPoint": ["styles/global.css", "docs/styles/global.css"],
+      "callees": ["mergeClasses"]
+    }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.js", "**/*.mjs", "**/*.cjs"],
+      "rules": {
+        "no-console": "off",
+        "@typescript-eslint/return-await": "off",
+        "@typescript-eslint/no-floating-promises": "off"
+      }
+    }
+  ]
+}

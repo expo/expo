@@ -1,0 +1,352 @@
+---
+title: How to use a standalone Expo module
+description: Learn how to use a standalone module created with create-expo-module in your project by using a monorepo or publishing the package to npm.
+---
+
+import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+**The recommended way to create an Expo module** in an existing project is described in the [Expo Modules API: Get Started](/modules/get-started/) guide. This tutorial explains two additional methods for using a module created with `create-expo-module` in an existing project:
+
+- [Configure a monorepo](#use-a-monorepo)
+- [Publish the module to npm](#publish-the-module-to-npm)
+
+These methods are useful if you still want to keep the module separate from the application or share it with other developers.
+
+## Use a monorepo
+
+Your project should use the following structure:
+
+- **apps**: A directory to store multiple projects, including React Native apps.
+- **packages**: A directory to keep different packages used by your apps.
+- **package.json**: This is the root package file that contains the Yarn workspaces configuration.
+
+> **info** To learn how to configure your project as a monorepo, check out the [Working with monorepos](/guides/monorepos/) guide.
+
+<Step label="1">
+
+### Initialize a new module
+
+Once you have set up the basic monorepo structure, create a new module using `create-expo-module` with the flag `--no-example` to skip creating the example app:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module packages/expo-settings --no-example'],
+    yarn: ['$ yarn create expo-module packages/expo-settings --no-example'],
+    pnpm: ['$ pnpm create expo-module packages/expo-settings --no-example'],
+    bun: ['$ bun create expo-module packages/expo-settings --no-example'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+### Set up a workspace dependency
+
+Add your native module from **packages** to your apps' dependencies. Update the **package.json** file in each app inside the **apps** directory that will use your native module and add your native module to the existing entries of dependencies:
+
+```json package.json
+{
+  "dependencies": {
+    /* @hide ... */ /* @end */
+    "expo-settings": "*"
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+</Step>
+
+<Step label="3">
+
+### Run the module
+
+Run one of your apps to ensure everything works. Then, start the TypeScript compiler in **packages/expo-settings** to watch for changes and rebuild the module's JavaScript:
+
+<Terminal
+  cmd={{
+    npm: ['$ cd packages/expo-settings', '$ npm run build'],
+    yarn: ['$ cd packages/expo-settings', '$ yarn run build'],
+    pnpm: ['$ cd packages/expo-settings', '$ pnpm run build'],
+    bun: ['$ cd packages/expo-settings', '$ bun run build'],
+  }}
+/>
+
+Open another terminal window, select an app from the **apps** directory, and run the `prebuild` command with the `--clean` option. Repeat these steps for each app in your monorepo to use the new module.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --clean'],
+    yarn: ['$ yarn expo prebuild --clean'],
+    pnpm: ['$ pnpm expo prebuild --clean'],
+    bun: ['$ bun expo prebuild --clean'],
+  }}
+/>
+
+Compile and run the app with the following command:
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Run the app on Android',
+      '$ npx expo run:android',
+      '# Run the app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Run the app on Android',
+      '$ yarn expo run:android',
+      '# Run the app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Run the app on Android',
+      '$ pnpm expo run:android',
+      '# Run the app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Run the app on Android',
+      '$ bun expo run:android',
+      '# Run the app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
+/>
+
+You can now use the module in your app. To test it, edit the **src/app/index.tsx** file in your app and render the text message from the `expo-settings` module:
+
+```tsx src/app/index.tsx
+import React from 'react';
+import { Text, View } from 'react-native';
+import * as Settings from 'expo-settings';
+
+export default function TabOneScreen() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>{Settings.hello()}</Text>
+    </View>
+  );
+}
+```
+
+After this configuration, the app displays the text "Hello world! 👋".
+
+</Step>
+
+## Publish the module to npm
+
+You can publish the module on npm and install it as a dependency in your project by following the steps below.
+
+<Step label="1">
+
+### Initialize a new module
+
+Start by creating a new module with `create-expo-module`. Follow the prompts carefully, as you will publish this library, and choose a unique name for your npm package.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module expo-settings'],
+    yarn: ['$ yarn create expo-module expo-settings'],
+    pnpm: ['$ pnpm create expo-module expo-settings'],
+    bun: ['$ bun create expo-module expo-settings'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+### Run the example project
+
+Run one of your apps to ensure everything works. Then, start the TypeScript compiler in the root of your project to watch for changes and rebuild the module's JavaScript:
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ npm run build',
+    ],
+    yarn: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ yarn run build',
+    ],
+    pnpm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ pnpm run build',
+    ],
+    bun: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ bun run build',
+    ],
+  }}
+/>
+
+Open another terminal window, compile and run the example app:
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
+/>
+
+</Step>
+
+<Step label="3">
+
+### Publish the package to npm
+
+To publish your package to npm, you need an npm account. If you don't have one, create an account on [the npm website](https://www.npmjs.com/signup). After creating an account, log in by running the following command:
+
+<Terminal cmd={['$ npm login']} />
+
+Navigate to the root of your module, then run the following command to publish it:
+
+<Terminal cmd={['$ npm publish']} />
+
+Your module will now be published to npm and can be installed in other projects using `npm install`.
+
+Apart from publishing your module to npm, you can use it in your project in the following ways:
+
+- **Create a tarball**: Use `npm pack` to create a tarball of your module, then install it in your project by running `npm install /path/to/tarball`. This method is helpful for testing your module locally before publishing it or sharing it with others who don't have access to the npm registry.
+- **Run a local npm registry**: Use a tool such as [Verdaccio](https://verdaccio.org/) to host a local npm registry. You can install your module from this registry, which is useful for managing internal packages within a company or organization.
+- **Publish a private package**: [Use a private registry with EAS Build](/build-reference/private-npm-packages/) to manage private modules securely.
+
+</Step>
+
+<Step label="4">
+
+### Test the published module
+
+To test the published module in a new project, create a new app and install the module as a dependency by running the following command:
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ npx create-expo-app@latest my-app --template default@sdk-57',
+      '$ cd my-app',
+      '$ npx expo install expo-settings',
+    ],
+    yarn: [
+      '$ yarn create expo-app my-app --template default@sdk-57',
+      '$ cd my-app',
+      '$ yarn expo install expo-settings',
+    ],
+    pnpm: [
+      '$ pnpm create expo-app my-app --template default@sdk-57',
+      '$ cd my-app',
+      '$ pnpm expo install expo-settings',
+    ],
+    bun: [
+      '$ bun create expo my-app --template default@sdk-57',
+      '$ cd my-app',
+      '$ bun expo install expo-settings',
+    ],
+  }}
+/>
+
+You can now use the module in your app! To test it, edit **src/app/index.tsx** and render the text message from **expo-settings**.
+
+```tsx src/app/index.tsx
+import React from 'react';
+import * as Settings from 'expo-settings';
+import { Text, View } from 'react-native';
+
+export default function TabOneScreen() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>{Settings.hello()}</Text>
+    </View>
+  );
+}
+```
+
+Finally, prebuild your project and run the app by executing the following commands:
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Re-generate the native project directories from scratch',
+      '$ npx expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Re-generate the native project directories from scratch',
+      '$ yarn expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Re-generate the native project directories from scratch',
+      '$ pnpm expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Re-generate the native project directories from scratch',
+      '$ bun expo prebuild --clean',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
+/>
+
+After this configuration, you see the text "Hello world! 👋" displayed in the app.
+
+</Step>
+
+## Next steps
+
+<BoxLink
+  title="Wrap third-party native libraries"
+  description="Learn how to wrap third-party native libraries in an Expo module."
+  href="/modules/third-party-library/"
+  Icon={Grid01Icon}
+/>
+
+<BoxLink
+  title="Tutorial: Creating a native module"
+  description="A tutorial on creating a native module that persists settings with Expo Modules API."
+  href="/modules/native-module-tutorial/"
+  Icon={Grid01Icon}
+/>

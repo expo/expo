@@ -1,0 +1,98 @@
+---
+title: Android Studio Emulator
+description: Learn how to set up the Android Emulator to test your app on a virtual Android device.
+---
+
+import AndroidEmulatorInstructions from '~/scenes/get-started/set-up-your-environment/instructions/_androidEmulatorInstructions.mdx';
+import AndroidStudioEnvironmentInstructions from '~/scenes/get-started/set-up-your-environment/instructions/_androidStudioEnvironmentInstructions.mdx';
+import AndroidStudioInstructions from '~/scenes/get-started/set-up-your-environment/instructions/_androidStudioInstructions.mdx';
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+If you don't have an Android device available to test with, we recommend using the default emulator that comes with Android Studio. If you run into any problems setting it up, follow the steps in this guide.
+
+<AndroidStudioEnvironmentInstructions />
+
+<AndroidStudioInstructions />
+
+<AndroidEmulatorInstructions />
+
+## Troubleshooting
+
+### Multiple `adb` versions
+
+Having multiple `adb` versions on your system can result in the following error:
+
+<Terminal cmd={["$ adb server version (xx) doesn't match this client (xx); killing..."]} />
+
+This is because the `adb` version on your system is different from the `adb` version on the Android SDK platform-tools.
+
+<Step label="1">
+Open the terminal and check the `adb` version on the system:
+
+<Terminal cmd={['$ adb version']} />
+</Step>
+
+<Step label="2">
+And from the Android SDK platform-tool directory:
+
+<Terminal cmd={[
+  '$ cd ~/Library/Android/sdk/platform-tools',
+  '$ ./adb version'
+]} cmdCopy="cd ~/Library/Android/sdk/platform-tools && ./adb version" />
+</Step>
+
+<Step label="3">
+Copy `adb` from Android SDK directory to `usr/bin` directory:
+
+<Terminal cmd={['$ sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin']} />
+</Step>
+
+### How do I install a specific version of Expo Go?
+
+You can create a project with the desired SDK version and open it in a simulator to install the matching version of Expo Go.
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Bootstrap an SDK 57 project',
+      '$ npx create-expo-app --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ npx expo start --android',
+    ],
+    yarn: [
+      '# Bootstrap an SDK 57 project',
+      '$ yarn create expo-app --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ yarn expo start --android',
+    ],
+    pnpm: [
+      '# Bootstrap an SDK 57 project',
+      '$ pnpm create expo-app --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ pnpm expo start --android',
+    ],
+    bun: [
+      '# Bootstrap an SDK 57 project',
+      '$ bun create expo --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ bun expo start --android',
+    ],
+  }}
+/>
+
+Alternatively, you can download a specific version of Expo Go with the [`expo-go` CLI](https://www.npmjs.com/package/expo-go) by passing an SDK version, or use `latest` for the latest SDK version. This command downloads the Expo Go app to the current directory and caches it under **~/.expo**.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-go download android latest'],
+    yarn: ['$ yarn dlx expo-go download android latest'],
+    pnpm: ['$ pnpm dlx expo-go download android latest'],
+    bun: ['$ bunx expo-go download android latest'],
+  }}
+/>

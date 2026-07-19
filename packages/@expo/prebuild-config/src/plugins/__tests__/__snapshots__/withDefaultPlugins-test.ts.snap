@@ -1,0 +1,1771 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`built-in plugins compiles mods 1`] = `
+{
+  "_internal": {
+    "pluginHistory": {
+      "expo-apple-authentication": {
+        "name": "expo-apple-authentication",
+        "version": "UNVERSIONED",
+      },
+      "expo-contacts": {
+        "name": "expo-contacts",
+        "version": "UNVERSIONED",
+      },
+      "expo-document-picker": {
+        "name": "expo-document-picker",
+        "version": "UNVERSIONED",
+      },
+      "expo-notifications": {
+        "name": "expo-notifications",
+        "version": "UNVERSIONED",
+      },
+      "expo-system-ui": {
+        "name": "expo-system-ui",
+        "version": "UNVERSIONED",
+      },
+      "expo-updates": {
+        "name": "expo-updates",
+        "version": "UNVERSIONED",
+      },
+      "react-native-maps": {
+        "name": "react-native-maps",
+        "version": "UNVERSIONED",
+      },
+    },
+    "projectRoot": "/app",
+  },
+  "android": {
+    "adaptiveIcon": {
+      "backgroundImage": "./icons/background.png",
+      "foregroundImage": "./icons/foreground.png",
+    },
+    "allowBackup": true,
+    "backgroundColor": "#ff0000",
+    "blockedPermissions": [
+      "android.permission.RECORD_AUDIO",
+      "android.permission.ACCESS_FINE_LOCATION",
+    ],
+    "config": {
+      "branch": {
+        "apiKey": "MY_BRANCH_ANDROID_KEY",
+      },
+      "googleMaps": {
+        "apiKey": "MY_GOOGLE_MAPS_ANDROID_KEY",
+      },
+      "googleMobileAdsAppId": "MY_GOOGLE_MOBILE_ADS_APP_ID",
+      "googleMobileAdsAutoInit": true,
+    },
+    "googleServicesFile": "./config/google-services.json",
+    "intentFilters": [
+      {
+        "action": "VIEW",
+        "autoVerify": true,
+        "category": [
+          "BROWSABLE",
+          "DEFAULT",
+        ],
+        "data": {
+          "host": "*.expo.dev",
+          "scheme": "https",
+        },
+      },
+    ],
+    "package": "com.bacon.todo",
+    "permissions": [
+      "android.permission.CAMERA",
+      "com.sec.android.provider.badge.permission.WRITE",
+      "android.permission.ACCESS_COARSE_LOCATION",
+    ],
+    "softwareKeyboardLayoutMode": "pan",
+    "userInterfaceStyle": "light",
+    "versionCode": 6,
+  },
+  "backgroundColor": "orange",
+  "description": "my app is great because it uses expo",
+  "developmentClient": {
+    "silentLaunch": true,
+  },
+  "facebookAdvertiserIDCollectionEnabled": true,
+  "facebookAppId": "1234567890",
+  "facebookAutoInitEnabled": true,
+  "facebookAutoLogAppEventsEnabled": true,
+  "facebookDisplayName": "my-fb-test-app",
+  "facebookScheme": "fb1234567890",
+  "githubUrl": "https://github.com/expo/expo",
+  "ios": {
+    "accessesContactNotes": true,
+    "appStoreUrl": "https://itunes.apple.com/us/app/pillar-valley/id1336398804?ls=1&mt=8",
+    "associatedDomains": [
+      "applinks:https://pillarvalley.netlify.app",
+    ],
+    "backgroundColor": "#ff0000",
+    "buildNumber": "6.5.0",
+    "bundleIdentifier": "com.bacon.todo",
+    "config": {
+      "googleMapsApiKey": "TEST_googleMapsApiKey",
+      "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
+      "googleMobileAdsAutoInit": true,
+      "usesNonExemptEncryption": true,
+    },
+    "deploymentTarget": "15.1",
+    "entitlements": {
+      "com.apple.developer.associated-domains": [
+        "applinks:https://pillarvalley.netlify.app",
+      ],
+      "com.apple.developer.contacts.notes": true,
+      "foo": "bar",
+    },
+    "googleServicesFile": "./config/GoogleService-Info.plist",
+    "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
+      "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
+      "CFBundleDisplayName": "my cool app",
+      "CFBundleExecutable": "$(EXECUTABLE_NAME)",
+      "CFBundleIdentifier": "$(PRODUCT_BUNDLE_IDENTIFIER)",
+      "CFBundleInfoDictionaryVersion": "6.0",
+      "CFBundleName": "$(PRODUCT_NAME)",
+      "CFBundlePackageType": "$(PRODUCT_BUNDLE_PACKAGE_TYPE)",
+      "CFBundleShortVersionString": "1.0.0",
+      "CFBundleSignature": "????",
+      "CFBundleURLTypes": [
+        {
+          "CFBundleURLSchemes": [
+            "my-app-redirect",
+            "com.bacon.todo",
+          ],
+        },
+        {
+          "CFBundleURLSchemes": [
+            "com.googleusercontent.apps.1234567890123-abcdef",
+          ],
+        },
+      ],
+      "CFBundleVersion": "6.5.0",
+      "GMSApiKey": "TEST_googleMapsApiKey",
+      "ITSAppUsesNonExemptEncryption": true,
+      "LSMinimumSystemVersion": "12.0",
+      "LSRequiresIPhoneOS": true,
+      "NSAppTransportSecurity": {
+        "NSAllowsArbitraryLoads": false,
+        "NSAllowsLocalNetworking": true,
+      },
+      "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "UIApplicationSceneManifest": {
+        "UIApplicationSupportsMultipleScenes": false,
+        "UISceneConfigurations": {
+          "UIWindowSceneSessionRoleApplication": [
+            {
+              "UISceneConfigurationName": "Default Configuration",
+              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+            },
+          ],
+        },
+      },
+      "UILaunchStoryboardName": "SplashScreen",
+      "UIRequiredDeviceCapabilities": [
+        "arm64",
+      ],
+      "UIRequiresFullScreen": true,
+      "UIStatusBarStyle": "UIStatusBarStyleDefault",
+      "UISupportedInterfaceOrientations": [
+        "UIInterfaceOrientationPortrait",
+        "UIInterfaceOrientationPortraitUpsideDown",
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight",
+      ],
+      "UIUserInterfaceStyle": "Automatic",
+      "UIViewControllerBasedStatusBarAppearance": false,
+      "bar": {
+        "val": [
+          "foo",
+        ],
+      },
+    },
+    "isTabletOnly": false,
+    "requireFullScreen": true,
+    "supportsTablet": true,
+    "userInterfaceStyle": "automatic",
+    "usesAppleSignIn": true,
+    "usesBroadcastPushNotifications": true,
+    "usesIcloudStorage": true,
+  },
+  "locales": {
+    "en": "./locales/en-US.json",
+    "es": {
+      "foo": "el bar",
+    },
+  },
+  "name": "my cool app",
+  "orientation": "default",
+  "packagerOpts": {
+    "extraThing": true,
+  },
+  "platforms": [
+    "android",
+    "ios",
+    "web",
+  ],
+  "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
+  "scheme": "my-app-redirect",
+  "slug": "mycoolapp",
+  "updates": {
+    "checkAutomatically": "ON_ERROR_RECOVERY",
+    "enabled": true,
+    "fallbackToCacheTimeout": 650,
+  },
+  "userInterfaceStyle": "dark",
+  "version": "1.0.0",
+}
+`;
+
+exports[`built-in plugins introspects mods 1`] = `
+{
+  "_internal": {
+    "modResults": {
+      "android": {
+        "colors": {
+          "resources": {
+            "color": [
+              {
+                "$": {
+                  "name": "splashscreen_background",
+                },
+                "_": "#FFFFFF",
+              },
+              {
+                "$": {
+                  "name": "colorPrimary",
+                },
+                "_": "#fff000",
+              },
+              {
+                "$": {
+                  "name": "activityBackground",
+                },
+                "_": "#ff0000",
+              },
+            ],
+          },
+        },
+        "colorsNight": {
+          "resources": {},
+        },
+        "gradleProperties": [
+          {
+            "type": "comment",
+            "value": "Project-wide Gradle settings.",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "IDE (e.g. Android Studio) users:",
+          },
+          {
+            "type": "comment",
+            "value": "Gradle settings configured through the IDE *will override*",
+          },
+          {
+            "type": "comment",
+            "value": "any settings specified in this file.",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "For more details on how to configure your build environment visit",
+          },
+          {
+            "type": "comment",
+            "value": "http://www.gradle.org/docs/current/userguide/build_environment.html",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Specifies the JVM arguments used for the daemon process.",
+          },
+          {
+            "type": "comment",
+            "value": "The setting is particularly useful for tweaking memory settings.",
+          },
+          {
+            "type": "comment",
+            "value": "Default value: -Xmx512m -XX:MaxMetaspaceSize=256m",
+          },
+          {
+            "key": "org.gradle.jvmargs",
+            "type": "property",
+            "value": "-Xmx2048m -XX:MaxMetaspaceSize=512m",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "When configured, Gradle will run in incubating parallel mode.",
+          },
+          {
+            "type": "comment",
+            "value": "This option should only be used with decoupled projects. More details, visit",
+          },
+          {
+            "type": "comment",
+            "value": "http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects",
+          },
+          {
+            "key": "org.gradle.parallel",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "AndroidX package structure to make it clearer which packages are bundled with the",
+          },
+          {
+            "type": "comment",
+            "value": "Android operating system, and which are packaged with your app's APK",
+          },
+          {
+            "type": "comment",
+            "value": "https://developer.android.com/topic/libraries/support-library/androidx-rn",
+          },
+          {
+            "key": "android.useAndroidX",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Enable AAPT2 PNG crunching",
+          },
+          {
+            "key": "android.enablePngCrunchInReleaseBuilds",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Use this property to specify which architecture you want to build.",
+          },
+          {
+            "type": "comment",
+            "value": "You can also override it from the CLI using",
+          },
+          {
+            "type": "comment",
+            "value": "./gradlew <task> -PreactNativeArchitectures=x86_64",
+          },
+          {
+            "key": "reactNativeArchitectures",
+            "type": "property",
+            "value": "armeabi-v7a,arm64-v8a,x86,x86_64",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Use this property to enable support to the new architecture.",
+          },
+          {
+            "type": "comment",
+            "value": "This will allow you to use TurboModules and the Fabric render in",
+          },
+          {
+            "type": "comment",
+            "value": "your application. You should enable this flag either if you want",
+          },
+          {
+            "type": "comment",
+            "value": "to write custom TurboModules/Fabric components OR use libraries that",
+          },
+          {
+            "type": "comment",
+            "value": "are providing them.",
+          },
+          {
+            "key": "newArchEnabled",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Use this property to enable or disable the Hermes JS engine.",
+          },
+          {
+            "type": "comment",
+            "value": "If set to false, you will be using JSC instead.",
+          },
+          {
+            "key": "hermesEnabled",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Use this property to enable edge-to-edge display support.",
+          },
+          {
+            "type": "comment",
+            "value": "This allows your app to draw behind system bars for an immersive UI.",
+          },
+          {
+            "type": "comment",
+            "value": "Note: Only works with ReactActivity and should not be used with custom Activity.",
+          },
+          {
+            "key": "edgeToEdgeEnabled",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Enable GIF support in React Native images (~200 B increase)",
+          },
+          {
+            "key": "expo.gif.enabled",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "comment",
+            "value": "Enable webp support in React Native images (~85 KB increase)",
+          },
+          {
+            "key": "expo.webp.enabled",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "comment",
+            "value": "Enable animated webp support (~3.4 MB increase)",
+          },
+          {
+            "type": "comment",
+            "value": "Disabled by default because iOS doesn't support animated webp",
+          },
+          {
+            "key": "expo.webp.animated",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Enable network inspector",
+          },
+          {
+            "key": "EX_DEV_CLIENT_NETWORK_INSPECTOR",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Use legacy packaging to compress native libraries in the resulting APK.",
+          },
+          {
+            "key": "expo.useLegacyPackaging",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "key": "expo.inlineModules.watchedDirectories",
+            "type": "property",
+            "value": "[]",
+          },
+        ],
+        "manifest": {
+          "manifest": {
+            "$": {
+              "xmlns:android": "http://schemas.android.com/apk/res/android",
+              "xmlns:tools": "http://schemas.android.com/tools",
+            },
+            "application": [
+              {
+                "$": {
+                  "android:allowBackup": "true",
+                  "android:enableOnBackInvokedCallback": "false",
+                  "android:icon": "@mipmap/ic_launcher",
+                  "android:label": "@string/app_name",
+                  "android:name": ".MainApplication",
+                  "android:roundIcon": "@mipmap/ic_launcher_round",
+                  "android:supportsRtl": "true",
+                  "android:theme": "@style/AppTheme",
+                },
+                "activity": [
+                  {
+                    "$": {
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize|assetsPaths",
+                      "android:exported": "true",
+                      "android:launchMode": "singleTask",
+                      "android:name": ".MainActivity",
+                      "android:screenOrientation": "unspecified",
+                      "android:theme": "@style/Theme.App.SplashScreen",
+                      "android:windowSoftInputMode": "adjustPan",
+                    },
+                    "intent-filter": [
+                      {
+                        "action": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.action.MAIN",
+                            },
+                          },
+                        ],
+                        "category": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.LAUNCHER",
+                            },
+                          },
+                        ],
+                      },
+                      {
+                        "action": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.action.VIEW",
+                            },
+                          },
+                        ],
+                        "category": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.DEFAULT",
+                            },
+                          },
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.BROWSABLE",
+                            },
+                          },
+                        ],
+                        "data": [
+                          {
+                            "$": {
+                              "android:scheme": "my-app-redirect",
+                            },
+                          },
+                        ],
+                      },
+                      {
+                        "$": {
+                          "android:autoVerify": "true",
+                          "data-generated": "true",
+                        },
+                        "action": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.action.VIEW",
+                            },
+                          },
+                        ],
+                        "category": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.BROWSABLE",
+                            },
+                          },
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.DEFAULT",
+                            },
+                          },
+                        ],
+                        "data": [
+                          {
+                            "$": {
+                              "android:host": "*.expo.dev",
+                              "android:scheme": "https",
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+                "meta-data": [
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.ENABLED",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH",
+                      "android:value": "NEVER",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
+                      "android:value": "650",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "com.google.android.geo.API_KEY",
+                      "android:value": "MY_GOOGLE_MAPS_ANDROID_KEY",
+                    },
+                  },
+                ],
+                "uses-library": [
+                  {
+                    "$": {
+                      "android:name": "org.apache.http.legacy",
+                      "android:required": false,
+                    },
+                  },
+                ],
+              },
+            ],
+            "queries": [
+              {
+                "intent": [
+                  {
+                    "action": [
+                      {
+                        "$": {
+                          "android:name": "android.intent.action.VIEW",
+                        },
+                      },
+                    ],
+                    "category": [
+                      {
+                        "$": {
+                          "android:name": "android.intent.category.BROWSABLE",
+                        },
+                      },
+                    ],
+                    "data": [
+                      {
+                        "$": {
+                          "android:scheme": "https",
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+            "uses-permission": [
+              {
+                "$": {
+                  "android:name": "android.permission.INTERNET",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.SYSTEM_ALERT_WINDOW",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.VIBRATE",
+                },
+              },
+              {
+                "$": {
+                  "android:maxSdkVersion": "32",
+                  "android:name": "android.permission.READ_EXTERNAL_STORAGE",
+                  "tools:replace": "android:maxSdkVersion",
+                },
+              },
+              {
+                "$": {
+                  "android:maxSdkVersion": "32",
+                  "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
+                  "tools:replace": "android:maxSdkVersion",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.CAMERA",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "com.sec.android.provider.badge.permission.WRITE",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.ACCESS_COARSE_LOCATION",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.RECORD_AUDIO",
+                  "tools:node": "remove",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.ACCESS_FINE_LOCATION",
+                  "tools:node": "remove",
+                },
+              },
+            ],
+          },
+        },
+        "strings": {
+          "resources": {
+            "string": [
+              {
+                "$": {
+                  "name": "app_name",
+                },
+                "_": "my cool app",
+              },
+              {
+                "$": {
+                  "name": "expo_runtime_version",
+                },
+                "_": "1.0",
+              },
+            ],
+          },
+        },
+        "styles": {
+          "resources": {
+            "$": {
+              "xmlns:tools": "http://schemas.android.com/tools",
+            },
+            "style": [
+              {
+                "$": {
+                  "name": "AppTheme",
+                  "parent": "Theme.AppCompat.DayNight.NoActionBar",
+                },
+                "item": [
+                  {
+                    "$": {
+                      "name": "android:editTextBackground",
+                    },
+                    "_": "@drawable/rn_edit_text_material",
+                  },
+                  {
+                    "$": {
+                      "name": "colorPrimary",
+                    },
+                    "_": "@color/colorPrimary",
+                  },
+                  {
+                    "$": {
+                      "name": "android:statusBarColor",
+                    },
+                    "_": "@android:color/transparent",
+                  },
+                  {
+                    "$": {
+                      "name": "android:navigationBarColor",
+                    },
+                    "_": "@android:color/transparent",
+                  },
+                  {
+                    "$": {
+                      "name": "android:windowBackground",
+                    },
+                    "_": "@color/activityBackground",
+                  },
+                ],
+              },
+              {
+                "$": {
+                  "name": "Theme.App.SplashScreen",
+                  "parent": "AppTheme",
+                },
+                "item": [
+                  {
+                    "$": {
+                      "name": "android:windowBackground",
+                    },
+                    "_": "@drawable/splashscreen_logo",
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+      "ios": {
+        "entitlements": {
+          "com.apple.developer.associated-domains": [
+            "applinks:https://pillarvalley.netlify.app",
+          ],
+          "com.apple.developer.contacts.notes": true,
+          "foo": "bar",
+        },
+        "expoPlist": {
+          "EXUpdatesCheckOnLaunch": "NEVER",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
+          "EXUpdatesEnabled": true,
+          "EXUpdatesLaunchWaitMs": 650,
+          "EXUpdatesRuntimeVersion": "1.0",
+        },
+        "infoPlist": {
+          "CADisableMinimumFrameDurationOnPhone": true,
+          "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
+          "CFBundleDisplayName": "my cool app",
+          "CFBundleExecutable": "$(EXECUTABLE_NAME)",
+          "CFBundleIdentifier": "$(PRODUCT_BUNDLE_IDENTIFIER)",
+          "CFBundleInfoDictionaryVersion": "6.0",
+          "CFBundleName": "$(PRODUCT_NAME)",
+          "CFBundlePackageType": "$(PRODUCT_BUNDLE_PACKAGE_TYPE)",
+          "CFBundleShortVersionString": "1.0.0",
+          "CFBundleSignature": "????",
+          "CFBundleURLTypes": [
+            {
+              "CFBundleURLSchemes": [
+                "my-app-redirect",
+                "com.bacon.todo",
+              ],
+            },
+            {
+              "CFBundleURLSchemes": [
+                "com.googleusercontent.apps.1234567890123-abcdef",
+              ],
+            },
+          ],
+          "CFBundleVersion": "6.5.0",
+          "GMSApiKey": "TEST_googleMapsApiKey",
+          "ITSAppUsesNonExemptEncryption": true,
+          "LSMinimumSystemVersion": "12.0",
+          "LSRequiresIPhoneOS": true,
+          "NSAppTransportSecurity": {
+            "NSAllowsArbitraryLoads": false,
+            "NSAllowsLocalNetworking": true,
+          },
+          "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+          "UIApplicationSceneManifest": {
+            "UIApplicationSupportsMultipleScenes": false,
+            "UISceneConfigurations": {
+              "UIWindowSceneSessionRoleApplication": [
+                {
+                  "UISceneConfigurationName": "Default Configuration",
+                  "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+                },
+              ],
+            },
+          },
+          "UILaunchStoryboardName": "SplashScreen",
+          "UIRequiredDeviceCapabilities": [
+            "arm64",
+          ],
+          "UIRequiresFullScreen": true,
+          "UIStatusBarStyle": "UIStatusBarStyleDefault",
+          "UISupportedInterfaceOrientations": [
+            "UIInterfaceOrientationPortrait",
+            "UIInterfaceOrientationPortraitUpsideDown",
+            "UIInterfaceOrientationLandscapeLeft",
+            "UIInterfaceOrientationLandscapeRight",
+          ],
+          "UIUserInterfaceStyle": "Automatic",
+          "UIViewControllerBasedStatusBarAppearance": false,
+          "bar": {
+            "val": [
+              "foo",
+            ],
+          },
+        },
+        "podfileProperties": {
+          "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+          "expo.inlineModules.watchedDirectories": "[]",
+          "expo.inlineModules.xcodeProjectTargets": "{"mainTarget":"mycoolapp","targets":[]}",
+          "expo.jsEngine": "hermes",
+          "ios.deploymentTarget": "15.1",
+        },
+      },
+    },
+    "pluginHistory": {
+      "expo-apple-authentication": {
+        "name": "expo-apple-authentication",
+        "version": "UNVERSIONED",
+      },
+      "expo-contacts": {
+        "name": "expo-contacts",
+        "version": "UNVERSIONED",
+      },
+      "expo-document-picker": {
+        "name": "expo-document-picker",
+        "version": "UNVERSIONED",
+      },
+      "expo-notifications": {
+        "name": "expo-notifications",
+        "version": "UNVERSIONED",
+      },
+      "expo-system-ui": {
+        "name": "expo-system-ui",
+        "version": "UNVERSIONED",
+      },
+      "expo-updates": {
+        "name": "expo-updates",
+        "version": "UNVERSIONED",
+      },
+      "react-native-maps": {
+        "name": "react-native-maps",
+        "version": "UNVERSIONED",
+      },
+    },
+    "projectRoot": "/app",
+  },
+  "android": {
+    "adaptiveIcon": {
+      "backgroundImage": "./icons/background.png",
+      "foregroundImage": "./icons/foreground.png",
+    },
+    "allowBackup": true,
+    "backgroundColor": "#ff0000",
+    "blockedPermissions": [
+      "android.permission.RECORD_AUDIO",
+      "android.permission.ACCESS_FINE_LOCATION",
+    ],
+    "config": {
+      "branch": {
+        "apiKey": "MY_BRANCH_ANDROID_KEY",
+      },
+      "googleMaps": {
+        "apiKey": "MY_GOOGLE_MAPS_ANDROID_KEY",
+      },
+      "googleMobileAdsAppId": "MY_GOOGLE_MOBILE_ADS_APP_ID",
+      "googleMobileAdsAutoInit": true,
+    },
+    "googleServicesFile": "./config/google-services.json",
+    "intentFilters": [
+      {
+        "action": "VIEW",
+        "autoVerify": true,
+        "category": [
+          "BROWSABLE",
+          "DEFAULT",
+        ],
+        "data": {
+          "host": "*.expo.dev",
+          "scheme": "https",
+        },
+      },
+    ],
+    "package": "com.bacon.todo",
+    "permissions": [
+      "android.permission.CAMERA",
+      "com.sec.android.provider.badge.permission.WRITE",
+      "android.permission.ACCESS_COARSE_LOCATION",
+    ],
+    "softwareKeyboardLayoutMode": "pan",
+    "userInterfaceStyle": "light",
+    "versionCode": 6,
+  },
+  "backgroundColor": "orange",
+  "description": "my app is great because it uses expo",
+  "developmentClient": {
+    "silentLaunch": true,
+  },
+  "facebookAdvertiserIDCollectionEnabled": true,
+  "facebookAppId": "1234567890",
+  "facebookAutoInitEnabled": true,
+  "facebookAutoLogAppEventsEnabled": true,
+  "facebookDisplayName": "my-fb-test-app",
+  "facebookScheme": "fb1234567890",
+  "githubUrl": "https://github.com/expo/expo",
+  "ios": {
+    "accessesContactNotes": true,
+    "appStoreUrl": "https://itunes.apple.com/us/app/pillar-valley/id1336398804?ls=1&mt=8",
+    "associatedDomains": [
+      "applinks:https://pillarvalley.netlify.app",
+    ],
+    "backgroundColor": "#ff0000",
+    "buildNumber": "6.5.0",
+    "bundleIdentifier": "com.bacon.todo",
+    "config": {
+      "googleMapsApiKey": "TEST_googleMapsApiKey",
+      "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
+      "googleMobileAdsAutoInit": true,
+      "usesNonExemptEncryption": true,
+    },
+    "deploymentTarget": "15.1",
+    "entitlements": {
+      "com.apple.developer.associated-domains": [
+        "applinks:https://pillarvalley.netlify.app",
+      ],
+      "com.apple.developer.contacts.notes": true,
+      "foo": "bar",
+    },
+    "googleServicesFile": "./config/GoogleService-Info.plist",
+    "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
+      "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
+      "CFBundleDisplayName": "my cool app",
+      "CFBundleExecutable": "$(EXECUTABLE_NAME)",
+      "CFBundleIdentifier": "$(PRODUCT_BUNDLE_IDENTIFIER)",
+      "CFBundleInfoDictionaryVersion": "6.0",
+      "CFBundleName": "$(PRODUCT_NAME)",
+      "CFBundlePackageType": "$(PRODUCT_BUNDLE_PACKAGE_TYPE)",
+      "CFBundleShortVersionString": "1.0.0",
+      "CFBundleSignature": "????",
+      "CFBundleURLTypes": [
+        {
+          "CFBundleURLSchemes": [
+            "my-app-redirect",
+            "com.bacon.todo",
+          ],
+        },
+        {
+          "CFBundleURLSchemes": [
+            "com.googleusercontent.apps.1234567890123-abcdef",
+          ],
+        },
+      ],
+      "CFBundleVersion": "6.5.0",
+      "GMSApiKey": "TEST_googleMapsApiKey",
+      "ITSAppUsesNonExemptEncryption": true,
+      "LSMinimumSystemVersion": "12.0",
+      "LSRequiresIPhoneOS": true,
+      "NSAppTransportSecurity": {
+        "NSAllowsArbitraryLoads": false,
+        "NSAllowsLocalNetworking": true,
+      },
+      "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "UIApplicationSceneManifest": {
+        "UIApplicationSupportsMultipleScenes": false,
+        "UISceneConfigurations": {
+          "UIWindowSceneSessionRoleApplication": [
+            {
+              "UISceneConfigurationName": "Default Configuration",
+              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+            },
+          ],
+        },
+      },
+      "UILaunchStoryboardName": "SplashScreen",
+      "UIRequiredDeviceCapabilities": [
+        "arm64",
+      ],
+      "UIRequiresFullScreen": true,
+      "UIStatusBarStyle": "UIStatusBarStyleDefault",
+      "UISupportedInterfaceOrientations": [
+        "UIInterfaceOrientationPortrait",
+        "UIInterfaceOrientationPortraitUpsideDown",
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight",
+      ],
+      "UIUserInterfaceStyle": "Automatic",
+      "UIViewControllerBasedStatusBarAppearance": false,
+      "bar": {
+        "val": [
+          "foo",
+        ],
+      },
+    },
+    "isTabletOnly": false,
+    "requireFullScreen": true,
+    "supportsTablet": true,
+    "userInterfaceStyle": "automatic",
+    "usesAppleSignIn": true,
+    "usesBroadcastPushNotifications": true,
+    "usesIcloudStorage": true,
+  },
+  "locales": {
+    "en": "./locales/en-US.json",
+    "es": {
+      "foo": "el bar",
+    },
+  },
+  "name": "my cool app",
+  "orientation": "default",
+  "packagerOpts": {
+    "extraThing": true,
+  },
+  "platforms": [
+    "android",
+    "ios",
+    "web",
+  ],
+  "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
+  "scheme": "my-app-redirect",
+  "slug": "mycoolapp",
+  "updates": {
+    "checkAutomatically": "ON_ERROR_RECOVERY",
+    "enabled": true,
+    "fallbackToCacheTimeout": 650,
+  },
+  "userInterfaceStyle": "dark",
+  "version": "1.0.0",
+}
+`;
+
+exports[`built-in plugins introspects mods in a managed project 1`] = `
+{
+  "_internal": {
+    "modResults": {
+      "android": {
+        "colors": {
+          "resources": {
+            "color": [
+              {
+                "$": {
+                  "name": "colorPrimary",
+                },
+                "_": "#fff000",
+              },
+              {
+                "$": {
+                  "name": "activityBackground",
+                },
+                "_": "#ff0000",
+              },
+            ],
+          },
+        },
+        "colorsNight": {
+          "resources": {},
+        },
+        "gradleProperties": [
+          {
+            "key": "expo.inlineModules.watchedDirectories",
+            "type": "property",
+            "value": "[]",
+          },
+        ],
+        "manifest": {
+          "manifest": {
+            "$": {
+              "package": "com.bacon.todo",
+              "xmlns:android": "http://schemas.android.com/apk/res/android",
+              "xmlns:tools": "http://schemas.android.com/tools",
+            },
+            "application": [
+              {
+                "$": {
+                  "android:allowBackup": "true",
+                  "android:enableOnBackInvokedCallback": "false",
+                  "android:icon": "@mipmap/ic_launcher",
+                  "android:label": "@string/app_name",
+                  "android:name": ".MainApplication",
+                  "android:roundIcon": "@mipmap/ic_launcher_round",
+                  "android:supportsRtl": "true",
+                  "android:theme": "@style/AppTheme",
+                },
+                "activity": [
+                  {
+                    "$": {
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize",
+                      "android:exported": "true",
+                      "android:launchMode": "singleTask",
+                      "android:name": ".MainActivity",
+                      "android:screenOrientation": "unspecified",
+                      "android:theme": "@style/Theme.App.SplashScreen",
+                      "android:windowSoftInputMode": "adjustPan",
+                    },
+                    "intent-filter": [
+                      {
+                        "action": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.action.MAIN",
+                            },
+                          },
+                        ],
+                        "category": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.LAUNCHER",
+                            },
+                          },
+                        ],
+                      },
+                      {
+                        "action": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.action.VIEW",
+                            },
+                          },
+                        ],
+                        "category": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.DEFAULT",
+                            },
+                          },
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.BROWSABLE",
+                            },
+                          },
+                        ],
+                        "data": [
+                          {
+                            "$": {
+                              "android:scheme": "my-app-redirect",
+                            },
+                          },
+                        ],
+                      },
+                      {
+                        "$": {
+                          "android:autoVerify": "true",
+                          "data-generated": "true",
+                        },
+                        "action": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.action.VIEW",
+                            },
+                          },
+                        ],
+                        "category": [
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.BROWSABLE",
+                            },
+                          },
+                          {
+                            "$": {
+                              "android:name": "android.intent.category.DEFAULT",
+                            },
+                          },
+                        ],
+                        "data": [
+                          {
+                            "$": {
+                              "android:host": "*.expo.dev",
+                              "android:scheme": "https",
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+                "meta-data": [
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.ENABLED",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH",
+                      "android:value": "NEVER",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
+                      "android:value": "650",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT",
+                      "android:value": "true",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "com.google.android.geo.API_KEY",
+                      "android:value": "MY_GOOGLE_MAPS_ANDROID_KEY",
+                    },
+                  },
+                ],
+                "uses-library": [
+                  {
+                    "$": {
+                      "android:name": "org.apache.http.legacy",
+                      "android:required": false,
+                    },
+                  },
+                ],
+              },
+            ],
+            "queries": [
+              {
+                "intent": [
+                  {
+                    "action": [
+                      {
+                        "$": {
+                          "android:name": "android.intent.action.VIEW",
+                        },
+                      },
+                    ],
+                    "category": [
+                      {
+                        "$": {
+                          "android:name": "android.intent.category.BROWSABLE",
+                        },
+                      },
+                    ],
+                    "data": [
+                      {
+                        "$": {
+                          "android:scheme": "https",
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+            "uses-permission": [
+              {
+                "$": {
+                  "android:name": "android.permission.INTERNET",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.SYSTEM_ALERT_WINDOW",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.VIBRATE",
+                },
+              },
+              {
+                "$": {
+                  "android:maxSdkVersion": "32",
+                  "android:name": "android.permission.READ_EXTERNAL_STORAGE",
+                  "tools:replace": "android:maxSdkVersion",
+                },
+              },
+              {
+                "$": {
+                  "android:maxSdkVersion": "32",
+                  "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
+                  "tools:replace": "android:maxSdkVersion",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.CAMERA",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "com.sec.android.provider.badge.permission.WRITE",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.ACCESS_COARSE_LOCATION",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.RECORD_AUDIO",
+                  "tools:node": "remove",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.ACCESS_FINE_LOCATION",
+                  "tools:node": "remove",
+                },
+              },
+            ],
+          },
+        },
+        "strings": {
+          "resources": {
+            "string": [
+              {
+                "$": {
+                  "name": "app_name",
+                },
+                "_": "my cool app",
+              },
+              {
+                "$": {
+                  "name": "expo_runtime_version",
+                },
+                "_": "1.0",
+              },
+            ],
+          },
+        },
+        "styles": {
+          "resources": {
+            "$": {
+              "xmlns:tools": "http://schemas.android.com/tools",
+            },
+            "style": [
+              {
+                "$": {
+                  "name": "AppTheme",
+                  "parent": "Theme.AppCompat.Light.NoActionBar",
+                },
+                "item": [
+                  {
+                    "$": {
+                      "name": "colorPrimary",
+                    },
+                    "_": "@color/colorPrimary",
+                  },
+                  {
+                    "$": {
+                      "name": "android:statusBarColor",
+                    },
+                    "_": "@android:color/transparent",
+                  },
+                  {
+                    "$": {
+                      "name": "android:navigationBarColor",
+                    },
+                    "_": "@android:color/transparent",
+                  },
+                  {
+                    "$": {
+                      "name": "android:windowBackground",
+                    },
+                    "_": "@color/activityBackground",
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+      "ios": {
+        "entitlements": {
+          "com.apple.developer.associated-domains": [
+            "applinks:https://pillarvalley.netlify.app",
+          ],
+          "com.apple.developer.contacts.notes": true,
+          "foo": "bar",
+        },
+        "expoPlist": {
+          "EXUpdatesCheckOnLaunch": "NEVER",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
+          "EXUpdatesEnabled": true,
+          "EXUpdatesLaunchWaitMs": 650,
+          "EXUpdatesRuntimeVersion": "1.0",
+        },
+        "infoPlist": {
+          "CADisableMinimumFrameDurationOnPhone": true,
+          "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
+          "CFBundleDisplayName": "my cool app",
+          "CFBundleExecutable": "$(EXECUTABLE_NAME)",
+          "CFBundleIdentifier": "$(PRODUCT_BUNDLE_IDENTIFIER)",
+          "CFBundleInfoDictionaryVersion": "6.0",
+          "CFBundleName": "$(PRODUCT_NAME)",
+          "CFBundlePackageType": "$(PRODUCT_BUNDLE_PACKAGE_TYPE)",
+          "CFBundleShortVersionString": "1.0.0",
+          "CFBundleSignature": "????",
+          "CFBundleURLTypes": [
+            {
+              "CFBundleURLSchemes": [
+                "my-app-redirect",
+                "com.bacon.todo",
+              ],
+            },
+            {
+              "CFBundleURLSchemes": [
+                "com.googleusercontent.apps.1234567890123-abcdef",
+              ],
+            },
+          ],
+          "CFBundleVersion": "6.5.0",
+          "GMSApiKey": "TEST_googleMapsApiKey",
+          "ITSAppUsesNonExemptEncryption": true,
+          "LSMinimumSystemVersion": "12.0",
+          "LSRequiresIPhoneOS": true,
+          "NSAppTransportSecurity": {
+            "NSAllowsArbitraryLoads": true,
+            "NSExceptionDomains": {
+              "localhost": {
+                "NSExceptionAllowsInsecureHTTPLoads": true,
+              },
+            },
+          },
+          "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+          "UILaunchStoryboardName": "SplashScreen",
+          "UIRequiredDeviceCapabilities": [
+            "armv7",
+          ],
+          "UIRequiresFullScreen": true,
+          "UIStatusBarStyle": "UIStatusBarStyleDefault",
+          "UISupportedInterfaceOrientations": [
+            "UIInterfaceOrientationPortrait",
+            "UIInterfaceOrientationPortraitUpsideDown",
+            "UIInterfaceOrientationLandscapeLeft",
+            "UIInterfaceOrientationLandscapeRight",
+          ],
+          "UIUserInterfaceStyle": "Automatic",
+          "UIViewControllerBasedStatusBarAppearance": false,
+          "bar": {
+            "val": [
+              "foo",
+            ],
+          },
+        },
+        "podfileProperties": {
+          "expo.inlineModules.watchedDirectories": "[]",
+          "expo.inlineModules.xcodeProjectTargets": "{"mainTarget":"mycoolapp","targets":[]}",
+          "ios.deploymentTarget": "15.1",
+        },
+      },
+    },
+    "pluginHistory": {
+      "expo-apple-authentication": {
+        "name": "expo-apple-authentication",
+        "version": "UNVERSIONED",
+      },
+      "expo-contacts": {
+        "name": "expo-contacts",
+        "version": "UNVERSIONED",
+      },
+      "expo-document-picker": {
+        "name": "expo-document-picker",
+        "version": "UNVERSIONED",
+      },
+      "expo-notifications": {
+        "name": "expo-notifications",
+        "version": "UNVERSIONED",
+      },
+      "expo-system-ui": {
+        "name": "expo-system-ui",
+        "version": "UNVERSIONED",
+      },
+      "expo-updates": {
+        "name": "expo-updates",
+        "version": "UNVERSIONED",
+      },
+      "react-native-maps": {
+        "name": "react-native-maps",
+        "version": "UNVERSIONED",
+      },
+    },
+    "projectRoot": "/app",
+  },
+  "android": {
+    "adaptiveIcon": {
+      "backgroundImage": "./icons/background.png",
+      "foregroundImage": "./icons/foreground.png",
+    },
+    "allowBackup": true,
+    "backgroundColor": "#ff0000",
+    "blockedPermissions": [
+      "android.permission.RECORD_AUDIO",
+      "android.permission.ACCESS_FINE_LOCATION",
+    ],
+    "config": {
+      "branch": {
+        "apiKey": "MY_BRANCH_ANDROID_KEY",
+      },
+      "googleMaps": {
+        "apiKey": "MY_GOOGLE_MAPS_ANDROID_KEY",
+      },
+      "googleMobileAdsAppId": "MY_GOOGLE_MOBILE_ADS_APP_ID",
+      "googleMobileAdsAutoInit": true,
+    },
+    "googleServicesFile": "./config/google-services.json",
+    "intentFilters": [
+      {
+        "action": "VIEW",
+        "autoVerify": true,
+        "category": [
+          "BROWSABLE",
+          "DEFAULT",
+        ],
+        "data": {
+          "host": "*.expo.dev",
+          "scheme": "https",
+        },
+      },
+    ],
+    "package": "com.bacon.todo",
+    "permissions": [
+      "android.permission.CAMERA",
+      "com.sec.android.provider.badge.permission.WRITE",
+      "android.permission.ACCESS_COARSE_LOCATION",
+    ],
+    "softwareKeyboardLayoutMode": "pan",
+    "userInterfaceStyle": "light",
+    "versionCode": 6,
+  },
+  "backgroundColor": "orange",
+  "description": "my app is great because it uses expo",
+  "developmentClient": {
+    "silentLaunch": true,
+  },
+  "facebookAdvertiserIDCollectionEnabled": true,
+  "facebookAppId": "1234567890",
+  "facebookAutoInitEnabled": true,
+  "facebookAutoLogAppEventsEnabled": true,
+  "facebookDisplayName": "my-fb-test-app",
+  "facebookScheme": "fb1234567890",
+  "githubUrl": "https://github.com/expo/expo",
+  "ios": {
+    "accessesContactNotes": true,
+    "appStoreUrl": "https://itunes.apple.com/us/app/pillar-valley/id1336398804?ls=1&mt=8",
+    "associatedDomains": [
+      "applinks:https://pillarvalley.netlify.app",
+    ],
+    "backgroundColor": "#ff0000",
+    "buildNumber": "6.5.0",
+    "bundleIdentifier": "com.bacon.todo",
+    "config": {
+      "googleMapsApiKey": "TEST_googleMapsApiKey",
+      "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
+      "googleMobileAdsAutoInit": true,
+      "usesNonExemptEncryption": true,
+    },
+    "deploymentTarget": "15.1",
+    "entitlements": {
+      "com.apple.developer.associated-domains": [
+        "applinks:https://pillarvalley.netlify.app",
+      ],
+      "com.apple.developer.contacts.notes": true,
+      "foo": "bar",
+    },
+    "googleServicesFile": "./config/GoogleService-Info.plist",
+    "infoPlist": {
+      "CADisableMinimumFrameDurationOnPhone": true,
+      "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
+      "CFBundleDisplayName": "my cool app",
+      "CFBundleExecutable": "$(EXECUTABLE_NAME)",
+      "CFBundleIdentifier": "$(PRODUCT_BUNDLE_IDENTIFIER)",
+      "CFBundleInfoDictionaryVersion": "6.0",
+      "CFBundleName": "$(PRODUCT_NAME)",
+      "CFBundlePackageType": "$(PRODUCT_BUNDLE_PACKAGE_TYPE)",
+      "CFBundleShortVersionString": "1.0.0",
+      "CFBundleSignature": "????",
+      "CFBundleURLTypes": [
+        {
+          "CFBundleURLSchemes": [
+            "my-app-redirect",
+            "com.bacon.todo",
+          ],
+        },
+        {
+          "CFBundleURLSchemes": [
+            "com.googleusercontent.apps.1234567890123-abcdef",
+          ],
+        },
+      ],
+      "CFBundleVersion": "6.5.0",
+      "GMSApiKey": "TEST_googleMapsApiKey",
+      "ITSAppUsesNonExemptEncryption": true,
+      "LSMinimumSystemVersion": "12.0",
+      "LSRequiresIPhoneOS": true,
+      "NSAppTransportSecurity": {
+        "NSAllowsArbitraryLoads": true,
+        "NSExceptionDomains": {
+          "localhost": {
+            "NSExceptionAllowsInsecureHTTPLoads": true,
+          },
+        },
+      },
+      "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
+      "UILaunchStoryboardName": "SplashScreen",
+      "UIRequiredDeviceCapabilities": [
+        "armv7",
+      ],
+      "UIRequiresFullScreen": true,
+      "UIStatusBarStyle": "UIStatusBarStyleDefault",
+      "UISupportedInterfaceOrientations": [
+        "UIInterfaceOrientationPortrait",
+        "UIInterfaceOrientationPortraitUpsideDown",
+        "UIInterfaceOrientationLandscapeLeft",
+        "UIInterfaceOrientationLandscapeRight",
+      ],
+      "UIUserInterfaceStyle": "Automatic",
+      "UIViewControllerBasedStatusBarAppearance": false,
+      "bar": {
+        "val": [
+          "foo",
+        ],
+      },
+    },
+    "isTabletOnly": false,
+    "requireFullScreen": true,
+    "supportsTablet": true,
+    "userInterfaceStyle": "automatic",
+    "usesAppleSignIn": true,
+    "usesBroadcastPushNotifications": true,
+    "usesIcloudStorage": true,
+  },
+  "locales": {
+    "en": "./locales/en-US.json",
+    "es": {
+      "foo": "el bar",
+    },
+  },
+  "name": "my cool app",
+  "orientation": "default",
+  "packagerOpts": {
+    "extraThing": true,
+  },
+  "platforms": [
+    "android",
+    "ios",
+    "web",
+  ],
+  "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
+  "scheme": "my-app-redirect",
+  "slug": "mycoolapp",
+  "updates": {
+    "checkAutomatically": "ON_ERROR_RECOVERY",
+    "enabled": true,
+    "fallbackToCacheTimeout": 650,
+  },
+  "userInterfaceStyle": "dark",
+  "version": "1.0.0",
+}
+`;

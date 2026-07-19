@@ -1,0 +1,132 @@
+import { convertEntryPointToRelative } from '@expo/config/paths';
+import path from 'path';
+import resolveFrom from 'resolve-from';
+
+import { toPosixPath } from '../../../utils/filePath';
+import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
+import { DOM_POLYFILLS_SCRIPT } from './domPolyfills';
+import type { ExpoMetroOptions } from './metroOptions';
+import { createBundleUrlPath } from './metroOptions';
+import type { ServerRequest, ServerResponse } from './server.types';
+
+export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export const DOM_COMPONENTS_BUNDLE_DIR = 'www.bundle';
+
+type CreateDomComponentsMiddlewareOptions = {
+  /** The absolute project root, used to resolve the `expo/dom/entry.js` path */
+  projectRoot: string;
+};
+
+export function createDomComponentsMiddleware(
+  { projectRoot }: CreateDomComponentsMiddlewareOptions,
+  instanceMetroOptions: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'platform' | 'bytecode'>
+) {
+  return (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
+    if (!req.url) return next();
+
+    const url = coerceUrl(req.url);
+
+    // Match `/_expo/@dom`.
+    // This URL can contain additional paths like `/_expo/@dom/foo.js?file=...` to help the Safari dev tools.
+    if (!url.pathname.startsWith('/_expo/@dom')) {
+      return next();
+    }
+
+    const file = url.searchParams.get('file');
+
+    if (!file || !file.startsWith('file://')) {
+      res.statusCode = 400;
+      res.statusMessage = 'Invalid file path: ' + file;
+      return res.end();
+    }
+
+    // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`
+    // Generate a unique entry file for the webview.
+    const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
+    const generatedEntryPath = path.resolve(
+      file.startsWith('file://') ? fileURLToFilePath(file) : file
+    );
+    // The relative import path will be used like URI so it must be POSIX.
+    const relativeImport =
+      './' + toPosixPath(path.relative(path.dirname(virtualEntry), generatedEntryPath));
+    // Create the script URL
+    const requestUrlBase = `http://${req.headers.host}`;
+    // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`
+    const metroUrl = new URL(
+      createBundleUrlPath({
+        ...instanceMetroOptions,
+        domRoot: encodeURI(relativeImport),
+        baseUrl: '/',
+        mainModuleName: convertEntryPointToRelative(projectRoot, virtualEntry),
+        bytecode: false,
+        platform: 'web',
+        isExporting: false,
+        engine: 'hermes',
+        // Required for ensuring bundler errors are caught in the root entry / async boundary and can be recovered from automatically.
+        lazy: true,
+      }),
+      requestUrlBase
+    ).toString();
+
+    res.statusCode = 200;
+    // Return HTML file
+    res.setHeader('Content-Type', 'text/html');
+
+    res.end(
+      // Create the entry HTML file.
+      getDomComponentHtml(metroUrl, { title: path.basename(file) })
+    );
+  };
+}
+
+function coerceUrl(url: string) {
+  try {
+    return new URL(url);
+  } catch {
+    return new URL(url, 'https://localhost:0');
+  }
+}
+
+export function getDomComponentHtml(src?: string, { title }: { title?: string } = {}) {
+  // This HTML is not optimized for `react-native-web` since DOM Components are meant for general React DOM web development.
+  return `
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        ${title ? `<title>${title}</title>` : ''}
+        <style id="expo-dom-component-style">
+        /* These styles make the body full-height */
+        html,
+        body {
+          -webkit-overflow-scrolling: touch; /* Enables smooth momentum scrolling */
+        }
+        /* These styles make the root element full-height */
+        #root {
+          display: flex;
+          flex: 1;
+        }
+        </style>
+    </head>
+    <body>
+    <noscript>DOM Components require <code>javaScriptEnabled</code></noscript>
+        <!-- Root element for the DOM component. -->
+        <div id="root"></div>
+        <script>${DOM_POLYFILLS_SCRIPT}</script>
+        <script>
+          var injectedObject = {};
+          try {
+            injectedObject = JSON.parse(window.ReactNativeWebView.injectedObjectJson());
+          } catch (e) {
+            throw new Error('Failed to parse injectedObjectJson: ' + e.message);
+          }
+          window.$$EXPO_DOM_HOST_OS = injectedObject.EXPO_DOM_HOST_OS;
+          window.$$EXPO_INITIAL_PROPS = injectedObject.initialProps;
+        </script>
+        ${src ? `<script crossorigin src="${src.replace(/^https?:/, '')}"></script>` : ''}
+    </body>
+</html>`;
+}

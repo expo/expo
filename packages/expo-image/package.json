@@ -1,0 +1,66 @@
+{
+  "name": "expo-image",
+  "version": "56.0.9",
+  "description": "A cross-platform, performant image component for React Native and Expo with Web support",
+  "keywords": [
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/image/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-image"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
+  "dependencies": {
+    "sf-symbols-typescript": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "expo": "workspace:*",
+    "expo-app-metrics": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "expo-observe": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-web": {
+      "optional": true
+    }
+  },
+  "title": "Expo Image"
+}

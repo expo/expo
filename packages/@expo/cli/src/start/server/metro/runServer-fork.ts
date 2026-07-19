@@ -1,0 +1,211 @@
+// Copyright © 2023 650 Industries.
+// Copyright (c) Meta Platforms, Inc. and affiliates.
+//
+// Forks https://github.com/facebook/metro/blob/b80d9a0f638ee9fb82ff69cd3c8d9f4309ca1da2/packages/metro/src/index.flow.js#L57
+// and adds the ability to access the bundler instance.
+import { createConnectMiddleware } from '@expo/metro/metro';
+import type { RunServerOptions } from '@expo/metro/metro';
+import type { ConfigT } from '@expo/metro/metro-config';
+import MetroHmrServer, { type Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
+import type Server from '@expo/metro/metro/Server';
+import createWebsocketServer from '@expo/metro/metro/lib/createWebsocketServer';
+import assert from 'assert';
+import http from 'http';
+import https from 'https';
+import type { WebSocketServer } from 'ws';
+
+import { Log } from '../../../log';
+import type { ConnectAppType } from '../middleware/server.types';
+import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
+
+export interface SecureServerOptions {
+  readonly key: string | Buffer;
+  readonly cert: string | Buffer;
+  readonly ca: string | Buffer;
+  readonly requestCert: boolean;
+}
+
+export interface ServerAddressInfo {
+  protocol: 'http' | 'https';
+  address: string;
+  family: string;
+  port: number;
+}
+
+interface RunServerOptionsFork {
+  hasReducedPerformance?: boolean;
+  host?: string;
+  onError?($$PARAM_0$$: Error & { code?: string }): void;
+  onReady?(server: http.Server | https.Server): void;
+  onClose?(): void;
+  websocketEndpoints?: RunServerOptions['websocketEndpoints'];
+  secureServerOptions?: SecureServerOptions;
+  waitForBundler?: boolean;
+  watch?: boolean;
+}
+
+export const runServer = async (
+  _metroBundler: MetroBundlerDevServer,
+  config: ConfigT,
+  {
+    hasReducedPerformance = false,
+    host,
+    onError,
+    onReady,
+    secureServerOptions,
+    websocketEndpoints = {},
+    watch,
+    waitForBundler = !!watch,
+  }: RunServerOptionsFork,
+  {
+    mockServer,
+  }: {
+    // Use a mock server object instead of creating a real server, this is used in export cases where we want to reuse codepaths but not actually start a server.
+    mockServer: boolean;
+  }
+): Promise<{
+  address: ServerAddressInfo | null;
+  server: http.Server | https.Server;
+  hmrServer: MetroHmrServer<MetroHmrClient> | null;
+  metro: Server;
+}> => {
+  // await earlyPortCheck(host, config.server.port);
+
+  // if (secure != null || secureCert != null || secureKey != null) {
+  //   // eslint-disable-next-line no-console
+  //   console.warn(
+  //     chalk.inverse.yellow.bold(' DEPRECATED '),
+  //     'The `secure`, `secureCert`, and `secureKey` options are now deprecated. ' +
+  //       'Use the `secureServerOptions` object instead to pass options to ' +
+  //       "Metro's https development server.",
+  //   );
+  // }
+
+  const { middleware, end, metroServer } = await createConnectMiddleware(config, {
+    hasReducedPerformance,
+    waitForBundler,
+    watch,
+  });
+
+  if (!mockServer) {
+    assert(typeof (middleware as any).use === 'function');
+  }
+  const serverApp = middleware as ConnectAppType;
+
+  let httpServer: http.Server | https.Server;
+  let protocol: 'http' | 'https';
+
+  if (secureServerOptions != null) {
+    protocol = 'https';
+    httpServer = https.createServer(secureServerOptions, serverApp);
+  } else {
+    protocol = 'http';
+    httpServer = http.createServer(serverApp);
+  }
+
+  httpServer.on('error', (error) => {
+    if ('code' in error && error.code === 'EADDRINUSE') {
+      // If `Error: listen EADDRINUSE: address already in use :::8081` then print additional info
+      // about the process before throwing.
+      const { getRunningProcess } =
+        require('../../../utils/getRunningProcess') as typeof import('../../../utils/getRunningProcess');
+      getRunningProcess(config.server.port).then((info) => {
+        if (info) {
+          Log.error(
+            `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
+          );
+        }
+      });
+    }
+
+    if (onError) {
+      onError(error);
+    }
+    end();
+  });
+
+  // Disable any kind of automatic timeout behavior for incoming
+  // requests in case it takes the packager more than the default
+  // timeout of 120 seconds to respond to a request.
+  httpServer.timeout = 0;
+
+  // Extend the close method to ensure all websocket servers are closed, and connections are terminated
+  const originalClose = httpServer.close.bind(httpServer);
+
+  httpServer.close = function closeHttpServer(callback) {
+    originalClose((err?: Error) => {
+      // Always call end() to clean up Metro workers, even if the server wasn't started.
+      // The 'close' event doesn't fire for servers that were never started (mockServer case),
+      // so we need to call end() explicitly here.
+      end();
+      callback?.(err);
+    });
+
+    // Close all websocket servers, including possible client connections (see: https://github.com/websockets/ws/issues/2137#issuecomment-1507469375)
+    for (const endpoint of Object.values(websocketEndpoints) as WebSocketServer[]) {
+      endpoint.close();
+      endpoint.clients.forEach((client) => client.terminate());
+    }
+
+    // Forcibly close active connections
+    this.closeAllConnections();
+    return this;
+  };
+
+  if (mockServer) {
+    return { address: null, server: httpServer, hmrServer: null, metro: metroServer };
+  }
+
+  return new Promise((resolve, reject) => {
+    httpServer.on('error', (error) => {
+      reject(error);
+    });
+
+    httpServer.listen(config.server.port, host, () => {
+      if (onReady) {
+        onReady(httpServer);
+      }
+
+      const hmrServer = new MetroHmrServer(
+        metroServer.getBundler(),
+        metroServer.getCreateModuleId(),
+        config
+      );
+
+      Object.assign(websocketEndpoints, {
+        '/hot': createWebsocketServer({
+          websocketServer: hmrServer,
+        }),
+      });
+
+      httpServer.on('upgrade', (request, socket, head) => {
+        const { pathname } = new URL(request.url!, 'http://localhost');
+        if (pathname != null && websocketEndpoints[pathname]) {
+          websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
+            websocketEndpoints[pathname]?.emit('connection', ws, request);
+          });
+        } else {
+          socket.destroy();
+        }
+      });
+
+      const address = httpServer.address();
+      assert(
+        address == null || typeof address === 'object',
+        'Expected httpServer.address() to be an object'
+      );
+
+      resolve({
+        address: {
+          protocol,
+          address: address?.address ?? host ?? 'localhost',
+          family: address?.family ?? 'ipv4',
+          port: address?.port ?? config.server.port,
+        },
+        server: httpServer,
+        hmrServer,
+        metro: metroServer,
+      });
+    });
+  });
+};

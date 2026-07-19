@@ -1,0 +1,204 @@
+// Copyright 2022-present 650 Industries. All rights reserved.
+
+import ExpoModulesJSI
+
+protocol AnyPropertyDefinition {
+  /**
+   Name of the property.
+   */
+  var name: String { get }
+
+  /**
+   Creates the JavaScript object representing the property descriptor.
+   */
+  @JavaScriptActor
+  func buildDescriptor(appContext: AppContext) throws -> JavaScriptObject
+
+  /**
+   Creates the JavaScript property descriptor in a specific runtime.
+   Used to install property getters/setters in alternate runtimes (e.g. worklet runtime).
+   */
+  @JavaScriptActor
+  func buildDescriptor(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject
+}
+
+public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefinition, @unchecked Sendable {
+  /**
+   Name of the property.
+   */
+  let name: String
+
+  /**
+   Synchronous function that is called when the property is being accessed.
+   */
+  var getter: AnySyncFunctionDefinition?
+
+  /**
+   Synchronous function that is called when the property is being set.
+   */
+  var setter: AnySyncFunctionDefinition?
+
+  /**
+   Initializes an unowned PropertyDefinition without getter and setter functions.
+   */
+  init(name: String) {
+    self.name = name
+  }
+
+  /**
+   Initializes an unowned PropertyDefinition with a getter without arguments.
+   */
+  init<ReturnType>(name: String, getter: @escaping () -> ReturnType) {
+    self.name = name
+
+    // Set the getter right away
+    self.get(getter)
+  }
+
+  /**
+   Initializes an owned PropertyDefinition with a getter that takes the owner as its first argument.
+   */
+  init<ReturnType>(name: String, getter: @escaping (_ this: OwnerType) -> ReturnType) {
+    self.name = name
+
+    // Set the getter right away
+    self.get(getter)
+  }
+
+  // MARK: - Modifiers
+
+  /**
+   Modifier that sets property getter that has no arguments (the owner is not used).
+   */
+  @discardableResult
+  public func get<ReturnType>(_ getter: @escaping () -> ReturnType) -> Self {
+    self.getter = SyncFunctionDefinition(
+      "get",
+      firstArgType: Void.self,
+      dynamicArgumentTypes: [],
+      returnType: ~ReturnType.self,
+      getter
+    )
+    return self
+  }
+
+  /**
+   Modifier that sets property getter that receives the owner as an argument.
+   The owner is an object on which the function is called, like `this` in JavaScript.
+   */
+  @discardableResult
+  public func get<ReturnType>(_ getter: @escaping (_ this: OwnerType) -> ReturnType) -> Self {
+    self.getter = SyncFunctionDefinition(
+      "get",
+      firstArgType: OwnerType.self,
+      dynamicArgumentTypes: [~OwnerType.self],
+      returnType: ~ReturnType.self,
+      getter
+    )
+    self.getter?.takesOwner = true
+    return self
+  }
+
+  /**
+   Modifier that sets property setter that receives only the new value as an argument.
+   */
+  @discardableResult
+  public func set<ValueType>(_ setter: @escaping (_ newValue: ValueType) -> Void) -> Self {
+    self.setter = SyncFunctionDefinition(
+      "set",
+      firstArgType: ValueType.self,
+      dynamicArgumentTypes: [~ValueType.self],
+      returnType: ~Void.self,
+      setter
+    )
+    return self
+  }
+
+  /**
+   Modifier that sets property setter that receives the owner and the new value as arguments.
+   The owner is an object on which the function is called, like `this` in JavaScript.
+   */
+  @discardableResult
+  public func set<ValueType>(_ setter: @escaping (_ this: OwnerType, _ newValue: ValueType) -> Void) -> Self {
+    self.setter = SyncFunctionDefinition(
+      "set",
+      firstArgType: OwnerType.self,
+      dynamicArgumentTypes: [~OwnerType.self, ~ValueType.self],
+      returnType: ~Void.self,
+      setter
+    )
+    self.setter?.takesOwner = true
+    return self
+  }
+
+  // MARK: - Internals
+
+  /**
+   Creates the JavaScript function that will be used as a getter of the property.
+   */
+  @JavaScriptActor
+  internal func buildGetter(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptFunction {
+    return runtime.createFunction(name) { [weak appContext, weak self, name] this, arguments in
+      guard let appContext else {
+        throw Exceptions.AppContextLost()
+      }
+      guard let self else {
+        throw NativePropertyUnavailableException(name)
+      }
+      guard let getter = self.getter else {
+        return .undefined
+      }
+      return try getter.call(appContext, in: runtime, this: this, arguments: arguments)
+    }
+  }
+
+  /**
+   Creates the JavaScript function that will be used as a setter of the property.
+   */
+  @JavaScriptActor
+  internal func buildSetter(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptFunction {
+    return runtime.createFunction(name) { [weak appContext, weak self, name] this, arguments in
+      guard let appContext else {
+        throw Exceptions.AppContextLost()
+      }
+      guard let self else {
+        throw NativePropertyUnavailableException(name)
+      }
+      guard let setter = self.setter else {
+        return .undefined
+      }
+      return try setter.call(appContext, in: runtime, this: this, arguments: arguments)
+    }
+  }
+
+  /**
+   Creates the JavaScript object representing the property descriptor.
+   */
+  @JavaScriptActor
+  internal func buildDescriptor(appContext: AppContext) throws -> JavaScriptObject {
+    return try buildDescriptor(appContext: appContext, in: appContext.runtime)
+  }
+
+  @JavaScriptActor
+  internal func buildDescriptor(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    let descriptor = runtime.createObject()
+
+    descriptor.setProperty("enumerable", value: true)
+
+    if getter != nil {
+      descriptor.setProperty("get", value: try buildGetter(appContext: appContext, in: runtime))
+    }
+    if setter != nil {
+      descriptor.setProperty("set", value: try buildSetter(appContext: appContext, in: runtime))
+    }
+    return descriptor
+  }
+}
+
+// MARK: - Exceptions
+
+internal final class NativePropertyUnavailableException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    return "Native property '\(param)' is no longer available in memory"
+  }
+}

@@ -1,0 +1,592 @@
+import { events } from '2g';
+import assert from 'assert';
+import resolveFrom from 'resolve-from';
+
+import * as Log from '../../log';
+import { FileNotifier } from '../../utils/FileNotifier';
+import { resolveWithTimeout } from '../../utils/delay';
+import { env, envIsWebcontainer } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
+import { isInteractive } from '../../utils/interactive';
+import { openBrowserAsync } from '../../utils/open';
+import type { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
+import { AsyncNgrok } from './AsyncNgrok';
+import { AsyncWsTunnel } from './AsyncWsTunnel';
+import { Bonjour } from './Bonjour';
+import DevToolsPluginManager from './DevToolsPluginManager';
+import { DevelopmentSession } from './DevelopmentSession';
+import type { CreateURLOptions } from './UrlCreator';
+import { UrlCreator } from './UrlCreator';
+import { debugEvent } from './events';
+import type { PlatformBundlers } from './platformBundlers';
+
+declare module '2g' {
+  interface EventRegistry {
+    'devserver:url': {
+      bundler: string;
+      url: string;
+      runtimeUrl: string | null;
+      hostType: 'localhost' | 'lan' | 'tunnel' | null;
+      port: number;
+    };
+    'devserver:stop': { bundler: string; ms: number };
+  }
+}
+
+const event = events('devserver');
+
+export type MessageSocket = {
+  broadcast: (method: string, params?: Record<string, any> | undefined) => void;
+};
+
+export type ServerLike = {
+  close(callback?: (err?: Error) => void): void;
+  addListener?(event: string, listener: (...args: any[]) => void): unknown;
+};
+
+export type DevServerInstance = {
+  /** Bundler dev server instance. */
+  server: ServerLike;
+  /** Dev server URL location properties. */
+  location: {
+    url: string;
+    port: number;
+    protocol: 'http' | 'https';
+    host?: string;
+  };
+  /** Additional middleware that's attached to the `server`. */
+  middleware: any;
+  /** Message socket for communicating with the runtime. */
+  messageSocket: MessageSocket;
+};
+
+export interface BundlerStartOptions {
+  /** Should the dev server use `https` protocol. */
+  https?: boolean;
+  /** Should start the dev servers in development mode (minify). */
+  mode?: 'development' | 'production';
+  /** Is dev client enabled. */
+  devClient?: boolean;
+  /** Should run dev servers with clean caches. */
+  resetDevServer?: boolean;
+  /** Code signing private key path (defaults to same directory as certificate) */
+  privateKeyPath?: string;
+
+  /** Max amount of workers (threads) to use with Metro bundler, defaults to undefined for max workers. */
+  maxWorkers?: number;
+  /** Port to start the dev server on. */
+  port?: number;
+
+  /** Should start a headless dev server e.g. mock representation to approximate info from a server running in a different process. */
+  headless?: boolean;
+  /** Should instruct the bundler to create minified bundles. */
+  minify?: boolean;
+
+  /** Will the bundler be used for exporting. NOTE: This is an odd option to pass to the dev server. */
+  isExporting?: boolean;
+
+  // Webpack options
+  /** Should modify and create PWA icons. */
+  isImageEditingEnabled?: boolean;
+
+  location: CreateURLOptions;
+}
+
+const PLATFORM_MANAGERS = {
+  simulator: () =>
+    require('../platforms/ios/ApplePlatformManager')
+      .ApplePlatformManager as typeof import('../platforms/ios/ApplePlatformManager').ApplePlatformManager,
+  emulator: () =>
+    require('../platforms/android/AndroidPlatformManager')
+      .AndroidPlatformManager as typeof import('../platforms/android/AndroidPlatformManager').AndroidPlatformManager,
+};
+
+type PlatformManagers = {
+  [K in keyof typeof PLATFORM_MANAGERS]: InstanceType<ReturnType<(typeof PLATFORM_MANAGERS)[K]>>;
+};
+
+type PlatformDevice<Platform extends keyof PlatformManagers> =
+  PlatformManagers[Platform] extends PlatformManager<infer Device, any> ? Device : never;
+
+type PlatformLaunchProps<Platform extends keyof PlatformManagers> =
+  PlatformManagers[Platform] extends PlatformManager<any, infer LaunchProps> ? LaunchProps : never;
+
+export abstract class BundlerDevServer {
+  /** Name of the bundler. */
+  abstract get name(): string;
+
+  /** Tunnel instance for managing tunnel connections. */
+  protected tunnel: AsyncNgrok | AsyncWsTunnel | null = null;
+  /** Interfaces with the Expo 'Development Session' API. */
+  protected devSession: DevelopmentSession | null = null;
+  /** Announces dev server via Bonjour */
+  protected bonjour: Bonjour | null = null;
+  /** Http server and related info. */
+  protected instance: DevServerInstance | null = null;
+  /** Native platform interfaces for opening projects.  */
+  private platformManagers: { [K in keyof PlatformManagers]?: PlatformManagers[K] | undefined } =
+    {};
+  /** Manages the creation of dev server URLs. */
+  protected urlCreator?: UrlCreator | null = null;
+
+  private notifier: FileNotifier | null = null;
+  protected readonly devToolsPluginManager: DevToolsPluginManager;
+  public isDevClient: boolean;
+
+  constructor(
+    /** Project root folder. */
+    public projectRoot: string,
+    /** A mapping of bundlers to platforms. */
+    public platformBundlers: PlatformBundlers,
+    /** Advanced options */
+    options?: {
+      /**
+       * The instance of DevToolsPluginManager
+       * @default new DevToolsPluginManager(projectRoot)
+       */
+      devToolsPluginManager?: DevToolsPluginManager;
+      // TODO: Replace with custom scheme maybe...
+      isDevClient?: boolean;
+    }
+  ) {
+    this.devToolsPluginManager =
+      options?.devToolsPluginManager ?? new DevToolsPluginManager(projectRoot);
+    this.isDevClient = options?.isDevClient ?? false;
+  }
+
+  protected setInstance(instance: DevServerInstance) {
+    this.instance = instance;
+  }
+
+  /** Get the manifest middleware function. */
+  protected async getManifestMiddlewareAsync(
+    options: Pick<BundlerStartOptions, 'minify' | 'mode' | 'privateKeyPath'> = {}
+  ) {
+    const Middleware = require('./middleware/ExpoGoManifestHandlerMiddleware')
+      .ExpoGoManifestHandlerMiddleware as typeof import('./middleware/ExpoGoManifestHandlerMiddleware').ExpoGoManifestHandlerMiddleware;
+
+    const urlCreator = this.getUrlCreator();
+    const middleware = new Middleware(this.projectRoot, {
+      constructUrl: urlCreator.constructUrl.bind(urlCreator),
+      mode: options.mode,
+      minify: options.minify,
+      isNativeWebpack: this.name === 'webpack' && this.isTargetingNative(),
+      privateKeyPath: options.privateKeyPath,
+    });
+    return middleware;
+  }
+
+  /** Start the dev server using settings defined in the start command. */
+  public async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
+    await this.stopAsync();
+
+    let instance: DevServerInstance;
+    if (options.headless) {
+      instance = await this.startHeadlessAsync(options);
+    } else {
+      instance = await this.startImplementationAsync(options);
+    }
+
+    this.setInstance(instance);
+    await this.postStartAsync(options);
+    const url =
+      this.getTunnelUrl() ??
+      this.getUrlCreator().constructUrl({
+        scheme: instance.location.protocol,
+      });
+    event('url', {
+      bundler: this.name,
+      url,
+      runtimeUrl: this.getNativeRuntimeUrl(),
+      hostType: options.location.hostType ?? null,
+      port: instance.location.port,
+    });
+    return instance;
+  }
+
+  protected abstract startImplementationAsync(
+    options: BundlerStartOptions
+  ): Promise<DevServerInstance>;
+
+  public async waitForTypeScriptAsync(): Promise<boolean> {
+    return false;
+  }
+
+  public abstract startTypeScriptServices(): Promise<void>;
+
+  public async watchEnvironmentVariables(): Promise<void> {
+    // noop -- We've only implemented this functionality in Metro.
+  }
+
+  /**
+   * Creates a mock server representation that can be used to estimate URLs for a server started in another process.
+   * This is used for the run commands where you can reuse the server from a previous run.
+   */
+  private async startHeadlessAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
+    if (!options.port)
+      throw new CommandError('HEADLESS_SERVER', 'headless dev server requires a port option');
+    await this.initUrlCreator(options);
+    return {
+      // Create a mock server
+      server: {
+        close: (callback: () => void) => {
+          this.instance = null;
+          callback?.();
+        },
+        addListener() {},
+      },
+      location: {
+        // The port is the main thing we want to send back.
+        port: options.port,
+        // localhost isn't always correct.
+        host: 'localhost',
+        // http is the only supported protocol on native.
+        url: `http://localhost:${options.port}`,
+        protocol: 'http',
+      },
+      middleware: {},
+      messageSocket: {
+        broadcast: () => {
+          throw new CommandError('HEADLESS_SERVER', 'Cannot broadcast messages to headless server');
+        },
+      },
+    };
+  }
+
+  /**
+   * Runs after the `startAsync` function, performing any additional common operations.
+   * You can assume the dev server is started by the time this function is called.
+   */
+  protected async postStartAsync(options: BundlerStartOptions) {
+    if (
+      options.location.hostType === 'tunnel' &&
+      !env.EXPO_OFFLINE &&
+      // This is a hack to prevent using tunnel on web since we block it upstream for some reason.
+      this.isTargetingNative()
+    ) {
+      await this._startTunnelAsync();
+    } else if (envIsWebcontainer()) {
+      await this._startTunnelAsync();
+    }
+
+    if (!options.isExporting) {
+      await Promise.all([this.startDevSessionAsync(), this.startBonjourAsync()]);
+      this.watchConfig();
+    }
+  }
+
+  protected abstract getConfigModuleIds(): string[];
+
+  protected watchConfig() {
+    this.notifier?.stopObserving();
+    this.notifier = new FileNotifier(this.projectRoot, this.getConfigModuleIds());
+    this.notifier.startObserving();
+  }
+
+  /** Create the tunnel instance and start the tunnel server. Exposed for testing. */
+  public async _startTunnelAsync(): Promise<AsyncNgrok | AsyncWsTunnel | null> {
+    const port = this.getInstance()?.location.port;
+    if (!port) return null;
+    this.tunnel = this._createTunnel(port);
+    await this.tunnel.startAsync();
+    return this.tunnel;
+  }
+
+  /** Resolve which tunnel implementation to use, without starting it. */
+  private _createTunnel(port: number): AsyncNgrok | AsyncWsTunnel {
+    const useV2Tunnel = env.EXPO_UNSTABLE_TUNNEL_V2 || envIsWebcontainer();
+    if (useV2Tunnel) {
+      const useExpoAccount = !!env.EXPO_UNSTABLE_TUNNEL_V2;
+      return new AsyncWsTunnel(this.projectRoot, port, { useExpoAccount });
+    }
+
+    return new AsyncNgrok(this.projectRoot, port);
+  }
+
+  protected async startDevSessionAsync() {
+    // This is used to make Expo Go open the project in either Expo Go, or the web browser.
+    // Must come after ngrok (`startTunnelAsync`) setup.
+    this.devSession = new DevelopmentSession(
+      this.projectRoot,
+      // This URL will be used on external devices so the computer IP won't be relevant.
+      this.isTargetingNative()
+        ? this.getNativeRuntimeUrl()
+        : this.getDevServerUrl({ hostType: 'localhost' })
+    );
+
+    await this.devSession.startAsync({
+      runtime: this.isTargetingNative() ? 'native' : 'web',
+    });
+  }
+
+  protected async startBonjourAsync() {
+    // This is used to make Expo Go open the project in either Expo Go, or the web browser.
+    // Must come after ngrok (`startTunnelAsync`) setup.
+    if (!this.bonjour) {
+      this.bonjour = new Bonjour(this.projectRoot, this.getInstance()?.location.port);
+    }
+
+    await this.bonjour.announceAsync({});
+  }
+
+  public isTargetingNative() {
+    // Temporary hack while we implement multi-bundler dev server proxy.
+    return true;
+  }
+
+  public isTargetingWeb() {
+    return this.platformBundlers.web === this.name;
+  }
+
+  /**
+   * Sends a message over web sockets to any connected device,
+   * does nothing when the dev server is not running.
+   *
+   * @param method name of the command. In RN projects `reload`, and `devMenu` are available. In Expo Go, `sendDevCommand` is available.
+   * @param params
+   */
+  public broadcastMessage(
+    method: 'reload' | 'devMenu' | 'sendDevCommand',
+    params?: Record<string, any>
+  ) {
+    this.getInstance()?.messageSocket.broadcast(method, params);
+  }
+
+  /** Get the running dev server instance. */
+  public getInstance() {
+    return this.instance;
+  }
+
+  /** Stop the running dev server instance. */
+  async stopAsync() {
+    const stoppedAt = Date.now();
+    // Reset url creator
+    this.urlCreator = undefined;
+
+    // Stop file watching.
+    this.notifier?.stopObserving();
+
+    await Promise.all([
+      // Stop the bonjour advertiser
+      this.bonjour?.closeAsync(),
+      // Stop the dev session timer and tell Expo API to remove dev session.
+      this.devSession?.closeAsync(),
+    ]);
+
+    // Stop tunnel if running.
+    await this.tunnel?.stopAsync().catch((e) => {
+      Log.error(`Error stopping tunnel:`);
+      Log.exception(e);
+    });
+
+    await resolveWithTimeout(
+      () =>
+        new Promise<void>((resolve, reject) => {
+          if (this.instance?.server) {
+            // Check if server is even running.
+            this.instance.server.close((error) => {
+              this.instance = null;
+              if (error) {
+                if ('code' in error && error.code === 'ERR_SERVER_NOT_RUNNING') {
+                  resolve();
+                } else {
+                  reject(error);
+                }
+              } else {
+                resolve();
+              }
+            });
+          } else {
+            this.instance = null;
+            resolve();
+          }
+        }),
+      {
+        // NOTE(Bacon): Metro dev server doesn't seem to be closing in time.
+        timeout: 1000,
+        errorMessage: `Timeout waiting for '${this.name}' dev server to close`,
+      }
+    );
+
+    event('stop', { bundler: this.name, ms: Date.now() - stoppedAt });
+  }
+
+  // TODO(@kitten): This should be created top-down rather than bottom up from implementors
+  protected async initUrlCreator(
+    options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}
+  ) {
+    assert(options?.port, 'Dev server instance not found');
+    assert(!this.urlCreator, 'Dev server is already initialized');
+    const urlCreator = await UrlCreator.init(options.location, {
+      port: options.port,
+      getTunnelUrl: this.getTunnelUrl.bind(this),
+    });
+    this.urlCreator = urlCreator;
+    return urlCreator;
+  }
+
+  public getUrlCreator() {
+    assert(this.urlCreator, 'Dev server is uninitialized');
+    return this.urlCreator;
+  }
+
+  public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {
+    return this.isDevClient
+      ? (this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl())
+      : this.getUrlCreator().constructUrl({ ...opts, scheme: 'exp' });
+  }
+
+  /** Get the URL for the running instance of the dev server. */
+  public getDevServerUrl(options: { hostType?: 'localhost' } = {}): string | null {
+    const instance = this.getInstance();
+    if (!instance?.location) {
+      return null;
+    }
+
+    // If we have an active WS tunnel instance, we always need to return the tunnel location.
+    if (this.tunnel && this.tunnel instanceof AsyncWsTunnel) {
+      return this.getUrlCreator().constructUrl();
+    }
+
+    const { location } = instance;
+    if (options.hostType === 'localhost') {
+      return `${location.protocol}://localhost:${location.port}`;
+    }
+
+    return location.url ?? null;
+  }
+
+  public getDevServerUrlOrAssert(options: { hostType?: 'localhost' } = {}): string {
+    const instance = this.getDevServerUrl(options);
+    if (!instance) {
+      throw new CommandError(
+        'DEV_SERVER',
+        `Cannot get the dev server URL before the server has started - bundler[${this.name}]`
+      );
+    }
+
+    return instance;
+  }
+
+  /** Get the base URL for JS inspector */
+  public getJsInspectorBaseUrl(): string {
+    if (this.name !== 'metro') {
+      throw new CommandError(
+        'DEV_SERVER',
+        `Cannot get the JS inspector base url - bundler[${this.name}]`
+      );
+    }
+    return this.getUrlCreator().constructUrl({ scheme: 'http' });
+  }
+
+  /** Get the tunnel URL from the tunnel. */
+  public getTunnelUrl(): string | null {
+    return this.tunnel?.getActiveUrl() ?? null;
+  }
+
+  /** Open the dev server in a runtime. */
+  public async openPlatformAsync(
+    launchTarget: keyof PlatformManagers | 'desktop',
+    resolver: BaseResolveDeviceProps<any> = {}
+  ) {
+    if (launchTarget === 'desktop') {
+      const serverUrl = this.getDevServerUrl({ hostType: 'localhost' });
+      // Allow opening the tunnel URL when using Metro web.
+      const url = this.name === 'metro' ? (this.getTunnelUrl() ?? serverUrl) : serverUrl;
+      // Only launch the browser automatically if the process is interactive, otherwise we'll assume it's an agent.
+      if (isInteractive()) {
+        await openBrowserAsync(url!);
+      }
+      return { url };
+    }
+
+    const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
+    const manager = await this.getPlatformManagerAsync(launchTarget);
+    return manager.openAsync({ runtime }, resolver);
+  }
+
+  /** Open the dev server in a runtime. */
+  public async openCustomRuntimeAsync<Platform extends keyof PlatformManagers>(
+    launchTarget: Platform,
+    launchProps: Partial<PlatformLaunchProps<Platform>> = {},
+    resolver: BaseResolveDeviceProps<PlatformDevice<Platform>> = {}
+  ) {
+    const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
+    if (runtime !== 'custom') {
+      throw new CommandError(
+        `dev server cannot open custom runtimes either because it does not target native platforms or because it is not targeting dev clients. (target: ${runtime})`
+      );
+    }
+
+    const manager = await this.getPlatformManagerAsync(launchTarget);
+    return manager.openAsync(
+      { runtime: 'custom', props: launchProps },
+      resolver as BaseResolveDeviceProps<any>
+    );
+  }
+
+  /** Get the URL for opening in Expo Go. */
+  protected getExpoGoUrl(): string {
+    return this.getUrlCreator().constructUrl({ scheme: 'exp' });
+  }
+
+  /** Should use the interstitial page for selecting which runtime to use. */
+  protected isRedirectPageEnabled(): boolean {
+    return (
+      !env.EXPO_NO_REDIRECT_PAGE &&
+      // if user passed --dev-client flag, skip interstitial page
+      !this.isDevClient &&
+      // Checks if dev client is installed.
+      !!resolveFrom.silent(this.projectRoot, 'expo-dev-client')
+    );
+  }
+
+  /** Get the redirect URL when redirecting is enabled. */
+  public getRedirectUrl(platform: keyof PlatformManagers | null = null): string | null {
+    if (!this.isRedirectPageEnabled()) {
+      return null;
+    }
+
+    return (
+      this.getUrlCreator().constructLoadingUrl(
+        {},
+        platform === 'emulator' ? 'android' : platform === 'simulator' ? 'ios' : null
+      ) ?? null
+    );
+  }
+
+  protected async getPlatformManagerAsync<Platform extends keyof PlatformManagers>(
+    ofPlatform: Platform
+  ): Promise<PlatformManagers[Platform]> {
+    const platform: keyof PlatformManagers = ofPlatform;
+    if (!this.platformManagers[platform]) {
+      const port = this.getInstance()?.location.port;
+      if (!port || !this.urlCreator) {
+        throw new CommandError(
+          'DEV_SERVER',
+          'Cannot interact with native platforms until dev server has started'
+        );
+      }
+      debugEvent('platform_manager_created', { platform, port });
+      const managerParams = {
+        getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
+        getExpoGoUrl: this.getExpoGoUrl.bind(this),
+        getRedirectUrl: this.getRedirectUrl.bind(this, platform),
+        getDevServerUrl: this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
+      };
+      switch (platform) {
+        case 'simulator': {
+          const Manager = PLATFORM_MANAGERS[platform]();
+          this.platformManagers[platform] = new Manager(this.projectRoot, port, managerParams);
+          break;
+        }
+        case 'emulator': {
+          const Manager = PLATFORM_MANAGERS[platform]();
+          this.platformManagers[platform] = new Manager(this.projectRoot, port, managerParams);
+          break;
+        }
+      }
+    }
+    return this.platformManagers[platform] as PlatformManagers[Platform];
+  }
+}

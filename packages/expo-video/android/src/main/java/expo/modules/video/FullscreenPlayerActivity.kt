@@ -1,0 +1,259 @@
+package expo.modules.video
+
+import android.app.Activity
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.os.Build
+import android.os.Bundle
+import android.content.Context
+import android.util.Log
+import android.view.View
+import android.view.accessibility.CaptioningManager
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+import android.widget.ImageButton
+import androidx.media3.ui.PlayerView
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.video.listeners.VideoManagerListener
+import expo.modules.video.player.VideoPlayer
+import expo.modules.video.records.FullscreenOptions
+import expo.modules.video.utils.FullscreenActivityOrientationHelper
+import expo.modules.video.utils.SubtitleUtils
+import expo.modules.video.utils.applyPiPParams
+import expo.modules.video.utils.applyRectHint
+import expo.modules.video.utils.calculatePiPAspectRatio
+import expo.modules.video.utils.calculateRectHint
+import expo.modules.video.managers.VideoManager
+
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+class FullscreenPlayerActivity : Activity(), VideoManagerListener {
+  private lateinit var mContentView: View
+  private var videoViewId: String? = null
+  private var videoPlayer: VideoPlayer? = null
+  private lateinit var playerView: PlayerView
+  private lateinit var videoView: VideoView
+  private var didFinish = false
+  private var wasAutoPaused = false
+  private var isStopped = false
+  private lateinit var options: FullscreenOptions
+  private var orientationHelper: FullscreenActivityOrientationHelper? = null
+  private var captioningChangeListener: CaptioningManager.CaptioningChangeListener? = null
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    try {
+      videoViewId = intent.getStringExtra(VideoManager.INTENT_PLAYER_KEY)
+        ?: throw FullScreenVideoViewNotFoundException()
+
+      options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        intent.getSerializableExtra(INTENT_FULLSCREEN_OPTIONS_KEY, FullscreenOptions::class.java)
+          ?: throw FullScreenOptionsNotFoundException()
+      } else {
+        @Suppress("DEPRECATION")
+        intent.getSerializableExtra(INTENT_FULLSCREEN_OPTIONS_KEY) as? FullscreenOptions
+          ?: throw FullScreenOptionsNotFoundException()
+      }
+
+      videoView = videoViewId?.let { VideoManager.getVideoView(it) }
+        ?: throw FullScreenVideoViewNotFoundException()
+
+      orientationHelper = FullscreenActivityOrientationHelper(
+        this,
+        options,
+        onShouldAutoExit = {
+          finish()
+        },
+        onShouldReleaseOrientation = {
+          requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
+      )
+      orientationHelper?.startOrientationEventListener()
+    } catch (e: CodedException) {
+      Log.e("ExpoVideo", "${e.message}", e)
+      finish()
+      return
+    }
+
+    setContentView(R.layout.fullscreen_player_activity)
+    mContentView = findViewById(R.id.enclosing_layout)
+    playerView = findViewById(R.id.player_view)
+    requestedOrientation = options.orientation.toActivityOrientation()
+
+    videoPlayer = videoView.videoPlayer
+    videoPlayer?.player?.let {
+      PlayerView.switchTargetView(it, videoView.playerView, playerView)
+      videoPlayer?.hasBeenDisconnectedFromVideoView() // The video player is disconnected. We are only using the ExoPlayer it contained
+    }
+
+    videoViewId?.let { VideoManager.registerFullscreenPlayerActivity(it, this) }
+    VideoManager.registerListener(this)
+    playerView.player?.let {
+      val aspectRatio = calculatePiPAspectRatio(it.videoSize, playerView.width, playerView.height, videoView.contentFit)
+      applyPiPParams(this, videoView.autoEnterPiP, aspectRatio)
+    }
+  }
+
+  override fun onPostCreate(savedInstanceState: Bundle?) {
+    super.onPostCreate(savedInstanceState)
+    hideStatusBar()
+    setupFullscreenButton()
+    val requiresLinearPlayback = videoPlayer?.requiresLinearPlayback ?: false
+    val buttonConfig = videoView.buttonOptions.copy(showBottomBar = true) // Always show bottom bar in fullscreen mode so user can exit
+    playerView.applyButtonOptions(buttonConfig, requiresLinearPlayback)
+    playerView.setTimeBarInteractive(requiresLinearPlayback)
+    playerView.controllerAutoShow = videoView.controllerAutoShow
+    playerView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+      // On every re-layout ExoPlayer makes the timeBar interactive.
+      // We need to disable it to keep scrubbing off.
+      playerView.setTimeBarInteractive(requiresLinearPlayback)
+    }
+    playerView.setShowSubtitleButton(videoView.buttonOptions.showSubtitles ?: videoView.currentTrackHasSubtitles)
+
+    // Configure subtitle view to fix sizing issues with embedded styles (same as VideoView)
+    SubtitleUtils.configureSubtitleView(playerView, this)
+
+    // Set up listener for accessibility caption changes
+    setupCaptioningChangeListener()
+
+    playerView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+      applyRectHint(this, calculateRectHint(playerView))
+    }
+  }
+
+  override fun finish() {
+    super.finish()
+    didFinish = true
+    videoViewId?.let {
+      try {
+        VideoManager.getVideoView(it).attachPlayer()
+      } catch (e: VideoViewNotFoundException) {
+        Log.w("ExpoVideo", "VideoView $it already unmounted when finishing fullscreen — skipping attachPlayer")
+      }
+    }
+
+    // Disable the exit transition
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
+    } else {
+      @Suppress("DEPRECATION")
+      overridePendingTransition(0, 0)
+    }
+  }
+
+  override fun onResume() {
+    orientationHelper?.startOrientationEventListener()
+    playerView.useController = true
+    // Reconfigure subtitles when resuming (handles returning from settings)
+    SubtitleUtils.configureSubtitleView(playerView, this)
+    super.onResume()
+  }
+
+  override fun onPause() {
+    if (videoPlayer?.staysActiveInBackground != true && !didFinish) {
+      wasAutoPaused = videoPlayer?.player?.isPlaying == true
+      if (wasAutoPaused) {
+        playerView.useController = false
+        videoPlayer?.player?.pause()
+      }
+    }
+    orientationHelper?.stopOrientationEventListener()
+    super.onPause()
+  }
+
+  override fun onStop() {
+    isStopped = true
+    super.onStop()
+  }
+
+  override fun onStart() {
+    isStopped = false
+    super.onStart()
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+
+    // Clean up captioning change listener
+    captioningChangeListener?.let {
+      val captioningManager = getSystemService(Context.CAPTIONING_SERVICE) as? CaptioningManager
+      captioningManager?.removeCaptioningChangeListener(it)
+      captioningChangeListener = null
+    }
+
+    if (::videoView.isInitialized) {
+      videoView.exitFullscreen()
+    }
+    VideoManager.unregisterListener(this)
+    videoViewId?.let { VideoManager.unregisterFullscreenPlayerActivity(it) }
+    orientationHelper?.stopOrientationEventListener()
+  }
+
+  // When the app enters the foreground, we need to decide whether to close this activity.
+  // - If stopped: the user went home from fullscreen and came back via app icon -> close
+  // - If in PiP: the user went home while in PiP and came back via app icon -> close
+  // - If only paused (not stopped, not yet in PiP): we're mid-transition into PiP -> keep alive
+  override fun onAppForegrounded() {
+    if (isStopped || isInPictureInPictureMode) {
+      finish()
+    }
+  }
+
+  private fun setupFullscreenButton() {
+    playerView.setFullscreenButtonClickListener { finish() }
+
+    val fullScreenButton: ImageButton = playerView.findViewById(androidx.media3.ui.R.id.exo_fullscreen)
+    fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_icon_fullscreen_exit)
+  }
+
+  override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration?) {
+    if (!isInPictureInPictureMode) {
+      playerView.useController = videoView.useNativeControls
+    } else {
+      playerView.useController = false
+    }
+    if (wasAutoPaused && isInPictureInPictureMode) {
+      videoPlayer?.player?.play()
+    }
+    super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+  }
+
+  private fun hideStatusBar() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      val controller = mContentView.windowInsetsController
+      controller?.apply {
+        systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+      }
+    } else {
+      @Suppress("DEPRECATION")
+      mContentView.systemUiVisibility = (
+        View.SYSTEM_UI_FLAG_LOW_PROFILE
+          or View.SYSTEM_UI_FLAG_FULLSCREEN
+          or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+          or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+          or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+          or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        )
+    }
+  }
+
+  private fun setupCaptioningChangeListener() {
+    val captioningManager = getSystemService(Context.CAPTIONING_SERVICE) as? CaptioningManager
+
+    captioningChangeListener = SubtitleUtils.createCaptioningChangeListener(playerView, this)
+
+    captioningChangeListener?.let { listener ->
+      captioningManager?.addCaptioningChangeListener(listener)
+    }
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    orientationHelper?.onConfigurationChanged(newConfig)
+  }
+
+  companion object {
+    const val INTENT_FULLSCREEN_OPTIONS_KEY = "fullscreen_options"
+  }
+}

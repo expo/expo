@@ -1,0 +1,274 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+package expo.modules.webview
+
+import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.os.Build
+import android.view.MotionEvent
+import android.view.View
+import android.view.View.OnTouchListener
+import android.view.ViewGroup
+import android.webkit.RenderProcessGoneDetail
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import expo.modules.core.logging.LogHandlers
+import expo.modules.core.logging.Logger
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ExpoView
+import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+
+@SuppressLint("ViewConstructor")
+internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(context, appContext), OnTouchListener {
+  val webView: WebView
+  val webViewId = DomWebViewRegistry.add(this)
+
+  private var source: DomWebViewSource? = null
+  private var injectedJS: String? = null
+  private var injectedJSBeforeContentLoaded: String? = null
+  private val rncWebViewBridge = RNCWebViewBridge(this@DomWebView)
+  var webviewDebuggingEnabled: Boolean = false
+    set(value) {
+      field = value
+      WebView.setWebContentsDebuggingEnabled(value)
+    }
+  var nestedScrollEnabled = true
+
+  var useExpoModulesBridge: Boolean = false
+    set(value) {
+      if (field == value) return
+      field = value
+      needsResetupScripts = true
+    }
+
+  var mediaPlaybackRequiresUserAction: Boolean
+    get() = webView.settings.mediaPlaybackRequiresUserGesture
+    set(value) {
+      webView.settings.mediaPlaybackRequiresUserGesture = value
+    }
+
+  private var needsResetupScripts = false
+
+  private val onMessage by EventDispatcher<OnMessageEvent>()
+  private val onRenderProcessGone by EventDispatcher<OnRenderProcessGoneEvent>()
+
+  init {
+    this.webView = createWebView()
+    addView(
+      webView,
+      ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+    )
+  }
+
+  // region Public methods
+
+  fun reload() {
+    val sourceUri = source?.uri
+    if (sourceUri != null && sourceUri != webView.url) {
+      needsResetupScripts = false
+      webView.loadUrl(sourceUri)
+      return
+    }
+
+    if (needsResetupScripts) {
+      // onPageStarted re-injects scripts, so a reload is required when only the scripts changed.
+      needsResetupScripts = false
+      webView.reload()
+    }
+  }
+
+  fun forceReload() {
+    webView.post {
+      if (webView.url != null) {
+        webView.reload()
+      } else {
+        source?.uri?.let { webView.loadUrl(it) }
+      }
+    }
+  }
+
+  internal fun onViewDestroys() {
+    webView.removeJavascriptInterface("ReactNativeWebView")
+    webView.removeJavascriptInterface("ExpoDomWebViewBridge")
+    removeAllViews()
+    webView.destroy()
+    DomWebViewRegistry.remove(webViewId)
+  }
+
+  fun setSource(source: DomWebViewSource) {
+    this.source = source
+  }
+
+  fun setInjectedJS(script: String?) {
+    injectedJS = if (!script.isNullOrEmpty()) {
+      "(function() { $script; })();true;"
+    } else {
+      null
+    }
+    needsResetupScripts = true
+  }
+
+  fun setInjectedJSBeforeContentLoaded(script: String?) {
+    injectedJSBeforeContentLoaded = if (!script.isNullOrEmpty()) {
+      "(function() { $script; })();true;"
+    } else {
+      null
+    }
+    needsResetupScripts = true
+  }
+
+  fun setInjectedJavaScriptObject(source: String) {
+    rncWebViewBridge.injectedObjectJson = source
+  }
+
+  fun injectJavaScript(script: String) {
+    webView.post {
+      webView.evaluateJavascript(script, null)
+    }
+  }
+
+  fun dispatchMessageEvent(message: String) {
+    webView.post {
+      val messageEvent = OnMessageEvent(
+        title = webView.title ?: "",
+        url = webView.url ?: "",
+        data = message
+      )
+      onMessage.invoke(messageEvent)
+    }
+  }
+
+  fun evalSync(data: String): String {
+    if (!useExpoModulesBridge) {
+      return "{\"isPromise\":false,\"value\":null}"
+    }
+    val json = JSONObject(data)
+    val deferredId = json.getInt("deferredId")
+    val source = json.getString("source")
+    return runBlocking {
+      nativeJsiEvalSync(deferredId, source)
+    }
+  }
+
+  fun scrollTo(param: ScrollToParam) {
+    webView.post {
+      if (!param.animated) {
+        webView.scrollTo(param.x.toInt(), param.y.toInt())
+        return@post
+      }
+
+      val duration = 250L
+      val animatorX = ObjectAnimator.ofInt(webView, "scrollX", webView.scrollX, param.x.toInt())
+      animatorX.setDuration(duration)
+      val animatorY = ObjectAnimator.ofInt(webView, "scrollY", webView.scrollY, param.y.toInt())
+      animatorY.setDuration(duration)
+      animatorX.start()
+      animatorY.start()
+    }
+  }
+
+  // endregion Public methods
+
+  // region Override methods
+
+  override fun onTouch(view: View?, event: MotionEvent?): Boolean {
+    if (nestedScrollEnabled) {
+      requestDisallowInterceptTouchEvent(true)
+    }
+    return false
+  }
+
+  // region Override methods
+
+  // region Internals
+
+  @SuppressLint("SetJavaScriptEnabled")
+  private fun createWebView(): WebView {
+    return WebView(context).apply {
+      setBackgroundColor(Color.TRANSPARENT)
+      settings.javaScriptEnabled = true
+      // API 30+ default disables file access; DOM bundles need it for sibling assets.
+      settings.allowFileAccess = true
+      settings.allowFileAccessFromFileURLs = true
+      webViewClient = createWebViewClient()
+      addJavascriptInterface(rncWebViewBridge, "ReactNativeWebView")
+      addJavascriptInterface(DomWebViewBridge(this@DomWebView), "ExpoDomWebViewBridge")
+      setOnTouchListener(this@DomWebView)
+    }
+  }
+
+  private fun createWebViewClient() = object : WebViewClient() {
+    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+      super.onPageStarted(view, url, favicon)
+      if (this@DomWebView.useExpoModulesBridge) {
+        view?.evaluateJavascript(INSTALL_GLOBALS_SCRIPT.replace("\"%%WEBVIEW_ID%%\"", webViewId.toString()), null)
+      }
+      this@DomWebView.injectedJSBeforeContentLoaded?.let { script ->
+        view?.evaluateJavascript(script, null)
+      }
+    }
+
+    override fun onPageFinished(view: WebView?, url: String?) {
+      super.onPageFinished(view, url)
+      this@DomWebView.injectedJS?.let {
+        injectJavaScript(it)
+      }
+    }
+
+    override fun onRenderProcessGone(view: WebView?, detail: RenderProcessGoneDetail?): Boolean {
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        return false
+      }
+      val didCrash = detail?.didCrash() ?: false
+      if (didCrash) {
+        log.error("The WebView rendering process crashed.")
+      } else {
+        log.warn("The WebView rendering process was killed by the system.")
+      }
+      // If view is null, the WebView has already been disposed and there's
+      // nothing left to dispatch. Returning true still prevents the app crash.
+      if (view == null) {
+        return true
+      }
+      this@DomWebView.onRenderProcessGone(
+        OnRenderProcessGoneEvent(
+          url = view.url ?: "",
+          title = view.title ?: "",
+          didCrash = didCrash
+        )
+      )
+      return true
+    }
+  }
+
+  private suspend fun nativeJsiEvalSync(deferredId: Int, source: String): String {
+    return suspendCoroutine { continuation ->
+      appContext.executeOnJavaScriptThread {
+        val wrappedSource = NATIVE_EVAL_WRAPPER_SCRIPT
+          .replace("\"%%DEFERRED_ID%%\"", deferredId.toString())
+          .replace("\"%%WEBVIEW_ID%%\"", webViewId.toString())
+          .replace("\"%%SOURCE%%\"", source)
+        try {
+          val result = appContext.runtime.eval(wrappedSource)
+          continuation.resume(result.getString())
+        } catch (e: Exception) {
+          continuation.resumeWithException(e)
+        }
+      }
+    }
+  }
+
+  // endregion Internals
+
+  companion object {
+    private val log = Logger(listOf(LogHandlers.createOSLogHandler("DomWebView")))
+  }
+}

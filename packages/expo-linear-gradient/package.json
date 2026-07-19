@@ -1,0 +1,48 @@
+{
+  "name": "expo-linear-gradient",
+  "version": "56.0.4",
+  "description": "Provides a React component that renders a gradient view.",
+  "keywords": [
+    "expo",
+    "gradient",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/linear-gradient/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-linear-gradient"
+  },
+  "sideEffects": false,
+  "main": "build/LinearGradient.js",
+  "types": "build/LinearGradient.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/react-native": "^13.3.0",
+    "@types/react": "~19.2.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

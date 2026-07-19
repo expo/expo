@@ -1,0 +1,207 @@
+import { useEvent, useReleasingSharedObject, type PermissionResponse } from 'expo';
+import { useEffect, useMemo } from 'react';
+
+import type {
+  AudioMode,
+  AudioPlayerOptions,
+  AudioPlaylistOptions,
+  AudioPlaylistStatus,
+  AudioSource,
+  AudioStatus,
+  PreloadOptions,
+  RecordingOptions,
+  RecordingStatus,
+} from './Audio.types';
+import {
+  AUDIO_SAMPLE_UPDATE,
+  PLAYBACK_STATUS_UPDATE,
+  PLAYLIST_STATUS_UPDATE,
+  RECORDING_STATUS_UPDATE,
+} from './AudioEventKeys';
+import type { AudioPlayer, AudioSample } from './AudioModule.types';
+import * as AudioModule from './AudioModule.web';
+import { createRecordingOptions } from './utils/options';
+import { resolveSource, resolveSources } from './utils/resolveSource';
+
+export function createAudioPlayer(
+  source: AudioSource | string | number | null = null,
+  options: AudioPlayerOptions = {}
+): AudioPlayer {
+  const { downloadFirst = false } = options;
+
+  // If downloadFirst is true, we don't need to resolve the source, because it will be replaced once the source is downloaded.
+  // If downloadFirst is false, we resolve the source here.
+  const initialSource = downloadFirst ? null : resolveSource(source);
+  const player = new AudioModule.AudioPlayerWeb(initialSource, options);
+
+  // Preload the source and replace the player's source with the cached blob URL.
+  // Only relevant if downloadFirst is true and source is not null.
+  if (downloadFirst && source) {
+    const resolved = resolveSource(source);
+    if (resolved) {
+      AudioModule.preloadAsync(resolved).finally(() => {
+        player.replace(resolved);
+      });
+    }
+  }
+
+  return player;
+}
+
+export function useAudioPlayer(
+  source: AudioSource | string | number | null = null,
+  options: AudioPlayerOptions = {}
+): AudioModule.AudioPlayerWeb {
+  const { downloadFirst = false } = options;
+
+  // If downloadFirst is true, we don't need to resolve the source, because it will be resolved in the useEffect below.
+  // If downloadFirst is false, we resolve the source here.
+  // we call .replace() in the useEffect below to replace the source with the downloaded one.
+  const initialSource = useMemo(() => {
+    return downloadFirst ? null : resolveSource(source);
+  }, [JSON.stringify(source), downloadFirst]);
+
+  const player = useReleasingSharedObject(
+    () => new AudioModule.AudioPlayerWeb(initialSource, options),
+    [JSON.stringify(initialSource), JSON.stringify(options)]
+  );
+
+  // Handle async source resolution for downloadFirst
+  useEffect(() => {
+    if (!downloadFirst || source === null) {
+      return;
+    }
+
+    let isCancelled = false;
+    const resolved = resolveSource(source);
+
+    if (resolved) {
+      AudioModule.preloadAsync(resolved).finally(() => {
+        if (!isCancelled) {
+          player.replace(resolved);
+        }
+      });
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [player, JSON.stringify(source), downloadFirst]);
+
+  return player;
+}
+
+export function useAudioPlayerStatus(player: AudioModule.AudioPlayerWeb): AudioStatus {
+  const currentStatus = useMemo(() => player.currentStatus, [player.id]);
+  return useEvent(player, PLAYBACK_STATUS_UPDATE, currentStatus);
+}
+
+export function useAudioSampleListener(
+  player: AudioModule.AudioPlayerWeb,
+  listener: (data: AudioSample) => void
+) {
+  player.setAudioSamplingEnabled(true);
+  useEffect(() => {
+    const subscription = player.addListener(AUDIO_SAMPLE_UPDATE, listener);
+    return () => {
+      player.setAudioSamplingEnabled(false);
+      subscription.remove();
+    };
+  }, [player.id]);
+}
+
+export function useAudioRecorder(
+  options: RecordingOptions,
+  statusListener?: (status: RecordingStatus) => void
+): AudioModule.AudioRecorderWeb {
+  const platformOptions = createRecordingOptions(options);
+  const recorder = useMemo(() => {
+    return new AudioModule.AudioRecorderWeb(platformOptions);
+  }, [JSON.stringify(platformOptions)]);
+
+  useEffect(() => {
+    const subscription = recorder.addListener(RECORDING_STATUS_UPDATE, (status) => {
+      statusListener?.(status);
+    });
+    return () => {
+      recorder.clearTimeouts();
+      subscription.remove();
+    };
+  }, [recorder.id]);
+
+  return recorder;
+}
+
+export { useAudioRecorderState } from './utils/useAudioRecorderState';
+
+export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
+  return await AudioModule.setIsAudioActiveAsync(active);
+}
+
+export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
+  return await AudioModule.setAudioModeAsync(mode);
+}
+
+export async function requestRecordingPermissionsAsync(): Promise<PermissionResponse> {
+  return await AudioModule.requestRecordingPermissionsAsync();
+}
+
+export async function getRecordingPermissionsAsync(): Promise<PermissionResponse> {
+  return await AudioModule.getRecordingPermissionsAsync();
+}
+
+export function useAudioPlaylist(options: AudioPlaylistOptions = {}): AudioModule.AudioPlaylistWeb {
+  const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+
+  const resolvedSources = useMemo(() => resolveSources(sources), [JSON.stringify(sources)]);
+
+  const playlist = useMemo(
+    () => new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin),
+    [JSON.stringify(resolvedSources), updateInterval, loop, crossOrigin]
+  );
+
+  useEffect(() => {
+    return () => playlist.destroy();
+  }, [playlist]);
+
+  return playlist;
+}
+
+export function useAudioPlaylistStatus(
+  playlist: AudioModule.AudioPlaylistWeb
+): AudioPlaylistStatus {
+  const currentStatus = useMemo(() => playlist.currentStatus, [playlist.id]);
+  return useEvent(playlist, PLAYLIST_STATUS_UPDATE, currentStatus);
+}
+
+export function createAudioPlaylist(
+  options: AudioPlaylistOptions = {}
+): AudioModule.AudioPlaylistWeb {
+  const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+  const resolvedSources = resolveSources(sources);
+  return new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin);
+}
+
+export function preload(source: AudioSource, _options: PreloadOptions = {}): void {
+  const resolved = resolveSource(source);
+  if (!resolved) return;
+  AudioModule.preload(resolved);
+}
+
+export function clearPreloadedSource(source: AudioSource): void {
+  const resolved = resolveSource(source);
+  if (!resolved) return;
+  AudioModule.clearPreloadedSource(resolved);
+}
+
+export function clearAllPreloadedSources(): void {
+  AudioModule.clearAllPreloadedSources();
+}
+
+export function getPreloadedSources(): string[] {
+  return AudioModule.getPreloadedSources();
+}
+
+export { useAudioStream } from './AudioStream.web';
+
+export { AudioModule };

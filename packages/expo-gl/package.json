@@ -1,0 +1,72 @@
+{
+  "name": "expo-gl",
+  "version": "56.0.5",
+  "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
+  "keywords": [
+    "expo",
+    "gl",
+    "glview",
+    "react-native",
+    "webgl"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/gl-view/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-gl"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "test:snapshots": "jest --updateSnapshot",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/invariant": "^2.2.33",
+    "@types/offscreencanvas": "2019.6.4",
+    "@types/react": "~19.2.0",
+    "@types/react-test-renderer": "^19.1.0",
+    "@types/webgl2": "^0.0.6",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "react-test-renderer": "19.2.0"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-native": "*",
+    "react-native-reanimated": "*",
+    "react-native-web": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-web": {
+      "optional": true
+    }
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
+  }
+}

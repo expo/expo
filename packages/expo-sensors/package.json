@@ -1,0 +1,60 @@
+{
+  "name": "expo-sensors",
+  "version": "56.0.5",
+  "description": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
+  "keywords": [
+    "accelerometer",
+    "barometer",
+    "devicemotion",
+    "expo",
+    "gyroscope",
+    "lightsensor",
+    "magnetometer",
+    "pedometer",
+    "react-native",
+    "sensors"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/sensors/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-sensors"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/invariant": "^2.2.33",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
+  }
+}

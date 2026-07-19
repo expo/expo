@@ -1,0 +1,31 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.1'
+
+expoModule {
+  canBePublished false
+}
+
+android {
+  namespace "expo.modules.easclient"
+  defaultConfig {
+    versionCode 1
+    versionName "56.0.1"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+  testOptions {
+    unitTests.includeAndroidResources = true
+  }
+}
+
+dependencies {
+  androidTestImplementation 'org.amshove.kluent:kluent-android:1.68'
+  androidTestImplementation 'io.mockk:mockk-android:1.12.3'
+  androidTestImplementation 'androidx.test:runner:1.7.0'
+  androidTestImplementation 'androidx.test:core:1.7.0'
+  androidTestImplementation 'androidx.test:rules:1.7.0'
+}

@@ -1,0 +1,16 @@
+{
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "eslint.workingDirectories": [{ "pattern": "*" }],
+  "search.exclude": {
+    "packages/**/build": true,
+    "docs/public/static/data": true
+  },
+  "search.followSymlinks": false,
+  "tailwindCSS.lint.suggestCanonicalClasses": "ignore",
+  "tailwindCSS.lint.recommendedVariantOrder": "ignore",
+  "tailwindCSS.classFunctions": ["mergeClasses", "classNames", "clsx"],
+  "tailwindCSS.experimental.classRegex": [
+    ["\\b\\w*[Cc]lass(?:Name)?(?:es|s)?\\s*[:=]\\s*['\"`]([^'\"`]*)['\"`]"]
+  ]
+}

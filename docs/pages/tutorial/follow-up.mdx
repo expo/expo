@@ -1,0 +1,57 @@
+---
+title: Learning resources
+description: Explore a curated list of resources to learn about Expo and React Native.
+---
+
+import { A } from '~/ui/components/Text';
+
+Now that the example app is done, let's learn more about the technologies we used to build it.
+
+## Build your project into an app
+
+To start creating a new app on your machine you can use `npx create-expo-app@latest --template default@sdk-57` and [set up your development environment](/get-started/set-up-your-environment/) sequentially.
+
+> **Note:** During the SDK 57 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-57` to create an SDK 57 project.
+
+### Recommended resources
+
+Once you've created your new project, you can learn more about different tools and concepts that will help you on your app development journey:
+
+- [Development tools](/develop/tools/): A reference of Expo tools that will help you during various aspects of your app-building journey.
+- [Development builds](/develop/development-builds/introduction/): Using a development build allows you to gain full control over your app's build process, and to test your app on a device or simulator.
+- [Development overview](/workflow/overview/): This is a high-level overview that provides details on key concepts for developing an app with Expo and the flow of core development loop.
+- [Expo Router](/router/introduction/): We went through basics of Expo Router and implemented a tab navigator. See its documentation to learn more about the library.
+- [App icon](/develop/user-interface/splash-screen-and-app-icon/#app-icon) and [splash screen](/develop/user-interface/splash-screen-and-app-icon/#splash-screen): You can learn more about customizing your app icon and splash screen guides. Also, look through the [app config reference](/workflow/configuration) for properties you can configure in the **app.json** file.
+- [App distribution](/deploy/build-project/) and [submission](/deploy/submit-to-app-stores/) to app stores: Read these resources to learn more about how to release and submit your app to app stores once it's ready to ship.
+- [Debugging](/debugging/runtime-issues/): Sometimes things go wrong, and when they do, you can use debugging tools to find and fix errors.
+
+## Learning
+
+### React
+
+We used React components and APIs. Having a solid understanding of React is essential to using Expo to build your app. We recommend reading the React documentation's [Quick Start section](https://react.dev/learn) and the [Hooks section](https://react.dev/reference/react/hooks).
+
+### React Native
+
+While developing the tutorial app, we used React Native extensively. You can start from the [React Native basics guide](https://reactnative.dev/docs/getting-started) to learn more. Also, check out the following docs:
+
+- [View API reference](https://reactnative.dev/docs/view)
+- [Text API reference](https://reactnative.dev/docs/text)
+- [Platform specific code](https://reactnative.dev/docs/platform-specific-code)
+- [Presenting data in a list](https://reactnative.dev/docs/using-a-listview)
+
+We used Flexbox to layout our components. Check out the following recommendations to learn more about it:
+
+- [Height and Width](https://reactnative.dev/docs/height-and-width)
+- [Layout with Flexbox](https://reactnative.dev/docs/flexbox)
+
+### Gestures and animations
+
+To learn more about implementing different types of gestures and animations, we recommend the following documentation:
+
+- [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/)
+- [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started)
+
+## Join the community
+
+Join our community on <A href="https://chat.expo.dev/" shouldLeakReferrer>Discord</A> to chat with other Expo users or to ask questions.

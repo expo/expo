@@ -1,0 +1,51 @@
+plugins {
+  id 'com.android.library'
+  id 'kotlin-parcelize'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.14'
+
+android {
+  namespace "expo.modules.notifications"
+  defaultConfig {
+    versionCode 21
+    versionName '56.0.14'
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    consumerProguardFiles 'proguard-rules.pro'
+  }
+
+  buildFeatures {
+    buildConfig true
+  }
+  testOptions {
+    unitTests.all { test ->
+      testLogging {
+        outputs.upToDateWhen { false }
+        events "passed", "failed", "skipped", "standardError"
+        showCauses true
+        showExceptions true
+        showStandardStreams true
+      }
+    }
+  }
+}
+
+dependencies {
+  implementation 'androidx.core:core:1.17.0'
+  implementation 'androidx.lifecycle:lifecycle-runtime:2.9.3'
+  implementation 'androidx.lifecycle:lifecycle-process:2.9.3'
+  implementation 'androidx.lifecycle:lifecycle-common-java8:2.9.3'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+
+  // release notes in https://firebase.google.com/support/release-notes/android - cmd + f "Cloud Messaging version"
+  implementation 'com.google.firebase:firebase-messaging:25.0.1'
+
+  implementation 'me.leolin:ShortcutBadger:1.1.22@aar'
+
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
+    androidTestImplementation project(':expo-modules-test-core')
+  }
+}

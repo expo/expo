@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <queries>
+    <intent>
+      <!-- Required for text-to-speech if targeting API 30 -->
+      <action android:name="android.intent.action.TTS_SERVICE" />
+    </intent>
+  </queries>
+</manifest>

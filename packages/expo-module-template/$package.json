@@ -1,0 +1,61 @@
+{
+  "name": "<%- project.slug %>",
+  "version": "<%- project.version %>",
+  "description": "<%- project.description %>",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "node internal/module_scripts/build.js",
+    "clean": "node internal/module_scripts/clean.js",
+    "lint": "eslint src/",
+    "test": "node internal/module_scripts/test.js",
+    "prepare": "node internal/module_scripts/prepare.js",
+    "open:ios": "node internal/module_scripts/open-ios.js",
+    "open:android": "node internal/module_scripts/open-android.js"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "<%- project.slug %>",
+    "<%- project.name %>"
+  ],
+  "repository": "<%- repo %>",
+  "bugs": {
+    "url": "<%- repo %>/issues"
+  },
+  "author": "<%- author %>",
+  "license": "<%- license %>",
+  "homepage": "<%- repo %>#readme",
+  "dependencies": {},
+  "devDependencies": {
+<% if (usesExpoUI) { -%>
+    "@expo/ui": "^56.0.10",
+<% } -%>
+    "@babel/core": "^7.26.0",
+    "@types/jest": "^29.2.1",
+    "@types/react": "~19.1.1",
+    "babel-preset-expo": "~55.0.8",
+    "eslint": "~9.39.4",
+    "eslint-config-universe": "^15.0.3",
+    "expo": "^56.0.5",
+    "jest": "^29.7.0",
+    "jest-expo": "~55.0.9",
+    "prettier": "^3.0.0",
+    "react-native": "0.82.1",
+    "typescript": "^5.9.2"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "roots": [
+      "<rootDir>/src"
+    ]
+  },
+  "peerDependencies": {
+<% if (usesExpoUI) { -%>
+    "@expo/ui": "*",
+<% } -%>
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

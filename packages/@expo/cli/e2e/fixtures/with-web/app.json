@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "android": {
+      "package": "com.example.minimal"
+    },
+    "ios": {
+      "bundleIdentifier": "com.example.minimal"
+    },
+    "web": {
+      "bundler": "webpack"
+    },
+    "experiments": {
+      "autolinkingModuleResolution": true
+    }
+  }
+}

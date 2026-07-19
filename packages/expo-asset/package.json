@@ -1,0 +1,79 @@
+{
+  "name": "expo-asset",
+  "version": "56.0.15",
+  "description": "An Expo universal module to download assets and pass them into other APIs",
+  "keywords": [
+    "asset",
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/asset/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-asset"
+  },
+  "sideEffects": [
+    "*.fx.js",
+    "*.fx.web.js"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js",
+    "./tools/hashAssetFiles": "./tools/hashAssetFiles.js",
+    "./package.json": "./package.json",
+    "./plugin": "./plugin/build/index.js",
+    ".": {
+      "react-server": {
+        "types": {
+          "expo-source": "./src/index.server.ts",
+          "default": "./build/index.server.d.ts"
+        },
+        "expo-source": "./src/index.server.ts",
+        "default": "./build/index.server.js"
+      },
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    }
+  },
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
+  "dependencies": {
+    "@expo/image-utils": "workspace:^0.10.1",
+    "expo-constants": "workspace:~56.0.16"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "^13.3.0",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "@types/react-native__assets": "^1.0.3",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

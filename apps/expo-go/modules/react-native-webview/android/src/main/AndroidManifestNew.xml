@@ -1,0 +1,26 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <queries>
+    <intent>
+      <action android:name="org.chromium.intent.action.PAY"/>
+    </intent>
+    <intent>
+      <action android:name="org.chromium.intent.action.IS_READY_TO_PAY"/>
+    </intent>
+    <intent>
+      <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS"/>
+    </intent>
+  </queries>
+   
+  <application>
+    <provider
+      android:name=".RNCWebViewFileProvider"
+      android:authorities="${applicationId}.fileprovider"
+      android:exported="false"
+      android:grantUriPermissions="true">
+      <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_provider_paths" />
+    </provider>
+  </application>
+</manifest>

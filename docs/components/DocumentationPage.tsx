@@ -1,0 +1,428 @@
+import { mergeClasses } from '@expo/styleguide';
+import { breakpoints } from '@expo/styleguide-base';
+import { useRouter } from 'next/compat/router';
+import dynamic from 'next/dynamic';
+import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
+
+import { getLocaleFromPath } from '~/common/i18n';
+import * as RoutesUtils from '~/common/routes';
+import {
+  appendSectionToRoute,
+  getBreadcrumbTrail,
+  isRouteActive,
+  localizeRoutes,
+} from '~/common/routes';
+import { versionToText, throttle } from '~/common/utilities';
+import * as WindowUtils from '~/common/window';
+import DocumentationHead from '~/components/DocumentationHead';
+import DocumentationNestedScrollLayout, {
+  DocumentationNestedScrollLayoutHandles,
+} from '~/components/DocumentationNestedScrollLayout';
+import { buildBreadcrumbListSchema, buildTechArticleSchema } from '~/constants/structured-data';
+import { usePageApiVersion } from '~/providers/page-api-version';
+import versions from '~/public/static/constants/versions.json';
+import { PageMetadata } from '~/types/common';
+import { AskPageAILoading } from '~/ui/components/AskPageAI/AskPageAILoading';
+import { Footer } from '~/ui/components/Footer';
+import { Header } from '~/ui/components/Header';
+import { InlineHelp } from '~/ui/components/InlineHelp';
+import { PageHeader } from '~/ui/components/PageHeader';
+import { Separator } from '~/ui/components/Separator';
+import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
+import { StructuredData } from '~/ui/components/StructuredData';
+import {
+  TableOfContentsHandles,
+  TableOfContentsWithManager,
+} from '~/ui/components/TableOfContents';
+import { A } from '~/ui/components/Text';
+
+const { LATEST_VERSION } = versions;
+
+const AskPageAILazyMount = dynamic(() => import('~/ui/components/AskPageAI/AskPageAILazyMount'), {
+  ssr: false,
+  loading: () => <AskPageAILoading />,
+});
+
+export type DocPageProps = PropsWithChildren<PageMetadata>;
+
+export default function DocumentationPage({
+  title,
+  description,
+  packageName,
+  cliVersion,
+  sourceCodeUrl,
+  iconUrl,
+  children,
+  hideFromSearch,
+  platforms,
+  hideTOC,
+  modificationDate,
+  searchRank,
+  searchPosition,
+}: DocPageProps) {
+  const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
+  const [isAskAIVisible, setAskAIVisible] = useState(false);
+  const [hasActivatedAskAI, setHasActivatedAskAI] = useState(false);
+  const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isAskAIExpanded, setAskAIExpanded] = useState(false);
+  const [didChatForceSidebarCollapse, setDidChatForceSidebarCollapse] = useState(false);
+  const [isImmersiveMode, setImmersiveMode] = useState(false);
+  const { version } = usePageApiVersion();
+  const router = useRouter();
+
+  const layoutRef = useRef<DocumentationNestedScrollLayoutHandles | null>(null);
+  const tableOfContentsRef = useRef<TableOfContentsHandles>(null);
+
+  const pathname = router?.pathname ?? '/';
+  const locale = getLocaleFromPath(pathname);
+  const routes = localizeRoutes(RoutesUtils.getRoutes(pathname, version), locale);
+  const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
+  const breadcrumbTrail = getBreadcrumbTrail(routes, pathname);
+  const breadcrumbSchema = buildBreadcrumbListSchema(breadcrumbTrail);
+  const canonicalUrl =
+    version !== 'unversioned' && !RoutesUtils.isInternalPath(pathname)
+      ? RoutesUtils.getCanonicalUrl(pathname)
+      : undefined;
+  const techArticleSchema =
+    title && canonicalUrl
+      ? buildTechArticleSchema({ title, description, modificationDate, url: canonicalUrl })
+      : null;
+  const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
+  const currentPath = router?.asPath ?? '';
+  const markdownPath = RoutesUtils.getMarkdownPath(currentPath);
+  const isLatestSdkPage = currentPath.startsWith('/versions/latest/sdk/');
+  const isLatestConfigPage = currentPath.startsWith('/versions/latest/config/');
+  const isAskAIEligiblePage = isLatestSdkPage || isLatestConfigPage;
+  const askAIButtonVariant = isLatestConfigPage ? 'config' : 'default';
+
+  const handleAskAIExpandedChange = useCallback(
+    (expanded: boolean) => {
+      setAskAIExpanded(expanded);
+      if (expanded) {
+        const shouldCollapseSidebar = !isSidebarCollapsed && !isImmersiveMode;
+        setDidChatForceSidebarCollapse(shouldCollapseSidebar);
+        if (shouldCollapseSidebar) {
+          setSidebarCollapsed(true);
+        }
+        return;
+      }
+
+      if (didChatForceSidebarCollapse) {
+        setDidChatForceSidebarCollapse(false);
+        if (!isImmersiveMode) {
+          setSidebarCollapsed(false);
+        }
+      }
+    },
+    [didChatForceSidebarCollapse, isImmersiveMode, isSidebarCollapsed]
+  );
+
+  useEffect(() => {
+    if (!isAskAIEligiblePage && isAskAIVisible) {
+      setAskAIVisible(false);
+      handleAskAIExpandedChange(false);
+    }
+  }, [handleAskAIExpandedChange, isAskAIEligiblePage, isAskAIVisible]);
+
+  const handleAskAIChatClose = () => {
+    handleAskAIExpandedChange(false);
+    setAskAIVisible(false);
+  };
+  const handleAskAIMinimize = () => {
+    handleAskAIExpandedChange(false);
+    setAskAIVisible(false);
+  };
+  const handleAskAIToggle = () => {
+    if (!isAskAIEligiblePage) {
+      return;
+    }
+
+    const nextVisibility = !isAskAIVisible;
+    setAskAIVisible(nextVisibility);
+    handleAskAIExpandedChange(false);
+  };
+
+  const enterImmersiveMode = useCallback(() => {
+    setImmersiveMode(true);
+    setSidebarCollapsed(true);
+  }, []);
+
+  const exitImmersiveMode = useCallback(() => {
+    setImmersiveMode(false);
+    if (!didChatForceSidebarCollapse) {
+      setSidebarCollapsed(false);
+    }
+  }, [didChatForceSidebarCollapse]);
+
+  const toggleImmersiveMode = useCallback(() => {
+    if (isImmersiveMode) {
+      exitImmersiveMode();
+    } else {
+      enterImmersiveMode();
+    }
+  }, [enterImmersiveMode, exitImmersiveMode, isImmersiveMode]);
+
+  const handleSidebarToggle = useCallback(() => {
+    setDidChatForceSidebarCollapse(false);
+    if (isImmersiveMode) {
+      setSidebarCollapsed(false);
+      exitImmersiveMode();
+      return;
+    }
+
+    if (isSidebarCollapsed) {
+      setSidebarCollapsed(false);
+      return;
+    }
+
+    enterImmersiveMode();
+  }, [enterImmersiveMode, exitImmersiveMode, isImmersiveMode, isSidebarCollapsed]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const stored = window.sessionStorage.getItem('expo-docs-ask-ai-visible');
+    if (stored === 'true') {
+      setAskAIVisible(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    window.sessionStorage.setItem('expo-docs-ask-ai-visible', String(isAskAIVisible));
+  }, [isAskAIVisible]);
+
+  useEffect(() => {
+    if (isAskAIVisible) {
+      setHasActivatedAskAI(true);
+    }
+  }, [isAskAIVisible]);
+
+  useEffect(() => {
+    if (!layoutRef.current) {
+      return;
+    }
+
+    layoutRef.current.contentRef.current?.getScrollRef().current?.focus();
+
+    const handleRouteChangeStart = (url: string) => {
+      if (
+        RoutesUtils.getPageSection(pathname) !== RoutesUtils.getPageSection(url) ||
+        pathname === '/' ||
+        !layoutRef.current
+      ) {
+        window.__sidebarScroll = 0;
+      } else {
+        window.__sidebarScroll = layoutRef.current.getSidebarScrollTop();
+      }
+    };
+
+    router?.events.on('routeChangeStart', handleRouteChangeStart);
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      router?.events.off('routeChangeStart', handleRouteChangeStart);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [layoutRef, tableOfContentsRef, router?.events, pathname]);
+
+  const handleResize = () => {
+    if (WindowUtils.getViewportSize().width >= breakpoints.medium + 124) {
+      setMobileMenuVisible(false);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const handleContentScroll = useMemo(
+    () =>
+      throttle((contentScrollPosition: number) => {
+        window.requestAnimationFrame(() => {
+          if (tableOfContentsRef.current?.handleContentScroll) {
+            tableOfContentsRef.current.handleContentScroll(contentScrollPosition);
+          }
+        });
+      }, 150),
+    []
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) {
+        return;
+      }
+
+      let isMac = false;
+      if (typeof navigator !== 'undefined') {
+        if ('userAgentData' in navigator && navigator.userAgentData?.platform) {
+          isMac = navigator.userAgentData.platform === 'macOS';
+        } else if (navigator.userAgent) {
+          isMac = navigator.userAgent.toLowerCase().includes('mac');
+        }
+      }
+      const isModPressed = isMac ? event.metaKey : event.ctrlKey;
+
+      if (isModPressed && event.shiftKey && event.key === 'Enter') {
+        event.preventDefault();
+        toggleImmersiveMode();
+        return;
+      }
+
+      if (event.key === 'Escape' && isImmersiveMode) {
+        exitImmersiveMode();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeydown);
+    return () => {
+      window.removeEventListener('keydown', handleKeydown);
+    };
+  }, [exitImmersiveMode, isImmersiveMode, toggleImmersiveMode]);
+
+  const sidebarElement = <Sidebar routes={routes} />;
+  const headerElement = (
+    <Header
+      sidebar={sidebarElement}
+      sidebarActiveGroup={sidebarActiveGroup}
+      isMobileMenuVisible={isMobileMenuVisible}
+      setMobileMenuVisible={newState => {
+        setMobileMenuVisible(newState);
+      }}
+    />
+  );
+
+  const flattenStructure = routes
+    .map(route => appendSectionToRoute(route))
+    .flat()
+    .map(route => {
+      if (route?.type === 'page') {
+        return route;
+      } else {
+        const sectionRoutes = appendSectionToRoute(route);
+        if (Array.isArray(sectionRoutes)) {
+          return sectionRoutes
+            .map(subRoute =>
+              subRoute?.type === 'page' ? subRoute : appendSectionToRoute(subRoute)
+            )
+            .flat();
+        }
+        return sectionRoutes;
+      }
+    })
+    .flat();
+
+  const pageIndex = flattenStructure.findIndex(page =>
+    isRouteActive(page, router?.asPath, router?.pathname)
+  );
+
+  const previousPage = flattenStructure[pageIndex - 1];
+  const nextPage = flattenStructure[pageIndex + 1];
+
+  const hideSidebarRight = hideTOC ?? false;
+  const shouldHideSidebarRight = hideSidebarRight || isImmersiveMode;
+  const isNavigationCollapsed = isSidebarCollapsed || isImmersiveMode;
+
+  return (
+    <>
+      <DocumentationNestedScrollLayout
+        layoutRef={layoutRef}
+        header={headerElement}
+        sidebar={sidebarElement}
+        sidebarRight={<TableOfContentsWithManager ref={tableOfContentsRef} />}
+        sidebarActiveGroup={sidebarActiveGroup}
+        hideTOC={shouldHideSidebarRight}
+        isMobileMenuVisible={isMobileMenuVisible}
+        onContentScroll={handleContentScroll}
+        sidebarScrollPosition={sidebarScrollPosition}
+        onSidebarToggle={handleSidebarToggle}
+        isSidebarCollapsed={isNavigationCollapsed}
+        isChatExpanded={isAskAIExpanded}>
+        {breadcrumbSchema && <StructuredData id="breadcrumb-list" data={breadcrumbSchema} />}
+        {techArticleSchema && <StructuredData id="tech-article" data={techArticleSchema} />}
+        <DocumentationHead
+          title={title}
+          description={description}
+          canonicalUrl={canonicalUrl}
+          markdownPath={markdownPath}
+          locale={locale}>
+          {hideFromSearch !== true && (
+            <meta
+              name="docsearch:version"
+              content={RoutesUtils.isReferencePath(pathname) ? version : 'none'}
+            />
+          )}
+          {(version === 'unversioned' ||
+            RoutesUtils.isPreviewPath(pathname) ||
+            RoutesUtils.isArchivePath(pathname) ||
+            RoutesUtils.isInternalPath(pathname)) && <meta name="robots" content="noindex" />}
+          {searchRank && <meta name="searchRank" content={String(searchRank)} />}
+          {searchPosition && <meta name="searchPosition" content={String(searchPosition)} />}
+        </DocumentationHead>
+        <div
+          className={mergeClasses(
+            'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
+            'bg-linear-to-b from-default to-transparent opacity-90'
+          )}
+        />
+        <main className={mergeClasses('mx-auto px-14 pt-10', 'max-lg:px-4 max-lg:pt-5')}>
+          <p className="sr-only">
+            This documentation is available as Markdown for AI agents and LLMs. See the{' '}
+            <A openInNewTab href="/llms.txt">
+              full Markdown index
+            </A>{' '}
+            or append .md to any documentation URL.
+          </p>
+          {version && version === 'unversioned' && (
+            <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
+              This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
+              <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
+              {versionToText(LATEST_VERSION)}).
+            </InlineHelp>
+          )}
+          {title && (
+            <PageHeader
+              title={title}
+              description={description}
+              cliVersion={cliVersion}
+              sourceCodeUrl={sourceCodeUrl}
+              packageName={packageName}
+              iconUrl={iconUrl}
+              platforms={platforms}
+              showAskAIButton={isAskAIEligiblePage}
+              onAskAIClick={handleAskAIToggle}
+              isAskAIVisible={isAskAIVisible}
+              askAIButtonVariant={askAIButtonVariant}
+            />
+          )}
+          {title && <Separator />}
+          {children}
+        </main>
+        <Footer
+          title={title}
+          sourceCodeUrl={sourceCodeUrl}
+          packageName={packageName}
+          previousPage={previousPage}
+          nextPage={nextPage}
+          modificationDate={modificationDate}
+        />
+      </DocumentationNestedScrollLayout>
+      {isAskAIEligiblePage && hasActivatedAskAI && (
+        <AskPageAILazyMount
+          onClose={handleAskAIChatClose}
+          onMinimize={handleAskAIMinimize}
+          pageTitle={title}
+          isExpoSdkPage={isLatestSdkPage}
+          isVisible={isAskAIVisible}
+          isExpanded={isAskAIExpanded}
+          onExpandedChange={handleAskAIExpandedChange}
+        />
+      )}
+    </>
+  );
+}

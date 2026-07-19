@@ -1,0 +1,206 @@
+name: PR labeler
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pr-labeler.yml
+      - apps/bare-expo/**
+      - apps/test-suite/**
+      - packages/**
+      - pnpm-lock.yaml
+      # When adding new paths, also update the paths of the "Get the base commit" step below
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - .github/workflows/pr-labeler.yml
+      - apps/bare-expo/**
+      - apps/test-suite/**
+      - packages/**
+      - pnpm-lock.yaml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-suite-fingerprint:
+    runs-on: ubuntu-24.04
+    if: ${{ github.repository == 'expo/expo' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push') }}
+    # REQUIRED: limit concurrency when pushing main(default) branch to prevent conflict for this action to update its fingerprint database
+    concurrency: fingerprint-${{ github.event_name != 'pull_request' && 'main' || github.run_id }}
+    permissions:
+      # REQUIRED: Allow comments of PRs
+      pull-requests: write
+      # REQUIRED: Allow updating fingerprint in action caches
+      actions: write
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin main:main --depth 100
+        if: github.event_name == 'pull_request'
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build app dependencies
+        run: pnpm turbo build --filter bare-expo...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: Get the base commit
+        id: base-commit
+        run: |
+          # Since we limit this pr-labeler workflow only triggered from limited paths, we should use custom base commit
+          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/pr-labeler.yml apps/bare-expo apps/test-suite packages pnpm-lock.yaml) >> "$GITHUB_OUTPUT"
+      - name: 📷 Check fingerprint
+        id: fingerprint
+        uses: expo/actions/fingerprint@150c682164cec02a2d43347b70906d234d33f575 # main
+        with:
+          working-directory: apps/bare-expo
+          previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
+          fingerprint-db-cache-path: .fingerprint.db
+          fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
+
+      - name: 👀 Debug fingerprint
+        run: |
+          echo "previousGitCommit=${{ steps.fingerprint.outputs.previous-git-commit }} currentGitCommit=${{ steps.fingerprint.outputs.current-git-commit }}"
+          echo "isPreviousFingerprintEmpty=${{ steps.fingerprint.outputs.previous-fingerprint == '' }}"
+
+      - name: 🏷️ Labeling PR
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff == '[]' }}
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ['bot: fingerprint changed']
+              })
+            } catch (e) {
+              if (e.status != 404) {
+                throw e;
+              }
+            }
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['bot: fingerprint compatible']
+            })
+      - name: 🏷️ Labeling PR
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' }}
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ['bot: fingerprint compatible']
+              })
+            } catch (e) {
+              if (e.status != 404) {
+                throw e;
+              }
+            }
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['bot: fingerprint changed']
+            })
+
+      - name: 🔍 Find old comment if it exists
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
+        if: ${{ github.event_name == 'pull_request' }}
+        id: old_comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'expo-bot'
+          body-includes: <!-- pr-labeler comment -->
+      - name: 💬 Add comment with fingerprint
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' && steps.old_comment.outputs.comment-id == '' }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const state = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/fingerprint-state.json', 'utf8'));
+            const diff = JSON.stringify(state.diff, null, 2);
+            const body = `<!-- pr-labeler comment -->
+            The Pull Request introduced fingerprint changes against the base commit: ${state.previousGitCommitHash}
+            <details><summary>Fingerprint diff</summary>
+
+            \`\`\`json
+            ${diff}
+            \`\`\`
+
+            </details>
+
+            ---
+            *Generated by [PR labeler](https://github.com/expo/expo/actions/workflows/pr-labeler.yml) 🤖*
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body,
+            });
+      - name: 💬 Update comment with fingerprint
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' && steps.old_comment.outputs.comment-id != '' }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const state = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/fingerprint-state.json', 'utf8'));
+            const diff = JSON.stringify(state.diff, null, 2);
+            const body = `<!-- pr-labeler comment -->
+            The Pull Request introduced fingerprint changes against the base commit: ${state.previousGitCommitHash}
+            <details><summary>Fingerprint diff</summary>
+
+            \`\`\`json
+            ${diff}
+            \`\`\`
+
+            </details>
+
+            ---
+            *Generated by [PR labeler](https://github.com/expo/expo/actions/workflows/pr-labeler.yml) 🤖*
+            `;
+
+            github.rest.issues.updateComment({
+              issue_number: context.issue.number,
+              comment_id: '${{ steps.old_comment.outputs.comment-id }}',
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body,
+            });
+      - name: 💬 Delete comment with fingerprint
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff == '[]' && steps.old_comment.outputs.comment-id != '' }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.deleteComment({
+              issue_number: context.issue.number,
+              comment_id: '${{ steps.old_comment.outputs.comment-id }}',
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });

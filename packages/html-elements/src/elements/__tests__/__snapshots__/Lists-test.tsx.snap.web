@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders UL nested in LI 1`] = `
+<li
+  className="css-view-g5y9jx"
+  dir={null}
+  ref={[Function]}
+  role="listitem"
+>
+  <li
+    className="css-text-146c3p1"
+    dir="auto"
+    ref={[Function]}
+    role="listitem"
+  >
+    item
+  </li>
+  <ul
+    className="css-view-g5y9jx"
+    dir={null}
+    ref={[Function]}
+    role="list"
+  >
+    <li
+      className="css-text-146c3p1"
+      dir="auto"
+      ref={[Function]}
+      role="listitem"
+    >
+      item
+    </li>
+  </ul>
+</li>
+`;

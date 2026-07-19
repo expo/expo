@@ -1,0 +1,187 @@
+import type { ExpoConfig } from '@expo/config';
+
+import { createCorsMiddleware, _isLocalHostname } from '../CorsMiddleware';
+import type { ServerNext, ServerRequest, ServerResponse } from '../server.types';
+
+describe(createCorsMiddleware, () => {
+  const config: ExpoConfig = { name: 'test', slug: 'test' };
+  const middleware = createCorsMiddleware(config);
+  const asRequest = (req: Partial<ServerRequest>) => req as ServerRequest;
+
+  let resHeaders: Record<string, string> = {};
+  let res: ServerResponse;
+  let next: jest.Mock<ServerNext>;
+
+  beforeEach(() => {
+    resHeaders = {};
+    res = {
+      setHeader: (key: string, value: string) => {
+        resHeaders[key] = value;
+      },
+    } as unknown as ServerResponse;
+    next = jest.fn();
+    jest.resetAllMocks();
+  });
+
+  it('should pass through requests without origin', () => {
+    middleware(asRequest({ url: 'http://example.com:8081/', headers: {} }), res, next);
+    expect(resHeaders['Access-Control-Allow-Origin']).toBeUndefined();
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+
+  it('should allow CORS from "devtools"', () => {
+    const origin = 'http://devtools/';
+    middleware(asRequest({ url: 'http://devtools:8082/', headers: { origin } }), res, next);
+    expect(resHeaders['Access-Control-Allow-Origin']).toBe(origin);
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+
+  it('should skip CORS headers from "localhost"', () => {
+    const origin = 'http://localhost:8082/';
+    middleware(asRequest({ url: 'http://localhost:8082/', headers: { origin } }), res, next);
+    expect(resHeaders['Access-Control-Allow-Origin']).toBe(undefined);
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+
+  it('should allow requests from origin same as host', () => {
+    const host = '192.168.1.1:8081';
+    const origin = 'http://192.168.1.1:8081/';
+    middleware(
+      asRequest({ url: 'http://192.168.1.1:8081/', headers: { host, origin } }),
+      res,
+      next
+    );
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+
+  it('should allow CORS from devtools://devtools', () => {
+    const origin = 'devtools://devtools';
+    middleware(asRequest({ url: 'http://localhost:8081/', headers: { origin } }), res, next);
+    expect(resHeaders['Access-Control-Allow-Origin']).toBe(origin);
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+
+  it(`should allow CORS from expo-router's origin`, () => {
+    const origin = 'https://example.org';
+    const middleware = createCorsMiddleware({ ...config, extra: { router: { origin } } });
+    middleware(asRequest({ url: 'http://localhost:8081/', headers: { origin } }), res, next);
+    expect(resHeaders['Access-Control-Allow-Origin']).toBe(origin);
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+
+  it(`should allow CORS from expo-router's headOrigin`, () => {
+    const headOrigin = 'https://example.org';
+    const middleware = createCorsMiddleware({ ...config, extra: { router: { headOrigin } } });
+    middleware(
+      asRequest({ url: 'http://localhost:8081/', headers: { origin: headOrigin } }),
+      res,
+      next
+    );
+    expect(resHeaders['Access-Control-Allow-Origin']).toBe(headOrigin);
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+
+  it(`should allow CORS from expo-router's origin to a full URL request`, () => {
+    // Though browsers don't send the full URL in the Origin header, we should support it
+    const origin = 'https://example.org';
+    const middleware = createCorsMiddleware({ ...config, extra: { router: { origin } } });
+    middleware(
+      asRequest({ url: 'http://localhost:8081/foo/bar?alpha=beta#gamma', headers: { origin } }),
+      res,
+      next
+    );
+    expect(resHeaders['Access-Control-Allow-Origin']).toBe(origin);
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+
+  it('should prevent metro reset the hardcoded CORS header', () => {
+    const origin = 'http://devtools';
+    middleware(
+      asRequest({ url: 'http://devtools:8081/index.map', headers: { origin } }),
+      res,
+      next
+    );
+    // Simulate metro to reset the hardcoded CORS header
+    res.setHeader('Access-Control-Allow-Origin', 'devtools://devtools');
+
+    expect(resHeaders['Access-Control-Allow-Origin']).toBe(origin);
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+
+  it('should show explicit error from disallowed CORS', () => {
+    const origin = 'https://example.org/';
+    middleware(asRequest({ url: 'http://localhost:8081/', headers: { origin } }), res, next);
+    expect(resHeaders['Access-Control-Allow-Origin']).toBeUndefined();
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error);
+  });
+
+  it('should show explicit error from disallowed CORS to a full URL request', () => {
+    // Though browsers don't send the full URL in the Origin header, we should support it
+    const origin = 'https://example.org/foo/bar?alpha=beta#gamma';
+    middleware(
+      asRequest({ url: 'http://localhost:8081/foo/bar?alpha=beta#gamma', headers: { origin } }),
+      res,
+      next
+    );
+    expect(resHeaders['Access-Control-Allow-Origin']).toBeUndefined();
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error);
+  });
+
+  it('Advanced CORS like preflight requests are not supported', () => {
+    const origin = 'http://devtools';
+    middleware(
+      asRequest({
+        url: 'http://devtools:8081/',
+        headers: { origin, 'Access-Control-Request-Method': 'DELETE' },
+        method: 'OPTIONS',
+      }),
+      res,
+      next
+    );
+    expect(resHeaders['Access-Control-Allow-Origin']).toBe(origin);
+    expect(resHeaders['Access-Control-Allow-Methods']).toBeUndefined();
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+  });
+});
+
+describe(_isLocalHostname, () => {
+  it('accepts localhost', () => {
+    expect(_isLocalHostname('localhost')).toBe(true);
+  });
+
+  it('accepts 127.0.0.1 and related IPs', () => {
+    expect(_isLocalHostname('127.0.0.1')).toBe(true);
+    expect(_isLocalHostname('127.255.255.255')).toBe(true);
+    // rejects invalid IP
+    expect(_isLocalHostname('127.999.999.999')).toBe(false);
+    expect(_isLocalHostname('127.0.0.999')).toBe(false);
+    // rejects unrelated IP
+    expect(_isLocalHostname('128.0.0.1')).toBe(false);
+  });
+
+  it('accepts IPv6 local address', () => {
+    expect(_isLocalHostname('::ffff:127.0.0.1')).toBe(true);
+    expect(_isLocalHostname('::ffff:127.1.1.1')).toBe(true);
+    expect(_isLocalHostname('::1')).toBe(true);
+    // rejects unrelated IPv6 addresses
+    expect(_isLocalHostname('::2')).toBe(false);
+    expect(_isLocalHostname('::ffff:0.0.0.1')).toBe(false);
+  });
+
+  it('rejects other hostnames', () => {
+    expect(_isLocalHostname('localghost')).toBe(false);
+    expect(_isLocalHostname('example.com')).toBe(false);
+  });
+});

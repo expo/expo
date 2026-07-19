@@ -1,0 +1,139 @@
+---
+title: Integrate in an existing library
+description: Learn how to integrate Expo Modules API into an existing React Native library.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Step } from '~/ui/components/Step';
+
+There are cases where you may want to integrate the Expo Modules API into an existing React Native library. For example, it might be useful to incrementally rewrite your library or to take advantage of [Android lifecycle listeners](/modules/android-lifecycle-listeners/) and [iOS AppDelegate subscribers](/modules/appdelegate-subscribers/) to automatically set up the library.
+
+This guide will help you set up your existing React Native library to access Expo Modules API.
+
+<Prerequisites>
+  <Requirement title="Create expo-module.config.json">
+    Create the [**expo-module.config.json**](/modules/module-config/) file at the root of your project and add an empty object `{}` inside it. You will update it later to enable specific features.
+
+    This file is required for [Expo Autolinking](/modules/autolinking/) to recognize your library as an Expo module and automatically link your native code.
+
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+## Add the `expo-modules-core` native dependency
+
+Add `expo-modules-core` as a dependency in your **build.gradle** and **podspec** files:
+
+<CodeBlocksTable tabs={["build.gradle", "*.podspec"]}>
+
+```groovy
+// ...
+dependencies {
+  // ...
+  implementation project(':expo-modules-core')
+}
+```
+
+```ruby
+# ...
+Pod::Spec.new do |s|
+  # ...
+  s.dependency 'ExpoModulesCore'
+end
+```
+
+</CodeBlocksTable>
+
+</Step>
+
+<Step label="2">
+
+## Add Expo packages to dependencies
+
+Add `expo` package as a peer dependency in your **package.json** — we recommend using `*` as a version range so as not to cause any duplicated packages in user's **node_modules** directory.
+
+Your library also needs to depend on `expo-modules-core` but only as a dev dependency — it's already provided in the projects depending on your library by the `expo` package with the version of core that is compatible with the specific SDK used in the project.
+
+```json package.json
+{
+  /* @hide ... */ /* @end */
+  "devDependencies": {
+    "expo-modules-core": "^X.Y.Z"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="3">
+
+## Create a native module
+
+Create Kotlin and Swift files from the templates below:
+
+<CodeBlocksTable tabs={["MyModule.kt", "MyModule.swift"]}>
+
+```kotlin
+package my.module.package
+
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+
+class MyModule : Module() {
+  override fun definition() = ModuleDefinition {
+    // Definition components go here
+  }
+}
+```
+
+```swift
+import ExpoModulesCore
+
+public class MyModule: Module {
+  public func definition() -> ModuleDefinition {
+    // Definition components go here
+  }
+}
+```
+
+</CodeBlocksTable>
+
+Then, add your classes to Android and/or iOS `modules` in the [**expo-module.config.json**](/modules/module-config/) file. Expo Autolinking will automatically link these classes as native modules in the user's project.
+
+```json expo-module.config.json
+{
+  "ios": {
+    "modules": ["MyModule"]
+  },
+  "android": {
+    "modules": ["my.module.package.MyModule"]
+  }
+}
+```
+
+If you already have an example app in your workspace, ensure that the module is linked correctly.
+
+- **On Android** the native module class will be linked automatically before building, as part of the Gradle build task.
+- **On iOS** you need to run `pod install` to link the new class.
+
+These module classes are now accessible from the JavaScript code using the `requireNativeModule` function from the `expo-modules-core` package. We recommend creating a separate file that exports the native module for simplicity.
+
+```ts MyModule.ts
+import { requireNativeModule } from 'expo-modules-core';
+
+export default requireNativeModule('MyModule');
+```
+
+</Step>
+
+Now that the class is set up and linked, you can start to implement its functionality. See the [native module API](/modules/module-api/) reference page and links to [examples](/modules/module-api/#examples) from simple to moderately complex real-world modules to understand how to use the API.

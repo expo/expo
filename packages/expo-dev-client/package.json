@@ -1,0 +1,53 @@
+{
+  "name": "expo-dev-client",
+  "version": "56.0.16",
+  "description": "Expo Development Client",
+  "keywords": [
+    "expo",
+    "expo-dev-client",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/dev-client/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-dev-client"
+  },
+  "main": "build/DevClient.js",
+  "types": "build/DevClient.d.ts",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "e2e": "expo-test-runner run-test -t e2e",
+    "latest-e2e": "expo-test-runner run-test -t latest-e2e",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
+  "dependencies": {
+    "expo-dev-launcher": "workspace:~56.0.16",
+    "expo-dev-menu": "workspace:~56.0.15",
+    "expo-dev-menu-interface": "workspace:~56.0.0",
+    "expo-manifests": "workspace:~56.0.4",
+    "expo-updates-interface": "workspace:~56.0.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*",
+    "expo-test-runner": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

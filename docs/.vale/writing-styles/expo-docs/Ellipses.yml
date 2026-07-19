@@ -1,0 +1,8 @@
+extends: existence
+message: "In general, don't use an ellipsis."
+nonword: true
+level: error
+action:
+  name: remove
+tokens:
+  - …

@@ -1,0 +1,10 @@
+diff --git a/android/gradle.properties b/android/gradle.properties
+--- a/android/gradle.properties
++++ b/android/gradle.properties
+@@ -54,3 +54,6 @@ EX_DEV_CLIENT_NETWORK_INSPECTOR=true
+
+  # Use legacy packaging to compress native libraries in the resulting APK.
+  expo.useLegacyPackaging=false
++
++ # expo-updates custom initialization
++ EX_UPDATES_CUSTOM_INIT=true

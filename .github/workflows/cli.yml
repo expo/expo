@@ -1,0 +1,321 @@
+name: CLI
+
+on:
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/cli.yml
+      - apps/router-e2e/**
+      - packages/@expo/cli/**
+      - packages/@expo/metro-runtime/**
+      - packages/@expo/metro-config/src/**
+      - packages/@expo/config/src/**
+      - packages/@expo/config-plugins/src/**
+      - packages/@expo/env/src/**
+      - packages/@expo/json-file/src/**
+      - packages/@expo/package-manager/src/**
+      - packages/@expo/prebuild-config/src/**
+      - packages/@expo/router-server/**
+      - packages/@expo/log-box/**
+      - packages/@expo/metro-file-map/**
+      - packages/create-expo/**
+      - packages/eslint-config-expo/**
+      - packages/eslint-plugin-expo/**
+      - packages/expo-router/**
+      - packages/expo-server/**
+      - pnpm-lock.yaml
+      - '!**.md'
+  pull_request:
+    paths:
+      - .github/workflows/cli.yml
+      - apps/router-e2e/**
+      - packages/@expo/cli/**
+      - packages/@expo/metro-runtime/**
+      - packages/@expo/metro-config/src/**
+      - packages/@expo/config/src/**
+      - packages/@expo/config-plugins/src/**
+      - packages/@expo/env/src/**
+      - packages/@expo/json-file/src/**
+      - packages/@expo/package-manager/src/**
+      - packages/@expo/prebuild-config/src/**
+      - packages/@expo/router-server/**
+      - packages/@expo/log-box/**
+      - packages/@expo/metro-file-map/**
+      - packages/create-expo/**
+      - packages/eslint-config-expo/**
+      - packages/eslint-plugin-expo/**
+      - packages/expo-router/**
+      - packages/expo-server/**
+      - pnpm-lock.yaml
+      - '!**.md'
+  schedule:
+    - cron: 0 14 * * *
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # JS-only jobs, so skip the ~685 MB @shopify/react-native-skia prebuilt-binary download.
+  SKIP_SKIA_DOWNLOAD: '1'
+
+jobs:
+  jest-ubuntu:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.x'
+
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🔎 Type Check CLI
+        working-directory: packages/@expo/cli
+        run: pnpm typecheck
+
+      - name: 🧪 E2E Test CLI
+        working-directory: packages/@expo/cli
+        run: pnpm test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+
+  jest-windows:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      # Change bun, npm, and pnpm caches to the much faster D:\ drive
+      # See: https://github.com/twpayne/chezmoi/pull/4064
+      BUN_INSTALL_CACHE_DIR: D:\_temp\bun
+      NPM_CACHE_LOCATION: D:\_temp\npm
+      # Change the Expo E2E project directory to the same drive as the repository,
+      # allowing to run Expo from source (avoiding Metro's multi-drive limitation)
+      EXPO_E2E_TEMP_DIR: D:\_temp\expo-e2e
+    steps:
+      - name: 🪟 Setup Windows
+        shell: bash
+        # Configure Git to use LF line endlings
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.x'
+
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🔎 Type Check CLI
+        working-directory: packages/@expo/cli
+        # TODO(cedric): expo module scripts is incompatible with Windows, forcing us to manually set up these steps instead of `pnpm typecheck`
+        run: pnpm tsc --noEmit
+
+      - name: 🧪 E2E Test CLI
+        working-directory: packages/@expo/cli
+        run: pnpm test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+
+  playwright-ubuntu:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.x'
+
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🎭 Get Playwright information
+        id: playwright-info
+        shell: bash
+        working-directory: packages/@expo/cli
+        run: |
+          echo version="$(pnpm exec playwright --version)" >> $GITHUB_OUTPUT
+      - name: 🎭 Cache Playwright browser binaries
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        id: playwright-browser-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-info.outputs.version }}
+      - name: 🎭 Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: packages/@expo/cli
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+
+      - name: 🧪 E2E (playwright) Test CLI
+        working-directory: packages/@expo/cli
+        run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+
+      - name: 🗄️ Upload playwright report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: playwright-report-ubuntu-${{ matrix.shard }}
+          path: packages/@expo/cli/playwright-report/
+          retention-days: 30
+
+  playwright-windows:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      # Change bun, npm, and pnpm caches to the much faster D:\ drive
+      # See: https://github.com/twpayne/chezmoi/pull/4064
+      BUN_INSTALL_CACHE_DIR: D:\_temp\bun
+      NPM_CACHE_LOCATION: D:\_temp\npm
+      # Change playwright browser cache to the much faster D:\ drive
+      PLAYWRIGHT_BROWSERS_PATH: D:\_temp\playwright-browsers
+      # Change the Expo E2E project directory to the same drive as the repository,
+      # allowing to run Expo from source (avoiding Metro's multi-drive limitation)
+      EXPO_E2E_TEMP_DIR: D:\_temp\expo-e2e
+    steps:
+      - name: 🪟 Setup Windows
+        shell: bash
+        # Configure Git to use LF line endlings
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.x'
+
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🎭 Get Playwright information
+        id: playwright-info
+        shell: bash
+        working-directory: packages/@expo/cli
+        run: |
+          echo version="$(pnpm exec playwright --version)" >> $GITHUB_OUTPUT
+          echo dir="$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
+      - name: 🎭 Cache Playwright browser binaries
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        id: playwright-browser-cache
+        with:
+          path: ${{ steps.playwright-info.outputs.dir }}
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-info.outputs.version }}
+      - name: 🎭 Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps chromium
+        working-directory: packages/@expo/cli
+        if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
+
+      - name: 🧪 E2E (playwright) Test CLI
+        working-directory: packages/@expo/cli
+        run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+
+      - name: 🗄️ Upload playwright report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: playwright-report-windows-${{ matrix.shard }}
+          path: packages/@expo/cli/playwright-report/
+          retention-days: 30

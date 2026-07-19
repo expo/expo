@@ -1,0 +1,155 @@
+---
+title: Introduction to EAS Observe
+sidebar_title: Introduction
+description: EAS Observe is a performance monitoring service that tracks how your app performs in production across real devices and conditions.
+searchRank: 10
+hasVideoLink: true
+---
+
+import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+> **important** **EAS Observe** is in [Open Beta](/more/release-statuses/#beta). The first 10,000 monthly active users are free. For higher usage, contact [sales@expo.dev](mailto:sales@expo.dev).
+
+**EAS Observe** is a performance monitoring service from Expo for tracking how your app performs in production. It gives you visibility into real-world startup times, rendering performance, and user experience across different devices, networks, and conditions.
+
+Debugging performance in React Native has traditionally been limited to development tools. EAS Observe focuses on production, where performance characteristics differ significantly from what you see during development.
+
+<ContentSpotlight
+  alt="EAS Observe showing cold launch and warm launch metrics with release markers across two weeks of app startup data."
+  src="/static/images/expo-observe/observe-light.webp"
+  darkSrc="/static/images/expo-observe/observe-dark.webp"
+/>
+
+<VideoBoxLink
+  videoId="5JqK9JLD140"
+  title="Watch: Introducing EAS Observe"
+  description="See how EAS Observe surfaces real-world startup and rendering performance from your production app across different devices, networks, and conditions."
+/>
+
+<br />
+
+## Quick start
+
+<Terminal
+  cmd={{
+    npm: ['# Install the library', '$ npx expo install expo-observe'],
+    yarn: ['# Install the library', '$ yarn expo install expo-observe'],
+    pnpm: ['# Install the library', '$ pnpm expo install expo-observe'],
+    bun: ['# Install the library', '$ bun expo install expo-observe'],
+  }}
+/>
+
+Wrap your root layout with the `AppMetricsRoot` component (SDK 55) or the `ObserveRoot` component (SDK 56 and later) and call `markInteractive()` when your app is ready for user input. See [Get started](/eas/observe/get-started/) for the full setup guide.
+
+## Why EAS Observe
+
+Traditional development-time profiling tools show how your app performs on your machine. EAS Observe shows how it performs for real users:
+
+- **Production performance data**: Track startup times, render performance, and bundle load times from real user sessions across a range of devices
+- **Release comparison**: See how metrics change between app versions and OTA updates to catch regressions early
+- **Session investigation**: Drill into individual user sessions to understand why certain devices or conditions lead to slower performance
+- **CLI and dashboard access**: Query metrics from the terminal with `eas observe:` commands or view them in the EAS dashboard
+
+## When to use EAS Observe
+
+| Scenario                                            | Recommendation |
+| --------------------------------------------------- | -------------- |
+| Monitor app startup performance in production       | <YesIcon />    |
+| Compare performance across releases and OTA updates | <YesIcon />    |
+| Investigate slow sessions on specific devices       | <YesIcon />    |
+| Query performance metrics from the CLI              | <YesIcon />    |
+| Development-time profiling and debugging            | <NoIcon />     |
+| Crash reporting and error tracking                  | <NoIcon />     |
+| Custom analytics and event tracking                 | <NoIcon />     |
+
+**Development-time profiling and debugging**: Use [React Native DevTools](/debugging/tools/#debugging-with-react-native-devtools) for debugging and [Expo Atlas](/guides/analyzing-bundles/) for bundle inspection.
+
+**Crash reporting and error tracking**: This is a planned addition for EAS Observe in the future. In the interim we suggest a crash reporting service such as [Sentry](/guides/using-sentry/) or [BugSnag](/guides/using-bugsnag/).
+
+**Custom analytics and event tracking**: This is a planned addition for EAS Observe in the future. In the interim, choose an analytics provider from the [React Native analytics guide](/guides/using-analytics/), for example PostHog, Amplitude, or Firebase Analytics.
+
+## Frequently asked questions (FAQ)
+
+<FAQ>
+
+<Collapsible summary="What metrics does EAS Observe track?">
+
+EAS Observe focuses on startup metrics: cold launch time, warm launch time, time to first render, time to interactive, and bundle load time. See the [Metrics reference](/eas/observe/reference/metrics/) for detailed descriptions of each metric.
+
+</Collapsible>
+
+<Collapsible summary="Which platforms are supported?">
+
+EAS Observe supports Android and iOS. Metrics are collected from production builds and can be filtered by platform in both the dashboard and CLI.
+
+</Collapsible>
+
+<Collapsible summary="Is EAS Observe available in Expo Go?">
+
+No. EAS Observe relies on the `expo-observe` native library, which is not included in Expo Go. To use it, create a [development build](/develop/development-builds/introduction/) or a production build.
+
+</Collapsible>
+
+<Collapsible summary="Does EAS Observe collect personally identifiable information?">
+
+No. Users are identified by an anonymous ID that is unique per app installation. This ID is not personally identifiable and is reset if the user uninstalls and reinstalls the app. See [Metrics reference: User](/eas/observe/reference/metrics/#user) for more details.
+
+</Collapsible>
+
+<Collapsible summary="What happens when the device is offline?">
+
+Metrics collected while offline are stored locally on the device. They are automatically dispatched when the app moves to the background and connectivity is available. You can also flush events manually using `dispatchEvents()`.
+
+</Collapsible>
+
+<Collapsible summary="Can I test metrics during development?">
+
+By default, metrics collected from debug builds are not dispatched. You can dispatch them anyway for testing by setting `dispatchInDebug` to `true` via [`configure()`](/eas/observe/configuration/#configure). See [Configuration](/eas/observe/configuration/#enable-metrics-in-development) for details.
+
+</Collapsible>
+
+<Collapsible summary="How long is metric data retained?">
+
+Metric data is retained for a minimum of 60 days.
+
+</Collapsible>
+
+</FAQ>
+
+## Get started
+
+<BoxLink
+  title="Set up EAS Observe"
+  description="Install the library and start collecting metrics from your production app."
+  href="/eas/observe/get-started"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="EAS Observe dashboard"
+  description="View metrics, filter by platform or version, and investigate individual sessions."
+  href="/eas/observe/dashboard"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="Configuration"
+  description="Control environments, dispatching, and development mode settings."
+  href="/eas/observe/configuration"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="Metrics reference"
+  description="Detailed descriptions of each metric, concepts, and data handling."
+  href="/eas/observe/reference/metrics"
+  Icon={ActivityIcon}
+/>

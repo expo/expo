@@ -1,0 +1,19 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.14'
+
+android {
+  namespace "expo.modules.sharing"
+  defaultConfig {
+    versionCode 16
+    versionName '56.0.14'
+  }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+}

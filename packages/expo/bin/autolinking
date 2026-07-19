@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+// Executes expo-modules-autolinking CLI directly. This is accessed in three ways
+// - via the `expo-modules-autolinking` command declared via `package.json:bin` in `expo`
+// - in expo-templates-bare-minimum (prebuild) via Node resolution
+// - in expo-modules-autolinking's expo-gradle-plugin
+require('expo-modules-autolinking/bin/expo-modules-autolinking');

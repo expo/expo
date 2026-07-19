@@ -1,0 +1,135 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+@preconcurrency import ExpoModulesCore
+
+/// Typealias matching React Native's NSURLSessionConfigurationProvider block type
+public typealias URLSessionConfigurationProvider = @convention(block) () -> URLSessionConfiguration?
+
+private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
+nonisolated(unsafe) internal var urlSessionConfigurationProvider: URLSessionConfigurationProvider?
+
+public final class ExpoFetchModule: Module {
+  private lazy var urlSession = createURLSession()
+  private let urlSessionDelegate: URLSessionSessionDelegateProxy
+
+  public required init(appContext: AppContext) {
+    urlSessionDelegate = URLSessionSessionDelegateProxy(dispatchQueue: fetchRequestQueue)
+    super.init(appContext: appContext)
+  }
+
+  public func definition() -> ModuleDefinition {
+    Name("ExpoFetchModule")
+
+    OnDestroy {
+      urlSession.invalidateAndCancel()
+    }
+
+    // TODO(kudo,20260706): remove this when we install expo-blob as globalThis.Blob
+    AsyncFunction("unstable_createBlobData") { (data: Data) -> String in
+      guard let blobManager: NSObject = self.appContext?.nativeModule(named: "BlobModule") else {
+        throw FetchBlobModuleUnavailableException()
+      }
+      let store = NSSelectorFromString("store:")
+      guard blobManager.responds(to: store),
+        let blobId = blobManager.perform(store, with: data as NSData)?.takeUnretainedValue() as? String else {
+        throw FetchBlobModuleUnavailableException()
+      }
+      return blobId
+    }
+
+    // swiftlint:disable:next closure_body_length
+    Class(NativeResponse.self) {
+      Constructor {
+        return NativeResponse(dispatchQueue: fetchRequestQueue)
+      }
+
+      AsyncFunction("startStreaming") { (response: NativeResponse) -> Data? in
+        return response.startStreaming()
+      }.runOnQueue(fetchRequestQueue)
+
+      AsyncFunction("cancelStreaming") { (response: NativeResponse, _ reason: String) in
+        response.cancelStreaming()
+      }.runOnQueue(fetchRequestQueue)
+
+      Property("bodyUsed", \.bodyUsed)
+
+      Property("_rawHeaders") { (response: NativeResponse) in
+        return response.responseInit?.headers ?? []
+      }
+
+      Property("status") { (response: NativeResponse) in
+        return response.responseInit?.status ?? -1
+      }
+
+      Property("statusText") { (response: NativeResponse) in
+        return response.responseInit?.statusText ?? ""
+      }
+
+      Property("url") { (response: NativeResponse) in
+        return response.responseInit?.url ?? ""
+      }
+
+      Property("redirected", \.redirected)
+
+      AsyncFunction("arrayBuffer") { (response: NativeResponse, promise: Promise) in
+        response.waitFor(states: [.bodyCompleted]) { _ in
+          let data = response.sink.finalize()
+          promise.resolve(NativeArrayBuffer.wrap(dataWithoutCopy: data))
+        }
+      }.runOnQueue(fetchRequestQueue)
+
+      AsyncFunction("text") { (response: NativeResponse, promise: Promise) in
+        response.waitFor(states: [.bodyCompleted]) { _ in
+          let data = response.sink.finalize()
+          let text = String(decoding: data, as: UTF8.self)
+          promise.resolve(text)
+        }
+      }.runOnQueue(fetchRequestQueue)
+    }
+
+    Class(NativeRequest.self) {
+      Constructor { (nativeResponse: NativeResponse) in
+        return NativeRequest(response: nativeResponse)
+      }
+
+      AsyncFunction("start") { (request: NativeRequest, url: URL, requestInit: NativeRequestInit, requestBody: Data?, promise: Promise) in
+        request.start(
+          urlSession: urlSession,
+          urlSessionDelegate: urlSessionDelegate,
+          url: url,
+          requestInit: requestInit,
+          requestBody: requestBody
+        )
+        request.response.waitFor(states: [.responseReceived, .errorReceived]) { state in
+          if state == .responseReceived {
+            promise.resolve()
+          } else if state == .errorReceived {
+            promise.reject(request.response.error ?? FetchUnknownException())
+          }
+        }
+      }.runOnQueue(fetchRequestQueue)
+
+      AsyncFunction("cancel") { (request: NativeRequest) in
+        request.cancel(urlSessionDelegate: self.urlSessionDelegate)
+      }.runOnQueue(fetchRequestQueue)
+    }
+  }
+
+  private func createURLSession() -> URLSession {
+    let config: URLSessionConfiguration
+    if let urlSessionConfigurationProvider, let concreteConfig = urlSessionConfigurationProvider() {
+      config = concreteConfig
+    } else {
+      config = URLSessionConfiguration.default
+      config.httpShouldSetCookies = true
+      config.httpCookieAcceptPolicy = .always
+      config.httpCookieStorage = HTTPCookieStorage.shared
+
+      let useWifiOnly = Bundle.main.infoDictionary?["ReactNetworkForceWifiOnly"] as? Bool ?? false
+      if useWifiOnly {
+        config.allowsCellularAccess = !useWifiOnly
+      }
+    }
+    return URLSession(configuration: config, delegate: urlSessionDelegate, delegateQueue: nil)
+  }
+}

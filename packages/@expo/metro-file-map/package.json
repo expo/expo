@@ -1,0 +1,56 @@
+{
+  "name": "@expo/metro-file-map",
+  "version": "56.0.3",
+  "description": "A metro-file-map fork for Expo used with the Metro bundler",
+  "keywords": [
+    "expo",
+    "metro"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-file-map#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/metro-file-map"
+  },
+  "files": [
+    "build"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "2g": "^0.4.3",
+    "debug": "^4.3.4",
+    "fb-watchman": "^2.0.2",
+    "invariant": "^2.2.4",
+    "jest-worker": "^29.7.0",
+    "micromatch": "^4.0.4",
+    "walker": "^1.0.8"
+  },
+  "devDependencies": {
+    "@expo/metro": "~56.0.0",
+    "@types/debug": "^4.1.7",
+    "@types/fb-watchman": "^2.0.6",
+    "@types/invariant": "^2.2.37",
+    "@types/micromatch": "^4.0.10",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.6.0"
+  }
+}

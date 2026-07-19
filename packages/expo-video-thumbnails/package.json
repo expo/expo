@@ -1,0 +1,43 @@
+{
+  "name": "expo-video-thumbnails",
+  "version": "56.0.3",
+  "description": "Provides function that let you generate an image from video.",
+  "keywords": [
+    "android",
+    "expo",
+    "expo-video-thumbnails",
+    "ios",
+    "react-native",
+    "thumbnail"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/video-thumbnails/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-video-thumbnails"
+  },
+  "main": "build/VideoThumbnails.js",
+  "types": "build/VideoThumbnails.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

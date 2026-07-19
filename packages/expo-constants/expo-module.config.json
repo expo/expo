@@ -1,0 +1,10 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ConstantsModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.constants.ConstantsModule"],
+    "services": ["expo.modules.constants.ConstantsService"]
+  }
+}

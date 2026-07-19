@@ -1,0 +1,51 @@
+{
+  "name": "uri-scheme",
+  "version": "2.1.0",
+  "description": "Interact with native URI schemes",
+  "keywords": [
+    "android",
+    "expo",
+    "ios",
+    "uri-scheme"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/uri-scheme#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo <support@expo.dev>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/uri-scheme"
+  },
+  "bin": "cli.js",
+  "files": [
+    "build",
+    "cli.js"
+  ],
+  "main": "build/index.js",
+  "scripts": {
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
+  },
+  "devDependencies": {
+    "@expo/config-plugins": "workspace:*",
+    "@expo/plist": "workspace:*",
+    "@expo/spawn-async": "^1.8.0",
+    "@types/prompts": "^2.0.6",
+    "chalk": "^4.0.0",
+    "commander": "^12.1.0",
+    "expo-module-scripts": "workspace:*",
+    "glob": "^13.0.0",
+    "prompts": "^2.3.2",
+    "update-check": "^1.5.4"
+  }
+}

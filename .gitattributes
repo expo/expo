@@ -1,0 +1,22 @@
+* text=auto eol=lf
+*.pbxproj merge=union -text diff linguist-generated
+
+packages/*/build/** -diff linguist-generated eol=lf
+packages/*/plugin/build/** -diff linguist-generated eol=lf
+packages/*/cli/build/** -diff linguist-generated eol=lf
+packages/*/utils/build/** -diff linguist-generated eol=lf
+packages/*/scripts/build/** -diff linguist-generated eol=lf
+
+packages/@*/*/build/** -diff linguist-generated eol=lf
+packages/@*/*/plugin/build/** -diff linguist-generated eol=lf
+packages/@*/*/cli/build/** -diff linguist-generated eol=lf
+packages/@*/*/utils/build/** -diff linguist-generated eol=lf
+packages/@*/*/scripts/build/** -diff linguist-generated eol=lf
+
+ios/vendored/** linguist-vendored
+ios/versioned/** linguist-vendored
+ios/versioned-react-native/** linguist-vendored
+android/vendored/** linguist-vendored
+android/versioned-abis/** linguist-vendored
+android/versioned-react-native/** linguist-vendored
+packages/expo-dev-menu/vendored/** linguist-vendored

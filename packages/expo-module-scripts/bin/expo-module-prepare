@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+
+console.warn('This is a noop. Run `expo-module configure` once per package manually instead');

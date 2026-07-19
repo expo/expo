@@ -1,0 +1,110 @@
+{
+  "name": "expo-updates",
+  "version": "56.0.17",
+  "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
+  "keywords": [
+    "expo",
+    "react-native",
+    "updates"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/updates/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-updates"
+  },
+  "bin": {
+    "expo-updates": "bin/cli.js"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*.js",
+    "./*.js": "./*.js"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/create-updates-resources-ios.sh",
+      "./scripts/with-node.sh"
+    ]
+  },
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:utils && pnpm run build:cli",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "build:utils": "expo-build --base utils cjs:src",
+    "build:cli": "expo-build --base cli cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "pretest:e2e-cli": "expo-module prepublishOnly",
+    "test:e2e-cli": "jest --config e2e-cli/jest.config.js",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
+  "dependencies": {
+    "@expo/code-signing-certificates": "^0.0.6",
+    "@expo/plist": "workspace:^0.7.0",
+    "@expo/spawn-async": "^1.8.0",
+    "arg": "^4.1.0",
+    "chalk": "^4.1.2",
+    "debug": "^4.3.4",
+    "expo-eas-client": "workspace:~56.0.0",
+    "expo-manifests": "workspace:~56.0.4",
+    "expo-structured-headers": "workspace:~56.0.0",
+    "expo-updates-interface": "workspace:~56.0.1",
+    "getenv": "^2.0.0",
+    "glob": "^13.0.0",
+    "ignore": "^5.3.1",
+    "nullthrows": "^1.1.1",
+    "resolve-from": "^5.0.0"
+  },
+  "devDependencies": {
+    "@expo/metro-config": "workspace:*",
+    "@testing-library/react-native": "^13.3.0",
+    "@types/debug": "^4.1.7",
+    "@types/getenv": "^1.0.0",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "@types/node-forge": "^1.0.0",
+    "@types/picomatch": "^4.0.0",
+    "@types/react": "~19.2.0",
+    "@vercel/ncc": "^0.38.3",
+    "expo-dev-client": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "express": "^5.1.0",
+    "form-data": "^4.0.4",
+    "memfs": "^3.2.0",
+    "picomatch": "^4.0.4",
+    "ts-node": "^10.9.2",
+    "xstate": "^4.37.2"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "expo-dev-client": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-dev-client": {
+      "optional": true
+    }
+  }
+}

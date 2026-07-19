@@ -1,0 +1,157 @@
+import path from 'path';
+import { resolveWorkspaceRoot } from 'resolve-workspace-root';
+import semver from 'semver';
+
+import { learnMore } from '../utils/TerminalLink';
+import { loadMetroUserConfigAsync, getDefaultMetroConfig } from '../utils/metroConfigLoader';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+
+const isSubsetOf = (
+  defaultValues: readonly string[] | undefined,
+  userValues: readonly string[]
+) => {
+  const _userValues = new Set(userValues);
+  const isSubset = (defaultValues ?? []).every((value) => _userValues.has(value));
+  return isSubset;
+};
+
+export class MetroConfigCheck implements DoctorCheck {
+  description = 'Check for issues with Metro config';
+
+  sdkVersionRange = '>=51.0.0';
+
+  async runAsync({ projectRoot, exp }: DoctorCheckParams): Promise<DoctorCheckResult> {
+    const issues: string[] = [];
+
+    const serverRoot = resolveWorkspaceRoot(projectRoot) ?? projectRoot;
+    const userConfig = await loadMetroUserConfigAsync(projectRoot, serverRoot);
+    if (!userConfig) {
+      return {
+        isSuccessful: true,
+        issues: [],
+        advice: [],
+      };
+    }
+
+    if (userConfig.transformer && !('_expoRelativeProjectRoot' in userConfig.transformer)) {
+      // If this Expo property isn't set, which is used for cache invalidation, we don't have an Expo-based config
+      return {
+        isSuccessful: false,
+        issues: [
+          'It looks like that you are using a custom metro.config.js that does not extend "expo/metro-config". This can lead to unexpected and hard to debug issues. ' +
+            learnMore('https://docs.expo.dev/guides/customizing-metro/'),
+        ],
+        advice: [`Update your "metro.config.js" to extend "expo/metro-config".`],
+      };
+    }
+
+    const resolvePath = (target: string) => path.normalize(path.resolve(projectRoot, target));
+
+    const isPathsSubsetOf = (
+      defaultPaths: readonly string[] | undefined,
+      userPaths: readonly string[] | undefined
+    ) => isSubsetOf(defaultPaths?.map(resolvePath), userPaths?.map(resolvePath) ?? []);
+
+    const defaultConfig = getDefaultMetroConfig(projectRoot);
+
+    // From SDK 56+, the on-demand filesystem (experiments.onDemandFilesystem) makes `watchFolders`
+    // a non-critical configuration that doesn't block file discovery. There's still potential for
+    // errors with it being misconfigured, but the risk is lower, and users may now legitimately
+    // "optimize" what they want to crawl and watch
+    const isSdk56OrLater =
+      exp.sdkVersion === 'UNVERSIONED' ||
+      (exp.sdkVersion != null && semver.satisfies(exp.sdkVersion, '>=56.0.0'));
+    if (
+      (!isSdk56OrLater || exp.experiments?.onDemandFilesystem === false) &&
+      !isPathsSubsetOf(defaultConfig.watchFolders, userConfig.watchFolders)
+    ) {
+      issues.push(`- "watchFolders" does not contain all entries from Expo's defaults`);
+    }
+
+    if (userConfig.resolver) {
+      if (userConfig.resolver.blacklistRE != null) {
+        issues.push(
+          `- "resolver.blacklistRE" is deprecated. Replace it with "resolver.blockList" or remove it.`
+        );
+      }
+
+      const blockList = userConfig.resolver.blockList;
+      const blockListPatterns: RegExp[] = Array.isArray(blockList)
+        ? blockList.filter((p): p is RegExp => p instanceof RegExp)
+        : blockList instanceof RegExp
+          ? [blockList]
+          : [];
+      for (const pattern of blockListPatterns) {
+        const offending = pattern.flags.match(/[gy]/g)?.join('');
+        if (offending) {
+          issues.push(
+            `- "resolver.blockList"'s ${pattern} uses the stateful "${offending}" flag, which causes inconsistent matches.`
+          );
+        }
+      }
+
+      // `nodeModulesPaths` is likely to be empty, except in monorepos. But this setting
+      // usually doesn't matter as much. We still apply checks, but don't expect this to
+      // fail often
+      // NOTE (@kitten): `nodeModulesPaths` are fallbacks, so considering `disableHierarchicalLookup`
+      // is enforced below, we don't have to check this, if the user has emptied it out
+      if (
+        userConfig.resolver?.nodeModulesPaths?.length &&
+        !isPathsSubsetOf(
+          defaultConfig.resolver?.nodeModulesPaths,
+          userConfig.resolver?.nodeModulesPaths
+        )
+      ) {
+        issues.push(
+          `- "resolver.nodeModulesPaths" does not contain all entries from Expo's defaults`
+        );
+      }
+
+      // Users sometimes move source extensions to assets, and vice versa, so we can only check for completeness
+      // by checking across both simultaneously
+      const defaultExts = [
+        ...(defaultConfig.resolver?.sourceExts ?? []),
+        ...(defaultConfig.resolver?.assetExts ?? []),
+      ];
+      const userExts = [
+        ...(userConfig.resolver?.sourceExts ?? []),
+        ...(userConfig.resolver?.assetExts ?? []),
+      ];
+      if (!isSubsetOf(defaultExts, userExts)) {
+        issues.push(
+          `- "resolver.sourceExts" and "resolver.assetExts" miss values from Expo's default extensions`
+        );
+      }
+    }
+
+    const compareConfigEntries = [
+      ['projectRoot'],
+      ['resolver', 'disableHierarchicalLookup'],
+      ['resolver', 'unstable_allowRequireContext'],
+      ['resolver', 'unstable_enableSymlinks'],
+    ] as const;
+    for (const configEntryPath of compareConfigEntries) {
+      if (userConfig[configEntryPath[0]] === undefined) {
+        continue;
+      }
+      const defaultValue = configEntryPath.reduce((acc, key) => acc?.[key], defaultConfig as any);
+      const userValue = configEntryPath.reduce((acc, key) => acc?.[key], userConfig as any);
+      if (defaultValue !== userValue) {
+        issues.push(
+          `- "${configEntryPath.join('.')}" mismatch. Expected ${defaultValue}, got: ${userValue}`
+        );
+      }
+    }
+
+    return {
+      isSuccessful: !issues.length,
+      issues,
+      advice: issues.length
+        ? [
+            'Modifying the "metro.config.js" is dangerous and may lead to unintended consequences.\n' +
+              'Unless you know what these overrides do, remove them and adopt the recommended values from "expo/metro-config".',
+          ]
+        : [],
+    };
+  }
+}

@@ -1,0 +1,503 @@
+# Changelog
+
+## Unpublished
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+- Added support for storing recordings in the app document directory on Android and iOS. ([#46189](https://github.com/expo/expo/pull/46189) by [@shubh73](https://github.com/shubh73))
+- Support lockscreen controls with playlists. ([#46020](https://github.com/expo/expo/pull/46020) by [@alanjhughes](https://github.com/alanjhughes))
+- Added a `fileSize` field to `RecorderState` reporting the current size of the recording file in bytes. ([#46808](https://github.com/expo/expo/pull/46808) by [@behenate](https://github.com/behenate))
+- Added `startFileRecordingAsync` and `stopFileRecordingAsync` methods to `AudioStream` for continuous WAV and PCM file recording alongside buffer streaming. ([#46771](https://github.com/expo/expo/pull/46771) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [Android] Give the lock-screen `MediaSession` instances a unique ID so concurrent active players (and the basic session) no longer collide on the empty default. ([#47101](https://github.com/expo/expo/issues/47101) by [@tsushanth](https://github.com/tsushanth))
+- [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))
+- [Android] Fix recording crash in apps wrapped with Microsoft Intune. ([#47005](https://github.com/expo/expo/pull/47005) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Deactivate the audio session off the main thread to avoid app hangs. ([#47066](https://github.com/expo/expo/pull/47066) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Don't start playback when the system denies audio focus, and log a warning explaining that background playback needs an active media playback foreground service. ([#46957](https://github.com/expo/expo/pull/46957) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix playlist `currentIndex` freezing after the first auto-advance. ([#47257](https://github.com/expo/expo/pull/47257) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`). ([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
+
+## 56.0.11 — 2026-05-26
+
+### 💡 Others
+
+- [web] Added a warning when setting volume in browsers on iOS, where Apple does not allow programmatic volume control. ([#44474](https://github.com/expo/expo/pull/44474) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.10 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [Android] Fix `RemoteServiceException` crash when the system starts `AudioControlsService` via `startForegroundService()`. ([#46147](https://github.com/expo/expo/pull/46147) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.9 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.8 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-15
+
+### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.6 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-13
+
+### 💡 Others
+
+- Updated permission type and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.4 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- [iOS] Added `isLiveStream` option to `AudioLockScreenOptions` to hide duration and scrub bar for live streams. ([#43088](https://github.com/expo/expo/pull/43088) by [@robrechtme](https://github.com/robrechtme))
+- [android] Add support for playsInSilentMode ([#43117](https://github.com/expo/expo/pull/43117) by [@blazejkustra](https://github.com/blazejkustra))
+- Added `isLive`, `currentOffsetFromLive`, and `error` fields to `AudioStatus` for live stream detection and error handling. ([#44441](https://github.com/expo/expo/pull/44441) by [@alanjhughes](https://github.com/alanjhughes))
+- Add support for real-time audio stream buffer access via the new `useAudioStream` hook. ([#44902](https://github.com/expo/expo/pull/44902) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [iOS] Improve looping support. ([#43600](https://github.com/expo/expo/pull/43600) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Prevent stale lock screen artwork updates from crashing or overwriting newer metadata. ([#44498](https://github.com/expo/expo/pull/44498) by [@kotadd](https://github.com/kotadd))
+- [iOS] Fix playback progress continuing after pause by setting correct playback rate in now playing info. ([#44974](https://github.com/expo/expo/pull/44974) by [@JstUsername](https://github.com/JstUsername))
+- [Android] Remove `RECORD_AUDIO` from the manifest so `recordAudioAndroid` depends on the plugin. ([#45131](https://github.com/expo/expo/pull/45131) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix pixelated lock screen artwork on Android 13+ by setting `artworkUri` on the session's `MediaMetadata`. ([#44953](https://github.com/expo/expo/pull/44953) by [@radko93](https://github.com/radko93))
+
+### 💡 Others
+
+- [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Bump media3 version to 1.9.0. ([#44823](https://github.com/expo/expo/pull/44823) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.14 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- [Android] Fix lock screen controls on android 12 and earlier. ([#44754](https://github.com/expo/expo/pull/44754) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.13 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-17
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [Web] Fix potential `nan` duration. ([#43268](https://github.com/expo/expo/pull/43268) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [android] Make in-memory preload cache. ([#43293](https://github.com/expo/expo/pull/43293) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.6 — 2026-02-16
+
+### 🎉 New features
+
+- [iOS] Add support for `shouldRouteThroughEarpiece`. ([#43089](https://github.com/expo/expo/pull/43089) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Make it possible to add/remove the foreground service and foreground service permissions with a config plugin. ([#43014](https://github.com/expo/expo/pull/43014) by [@behenate](https://github.com/behenate))
+- [Web] Add support for audio sampling. ([#43149](https://github.com/expo/expo/pull/43149) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Add support for media controls. ([#43150](https://github.com/expo/expo/pull/43150) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Add support for selecting recording inputs. ([#43151](https://github.com/expo/expo/pull/43151) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Add support for recording metering. ([#43152](https://github.com/expo/expo/pull/43152) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Enable `setIsAudioActiveAsync`. ([#43142](https://github.com/expo/expo/pull/43142) by [@alanjhughes](https://github.com/alanjhughes))
+- Add support for preloading audio sources. ([#43063](https://github.com/expo/expo/pull/43063) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [Android] Fix memory leaks when refreshing the app. ([#42785](https://github.com/expo/expo/pull/42785) by [@behenate](https://github.com/behenate))
+- [iOS] Fixes `mediaServicesDidReset` not being correctly implemented. ([#42898](https://github.com/expo/expo/pull/42898) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Improve event handling. ([#43121](https://github.com/expo/expo/pull/43121) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Rework native audio service handling. ([#43015](https://github.com/expo/expo/pull/43015) by [@behenate](https://github.com/behenate))
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
+- [iOS/Android] Add support background recording. ([#41134](https://github.com/expo/expo/pull/41134) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Support `mixWithOthers` interruption mode. ([#41670](https://github.com/expo/expo/pull/41670) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [Android] Removed call to setShowActionsInCompactView when using custom layout in notification. ([#40557](https://github.com/expo/expo/pull/40557) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Fixed race-condition when creating the notification before the actions has been added. ([#40518](https://github.com/expo/expo/pull/40518) by [@chrfalch](https://github.com/chrfalch))
+- [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix incorrect notify others on deactivation ([#41196](https://github.com/expo/expo/pull/41196) by [@dylancom](https://github.com/dylancom))
+- [Android] Handle `stop` errors on the `recorder` and return correct timestamp for `currentTime`. ([#41933](https://github.com/expo/expo/pull/41933) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Removing `Record` from `RecordingPresets` type annotation to improve type safety ([#39391](https://github.com/expo/expo/pull/39391) by [@Shoghy](https://github.com/Shoghy))
+- Separate the conditions to enable and disable microphone permissions. ([#40861](https://github.com/expo/expo/pull/40861) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Dedupe events when sending status updates. ([#41700](https://github.com/expo/expo/pull/41700) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.16 - 2025-12-04
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.15 - 2025-11-21
+
+### 🐛 Bug fixes
+
+- [Android] Fix issue where after replacing the media source, events are emitted twice. ([#40133](https://github.com/expo/expo/pull/40133) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix issue where if `prepare` fails on android there was no error and the user would receive an empty file. ([#40239](https://github.com/expo/expo/pull/40239) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix incorrect volume read. ([#40258](https://github.com/expo/expo/pull/40258) by [@alanjhughes](https://github.com/alanjhughes))
+- [web] Bring fix from [#38273](https://github.com/expo/expo/pull/38273) to web. ([#40802](https://github.com/expo/expo/pull/40802) by [@alanjhughes](https://github.com/alanjhughes) ([#38273](https://github.com/expo/expo/pull/38273), [#40802](https://github.com/expo/expo/pull/40802) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Fix recording options not being applied to web correctly. ([#41154](https://github.com/expo/expo/pull/41154) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.14 - 2025-10-28
+
+### 🐛 Bug fixes
+
+- Fix issue where local assets don't resolve correctly in release mode. ([#40642](https://github.com/expo/expo/pull/40642) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.13 - 2025-09-18
+
+### 🐛 Bug fixes
+
+- [Android] Fix zero-byte audio recordings after calling `audioRecorder.stop()` ([#39788](https://github.com/expo/expo/pull/39788) by [@hirbod](https://github.com/hirbod))
+
+## 1.0.12 — 2025-09-16
+
+### 🎉 New features
+
+- [Android] Expose MediaRecorder.AudioSource on RecordingOptionsAndroid ([#38271](https://github.com/expo/expo/pull/38271) by [@vipierozan99](https://github.com/vipierozan99))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix setting audio quality for recordings. ([#39705](https://github.com/expo/expo/pull/39705) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Removed requiring shouldPlayInBackground to be true for background recording. ([#42134](https://github.com/expo/expo/pull/42134) by [@chrfalch](https://github.com/chrfalch))
+
+## 1.0.11 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.10 — 2025-09-08
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.9 — 2025-09-03
+
+### 💡 Others
+
+- [Android] Bump media3 version to 1.8.0. ([#39187](https://github.com/expo/expo/pull/39187) by [@behenate](https://github.com/behenate))
+
+## 1.0.8 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.7 — 2025-08-31
+
+### 🎉 New features
+
+- [iOS] Add keepAudioSessionActive option to prevent session deactivation ([#39250](https://github.com/expo/expo/pull/39250) by [@hirbod](https://github.com/hirbod))
+
+## 1.0.6 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.5 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- Correctly export enum values. ([#38940](https://github.com/expo/expo/pull/38940) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Repurpose audio recording tests. ([#38940](https://github.com/expo/expo/pull/38940) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.4 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- [Android] Emit state update after reload. ([#39003](https://github.com/expo/expo/pull/39003) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.3 — 2025-08-18
+
+### 🐛 Bug fixes
+
+- [Android] Fix regression in playing bundled assets in production. ([#38928](https://github.com/expo/expo/pull/38928) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.1 — 2025-08-15
+
+### 🐛 Bug fixes
+
+- [iOS] tvOS fixes. ([#38815](https://github.com/expo/expo/pull/38815) by [@douglowder](https://github.com/douglowder))
+
+## 1.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- [iOS][Android][Web]: Change `useAudioPlayer` and `createAudioPlayer` to accept options object as second parameter instead of `updateInterval`. Moved `updateInterval` to options and add `downloadFirst` option for pre-downloading assets ([#38563](https://github.com/expo/expo/pull/38563) by [@hirbod](https://github.com/hirbod))
+
+### 🎉 New features
+
+- [Android] Add support for `recordForDuration`. ([#38405](https://github.com/expo/expo/pull/38405) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS][Android][Web]: Add downloadFirst option for audio playback and update related documentation ([#38563](https://github.com/expo/expo/pull/38563) by [@hirbod](https://github.com/hirbod))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix connected bluetooth devices not playing back recordings. ([#37580](https://github.com/expo/expo/pull/37580) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Exclude setting `.allowBluetooth` on tvOS. ([#37950](https://github.com/expo/expo/pull/37950) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Prevent autoplaying when setting the playback rate. ([#38293](https://github.com/expo/expo/pull/38293) by [@alanjhughes](https://github.com/alanjhughes))
+- Add shallow state comparison to prevent unnecessary re-renders in `useAudioRecorderState`. ([#38273](https://github.com/expo/expo/pull/38273) by [@alanjhughes](https://github.com/alanjhughes))
+- [web] Fixed broken player state when `replace` was called while audio was running, added missing `updateInterval` to web, and improved audio status event emitting. ([#38505](https://github.com/expo/expo/pull/38505) by [@hirbod](https://github.com/hirbod))
+- [android][iOS][web] Fix recordForDuration status updates and add new record() options API ([#38612](https://github.com/expo/expo/pull/38612) by [@hirbod](https://github.com/hirbod))
+- [android]: Handle exceptions when retrieving maxAmplitude from MediaRecorder ([#38690](https://github.com/expo/expo/pull/38690) by [@hirbod](https://github.com/hirbod))
+- [iOS] Report correct playback rate. ([#38729](https://github.com/expo/expo/pull/38729) by [@aleqsio](https://github.com/aleqsio))
+- [web] Added crossOrigin property to useAudioPlayer and createAudioPlayer ([#38818](https://github.com/expo/expo/pull/38818) by [@hirbod](https://github.com/hirbod)
+
+### 💡 Others
+
+- Fix resolving issues with AudioEventKeys on webpack. Export mark types export with `type`. ([#37421](https://github.com/expo/expo/pull/37421) by [@behenate](https://github.com/behenate))
+- [iOS] Throw an error when attempting to record when recording is not allowed. ([#37929](https://github.com/expo/expo/pull/37929) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.8 - 2025-07-03
+
+### 🎉 New features
+
+- [iOS] Support setting seek tolerences when calling `seekTo` on the player. ([#37669](https://github.com/expo/expo/pull/37669) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Support lock screen controls. ([#37126](https://github.com/expo/expo/pull/37126) by [@alanjhughes](https://github.com/alanjhughes)
+
+### 🐛 Bug fixes
+
+- [Android] Fix issues with audio focus management. ([#37698](https://github.com/expo/expo/pull/37698) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix connected bluetooth devices not playing back recordings. ([#37580](https://github.com/expo/expo/pull/37580) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix issue where the currentTime is out of sync when seeking before playing. ([#37668](https://github.com/expo/expo/pull/37668) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix ducking behaviour. ([#37788](https://github.com/expo/expo/pull/37788) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.7 - 2025-06-26
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed status property bug when track finishes ([#37389](https://github.com/expo/expo/pull/37389) by [@adiktiv](https://github.com/adiktiv))
+- [iOS] Fix inconsistent audio sampling. ([#37154](https://github.com/expo/expo/pull/37154) by [@alanjhughes](https://github.com/alanjhughes))
+- Add automatic interruption handling. ([#37153](https://github.com/expo/expo/pull/37153) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS]: Fix changing pitch algorithm stops the playback if sampling is enabled ([#37320](https://github.com/expo/expo/pull/37320) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Improve audio tap memory safety and cleanup ([#37174](https://github.com/expo/expo/pull/37174) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix unused recording permission causing app store rejection. ([#37457](https://github.com/expo/expo/pull/37457) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Prevent status updates when the player is paused. ([#37475](https://github.com/expo/expo/pull/37475) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Change component registry to be per module to prevent interference. ([#37534](https://github.com/expo/expo/pull/37534) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix metering issues when recording. ([#37556](https://github.com/expo/expo/pull/37556) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [iOS] Accurately restore volume after interruption. ([#37444](https://github.com/expo/expo/pull/37444) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Switch audio tap processing effects from pre to post so volume is taken into account. ([#37461](https://github.com/expo/expo/pull/37461) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.6 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- [iOS] Support base64 strings as an audio source. ([#37031](https://github.com/expo/expo/pull/37031) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Correctly add the http headers to the `AVURLAsset`. ([#37029](https://github.com/expo/expo/pull/37029) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.5 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- [Android] Correctly handle recording URL's and local assets in production. ([#36737](https://github.com/expo/expo/pull/36737) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Run player updates on the main thread in the `audioFocusChangeListener`. ([#36957](https://github.com/expo/expo/pull/36957) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.3 — 2025-04-25
+
+### 💡 Others
+
+- [Android] Support manual audio focus control on `Android`. ([#36221](https://github.com/expo/expo/pull/36221) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.0 — 2025-04-04
+
+### 🎉 New features
+
+- [iOS] Add Apple TV support. ([#33365](https://github.com/expo/expo/pull/33365) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- [Android] Remove maxSdkVersion from MODIFY_AUDIO_SETTINGS permission ([#35541](https://github.com/expo/expo/pull/35541) by [@jakex7](https://github.com/jakex7))
+- Use the same prop name for "muted" on all platforms. Fix playing in background on iOS.([#35600](https://github.com/expo/expo/pull/35600) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Recording was not working when prepared due to wrong precondition check ([#35591](https://github.com/expo/expo/pull/35591) by [@pennersr](https://github.com/pennersr))
+- [Android] Correctly handle muting and volume. ([#35631](https://github.com/expo/expo/pull/35631) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix replacing item when `useAudioPlayer` is passed an empty source. ([#35749](https://github.com/expo/expo/pull/35749) by [@alanjhughes](https://github.com/alanjhughes))
+- Return `currentTime` and `duration` in seconds across all platforms. ([#35787](https://github.com/expo/expo/pull/35787) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 0.3.5 - 2025-02-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.4 - 2025-01-19
+
+### 💡 Others
+
+- [Android] Add checks to methods that will throw without permissions being granted. ([#33986](https://github.com/expo/expo/pull/33986) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.3.3 - 2025-01-10
+
+### 🎉 New features
+
+- Add new `didJustFinish` property to `AudioStatus`. ([#34089](https://github.com/expo/expo/pull/34089) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.3.2 - 2025-01-08
+
+### 🐛 Bug fixes
+
+- Expose `isMeteringEnabled` to `JS`. ([#33713](https://github.com/expo/expo/pull/33713) by [@alanjhughes](https://github.com/alanjhughes))
+- On `Android`, allow player to accept a `null` audio source. ([#33854](https://github.com/expo/expo/pull/33854) by [@alanjhughes](https://github.com/alanjhughes))
+- Override the `replace` method on the `AudioPlayer` so the source can be parsed correctly. ([#33708](https://github.com/expo/expo/pull/33708) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Remove unused `setAudioMode()` parameters. ([#34031](https://github.com/expo/expo/pull/34031) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Improvements in recording handling. ([#34841](https://github.com/expo/expo/pull/34841) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix `AudioMode` defaults. ([#34920](https://github.com/expo/expo/pull/34920) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.3.1 - 2024-12-16
+
+### 🐛 Bug fixes
+
+- Update docs and API so all units of time are returned as seconds, not milliseconds. ([#33320](https://github.com/expo/expo/pull/33320) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix `AudioSource` to accept numbers for loading local assets. ([#33676](https://github.com/expo/expo/pull/33676) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.3.0 - 2024-12-02
+
+### 🎉 New features
+
+- Support creating an `AudioPlayer` instance without using the `useAudioPlayer` hook. ([#33331](https://github.com/expo/expo/pull/33331) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.2.4 — 2024-11-19
+
+### 🎉 New features
+
+- Add support for replacing the auido source without recreating the player. ([#32981](https://github.com/expo/expo/pull/32981) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Imporve handling of `Visulaizer`. ([#33018](https://github.com/expo/expo/pull/33018) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.2.3 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30455](https://github.com/expo/expo/pull/30455) by [@byCedric](https://github.com/byCedric))
+
+## 0.1.0 — 2024-04-18
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))

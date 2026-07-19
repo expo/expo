@@ -1,0 +1,6 @@
+{
+  expo: {
+    // The following line has an error
+    sdkVersion, "26.0.0",
+  },
+}

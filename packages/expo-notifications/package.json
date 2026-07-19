@@ -1,0 +1,60 @@
+{
+  "name": "expo-notifications",
+  "version": "56.0.14",
+  "description": "Provides an API to fetch push notification tokens and to present, schedule, receive, and respond to notifications.",
+  "keywords": [
+    "expo",
+    "expo-notifications",
+    "notifications",
+    "push-nofifications",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/notifications/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-notifications"
+  },
+  "sideEffects": [
+    "./build/DevicePushTokenAutoRegistration.fx.js"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
+  "dependencies": {
+    "@expo/image-utils": "workspace:^0.10.1",
+    "abort-controller": "^3.0.0",
+    "badgin": "^1.1.5",
+    "expo-application": "workspace:~56.0.3",
+    "expo-constants": "workspace:~56.0.16"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

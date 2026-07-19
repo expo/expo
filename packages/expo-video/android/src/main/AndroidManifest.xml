@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.INTERNET" />
+
+  <application>
+    <activity android:name=".FullscreenPlayerActivity"
+      android:supportsPictureInPicture="true"
+      android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|navigation"
+      android:theme="@style/Fullscreen" />
+  </application>
+</manifest>

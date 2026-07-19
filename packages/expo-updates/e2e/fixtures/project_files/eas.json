@@ -1,0 +1,62 @@
+{
+  "cli": {
+    "version": ">= 2.7.1"
+  },
+  "build": {
+    "base": {
+      "node": "20.14.0",
+      "android": {
+        "image": "ubuntu-22.04-jdk-17-ndk-r21e",
+        "resourceClass": "large"
+      },
+      "ios": {
+        "image": "latest"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug"
+      }
+    },
+    "updates_testing_debug": {
+      "extends": "base",
+      "android": {
+        "applicationArchivePath": "eas.json",
+        "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "applicationArchivePath": "eas.json",
+        "simulator": true,
+        "buildConfiguration": "Debug"
+      },
+      "distribution": "internal",
+      "buildArtifactPaths": ["logs/*.log"]
+    },
+    "updates_testing_release": {
+      "extends": "base",
+      "android": {
+        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "simulator": true,
+        "buildConfiguration": "Release"
+      },
+      "distribution": "internal",
+      "buildArtifactPaths": ["logs/*.log"]
+    },
+
+    "production": {
+      "extends": "base"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

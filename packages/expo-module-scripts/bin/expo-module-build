@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import { commandRunner, getArgs, addWatchFlagIfNeeded } from '../utils/commandUtils.js';
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const EXTRA_MODULE_BUILD_TARGETS = ['plugin', 'cli', 'utils', 'scripts', 'shared'];
+
+let args = getArgs();
+
+// If the command is used like `yarn build plugin`, set the --build option to point to plugin/tsconfig.json
+if (EXTRA_MODULE_BUILD_TARGETS.includes(args[0])) {
+  const target = args[0];
+  const targetDir = path.join(process.cwd(), args[0]);
+  if (fs.existsSync(path.join(targetDir, 'tsconfig.json'))) {
+    // Push the rest of the arguments minus the `plugin` arg
+    const restArgs = args.slice(1);
+    args = ['--build', targetDir, ...restArgs];
+  } else {
+    console.log(`tsconfig.json not found in ${target}, skipping build for ${target}`);
+    process.exit(0);
+  }
+}
+
+args = addWatchFlagIfNeeded(args);
+await commandRunner(path.join(dirname, 'expo-module-tsc'), args);

@@ -1,0 +1,10 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["ExpoFetchModule"],
+    "podspecPath": "Expo.podspec"
+  },
+  "android": {
+    "modules": ["expo.modules.fetch.ExpoFetchModule"]
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "name": "@expo/fingerprint",
+  "version": "0.19.3",
+  "description": "A library to generate a fingerprint from a React Native project",
+  "keywords": [
+    "expo",
+    "fingerprint",
+    "hash",
+    "node",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/fingerprint#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/fingerprint"
+  },
+  "bin": {
+    "fingerprint": "bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "build",
+    "cli/build"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:cli",
+    "build:lib": "expo-build cjs:src",
+    "build:cli": "expo-build --base cli cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "pretest:e2e": "expo-module prepublishOnly",
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
+  "dependencies": {
+    "@expo/env": "workspace:^2.3.0",
+    "@expo/spawn-async": "^1.8.0",
+    "arg": "^5.0.2",
+    "chalk": "^4.1.2",
+    "debug": "^4.3.4",
+    "getenv": "^2.0.0",
+    "glob": "^13.0.0",
+    "ignore": "^5.3.1",
+    "minimatch": "^10.2.2",
+    "resolve-from": "^5.0.0",
+    "semver": "^7.6.0"
+  },
+  "devDependencies": {
+    "@expo/config": "workspace:~55.0.8",
+    "@expo/require-utils": "workspace:~55.0.2",
+    "@types/debug": "^4.1.5",
+    "@types/getenv": "^1.0.0",
+    "@types/node": "^22.14.0",
+    "@types/require-from-string": "^1.2.3",
+    "@types/semver": "^7.5.8",
+    "expo-module-scripts": "workspace:*",
+    "expo-splash-screen": "workspace:*",
+    "memfs": "^3.2.0",
+    "require-from-string": "^2.0.2",
+    "temp-dir": "^2.0.0"
+  }
+}

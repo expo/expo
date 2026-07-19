@@ -1,0 +1,333 @@
+diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
+index fc185e53bc3..66d64fd22ed 100644
+--- a/templates/expo-template-bare-minimum/android/app/build.gradle
++++ b/templates/expo-template-bare-minimum/android/app/build.gradle
+@@ -116,7 +116,7 @@ android {
+             def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
+             shrinkResources enableShrinkResources.toBoolean()
+             minifyEnabled enableMinifyInReleaseBuilds
+-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
++            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+             def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
+             crunchPngs enablePngCrunchInRelease.toBoolean()
+         }
+diff --git a/templates/expo-template-bare-minimum/android/gitignore b/templates/expo-template-bare-minimum/android/gitignore
+index 8a6be077181..01581731149 100644
+--- a/templates/expo-template-bare-minimum/android/gitignore
++++ b/templates/expo-template-bare-minimum/android/gitignore
+@@ -11,6 +11,10 @@ local.properties
+ *.iml
+ *.hprof
+ .cxx/
++gradle/gradle-daemon-jvm.properties
++
++# generated inline modules
++app/src/main/java/inline/
+ 
+ # Bundle artifacts
+ *.jsbundle
+diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
+index 8bdaf60c75a..61285a659d1 100644
+Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
+diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
+index 2a84e188b85..37f78a6af83 100644
+--- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
++++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
+@@ -1,6 +1,6 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-9.0.0-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-9.3.1-bin.zip
+ networkTimeout=10000
+ validateDistributionUrl=true
+ zipStoreBase=GRADLE_USER_HOME
+diff --git a/templates/expo-template-bare-minimum/android/gradlew b/templates/expo-template-bare-minimum/android/gradlew
+index bbb00327904..adff685a034 100755
+--- a/templates/expo-template-bare-minimum/android/gradlew
++++ b/templates/expo-template-bare-minimum/android/gradlew
+@@ -114,7 +114,6 @@ case "$( uname )" in                #(
+   NONSTOP* )        nonstop=true ;;
+ esac
+ 
+-CLASSPATH="\\\"\\\""
+ 
+ 
+ # Determine the Java command to use to start the JVM.
+@@ -172,7 +171,6 @@ fi
+ # For Cygwin or MSYS, switch paths to Windows format before running java
+ if "$cygwin" || "$msys" ; then
+     APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
+-    CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
+ 
+     JAVACMD=$( cygpath --unix "$JAVACMD" )
+ 
+@@ -205,14 +203,13 @@ fi
+ DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+ 
+ # Collect all arguments for the java command:
+-#   * DEFAULT_JVM_OPTS, JAVA_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
++#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
+ #     and any embedded shellness will be escaped.
+ #   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be
+ #     treated as '${Hostname}' itself on the command line.
+ 
+ set -- \
+         "-Dorg.gradle.appname=$APP_BASE_NAME" \
+-        -classpath "$CLASSPATH" \
+         -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
+         "$@"
+ 
+diff --git a/templates/expo-template-bare-minimum/android/gradlew.bat b/templates/expo-template-bare-minimum/android/gradlew.bat
+index 5eed7ee8452..39baf4d6846 100644
+--- a/templates/expo-template-bare-minimum/android/gradlew.bat
++++ b/templates/expo-template-bare-minimum/android/gradlew.bat
+@@ -1,3 +1,8 @@
++@REM Copyright (c) Meta Platforms, Inc. and affiliates.
++@REM
++@REM This source code is licensed under the MIT license found in the
++@REM LICENSE file in the root directory of this source tree.
++
+ @rem
+ @rem Copyright 2015 the original author or authors.
+ @rem
+@@ -70,11 +75,10 @@ goto fail
+ :execute
+ @rem Setup the command line
+ 
+-set CLASSPATH=
+ 
+ 
+ @rem Execute Gradle
+-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
++"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
+ 
+ :end
+ @rem End local scope for the variables with windows NT shell
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
+index 8a390c764af..4670609274a 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
+@@ -11,6 +11,7 @@
+ 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+ 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+ 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
++		F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748432D0307B40044C1D9 /* SceneDelegate.swift */; };
+ /* End PBXBuildFile section */
+ 
+ /* Begin PBXFileReference section */
+@@ -21,6 +22,7 @@
+ 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+ 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+ 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = HelloWorld/AppDelegate.swift; sourceTree = "<group>"; };
++		F11748432D0307B40044C1D9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = HelloWorld/SceneDelegate.swift; sourceTree = "<group>"; };
+ 		F11748442D0722820044C1D9 /* HelloWorld-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "HelloWorld-Bridging-Header.h"; path = "HelloWorld/HelloWorld-Bridging-Header.h"; sourceTree = "<group>"; };
+ /* End PBXFileReference section */
+ 
+@@ -39,6 +41,7 @@
+ 			isa = PBXGroup;
+ 			children = (
+ 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
++				F11748432D0307B40044C1D9 /* SceneDelegate.swift */,
+ 				F11748442D0722820044C1D9 /* HelloWorld-Bridging-Header.h */,
+ 				BB2F792B24A3F905000567C9 /* Supporting */,
+ 				13B07FB51A68108700A75B9A /* Images.xcassets */,
+@@ -230,6 +233,7 @@
+ 			buildActionMask = 2147483647;
+ 			files = (
+ 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
++				F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -248,11 +252,12 @@
+ 					"FB_SONARKIT_ENABLED=1",
+ 				);
+ 				INFOPLIST_FILE = HelloWorld/Info.plist;
+-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
++				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+ 					"@executable_path/Frameworks",
+ 				);
++				MACOSX_DEPLOYMENT_TARGET = 13.4;
+ 				MARKETING_VERSION = 1.0;
+ 				OTHER_LDFLAGS = (
+ 					"$(inherited)",
+@@ -275,11 +280,12 @@
+ 				CLANG_ENABLE_MODULES = YES;
+ 				CURRENT_PROJECT_VERSION = 1;
+ 				INFOPLIST_FILE = HelloWorld/Info.plist;
+-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
++				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+ 					"@executable_path/Frameworks",
+ 				);
++				MACOSX_DEPLOYMENT_TARGET = 13.4;
+ 				MARKETING_VERSION = 1.0;
+ 				OTHER_LDFLAGS = (
+ 					"$(inherited)",
+@@ -341,7 +347,7 @@
+ 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+ 				GCC_WARN_UNUSED_FUNCTION = YES;
+ 				GCC_WARN_UNUSED_VARIABLE = YES;
+-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
++				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					/usr/lib/swift,
+ 					"$(inherited)",
+@@ -393,7 +399,7 @@
+ 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+ 				GCC_WARN_UNUSED_FUNCTION = YES;
+ 				GCC_WARN_UNUSED_VARIABLE = YES;
+-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
++				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					/usr/lib/swift,
+ 					"$(inherited)",
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
+index 9670a1ff07e..34fd928b70c 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
+@@ -3,7 +3,7 @@ import React
+ import ReactAppDependencyProvider
+ 
+ @main
+-class AppDelegate: ExpoAppDelegate {
++class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {
+   var window: UIWindow?
+ 
+   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+@@ -20,35 +20,10 @@ class AppDelegate: ExpoAppDelegate {
+     reactNativeDelegate = delegate
+     reactNativeFactory = factory
+ 
+-#if os(iOS) || os(tvOS)
+-    window = UIWindow(frame: UIScreen.main.bounds)
+-    factory.startReactNative(
+-      withModuleName: "main",
+-      in: window,
+-      launchOptions: launchOptions)
+-#endif
+-
++    // The window is created and React Native is started by `SceneDelegate` under the
++    // scene-based life cycle (required by the iOS 27 SDK).
+     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+   }
+-
+-  // Linking API
+-  public override func application(
+-    _ app: UIApplication,
+-    open url: URL,
+-    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+-  ) -> Bool {
+-    return super.application(app, open: url, options: options) || RCTLinkingManager.application(app, open: url, options: options)
+-  }
+-
+-  // Universal Links
+-  public override func application(
+-    _ application: UIApplication,
+-    continue userActivity: NSUserActivity,
+-    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+-  ) -> Bool {
+-    let result = RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
+-    return super.application(application, continue: userActivity, restorationHandler: restorationHandler) || result
+-  }
+ }
+ 
+ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
+index 596dc7ce6b5..e33bda957c9 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
+@@ -33,6 +33,23 @@
+ 		<key>NSAllowsLocalNetworking</key>
+ 		<true/>
+ 	</dict>
++	<key>UIApplicationSceneManifest</key>
++	<dict>
++		<key>UIApplicationSupportsMultipleScenes</key>
++		<false/>
++		<key>UISceneConfigurations</key>
++		<dict>
++			<key>UIWindowSceneSessionRoleApplication</key>
++			<array>
++				<dict>
++					<key>UISceneConfigurationName</key>
++					<string>Default Configuration</string>
++					<key>UISceneDelegateClassName</key>
++					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
++				</dict>
++			</array>
++		</dict>
++	</dict>
+ 	<key>UILaunchStoryboardName</key>
+ 	<string>SplashScreen</string>
+ 	<key>UIRequiredDeviceCapabilities</key>
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/SceneDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/SceneDelegate.swift
+new file mode 100644
+index 00000000000..788dde8f463
+--- /dev/null
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/SceneDelegate.swift
+@@ -0,0 +1,6 @@
++internal import Expo
++
++@objc(SceneDelegate)
++class SceneDelegate: ExpoAppSceneDelegate {
++  // Extension point for config plugins.
++}
+diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
+index 03484edf156..1a7b1969798 100644
+--- a/templates/expo-template-bare-minimum/ios/Podfile
++++ b/templates/expo-template-bare-minimum/ios/Podfile
+@@ -13,10 +13,14 @@ def ccache_enabled?(podfile_properties)
+ end
+ 
+ ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
+-ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
+-ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
+-ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
+-platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
++ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
++ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
++ENV['RCT_HERMES_V1_ENABLED'] ||= '0' if podfile_properties['expo.useHermesV1'] == 'false'
++# An explicit `ios.usePrecompiledModules: false` must win even when the env var is already set
++# (e.g. EXPO_USE_PRECOMPILED_MODULES exported by EAS Build), so force-disable here before the default.
++ENV['EXPO_USE_PRECOMPILED_MODULES'] = '0' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] == 'false'
++ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'
++platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
+ 
+ prepare_react_native_project!
+ 
+diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
+index c1632a27f75..92989571f5f 100644
+--- a/templates/expo-template-bare-minimum/package.json
++++ b/templates/expo-template-bare-minimum/package.json
+@@ -2,7 +2,7 @@
+   "name": "expo-template-bare-minimum",
+   "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
+   "license": "0BSD",
+-  "version": "55.0.39",
++  "version": "56.0.19",
+   "main": "index.js",
+   "scripts": {
+     "start": "expo start --dev-client",
+@@ -11,9 +11,14 @@
+     "web": "expo start --web"
+   },
+   "dependencies": {
+-    "expo": "~55.0.27",
+-    "expo-status-bar": "~55.0.6",
+-    "react": "19.2.0",
+-    "react-native": "0.83.10"
++    "expo": "~56.0.5",
++    "expo-status-bar": "~56.0.4",
++    "react": "19.2.3",
++    "react-native": "0.86.0"
++  },
++  "publishConfig": {
++    "executableFiles": [
++      "./android/gradlew"
++    ]
+   }
+ }

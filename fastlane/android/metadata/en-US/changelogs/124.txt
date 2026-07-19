@@ -1,0 +1,3 @@
+Fix issues when fetching push notifications token
+===
+Add support for Expo SDK 37

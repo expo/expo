@@ -1,0 +1,225 @@
+# Contributing to the Expo SDK
+
+- [📦 Download and Setup](#-download-and-setup)
+- [✍️ Editing SDK Packages](#%EF%B8%8F-editing-sdk-packages)
+  - [Style](#style)
+  - [Extra Credit](#extra-credit)
+- [⏱ Testing Your Changes](#-testing-your-changes)
+  - [✅ Unit Testing](#-unit-testing)
+  - [🏁 E2E Testing](#-e2e-testing)
+- [📚 Updating Documentation](#-updating-documentation)
+- [📝 Writing a Commit Message](#-writing-a-commit-message)
+- [🔎 Before Submitting](#-before-submitting)
+  - [Extra Credit](#extra-credit-1)
+
+Thanks for your interest in contributing! We currently review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files.
+
+We recommend that folks interested in contributing to the SDK use the `apps/bare-expo` project in their SDK development workflow instead of Expo Go (in `apps/expo-go`). The Expo Go app is difficult to set up and requires API tokens.
+
+The `bare-expo` project includes most of the Expo SDK. It runs the JavaScript code from `apps/test-suite` and `apps/native-component-list`. That allows you to browse the Expo SDK components and APIs and easily write and run E2E tests for iOS, and Android for any given SDK package. Unit tests can be written within the SDK package itself. When pushed to the remote, CI will run this project with tests for Android/iOS and report the results on your pull request.
+
+Manual smoke tests are included in `apps/native-component-list`, which is a good fit for demos or tests that require physical interactions. This is particularly useful if you are testing interactions with UI components, or if there is something very difficult to test in an automated way but would be easy to verify through manual interaction.
+
+> 💡 How does `bare-expo` relate to `test-suite`?
+>
+> `bare-expo` is a bare React Native app that links all of the Expo SDK dependencies in the `packages/` directory in order to be able to run projects in the `apps/` directory. It currently runs `test-suite` (an Expo app with some custom code to turn it into a test runner), and `native-component-list`. If you run `expo start` in the `test-suite` directory you can load the project in Expo Go. `bare-expo` imports the `test-suite` app root component and uses it as its own root component.
+
+## 📦 Download and Setup
+
+> 💽 The development environment for this repository does not support Windows; WSL is required to contribute from Windows.
+
+1. If you are an Expo team member, clone the repository. If you are an external contributor, [fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch main git@github.com:expo/expo.git`, skipping most of the branches and history to clone it faster.
+2. Install [direnv](https://direnv.net/). On macOS: `brew install direnv`. Don't forget to install the [shell hook](https://direnv.net/docs/hook.html) to your shell profile.
+3. Install Ruby 3.3 or later. On macOS: `brew install ruby@3.3`
+4. Install [Node LTS](https://nodejs.org/).
+5. Some of the scripts in this repository require Bun. You won't need it for most tasks, but can install it via [these options](https://bun.com/docs/installation).
+
+### Set up documentation
+
+If you plan to contribute to the documentation, see [Updating Documentation](#-updating-documentation) section below.
+
+### Set up Android
+
+If you plan to contribute to Android, run `pnpm run setup:native`. This command does the following for you:
+
+- Downloads submodules (like `react-native`) with `git submodule update --init`
+- Ensures pnpm is installed
+- Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
+- Downloads the Node packages (`pnpm install`)
+
+We recommend JDK 17 (eg. zulu17). Run the following commands in a terminal window to install it:
+
+```sh
+brew tap homebrew/cask-versions
+brew install --cask zulu@17
+```
+
+After you install the JDK, add the JAVA_HOME environment variable in ~/.bash_profile (or ~/.zshrc if you use ZSH):
+
+```sh
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+```
+
+`ANDROID_SDK_ROOT` environmental variable should be set or configured via `local.properties` file in `android` folder of the native project you're working with.
+
+### (Optional) Speed up Android native builds with ccache
+
+[ccache](https://ccache.dev/) caches C/C++ compilation results so rebuilds of native code are nearly instant when source files haven't changed.
+
+1. Install ccache: `brew install ccache`
+2. Add to your `~/.zshrc` (or `~/.bashrc`):
+   ```sh
+   export CMAKE_C_COMPILER_LAUNCHER="ccache"
+   export CMAKE_CXX_COMPILER_LAUNCHER="ccache"
+   ```
+3. Enable precompiled header support (required by some modules like `expo-modules-core`):
+   ```sh
+   ccache -o sloppiness=pch_defines,time_macros
+   ```
+
+The repo's `.envrc` automatically sets `CCACHE_BASEDIR` via direnv, so cache is shared across git worktrees with no extra setup.
+
+### Set up iOS
+
+If you will be working with the iOS project, ensure **ruby 3.3** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@3.3`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.
+
+### Verify native installation is successful
+
+1. Navigate to the bare sandbox project `cd apps/bare-expo`
+2. Run the project on any native platform:
+   - iOS: `pnpm ios`
+   - Android: `pnpm android`
+   - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="konsole"`)
+
+3. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
+
+> If this didn't work for you as described, please [open an issue.](https://github.com/expo/expo/issues/new/choose)
+
+## ✍️ Editing SDK Packages
+
+All Expo SDK packages can be found in the `packages/` directory. These packages are automatically linked to the projects in the `apps/` directory, so you can edit them in-place and see the changes in the running app.
+
+1. Navigate to a package you want to edit. Ex: `cd packages/expo-constants`
+2. Compile the package's TypeScript after editing: `pnpm build` (skip this if such script is not present)
+3. Edit code in that package's `src/` directory
+4. Play with your changes on a simulator or device through `bare-expo`:
+   - Add or modify a file named after the API you're working on. Ex: `apps/test-suite/tests/Constants.js`
+   - To see native changes, you will need to run the `test-suite` with the `apps/bare-expo` project using `pnpm <android | ios>`.
+   - If you are only making JavaScript changes, you can run `test-suite` from the `apps/test-suite` project using `expo start`.
+   - To run the full test suite, you can run the tests `pnpm test:<android | ios>`.
+5. You can edit a package's native code directly from its respective folder in the `packages/` directory or by opening `bare-expo` in a native editor:
+   - Navigate to the `bare-expo` app directory: `cd apps/bare-expo`
+   - Android Studio: `pnpm edit:android`
+   - Xcode: `pnpm edit:ios`
+   - Remember to **rebuild** the native project whenever you make a native change
+6. (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
+
+### Common package scripts
+
+Almost every package in `packages/` exposes the same set of npm scripts, orchestrated across the monorepo by [Turborepo](https://turborepo.com/). The compiled `build/` output is not committed to Git (it is in `.gitignore`); Turborepo builds it on demand and caches the result, locally and in a shared remote cache, so a `git pull` or `git checkout` doesn't force you to rebuild every package.
+
+| Script      | What it does                                                        |
+|-------------|---------------------------------------------------------------------|
+| `build`     | Compiles `src/` → `build/`.                                         |
+| `typecheck` | Type-checks the package with `tsc`.                                 |
+| `test`      | Runs the package's Jest unit tests.                                 |
+| `lint`      | Lints the package. Pass `--fix` to autofix.                         |
+| `format`    | Formats the package. Pass `--check` to check without modifying.     |
+| `depscheck` | Verifies the package's declared dependencies match what it imports. |
+
+Run them two ways:
+
+- **From the repo root** with `pnpm <script>` (e.g. `pnpm build`, `pnpm test`, `pnpm lint`, `pnpm format`, `pnpm typecheck`). This invokes `turbo <task>` and runs the script across every workspace package — respecting the cache and dependency graph
+- **From a single package directory** with `pnpm run <script>` (e.g. `cd packages/expo-constants && pnpm run test`) to run just that package's script.
+
+For a one-shot "did my change build, typecheck, lint, and pass tests?" check across the packages you touched, use `et check-packages <...packages>`, which runs the same Turborepo task graph as CI.
+
+### Finding a task to work on
+
+If you don't have something in mind already, the best way to find something to help with is ["Issue accepted" label](https://github.com/expo/expo/issues?q=is%3Aissue+is%3Aopen+label%3A%22Issue+accepted%22).
+
+Note that we generally do not accept PRs that bump versions of native dependencies. The Expo team handles bumping these dependencies as part of our release process for each Expo SDK. The process for pulling in a new version requires a fair amount of context on how Expo Go works.
+
+### Style
+
+All modules should adhere to the style guides which can be found here:
+
+- [Expo Module Infrastructure](guides/Expo%20Module%20Infrastructure.md)
+- [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
+- [Expo Swift Style Guide](guides/Swift%20Style%20Guide.md)
+- [Updating Changelogs](guides/contributing/Updating%20Changelogs.md)
+
+### Extra Credit
+
+- The React Native dev tools are currently disabled in our fork [#5602](https://github.com/expo/expo/issues/5602). You can hack around this by cloning React Native outside this repo, then copying the contents `react-native/React/DevSupport` into `expo/react-native-lab/react-native/React/DevSupport` (this will only enable the shake gesture, CMD+R won't work yet).
+- We use a fork of `react-native` in this repo; this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want). It diverges the minimal amount necessary from the `react-native` version in its `package.json`.
+- We use a unified set of basic Bash scripts and configs called `expo-module-scripts` to ensure everything runs smoothly (TypeScript, Babel, Jest, etc...).
+
+## ⏱ Testing Your Changes
+
+> You'll need write about how you tested your changes in the PR under the **Test Plan** section.
+
+The best way to get your changes merged is to build good tests for them! We have three different kinds of tests: unit-tests, automated E2E tests, and demos (adding tests that you notice are missing is a great way to become my friend 🥳)!
+
+### ✅ Unit Testing
+
+1. Create a test for your feature in the appropriate package's `src/__tests__` directory (if the file doesn't exist already, create it with the `*-test.ts` or `*-test.tsx` extension).
+2. Any new bridged native functions have to be added to the [jest-expo](https://github.com/expo/expo/blob/main/packages/jest-expo/src/preset/expoModules.js) package to ensure they are mocked. To help you do this more easily, we've written a tool and a guide on how to do this. Check out [Generating Jest Mocks](https://github.com/expo/expo/blob/main/guides/Generating%20Jest%20Mocks.md)!
+3. Run the test with `pnpm test` and ensure it handles all platforms (iOS, Android, and web). If the feature doesn't support a platform, then you can exclude it by putting your test in a file with a platform extension like: `.test.ios.ts`, `.test.native.ts`, `.test.web.ts`...
+4. You can also test platforms one at a time by pressing <kbd>X</kbd> and selecting the platform you want to test!
+
+### 🏁 E2E Testing
+
+1. Write your tests in `apps/test-suite/tests`
+   - These tests are written with a non-feature-complete version of Jasmine that runs on the Android and iOS clients, so no special features like snapshot testing will be available.
+   - If you created a new test file, be sure to add it in `apps/test-suite/TestUtils.js`.
+   - If the new test file could be running automatically from the `bare-expo` testing, add it in `apps/bare-expo/e2e/TestSuite-test.native.js`.
+2. Run your tests locally from the `bare-expo` directory with `pnpm test:android`, or `pnpm test:ios`.
+   - It's important you test locally because native CI tests can be fragile, take a while to finish, and be frustrating when they fail.
+3. Remember to try and get your feature running on as many platforms as possible.
+
+Thanks again for helping to make sure that Expo is stable for everyone!
+
+## 📚 Updating Documentation
+
+Our docs are made with [Next.js](https://github.com/vercel/next.js). They're located in the **docs** directory. For more information look at the [**docs/README.md**](/docs/README.md).
+
+**TL;DR:**
+
+Note: Running docs pnpm commands requires a specific version of Node. You can find this version under the `volta` section in [./docs/package.json](./docs/package.json).
+
+1. Navigate to the **docs** directory and run `pnpm install`.
+2. Start the project with `pnpm dev` (make sure you don't have another server running on port `3002`). Note: Requires Node `22.13.1` or higher.
+3. Navigate to the docs you want to edit: `cd docs/pages/`.
+4. If you update an older version, ensure the relevant changes are copied into `docs/pages/versions/unversioned/` for API docs.
+5. Package API docs are generated from sources. To regenerate the docs, run `et generate-docs-api-data -p <package-name>` (for the next SDK version) or `et generate-docs-api-data -p <package-name> -s <number>` (for a specific SDK version).
+
+## 📝 Writing a Commit Message
+
+> If this is your first time committing to a large public repo, you could look through this neat tutorial: ["How to Write a Git Commit Message"](https://chris.beams.io/posts/git-commit/)
+
+Commit messages are most useful when formatted like so: `[platform][api] Title`. For example, if you fix a bug in the package `expo-video` for iOS, you could write: `[ios][video] Fixed black screen bug that appears on older devices`.
+
+## 🔎 Before Submitting
+
+- Remember to add a concise description of any user-facing changes to `CHANGELOG.md` file in the package you've changed or [root's CHANGELOG.md](/CHANGELOG.md) if your changes don't apply to any package. This is especially helpful for breaking changes!
+
+To keep CI green, please make sure of the following:
+
+### If you modified anything in `packages/`:
+
+- Run `et check-packages <...packages>` (or `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm lint` and `pnpm format`) for the packages you changed. See [Common package scripts](#common-package-scripts).
+- Run `pnpm lint --fix` and `pnpm format` to fix the formatting of the code. Ensure that both commands succeed without errors or warnings.
+- (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
+- All `console.log`s or commented out code blocks are removed!
+
+### If you edited the docs directory:
+
+- Any changes to docs for the current SDK version should also be applied to the unversioned copy. The current docs SDK version is defined in [`docs/package.json`](./docs/package.json), and the versioning workflow is described in [docs/README.md](./docs/README.md#update-latest-version-of-api-reference-docs). Example:
+  - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
+  - Ensure you copy that change to: `docs/pages/versions/unversioned/sdk/app-auth.md`
+- You don't need to run the docs tests locally. Just ensure the links you include aren't broken, the format is correct, and the changes are following our [writing style guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
+
+### Extra Credit
+
+- Our CI tests will finish early if you don't make changes to certain directories. If you want to **get results faster** then you should make changes to **docs** directory in one PR, and changes to anything else in another!

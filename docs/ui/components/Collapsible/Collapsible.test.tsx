@@ -1,0 +1,52 @@
+import { fireEvent, render, screen } from '@testing-library/react';
+import GithubSlugger from 'github-slugger';
+import { PropsWithChildren } from 'react';
+
+import { createHeadingManager } from '~/common/headingManager';
+import { HeadingsContext } from '~/common/withHeadingManager';
+
+import { Collapsible } from '.';
+
+const prepareHeadingManager = () => {
+  return createHeadingManager(new GithubSlugger(), { headings: [] });
+};
+
+const WrapWithContext = ({ children }: PropsWithChildren) => {
+  const headingManager = prepareHeadingManager();
+  return <HeadingsContext.Provider value={headingManager}>{children}</HeadingsContext.Provider>;
+};
+
+describe('Collapsible', () => {
+  it('hides content by default', () => {
+    render(
+      <WrapWithContext>
+        <Collapsible summary="Summary">Content</Collapsible>
+      </WrapWithContext>
+    );
+    expect(screen.getByText('Summary')).toBeVisible();
+    expect(screen.getByText('Content')).not.toBeVisible();
+  });
+
+  it('shows content when opened', () => {
+    render(
+      <WrapWithContext>
+        <Collapsible summary="Summary">Content</Collapsible>
+      </WrapWithContext>
+    );
+    fireEvent.click(screen.getByText('Summary'));
+    expect(screen.getByText('Summary')).toBeVisible();
+    expect(screen.getByText('Content')).toBeVisible();
+  });
+
+  it('shows content when rendered with open', () => {
+    render(
+      <WrapWithContext>
+        <Collapsible summary="Summary" open>
+          Content
+        </Collapsible>
+      </WrapWithContext>
+    );
+    expect(screen.getByText('Summary')).toBeVisible();
+    expect(screen.getByText('Content')).toBeVisible();
+  });
+});

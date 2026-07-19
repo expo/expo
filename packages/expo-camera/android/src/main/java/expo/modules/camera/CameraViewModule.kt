@@ -1,0 +1,602 @@
+package expo.modules.camera
+
+import android.Manifest
+import android.app.Activity
+import android.content.IntentSender
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Bundle
+import android.util.Base64
+import android.util.Log
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
+import expo.modules.camera.analyzers.BarCodeScannerResultSerializer
+import expo.modules.camera.analyzers.MLKitBarCodeScanner
+import expo.modules.camera.documentscanner.DocumentScannerActivityResult
+import expo.modules.camera.documentscanner.DocumentScannerContract
+import expo.modules.camera.documentscanner.DocumentScannerContractInput
+import expo.modules.camera.documentscanner.DocumentScannerResultParser
+import expo.modules.camera.records.BarcodeSettings
+import expo.modules.camera.records.BarcodeType
+import expo.modules.camera.records.CameraMode
+import expo.modules.camera.records.DocumentScannerOptions
+import expo.modules.camera.records.CameraRatio
+import expo.modules.camera.records.CameraType
+import expo.modules.camera.records.FlashMode
+import expo.modules.camera.records.FocusMode
+import expo.modules.camera.records.VideoQuality
+import expo.modules.camera.records.VideoStabilizationMode
+import expo.modules.camera.tasks.ResolveTakenPicture
+import expo.modules.camera.tasks.writeStreamToFile
+import expo.modules.camera.utils.CameraUtils
+import expo.modules.camera.utils.CameraViewHelper
+import expo.modules.core.errors.ModuleDestroyedException
+import expo.modules.core.utilities.EmulatorUtilities
+import expo.modules.core.utilities.VRUtilities
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import java.io.File
+
+val cameraEvents = arrayOf(
+  "onCameraReady",
+  "onMountError",
+  "onBarcodeScanned",
+  "onFacesDetected",
+  "onFaceDetectionError",
+  "onPictureSaved",
+  "onAvailableLensesChanged"
+)
+
+val cameraPermissions = if (VRUtilities.isQuest()) {
+  arrayOf(
+    Manifest.permission.CAMERA,
+    VRUtilities.HZOS_CAMERA_PERMISSION
+  )
+} else {
+  arrayOf(Manifest.permission.CAMERA)
+}
+
+class CameraViewModule : Module() {
+  private val moduleScope = CoroutineScope(Dispatchers.Main)
+
+  private var pendingDocumentScanIntentSender: IntentSender? = null
+  private var documentScanPromise: Promise? = null
+  private lateinit var documentScannerLauncher:
+    AppContextActivityResultLauncher<DocumentScannerContractInput, DocumentScannerActivityResult>
+
+  override fun definition() = ModuleDefinition {
+    Name("ExpoCamera")
+
+    Events("onModernBarcodeScanned")
+
+    // Aligned with iOS which has the same property. True when ML Kit is available.
+    // False on Horizon OS (Quest devices) and devices without Google Play Services.
+    Property("isModernBarcodeScannerAvailable") {
+      !VRUtilities.isQuest() && CameraUtils.isMLKitAvailable(appContext.reactContext)
+    }
+
+    // Again, aligned with iOS.
+    Property("toggleRecordingAsyncAvailable") {
+      true
+    }
+
+    AsyncFunction("requestCameraPermissionsAsync") { promise: Promise ->
+      Permissions.askForPermissionsWithPermissionsManager(
+        permissionsManager,
+        promise,
+        *cameraPermissions
+      )
+    }
+
+    AsyncFunction("requestMicrophonePermissionsAsync") { promise: Promise ->
+      Permissions.askForPermissionsWithPermissionsManager(
+        permissionsManager,
+        promise,
+        Manifest.permission.RECORD_AUDIO
+      )
+    }
+
+    AsyncFunction("getCameraPermissionsAsync") { promise: Promise ->
+      Permissions.getPermissionsWithPermissionsManager(
+        permissionsManager,
+        promise,
+        *cameraPermissions
+      )
+    }
+
+    AsyncFunction("getMicrophonePermissionsAsync") { promise: Promise ->
+      Permissions.getPermissionsWithPermissionsManager(
+        permissionsManager,
+        promise,
+        Manifest.permission.RECORD_AUDIO
+      )
+    }
+
+    AsyncFunction("scanFromURLAsync") { url: String, barcodeTypes: List<BarcodeType>, promise: Promise ->
+      if (!CameraUtils.isMLKitAvailable(appContext.reactContext)) {
+        promise.reject(CameraExceptions.MLKitUnavailableException())
+        return@AsyncFunction
+      }
+
+      appContext.service<ImageLoaderInterface>()?.loadImageForManipulationFromURL(
+        url,
+        object : ImageLoaderInterface.ResultListener {
+          override fun onSuccess(bitmap: Bitmap) {
+            try {
+              val scanner = MLKitBarCodeScanner()
+              val formats = barcodeTypes.map { it.mapToBarcode() }
+              scanner.setSettings(formats)
+
+              moduleScope.launch {
+                try {
+                  val barcodes = scanner.scan(bitmap)
+                    .filter { formats.contains(it.type) }
+                    .map { BarCodeScannerResultSerializer.toBundle(it, 1.0f) }
+                  promise.resolve(barcodes)
+                } catch (e: Exception) {
+                  Log.e(TAG, "ML Kit scanning failed: ${e.message}")
+                  promise.reject(CameraExceptions.MLKitUnavailableException())
+                }
+              }
+            } catch (e: Exception) {
+              promise.reject(CameraExceptions.MLKitUnavailableException())
+            }
+          }
+
+          override fun onFailure(cause: Throwable?) {
+            promise.reject(CameraExceptions.ImageRetrievalException(url))
+          }
+        }
+      )
+    }
+
+    AsyncFunction("launchScanner") { settings: BarcodeSettings, promise: Promise ->
+      if (!CameraUtils.isMLKitBarcodeScannerAvailable()) {
+        promise.reject(CameraExceptions.MLKitUnavailableException())
+        return@AsyncFunction
+      }
+
+      if (!CameraUtils.hasGooglePlayServices(appContext.reactContext)) {
+        promise.reject(CameraExceptions.GooglePlayServicesUnavailableException())
+        return@AsyncFunction
+      }
+
+      val reactContext = appContext.reactContext
+
+      if (reactContext == null) {
+        promise.reject(Exceptions.ReactContextLost())
+        return@AsyncFunction
+      }
+
+      try {
+        val options = GmsBarcodeScannerOptions.Builder().apply {
+          if (settings.barcodeTypes.isNotEmpty()) {
+            setBarcodeFormats(
+              settings.barcodeTypes.first().mapToBarcode(),
+              *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray()
+            )
+          }
+        }.build()
+
+        val scanner = GmsBarcodeScanning.getClient(reactContext, options)
+        scanner.startScan()
+          .addOnSuccessListener { barcode ->
+            val result = BarCodeScannerResultSerializer.parseBarcodeScanningResult(barcode)
+            sendEvent("onModernBarcodeScanned", BarCodeScannerResultSerializer.toBundle(result, 1.0f))
+            promise.resolve()
+          }
+          .addOnCanceledListener {
+            promise.reject(CameraExceptions.BarcodeScanningCancelledException())
+          }
+          .addOnFailureListener {
+            promise.reject(CameraExceptions.BarcodeScanningFailedException())
+          }
+      } catch (_: Exception) {
+        promise.reject(CameraExceptions.GooglePlayServicesUnavailableException())
+      }
+    }
+
+    AsyncFunction("dismissScanner") {
+      // Aligned with iOS, this function is a no-op on Android since the scanner is dismissed automatically
+    }
+
+    Property("isDocumentScannerAvailable") {
+      CameraUtils.isMLKitDocumentScannerAvailable() && CameraUtils.hasGooglePlayServices(appContext.reactContext)
+    }
+
+    RegisterActivityContracts {
+      documentScannerLauncher = registerForActivityResult(
+        DocumentScannerContract { pendingDocumentScanIntentSender }
+      ) { _, _ ->
+        pendingDocumentScanIntentSender = null
+        documentScanPromise?.reject(
+          CameraExceptions.DocumentScanningFailedException("the document scan was interrupted because the screen was recreated")
+        )
+        documentScanPromise = null
+      }
+    }
+
+    AsyncFunction("scanDocumentAsync") { options: DocumentScannerOptions?, promise: Promise ->
+      if (!CameraUtils.isMLKitDocumentScannerAvailable()) {
+        promise.reject(CameraExceptions.DocumentScannerUnavailableException())
+        return@AsyncFunction
+      }
+      if (!CameraUtils.hasGooglePlayServices(appContext.reactContext)) {
+        promise.reject(CameraExceptions.GooglePlayServicesUnavailableException())
+        return@AsyncFunction
+      }
+      val activity = appContext.currentActivity
+      if (activity == null) {
+        promise.reject(Exceptions.MissingActivity())
+        return@AsyncFunction
+      }
+      if (documentScanPromise != null) {
+        promise.reject(CameraExceptions.DocumentScanningFailedException("a document scan is already in progress"))
+        return@AsyncFunction
+      }
+      launchDocumentScanner(activity, options, promise)
+    }
+
+    OnDestroy {
+      try {
+        moduleScope.cancel(ModuleDestroyedException())
+      } catch (_: IllegalStateException) {
+        Log.e(TAG, "The scope does not have a job in it")
+      }
+    }
+
+    Class("Picture", PictureRef::class) {
+      Property("width") { picture: PictureRef ->
+        picture.ref.width
+      }
+
+      Property("height") { picture: PictureRef ->
+        picture.ref.height
+      }
+
+      AsyncFunction("savePictureAsync") { picture: PictureRef, options: SavePictureOptions?, promise: Promise ->
+        val image = picture.ref
+        val response = Bundle()
+
+        cacheDirectory.let {
+          response.apply {
+            putInt("width", image.width)
+            putInt("height", image.height)
+          }
+
+          val quality = options?.quality ?: 1
+          // Cache compressed image in imageStream
+          ByteArrayOutputStream().use { imageStream ->
+            image.compress(Bitmap.CompressFormat.JPEG, quality.toInt() * 100, imageStream)
+            // Write compressed image to file in cache directory
+            try {
+              val filePath = writeStreamToFile(it, imageStream)
+              image.recycle()
+              val imageFile = File(filePath)
+              val fileUri = Uri.fromFile(imageFile).toString()
+              response.putString("uri", fileUri)
+
+              // Write base64-encoded image to the response if requested
+              if (options?.base64 == true) {
+                response.putString("base64", Base64.encodeToString(imageStream.toByteArray(), Base64.NO_WRAP))
+              }
+              promise.resolve(response)
+            } catch (e: CodedException) {
+              promise.reject(e)
+            }
+          }
+        }
+      }
+    }
+
+    View(ExpoCameraView::class) {
+      Events(cameraEvents)
+
+      Prop("facing") { view, facing: CameraType? ->
+        facing?.let {
+          if (view.lensFacing != it) {
+            view.lensFacing = it
+          }
+        } ?: run {
+          if (view.lensFacing != CameraType.BACK) {
+            view.lensFacing = CameraType.BACK
+          }
+        }
+      }
+
+      Prop("flashMode") { view, flashMode: FlashMode? ->
+        flashMode?.let {
+          if (view.flashMode != it) {
+            view.flashMode = it
+          }
+        } ?: run {
+          if (view.flashMode != FlashMode.OFF) {
+            view.flashMode = FlashMode.OFF
+          }
+        }
+      }
+
+      Prop("enableTorch") { view, enabled: Boolean? ->
+        enabled?.let {
+          if (view.enableTorch != it) {
+            view.enableTorch = it
+          }
+        } ?: run {
+          if (view.enableTorch) {
+            view.enableTorch = false
+          }
+        }
+      }
+
+      Prop("animateShutter") { view, animate: Boolean? ->
+        view.animateShutter = animate ?: true
+      }
+
+      Prop("zoom") { view, zoom: Float? ->
+        zoom?.let {
+          if (view.zoom != it) {
+            view.zoom = it
+          }
+        } ?: run {
+          if (view.zoom != 0f) {
+            view.zoom = 0f
+          }
+        }
+      }
+
+      Prop("mode") { view, mode: CameraMode? ->
+        mode?.let {
+          if (view.cameraMode != it) {
+            view.cameraMode = it
+          }
+        } ?: run {
+          if (view.cameraMode != CameraMode.PICTURE) {
+            view.cameraMode = CameraMode.PICTURE
+          }
+        }
+      }
+
+      Prop("mute") { view, muted: Boolean? ->
+        view.mute = muted ?: false
+      }
+
+      Prop("videoQuality") { view, quality: VideoQuality? ->
+        quality?.let {
+          if (view.videoQuality != it) {
+            view.videoQuality = it
+          }
+        } ?: run {
+          if (view.videoQuality != VideoQuality.VIDEO1080P) {
+            view.videoQuality = VideoQuality.VIDEO1080P
+          }
+        }
+      }
+
+      Prop("videoStabilizationMode") { view, mode: VideoStabilizationMode? ->
+        mode?.let {
+          if (view.videoStabilizationMode != it) {
+            view.videoStabilizationMode = it
+          }
+        } ?: run {
+          if (view.videoStabilizationMode != VideoStabilizationMode.AUTO) {
+            view.videoStabilizationMode = VideoStabilizationMode.AUTO
+          }
+        }
+      }
+
+      Prop("barcodeScannerSettings") { view, settings: BarcodeSettings? ->
+        if (!CameraUtils.isMLKitBarcodeScannerAvailable()) {
+          appContext.jsLogger?.warn("Barcode scanning has been disabled")
+          return@Prop
+        }
+        settings?.let {
+          view.setBarcodeScannerSettings(it)
+        }
+      }
+
+      Prop("barcodeScannerEnabled") { view, enabled: Boolean? ->
+        if (!CameraUtils.isMLKitBarcodeScannerAvailable()) {
+          view.setShouldScanBarcodes(false)
+          return@Prop
+        }
+        enabled?.let {
+          view.setShouldScanBarcodes(enabled)
+        }
+      }
+
+      Prop("pictureSize") { view, pictureSize: String? ->
+        pictureSize?.let {
+          if (view.pictureSize != it) {
+            view.pictureSize = it
+          }
+        } ?: run {
+          if (view.pictureSize.isNotEmpty()) {
+            view.pictureSize = ""
+          }
+        }
+      }
+
+      Prop("autoFocus") { view, autoFocus: FocusMode? ->
+        autoFocus?.let {
+          if (view.autoFocus != it) {
+            view.autoFocus = it
+          }
+        } ?: run {
+          if (view.autoFocus != FocusMode.OFF) {
+            view.autoFocus = FocusMode.OFF
+          }
+        }
+      }
+
+      Prop("ratio") { view, ratio: CameraRatio? ->
+        ratio?.let {
+          if (view.ratio != it) {
+            view.ratio = it
+          }
+        } ?: run {
+          if (view.ratio != null) {
+            view.ratio = null
+          }
+        }
+      }
+
+      Prop("mirror") { view, mirror: Boolean? ->
+        mirror?.let {
+          if (view.mirror != it) {
+            view.mirror = it
+          }
+        } ?: run {
+          if (view.mirror) {
+            view.mirror = false
+          }
+        }
+      }
+
+      Prop("videoBitrate") { view, bitrate: Int? ->
+        bitrate?.let {
+          if (view.videoEncodingBitrate != it) {
+            view.videoEncodingBitrate = it
+          }
+        } ?: run {
+          if (view.videoEncodingBitrate != null) {
+            view.videoEncodingBitrate = null
+          }
+        }
+      }
+
+      OnViewDidUpdateProps { view ->
+        view.recreateCamera()
+      }
+
+      OnViewDestroys { view ->
+        view.cleanupCamera()
+      }
+
+      AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
+        if (!EmulatorUtilities.isRunningOnEmulator()) {
+          view.takePicture(options, promise, cacheDirectory, runtime)
+        } else {
+          val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
+          moduleScope.launch {
+            ResolveTakenPicture(image, promise, options, false, runtime, cacheDirectory) { response ->
+              view.onPictureSaved(response)
+            }.resolve()
+          }
+        }
+      }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("getAvailablePictureSizes") { view: ExpoCameraView ->
+        return@AsyncFunction view.getAvailablePictureSizes()
+      }
+
+      AsyncFunction("record") { view: ExpoCameraView, options: RecordingOptions, promise: Promise ->
+        if (!view.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
+          throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
+        }
+
+        view.record(options, promise, cacheDirectory)
+      }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("toggleRecording") { view: ExpoCameraView ->
+        view.toggleRecording()
+      }
+
+      AsyncFunction("stopRecording") { view: ExpoCameraView ->
+        view.stopRecording()
+      }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("resumePreview") { view: ExpoCameraView ->
+        view.resumePreview()
+      }
+
+      AsyncFunction("pausePreview") { view: ExpoCameraView ->
+        view.pausePreview()
+      }
+    }
+  }
+
+  private val cacheDirectory: File
+    get() = appContext.cacheDirectory
+
+  private val permissionsManager: Permissions
+    get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
+
+  private fun launchDocumentScanner(activity: Activity, options: DocumentScannerOptions?, promise: Promise) {
+    documentScanPromise = promise
+    try {
+      GmsDocumentScanning.getClient(buildDocumentScannerOptions(options))
+        .getStartScanIntent(activity)
+        .addOnSuccessListener { intentSender ->
+          pendingDocumentScanIntentSender = intentSender
+          documentScannerLauncher.launch(DocumentScannerContractInput()) { result ->
+            handleDocumentScanResult(result)
+          }
+        }
+        .addOnFailureListener { e ->
+          documentScanPromise = null
+          promise.reject(CameraExceptions.DocumentScanningFailedException(e.message))
+        }
+    } catch (e: Exception) {
+      documentScanPromise = null
+      promise.reject(CameraExceptions.DocumentScanningFailedException(e.message))
+    }
+  }
+
+  private fun buildDocumentScannerOptions(options: DocumentScannerOptions?): GmsDocumentScannerOptions {
+    val builder = GmsDocumentScannerOptions.Builder()
+      .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
+    if (options?.requestPdf == true) {
+      builder.setResultFormats(
+        GmsDocumentScannerOptions.RESULT_FORMAT_JPEG,
+        GmsDocumentScannerOptions.RESULT_FORMAT_PDF
+      )
+    } else {
+      builder.setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
+    }
+    return builder.build()
+  }
+
+  private fun handleDocumentScanResult(activityResult: DocumentScannerActivityResult) {
+    pendingDocumentScanIntentSender = null
+    val promise = documentScanPromise ?: return
+    documentScanPromise = null
+    if (activityResult.cancelled || activityResult.result == null) {
+      promise.resolve(null)
+      return
+    }
+    val reactContext = appContext.reactContext
+    if (reactContext == null) {
+      promise.reject(Exceptions.ReactContextLost())
+      return
+    }
+    moduleScope.launch {
+      try {
+        val bundle = withContext(Dispatchers.IO) {
+          DocumentScannerResultParser.parse(reactContext, activityResult.result, cacheDirectory)
+        }
+        promise.resolve(bundle)
+      } catch (e: Exception) {
+        promise.reject(CameraExceptions.DocumentScanningFailedException(e.message))
+      }
+    }
+  }
+
+  companion object {
+    internal val TAG = CameraViewModule::class.java.simpleName
+  }
+}

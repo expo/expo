@@ -1,0 +1,42 @@
+{
+  "name": "expo-battery",
+  "version": "56.0.4",
+  "description": "Provides battery information for the physical device, as well as corresponding event listeners.",
+  "keywords": [
+    "expo",
+    "expo-battery",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/battery/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-battery"
+  },
+  "main": "build/Battery.js",
+  "types": "build/Battery.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/react": "~19.2.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*"
+  }
+}

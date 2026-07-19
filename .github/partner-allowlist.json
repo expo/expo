@@ -1,0 +1,16 @@
+{
+  "_comment": "Manually-curated list of GitHub usernames for partner-org employees whose org membership is private. Used in addition to the public_members API check by .github/workflows/pr-contributor-labeler.yml and .github/scripts/backfill-pr-labels.mjs. Keys are partner label suffixes (matching the AFFILIATIONS map in the workflow).",
+  "meta": ["cortinico", "cipolleschi", "motiz88"],
+  "software-mansion": [],
+  "infinite-red": ["frankcalise"],
+  "callstack": [],
+  "margelo": ["zhongwuzw"],
+  "app-and-flow": [],
+  "strv": [],
+  "theodo": [],
+  "nearform": [],
+  "echobind": [],
+  "pagepro": [],
+  "g2i": [],
+  "geekyants": []
+}

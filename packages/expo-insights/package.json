@@ -1,0 +1,44 @@
+{
+  "name": "expo-insights",
+  "version": "56.0.14",
+  "description": "Expo module that offers developers insight into the usage data of the app",
+  "keywords": [
+    "EAS",
+    "ExpoInsights",
+    "expo",
+    "expo-insights",
+    "insights",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-insights"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "expo-eas-client": "workspace:~56.0.0"
+  },
+  "devDependencies": {
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "title": "Expo Insights"
+}

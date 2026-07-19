@@ -1,0 +1,162 @@
+---
+title: Using Convex
+description: Add a database to your app with Convex.
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+[Convex](https://www.convex.dev/) is a backend platform for building reactive apps with a realtime database, server functions, file storage, search, scheduling, and type-safe client libraries without the need for cluster management, SQL, or ORMs.
+
+The EAS CLI integration can create and connect the Convex project for you. It replaces the manual setup steps where you install the package, create a Convex team and project, copy deployment URLs, and configure EAS environment variables.
+
+<Prerequisites>
+  <Requirement title="Expo account">
+    Sign up for an [Expo account](https://expo.dev/signup).
+  </Requirement>
+  <Requirement title="EAS CLI">Install EAS CLI globally with `npm install -g eas-cli`.</Requirement>
+  <Requirement title="Expo project linked to EAS">
+    Create an Expo project and link it to EAS with `eas init`.
+  </Requirement>
+</Prerequisites>
+
+## Connect Convex with EAS
+
+<Step label="1">
+
+### Run the EAS CLI integration command
+
+From your Expo project directory, run:
+
+<Terminal cmd={['$ eas integrations:convex:connect']} />
+
+The command will prompt for a Convex deployment region, project name, and team name when needed. It only asks for a team name when it needs to create a new Convex team connection.
+
+You can also pass values explicitly:
+
+<Terminal
+  cmd={[
+    '$ eas integrations:convex:connect --region aws-us-east-1 --team-name "Your-team-name" --project-name "your-app"',
+  ]}
+/>
+
+The integration command:
+
+- Installs the `convex` package with `npx expo install convex`
+- Creates a Convex team connection for your EAS account, or reuses an existing one
+- Creates a Convex project and deployment for the current Expo app
+- Writes `CONVEX_DEPLOY_KEY` and `EXPO_PUBLIC_CONVEX_URL` to **.env.local**
+- Creates or updates the `EXPO_PUBLIC_CONVEX_URL` EAS project environment variable for the production, preview, and development environments
+- Sends an invitation to your verified email so you can claim the Convex team and open the Convex dashboard
+
+</Step>
+
+<Step label="2">
+
+### Start Convex locally
+
+After the integration command finishes, start the Convex dev server:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx convex dev'],
+    yarn: ['$ yarn dlx convex dev'],
+    pnpm: ['$ pnpm dlx convex dev'],
+    bun: ['$ bunx convex dev'],
+  }}
+/>
+
+This creates the local **convex** directory if your project does not have one yet, generates the typed API files, and syncs your Convex functions with your deployment while it runs.
+
+</Step>
+
+<Step label="3">
+
+### Add a Convex provider
+
+Create a Convex client with the deployment URL that the EAS integration wrote to **.env.local**, then wrap your app in `ConvexProvider`.
+
+For an Expo Router project, update **src/app/\_layout.tsx**:
+
+```tsx src/app/_layout.tsx
+import { ConvexProvider, ConvexReactClient } from 'convex/react';
+import { Stack } from 'expo-router';
+
+const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
+  unsavedChangesWarning: false,
+});
+
+export default function RootLayout() {
+  return (
+    <ConvexProvider client={convex}>
+      <Stack />
+    </ConvexProvider>
+  );
+}
+```
+
+</Step>
+
+<Step label="4">
+
+### Query Convex from your app
+
+Add a query function in the **convex** directory:
+
+```ts convex/tasks.ts
+import { query } from './_generated/server';
+
+export const get = query({
+  args: {},
+  handler: async ctx => {
+    return await ctx.db.query('tasks').collect();
+  },
+});
+```
+
+Then call it from your app with `useQuery`:
+
+```tsx src/app/index.tsx
+import { api } from '@/convex/_generated/api';
+import { useQuery } from 'convex/react';
+import { Text, View } from 'react-native';
+
+export default function Index() {
+  const tasks = useQuery(api.tasks.get);
+
+  return (
+    <View>
+      {tasks?.map(task => (
+        <Text key={task._id}>{task.text}</Text>
+      ))}
+    </View>
+  );
+}
+```
+
+</Step>
+
+To learn more about how Convex works, including database documents, functions, and client subscriptions, see the Convex overview:
+
+<BoxLink
+  title="Convex overview"
+  description="Learn the core Convex concepts behind database documents, functions, and realtime client updates."
+  href="https://docs.convex.dev/understanding/"
+/>
+
+## Manage the integration
+
+Use these commands to inspect or manage the Convex integration later:
+
+<Terminal
+  cmd={[
+    '$ eas integrations:convex:project',
+    '$ eas integrations:convex:dashboard',
+    '$ eas integrations:convex:team',
+    '$ eas integrations:convex:team:invite',
+  ]}
+/>
+
+If you remove the link with `eas integrations:convex:project:delete` or `eas integrations:convex:team:delete`, EAS removes its integration metadata. These commands do not destroy resources on Convex.

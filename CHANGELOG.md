@@ -1,0 +1,4659 @@
+# Changelog
+
+This is the log of notable changes to the Expo client that are developer-facing.
+Package-specific changes not released in any SDK will be added here just before the release. Until then, you can find them in changelogs of the individual packages (see [packages](./packages) directory).
+
+## Unpublished
+
+### 📚 3rd party library updates
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 57.0.0 — 2026-07-08
+
+### 🛠 Breaking changes
+
+- **`@expo/ui`**
+  - [universal][android] Use `BasicTextField` component instead of Filled Material TextField. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46442](https://github.com/expo/expo/pull/46442) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- **`expo-modules-jsi`**
+  - [iOS] `JavaScriptError` is now a copyable class conforming to `Error` (was a non-copyable struct), and `JavaScriptValue` no longer conforms to `Error`. ([#47154](https://github.com/expo/expo/pull/47154) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-font`**
+  - [web] Removed `Server.resetServerContext()`. Server-side font state is now scoped per-render via `AsyncLocalStorage`. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
+- **`@expo/cli`**
+  - Make `expo prebuild` clear and regenerate the native folders by default. Pass `--no-clean` to apply changes to the existing folders instead. ([#47209](https://github.com/expo/expo/pull/47209) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🎉 New features
+
+- Initial release of **`@expo/require-utils`** 🥳
+- **`pod-install`**
+  - Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
+- **`@expo/ui`**
+  - [iOS] Added the SwiftUI `accessibilityHidden` modifier to hide decorative views from VoiceOver and other assistive technologies during element traversal. ([#46579](https://github.com/expo/expo/pull/46579) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [iOS] Added the SwiftUI `accessibilityIdentifier` modifier to set a stable identifier for UI testing tools such as XCUITest. ([#46556](https://github.com/expo/expo/pull/46556) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [iOS] Added the SwiftUI `dynamicTypeSize` modifier to set or constrain the Dynamic Type size within a view. Accepts a single size or a `{ min, max }` range, and cascades from `<Host>` to bound how far text scales at the largest accessibility sizes. ([#46540](https://github.com/expo/expo/pull/46540) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
+  - [iOS] Add `buttonBorderShape` SwiftUI modifier, which reshapes a styled button (for example a `glass` button) while preserving its native press effect. ([#46348](https://github.com/expo/expo/pull/46348) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46348](https://github.com/expo/expo/pull/46348) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [jetpack-compose] Added `NavigationBar` and `NavigationBarItem` components.
+  - [iOS] Added the SwiftUI `listRowSpacing` modifier. ([#46417](https://github.com/expo/expo/pull/46417) by [@qiyangdev](https://github.com/qiyangdev))
+  - [iOS] Added support for custom SF Symbols in the SwiftUI `Image` component. ([#46183](https://github.com/expo/expo/pull/46183) by [@cinques](https://github.com/cinques))
+  - [swift-ui] Added `<DisclosureGroup.Label>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
+  - [universal] Added `<Collapsible.labelStyle>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
+  - [jetpack-compose] Added `dropShadow` and `innerShadow` modifiers. ([#46364](https://github.com/expo/expo/discussions/46364) by [@duyanhv](https://github.com/duyanhv))
+  - [iOS] Added the SwiftUI `imageScale` modifier to scale SF Symbols within a view relative to the surrounding text (`small`, `medium`, `large`). ([#46774](https://github.com/expo/expo/pull/46774) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [jetpack-compose] Added `onGloballyPositioned` modifier, which reports a composable's window position and size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46744](https://github.com/expo/expo/pull/46744) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Extended the SwiftUI `onGeometryChange` modifier to also report the view's global position (`x`/`y`) alongside its size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46744](https://github.com/expo/expo/pull/46744) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Added the SwiftUI `minimumScaleFactor` modifier to let text shrink down to a given fraction of its size before truncating. ([#46740](https://github.com/expo/expo/pull/46740) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46740](https://github.com/expo/expo/pull/46740) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS][android] Added React Compiler-friendly `get()` / `set()` accessors to `useNativeState`, as an alternative to reading and writing `.value`. ([#46690](https://github.com/expo/expo/pull/46692) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46692](https://github.com/expo/expo/pull/46692) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [jetpack-compose] Added `BasicTextField` component. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46442](https://github.com/expo/expo/pull/46442) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Added the SwiftUI `accessibilityInputLabels` modifier to set alternative spoken phrases Voice Control uses to refer to a view (for example "Hang up" for an "End" button). ([#46661](https://github.com/expo/expo/pull/46661) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [iOS] Added the SwiftUI `activityBackgroundTint` modifier for setting Live Activity background. ([#46756](https://github.com/expo/expo/pull/46756) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Added a `modifiers` prop to `ListItem` to override its default `buttonStyle(.plain)`. ([#47124](https://github.com/expo/expo/pull/47124) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47124](https://github.com/expo/expo/pull/47124) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS][web] Added `seedColor` prop to the universal and SwiftUI `<Host>`, used as the SwiftUI tint on iOS and to derive the primary color scale on web. ([#46566](https://github.com/expo/expo/pull/46566) by [@zoontek](https://github.com/zoontek))
+  - [web] Honor the `colorScheme` prop on `<Host>` to override the system color scheme for its subtree, matching native parity. ([#46459](https://github.com/expo/expo/pull/46459) by [@zoontek](https://github.com/zoontek))
+  - [iOS] Added the SwiftUI `accessibilityElement` modifier, which collapses a view's subtree into a single accessibility element via `ignore`, `combine`, or `contain`. ([#47156](https://github.com/expo/expo/pull/47156) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [iOS] Added the SwiftUI `redacted`, `unredacted`, `privacySensitive`, and `invalidatableContent` modifiers, mapping SwiftUI's redaction family for native skeleton-loading and sensitive-content states. ([#47269](https://github.com/expo/expo/pull/47269) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [iOS] Added `accessibilityAddTraits` and `accessibilityRemoveTraits` SwiftUI modifiers, accepting an array of trait names. ([#47387](https://github.com/expo/expo/pull/47387) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [iOS] Added the SwiftUI `strokeBorder` modifier with a full `StrokeStyle` (line width, cap, join, miter limit, dash array, dash phase) for dashed and dotted inset borders that follow the shape's corners. ([#47426](https://github.com/expo/expo/pull/47426) by [@ramonclaudio](https://github.com/ramonclaudio))
+- **`expo-network`**
+  - [macOS] Add support for the macOS platform. ([#46535](https://github.com/expo/expo/pull/46535) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-router`**
+  - Add `standard-navigation` integration ([#46456](https://github.com/expo/expo/pull/46456) by [@Ubax](https://github.com/Ubax))
+  - Re-export drawer content components and types from `expo-router/drawer` ([#46635](https://github.com/expo/expo/pull/46635) by [@Ubax](https://github.com/Ubax))
+  - [native-tabs] Emit a `tabPress` event with `isPrevented: true` when a `disabled` tab is tapped, without selecting it. ([#46445](https://github.com/expo/expo/pull/46445) by [@Ubax](https://github.com/Ubax))
+  - [android] Support `Stack.Toolbar.Badge` in header left/right placements ([#46537](https://github.com/expo/expo/pull/46537) by [@benjaminkomen](https://github.com/benjaminkomen))
+  - [android] Support `Stack.Toolbar.Badge` on `Stack.Toolbar.Menu` icons in header left/right placements ([#47276](https://github.com/expo/expo/pull/47276) by [@Ubax](https://github.com/Ubax))
+  - Add `unstable_nativeProps` to native Stack options. ([#47482](https://github.com/expo/expo/pull/47482) by [@Ubax](https://github.com/Ubax))
+  - [native-tabs] Add `testID` and `accessibilityLabel` props to `NativeTabs.Trigger`. ([#47472](https://github.com/expo/expo/pull/47472) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - Export the `Theme` type from the root `expo-router` entry point. ([#47476](https://github.com/expo/expo/pull/47476) by [@eliotgevers](https://github.com/eliotgevers))
+- **`expo-modules-autolinking`**
+  - Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
+  - Add experimental `tvos` and `macos` resolution ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
+  - [Android] Apply the `android.cmakeVersion` build property to the app and all library subprojects. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
+- **`expo-modules-jsi`**
+  - [iOS] Add closure-taking `JavaScriptObject.setProperty(_:function:)` overloads that create a sync or async host function from the given closure. ([#46622](https://github.com/expo/expo/pull/46622) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Add `JavaScriptUnownedValue`, a non-owning, non-copyable value that borrows a `jsi::Value` for the zero-copy argument-decode fast path. ([#46616](https://github.com/expo/expo/pull/46616) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `JavaScriptError` can now wrap and throw an arbitrary JS value (not only an `Error` instance) via `init(_:value:)`, preserving the thrown value's identity when it reaches JavaScript. ([#47154](https://github.com/expo/expo/pull/47154) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Add `createFunction`/`setProperty` overloads taking a `UnownedThisSyncFunctionClosure`, which receives `this` as a borrowed `JavaScriptUnownedValue` instead of an owning `JavaScriptValue`. Used by host functions that ignore `this` to skip the per-call owning-value allocation and its `weak`-runtime traffic. ([#46949](https://github.com/expo/expo/pull/46949) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Conform `JavaScriptRuntime` to `Identifiable` with an `id` based on the underlying runtime, equal across multiple wrappers of the same runtime. ([#47068](https://github.com/expo/expo/pull/47068) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-media-library`**
+  - Add filtering by `isFavorite` to `Query` ([#45769](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
+  - Add `Query.exeForMetadata()` for cheap bulk fetch ([#46485](https://github.com/expo/expo/pull/46485) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-modules-core`**
+  - [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added the `@Event` macro that turns a function-typed `var` on a module or shared object into a typed JavaScript event. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `@ExpoModule` now synthesizes the module's JavaScript name from the class name or its `@ExpoModule("CustomName")` argument, so a `Name(…)` definition entry is no longer required. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added `SharedObject.native(from:)` that recovers the native shared object paired with a JavaScript object, with a generic overload that returns the concrete subclass directly. ([#47054](https://github.com/expo/expo/pull/47054) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added `Module.emit` that sends an event directly to the module's own JavaScript object, mirroring `SharedObject.emit`. Both now share an `EventEmitter` protocol. ([#46555](https://github.com/expo/expo/pull/46555) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-linking`**
+  - Added `Linking.clearInitialURL()` to reset the cached deep-link URL. ([#46265](https://github.com/expo/expo/pull/46265) by @gabrieldonadel)
+- **`expo-image-picker`**
+  - [iOS] Allow `launchCameraAsync` to be invoked on the simulator. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-font`**
+  - [web] Added `Server.withServerContext(callback)` which scopes server-side font loads per render. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
+- **`expo-contacts`**
+  - [iOS] Add `cancelButtonTitle` and `showsCancelButton` options to contact forms. ([#46960](https://github.com/expo/expo/pull/46960) by [@Wenszel](https://github.com/Wenszel))
+  - [iOS] Add `preventAnimation` option to `presentCreateForm`. ([#46960](https://github.com/expo/expo/pull/46960) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-clipboard`**
+  - Add macOS support. ([#46479](https://github.com/expo/expo/pull/46479) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-brownfield`**
+  - [iOS] Add hostProvidedFrameworks option to skip Frameworks provided by the host app ([#46355](https://github.com/expo/expo/pull/46355) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-camera`**
+  - Enabled responsive capture and fast capture prioritization on iOS for lower shutter lag and faster successive photo captures.
+- **`@expo/package-manager`**
+  - Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
+- **`@expo/cli`**
+  - Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
+  - Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
+  - Support Device Hub as Simulator replacement for Xcode 27+ ([#46757](https://github.com/expo/expo/pull/46757) by [@byCedric](https://github.com/byCedric), [@GersonRocha9](https://github.com/GersonRocha9))
+  - Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- **`expo-sqlite`**
+  - Fixed a fatal JNI crash on Android when using `useLibSQL: true`, caused by the libSQL session bindings still declaring `byte[]` signatures after [#42638](https://github.com/expo/expo/pull/42638) switched Kotlin and the default native bindings to `ByteBuffer`. ([#46651](https://github.com/expo/expo/pull/46651) by [@zoontek](https://github.com/zoontek)) ([#42638](https://github.com/expo/expo/pull/42638), [#46651](https://github.com/expo/expo/pull/46651) by [@zoontek](https://github.com/zoontek))
+- **`@expo/ui`**
+  - [iOS] Fix Mac Catalyst build failure with `activityBackgroundTint` ([#46929](https://github.com/expo/expo/pull/46929) by [@theeket](https://github.com/theeket))
+  - [iOS] Fix the SwiftUI `listRowInsets` modifier being ignored when every edge is set to `0`, so a row can now reset all of its insets. ([#47000](https://github.com/expo/expo/pull/47000) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47000](https://github.com/expo/expo/pull/47000) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [android] Fix `FieldGroup` rendering an empty row/section when a conditional child (e.g. `{condition && <FieldGroup.Section>…</FieldGroup.Section>}`) evaluates to `false`. ([##46874](https://github.com/expo/expo/pull/46874) by [@dileepapeiris](https://github.com/dileepapeiris))
+  - [android] Fix React Native `Pressable`/`Button` taps not registering on `community/pager-view` pages after the first on physical devices. ([#46851](https://github.com/expo/expo/pull/46851) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46851](https://github.com/expo/expo/pull/46851) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [universal] Fix user-supplied `modifiers` having no effect when the component derives a modifier of the same type from its props, e.g. `buttonStyle` on `Button` always losing to the `variant` prop. ([#46815](https://github.com/expo/expo/pull/46815) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46815](https://github.com/expo/expo/pull/46815) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [android] Fix race between JS imperative `expand()` and Compose handler registration on `ModalBottomSheet`. Adds `initialFullyExpanded` prop to drive initial snap state natively. ([#46367](https://github.com/expo/expo/pull/46367) by [@duyanhv](https://github.com/duyanhv))
+  - [iOS][android] Fix `community/bottom-sheet` blocking touches behind the sheet after it's dismissed. ([#46805](https://github.com/expo/expo/pull/46805) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46805](https://github.com/expo/expo/pull/46805) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [android] Fix React Native touchables (e.g. `Pressable`) on `community/pager-view` pages not responding, or triggering the wrong page's handler, after navigating between pages. ([#46778](https://github.com/expo/expo/pull/46778) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46778](https://github.com/expo/expo/pull/46778) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix `font`, `dynamicTypeSize`, and `resizable` modifiers not applying to the SwiftUI `Image`. SF Symbols scale with Dynamic Type when a `font` modifier sets a `textStyle`. ([#46714](https://github.com/expo/expo/pull/46714) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [android] Fix React Native `ScrollView` nested scrolling inside `BottomSheet`. ([#46544](https://github.com/expo/expo/pull/46544) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46544](https://github.com/expo/expo/pull/46544) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [jetpack-compose] Fix layout shift when `Host` with `matchContents` is used inside React Native Screens. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46604](https://github.com/expo/expo/pull/46604) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix `PagerView` offsetting `ScrollView` by safe area insets. ([#46637](https://github.com/expo/expo/pull/46637) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46637](https://github.com/expo/expo/pull/46637) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix `SegmentedControl` being overlapped by sibling components inside a `ScrollView`, by disabling the `Host` safe area insets. ([#46575](https://github.com/expo/expo/pull/46575) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46575](https://github.com/expo/expo/pull/46575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix the community `DateTimePicker`, `MenuView`, `Picker`, and `Slider` applying safe area insets (including keyboard avoidance) twice, by disabling the `Host` safe area insets (`ignoreSafeArea="all"`). ([#46721](https://github.com/expo/expo/pull/46721) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46721](https://github.com/expo/expo/pull/46721) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [jetpack-compose] Fix `TextField` jiggling the surrounding content while its label animates on focus (a Material 3 expressive motion spring overshoot). ([#46568](https://github.com/expo/expo/pull/46568) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46568](https://github.com/expo/expo/pull/46568) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix `BottomSheet` animating open from the bottom-left corner in `fitToContents` mode. ([#46546](https://github.com/expo/expo/pull/46546) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46546](https://github.com/expo/expo/pull/46546) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix `TextField` and `SecureField` worklet `onTextChange` firing more than once per keystroke (when a change triggers reformatting) and on programmatic text updates. ([#46483](https://github.com/expo/expo/pull/46483) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46483](https://github.com/expo/expo/pull/46483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix the `font` modifier dropping Dynamic Type scaling (`relativeTo`) and `weight` on concatenated `Text` runs. The Text-concatenation path now resolves the same `Font` as the view path. ([#46509](https://github.com/expo/expo/pull/46509) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [android] Fix universal `TextInput` ignoring `style` `backgroundColor` / `borderWidth` and not applying `textAlign` to the placeholder. ([#46441](https://github.com/expo/expo/pull/46441) by [@duyanhv](https://github.com/duyanhv))
+  - [android] Fix `Switch` alignment when `label` is provided ([#47088](https://github.com/expo/expo/pull/47088) by [@rklomp](https://github.com/rklomp))
+  - [iOS] Fix universal `ListItem` stretching a fixed-size raw RN view in its leading/trailing slot to fill the row instead of honoring its size, matching Android. ([#46883](https://github.com/expo/expo/issues/46883) by [@david-videau-ortega](https://github.com/david-videau-ortega)) ([#47236](https://github.com/expo/expo/pull/47236) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47236](https://github.com/expo/expo/pull/47236) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [Android] Fix the `@expo-ui/community/datetime-picker` dialog ignoring `minimumDate`/`maximumDate` for its year range, so the calendar and year picker no longer always span 1900–2100. ([#47206](https://github.com/expo/expo/issues/47206) by [@vioodle](https://github.com/vioodle)) ([#47213](https://github.com/expo/expo/pull/47213) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47213](https://github.com/expo/expo/pull/47213) by [@vioodle](https://github.com/vioodle), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS][Android] Fix a scrollable (e.g. `FlatList`) inside `@expo/ui/community/bottom-sheet` not scrolling when the `<BottomSheet>` is mounted inside another same-orientation list (such as a `FlatList` header). ([#47197](https://github.com/expo/expo/pull/47197) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47197](https://github.com/expo/expo/pull/47197) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS][Android] Fix a scrollable child (e.g. `FlatList`, `ScrollView`) inside `@expo/ui/community/bottom-sheet` not scrolling to the end when using fixed snap points. ([#47245](https://github.com/expo/expo/pull/47245) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47245](https://github.com/expo/expo/pull/47245) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix the SwiftUI `TextField` crashing with "String index is out of bounds" on iOS 18 when JS writes new text into a focused field that holds an active text selection. ([#47447](https://github.com/expo/expo/pull/47447) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47447](https://github.com/expo/expo/pull/47447) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS][android] Fix `community/masked-view` doubling offsets and transforms by re-applying the user-supplied `style` to the inner mask/content `View` wrappers. ([#47067](https://github.com/expo/expo/issues/47067) by [@tsushanth](https://github.com/tsushanth))
+  - [iOS] Fix the graphical `DatePicker` style (`community/datetime-picker` `display="inline"`) rendering undersized on mount and jumping to its correct size on the first tap. ([#47062](https://github.com/expo/expo/issues/47062) by [@etiennetalbot](https://github.com/etiennetalbot)) ([#47465](https://github.com/expo/expo/pull/47465) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47465](https://github.com/expo/expo/pull/47465) by [@etiennetalbot](https://github.com/etiennetalbot), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- **`expo-sensors`**
+  - Fixed the prebuilt `ExpoSensors.xcframework` always returning `denied` for the motion permission on iOS. The prebuild config unconditionally defined `EXPO_DISABLE_MOTION_PERMISSION`, which is only meant to be set when opting out via the `motionPermission: false` config plugin option. ([#46686](https://github.com/expo/expo/issues/46686) by [@zoontek](https://github.com/zoontek))
+- **`expo-router`**
+  - [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))
+  - Sync config plugin `Props` type with the options schema, adding the missing `redirects`, `rewrites`, `platformRoutes`, and `disableSynchronousScreensUpdates` options. ([#46677](https://github.com/expo/expo/pull/46677) by [@zoontek](https://github.com/zoontek))
+  - Allow async routes to rehydrate synchronously by carrying through preloaded modules preventing FOUC in production output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
+  - Fix type inference for `unstable_createStandardRouterNavigator` ([#46737](https://github.com/expo/expo/pull/46737) by [@Ubax](https://github.com/Ubax))
+  - Preserve a system time mocked with `jest.setSystemTime` across `renderRouter` ([#46978](https://github.com/expo/expo/pull/46978) by [@Ubax](https://github.com/Ubax))
+  - [ios] Fix white flash behind screens during the interactive swipe-back gesture by forwarding the theme background to the native stack container. ([#47121](https://github.com/expo/expo/pull/47121) by [@kevenleone](https://github.com/kevenleone))
+  - [android] Remove navigation state restoration across activity recreation. ([#47422](https://github.com/expo/expo/pull/47422) by [@Ubax](https://github.com/Ubax))
+  - fix press detection with android bottom toolbar ([#47389](https://github.com/expo/expo/pull/47389) by [@Ubax](https://github.com/Ubax))
+  - Guard the deep link decode in `extractExactPathFromURL` against malformed percent-encoding. ([#47526](https://github.com/expo/expo/pull/47526) by [@momomuchu](https://github.com/momomuchu))
+  - Fix `renderRouter` ignoring `overrides` and listing duplicate routes when an override key matches a file in `appDir`. ([#47287](https://github.com/expo/expo/pull/47287) by [@wwdrew](https://github.com/wwdrew))
+- **`expo-modules-autolinking`**
+  - [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.4.1` upstream defaults, adding the `CSS/core/transition` and `PseudoStyles` header mappings along with the missing `IOS_CSS_CORE_ANIMATION` and `USE_ANIMATION_BACKEND` feature flags so its XCFramework builds. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
+  - Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
+  - Fixed the macro plugin flag not being applied to test targets, so macros couldn't be used in unit tests. ([#46595](https://github.com/expo/expo/pull/46595) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.5.0`'s generated component and native view sources. ([#47201](https://github.com/expo/expo/pull/47201) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Respect an explicit `ios.usePrecompiledModules: false` even when `EXPO_USE_PRECOMPILED_MODULES` is already set in the environment (e.g. EAS Build). ([#46983](https://github.com/expo/expo/pull/46983) by [@ryanda9910](https://github.com/ryanda9910))
+  - [iOS] Add the missing `ENABLE_CROSS_RUNTIME_STACK_TRACES` flag to the `react-native-worklets` precompile config so its prebuilt XCFramework matches the package's `staticFlags.json`. ([#47478](https://github.com/expo/expo/pull/47478) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Under precompiled modules, preserve a dynamic-framework subgraph set up by an earlier `pre_install` hook (e.g. `@rnmapbox/maps`) — both the dynamic frameworks and the pods that link against them — instead of forcing them back to static libraries. ([#47500](https://github.com/expo/expo/pull/47500) by [@kudo](https://github.com/kudo))
+- **`expo-module-scripts`**
+  - Add missing `publishConfig.executableFiles` ([#46074](https://github.com/expo/expo/pull/46074) by [@kitten](https://github.com/kitten))
+- **`expo-modules-jsi`**
+  - [iOS] Fixed the xcframework build failing with a `sed` error when building in an environment that uses GNU `sed` instead of BSD `sed` (e.g. a Nix shell). ([#46389](https://github.com/expo/expo/pull/46389) by [@niteshbalusu11](https://github.com/niteshbalusu11))
+  - [iOS] Propagate `JavaScriptPromise` setup failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong)) ([#46145](https://github.com/expo/expo/pull/46145) by [@qutrek](https://github.com/qutrek), [@mvincentong](https://github.com/mvincentong))
+  - Fix build framework for macOS ([#46413](https://github.com/expo/expo/pull/46413) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Fix build framework for Mac Catalyst ([#46289](https://github.com/expo/expo/pull/46289) by [@theeket](https://github.com/theeket))
+  - [iOS] Throw instead of aborting when `getPropertyAsFunction` targets a missing or non-callable property. ([#46437](https://github.com/expo/expo/pull/46437) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Throw instead of aborting when `getPropertyAsObject` targets a non-object property. ([#46438](https://github.com/expo/expo/pull/46438) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Include the Swift toolchain version in the xcframework cache key so upgrading Xcode rebuilds slices instead of reusing ones built by an older compiler. ([#46523](https://github.com/expo/expo/pull/46523) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Ignore already-settled promises. ([#46765](https://github.com/expo/expo/pull/46765) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Awaiting a `JavaScriptPromise` that is rejected after the await begins now throws instead of resuming with the rejection value as if fulfilled. ([#47154](https://github.com/expo/expo/pull/47154) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Return `NSNull` instead of trapping in the deprecated `JavaScriptValue.getAny()` when it encounters a unrepresentable value. ([#47381](https://github.com/expo/expo/pull/47381) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-media-library`**
+  - Add `accessPrivileges` to `PermissionResponse` type ([#47177](https://github.com/expo/expo/pull/47177) by [@Wenszel](https://github.com/Wenszel))
+  - [iOS] Fix permission guards for limited and write-only photo library access. ([#47216](https://github.com/expo/expo/pull/47216) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-modules-core`**
+  - [iOS] Propagate async-function promise construction failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong)) ([#46145](https://github.com/expo/expo/pull/46145) by [@qutrek](https://github.com/qutrek), [@mvincentong](https://github.com/mvincentong))
+  - [iOS] Read iPad-specific supported orientations from `UISupportedInterfaceOrientations~ipad`. ([#46281](https://github.com/expo/expo/issues/46281) by [@bryandent](https://github.com/bryandent)) ([#46306](https://github.com/expo/expo/pull/46306) by [@mvincentong](https://github.com/mvincentong)) ([#46306](https://github.com/expo/expo/pull/46306) by [@bryandent](https://github.com/bryandent), [@mvincentong](https://github.com/mvincentong))
+  - [android] Fix nested `Host` double-composing children. ([#46304](https://github.com/expo/expo/pull/46304) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46304](https://github.com/expo/expo/pull/46304) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Throw an actionable error when a worklet is used but `react-native-worklets`'s native adapter isn't linked, instead of a misleading "not an instance of Worklet" failure. ([#46571](https://github.com/expo/expo/pull/46571) by [@chrfalch](https://github.com/chrfalch))
+  - [android] Add a synchronous shadow node size update path, fixing a layout shift for `Host` `matchContents` views. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46604](https://github.com/expo/expo/pull/46604) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [Android] Fix `NullPointerException` crash when a `matchContents` view is unmounted while a shadow node size update is pending (e.g. closing a bottom sheet mid-resize). ([#46785](https://github.com/expo/expo/pull/46785) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46785](https://github.com/expo/expo/pull/46785) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Accept JS `Double` timestamps in `Date` Convertible. JS numbers arrive across the JSI bridge as Swift `Double`; the prior `as? Int` branch never matched, throwing `ConvertingException<Date>` whenever a JS caller passed `someDate.getTime()` to a `Date` / `Date?` argument. ([#46340](https://github.com/expo/expo/pull/46340) by [@kyleasaff](https://github.com/kyleasaff))
+  - [Android] Fix events being silently dropped for Compose views in custom modules. ([#46623](https://github.com/expo/expo/issues/46623) by [@benjaminkomen](https://github.com/benjaminkomen)) ([#46624](https://github.com/expo/expo/pull/46624) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46624](https://github.com/expo/expo/pull/46624) by [@benjaminkomen](https://github.com/benjaminkomen), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [Android] Fixed Expo UI re-compose when switching screens in react-native-screens. ([#46650](https://github.com/expo/expo/pull/46650) by [@kudo](https://github.com/kudo))
+  - [iOS] Pair a native shared object with one JavaScript object per runtime, so a shared object exposed to several runtimes (e.g. the main and UI runtimes, or worklet contexts) keeps a live pairing in each instead of only the one paired last. ([#47238](https://github.com/expo/expo/pull/47238) by [@tsapeta](https://github.com/tsapeta))
+  - [Android][compose] Guard `onLayout` against detached window to prevent `LayoutNode should be attached to an owner` crash. ([#47085](https://github.com/expo/expo/pull/47085) by [@roitium](https://github.com/roitium))
+  - [Android] Fix Jetpack Compose `Host` content disappearing before a react-native-screens pop animation finishes, by deferring composition disposal to window detach while the view is still on-screen for a transition. ([#45914](https://github.com/expo/expo/issues/45914), [#47086](https://github.com/expo/expo/issues/47086) by [@aubrey-wodonga](https://github.com/aubrey-wodonga)) ([#47099](https://github.com/expo/expo/pull/47099) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47099](https://github.com/expo/expo/pull/47099) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix a crash on `Updates.reloadAsync()` where the previous `AppContext` could deallocate before the old runtime finished tearing down, releasing cached JSI objects against a dying runtime on the wrong thread. Its lifetime is now tied to the runtime via native state attached to the `global.expo` object. ([#47051](https://github.com/expo/expo/issues/47051) by [@HaiyiMei](https://github.com/HaiyiMei)) ([#47080](https://github.com/expo/expo/pull/47080), [#47098](https://github.com/expo/expo/pull/47098) by [@tsapeta](https://github.com/tsapeta)) ([#47080](https://github.com/expo/expo/pull/47080), [#47098](https://github.com/expo/expo/pull/47098) by [@HaiyiMei](https://github.com/HaiyiMei), [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Fix a reload deadlock on the new architecture where reloading (from pressing `r` in the iOS simulator) would freeze the app until the watchdog killed it. `reloadAppAsync` now triggers the reload synchronously when already on the main thread instead of always deferring via `DispatchQueue.main.async`. ([#47392](https://github.com/expo/expo/pull/47392) by [@brentvatne](https://github.com/brentvatne))
+  - [iOS] Fix `ExpoModulesProvider` lookup failing for bundle names with non-identifier characters (e.g. dots). ([#46424](https://github.com/expo/expo/pull/46424) by [@shawnthye-guru](https://github.com/shawnthye-guru))
+- **`expo-contacts`**
+  - Fix `getDetails` throwing NPE on malformed label ([#46405](https://github.com/expo/expo/pull/46405) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-calendar`**
+  - Add `@platform ios` JSDoc annotations to iOS-exclusive APIs: `ExpoCalendarReminder` class, `listReminders()`, `createReminder()`, `requestRemindersPermissions()`, `getRemindersPermissions()`, `useRemindersPermissions()`, `AddEventWithFormOptions.url`, and `AddEventWithFormOptions.alarms`. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
+  - Throw `UnavailabilityError` when iOS-only Reminders and Sources APIs (`listReminders()`, `createReminder()`, `ExpoCalendarReminder.get/update/delete`, `requestRemindersPermissions()`, `getRemindersPermissions()`, and `getSourcesSync()`) are called on non-iOS platforms. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
+  - Return a denied permission response from `useRemindersPermissions()` on non-iOS platforms instead of throwing. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
+- **`expo-blur`**
+  - [Android] Fix gesture handlers treating views under a `BlurTargetView` as detached and cancelling their gestures. ([#47404](https://github.com/expo/expo/pull/47404) by [@efstathiosntonas](https://github.com/efstathiosntonas))
+- **`expo-camera`**
+  - Host the iOS camera preview on the view's backing layer so it no longer zooms into place on launch. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
+  - Replace the deprecated `videoOrientation` API with `AVCaptureDevice.RotationCoordinator` for the iOS camera preview. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix dark frames and the preview rotating into place on iOS launch by fully configuring the camera session before it starts running. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
+  - Default the iOS camera `pictureSize` to `photo` instead of `high`. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
+- **`@expo/cli`**
+  - Symbolicate web error stacks in the dev server console. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+  - Disable sextant QR code rendering for Windows Terminal ([#46455](https://github.com/expo/expo/pull/46455) by [@kitten](https://github.com/kitten))
+  - Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
+  - Remove `@expo/metro-config` install from `expo customize metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
+  - Place static entries last in serialized HTML output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
+  - Focus the booted device in Device Hub using its `devices://` deep link instead of only bringing the app forward. ([#46809](https://github.com/expo/expo/pull/46809) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+  - Include external CSS imports in the production server manifest ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
+  - Avoid writing a 500 response when a DevTools plugin server request has already started or aborted. ([#47192](https://github.com/expo/expo/pull/47192) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+  - Pass a fetch API `Request` to DevTools plugin WebSocket handlers instead of `IncomingMessage`. ([#47410](https://github.com/expo/expo/pull/47410) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+  - Use `loadModule` for MCP and DevTools plugin server module loading. ([#47139](https://github.com/expo/expo/pull/47139) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+  - Fall back to AGP's `output-metadata.json` when resolving APK filenames to support projects that override `outputFileName` in `applicationVariants` ([#47083](https://github.com/expo/expo/pull/47083) by [@NikhilVashistha](https://github.com/NikhilVashistha))
+- **`expo`**
+  - Decompress `gzip` / `br` / `zstd` `expo/fetch` responses on Android even when the caller sets their own `Accept-Encoding` header. ([#46398](https://github.com/expo/expo/pull/46398) by [@zoontek](https://github.com/zoontek))
+  - Fix `bodyUsed` leaking across siblings when fetch Response is cloned twice ([#46397](https://github.com/expo/expo/pull/46397) by [@zoontek](https://github.com/zoontek))
+  - Prevent fatal `The stream is not in a state that permits close` in `expo/fetch` when native delivers `didComplete`/`didFailWithError` after the consumer has already canceled the body stream. ([#44909](https://github.com/expo/expo/pull/44909) by [@safaiyeh](https://github.com/safaiyeh))
+  - Fix `expo/fetch` on Android sending a single `0x00` byte instead of an empty body for body-less `POST`/`PUT`/`PATCH` requests. ([#46678](https://github.com/expo/expo/pull/46678) by [@zoontek](https://github.com/zoontek))
+  - Forward unhandled errors and rejections to the dev server console. ([#46578](https://github.com/expo/expo/pull/46578) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+  - Include JavaScript and React component stacks in web dev server error logs. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+  - Fix `asyncRoutes` failing on Android and iOS with `Requiring unknown module` ([#46870](https://github.com/expo/expo/pull/46870) by [@hassankhan](https://github.com/hassankhan))
+  - Fix `Response.blob()` in `expo/fetch` throwing when the global `Blob` is react-native's implementation. ([#47538](https://github.com/expo/expo/pull/47538) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- **`@expo/ui`**
+  - Export public component props as interfaces to support module augmentation. by [@Brentlok](https://github.com/Brentlok)
+  - [universal] Revamp web universal components (`Button`, `Checkbox`, `FieldGroup`, `Picker`, `Slider`,`Switch`,`TextInput`) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258), [#46541](https://github.com/expo/expo/pull/46541) by [@zoontek](https://github.com/zoontek))
+  - [iOS][android] Removed the `react-native-reanimated` dependency from the worklet integration; worklet features rely on `react-native-worklets` directly. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - Removed `CLAUDE.md` and `CONTRIBUTING.md` from publishing and fixed side effects. ([#47451](https://github.com/expo/expo/pull/47451) by [@kudo](https://github.com/kudo))
+- **`expo-modules-autolinking`**
+  - Add `bannerTitle` and `serverEntryPoint` options to the DevTools plugin module config. ([#46764](https://github.com/expo/expo/pull/46764) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- **`expo-modules-jsi`**
+  - [iOS] Sync host functions no longer allocate a `JavaScriptRef` per call: the arguments buffer is now built inside the synchronous `assumeIsolated` closure instead of being boxed to cross the closure boundary, removing a heap allocation and its retain/release/dealloc from every host call (measured ~10% faster on the no-op `@JS` host-call floor). ([#46949](https://github.com/expo/expo/pull/46949) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `JavaScriptNativeState` can now back any `jsi::NativeState` subtype via a `void *` factory, so consumers without Swift/C++ interop (e.g. `expo-modules-core`) can supply their own pointee. `expo::NativeState` ships from the xcframework as a public C++ header. ([#46330](https://github.com/expo/expo/pull/46330) by [@tsapeta](https://github.com/tsapeta))
+  - `NativeArrayBuffer` arguments no longer copy the buffer when it's already native-backed. ([#46448](https://github.com/expo/expo/pull/46448) by [@barthap](https://github.com/barthap))
+  - [iOS] Type the host-object setter pointer explicitly so the nil-check conversion type-checks reliably. ([#46736](https://github.com/expo/expo/pull/46736) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `JavaScriptUnownedValue` and `JavaScriptValuesBuffer` now cache the runtime as the immortal `facebook.jsi.IRuntime` instead of the ARC-managed `JavaScriptRuntime` wrapper, removing per-call retain/release on the argument-decode hot path (measured ~16% faster `addNumbers`, ~24% faster `addStrings`). ([#46792](https://github.com/expo/expo/pull/46792) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `getExpoNativeState` now probes with the specialized `hasNativeState<jsi::NativeState>` and dynamic-casts the raw pointer once, avoiding a redundant `dynamic_pointer_cast` on the shared object argument unwrap hot path. ([#46712](https://github.com/expo/expo/pull/46712) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-media-library`**
+  - [android] Add `getAssetContentUriAsync` for legacy ID migration ([#46854](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel)) ([#45769](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-modules-core`**
+  - Native view config attributes now carry a `process` function that unwraps shared objects to their registry id, so callers can pass shared objects directly as view props instead of unwrapping them manually. ([#46212](https://github.com/expo/expo/pull/46212) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `@ExpoModule` now synthesizes a `_decorateModule` that binds the module's `@JS` functions directly onto the JS object, letting the module holder skip the dynamic definition path for synthesized modules. ([#46612](https://github.com/expo/expo/pull/46612) by [@tsapeta](https://github.com/tsapeta))
+  - Allow `react-native-worklets` `^0.9.0` in peer dependencies. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
+  - Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
+  - [iOS] Added `JavaScriptDecodable` / `JavaScriptEncodable` (composed as `JavaScriptCodable`), a statically-dispatched, non-erasing conversion path between JavaScript and native values for Expo Modules v2, with conformances for primitives, containers, records, enumerables and `Data`. ([#46893](https://github.com/expo/expo/pull/46893) by [@tsapeta](https://github.com/tsapeta))
+  - [Internal] [iOS] Dropped the unused `appContext` parameter from the `JavaScriptCodable` conversions; conversions that need the app context now recover it from the runtime via the new public `AppContext.from(runtime:)`. ([#47111](https://github.com/expo/expo/pull/47111) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `JavaScriptCodable` now maps `Int64`/`UInt64` to a JS `BigInt` for lossless 64-bit round-tripping, and `Int`/`UInt` throw when encoding a value outside JavaScript's safe-integer range. ([#46939](https://github.com/expo/expo/pull/46939) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added the public `Exceptions.ArgumentsRangeMismatch` exception, thrown by synthesized `@JS` function bindings when a JavaScript caller passes a number of arguments outside the accepted range. ([#46901](https://github.com/expo/expo/pull/46901) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `SharedObject::NativeState` now derives from `expo::NativeState` so the Swift wrapper can be recovered from the JS side via `getNativeState`, laying the groundwork for native-state-based shared object lookup. ([#46330](https://github.com/expo/expo/pull/46330) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `SharedObject` is now paired with its JS counterpart through a `SharedObjectNativeState` attached to the JS object, so registry lookups in both directions go through the native state and fall back to the legacy id-based path. ([#46712](https://github.com/expo/expo/pull/46712) by [@tsapeta](https://github.com/tsapeta))
+  - `NativeArrayBuffer` arguments no longer copy the buffer when it's already native-backed. ([#46448](https://github.com/expo/expo/pull/46448) by [@barthap](https://github.com/barthap))
+  - [iOS][android] Resolve the worklet UI runtime from its `react-native-worklets` holder instead of the reanimated `_WORKLET_RUNTIME` global; `installOnUIRuntime` now takes the holder from `getUIRuntimeHolder()`. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- **`expo-image-picker`**
+  - [Web] Drop dependency on `expo-modules-core` `Platform` in favor of inline `window`/`document` checks. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
+  - Switch package entry to TypeScript source and emit declarations only. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-gl`**
+  - Update docs to `createContextAsync` and `destroyContextAsync` methods which purpose wasn't documented and [was confusing](https://github.com/expo/expo/issues/40037). ([#47200](https://github.com/expo/expo/pull/47200) by [@HubertBer](https://github.com/HubertBer))
+- **`expo-font`**
+  - Resolve package-style font paths. ([#46784](https://github.com/expo/expo/pull/46784) by [@maxlapides](https://github.com/maxlapides))
+- **`@expo/cli`**
+  - Bump to `@expo/ws-tunnel@^2.0.0` ([#46696](https://github.com/expo/expo/pull/46696) by [@kitten](https://github.com/kitten))
+  - [Internal] Unify favicon injection between SPA, SSG and SSR pipelines ([#46586](https://github.com/expo/expo/pull/46586) by [@hassankhan](https://github.com/hassankhan))
+  - [Internal] Unify the sync realpath helper and make fallback handling explicit. ([#47175](https://github.com/expo/expo/pull/47175) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+  - Add server functions and startup banners to DevTools plugins. Plugins can define a `serverEntryPoint` that handles HTTP requests and WebSocket connections in the Expo CLI process, and a `bannerTitle` shown in the CLI startup banner. ([#46764](https://github.com/expo/expo/pull/46764) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- **`expo`**
+  - [Internal] Return thenable with sync-bailout for async require calls ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
+
+## 56.0.0 — 2026-06-01
+
+### 🛠 Breaking changes
+
+- **`unimodules-app-loader`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-web-browser`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-video-thumbnails`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-task-manager`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-store-review`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-speech`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sqlite`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sms`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sharing`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-secure-store`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sensors`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-screen-capture`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-screen-orientation`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-print`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-network`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-notifications`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-localization`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-media-library`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+  - Promote the object-oriented MediaLibrary API to the root `expo-media-library` import and move the legacy API to `expo-media-library/legacy`. ([#46030](https://github.com/expo/expo/pull/46030) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-mail-composer`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-location`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-keep-awake`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-modules-core`**
+  - [iOS] Replaced the Objective-C++ JSI layer (`EXJavaScriptRuntime`, `EXJavaScriptObject`, `ExpoModulesHostObject`, `EXSharedObjectUtils`, etc.) with the new `ExpoModulesJSI` Swift package. Third-party native modules depending on these types must migrate to the new Swift-first API. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-local-authentication`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-linking`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-image-manipulator`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-haptics`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-linear-gradient`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-gl`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-image-picker`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-font`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-document-picker`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-file-system`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+  - `copy()` and `move()` methods of `File` and `Directory` are now asynchronous and return a Promise. Use `copySync()` and `moveSync()` for synchronous behavior. ([#44359](https://github.com/expo/expo/pull/44359) by [@barthap](https://github.com/barthap))
+  - [Android] In Expo Go, `Paths.cache` and `Paths.document` are now pointing to experience-isolated directories. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
+  - `File.write()` is now asynchronous and returns a Promise. Use `File.writeSync()` for synchronous behavior. ([#45992](https://github.com/expo/expo/pull/45992) by [@wh201906](https://github.com/wh201906))
+  - `FileHandle.readBytes()` and `FileHandle.writeBytes()` are now asynchronous and return a Promise. Use `FileHandle.readBytesSync()` and `FileHandle.writeBytesSync()` for synchronous behavior. ([#46280](https://github.com/expo/expo/pull/46280) by [@wh201906](https://github.com/wh201906))
+- **`expo-device`**
+  - [iOS] Change the names of "iPad Air (11-inch) (6th generation)", "iPad Air (13-inch) (6th generation)" and "iPhone SE" to "iPad Air 11-inch (M2)", "iPad Air 13-inch (M2)" and "iPhone SE (1st generation)". ([#43644](https://github.com/expo/expo/pull/43644) by [@prusnak](https://github.com/prusnak))
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-crypto`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-contacts`**
+  - [next] Fix permission functions, presentPicker cancel, presentAccessPicker types ([#44847](https://github.com/expo/expo/pull/44847) by [@Wenszel](https://github.com/Wenszel))
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+  - Promote the object-oriented Contacts API to the root `expo-contacts` import and move the legacy API to `expo-contacts/legacy`. ([#46037](https://github.com/expo/expo/pull/46037) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-constants`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-clipboard`**
+  - Removed deprecated `setString` function. Use `setStringAsync` instead. ([#41758](https://github.com/expo/expo/pull/41758) by [@barthap](https://github.com/barthap))
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-cellular`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-camera`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-calendar`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+  - Promote the object-oriented Calendar API to the root `expo-calendar` import and move the legacy API to `expo-calendar/legacy`. ([#46030](https://github.com/expo/expo/pull/46030) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-brightness`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-blur`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-battery`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-background-fetch`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-application`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-apple-authentication`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-asset`**
+  - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Initial release of **`@expo/cli`** 🥳
+- Initial release of **`@expo/package-manager`** 🥳
+- Initial release of **`expo`** 🥳
+- Initial release of **`expo-brownfield`** 🥳
+- Initial release of **`expo-json-utils`** 🥳
+- Initial release of **`expo-modules-autolinking`** 🥳
+- Initial release of **`expo-router`** 🥳
+- Initial release of **`expo-module-scripts`** 🥳
+- Initial release of **`expo-modules-jsi`** 🥳
+- Initial release of **`@expo/ui`** 🥳
+- Initial release of **`pod-install`** 🥳
+- **`expo-web-browser`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-task-manager`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-sqlite`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-sharing`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-secure-store`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-sensors`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-screen-orientation`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-notifications`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-localization`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-media-library`**
+  - [next] Add support for listeners ([#44326](https://github.com/expo/expo/pull/44326) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add `presentPermissionsPicker` ([#44432](https://github.com/expo/expo/pull/44432) by [@Wenszel](https://github.com/Wenszel))
+  - [next][iOS] Add `asset.getMediaSubtypes()`, `asset.getLivePhotoVideoUri()`, `asset.getIsInCloud()`, and `asset.getOrientation()` ([#44568](https://github.com/expo/expo/pull/44568) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add `asset.getAlbums()` ([#44604](https://github.com/expo/expo/pull/44604) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add `Album.getAll()` ([#44446](https://github.com/expo/expo/pull/44446) by [@Wenszel](https://github.com/Wenszel))
+  - [next][iOS] Add `album.removeAssets()` ([#44455](https://github.com/expo/expo/pull/44455) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add usePermissions ([#44403](https://github.com/expo/expo/pull/44403) by [@Wenszel](https://github.com/Wenszel))
+  - [next][iOS] Fixed `Query.limit(0)` returning all assets instead of an empty array ([#44245](https://github.com/expo/expo/pull/44245) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add getPermissionsAsync ([#44244](https://github.com/expo/expo/pull/44244) by [@Wenszel](https://github.com/Wenszel))
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+  - [next][iOS] Added support to add or remove assets from Favorites smart album ([#43598](https://github.com/expo/expo/pull/43598) by [@awaisanjumx2](https://github.com/awaisanjumx2))
+  - [iOS] Added support to add or remove assets to Favorites smart album ([#43459](https://github.com/expo/expo/pull/43459) by [@awaisanjumx2](https://github.com/awaisanjumx2))
+  - [android] Add `getFavorite()`/`setFavorite()` ([#45768](https://github.com/expo/expo/pull/45768) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-mail-composer`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-location`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+  - Added motion activity APIs: `getMotionActivityAsync`, `watchMotionActivityAsync`, and permission helpers. ([#44893](https://github.com/expo/expo/pull/44893) by [@Guccio163](https://github.com/Guccio163))
+- **`expo-modules-core`**
+  - [iOS] Added `Equatable` conformance to `Either` type. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway)) ([#43954](https://github.com/expo/expo/pull/43954) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#43954](https://github.com/expo/expo/pull/43954), [#43954](https://github.com/expo/expo/pull/43954) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [android] Add `installModuleClasses` and `__resolveInWorklet` for resolving shared object class prototypes in the worklet runtime. ([#44669](https://github.com/expo/expo/pull/44669) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Add `installModuleClasses` for building shared object class prototypes in alternate JS runtimes. ([#44214](https://github.com/expo/expo/pull/44214) by [@nishan](https://github.com/intergalacticspacehighway)) ([#44214](https://github.com/expo/expo/pull/44214) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Install sync functions on shared object worklet prototypes and add `SharedObject.__resolveInWorklet` for resolving shared objects in worklet runtimes. ([#44215](https://github.com/expo/expo/pull/44215) by [@nishan](https://github.com/intergalacticspacehighway)) ([#44215](https://github.com/expo/expo/pull/44215) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - `NativeArrayBuffer` and `JavaScriptArrayBuffer` arguments now also accept typed arrays. ([#43082](https://github.com/expo/expo/pull/43082) by [@barthap](https://github.com/barthap))
+  - [Android] Use the `RuntimeScheduler` to schedule tasks on the JS thread. ([#43481](https://github.com/expo/expo/pull/43481) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Add `nativeModule` look up function and `bundleURL` to AppContext. ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] Added a polyfill for Swift [`Mutex`](https://developer.apple.com/documentation/synchronization/mutex) for older platform versions. ([#44122](https://github.com/expo/expo/pull/44122) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Exposed a shared OkHttpClient instance through AppContext with new coroutine-friendly extensions. ([#44854](https://github.com/expo/expo/pull/44854) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Allow compile-time optimization of compose view props when the property class is annotated with `@OptimizedComposeProps`. ([#45021](https://github.com/expo/expo/pull/45021) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fixed `SharedObject.emit` dropping `NativeArrayBuffer` values in events ([#45257](https://github.com/expo/expo/pull/45257) by [@alanjhughes](https://github.com/alanjhughes))
+  - Added single-payload overloads for `SharedObject.emit` on iOS and Android. The iOS API also accepts an already-converted `JavaScriptValue` payload to skip the native-to-JS conversion step. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `Decodable` types can now be used as native function arguments. JS values are decoded through the dynamic-type registry, so arrays, dictionaries, optionals, `RawRepresentable` enums and `Convertible`s are coerced consistently. ([#45705](https://github.com/expo/expo/pull/45705) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Create Compose props without View. ([#46256](https://github.com/expo/expo/pull/46256) by [@jakex7](https://github.com/jakex7))
+- **`expo-local-authentication`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-linking`**
+  - Added `Linking.clearInitialURL()` to reset the cached deep-link URL. ([#46265](https://github.com/expo/expo/pull/46265) by @gabrieldonadel)
+- **`expo-haptics`**
+  - Add web haptics for iOS Safari using checkbox. ([#44261](https://github.com/expo/expo/pull/44261) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-linear-gradient`**
+  - Add macOS support ([#45448](https://github.com/expo/expo/pull/45448) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-image-picker`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+  - [iOS] Allow `launchCameraAsync` to be invoked on the simulator. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-font`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+  - Add structured server resource descriptors for streaming SSR ([#44927](https://github.com/expo/expo/pull/44927) by [@hassankhan](https://github.com/hassankhan))
+- **`expo-document-picker`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-file-system`**
+  - [iOS] Add support for `mode` option when opening file handle. ([#44559](https://github.com/expo/expo/pull/44559) by [@gfemec](https://github.com/gfemec))
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+  - Add support picking for multiple files and choosing multiple MIME types. File.pickFileAsync() has now feature parity with `expo-document-picker`. ([#43411](https://github.com/expo/expo/pull/43411) by [@HubertBer](https://github.com/HubertBer))
+  - Add `overwrite` option to copy and move methods. ([#42979](https://github.com/expo/expo/pull/42979) by [@barthap](https://github.com/barthap))
+  - [Android] Add `mode` option when opening file handle. ([#42983](https://github.com/expo/expo/pull/42983) by [@barthap](https://github.com/barthap))
+  - Add `onProgress` callback and `AbortSignal` support to `File.downloadFileAsync()`. ([#43053](https://github.com/expo/expo/pull/43053) by [@aleqsio](https://github.com/aleqsio))
+  - Add `file.createUploadTask()` and `File.createDownloadTask()` APIs ([#44055](https://github.com/expo/expo/pull/44055) by [@barthap](https://github.com/barthap))
+  - Add `File.upload()` with legacy-compatible upload semantics, progress callbacks, and `AbortSignal` support. ([#45033](https://github.com/expo/expo/pull/45033) by [@barthap](https://github.com/barthap))
+  - Add support for watching file/directory events. ([#44986](https://github.com/expo/expo/pull/44986) by [@barthap](https://github.com/barthap))
+  - Added `File.json()` and `File.formData()` to satisfy `Blob` type augmentations in consumer projects. ([#45685](https://github.com/expo/expo/pull/45685) by [@mvincentong](https://github.com/mvincentong))
+- **`expo-device`**
+  - [iOS] Update Apple devices ([#43644](https://github.com/expo/expo/pull/43644) by [@prusnak](https://github.com/prusnak))
+- **`expo-contacts`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-cellular`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-camera`**
+  - [Web] Expands support for barcode types that can be scanned. ([#43403](https://github.com/expo/expo/pull/43403) by [@alanjhughes](https://github.com/alanjhughes))
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-calendar`**
+  - [iOS][next] Add support for writeOnly permissions ([#44967](https://github.com/expo/expo/pull/44967) by [@Wenszel](https://github.com/Wenszel))
+  - [iOS][next] Add `calendar.addEventWithForm()` ([#44966](https://github.com/expo/expo/pull/44966) by [@Wenszel](https://github.com/Wenszel))
+  - [iOS][next] Add `presentPicker()` ([#44965](https://github.com/expo/expo/pull/44965) by [@Wenszel](https://github.com/Wenszel))
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+  - [Android][next] Add `calendar.addEventWithForm()` ([#46004](https://github.com/expo/expo/pull/46004) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-brightness`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-background-fetch`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-apple-authentication`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- **`expo-asset`**
+  - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+  - Add support for .glb model assets. ([#42495](https://github.com/expo/expo/pull/42495) by [@pchalupa](https://github.com/pchalupa))
+
+### 🐛 Bug fixes
+
+- **`expo-web-browser`**
+  - Fixed `openAuthSessionAsync` silently failing on iOS 17.4+ when using `https://` redirect URLs without Associated Domains entitlements. The HTTPS universal link callback API is now opt-in via the `preferUniversalLinks` option. ([#44452](https://github.com/expo/expo/pull/44452) by [@vonovak](https://github.com/vonovak))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-task-manager`**
+  - Fixed JS timers hanging during background task execution on Android by registering with `HeadlessJsTaskContext`. ([#43821](https://github.com/expo/expo/pull/43821) by [@janicduplessis](https://github.com/janicduplessis))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+  - [android] Apply bundled `proguard-rules.pro` via `consumerProguardFiles` so the `-keep class expo.modules.taskManager.**` rule is added to consumer apps' R8 pass. ([#46029](https://github.com/expo/expo/pull/46029) by [@jiunshinn](https://github.com/jiunshinn))
+- **`expo-speech`**
+  - [Android] Fix `NullPointerException` in `LanguageUtils.getISOCode` when the TTS engine returns a voice with a non-standard locale. ([#44807](https://github.com/expo/expo/pull/44807) by [@zoontek](https://github.com/zoontek))
+- **`expo-sqlite`**
+  - Add explicit secure context error for `web/wa-sqlite/AccessHandlePoolVFS.js` ([#40605](https://github.com/expo/expo/pull/40605) by [@BDav24](https://github.com/BDav24))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-sharing`**
+  - [iOS] Fix `shareAsync` promise leaking when the user picks an activity and then cancels its follow-up dialog (e.g. taps Print, then cancels the print dialog). The completion handler now resolves unconditionally on dismissal. ([@Elehiggle](https://github.com/Elehiggle)) (by [@Elehiggle](https://github.com/Elehiggle))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-secure-store`**
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-sensors`**
+  - [iOS] Fixed TCC crash on iOS 26 during Metro reload when `motionPermission: false` — `CMAltimeter.stopRelativeAltitudeUpdates()` now only runs if updates were started. ([#45396](https://github.com/expo/expo/pull/45396) by [@JustinFay01](https://github.com/JustinFay01))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-screen-orientation`**
+  - [iOS] Fixed per-screen orientation not working with expo-dev-client by searching child VCs for react-native-screens orientation when an intermediate VC blocks the traversal. ([#44181](https://github.com/expo/expo/pull/44181) by [@vonovak](https://github.com/vonovak))
+  - [iOS] Fixed `lockAsync` silently failing when flipping between previously-applied masks. ([#45239](https://github.com/expo/expo/pull/45239) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fixed `EXC_BAD_ACCESS` crash from recursive `supportedInterfaceOrientations` when `react-native-screens` per-screen orientation is set. ([#45733](https://github.com/expo/expo/pull/45733) by [@rayabelcode](https://github.com/rayabelcode))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-network`**
+  - [Android] Fixed network state listener emitting a stale "connected" event when the device disconnects from the network on Android 13+. ([#44656](https://github.com/expo/expo/pull/44656) by [@gueroverdenwshq](https://github.com/gueroverdenwshq))
+  - [Android] Make `isInternetReachable` much more robust. Also emit network state changes when network capabilities change. ([#45101](https://github.com/expo/expo/pull/45101) by [@LumaDevelopment](https://github.com/LumaDevelopment))
+- **`expo-notifications`**
+  - [ios] Fixed `requestPermissionsAsync` returning raw permission result without several documented fields ([#43555](https://github.com/expo/expo/pull/43555) by [@vonovak](https://github.com/vonovak))
+  - [ios] Guard against crash in `BackgroundEventTransformer` when notification body is a primitive type. ([#45198](https://github.com/expo/expo/pull/45198) by [@DORI2001](https://github.com/DORI2001))
+  - [web] fix `getDevicePushTokenAsync` export ([#44413](https://github.com/expo/expo/pull/44413) by [@vonovak](https://github.com/vonovak))
+  - [ios] fix unhandled promise rejection in `getRegistrationInfoAsync`, relax keychain accessibility to allow access after device unlocked. ([#43829](https://github.com/expo/expo/pull/43829) by [@jmalmo](https://github.com/jmalmo))
+  - [ios] Dispatch foreground notification completion handler on the main thread to prevent SIGTRAP / `BSPreconditionFailure` on iOS 16. ([#45096](https://github.com/expo/expo/pull/45096) by [@qutrek](https://github.com/qutrek))
+  - [android] Apply bundled `proguard-rules.pro` via `consumerProguardFiles` so the `-keep class expo.modules.notifications.**` rule is added to consumer apps' R8 pass. ([#45974](https://github.com/expo/expo/pull/45974) by [@jiunshinn](https://github.com/jiunshinn))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-localization`**
+  - Prevalidate locale strings in config-plugin ([#45888](https://github.com/expo/expo/pull/45888) by [@kitten](https://github.com/kitten))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-media-library`**
+  - [Android] Read video dimensions from MediaStore cursor instead of opening each file with `MediaMetadataRetriever`, fixing extremely slow `getAssetsAsync` on devices with many videos. ([#44714](https://github.com/expo/expo/pull/44714) by [@oeddyo](https://github.com/oeddyo))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-mail-composer`**
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-location`**
+  - [iOS] Ignore [`locationUnknown`](https://developer.apple.com/documentation/corelocation/clerror-swift.struct/locationunknown) errors in `watchPositionAsync`. ([#44027](https://github.com/expo/expo/pull/44027) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Foreground service notification icon now falls back to `notification_icon` drawable before `applicationInfo.icon`. The launcher icon is full-color and renders as a solid white square in notifications. ([#44309](https://github.com/expo/expo/pull/44309) by [@creatornader](https://github.com/creatornader))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-keep-awake`**
+  - fix(keep-awake): catch activation promise rejection on Android ([#45006](https://github.com/expo/expo/pull/45006) by [@cortinico](https://github.com/cortinico))
+- **`expo-modules-core`**
+  - [Android] Fixed Compose view clipping that caused Material ripple effects to be cut off (e.g., Switch thumb ripple). ([#43656](https://github.com/expo/expo/pull/43656) by [@vonovak](https://github.com/vonovak))
+  - [iOS] Fix memory leak due to retain cycle in SwiftUI views. ([#43468](https://github.com/expo/expo/pull/43468) by [@nishan](https://github.com/intergalacticspacehighway)) ([#43468](https://github.com/expo/expo/pull/43468) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#43468](https://github.com/expo/expo/pull/43468), [#43468](https://github.com/expo/expo/pull/43468) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fixed compilation issues due to missing fallthrough case in `EXJavaScriptSerializable`. ([#43634](https://github.com/expo/expo/pull/43634) by [@tjzel](https://github.com/tjzel))
+  - [iOS] Fixed adding SwiftUI views to tabs BottomAccessory. ([#44247](https://github.com/expo/expo/pull/44247) by [@t0maboro](https://github.com/t0maboro))
+  - [iOS] Fix crash that can occur when reloading JavaScript bundle due to object deallocating off the JavaScript thread. ([#43937](https://github.com/expo/expo/pull/43937) by [@cltnschlosser](https://github.com/cltnschlosser))
+  - [iOS] Fixed runtime setup crashing in the old bridge module. ([#44121](https://github.com/expo/expo/pull/44121) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Make access to module registry thread safe. ([#44042](https://github.com/expo/expo/pull/44042) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fixed `PersistentFileLog.readEntries` race condition by serializing reads on the dispatch queue. ([#43958](https://github.com/expo/expo/pull/43958) by [@ramonclaudio](https://github.com/ramonclaudio))
+  - [iOS] Fixed looking up the `EXConstants.bundle` from the main bundle to allow running with precompiled XCFrameworks. ([#44551](https://github.com/expo/expo/pull/44551) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Fixed Constants.expoConfig returning null due to optional value wrapping in ConstantsProvider. ([#44550](https://github.com/expo/expo/pull/44550) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Fixed view lookup in bridgeless mode by using `ExpoHostWrapper` instead of `reactBridge.uiManager`. ([#44375](https://github.com/expo/expo/pull/44375) by [@vonovak](https://github.com/vonovak))
+  - [iOS] Resolve `react-native-worklets` from existing podspec, falling back to peer resolution ([#44232](https://github.com/expo/expo/pull/44232) by [@kitten](https://github.com/kitten))
+  - [iOS] Fix finding EXConstants.bundle inside framework bundle for brownfield ([#44810](https://github.com/expo/expo/pull/44810) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] Guard against null `eventEmitter` in `SwiftUIVirtualView.dispatchEvent` to prevent SIGSEGV after view teardown. ([#45175](https://github.com/expo/expo/pull/45175) by [@DORI2001](https://github.com/DORI2001))
+  - [iOS] Fix double to UIColor conversion ([#45387](https://github.com/expo/expo/pull/45387) by [@Wenszel](https://github.com/Wenszel))
+  - [iOS] Fix random crash when concurrent access of the same `Record` on `Field.options`. The set is now guarded by a per-field lock and accessed through a single `withOptions` API. ([#45072](https://github.com/expo/expo/pull/45072) by [@nishan](https://github.com/intergalacticspacehighway)) ([#45072](https://github.com/expo/expo/pull/45072) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fixed converting `Enumerable` function results to JS values. ([#45168](https://github.com/expo/expo/pull/45168) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Fixed prebuild dependencies for `ExpoModulesJSI` ([#45124](https://github.com/expo/expo/pull/45124) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Add async/await overload for StaticAsyncFunction ([#44471](https://github.com/expo/expo/pull/44471) by [@Wenszel](https://github.com/Wenszel))
+  - [Android] Added support for CSS `rgb(...)` and `rgba(...)` color strings when converting JS color values to `android.graphics.Color`. ([#44023](https://github.com/expo/expo/pull/44023) by [@dileepapeiris](https://github.com/dileepapeiris))
+  - [iOS] Fix missing jsi headers when building static frameworks ([#44865](https://github.com/expo/expo/pull/44865) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Fixed runtime crash when missing `Host` component for SwiftUI or Jetpack Compose components. ([#44118](https://github.com/expo/expo/pull/44118) by [@kudo](https://github.com/kudo))
+  - [iOS] Restore pre-ExpoModulesJSI `Record` conversion behavior by hydrating only declared fields, preserving `undefined` handling for object properties, and emitting typed records directly to JS. ([#45085](https://github.com/expo/expo/pull/45085) by [@barthap](https://github.com/barthap))
+  - Fix reading EXConstants.bundle when using prebuilds + brownfield with SPM ([#45148](https://github.com/expo/expo/pull/45148) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [Android] Resolve `libworklets.so` via prefab before falling back to local CMake output. ([#43863](https://github.com/expo/expo/pull/43863) by [@Insik-Han](https://github.com/Insik-Han))
+  - [iOS] Fix dictionary/array returns from sync functions invoked in the worklet runtime. ([#45419](https://github.com/expo/expo/pull/45419) by [@nishan](https://github.com/intergalacticspacehighway)) ([#45419](https://github.com/expo/expo/pull/45419) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [Android] Fix unsetting border width on views with border radius causing views to disappear ([#45467](https://github.com/expo/expo/pull/45467) by [@fractalbeauty](https://github.com/fractalbeauty))
+  - [iOS] Fix encoding `Encodable` function results so arrays, dictionaries, optionals, `RawRepresentable` enums and `Convertible`s route through their dynamic types instead of producing wrong shapes. ([#45575](https://github.com/expo/expo/pull/45575) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Avoid remounting Jetpack Compose views during same-frame React Native reparenting. ([#45711](https://github.com/expo/expo/pull/45711) by [@mvincentong](https://github.com/mvincentong))
+  - [Android] Fixed `associatedCookies` in `Network.requestWillBeSentExtraInfo` CDP events serializing as a JSON object instead of an array. ([#45720](https://github.com/expo/expo/pull/45720) by [@huntie](https://github.com/huntie))
+  - [Android] Keep `ExpoComposeView` content visible during parent view transitions (e.g., `react-native-screens` pop navigation). ([#45942](https://github.com/expo/expo/pull/45942) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix occasional `SharedObject.emit` crashes caused by an off-thread JSI lookup. ([#45986](https://github.com/expo/expo/pull/45986) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Suppress `-Wunused-result` compiler warning in `FrontendConverter.cpp`. ([#46073](https://github.com/expo/expo/pull/46073) by [@tomekzaw](https://github.com/tomekzaw))
+  - [android] Fix nested `Host` double-composing children. ([#46304](https://github.com/expo/expo/pull/46304) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46304](https://github.com/expo/expo/pull/46304) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Propagate async-function promise construction failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong)) ([#46145](https://github.com/expo/expo/pull/46145) by [@qutrek](https://github.com/qutrek), [@mvincentong](https://github.com/mvincentong))
+  - [iOS] Read iPad-specific supported orientations from `UISupportedInterfaceOrientations~ipad`. ([#46281](https://github.com/expo/expo/issues/46281) by [@bryandent](https://github.com/bryandent)) ([#46306](https://github.com/expo/expo/pull/46306) by [@mvincentong](https://github.com/mvincentong)) ([#46306](https://github.com/expo/expo/pull/46306) by [@bryandent](https://github.com/bryandent), [@mvincentong](https://github.com/mvincentong))
+- **`expo-local-authentication`**
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-intent-launcher`**
+  - [Android] Fixed `getApplicationIcon` throwing an error on Android below API 26. ([#46043](https://github.com/expo/expo/pull/46043) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-image-manipulator`**
+  - [iOS] Preserve HEIC orientation when loading local files for image manipulation. ([#43725](https://github.com/expo/expo/pull/43725) by [@maxsz](https://github.com/maxsz))
+  - [Android] Save manipulated images in the scoped cache directory. ([#45708](https://github.com/expo/expo/pull/45708) by [@mvincentong](https://github.com/mvincentong))
+  - [Web] Throw an error when requested mime type is not supported. ([#46165](https://github.com/expo/expo/pull/46165) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-gl`**
+  - Make `msaaSamples` and `enableExperimentalWorkletSupport` optional in `GLViewProps` to align TypeScript types with their runtime `defaultProps` values. ([#43767](https://github.com/expo/expo/pull/43767) by [@jcarlosroldan](https://github.com/jcarlosroldan))
+  - Install `WebGLRenderingContext` and `WebGL2RenderingContext` globals and their numeric constants at module init so libraries that read them before any GL context is created no longer crash. ([#45865](https://github.com/expo/expo/pull/45865) by [@tsapeta](https://github.com/tsapeta))
+  - Make `WebGL2RenderingContext` inherit from `WebGLRenderingContext`, matching the WebGL spec. `gl2 instanceof WebGLRenderingContext` now returns `true` for WebGL2 contexts, and shared constants and methods are no longer duplicated on the WebGL2 prototype. ([#45871](https://github.com/expo/expo/pull/45871) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-image-picker`**
+  - [android] fix cropper default colors in light mode ([#42437](https://github.com/expo/expo/pull/42437) by [@fobos531](https://github.com/fobos531))
+  - [android] Handle edge-to-edge display in crop activity. ([#44208](https://github.com/expo/expo/pull/44208) by [@zoontek](https://github.com/zoontek))
+  - fix potential `null` mime type reported ([#43734](https://github.com/expo/expo/pull/43734) by [@vonovak](https://github.com/vonovak))
+  - [android] Fix potential vulnerability in `com.canhub.cropper.CropImageActivity` being exported. ([#45357](https://github.com/expo/expo/pull/45357) by [@behenate](https://github.com/behenate))
+  - [iOS] Fix `base64` result not being a JPEG data. ([#43806](https://github.com/expo/expo/pull/43806) by [@barthap](https://github.com/barthap))
+  - [Android] Follow system day/night theme in crop activity. ([#44944](https://github.com/expo/expo/pull/44944) by [@jeferson-sb](https://github.com/jeferson-sb))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-font`**
+  - Align `ServerFontResourceDescriptor.crossOrigin` type with React ([#45115](https://github.com/expo/expo/pull/45115) by [@hassankhan](https://github.com/hassankhan))
+  - [android] include xml-fonts in the `getLoadedFonts()` list ([#43860](https://github.com/expo/expo/pull/43860) by [@vonovak](https://github.com/vonovak))
+  - Sanitize values in web font loader and Android config plugin ([#45887](https://github.com/expo/expo/pull/45887) by [@kitten](https://github.com/kitten))
+- **`expo-document-picker`**
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-file-system`**
+  - [Android] Fix copy/move support for SAF and content provider URIs. ([#42887](https://github.com/expo/expo/pull/42887) by [@barthap](https://github.com/barthap))
+  - Fix out-of-memory errors when calculating file `md5` hash. ([#44064](https://github.com/expo/expo/pull/44064) by [@barthap](https://github.com/barthap))
+  - [iOS] Fix `totalDiskSpace` returning free disk space instead of total disk capacity. ([#44849](https://github.com/expo/expo/pull/44849) by [@shanebdavis](https://github.com/shanebdavis))
+  - Fix `onProgress` callback of `File.downloadFileAsync()` sometimes not firing on download completion. ([#45238](https://github.com/expo/expo/pull/45238) by [@barthap](https://github.com/barthap))
+  - [iOS] Fix `File.pickFileAsync()` greying out all files when using wildcard MIME types like `*/*` or `image/*`. ([#45245](https://github.com/expo/expo/pull/45245) by [@barthap](https://github.com/barthap))
+  - Fixed the jest mock's `FileSystemFileHandle` to honor `FileMode` string values (`'r'`, `'w'`, `'wa'`, `'wt'`, `'rw'`) instead of the obsolete name table, expose handle and file metadata, and match the documented default mode for `content://` URIs. The dispatch is now exhaustive over `FileMode`, so future enum additions fail to compile in the mock. (by [@radko93](https://github.com/radko93))
+  - [Android] Added missing permission checks to `delete()` and `openHandle()` in the next-gen File System API. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
+  - [Android] Fixed path traversal vulnerability in `createFile`, `createDirectory`, and `rename` that allowed escaping the parent directory. ([#45967](https://github.com/expo/expo/pull/45967) by [@barthap](https://github.com/barthap))
+  - [Android] Fixed `Paths.cache` and `Paths.document` pointing to wrong directory in Expo Go. ([#45977](https://github.com/expo/expo/pull/45977) by [@barthap](https://github.com/barthap))
+- **`expo-crypto`**
+  - Access `crypto` on `globalThis` rather than just `window.crypto` ([#43405](https://github.com/expo/expo/pull/43405) by [@bradleyayers](https://github.com/bradleyayers))
+- **`expo-contacts`**
+  - Fix `expo-contacts/next` throwing `Cannot find native module 'ExpoContactsNext'` when imported on web by adding a web shim. ([#46018](https://github.com/expo/expo/pull/46018) by [@zoontek](https://github.com/zoontek))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+  - Fix `getDetails` throwing NPE on malformed label ([#46405](https://github.com/expo/expo/pull/46405) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-cellular`**
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-camera`**
+  - [Web] Fix `isAvailableAsync` returning `true` on devices without a camera. ([#43932](https://github.com/expo/expo/pull/43932) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Use runtime camera availability checks in Simulator so camera code paths can run when a runtime video device is present while preserving fallback behavior when no device is available. (by [@kmagiera](https://github.com/kmagiera)) ([#44159](https://github.com/expo/expo/pull/44159) by [@kmagiera](https://github.com/kmagiera)) ([#44159](https://github.com/expo/expo/pull/44159) by [@kmagiera](https://github.com/kmagiera), [@kmagiera](https://github.com/kmagiera)) ([#44159](https://github.com/expo/expo/pull/44159), [#44159](https://github.com/expo/expo/pull/44159) by [@kmagiera](https://github.com/kmagiera), [@kmagiera](https://github.com/kmagiera), [@kmagiera](https://github.com/kmagiera), [@kmagiera](https://github.com/kmagiera))
+  - [iOS] Fix inconsistent barcode `type` value returned by ZXing fallback scanner (code39, pdf417, codabar) — it now returns the same format as the AVFoundation scanner (e.g. `"code39"` instead of `"org.iso.Code39"`). ([#44726](https://github.com/expo/expo/pull/44726) by [@jensdev](https://github.com/jensdev))
+  - [iOS] Fix orientation issue caused by upstream changes. ([#44171](https://github.com/expo/expo/pull/44171) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix camera activity indicator remaining active after `CameraView.launchScanner` is interactively dismissed and the app is backgrounded/foregrounded. ([#45063](https://github.com/expo/expo/pull/45063) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Remove `RECORD_AUDIO` from the manifest so `recordAudioAndroid` depends on the plugin. ([#45132](https://github.com/expo/expo/pull/45132) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix `itf14` barcode type not detecting generic Interleaved 2 of 5 barcodes, so behavior matches Android's `FORMAT_ITF`. ([#44796](https://github.com/expo/expo/pull/44796) by [@mduchev](https://github.com/mduchev))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-calendar`**
+  - Fixed `NumberFormatException` crash on Android when calendar/event IDs exceed `Integer.MAX_VALUE`. ([#43344](https://github.com/expo/expo/pull/43344) by [@olivier-bouillet](https://github.com/olivier-bouillet))
+  - [iOS] Fix `deleteEventAsync` deleting wrong recurring event instance when `instanceStartDate` is provided. ([#40172](https://github.com/expo/expo/pull/40172) by [@marcelogdeandrade](https://github.com/marcelogdeandrade))
+  - [Android] Add missing escaping of `calendarIds` filter input ([#45951](https://github.com/expo/expo/pull/45951) by [@kitten](https://github.com/kitten))
+  - [next] Remove legacy exports ([#45739](https://github.com/expo/expo/pull/45739) by [@Wenszel](https://github.com/Wenszel))
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-brightness`**
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-blur`**
+  - [Android] Fix Fabric mount/detach mismatch in `BlurTargetView` that could trigger `view already removed from parent` errors during root tree transitions. ([#43595](https://github.com/expo/expo/pull/43595) by [@stathis](https://github.com/efstathiosntonas)) ([#43595](https://github.com/expo/expo/pull/43595) by [@efstathiosntonas](https://github.com/efstathiosntonas)) ([#43595](https://github.com/expo/expo/pull/43595), [#43595](https://github.com/expo/expo/pull/43595) by [@efstathiosntonas](https://github.com/efstathiosntonas), [@efstathiosntonas](https://github.com/efstathiosntonas))
+  - [Android] Fix the initial blur value not taking the `blurReductionFactor` into account. ([#43814](https://github.com/expo/expo/pull/43814) by [@behenate](https://github.com/behenate))
+- **`expo-battery`**
+  - [android] Add `BatteryState.NOT_CHARGING` when power is connected but the battery is not charging (e.g. battery protection); map `BATTERY_STATUS_DISCHARGING` to `UNPLUGGED` only ([#44212](https://github.com/expo/expo/issues/44212)) ([#44451](https://github.com/expo/expo/pull/44451) by [@vj2303](https://github.com/vj2303))
+- **`expo-background-fetch`**
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-application`**
+  - [Android] Fix `PromiseAlreadySettledException` crash in `getInstallReferrerAsync` when `onInstallReferrerServiceDisconnected` gets called after promise settlement. ([#43419](https://github.com/expo/expo/pull/43419) by [@nishan](https://github.com/intergalacticspacehighway)) ([#43419](https://github.com/expo/expo/pull/43419) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#43419](https://github.com/expo/expo/pull/43419), [#43419](https://github.com/expo/expo/pull/43419) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- **`expo-apple-authentication`**
+  - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+- **`expo-asset`**
+  - Fixed incorrect MD5 checksum on Android. ([#43909](https://github.com/expo/expo/pull/43909) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- **`unimodules-app-loader`**
+  - [iOS] Added missing `Foundation.h` imports in header files. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-web-browser`**
+  - [Android] Bring back the `experimentalLauncherActivity` config plugin option. ([#44073](https://github.com/expo/expo/pull/44073) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-store-review`**
+  - [iOS] Migrated `requestReview` to the new `@MainActor` async-function API. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sqlite`**
+  - Bumped dev-plugin-webui to SDK 55. ([#43412](https://github.com/expo/expo/pull/43412) by [@kudo](https://github.com/kudo))
+  - [iOS] Updated sync function signatures (`runSync`, `applyChangesetSync`, `invertChangesetSync`) to accept `any AnyArrayBuffer` in place of the removed `JavaScriptArrayBuffer`. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
+  - Session changesets now use native `ArrayBuffer`s. ([#42638](https://github.com/expo/expo/pull/42638) by [@barthap](https://github.com/barthap))
+  - Statement bind params now use native `ArrayBuffer`s for blob columns. ([#42639](https://github.com/expo/expo/pull/42639) by [@barthap](https://github.com/barthap))
+  - [Android] Returned blob columns now use native `ArrayBuffer`s. ([#42640](https://github.com/expo/expo/pull/42640) by [@barthap](https://github.com/barthap))
+  - [iOS] Returned blob columns now use native `ArrayBuffer`s. ([#42642](https://github.com/expo/expo/pull/42642) by [@barthap](https://github.com/barthap))
+- **`expo-sensors`**
+  - Updated permission type and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-screen-capture`**
+  - Updated permission hooks and permission type imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-screen-orientation`**
+  - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-notifications`**
+  - Skip redundant device push token registration when token and metadata are unchanged since last successful registration. ([#44836](https://github.com/expo/expo/pull/44836) by [@stephanepham](https://github.com/stephanepham))
+  - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+  - Updated permission type and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-localization`**
+  - Use ReactI18nUtil dependency for enabling RTL support. ([#40575](https://github.com/expo/expo/pull/40575) by [@nishan](https://github.com/intergalacticspacehighway)) ([#40575](https://github.com/expo/expo/pull/40575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- **`expo-media-library`**
+  - Mark legacy API deprecated ([#44605](https://github.com/expo/expo/pull/44605) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Replace JS static overrides with StaticAsyncFunction ([#44473](https://github.com/expo/expo/pull/44473) by [@Wenszel](https://github.com/Wenszel))
+  - Updated permission hooks and permission type imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-location`**
+  - Updated permission hooks and permission type imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-modules-core`**
+  - [iOS] Extracted ObjC protocols (`EXAppContextProtocol`, `EXReactDelegateProtocol`, `EXAppContextFactoryRegistry`) for cross-xcframework module boundaries. Refactored legacy module registry, Fabric view headers, JSI layer, and podspecs for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Add `ViewWrapper` protocol and `AnyContentViewProvider` for type-erased access to wrapped SwiftUI views. ([#43669](https://github.com/expo/expo/pull/43669) by [@nishan](https://github.com/intergalacticspacehighway)) ([#43669](https://github.com/expo/expo/pull/43669) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#43669](https://github.com/expo/expo/pull/43669), [#43669](https://github.com/expo/expo/pull/43669) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway)) ([#43570](https://github.com/expo/expo/pull/43570) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#43570](https://github.com/expo/expo/pull/43570), [#43570](https://github.com/expo/expo/pull/43570) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Reduced per-call overhead of invoking native functions from JavaScript. ([#45093](https://github.com/expo/expo/pull/45093) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Fixed precompile build failing on `SwiftUIVirtualViewSharedImpl+Private.h` leaking into the public module umbrella. ([#44993](https://github.com/expo/expo/pull/44993) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Added explicit c++ linkage specifier to `ExpoModulesCore.podspec` to propagate to swift-only targets like Expo Widgets ([#44984](https://github.com/expo/expo/pull/44984) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Rewrote the core type system, definitions, `AppContext`, and worklets integration on top of the new `ExpoModulesJSI` package. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Decoupled Worklets integration into separate podspec. ([#42971](https://github.com/expo/expo/pull/42971) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Improved conversions of returned arrays and dictionaries with mixed element types. ([#42641](https://github.com/expo/expo/pull/42641) by [@barthap](https://github.com/barthap))
+  - [Android] Added broader colors support to convertibles. ([#44041](https://github.com/expo/expo/pull/44041) by [@kudo](https://github.com/kudo))
+  - [iOS] Added `@OptimizedFunction` macros support for Expo modules. ([#44262](https://github.com/expo/expo/pull/44262) by [@kudo](https://github.com/kudo))
+  - [iOS] Remove legacy `EXNativeModulesProxy` ([#42672](https://github.com/expo/expo/pull/42672) by [@tsapeta](https://github.com/tsapeta))
+  - Exclude ExpoModulesMacros.swift from SPM prebuild ([#44354](https://github.com/expo/expo/pull/44354) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] Remove legacy `ExpoBridgeModule` ([#44351](https://github.com/expo/expo/pull/44351) by [@tsapeta](https://github.com/tsapeta))
+  - Refactored `ComposableScope` and allow extensibility. ([#44698](https://github.com/expo/expo/pull/44698) by [@kudo](https://github.com/kudo))
+  - [iOS] Added broader colors support to convertibles. ([#44630](https://github.com/expo/expo/pull/44630) by [@kudo](https://github.com/kudo))
+  - Throwing error when converting invalid color array. ([#44734](https://github.com/expo/expo/pull/44734) by [@kudo](https://github.com/kudo))
+  - [Android] Added AsyncFunction support to the functional `ExpoUIView` DSL. ([#44081](https://github.com/expo/expo/pull/44081) by [@kudo](https://github.com/kudo))
+  - Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
+  - [Android] Improve performance of `PersistentFileLog`. ([#45058](https://github.com/expo/expo/pull/45058) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Improve performance of `EnumTypeConverter`. ([#45204](https://github.com/expo/expo/pull/45204) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Made `ExpoModulesWorklets` precompilable via runtime provider injection. ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] `AppContext.setRuntime` now takes the native React `RuntimeScheduler` pointer and a dispatch trampoline alongside the runtime pointer. ([#45636](https://github.com/expo/expo/pull/45636) by [@tsapeta](https://github.com/tsapeta))
+  - Deprecated `SharedObject.emit(event:arguments:)` (iOS) and the `vararg` `emit` (Android) in favor of the new single-payload overloads. Existing single-argument call sites keep working unchanged. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+  - Native view config attributes now carry a `process` function that unwraps shared objects to their registry id, so callers can pass shared objects directly as view props instead of unwrapping them manually. ([#46212](https://github.com/expo/expo/pull/46212) by [@tsapeta](https://github.com/tsapeta))
+  - Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
+- **`expo-image-manipulator`**
+  - [iOS] Use `internal import SDWebImageWebPCoder` to hide third-party dependency from public module interface. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-gl`**
+  - [iOS] Changed `EXGLContext.prepare:` signature — callers must now schedule onto the JS thread and pass a raw `jsi::Runtime` pointer. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-image-picker`**
+  - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+  - [android] bump Android-Image-Cropper dependency ([#43433](https://github.com/expo/expo/pull/43433) by [@vonovak](https://github.com/vonovak))
+  - Updated permission hooks and permission type imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+  - [Web] Drop dependency on `expo-modules-core` `Platform` in favor of inline `window`/`document` checks. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
+  - Switch package entry to TypeScript source and emit declarations only. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-font`**
+  - Export `ServerFontResourceDescriptor` type for external usage ([#45116](https://github.com/expo/expo/pull/45116) by [@hassankhan](https://github.com/hassankhan))
+- **`expo-file-system`**
+  - Add behavioral Jest mocks for the class-based `File` / `Directory` / `Paths` API, backed by an in-memory filesystem so tests can exercise create/write/read/move/copy/delete roundtrips without hand-rolling a `jest.mock`. ([#45027](https://github.com/expo/expo/pull/45027) by [@radko93](https://github.com/radko93))
+  - Deprecate `modificationTime` in favor of new `lastModified`, compatible with web `File` interface. ([#43411](https://github.com/expo/expo/pull/43411) by [@HubertBer](https://github.com/HubertBer))
+  - Deprecate `File.pickFileAsync(arg1, arg2)` in favour of new `File.pickFileAsync(options)`. ([#43411](https://github.com/expo/expo/pull/43411) by [@HubertBer](https://github.com/HubertBer))
+  - [Android] Optimized performance of copy and move operations. ([#44357](https://github.com/expo/expo/pull/44357), [#44358](https://github.com/expo/expo/pull/44358) by [@barthap](https://github.com/barthap))
+  - Improved public API docs. ([#45530](https://github.com/expo/expo/pull/45530) by [@barthap](https://github.com/barthap))
+  - Re-organized package TypeScript code. ([#45531](https://github.com/expo/expo/pull/45531) by [@barthap](https://github.com/barthap))
+  - Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Remove unused native dependencies. ([#45939](https://github.com/expo/expo/pull/45939) by [@jakex7](https://github.com/jakex7))
+- **`expo-crypto`**
+  - Improve `randomUUID()` performance on iOS. ([#46122](https://github.com/expo/expo/pull/46122) by [@kudo](https://github.com/kudo))
+- **`expo-contacts`**
+  - Mark legacy API deprecated ([#44845](https://github.com/expo/expo/pull/44845) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Improve contact observer implementation ([#44773](https://github.com/expo/expo/pull/44773) by [@Wenszel](https://github.com/Wenszel))
+  - Updated permission type and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-constants`**
+  - Switch app config generation from `@expo/config` to `expo/config` public API ([#44721](https://github.com/expo/expo/pull/44721) by [@kitten](https://github.com/kitten))
+- **`expo-clipboard`**
+  - [Android] Instead of exporting the `ClipboardFileProvider` use `android:grantUriPermissions` to share image files. ([#44556](https://github.com/expo/expo/pull/44556) by [@behenate](https://github.com/behenate))
+- **`expo-cellular`**
+  - Deprecate `allowsVoipAsync` method. ([#45177](https://github.com/expo/expo/pull/45177) by [@lukmccall](https://github.com/lukmccall))
+  - Updated permission hooks and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-camera`**
+  - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Extract barcode scanning (ZXingObjC) into a separate `ExpoCameraBarcodeScanning` companion pod. Disabling barcode scanning via config plugin now correctly excludes ZXingObjC from precompiled builds, reducing binary size. (by [@chrfalch](https://github.com/chrfalch)) ([#44766](https://github.com/expo/expo/pull/44766) by [@chrfalch](https://github.com/chrfalch)) ([#44766](https://github.com/expo/expo/pull/44766) by [@chrfalch](https://github.com/chrfalch), [@chrfalch](https://github.com/chrfalch))
+  - Updated permission hook imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-calendar`**
+  - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+  - [next] Add permission hooks ([#45390](https://github.com/expo/expo/pull/45390) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Clean up null options workaround ([#45328](https://github.com/expo/expo/pull/45328) by [@Wenszel](https://github.com/Wenszel))
+  - Add deprecation notes ([#45118](https://github.com/expo/expo/pull/45118) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Refactor Calendar@Next ([#43434](https://github.com/expo/expo/pull/43434) by [@Wenszel](https://github.com/Wenszel))
+  - Use `export type` for type-only re-exports to fix TS1205 with `isolatedModules`. ([#44205](https://github.com/expo/expo/pull/44205) by [@hknakn](https://github.com/hknakn))
+  - Updated permission hook imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-brightness`**
+  - Updated permission hooks and permission type imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-battery`**
+  - [Android] Remove unused native dependencies. ([#45937](https://github.com/expo/expo/pull/45937) by [@jakex7](https://github.com/jakex7))
+
+### ⚠️ Notices
+
+- **`expo-media-library`**
+  - Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-location`**
+  - Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.0 — 2026-02-25
+
+### 🛠 Breaking changes
+
+- **`expo-notifications`**
+  - expose `BackgroundNotificationTaskResult` ([#41291](https://github.com/expo/expo/pull/41291) by [@vonovak](https://github.com/vonovak))
+  - [ios], [internal] rename `EXNotifications` pod to `ExpoNotifications` ([#42009](https://github.com/expo/expo/pull/42009) by [@vonovak](https://github.com/vonovak))
+  - [android] throw instead of logging a warning when attempting to use push notifications with Expo Go ([#39459](https://github.com/expo/expo/pull/39459) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - [Android] Drop support for legacy architecture.
+  - [iOS] Renamed `ignoreSafeAreaKeyboardInsets` to `ignoreSafeArea` on `Host` component. It now accepts `'all'` or `'keyboard'` instead of a boolean. ([#42598](https://github.com/expo/expo/pull/42598) by [@nishan](https://github.com/intergalacticspacehighway)) ([#42598](https://github.com/expo/expo/pull/42598) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- **`expo-localization`**
+  - [Android] Default allowDynamicLocaleChangesAndroid to true when supportedLocales is configured ([#41813](https://github.com/expo/expo/pull/41813) by [@Ubax](https://github.com/Ubax))
+- **`expo-image-loader`**
+  - iOS implementation has been moved to `expo-modules-core`. ([#41395](https://github.com/expo/expo/pull/41395) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-clipboard`**
+  - Removed deprecated `content` property of the clipboard event listener. Use `getStringAsync()` instead. ([#41739](https://github.com/expo/expo/pull/41739) by [@barthap](https://github.com/barthap))
+- **`expo-cellular`**
+  - remove deprecated JS constants, return `null` as a replacement for deprecated native iOS methods ([#43035](https://github.com/expo/expo/pull/43035) by [@vonovak](https://github.com/vonovak))
+- **`expo-brightness`**
+  - Remove deprecated `useSystemBrightnessAsync` ([#40168](https://github.com/expo/expo/pull/40168) by [@vonovak](https://github.com/vonovak))
+- **`expo-blur`**
+  - [Android] The `dimezisBlurView` experimental blur method will no longer work without creating a related `BlurTargetView`. ([#39990](https://github.com/expo/expo/pull/39990) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- **`expo-web-browser`**
+  - Add support for auth universal links callback ([#42695](https://github.com/expo/expo/pull/42695) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-sqlite`**
+  - Added SQLite inspector devtools plugin. ([#40872](https://github.com/expo/expo/pull/40872), [#40900](https://github.com/expo/expo/pull/40900) by [@kudo](https://github.com/kudo))
+  - Added tagged template literals support. ([#40972](https://github.com/expo/expo/pull/40972) by [@kudo](https://github.com/kudo))
+  - Added `SQLITE_ENABLE_MATH_FUNCTIONS` support by default. ([#41333](https://github.com/expo/expo/pull/41333) by [@kudo](https://github.com/kudo))
+- **`expo-speech`**
+  - Added support for `volume` option on iOS and Android. ([#40959](https://github.com/expo/expo/pull/40959) by [@barthap](https://github.com/barthap))
+- **`expo-sharing`**
+  - Add `getSharedPayloads`, `getResolvedSharedPayloadsAsync`, `cleanSharedPayloads` functions and `useIncomingShare` hook for receiving data shared from other apps. ([#42284](https://github.com/expo/expo/pull/42284) by [@behenate](https://github.com/behenate))
+  - Add config plugin for receiving data from other apps. ([#42242](https://github.com/expo/expo/pull/42242) by [@behenate](https://github.com/behenate))
+- **`expo-notifications`**
+  - [android] Support subscribing to Firebase broadcast topics by ([#17674](https://github.com/expo/expo/pull/17674) [@mmomtchev](https://github.com/mmomtchev)) ([#17674](https://github.com/expo/expo/pull/17674) by [@mmomtchev](https://github.com/mmomtchev))
+  - improve runtime validation for NotificationTriggerInput ([#41538](https://github.com/expo/expo/pull/41538) by [@vonovak](https://github.com/vonovak))
+  - improve custom sound validation ([#43189](https://github.com/expo/expo/pull/43189) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - [Android] Starts using precompiled headers to improve build times. ([#39641](https://github.com/expo/expo/pull/39641) by [@lukmccall](https://github.com/lukmccall))
+  - Remove `ExpoAppDelegate` inheritance requirement in ExpoReactNativeFactory ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] Introduce ExpoAppDelegateSubscriberManager class ([#40008](https://github.com/expo/expo/pull/40008) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] Add `applicationDidReceiveMemoryWarning` subscribing to ExpoAppDelegateSubscriberManager ([#40504](https://github.com/expo/expo/pull/40504) by [@szydlovsky](https://github.com/szydlovsky))
+  - [iOS] Swift's `Encodable` types can now be converted to JavaScript values. ([#40621](https://github.com/expo/expo/pull/40621) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added `subscriberDidRegister` function to AppDelegate subscribers. ([#40684](https://github.com/expo/expo/pull/40684) by [@tsapeta](https://github.com/tsapeta))
+  - Add `reloadAppAsync` method to AppContext. ([#42295](https://github.com/expo/expo/pull/42295) by [@aleqsio](https://github.com/aleqsio))
+  - Add `map` to `ValueOrUndefined`. ([#40593](https://github.com/expo/expo/pull/40593) by [@Wenszel](https://github.com/Wenszel))
+  - Add types for `process.env.EXPO_DOM_HOST_OS`. ([#40382](https://github.com/expo/expo/pull/40382) by [@EvanBacon](https://github.com/EvanBacon))
+  - [Android] Add `ComposableScope` for compose Content functions. ([#39155](https://github.com/expo/expo/pull/39155) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Adds support for `ArrayBuffer`. ([#39943](https://github.com/expo/expo/pull/39943) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Add experimental formatters API. ([#38946](https://github.com/expo/expo/pull/38946) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Add `convertResult` to `Convertible`. ([#40302](https://github.com/expo/expo/pull/40302) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Adopted Swift 6 ([#40369](https://github.com/expo/expo/pull/40369) by [@tsapeta](https://github.com/tsapeta))
+  - Add StaticFunction and StaticAsyncFunction to Class in modules API. ([#39228](https://github.com/expo/expo/pull/39228), [#38754](https://github.com/expo/expo/pull/38754) by [@jakex7](https://github.com/jakex7))
+  - [Android] Added `ReactActivityHandler.onDidCreateReactActivityDelegateNotification`. ([#40537](https://github.com/expo/expo/pull/40537) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Added `ReactNativeHostHandler.onDidCreateReactHost`. ([#40561](https://github.com/expo/expo/pull/40561) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Remove `hermesEnabled` property requirement for internal testing ([#40678](https://github.com/expo/expo/pull/40678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] `Class` definition for shared objects is now optional. ([#40708](https://github.com/expo/expo/pull/40708) by [@tsapeta](https://github.com/tsapeta))
+  - Split out JSI layer from the modules core. ([#40755](https://github.com/expo/expo/pull/40755) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Improved support for `ArrayBuffer`s. ([#41404](https://github.com/expo/expo/pull/41404) by [@barthap](https://github.com/barthap))
+  - [Android] Add support for creating `ArrayBuffer`s in native modules. ([#41415](https://github.com/expo/expo/pull/41415) by [@barthap](https://github.com/barthap))
+  - [iOS] Added `appDelegateWillBeginInitialization` function to AppDelegate subscribers. ([#41456](https://github.com/expo/expo/pull/41456) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added `RNHost` to improve RN component layout inside SwiftUI views ([#40938](https://github.com/expo/expo/pull/40938) by [@nishan](https://github.com/intergalacticspacehighway)) ([#40938](https://github.com/expo/expo/pull/40938) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Added `ignoreSafeAreaKeyboardInsets` to `SwiftUIHostingView`. ([#41302](https://github.com/expo/expo/pull/41302) by [@nishan](https://github.com/intergalacticspacehighway)) ([#41302](https://github.com/expo/expo/pull/41302) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Added support for `ArrayBuffer`s. ([#41548](https://github.com/expo/expo/pull/41548) by [@barthap](https://github.com/barthap))
+  - [iOS] JSI runtime is now accessed from public `RCTHostRuntimeDelegate` instead of unofficial `bridge.runtime`. ([#41311](https://github.com/expo/expo/pull/41311) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Introduced global `JavaScriptActor` to isolate code requiring running on the JavaScript thread. ([#41793](https://github.com/expo/expo/pull/41793) by [@tsapeta](https://github.com/tsapeta))
+  - [iOs] Add experimental formatters API. ([#42023](https://github.com/expo/expo/pull/42023) by [@lukmccall](https://github.com/lukmccall))
+  - [macOS] Added `NSEdgeInsets.zero` extension to better match `UIEdgeInsets`. ([#42675](https://github.com/expo/expo/pull/42675) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-media-library`**
+  - [next] Add Query ([#39559](https://github.com/expo/expo/pull/39559) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add `asset.getShape()` ([#40110](https://github.com/expo/expo/pull/40110) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add `asset.getInfo()` ([#40146](https://github.com/expo/expo/pull/40146) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add exif support ([#39992](https://github.com/expo/expo/pull/39992) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add `Album.get(title)` ([#39717](https://github.com/expo/expo/pull/39717) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-location`**
+  - [Android] Add option `androidForegroundServiceIcon` for controlling the icon for the foreground service. ([#41132](https://github.com/expo/expo/pull/41132) by [@jeppester](https://github.com/jeppester))
+  - [iOS] Added `accuracy` field to `PermissionDetailsLocationIOS` exposing iOS 14+ precise/reduced location authorization. ([#42931](https://github.com/expo/expo/pull/42931) by [@sbs44](https://github.com/sbs44))
+- **`expo-image-picker`**
+  - [iOS] Add `shouldDownloadFromNetwork` option to fix iCloud video download ([#40697](https://github.com/expo/expo/pull/40697) by [@kosmydel](https://github.com/kosmydel))
+  - [android] support colors configuration ([#40834](https://github.com/expo/expo/pull/40834) by [@kosmydel](https://github.com/kosmydel))
+- **`expo-font`**
+  - Add support for setting custom testStrings for FontObserver on the web. ([#42442](https://github.com/expo/expo/pull/42442) by [@aleqsio](https://github.com/aleqsio))
+  - add support for line-height ([#41094](https://github.com/expo/expo/pull/41094) by [@Ubax](https://github.com/Ubax))
+- **`expo-file-system`**
+  - add `idempotent` option to `downloadFileAsync` ([#39681](https://github.com/expo/expo/pull/39681) by [@vonovak](https://github.com/vonovak))
+  - Add write options for base64 encoded bytes. ([#39963](https://github.com/expo/expo/pull/39963) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Add file sharing config options ([#39286](https://github.com/expo/expo/pull/39286) by [@kosmydel](https://github.com/kosmydel))
+  - [Android] Add contentUri property. ([#40002](https://github.com/expo/expo/pull/40002) by [@aleqsio](https://github.com/aleqsio))
+  - Add `append` option to write methods. ([#42778](https://github.com/expo/expo/pull/42778) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-device`**
+  - [iOS] Added support for iOS 26 and iPhone 17 devices. ([#39797](https://github.com/expo/expo/pull/39797) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-constants`**
+  - [android] Read projectRoot from expo-autolinking ([#40666](https://github.com/expo/expo/pull/40666) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-crypto`**
+  - Added support for AES-GCM encryption. ([#41249](https://github.com/expo/expo/pull/41249) by [@barthap](https://github.com/barthap))
+- **`expo-camera`**
+  - Allow disabling the barcode scanner functionality via config plugin. ([#40444](https://github.com/expo/expo/pull/40444) by [@alanjhughes](https://github.com/alanjhughes))
+  - Allow users to set video stabilization mode when recording videos. ([#41666](https://github.com/expo/expo/pull/41666) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Add support for screen flash on the front camera. ([#41667](https://github.com/expo/expo/pull/41667) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-contacts`**
+  - Add `Contacts@Next` ([#40886](https://github.com/expo/expo/pull/40886) by [@Wenszel](https://github.com/Wenszel))
+  - [Android] Implement `hasContactsAsync` function ([#40756](https://github.com/expo/expo/pull/40756) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- **`expo-calendar`**
+  - [iOS] Added support for all‑day reminders ([#39028](https://github.com/expo/expo/pull/39028)) by [@dominik-miskovic](https://github.com/dominik-miskovic) ([#39028](https://github.com/expo/expo/pull/39028) by)
+  - [next] Implement `ExpoCalendar@next`  ([#39108](https://github.com/expo/expo/pull/39108) by [@kosmydel](https://github.com/kosmydel) and [@arturgesiarz](https://github.com/arturgesiarz)) ([#39108](https://github.com/expo/expo/pull/39108) by [@kosmydel](https://github.com/kosmydel), [@arturgesiarz](https://github.com/arturgesiarz))
+- **`expo-blur`**
+  - [Android] Introduce new, more performant Blur API for Android. ([#39990](https://github.com/expo/expo/pull/39990) by [@behenate](https://github.com/behenate))
+  - [Android] Introduce `dimezisBlurViewSdk31Plus` blur method. ([#39998](https://github.com/expo/expo/pull/39998) by [@behenate](https://github.com/behenate))
+- **`expo-auth-session`**
+  - Added `extraHeaders` option to `TokenRequest` and `RevokeTokenRequest`. ([#31381](https://github.com/expo/expo/pull/31381)) by [@levizimmerman](https://github.com/levizimmerman) and [@lsarni](https://github.com/lsarni) ([#31381](https://github.com/expo/expo/pull/31381) by [@levizimmerman](https://github.com/levizimmerman), [@lsarni](https://github.com/lsarni))
+
+### 🐛 Bug fixes
+
+- **`expo-web-browser`**
+  - [Android] Fix multiple runs of prebuild repeateadly adding generated code. ([#39702](https://github.com/expo/expo/pull/39702) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix `dismissBrowser` hanging when called with no browser open. ([#40799](https://github.com/expo/expo/pull/40799) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Fix the browser closing after the app is backgrounded by adding a new option to use a proxy activity to launch custom tabs. ([#41457](https://github.com/expo/expo/pull/41457) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-video-thumbnails`**
+  - [Android] Fixed broken thumbnail generation on Android 9 and lower. ([#3854081613](https://github.com/expo/expo/pull/40816) by [@andrejpavlovic](https://github.com/andrejpavlovic)) ([#40816](https://github.com/expo/expo/pull/40816) by [@andrejpavlovic](https://github.com/andrejpavlovic))
+- **`expo-task-manager`**
+  - [Android] Fix NPE in updateOrScheduleJob in task manager ([#40396](https://github.com/expo/expo/pull/40396) by [@SamuelBrucksch](https://github.com/SamuelBrucksch))
+  - [Android] Fix job scheduling ANR caused by cancel/reschedule pattern that prevented jobs from executing and accumulated data until exceeding Binder transaction limit. ([#41688](https://github.com/expo/expo/pull/41688) by [@tyrauber](https://github.com/tyrauber))
+- **`expo-sqlite`**
+  - Throwing error when `ExpoSQLite.defaultDatabaseDirectory` returns undefined. ([#40680](https://github.com/expo/expo/pull/40680) by [@kudo](https://github.com/kudo))
+  - Fixed node runtime bundling error on web. ([#40739](https://github.com/expo/expo/pull/40739) by [@kudo](https://github.com/kudo))
+  - Fixed Android 16kb page size issue when enabling `useSQLCipher`. ([#40781](https://github.com/expo/expo/pull/40781) by [@ronickg](https://github.com/ronickg))
+  - Fixed `serializeAsync` / `serializeSync` errors from memory database on web. ([#40899](https://github.com/expo/expo/pull/40899) by [@kudo](https://github.com/kudo))
+- **`expo-store-review`**
+  - [iOS] Fix 'requestReview' function failing. ([#40080](https://github.com/expo/expo/pull/40080) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- **`expo-sensors`**
+  - [iOS] Fixed build failure when motion permission is disabled with the config plugin. ([#42599](https://github.com/expo/expo/pull/42599) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sharing`**
+  - Fix the share into extension being enabled by default. ([#42661](https://github.com/expo/expo/pull/42661) by [@behenate](https://github.com/behenate))
+  - [plugin] Fix the entitlements shape in eas config. ([#42663](https://github.com/expo/expo/pull/42663) by [@behenate](https://github.com/behenate))
+- **`expo-screen-capture`**
+  - Prevent multiple blur views from being added during rapid app state changes. ([#39633](https://github.com/expo/expo/pull/39633) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - [iOS] Fix main thread violation warnings on app startup. ([#42204](https://github.com/expo/expo/pull/42204) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-screen-orientation`**
+  - [web] fix undeclared `listener` reference ([#41441](https://github.com/expo/expo/pull/41441) by [@vonovak](https://github.com/vonovak))
+  - [iOS] Remove use of deprecated API `UIApplication.shared.windows`. ([#40881](https://github.com/expo/expo/pull/40881) by [@bwallberg](https://github.com/bwallberg))
+  - [iOS] [New Architecture] Restore orientationMask after app transition from background to foreground ([#42536](https://github.com/expo/expo/pull/42536) by [@LongyuW](https://github.com/LongyuW))
+- **`expo-network`**
+  - [Android] Fix network state race condition by delaying callback ([#40705](https://github.com/expo/expo/pull/40705) by [@kosmydel](https://github.com/kosmydel))
+- **`expo-notifications`**
+  - [android] avoid crash emitting a new token event when module is destroyed ([#41754](https://github.com/expo/expo/pull/41754) by [@vonovak](https://github.com/vonovak))
+  - [ios] fix completion handler never called for background notifications ([#41300](https://github.com/expo/expo/pull/41300) by [@vonovak](https://github.com/vonovak))
+  - Adjustments after removal of notification section of Expo config. ([#41972](https://github.com/expo/expo/pull/41972) by [@douglowder](https://github.com/douglowder))
+  - [Android] fix background task not consistently executing ([#43245](https://github.com/expo/expo/pull/43245) by [@vonovak](https://github.com/vonovak))
+  - [Android] fix `deleteNotificationChannelGroupAsync` export ([#43244](https://github.com/expo/expo/pull/43244) by [@vonovak](https://github.com/vonovak))
+  - add FCM intent origin validation ([#43206](https://github.com/expo/expo/pull/43206) by [@vonovak](https://github.com/vonovak))
+  - Fixed crash in `NotificationForwarderActivity` on Android 11/12 when Parcelable extras fail to deserialize by using byte array serialization as fallback. ([#43203](https://github.com/expo/expo/pull/43203) by [@vonovak](https://github.com/vonovak))
+  - [ios] Fixed `requestPermissionsAsync` not forwarding new options to the OS when notifications were already granted ([#43378](https://github.com/expo/expo/pull/43378) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - Fix runtime error due to passing undefined into function that doesnt receive any argument ([#39594](https://github.com/expo/expo/pull/39594) by [@mrevanzak](https://github.com/mrevanzak))
+  - Fix build error on Vite due to non-existent import for `TurboModuleRegistry` on web ([#39726](https://github.com/expo/expo/pull/39726) by [@satya164](https://github.com/satya164))
+  - [iOS] Return EXJavaScriptValue from null/undefined in arrays. ([#39872](https://github.com/expo/expo/pull/39872) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Fix NSURL to JSIString conversion returning nil. ([#39567](https://github.com/expo/expo/pull/39567) by [@behenate](https://github.com/behenate))
+  - Fix SharedObject created with `useReleasingSharedObject` getting destroyed after a fast refresh caused by a change in its dependencies. ([#39753](https://github.com/expo/expo/pull/39753) by [@behenate](https://github.com/behenate))
+  - [core] [iOS] Addresses a potential crash where `[NSString UTF8String]` could return `nil` for certain string inputs (non-English), leading to an attempt to dereference a null pointer during `jsi::String` creation. ([#40639](https://github.com/expo/expo/pull/40639) by [@mohammadamin16](https://github.com/mohammadamin16))
+  - [Android] Fix `androidNavigationBar.enforceContrast` app config property not working. ([#40263](https://github.com/expo/expo/pull/40263) by [@behenate](https://github.com/behenate))
+  - [iOS] Fix `Either` conversion in `Record` ([#40655](https://github.com/expo/expo/pull/40655) by [@vonovak](https://github.com/vonovak))
+  - [iOS] Fix sizing glitch when React Native components are used as child in Expo UI components ([#40693](https://github.com/expo/expo/pull/40693) by [@nishan](https://github.com/intergalacticspacehighway)) ([#40693](https://github.com/expo/expo/pull/40693) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#40693](https://github.com/expo/expo/pull/40693), [#40693](https://github.com/expo/expo/pull/40693) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix `TextField` causing crash when reload and unmounting. ([#40960](https://github.com/expo/expo/pull/40960) by [@nishan](https://github.com/intergalacticspacehighway)) ([#40960](https://github.com/expo/expo/pull/40960) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#40960](https://github.com/expo/expo/pull/40960), [#40960](https://github.com/expo/expo/pull/40960) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Universal links not working on cold start. ([#41185](https://github.com/expo/expo/pull/41185)) by [@jbaudanza](https://github.com/jbaudanza) ([#41185](https://github.com/expo/expo/pull/41185) by [@jbaudanza](https://github.com/jbaudanza)) ([#41185](https://github.com/expo/expo/pull/41185), [#41185](https://github.com/expo/expo/pull/41185) by [@jbaudanza](https://github.com/jbaudanza), [@jbaudanza](https://github.com/jbaudanza))
+  - [Android] Fixed DSL view props using stale state when updating. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
+  - [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
+  - [android] Fix source sets for events for functional view definitions. ([#41685](https://github.com/expo/expo/pull/41685) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
+  - [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))
+  - [Android] check if `AppContextActivityResultLauncher` coroutine continuation is active before resuming ([#41319](https://github.com/expo/expo/pull/41319) by [@vonovak](https://github.com/vonovak))
+  - [RSC] Fix server components asserting from missing native modules. ([#40388](https://github.com/expo/expo/pull/40388) by [@EvanBacon](https://github.com/EvanBacon))
+  - [Android] Restore `register` overload in `ModuleRegistry`. ([#40149](https://github.com/expo/expo/pull/40149) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Add `invalidate` callback to SwiftUIVirtualView. ([#40237](https://github.com/expo/expo/pull/40237) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix `ValueOrUndefined` conversion in `Record`. ([#40289](https://github.com/expo/expo/pull/40289) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Improve RN component layout when hosted in SwiftUI ([#40794](https://github.com/expo/expo/pull/40794) by [@nishan](https://github.com/intergalacticspacehighway)) ([#40794](https://github.com/expo/expo/pull/40794) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fixed `null` not being correctly converted to `ValueOrUndefined` in `Record`. ([#41005](https://github.com/expo/expo/pull/41005) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed `NativeModule` extending `Record<string, any>`, which made it not type-safe. ([#41320](https://github.com/expo/expo/pull/41320) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix missing headers when using static frameworks ([#41970](https://github.com/expo/expo/pull/41970) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] Add shallow equality check before triggering view prop setters to avoid unnecessary calls. ([#39331](https://github.com/expo/expo/pull/39331) by [@nishan](https://github.com/intergalacticspacehighway)) ([#39331](https://github.com/expo/expo/pull/39331) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - Fix react-native-macos 0.81 support ([#42366](https://github.com/expo/expo/pull/42366) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [Android] Fixed crashes in JavaScriptValue/JavaScriptObject destructor caused by freeing memory after the runtime is destroyed. ([#42440](https://github.com/expo/expo/pull/42440) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Added missing checks in the promise implementation. ([#42467](https://github.com/expo/expo/pull/42467) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fixed a crash in Fabric when unmounting a view while a geometry change event is being dispatched. ([#42628](https://github.com/expo/expo/issues/42628) by [@danishshaik](https://github.com/danishshaik)) ([#42634](https://github.com/expo/expo/pull/42634) by [@danishshaik](https://github.com/danishshaik)) ([#42634](https://github.com/expo/expo/pull/42634) by [@danishshaik](https://github.com/danishshaik), [@danishshaik](https://github.com/danishshaik))
+  - [iOS] Fix crashes when converting a single JSValue into an Array. ([#42694](https://github.com/expo/expo/pull/42694) by [@behenate](https://github.com/behenate))
+  - Added more Jetpack Compose support. ([#42734](https://github.com/expo/expo/pull/42734) by [@kudo](https://github.com/kudo))
+  - Fix global type declaration chain to point to `expo -> expo-modules-core/types -> ./build/global` rather than `types="node"` ([#42751](https://github.com/expo/expo/pull/42751) by [@kitten](https://github.com/kitten))
+  - [iOS] Fixed missing dependencies when building from source ([#42901](https://github.com/expo/expo/pull/42901) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Added `DynamicBoolType` to correctly distinguish boolean values from numeric 0/1. ([#42978](https://github.com/expo/expo/pull/42978) by [@nishan](https://github.com/intergalacticspacehighway)) ([#42978](https://github.com/expo/expo/pull/42978) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fixed `DynamicBoolType` to throw `NullCastException` for nil values, matching `DynamicRawType` behavior. ([#43085](https://github.com/expo/expo/pull/43085) by [@nishan](https://github.com/intergalacticspacehighway)) ([#43085](https://github.com/expo/expo/pull/43085) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Fix crash from `PersistentFileLog`. ([#43283](https://github.com/expo/expo/pull/43283) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fixed `field.options.insert()` silently failing in `fieldsOf()` due to mutation on protocol existential. ([#43341](https://github.com/expo/expo/pull/43341) by [@just1and0](https://github.com/just1and0))
+  - [iOS] Fixed warnings in `Prop` definition component by isolating its setter to the main actor. ([#43348](https://github.com/expo/expo/pull/43348) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-mail-composer`**
+  - [Android] Fix mail composer not suggesting an e-mail client on some devices. ([#41274](https://github.com/expo/expo/pull/41274) by [@behenate](https://github.com/behenate))
+- **`expo-media-library`**
+  - [next][android] Fix Failed To Build Unique File exception ([#42222](https://github.com/expo/expo/pull/42222) by [@Wenszel](https://github.com/Wenszel))
+  - [next][android] Fix creating album with name with spaces ([#42220](https://github.com/expo/expo/pull/42220) by [@Wenszel](https://github.com/Wenszel))
+  - Fix `endCursor` description in the documentation. ([#39120](https://github.com/expo/expo/pull/39120) by [@Wenszel](https://github.com/Wenszel))
+  - [next][iOS] Convert `id` to URI format ([#39920](https://github.com/expo/expo/pull/39920) by [@Wenszel](https://github.com/Wenszel))
+  - [next][android] Fix `delete()` throwing security exception ([#39914](https://github.com/expo/expo/pull/39914) by [@Wenszel](https://github.com/Wenszel))
+  - [next][android] Change default root directory to Pictures ([#39716](https://github.com/expo/expo/pull/39716) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Fix `asset.getModificationTime` to return milliseconds ([#39715](https://github.com/expo/expo/pull/39715) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-location`**
+  - [Android] Fixed deferred location updates being applied in foreground due to incorrect `mIsHostPaused` initialization. Location updates are now delivered immediately when app is in foreground, matching iOS behavior. ([#41659](https://github.com/expo/expo/pull/41659) by [@tyrauber](https://github.com/tyrauber))
+  - use WGS 84 as reference for altitude on iOS ([#41318](https://github.com/expo/expo/pull/41318) by [@vonovak](https://github.com/vonovak))
+  - fix position of the `scope` field in a permissions request result ([#41328](https://github.com/expo/expo/pull/41328) by [@vonovak](https://github.com/vonovak))
+  - [Web] Stop using legacy event emitter. ([#41680](https://github.com/expo/expo/pull/41680) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-localization`**
+  - Correct types for getCalendars and getLocales ([#39703](https://github.com/expo/expo/pull/39703) by [@kadikraman](https://github.com/kadikraman))
+  - [android] fix: convert BCP-47 locales to Android resource qualifiers ([#40901](https://github.com/expo/expo/pull/40901) by [@kosmydel](https://github.com/kosmydel))
+- **`expo-intent-launcher`**
+  - [Android] Fixed Double to Long conversion for intent extras to support calendar timestamps and other large numeric values. ([#42386](https://github.com/expo/expo/pull/42386) by [@brianomchugh](https://github.com/brianomchugh))
+- **`expo-image-manipulator`**
+  - Fix image manipulator in Expo Go. ([#42347](https://github.com/expo/expo/pull/42347) by [@aleqsio](https://github.com/aleqsio))
+  - fix TS build issue ([#41448](https://github.com/expo/expo/pull/41448) by [@vonovak](https://github.com/vonovak))
+- **`expo-image-picker`**
+  - [web] fix error propagation in `launchImageLibraryAsync` function on web ([#42716](https://github.com/expo/expo/pull/42716) by [@HubertBer](https://github.com/HubertBer))
+  - [android] fix `cropToolbarColor` default value ([#40834](https://github.com/expo/expo/pull/40834) by [@kosmydel](https://github.com/kosmydel))
+  - [android] do not crash if `ContentProvider` doesn't provide mime type ([#41495](https://github.com/expo/expo/pull/41495) by [@vonovak](https://github.com/vonovak))
+- **`expo-gl`**
+  - Fix race condition bug for **web** env for `onLayout` callback. ([#41460](https://github.com/expo/expo/pull/41460) by [@psnet](https://github.com/psnet))
+  - [iOS] Fixed a crash caused by the missing module registry. ([#42653](https://github.com/expo/expo/pull/42653) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Fixed missing dependencies when building from source ([#42901](https://github.com/expo/expo/pull/42901) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-font`**
+  - fix android image scaling in `renderToImageAsync` ([#40113](https://github.com/expo/expo/pull/40113) by [@vonovak](https://github.com/vonovak))
+  - [ios] Defer native font querying to prevent startup hang on iOS. ([#42033](https://github.com/expo/expo/pull/42033) by [@mozzius](https://github.com/mozzius))
+  - unify `useFonts` return value in RSC ([#40481](https://github.com/expo/expo/pull/40481) by [@vonovak](https://github.com/vonovak))
+- **`expo-file-system`**
+  - [Android] Fix incorrect AndroidManifest.xml location. ([#39134](https://github.com/expo/expo/pull/39134) by [@robertying](https://github.com/robertying))
+  - Fix typedoc in the File class. ([#40064](https://github.com/expo/expo/pull/40064) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Fix getContentUri. ([#40001](https://github.com/expo/expo/pull/40001) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Fix recursive file deletion. ([#40248](https://github.com/expo/expo/pull/40248) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Add missing `createFile` and `createDirectory` methods. ([#40314](https://github.com/expo/expo/pull/40314) by [@jakex7](https://github.com/jakex7))
+  - [file-system] Fix package exports for Typescript projects ([#39543](https://github.com/expo/expo/pull/39543) by [@smoores-dev](https://github.com/smoores-dev))
+  - [Android] Fix bundle directory listing returning incorrect names, URIs and trailing slashes for files. ([#42882](https://github.com/expo/expo/pull/42882) by [@aleqsio](https://github.com/aleqsio))
+  - Fix Jest mock to support new `File`/`Directory`/`Paths` API. ([#43005](https://github.com/expo/expo/pull/43005) by [@aleqsio](https://github.com/aleqsio))
+  - Fix incorrect return types for `File` and `Directory` static methods. ([#43282](https://github.com/expo/expo/pull/43282) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-clipboard`**
+  - Added missing export of `clipboardEventName` on Web. ([#42610](https://github.com/expo/expo/pull/42610) by [@Bram-dc](https://github.com/Bram-dc))
+- **`expo-constants`**
+  - Fixed empty `expoConfig` on Android. ([#41259](https://github.com/expo/expo/pull/41259) by [@kudo](https://github.com/kudo))
+- **`expo-crypto`**
+  - [Android] Fix memory corruption when offset typed array was provided to `digest()` or `getRandomValues()`. ([#42186](https://github.com/expo/expo/pull/42186) by [@barthap](https://github.com/barthap))
+  - Fixed incorrect option name for tag inclusion in `AESSealedData.ciphertext(options)`. ([#42535](https://github.com/expo/expo/pull/42535) by [@barthap](https://github.com/barthap))
+- **`expo-camera`**
+  - [Android] Fix barcode scanner on devices without access to Google Play Services. ([#39612](https://github.com/expo/expo/pull/39612) by [@behenate](https://github.com/behenate))
+  - [Android] Fix certain exif keys being dropped because of invalid values. ([#41043](https://github.com/expo/expo/pull/41043) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Fix camera not being recreated on the old architecture. ([#41405](https://github.com/expo/expo/pull/41405) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Return correct size information when using image refs. ([#41658](https://github.com/expo/expo/pull/41658) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix incorrect isPinchToZoomEnabled default value for scanner. ([#41803](https://github.com/expo/expo/pull/41803) by [@hssdiv](https://github.com/hssdiv))
+  - [iOS] Fixed a number of configuration issues and error inconsistencies. ([#42926](https://github.com/expo/expo/pull/42926) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-contacts`**
+  - [iOS] Fixed issue with missing `namePrefix` on iOS ([#39974](https://github.com/expo/expo/pull/39974) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - [iOS] Fixed phonetic name fields being assigned to wrong keys ([#40013](https://github.com/expo/expo/pull/40013) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - [Android] Fix updating contact with existing image ([#42133](https://github.com/expo/expo/pull/42133) by [@Wenszel](https://github.com/wenszel)) ([#42133](https://github.com/expo/expo/pull/42133) by [@wenszel](https://github.com/wenszel))
+  - [Android] Fix adding contact when default account is set to cloud ([#42203](https://github.com/expo/expo/pull/42203) by [@Wenszel](https://github.com/Wenszel))
+  - Fix `editWithForm` throws error ([#43315](https://github.com/expo/expo/pull/43315) by [@Wenszel](https://github.com/Wenszel))
+- **`expo-calendar`**
+  - [Android] Fixed retrieving recurrence rules information. ([#40549](https://github.com/expo/expo/pull/40549) by [@barthap](https://github.com/barthap))
+- **`expo-brightness`**
+  - **Android**: Fixed `setSystemBrightnessAsync` to support brightness value 0 by mapping [0,1] range to Android's valid [1,255] range. ([#42470](https://github.com/expo/expo/pull/42470) by [@davidalo](https://github.com/davidalo))
+- **`expo-asset`**
+  - [Android] Fix asset loading when Metro server runs over HTTPS by deriving scheme from `manifestBaseUrl` instead of hardcoding `http://`. ([#42184](https://github.com/expo/expo/pull/42184) by [@ink404](https://github.com/ink404))
+
+### 💡 Others
+
+- **`expo-web-browser`**
+  - [Android] Remove `experimentalLauncherActivity` config plugin option as it was replaced with the `useProxyActivity` option on `openBrowserAsync` and `openAuthSessionAsync` methods. ([#41535](https://github.com/expo/expo/pull/41535) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed missing word in `warmUpAsync` JSDoc. ([#42944](https://github.com/expo/expo/pull/42944) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-video-thumbnails`**
+  - [Android] Remove unused `androidx.annotation:annotation` dependency. ([#39755](https://github.com/expo/expo/pull/39755) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-task-manager`**
+  - [iOS] Migrated the native module to Swift. ([#41911](https://github.com/expo/expo/pull/41911) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sqlite`**
+  - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
+- **`expo-sensors`**
+  - mark `removeSubscription` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
+- **`expo-sms`**
+  - [Android] Removed unused `androidx.annotation:annotation` dependency. ([#39756](https://github.com/expo/expo/pull/39756) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-sharing`**
+  - [Android] Removed unused `androidx.legacy:legacy-support-v4` dependency. ([#39757](https://github.com/expo/expo/pull/39757) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-screen-capture`**
+  - Remove warning about iOS screenshot limitations. ([#40115](https://github.com/expo/expo/pull/40115) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - mark `removeScreenshotListener` call as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
+- **`expo-secure-store`**
+  - [iOS] Remove byte limit warning. ([#40187](https://github.com/expo/expo/pull/40187) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-screen-orientation`**
+  - mark `removeOrientationChangeListeners` and `removeOrientationChangeListener` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
+- **`expo-notifications`**
+  - add a warning for getDevicePushTokenAsync on iOS simulators ([#40028](https://github.com/expo/expo/pull/40028) by [@vonovak](https://github.com/vonovak))
+  - validate sound resource names with `assertValidAndroidAssetName` from `expo/config-plugins` ([#39883](https://github.com/expo/expo/pull/39883) by [@vonovak](https://github.com/vonovak))
+  - [android] migrate off of legacy expo-modules-core apis ([#41731](https://github.com/expo/expo/pull/41731) by [@vonovak](https://github.com/vonovak))
+  - [ios] migrate permission requester to swift ([#42010](https://github.com/expo/expo/pull/42010) by [@vonovak](https://github.com/vonovak))
+  - [android] remove token listener on module destroy ([#41275](https://github.com/expo/expo/pull/41275) by [@vonovak](https://github.com/vonovak))
+  - Remove tests-related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+  - [ios] migrate notification serializer to swift ([#38633](https://github.com/expo/expo/pull/38633) by [@vonovak](https://github.com/vonovak))
+  - [android] bump firebase notifications dependency ([#42016](https://github.com/expo/expo/pull/42016) by [@vonovak](https://github.com/vonovak))
+  - [android] mark `NotificationImportance.UNSPECIFIED` as not suitable for use ([#41709](https://github.com/expo/expo/pull/41709) by [@vonovak](https://github.com/vonovak))
+  - Remove unused `assert` dependency ([#42970](https://github.com/expo/expo/pull/42970) by [@kitten](https://github.com/kitten))
+  - [Android] migrate several Java files to Kotlin ([#43249](https://github.com/expo/expo/pull/43249) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - [ios] - Set host dimension synchronously on native ([#40017](https://github.com/expo/expo/pull/40017) by [@nishan](https://github.com/intergalacticspacehighway)) ([#40017](https://github.com/expo/expo/pull/40017) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#40017](https://github.com/expo/expo/pull/40017), [#40017](https://github.com/expo/expo/pull/40017) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - [iOS] Removed some runtime type checks for dynamic types. ([#40611](https://github.com/expo/expo/pull/40611) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added base props support for SwiftUI integration. ([#40492](https://github.com/expo/expo/pull/40492) by [@kudo](https://github.com/kudo))
+  - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
+  - [iOS] Add explicit CallInvoker and CallbackWrapper imports to EXJSIUtils ([#39818](https://github.com/expo/expo/pull/39818) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [Android] Refactor getDelayLoadAppHandler to use ReactHost ([#40084](https://github.com/expo/expo/pull/40084) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985), [#40241](https://github.com/expo/expo/pull/40241) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Use the `RuntimeScheduler` to schedule tasks on the JS thread. ([#40473](https://github.com/expo/expo/pull/40473) by [@alanjhughes](https://github.com/alanjhughes))
+  - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+  - Remove old REACT_NATIVE_TARGET_VERSION checks ([#40843](https://github.com/expo/expo/pull/40843) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] Moved the implementation of the constants provider (`EXConstantsService`) from `expo-constants`. ([#41339](https://github.com/expo/expo/pull/41339) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Replaced `appContext.fileSystem`, `appContext.utilities`, `appContext.imageLoader` and `appContext.permissions` with the core implementations. ([#41350](https://github.com/expo/expo/pull/41350), [#41370](https://github.com/expo/expo/pull/41370), [#41396](https://github.com/expo/expo/pull/41396) by [@tsapeta](https://github.com/tsapeta))
+  - Deprecated `executeOnJavaScriptThread` in favor of `runtime.schedule`. ([#41478](https://github.com/expo/expo/pull/41478) by [@tsapeta](https://github.com/tsapeta) & [#41551](https://github.com/expo/expo/pull/41551) by [@lukmccall](https://github.com/lukmccall)) ([#41478](https://github.com/expo/expo/pull/41478), [#41551](https://github.com/expo/expo/pull/41551) by [@tsapeta](https://github.com/tsapeta), [@lukmccall](https://github.com/lukmccall))
+  - Added `ShadowNodeProxy.setStyleSize()` for Jetpack Compose integration. ([#41553](https://github.com/expo/expo/pull/41553) by [@kudo](https://github.com/kudo))
+  - [iOS] Create wrapper for `RCTHost`. ([#41632](https://github.com/expo/expo/pull/41632) by [@alanjhughes](https://github.com/alanjhughes))
+  - Removed unnecessary warning in the legacy `NativeViewManagerAdapter`. ([#41804](https://github.com/expo/expo/pull/41804) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Removed legacy `EXReactNativeEventEmitter` class. ([#41915](https://github.com/expo/expo/pull/41915) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Removed legacy log handler. ([#41916](https://github.com/expo/expo/pull/41916) by [@tsapeta](https://github.com/tsapeta))
+  - [macos] Remove react-native-macos@0.79.0 workarounds ([#42409](https://github.com/expo/expo/pull/42409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Improved Jetpack Compose integration for Expo UI. ([#42450](https://github.com/expo/expo/pull/42450) by [@kudo](https://github.com/kudo))
+  - Removed needless warning when `NativeModulesProxy` is absent. ([#43020](https://github.com/expo/expo/pull/43020) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Removed some unused code. ([#42949](https://github.com/expo/expo/pull/42949) by [@tsapeta](https://github.com/tsapeta))
+  - Fixed view updates for Jetpack Compose integration. ([#42732](https://github.com/expo/expo/pull/42732) by [@kudo](https://github.com/kudo))
+  - [Android] Promoted `Either` type stable. ([#43267](https://github.com/expo/expo/pull/43267) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Remove legacy `ExpoModulesCorePlugin`. ([#43312](https://github.com/expo/expo/pull/43312) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-media-library`**
+  - [next][android] Refactor permissions ([#40076](https://github.com/expo/expo/pull/40076) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add test screens ([#39951](https://github.com/expo/expo/pull/39951) by [@Wenszel](https://github.com/Wenszel))
+  - [next] Add documentation ([#39754](https://github.com/expo/expo/pull/39754) by [@Wenszel](https://github.com/Wenszel))
+  - mark `removeSubscription` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
+  - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+  - [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+- **`expo-location`**
+  - [Android] Removed unused `androidx.annotation:annotation` dependency. ([#39758](https://github.com/expo/expo/pull/39758) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-localization`**
+  - mark `removeSubscription` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
+  - [Web] Add `getTextInfo()` fallback for deprecated `textInfo` in `getLocales()` ([#39255](https://github.com/expo/expo/pull/39255) by [@desii101](https://github.com/desii101))
+- **`expo-keep-awake`**
+  - Removed references to legacy native modules API. ([#41657](https://github.com/expo/expo/pull/41657) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-intent-launcher`**
+  - [Android] Removed unused `androidx.annotation:annotation` dependency. ([#39760](https://github.com/expo/expo/pull/39760) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-image-manipulator`**
+  - [Android] Removed unused `androidx.annotation:annotation` dependency ([#39764](https://github.com/expo/expo/pull/39764) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Removed dependency on `expo-image-loader` on iOS. ([#41395](https://github.com/expo/expo/pull/41395) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-image-picker`**
+  - [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+  - [iOS] Improved MIME type resolution. ([#42889](https://github.com/expo/expo/pull/42889) by [@barthap](https://github.com/barthap))
+- **`expo-image-loader`**
+  - [Android] Removed references to legacy native modules API. ([#41858](https://github.com/expo/expo/pull/41858) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-gl`**
+  - Methods of the legacy `EXGLObjectManager` module are now exported from the existing native module in Swift. ([#41171](https://github.com/expo/expo/pull/41171) by [@tsapeta](https://github.com/tsapeta))
+  - [android] rename module to align with iOS ([#41193](https://github.com/expo/expo/pull/41193) by [@Ubax](https://github.com/Ubax))
+- **`expo-haptics`**
+  - [Android] Fix missing `await` for `performHapticsAsync` ([#40987](https://github.com/expo/expo/pull/40987) by [@kamui545](https://github.com/kamui545))
+  - [Android] Removed unused `androidx.annotation:annotation` dependency. ([#39759](https://github.com/expo/expo/pull/39759) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-font`**
+  - update ExpoFontUtils mock, to align with new API ([#40964](https://github.com/expo/expo/pull/40964) by [@Ubax](https://github.com/Ubax))
+- **`expo-file-system`**
+  - [Android] Add `android:maxSdkVersion` annotation to `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+  - [Android] Removed references to legacy native modules API. ([#41791](https://github.com/expo/expo/pull/41791) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-device`**
+  - [Android] Removed unused `androidx.legacy:legacy-support` dependency. ([#39762](https://github.com/expo/expo/pull/39762) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-clipboard`**
+  - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+  - mark `removeClipboardListener` call as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
+  - [iOS] Update documentation regarding the edge case when the user denies paste permission ([#40259](https://github.com/expo/expo/pull/40259) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - Update internal TypeScript types. ([#41740](https://github.com/expo/expo/pull/41740) by [@barthap](https://github.com/barthap))
+- **`expo-constants`**
+  - [Android] Removed unused native dependencies. ([#39763](https://github.com/expo/expo/pull/39763) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Removed references to legacy native modules API. ([#41855](https://github.com/expo/expo/pull/41855) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-crypto`**
+  - bump base64-js from 1.2.3 to 1.5.1 ([#41211](https://github.com/expo/expo/pull/41211) by [@hassankhan](https://github.com/hassankhan))
+  - remove `ExpoCrypto.getRandomBase64String()` fallback in `getRandomBytes()` ([#41517](https://github.com/expo/expo/pull/41517) by [@hassankhan](https://github.com/hassankhan))
+- **`expo-camera`**
+  - [iOS] Support all valid gps tags from `CGImageProperties` in exif data. ([#40801](https://github.com/expo/expo/pull/40801) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-contacts`**
+  - Added ContactSerializationException for error handling. ([#40426](https://github.com/expo/expo/pull/40426) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - Added contact image uri validation. ([#39658](https://github.com/expo/expo/pull/39658) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - [ios] create `CNContactStore` lazily ([#42096](https://github.com/expo/expo/pull/42096) by [@vonovak](https://github.com/vonovak))
+  - [Android] Removed unused `androidx.annotation:annotation` dependency ([#39761](https://github.com/expo/expo/pull/39761) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-calendar`**
+  - [Android] Refactored module native code. ([#40548](https://github.com/expo/expo/pull/40548) by [@barthap](https://github.com/barthap))
+  - Fixed missing `@` in `@platform ios` JSDoc tag for `EntityTypes` enum. ([#42944](https://github.com/expo/expo/pull/42944) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-blur`**
+  - Update type exports, remove duplicated block in `ExpoBlurView.kt`. ([#42025](https://github.com/expo/expo/pull/42025) by [@behenate](https://github.com/behenate))
+  - [Android] Rename the `experimentalBlurMethod` prop to `blurMethod`. ([#39996](https://github.com/expo/expo/pull/39996) by [@behenate](https://github.com/behenate))
+  - Add missing type exports. ([#39999](https://github.com/expo/expo/pull/39999) by [@behenate](https://github.com/behenate))
+- **`expo-asset`**
+  - validate asset names with `isAndroidAssetNameValid` from `expo/config-plugins` ([#39883](https://github.com/expo/expo/pull/39883) by [@vonovak](https://github.com/vonovak))
+
+### ⚠️ Notices
+
+- **`expo-gl`**
+  - **Performance optimization**: remove support of **GIF** image format in image decoding in `texImage2D` expo wrapper. ([#41499](https://github.com/expo/expo/pull/41499) by [@psnet](https://github.com/psnet))
+  - **Performance optimization**: reduce supported old image formats in lib `stb_image.h` used for image decoding in `texImage2D` expo wrapper to support only **JPEG, PNG, GIF** image formats. Formats **BMP, PSD, TGA, HDR, PIC, PNM** are no longer supported. ([#41001](https://github.com/expo/expo/pull/41001) by [@psnet](https://github.com/psnet))
+  - Updated library `stb_image.h` used for image decoding in `texImage2D` expo wraper method. A lot of fixes and performance improvements, see related PR. ([#41000](https://github.com/expo/expo/pull/41000) by [@psnet](https://github.com/psnet))
+  - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.0 — 2025-09-10
+
+### 📚 3rd party library updates
+
+- **`expo-sqlite`**
+  - Updated libSQL SDK to 0.9.11. ([#37442](https://github.com/expo/expo/pull/37442) by [@kudo](https://github.com/kudo))
+  - Updated SQLite to 3.50.3. ([#38200](https://github.com/expo/expo/pull/38200) by [@kudo](https://github.com/kudo))
+- **`expo-camera`**
+  - [Android] Bumped MLKit barcode scanner to 17.3.0 for Android 16KB page size support. ([#37454](https://github.com/expo/expo/pull/37454) by [@kudo](https://github.com/kudo))
+
+### 🛠 Breaking changes
+
+- **`expo-notifications`**
+  - remove deprecated function exports ([#38782](https://github.com/expo/expo/pull/38782) by [@vonovak](https://github.com/vonovak))
+  - [android] make data-only notifications consistent with iOS ([#39025](https://github.com/expo/expo/pull/39025) by [@vonovak](https://github.com/vonovak))
+- **`expo-media-library`**
+  - [Android] Fix `getAssetsAsync` loading performance, add `resolveWithFullInfo` option to control whether to load full EXIF data for images. This is a breaking change for Android apps, as it might break the orientation of images in some cases. ([#37957](https://github.com/expo/expo/pull/37957) by [@kosmydel](https://github.com/kosmydel)).
+- **`expo-intent-launcher`**
+  - Updated intent actions list. ([#38131](https://github.com/expo/expo/pull/38131) by [@jakex7](https://github.com/jakex7))
+- **`expo-image-picker`**
+  - [Web] Changed web `uri` to use blob URLs instead of base64 data URLs for better performance. The `uri` property will now be a blob URL instead of a base64 data URL, while the `base64` property behavior remains unchanged. ([#37447](https://github.com/expo/expo/pull/37447) by [@hirbod](https://github.com/hirbod))
+  - [ios] The default for `preferredAssetRepresentationMode` is now `.current` instead of `.automatic`. This keeps the asset in its original container/codec (e.g. HEIC instead of JPEG) and is required for the new fast-path. Apps that relied on `.automatic` re-encoded output can pass `preferredAssetRepresentationMode: '.automatic'` to restore the old behaviour. ([#37569](https://github.com/expo/expo/pull/37569) by [@hirbod](https://github.com/hirbod))
+- **`expo-font`**
+  - [android] improve bitmap rendering for `renderToImageAsync` ([#39118](https://github.com/expo/expo/pull/39118) by [@vonovak](https://github.com/vonovak))
+- **`expo-file-system`**
+  - Make the modern filesystem API the default, move previous one to `expo-file-system/legacy`. ([#38404](https://github.com/expo/expo/pull/38404) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-document-picker`**
+  - [Web] getDocumentAsync() no longer returns base64 by default. The uri on web now always points to a Blob created via URL.createObjectURL(), which can be used for previews or appended to FormData for uploads. Selecting large files on web is now almost instant, since there’s no base64 conversion by default. If you still need base64, you can pass base64: true in the options. A new base64 field will then be included in the result. ([#37443](https://github.com/expo/expo/pull/37443) by [@hirbod](https://github.com/hirbod))
+
+### 🎉 New features
+
+- **`unimodules-app-loader`**
+  - [iOS] Add Apple TV support. ([#38513](https://github.com/expo/expo/pull/38513) by [@douglowder](https://github.com/douglowder))
+- **`expo-web-browser`**
+  - Add experimental macOS support ([#37352](https://github.com/expo/expo/pull/37352) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-video-thumbnails`**
+  - [iOS] Add Apple TV support. ([#38513](https://github.com/expo/expo/pull/38513) by [@douglowder](https://github.com/douglowder))
+- **`expo-task-manager`**
+  - [iOS] Add Apple TV support. ([#38513](https://github.com/expo/expo/pull/38513) by [@douglowder](https://github.com/douglowder))
+- **`expo-sqlite`**
+  - [iOS] Support Apple TV. ([#38475](https://github.com/expo/expo/pull/38475) by [@douglowder](https://github.com/douglowder))
+  - Added `loadExtensionAsync` / `loadExtensionSync` APIs and pre-bundled [sqlite-vec](https://github.com/asg017/sqlite-vec) extension. ([#38693](https://github.com/expo/expo/pull/38693) by [@kudo](https://github.com/kudo))
+  - Added `expo-sqlite/localStorage/install` for [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) drop-in replacement API. ([#38699](https://github.com/expo/expo/pull/38699) by [@kudo](https://github.com/kudo))
+- **`expo-speech`**
+  - [iOS] added `useApplicationAudioSession` option ([#37487](https://github.com/expo/expo/pull/37487) by [@vonovak](https://github.com/vonovak))
+- **`expo-screen-capture`**
+  - Implemented `useScreenshotListener` hook. ([#37411](https://github.com/expo/expo/pull/37411) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - Implemented screenshot prevention on iOS. ([#37874](https://github.com/expo/expo/pull/37874) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - Implement App Switcher protection on iOS. ([#38192](https://github.com/expo/expo/pull/38192) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- **`expo-modules-core`**
+  - [iOS] Add module registry encoder for JSON. ([#36677](https://github.com/expo/expo/pull/36677) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] New custom Type Converter API ([#36823](https://github.com/expo/expo/pull/36823) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Natively support `rgb` color conversions. ([#36914](https://github.com/expo/expo/pull/36914) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add default values to prop definition. ([#37011](https://github.com/expo/expo/pull/37011), [#37013](https://github.com/expo/expo/pull/37013) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Support cast from JavaScriptValue in DynamicArrayType. ([#37891](https://github.com/expo/expo/pull/37891) by [@jakex7](https://github.com/jakex7))
+  - Added support for expo modules written using TurboModules ([#36996](https://github.com/expo/expo/pull/36996) by [@acoates-ms](https://github.com/acoates-ms))
+  - [Android] Add Array converter and handle nullable values. ([#37220](https://github.com/expo/expo/pull/37220) by [@jakex7](https://github.com/jakex7))
+  - [Android] Support object arrays in type converters. ([#37276](https://github.com/expo/expo/pull/37276) by [@jakex7](https://github.com/jakex7))
+  - [Android] Add `testID` support to `ExpoComposeView`. ([#38005](https://github.com/expo/expo/pull/38005) by [@mateoguzmana](https://github.com/mateoguzmana))
+  - [iOS] Return proper dynamic type for AnyEither. ([#38072](https://github.com/expo/expo/pull/38072) by [@jakex7](https://github.com/jakex7))
+  - [Android] Add VRUtilities for VR-related values and utils ([#37744](https://github.com/expo/expo/pull/37744) by [@behenate](https://github.com/behenate))
+  - [Andorid] Start using experimental converters in properties. ([#38597](https://github.com/expo/expo/pull/38597) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Rethrow pending Jni exceptions. ([#38625](https://github.com/expo/expo/pull/38625) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Add new type - `ValueOrUndefined`. ([#38620](https://github.com/expo/expo/pull/38620) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Add new type - `ValueOrUndefined`. ([#39116](https://github.com/expo/expo/pull/39116) by [@lukmccall](https://github.com/lukmccall))
+  - Add `disableForceFlatten` prop to control flattening of display contents views. ([#39262](https://github.com/expo/expo/pull/39262) by [@nishan](https://github.com/intergalacticspacehighway)) ([#39262](https://github.com/expo/expo/pull/39262) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+  - Add logging from native to JS, compliant with the Logger interface, via `appContext.jsLogger`. ([#39159](https://github.com/expo/expo/pull/39159) by [@behenate](https://github.com/behenate))
+- **`expo-media-library`**
+  - [iOS] Add support for filtering assets by media subtype. by [@clarkg](https://github.com/clarkg) ([#36756](https://github.com/expo/expo/pull/36756) by [@clarkg](https://github.com/clarkg)) ([#36756](https://github.com/expo/expo/pull/36756) by [@clarkg](https://github.com/clarkg), [@clarkg](https://github.com/clarkg))
+  - Add MediaLibrary@Next. ([#38835](https://github.com/expo/expo/pull/38835) by [@Wenszel](https://github.com/wenszel)) ([#38835](https://github.com/expo/expo/pull/38835) by [@wenszel](https://github.com/wenszel))
+- **`expo-localization`**
+  - Add `supportedLocales` option to set app language from settings ([#37232](https://github.com/expo/expo/pull/37232) by [@alextoudic](https://github.com/alextoudic))
+- **`expo-local-authentication`**
+  - [Android] Added `promptSubtitle` and `promptDescription` parameters to `authenticateAsync`. ([#35335](https://github.com/expo/expo/pull/35335) by [@filipejuan](https://github.com/filipejuan))
+- **`expo-image-manipulator`**
+  - [iOS] Add Apple TV support. ([#38513](https://github.com/expo/expo/pull/38513) by [@douglowder](https://github.com/douglowder))
+- **`expo-intent-launcher`**
+  - Added `APP_OPEN_BY_DEFAULT_SETTINGS` action. ([#38054](https://github.com/expo/expo/pull/38054) by [@jakex7](https://github.com/jakex7))
+- **`expo-image-picker`**
+  - [android] Introduce customizable cropping UI with light and dark theme support ([#37573](https://github.com/expo/expo/pull/37573) by [@hirbod](https://github.com/hirbod))
+  - [android] Add new `shape` option to customize the shape of the crop zone ([#38148](https://github.com/expo/expo/pull/38148)) by [@janicduplessis](https://github.com/janicduplessis) ([#38148](https://github.com/expo/expo/pull/38148) by [@janicduplessis](https://github.com/janicduplessis))
+- **`expo-font`**
+  - [Android] Added support for font weight styles (through XML font definitions) to config plugin. ([#26082](https://github.com/expo/expo/pull/26082) by [@jongbelegen](https://github.com/jongbelegen))
+  - expose `ExpoFontLoader` on web ([#37991](https://github.com/expo/expo/pull/37991) by [@vonovak](https://github.com/vonovak))
+  - Add local package mocks. ([#37736](https://github.com/expo/expo/pull/37736) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-image-loader`**
+  - [iOS] Add Apple TV support. ([#38513](https://github.com/expo/expo/pull/38513) by [@douglowder](https://github.com/douglowder))
+- **`expo-file-system`**
+  - [android] Add file and directory pickers. ([#38455](https://github.com/expo/expo/pull/38455) by [@aleqsio](https://github.com/aleqsio))
+  - Add support for asset uris. ([#38785](https://github.com/expo/expo/pull/38785) by [@aleqsio](https://github.com/aleqsio))
+  - Make file implement blob interface directly. ([#38160](https://github.com/expo/expo/pull/38160) by [@aleqsio](https://github.com/aleqsio))
+  - Add directory info function ([#37910](https://github.com/expo/expo/pull/37910) by [@Wenszel](https://github.com/Wenszel))
+  - Add total and available sizes, directory sizes. ([#37594](https://github.com/expo/expo/pull/37594) by [@aleqsio](https://github.com/aleqsio))
+  - Add info method, modificationTime and creationTime properties to file-system/next. ([#37505](https://github.com/expo/expo/pull/37505) by [@Wenszel](https://github.com/Wenszel))
+  - Add support for custom headers in downloadFileAsync ([#36108](https://github.com/expo/expo/pull/36108) by [@leonhh](https://github.com/leonhh))
+  - [next] Add limited support for SAF Uris. ([#38075](https://github.com/expo/expo/pull/38075) by [@aleqsio](https://github.com/aleqsio))
+  - [next] Add full support for SAF Uris. ([#38075](https://github.com/expo/expo/pull/38075) by [@aleqsio](https://github.com/aleqsio))
+  - Add `rename` method for files and directories ([#39138](https://github.com/expo/expo/pull/39138) by [@kosmydel](https://github.com/kosmydel))
+  - Add `idempotent` option for creating directories ([#39121](https://github.com/expo/expo/pull/39121) by [@kosmydel](https://github.com/kosmydel))
+  - [iOS] Add `pickFileAsync` support ([#39173](https://github.com/expo/expo/pull/39173) by [@kosmydel](https://github.com/kosmydel))
+  - Add stubs for legacy methods imported from "expo-file-system". ([#39244](https://github.com/expo/expo/pull/39244) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Add `pickDirectoryAsync` support ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+- **`expo-document-picker`**
+  - [iOS][Android] add lastModified for iOS and Android to align with web ([#37429](https://github.com/expo/expo/pull/37429) by [@hirbod](https://github.com/hirbod))
+- **`expo-contacts`**
+  - Added `addContactsChangeListener()` to detect contact changes with platform-specific behavior. . ([#39434](https://github.com/expo/expo/pull/39434) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- **`expo-calendar`**
+  - [iOS] Added support for all‑day reminders ([#39028](https://github.com/expo/expo/pull/39028)) by [@dominik-miskovic](https://github.com/dominik-miskovic) ([#39028](https://github.com/expo/expo/pull/39028) by)
+- **`expo-camera`**
+  - [Android] Add support for Meta Quest passthrough camera ([#37748](https://github.com/expo/expo/pull/37748) by [@behenate](https://github.com/behenate))
+- **`expo-auth-session`**
+  - Added `rawResponse` to `TokenResponse`, allows reading fields that are not part of RFC 6749. ([#20284](https://github.com/expo/expo/pull/20284) by [@stefan-schweiger](https://github.com/stefan-schweiger))
+- **`expo-asset`**
+  - Add resource name validation for Android. ([#37322](https://github.com/expo/expo/pull/37322) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- **`expo-task-manager`**
+  - [android] add missing proguard-rules for `expo-task-manager` ([#37833](https://github.com/expo/expo/pull/37833) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Rethrow obj-c exception as swift error. ([#38714](https://github.com/expo/expo/pull/38714) by [@jakex7](https://github.com/jakex7))
+- **`expo-sqlite`**
+  - Fixed parallel issue for `Statement.executeAsync`. ([#36674](https://github.com/expo/expo/pull/36674) by [@kudo](https://github.com/kudo))
+  - Fixed exceptions when SQLite session API returns empty buffer. ([#37246](https://github.com/expo/expo/pull/37246) by [@kudo](https://github.com/kudo))
+  - Fixed minimum OS version support for libsql.xcframework. ([#37130](https://github.com/expo/expo/pull/37130) by [@kudo](https://github.com/kudo))
+  - Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
+  - Fixed unnecessary database reopen from `SQLiteProvider` with same options. ([#37872](https://github.com/expo/expo/pull/37872) by [@kudo](https://github.com/kudo))
+  - [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed `:memory:` path issue when building on Xcode 26. ([#39511](https://github.com/expo/expo/pull/39511) by [@kudo](https://github.com/kudo))
+- **`expo-speech`**
+  - [Android] Fix calling getVoices before TTS initialization ([#36664](https://github.com/expo/expo/pull/36664) by [@jakex7](https://github.com/jakex7))
+- **`expo-secure-store`**
+  - [android] Reset `isAuthenticating` prompt flag when error is thrown ([#38132](https://github.com/expo/expo/pull/38132) by [@SYoder1](https://github.com/SYoder1))
+  - [android] use more specific error messages in authentication prompt errors ([#38340](https://github.com/expo/expo/pull/38340) by [@SYoder1](https://github.com/SYoder1))
+- **`expo-screen-orientation`**
+  - [iOS] Fix the app becoming unresponsive when the orientation listener is used in `Split View` on iPad. ([#36667](https://github.com/expo/expo/pull/36667) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Call `createRootViewController` from the `ExpoReactNativeFactoryDelegate`. ([#36787](https://github.com/expo/expo/pull/36787) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-screen-capture`**
+  - [Android] Fix permissions on Android 13.
+  - [iOS] Fix issue with header flickering on screenshot prevention. ([#38384](https://github.com/expo/expo/pull/38384) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - [Android] Prevent hard crash when we cannot access the event emitter. ([#38869](https://github.com/expo/expo/pull/38869) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-print`**
+  - [Android] Use the last path segment of the `uri` as the job name. ([#39133](https://github.com/expo/expo/pull/39133) by [@ouwargui](https://github.com/ouwargui))
+- **`expo-notifications`**
+  - [ios] ensure `getLastNotificationResponseAsync` does not return null when no response listener added ([#36930](https://github.com/expo/expo/pull/36930) by [@jmysliv](https://github.com/jmysliv))
+  - [android] add missing proguard-rules for `expo-notifications` ([#37833](https://github.com/expo/expo/pull/37833) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Rethrow obj-c exception as swift error. ([#38714](https://github.com/expo/expo/pull/38714) by [@jakex7](https://github.com/jakex7))
+  - [ios] fix `setBadgeCountAsync(0)` also cleared notifications ([#39009](https://github.com/expo/expo/pull/39009) by [@vonovak](https://github.com/vonovak))
+  - refactor ExpoPushTokenManager promise handling ([#39179](https://github.com/expo/expo/pull/39179) by [@vonovak](https://github.com/vonovak))
+  - [android] do not send faulty duplicate `TextInputNotificationResponse` events ([#39356](https://github.com/expo/expo/pull/39356) by [@vonovak](https://github.com/vonovak))
+  - fix text response not present on some Android versions ([#39350](https://github.com/expo/expo/pull/39350) by [@vonovak](https://github.com/vonovak))
+  - [ios] fix race condition in `setNotificationCategoryAsync` ([#39306](https://github.com/expo/expo/pull/39306) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - Fixed `extraMavenRepos` not applied on Gradle subprojects. ([#36500](https://github.com/expo/expo/pull/36500) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fix `getSharedObjectId` for devices running android 7 and below. ([#36698](https://github.com/expo/expo/pull/36698) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fixed missing upload progress from `XMLHttpRequest` when network inspector is enabled. ([#36715](https://github.com/expo/expo/pull/36715) by [@kudo](https://github.com/kudo))
+  - [iOS] Call `createRootViewController` from the `ExpoReactNativeFactoryDelegate`. ([#36787](https://github.com/expo/expo/pull/36787) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Prevent crash on failed networked requests ([#36896](https://github.com/expo/expo/pull/36896) by [@adrum](https://github.com/adrum))
+  - Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
+  - [Android] Fix `Value is undefined, expected an Object` in the `JNIUtils::emitEventOnJSIObject`. ([#37778](https://github.com/expo/expo/pull/37778) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Mark either converters as non-trivial. ([#37836](https://github.com/expo/expo/pull/37836) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Fix view functions for SwiftUI views. ([#38275](https://github.com/expo/expo/pull/38275) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+  - [android] Fix android build without coreFeatures compose ([#38153](https://github.com/expo/expo/pull/38153) by [@Ubax](https://github.com/Ubax))
+  - [iOS] Fix `ExpoRequestInterceptorProtocol` to properly notify client about HTTP redirects. ([#38078](https://github.com/expo/expo/pull/38078) by [@kudo](https://github.com/kudo))
+  - [Android] Conditionally register `RuntimeHolder` bindings. ([#38345](https://github.com/expo/expo/pull/38345) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix null string conversion. ([#38284](https://github.com/expo/expo/pull/38284) by [@jakex7](https://github.com/jakex7))
+  - [Android] Fix invalid array buffer offset in typed arrays. ([#38958](https://github.com/expo/expo/pull/38958) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Fix ErrorManager not receiving error/warning events on the JS side. ([#39126](https://github.com/expo/expo/pull/39126) by [@behenate](https://github.com/behenate))
+  - [ios] Bring back correct scoping for Expo Go. ([#39186](https://github.com/expo/expo/pull/39186) by [@aleqsio](https://github.com/aleqsio))
+  - Fix Color extension on macOS. ([#39280](https://github.com/expo/expo/pull/39280) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Fix ErrorManager not receiving events. ([#39290](https://github.com/expo/expo/pull/39290) by [@behenate](https://github.com/behenate))
+  - [Android] Fix type check in the `SharedRef` converter. ([#39446](https://github.com/expo/expo/pull/39446) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixes `JNI detected error in application: obj == null` in `ExpoModulesHostObject::get`. ([#39523](https://github.com/expo/expo/pull/39523) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-media-library`**
+  - [Android] Fix `deleteAssetsAsync` not working on android 11 or above ([#33211](https://github.com/expo/expo/pull/33211) by [@Zeeshan404](https://github.com/Zeeshan404))
+  - [iOS] Fix tvOS compilation errors. ([#38085](https://github.com/expo/expo/pull/38085) by [@douglowder](https://github.com/douglowder))
+- **`expo-location`**
+  - [Android] Fix `shouldUseForegroundService` being always `true`. ([#35875](https://github.com/expo/expo/pull/35875) by [@filipef101](https://github.com/filipef101))
+- **`expo-linking`**
+  - Fixed `createURL` double-encodes URI parameters. ([#36704](https://github.com/expo/expo/pull/36704) by [@lukmccall](https://github.com/lukmccall))
+  - Fix cold booting iOS apps from a universal link. ([#37647](https://github.com/expo/expo/pull/37647) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-mail-composer`**
+  - [android] Replace LabeledIntent with Intent in composeAsync ([#37624](https://github.com/expo/expo/pull/37624) by [@Ubax](https://github.com/Ubax))
+  - [ios] Prevent duplicate values in LSApplicationQueriesSchemes ([#37697](https://github.com/expo/expo/pull/37697) by [@huextrat](https://github.com/huextrat))
+- **`expo-image-manipulator`**
+  - Fix `ReferenceError` during export for web. ([#36703](https://github.com/expo/expo/pull/36703) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-image-picker`**
+  - Prevent external applications from accessing the CropImageActivity ([#37223](https://github.com/expo/expo/pull/37223) by [@aladine](https://github.com/aladine))
+  - [Web] Corrected camera capture attributes on web where front camera was using 'environment' and back camera was using 'user'. Reversed the values to ensure proper camera selection. ([#37447](https://github.com/expo/expo/pull/37447) by [@hirbod](https://github.com/hirbod))
+  - [ios]: Enhance image reading logic to prioritize cropped images and improve orientation handling ([#37846](https://github.com/expo/expo/pull/37846) by [@hirbod](https://github.com/hirbod))
+  - [android] Adjust video metadata extraction to account for rotation ([#37849](https://github.com/expo/expo/pull/37849) by [@hirbod](https://github.com/hirbod))
+  - [iOS] Fix wrong dimensions reported for portrait images ([#39230](https://github.com/expo/expo/pull/39230) by [@hirbod](https://github.com/hirbod))
+  - [ios] Avoid transcoding for .avif and .tiff like it works for .heic. This keeps the asset in its original container/codec (e.g. TIFF instead of JPEG) and is required for the new fast-path. Apps that relied on .automatic re-encoded output can pass preferredAssetRepresentationMode: '.automatic' to restore the old behaviour.([#39398](https://github.com/expo/expo/pull/39398) by [@chocky335](https://github.com/chocky335))
+- **`expo-font`**
+  - Bail out early when `getLoadedFonts` returns an empty array. ([#36586](https://github.com/expo/expo/pull/36586) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-gl`**
+  - Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
+- **`expo-file-system`**
+  - Fix the `UploadTask.uploadAsync` method's return type did not indicate that the method could resolve to `null`. ([#36476](https://github.com/expo/expo/pull/36476) by [@DoctorJohn](https://github.com/DoctorJohn))
+  - Update exists logic to align with documentation ([#37692](https://github.com/expo/expo/pull/37692) by [@Wenszel](https://github.com/Wenszel))
+  - Fix memory usage issue in getInfoAsync ([#37417](https://github.com/expo/expo/pull/37417) by [@Wenszel](https://github.com/Wenszel))
+  - Improved type safety in the FileSystem module to support tsconfig setups with stricter rules than the default. ([#37107](https://github.com/expo/expo/pull/37107) by [@hirbod](https://github.com/hirbod))
+  - Added required modifiers in the FileSystem module to support tsconfig setups with stricter rules than the default. ([#37467](https://github.com/expo/expo/pull/37467) ([#37467](https://github.com/expo/expo/pull/37467) by)
+  - Fixed type definition for `textSync()` to return `string` instead of `Promise<string>` ([#38898](https://github.com/expo/expo/pull/38898) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+  - [iOS] Fix tvOS compile error. ([#39345](https://github.com/expo/expo/pull/39345) by [@douglowder](https://github.com/douglowder))
+  - Add minimal web stub to fix broken imports on web ([#39400](https://github.com/expo/expo/pull/39400) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+- **`expo-document-picker`**
+  - [Android] avoid hard crash in case of an exception ([#37110](https://github.com/expo/expo/pull/37110) by [@vonovak](https://github.com/vonovak))
+- **`expo-contacts`**
+  - Make `Contact.id` required for `updateContactAsync` ([#36603](https://github.com/expo/expo/pull/36603) by [@NorseGaud](https://github.com/NorseGaud))
+  - [Android] fixed `updateContactAsync()` removing contact rawDates / birthday ([#37054](https://github.com/expo/expo/pull/37054) by [@NorseGaud](https://github.com/NorseGaud)
+  - fix `CNContactViewController` presentation ([#39004](https://github.com/expo/expo/pull/39004) by [@vonovak](https://github.com/vonovak))
+  - [iOS] Fixed undefined labels for emails in contacts. ([#39222](https://github.com/expo/expo/pull/39222) by [@NorseGaud](https://github.com/hryhoriiK97) ([#39222](https://github.com/expo/expo/pull/39222) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - [iOS] Fixed issue with missing `instantMessageAddresses` on iOS ([#38985](https://github.com/expo/expo/pull/38985) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - [iOS] Added handling for optional labels. ([#38985](https://github.com/expo/expo/pull/39247) by [@hryhoriiK97](https://github.com/hryhoriiK97)) ([#39247](https://github.com/expo/expo/pull/39247) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- **`expo-constants`**
+  - Remove invalid import from expo-dev-launcher. ([#37558](https://github.com/expo/expo/pull/37558) by [@douglowder](https://github.com/douglowder))
+  - Fix check-packages warning. ([#37570](https://github.com/expo/expo/pull/37570) by [@douglowder](https://github.com/douglowder))
+- **`expo-calendar`**
+  - [iOS] Don't encode event URLs. ([#37243](https://github.com/expo/expo/pull/37243) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Don't require permissions for createEventInCalendarAsync. ([#37607](https://github.com/expo/expo/pull/37607) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Make location optional. ([#37612](https://github.com/expo/expo/pull/37612) by [@jakex7](https://github.com/jakex7))
+- **`expo-camera`**
+  - [Android] Fix the scenario where switching apps results in the loss of the recording video by throwing an error. ([#36854](https://github.com/expo/expo/pull/36854) by [@ladeira1](https://github.com/ladeira1))
+  - [Android] Fix barcode scanner coordinates to UI mapping. ([#37198](https://github.com/expo/expo/pull/37198) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fixes returning `PictureRef` objects.([#37393](https://github.com/expo/expo/pull/37393) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix barcode options to correctly handle empty barcodeTypes ([#38100](https://github.com/expo/expo/pull/38100) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+  - [Android] Add dismissScanner to module to prevent undefined error. ([#38129](https://github.com/expo/expo/pull/38129) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+  - [Android] Correctly handle errors when using `launchScanner`. ([#38322](https://github.com/expo/expo/pull/38322) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix `videoQuality` and `pictureSize` affecting modes they don't apply too. ([#38757](https://github.com/expo/expo/pull/38757) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Fix early tear down from `onDetachedFromWindow`. ([#39119](https://github.com/expo/expo/pull/39119) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Fix errors on devices that do not have Google Play Services installed. ([#39455](https://github.com/expo/expo/pull/39455) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-blur`**
+  - [Android] Fix transition issues with `react-native-screens` when using `dimezisBlurView` blur method. ([#37904](https://github.com/expo/expo/pull/37904) by [@hannojg](https://github.com/hannojg)
+- **`expo-background-fetch`**
+  - [iOS] Rethrow obj-c exception as swift error. ([#38714](https://github.com/expo/expo/pull/38714) by [@jakex7](https://github.com/jakex7))
+- **`expo-av`**
+  - Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
+- **`expo-auth-session`**
+  - Allow `preferEphemeralSession` in promptAsync method. ([#35489](https://github.com/expo/expo/pull/35489) by [@TJTorola](https://github.com/TJTorola))
+- **`expo-asset`**
+  - [Android] fix file scheme handling in `downloadAsync` ([#38227](https://github.com/expo/expo/pull/38227) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- **`expo-video-thumbnails`**
+  - Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+- **`expo-task-manager`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+  - [Android] Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-sqlite`**
+  - Avoided synchronous API calls for `kv-store`. ([#36669](https://github.com/expo/expo/pull/36669) by [@kudo](https://github.com/kudo))
+  - Improved synchronous APIs on web. ([#36670](https://github.com/expo/expo/pull/36670) by [@kudo](https://github.com/kudo))
+  - Prevent `maybeFinalizeAllStatements` throwing exceptions. ([#36843](https://github.com/expo/expo/pull/36843) by [@kudo](https://github.com/kudo))
+  - Apply [#36674](https://github.com/expo/expo/pull/36674) change to **SQLiteModuleLibSQL.swift**. ([#36850](https://github.com/expo/expo/pull/36850) by [@kudo](https://github.com/kudo)) ([#36674](https://github.com/expo/expo/pull/36674), [#36850](https://github.com/expo/expo/pull/36850) by [@kudo](https://github.com/kudo)) ([#36674](https://github.com/expo/expo/pull/36674), [#36850](https://github.com/expo/expo/pull/36850), [#36674](https://github.com/expo/expo/pull/36674), [#36850](https://github.com/expo/expo/pull/36850) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+  - Updated API doc for `loadExtensionAsync()` and `loadExtensionSync()`. ([#38905](https://github.com/expo/expo/pull/38905) by [@kudo](https://github.com/kudo))
+  - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-speech`**
+  - [Android] Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-sharing`**
+  - Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+- **`expo-secure-store`**
+  - [iOS] Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-sensors`**
+  - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-screen-capture`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+  - [iOS] Replaced deprecated keyWindow usage. ([#38207](https://github.com/expo/expo/pull/38207) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- **`expo-print`**
+  - Mark `uri` option as supported on iOS and Android only. ([#37312](https://github.com/expo/expo/pull/37312) by [@aleqsio](https://github.com/aleqsio))
+  - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-notifications`**
+  - improve test environment condition to avoid warning ([#33982](https://github.com/expo/expo/pull/33982) by [@PiotrBorowski](https://github.com/PiotrBorowski))
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+  - Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+  - deprecate two async functions in favor of their sync variants ([#39174](https://github.com/expo/expo/pull/39174) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - Improved `@expo/ui/swift-ui-primitives` integrations. ([#36937](https://github.com/expo/expo/pull/36937) by [@kudo](https://github.com/kudo))
+  - [iOS] Use dynamic type for AsyncFunction result conversion ([#36986](https://github.com/expo/expo/pull/36986) by [@jakex7](https://github.com/jakex7))
+  - Add package exports support. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))
+  - [iOS] Cleaned up iOS header files for precompilation ([#38441](https://github.com/expo/expo/pull/38441) by [@chrfalch](https://github.com/chrfalch))
+  - [Android] RN 0.81.0: patched some reflection issues after kotlin upgrade ([#38451](https://github.com/expo/expo/pull/38451) by [@chrfalch](https://github.com/chrfalch))
+  - Restructure Jest polyfills to not import forbidden platform extension directly. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
+  - [Android] Improve time to retrieve the Expo module. ([#37082](https://github.com/expo/expo/pull/37082) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Reduce the memory footprint of calling function from the native module. ([#37080](https://github.com/expo/expo/pull/37080) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Changed how nullable types are converted. ([#37055](https://github.com/expo/expo/pull/37055) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Reduce the number of conversions needed to call a function from the native module. ([#37099](https://github.com/expo/expo/pull/37099) by [@lukmccall](https://github.com/lukmccall))
+  - Updated `ExpoComposeView` to support virtual view. ([#36255](https://github.com/expo/expo/pull/36255) by [@kudo](https://github.com/kudo))
+  - [iOS] Support throwing errors in shared object constructor. ([#37618](https://github.com/expo/expo/pull/37618) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Remove boilerplate from function factories. ([#37884](https://github.com/expo/expo/pull/37884) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Remove react-native 0.74 support files ([#38216](https://github.com/expo/expo/pull/38216) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Add missing peer dependencies for `react` and `react-native` ([#38528](https://github.com/expo/expo/pull/38528) by [@kitten](https://github.com/kitten))
+  - Deprecate `Constants` in favor of `Constant` and `Property`. ([#38748](https://github.com/expo/expo/pull/38748) by [@jakex7](https://github.com/jakex7))
+  - Refactor typings to replace `ExpoGlobal` with namespace and to preserve type+value overlay on re-exported core globals ([#38649](https://github.com/expo/expo/pull/38649) by [@kitten](https://github.com/kitten))
+  - Fixed internal `JavaScriptValue` and added `props.globalEventDispatcher` for expo-ui. ([#38542](https://github.com/expo/expo/pull/38542) by [@kudo](https://github.com/kudo))
+  - [ios] Wrap system color references for dev client. ([#38912](https://github.com/expo/expo/pull/38912) by [@douglowder](https://github.com/douglowder))
+  - [Android] Update min, target, and compile SDK versions. ([#38938](https://github.com/expo/expo/pull/38938) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix JavaScriptRuntimeSpec tests ([#39281](https://github.com/expo/expo/pull/39281) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Added `appContext` to `ExpoSwiftUI.ViewProps`. ([#39231](https://github.com/expo/expo/pull/39231) by [@kudo](https://github.com/kudo))
+  - `requireOptionalNativeModule` will now catch errors which occur while requiring a module. ([#39290](https://github.com/expo/expo/pull/39290) by [@behenate](https://github.com/behenate))
+  - Use new LongLivedObject.h and CallbackWrapper.h headers namespace ([#39344](https://github.com/expo/expo/pull/39344) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] Added `Color` convertible support without passing `AppContext`. ([#39183](https://github.com/expo/expo/pull/39183) by [@aleqsio](https://github.com/aleqsio))
+  - Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+  - [Android] Remove some usage of `kotlin.reflect.full.*`. ([#39385](https://github.com/expo/expo/pull/39385) by [@lukmccall](https://github.com/lukmccall))
+  - improve startup performance by not relying on kotlin reflection. ([#39389](https://github.com/expo/expo/pull/39389) by [@ACHP](https://github.com/ACHP))
+- **`expo-media-library`**
+  - [Android] Migrate to coroutines. ([#38193](https://github.com/expo/expo/pull/38193) by [@Wenszel](http://github.com/wenszel)) ([#38193](https://github.com/expo/expo/pull/38193) by [@wenszel](https://github.com/wenszel))
+  - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+  - Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+- **`expo-local-authentication`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-keep-awake`**
+  - Migrate to package exports ([#37298](https://github.com/expo/expo/pull/37298) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-location`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-linking`**
+  - Deprecate `useURL` in favor of `useLinkingURL`. ([#37005](https://github.com/expo/expo/pull/37005) by [@aleqsio](https://github.com/aleqsio))
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-image-manipulator`**
+  - Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+- **`expo-image-picker`**
+  - [ios] Images now use a _fast-path_ if possible: the original file is copied once and its size is read from the header (no full decode / re-encode). This requires `quality: 1`, `allowsEditing: false` and `preferredAssetRepresentationMode: .current` (new default) ([#37569](https://github.com/expo/expo/pull/37569) by [@hirbod](https://github.com/hirbod))
+  - [ios] Videos picked with `VideoExportPreset.Passthrough` are no longer transcoded and are copied only once. ([#37569](https://github.com/expo/expo/pull/37569) by [@hirbod](https://github.com/hirbod))
+- **`expo-font`**
+  - [web] remove deprecated style 'type' attribute ([#38114](https://github.com/expo/expo/pull/38114) by [@vonovak](https://github.com/vonovak))
+  - Add missing `react-native` peer dependency ([#38540](https://github.com/expo/expo/pull/38540) by [@kitten](https://github.com/kitten))
+  - Update remaining `@expo/config-plugins` in config plugin to `expo/config-plugins` ([#38580](https://github.com/expo/expo/pull/38580) by [@kitten](https://github.com/kitten))
+  - Fix types and adjust platform checks. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-gl`**
+  - Use pointerEvents style instead of prop for components on web. ([#38023](https://github.com/expo/expo/pull/38023) by [@EvanBacon](https://github.com/EvanBacon))
+  - Add missing optional `react-dom` and `react-native-reanimated` peer dependencies ([#38569](https://github.com/expo/expo/pull/38569) by [@kitten](https://github.com/kitten))
+  - [Web] Remove `findDOMNode` usage. ([#38800](https://github.com/expo/expo/pull/38800) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-file-system`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+  - Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+  - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-document-picker`**
+  - remove use of `IOUtils` for stream copying ([#38096](https://github.com/expo/expo/pull/38096) by [@vonovak](https://github.com/vonovak))
+- **`expo-device`**
+  - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-clipboard`**
+  - [iOS] Refactor deprecated code ([#36714](https://github.com/expo/expo/pull/36714) by [@hirbod](https://github.com/hirbod))
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+  - [Android] Obfuscate clipped image filenames ([#39124](https://github.com/expo/expo/pull/39124) by [@kretkiewicz](https://github.com/kretkiewicz))
+- **`expo-contacts`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+  - Improved type safety with NewContact and ExistingContact types. ([#39269](https://github.com/expo/expo/pull/39269) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+  - Extracted the read permission check from `FileSystemUtilities` ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+- **`expo-cellular`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+  - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-constants`**
+  - [iOS] forward PROJECT_ROOT env var to app config script ([#38208](https://github.com/expo/expo/pull/38208) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-camera`**
+  - [Android] Make `createCamera` a suspend function. ([#37038](https://github.com/expo/expo/pull/37038) by [@alanjhughes](https://github.com/alanjhughes))
+  - Use pointerEvents style instead of prop for components on web. ([#38023](https://github.com/expo/expo/pull/38023) by [@EvanBacon](https://github.com/EvanBacon))
+  - Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+- **`expo-battery`**
+  - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-background-fetch`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-av`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+  - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-auth-session`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-asset`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+  - [android] throw when loading empty font file ([#38229](https://github.com/expo/expo/pull/38229) by [@vonovak](https://github.com/vonovak))
+  - Update remaining `@expo/config-plugins` in config plugin to `expo/config-plugins` ([#38580](https://github.com/expo/expo/pull/38580) by [@kitten](https://github.com/kitten))
+- **`expo-application`**
+  - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+  - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+
+## 53.0.0 — 2025-04-30
+
+### 📚 3rd party library updates
+
+- Updated `@shopify/flash-list` from `1.7.1` to `1.7.6`. ([#34635](https://github.com/expo/expo/pull/34635) by [@chrfalch](https://github.com/chrfalch), [#35699](https://github.com/expo/expo/pull/35699) by [@jakex7](https://github.com/jakex7))
+- Updated `react-native-screens` from `4.9.0` to `4.9.2`. ([#35702](https://github.com/expo/expo/pull/35702) by [@jakex7](https://github.com/jakex7))
+- Updated `react-native-web` from `~0.19.13` to `~0.20.0`. ([#35891](https://github.com/expo/expo/pull/35891) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-sqlite`**
+  - Updated SQLite to 3.49.1 and SQLCipher to 4.7.0. ([#35741](https://github.com/expo/expo/pull/35741) by [@kudo](https://github.com/kudo))
+  - Updated libsql libs to `libsql-0.9.5`. ([#36444](https://github.com/expo/expo/pull/36444) by [@kudo](https://github.com/kudo))
+
+### 🛠 Breaking changes
+
+- **`expo-notifications`**
+  - `DateTriggerInput` to only accept an object ([#33551](https://github.com/expo/expo/pull/33551) by [@vonovak](https://github.com/vonovak))
+  - [Android] support action buttons when not in foreground. This is breaking because notification background tasks on Android run not only in response to an incoming notification but also in response to an action button press. ([#35295](https://github.com/expo/expo/pull/35295) by [@vonovak](https://github.com/vonovak))
+  - support more `UNNotificationPresentationOptions`, deprecate `shouldShowAlert` ([#36361](https://github.com/expo/expo/pull/36361) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+  - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Fix support for react-native-macos 0.78 ([#35688](https://github.com/expo/expo/pull/35688) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-local-authentication`**
+  - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-keep-awake`**
+  - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-file-system`**
+  - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-gl`**
+  - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+- **`expo-font`**
+  - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-crypto`**
+  - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-constants`**
+  - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-asset`**
+  - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🎉 New features
+
+- **`expo-web-browser`**
+  - Add config plugin to enable correct behavior on android.([#34160](https://github.com/expo/expo/pull/34160) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sharing`**
+  - [iOS] Add optional anchor point to expo-sharing for iPad ([#35364](https://github.com/expo/expo/pull/35364) by [@Kilian](https://github.com/Kilian))
+- **`expo-sqlite`**
+  - Added experimental libSQL support. ([#34177](https://github.com/expo/expo/pull/34177), [#34205](https://github.com/expo/expo/pull/34205) by [@kudo](https://github.com/kudo))
+  - Added web support. ([#35207](https://github.com/expo/expo/pull/35207) by [@kudo](https://github.com/kudo))
+  - Added [Session Extension](https://www.sqlite.org/sessionintro.html) support. ([#35457](https://github.com/expo/expo/pull/35457), [#35458](https://github.com/expo/expo/pull/35458), [#35459](https://github.com/expo/expo/pull/35459), [#35461](https://github.com/expo/expo/pull/35461), [#35476](https://github.com/expo/expo/pull/35476) by [@kudo](https://github.com/kudo))
+  - Added `backupDatabaseAsync` and `backupDatabaseSync` APIs. ([#35604](https://github.com/expo/expo/pull/35604) by [@kudo](https://github.com/kudo))
+- **`expo-secure-store`**
+  - [iOS] Added support for access groups. ([#36056](https://github.com/expo/expo/pull/36056) by [@chrsmys](https://github.com/chrsmys))
+- **`expo-print`**
+  - Add `textZoom` option to override font scaling applied by the user’s Android device settings. ([#33784](https://github.com/expo/expo/pull/33784) by [@BatDroid](https://github.com/BatDroid))
+- **`expo-notifications`**
+  - [android] run notification tasks from killed state ([#32531](https://github.com/expo/expo/pull/32531) by [@vonovak](https://github.com/vonovak))
+  - add `enableBackgroundRemoteNotifications` option to config plugin ([#32716](https://github.com/expo/expo/pull/32716) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - [Android] Supported css properties (border, background and shadow) by default. ([#33074](https://github.com/expo/expo/pull/33074) by [@lukmccall](https://github.com/lukmccall))
+  - Added support for rendering children components in SwiftUI views. ([#33271](https://github.com/expo/expo/pull/33271) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Added support for Jetpack Compose views. ([#33759](https://github.com/expo/expo/pull/33759) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Support async functions by SwiftUI views ([#34853](https://github.com/expo/expo/pull/34853) by [@jakex7](https://github.com/jakex7))
+  - support Java `long` values in arrays and maps ([#35446](https://github.com/expo/expo/pull/35446) by [@vonovak](https://github.com/vonovak))
+  - [iOS] Add `UnwrappedChildren` for nested SwiftUI views. ([#34954](https://github.com/expo/expo/pull/34954) by [@andrew-levy](https://github.com/andrew-levy))
+  - support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
+  - Implemented dispatching events by SwiftUI views. ([#33860](https://github.com/expo/expo/pull/33860) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Support returning `SharedObject`s from a `Promise`. ([#34655](https://github.com/expo/expo/pull/34655) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add ExpoAppDelegate support for macOS. ([#35061](https://github.com/expo/expo/pull/35061) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Add support for macOS AppDelegate subscribers ([#35062](https://github.com/expo/expo/pull/35062) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Add SwiftUI views support for macOS ([#35078](https://github.com/expo/expo/pull/35078) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Add common constants to the CoreModule ([#35057](https://github.com/expo/expo/pull/35057) by [@jakex7](https://github.com/jakex7))
+  - [Android] Add Constant API ([#35157](https://github.com/expo/expo/pull/35157) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Add Constant API ([#35199](https://github.com/expo/expo/pull/35199) by [@jakex7](https://github.com/jakex7))
+  - [Android] Added support for custom queues for async functions. ([#35838](https://github.com/expo/expo/pull/35838) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Allow undefined props on ExpoSwiftUIView ([#35852](https://github.com/expo/expo/pull/35852) by [@jakex7](https://github.com/jakex7))
+- **`expo-media-library`**
+  - [iOS] Adding `pairedVideoAsset` for Live Photo support. ([#33274](https://github.com/expo/expo/pull/33274) by [@entiendoNull](https://github.com/entiendoNull))
+  - Add `album` parameter to `createAssetAsync`. ([#35686](https://github.com/expo/expo/pull/35686) by [@behenate](https://github.com/behenate))
+  - Add `initialAssetLocalUri` to `createAlbumAsync`. ([#35692](https://github.com/expo/expo/pull/35692) by [@behenate](https://github.com/behenate))
+- **`expo-mail-composer`**
+  - Add get mail client functionality. ([#25468](https://github.com/expo/expo/pull/25468) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-linking`**
+  - [iOS] Add basic support for App Clips. ([#34327](https://github.com/expo/expo/pull/34327) by [@EvanBacon](https://github.com/EvanBacon))
+  - Add macOS support. ([#35064](https://github.com/expo/expo/pull/35064) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-intent-launcher`**
+  - Added a synchronous function `openApplication` to open an application by its package name. ([#25468](https://github.com/expo/expo/pull/25468) by [@reichhartd](https://github.com/reichhartd))
+  - Added an asynchronous function `getApplicationIconAsync` to retrieve the icon of an application by its package name. ([#25468](https://github.com/expo/expo/pull/25468) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-localization`**
+  - Add languageScriptCode ([#34984](https://github.com/expo/expo/pull/34984) by [@jakex7](https://github.com/jakex7))
+- **`expo-image-picker`**
+  - Added support for ordered selection and default tab selection on Android. ([#34223](https://github.com/expo/expo/pull/34223) by [@fobos531](https://github.com/fobos531))
+  - Add support for cameraType in web implementation ([#35221](https://github.com/expo/expo/pull/35221) by [@RyogaK](https://github.com/RyogaK))
+- **`expo-haptics`**
+  - [Android] Added new method `performAndroidHapticsAsync()`. The `Vibrator` api is no longer recommended. This method avoids it. ([#34077](https://github.com/expo/expo/pull/34077) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Web] Add web support using Web Vibration API. ([#34131](https://github.com/expo/expo/pull/34131) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-file-system`**
+  - [next] Add file handles. ([#31738](https://github.com/expo/expo/pull/31738) by [@aleqsio](https://github.com/aleqsio))
+  - [next] Added `.bytes()` and writing a `Uint8Array`. ([#33020](https://github.com/expo/expo/pull/33020) by [@aleqsio](https://github.com/aleqsio))
+  - [next] Add blob support and `.blob()` function. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
+  - [expo-file-system][next] Add options to the create function. ([#32909](https://github.com/expo/expo/pull/32909) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-document-picker`**
+  - [iOS] Allow setting of the `com.apple.developer.ubiquity-kvstore-identifier` entitlement directly. ([#34338](https://github.com/expo/expo/pull/34338) by [@keith-kurak](https://github.com/keith-kurak))
+- **`expo-font`**
+  - Support loading expo-font in a `react-server` environment. ([#34736](https://github.com/expo/expo/pull/34736) by [@EvanBacon](https://github.com/EvanBacon))
+  - Render to image ([#36185](https://github.com/expo/expo/pull/36185) by [@jakex7](https://github.com/jakex7))
+- **`expo-contacts`**
+  - added the ability to read and write starred property (as "isFavorite") of contacts on Android ([#33208](https://github.com/expo/expo/pull/33208) by [@NorseGaud](https://github.com/NorseGaud))
+  - added the ability to change isFavorite property of contacts on Android (using updateContactAsync) ([#34483](https://github.com/expo/expo/pull/34483) by [@NorseGaud](https://github.com/NorseGaud))
+  - Add `presentAccessPickerAsync` function that presents the iOS 18.0+ picker for limited contacts access. ([#33771](https://github.com/expo/expo/pull/33771) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Exposed `ContactAccessButton` from SwiftUI. ([#33782](https://github.com/expo/expo/pull/33782) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Disambiguated `limited` permission status from `granted`. ([#35772](https://github.com/expo/expo/pull/35772) by [@clarkg](https://github.com/clarkg))
+- **`expo-calendar`**
+  - Allow nullable dates for `getRemindersAsync` ([#33264](https://github.com/expo/expo/pull/33264) by [@TomAtterton](https://github.com/TomAtterton))
+- **`expo-camera`**
+  - Add `videoBitrate` prop to allow setting the bitrate used when recording a video. ([#33087](https://github.com/expo/expo/pull/33087) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Add support for the `Google Code Scanner`, similar to the `DataScannerViewController` used on iOS. ([#33347](https://github.com/expo/expo/pull/33347) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add support for pausing and resuming a video recording. ([#34002](https://github.com/expo/expo/pull/34002) by [@alanjhughes](https://github.com/alanjhughes))
+  - Support returning image ref ([#34656](https://github.com/expo/expo/pull/34656) and ([#34693](https://github.com/expo/expo/pull/34693) by [@alanjhughes](https://github.com/alanjhughes)) ([#34656](https://github.com/expo/expo/pull/34656), [#34693](https://github.com/expo/expo/pull/34693) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Support better formatted data on barcode scanning results. ([#34801](https://github.com/expo/expo/pull/34801) by [@alanjhughes](https://github.com/alanjhughes))
+  - Support saving images PNGs in native. ([#35615](https://github.com/expo/expo/pull/35615) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Support selecting which lens to use for the camera. ([#36233](https://github.com/expo/expo/pull/36233) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-asset`**
+  - Add RSC support. ([#34213](https://github.com/expo/expo/pull/34213) by [@EvanBacon](https://github.com/EvanBacon))
+  - Add .riv to accepted media types ([#35758](https://github.com/expo/expo/pull/35758) by [@alextoudic](https://github.com/alextoudic))
+- **`expo-apple-authentication`**
+  - Add `formatFullName` method to format tokenized full name object into a local-aware string representation ([#32567](https://github.com/expo/expo/pull/32567) by [@Armster15](https://github.com/Armster15))
+
+### 🐛 Bug fixes
+
+- **`expo-web-browser`**
+  - [iOS] Fix an issue where the app will crash when using the popover presentation style on iPad. ([#33996](https://github.com/expo/expo/pull/33996) by [@jblarriviere](https://github.com/jblarriviere))
+  - [Android] Fix an issue where the browser would close when returning from the background.([#34160](https://github.com/expo/expo/pull/34160) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fixed `openBrowserAsync` doesn't surface exceptions. ([#36182](https://github.com/expo/expo/pull/36182) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-video-thumbnails`**
+  - [iOS] Run thumnbnail generation on background thread. ([#32773](https://github.com/expo/expo/pull/32773) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-task-manager`**
+  - [iOS] Added guards to avoid crashing the app if we try to write task results that contains NSNull values ([#35477](https://github.com/expo/expo/pull/35477) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-store-review`**
+  - Fix activationState must be used from main thread only ([#35403](https://github.com/expo/expo/pull/35403) by [@dylancom](https://github.com/dylancom))
+- **`expo-sqlite`**
+  - Include the plugin under the `exports` in the package.json. ([#32780](https://github.com/expo/expo/pull/32780) by [@alanjhughes](https://github.com/alanjhughes))
+  - Replaced the cached statement manager with `sqlite3_next_stmt` and prevented uncaught statements from leaking. [#34992](https://github.com/expo/expo/pull/34992) by [@Bowlerr](https://github.com/Bowlerr))
+  - Fixed exceptions when converting empty blob data on iOS. ([#33564](https://github.com/expo/expo/pull/33564) by [@kudo](https://github.com/kudo))
+  - Fixed `expo-sqlite/kv-store` async API not being well handled when using AsyncStorage compatible api ([#33847](https://github.com/expo/expo/pull/33847) by [@rtorrente](https://github.com/rtorrente))
+  - Fixed `database is locked` error from parallel `kv-store` operations. ([#33834](https://github.com/expo/expo/pull/33834) by [@kudo](https://github.com/kudo))
+  - Fixed `database is locked` error while using `kv-store multiGet` function. ([#33873](https://github.com/expo/expo/pull/33873) by [@rtorrente](https://github.com/rtorrente))
+  - Fixed `syncLibSQL` return type. ([#35804](https://github.com/expo/expo/pull/35804) by [@kudo](https://github.com/kudo))
+  - Fixed build error for conflict `libc++_shared.so` on Android. ([#35298](https://github.com/expo/expo/pull/35298) by [@kudo](https://github.com/kudo))
+  - Added reference counting for database closing functions. ([#35818](https://github.com/expo/expo/pull/35818) by [@kudo](https://github.com/kudo))
+- **`expo-sensors`**
+  - Add missing `getPermissionsAsync` and `requestPermissionsAsync` implementations to native DeviceMotion modules. ([#33719](https://github.com/expo/expo/pull/33719) by [@ratley](https://github.com/ratley))
+  - [Android] Fix throwing an error inside `getOrientation` when the `currentActivity` is not available. ([#36369](https://github.com/expo/expo/pull/36369) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-screen-orientation`**
+  - Fixed event listeners on web. ([#33361](https://github.com/expo/expo/pull/33361) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Fixed crash when multiple threads access same member in swift ([#33572](https://github.com/expo/expo/pull/33572) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Fixed ScreenOrientation.addOrientationChangeListener() Freezes iOS Devices in Expo SDK 52, issue 33853 ([#33867](https://github.com/expo/expo/pull/33867) by [@pjdemers](https://github.com/pjdemers)
+- **`expo-network`**
+  - [iOS] Added fix to getNetworkStateAsync failing on iOS ([#33137](https://github.com/expo/expo/pull/33137) by [@chrfalch](https://github.com/chrfalch))
+  - Fix event emitters not working on web. ([#33327](https://github.com/expo/expo/pull/33327) by [@aleqsio](https://github.com/aleqsio))
+  - On `Android`, Prevent crash from the `networkCallback` calling `fetchNetworkState`. ([#33563](https://github.com/expo/expo/pull/33563) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Added `netInfo` null check. ([#33559](https://github.com/expo/expo/pull/33559)) by [@pchalupa](https://github.com/pchalupa) ([#33559](https://github.com/expo/expo/pull/33559) by [@pchalupa](https://github.com/pchalupa))
+- **`expo-notifications`**
+  - fix event subscription type export names ([#33295](https://github.com/expo/expo/pull/33295) by [@vonovak](https://github.com/vonovak))
+  - [android] fix notifications with custom sounds treated as silent ([#33311](https://github.com/expo/expo/pull/33311) by [@pennersr](https://github.com/pennersr))
+  - [android] fix data serialization for notifications with `ChannelAwareTrigger` ([#33354](https://github.com/expo/expo/pull/33354) by [@alextoudic](https://github.com/alextoudic))
+  - Add additional fallback value for project ID in `getExpoPushTokenAsync` ([#33359](https://github.com/expo/expo/pull/33359) by [@bradjones1](https://github.com/bradjones1))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - fix non-repeating scheduled notifications ([#35393](https://github.com/expo/expo/pull/35393) by [@vonovak](https://github.com/vonovak))
+  - improve notification response handling ([#36027](https://github.com/expo/expo/pull/36027) by [@vonovak](https://github.com/vonovak))
+  - remove unneeded Long conversions on Android ([#35976](https://github.com/expo/expo/pull/35976) by [@vonovak](https://github.com/vonovak))
+  - [post-swift-conversion] fix data serialization ([#35975](https://github.com/expo/expo/pull/35975) by [@vonovak](https://github.com/vonovak))
+  - simplify push token event management ([#35944](https://github.com/expo/expo/pull/35944) by [@vonovak](https://github.com/vonovak))
+  - fix Android `NotificationContent` not containing JSON data object ([#35942](https://github.com/expo/expo/pull/35942) by [@vonovak](https://github.com/vonovak))
+  - [post-swift-conversion] fix regressions in `CalendarTriggerRecord` ([#35937](https://github.com/expo/expo/pull/35937) by [@vonovak](https://github.com/vonovak))
+  - remove deprecated `presentNotificationAsync` ([#35900](https://github.com/expo/expo/pull/35900) by [@vonovak](https://github.com/vonovak))
+  - [post-swift-conversion] UNTextInputNotificationAction wasn't provided with options ([#35903](https://github.com/expo/expo/pull/35903) by [@vonovak](https://github.com/vonovak))
+  - [post-swift-conversion] event emitter should not influence notification presentation ([#35858](https://github.com/expo/expo/pull/35858) by [@vonovak](https://github.com/vonovak))
+  - correctly serialize `null` trigger on iOS ([#35672](https://github.com/expo/expo/pull/35672) by [@vonovak](https://github.com/vonovak))
+  - restore `useLastNotificationResponse` return value behavior ([#35504](https://github.com/expo/expo/pull/35504) by [@vonovak](https://github.com/vonovak))
+  - [post-swift-conversion] fix ios textInput action missing title ([#34866](https://github.com/expo/expo/pull/34866) by [@vonovak](https://github.com/vonovak))
+  - [ios] Fixed incorrect `EXNotifications-Swift.h` import. ([#34987](https://github.com/expo/expo/pull/34987) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] fix notification response listener emitting duplicate response events ([#34849](https://github.com/expo/expo/pull/34849) by [@xc2](https://github.com/xc2))
+  - [Android] Defer calling `addTokenListener` until `OnCreate`. ([#36052](https://github.com/expo/expo/pull/36052) by [@alanjhughes](https://github.com/alanjhughes))
+  - correctly include `NotificationContent.data` in `NotificationHandler` ([#36195](https://github.com/expo/expo/pull/36195) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - [Android] Ensure that the headless app loader is started on the main thread. ([#32705](https://github.com/expo/expo/pull/32705) by [@chrfalch](https://github.com/chrfalch))
+  - [Android] Added `@DoNotStrip` annotation to new `Either` types. ([#32783](https://github.com/expo/expo/pull/32783) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fixed requests from `expo/fetch` being stuck on iOS. ([#32894](https://github.com/expo/expo/pull/32894) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed sending event containing `ByteArray` from the Kotlin module results in string ID instead of `Uint8Array`. ([#32945](https://github.com/expo/expo/pull/32945) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed type errors when using `ts-jest`. ([#32954](https://github.com/expo/expo/pull/32954) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed `no non-static method "SharedObject.getSharedObjectId()" when proguard is enabled. ([#33011](https://github.com/expo/expo/pull/33011) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fixed build error when using jsEngine=jsc. ([#33130](https://github.com/expo/expo/pull/33130) by [@kudo](https://github.com/kudo))
+  - Fixed TypeScript incompatible `process` type error when including `@types/node`. ([#33155](https://github.com/expo/expo/pull/33155) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed issue with RNHeadlessAppLoader destroying the reactHost instance in the new architecture. ([#33176](https://github.com/expo/expo/pull/33176) by [@chrfalch](https://github.com/chrfalch))
+  - Fixed backwards compatibility in the `EventEmitter` constructor. ([#33294](https://github.com/expo/expo/pull/33294) by [@tsapeta](https://github.com/tsapeta))
+  - Ensure `uuid.v4`and`uuid.v5` is available on old react native architecture. ([#33621](https://github.com/expo/expo/pull/33621) by [@andrejpavlovic](https://github.com/andrejpavlovic))
+  - Changed `import` to `import type` for TS type declarations. ([#33447](https://github.com/expo/expo/pull/33447) by [@j-piasecki](https://github.com/j-piasecki))
+  - [macOS] Allow SwiftUI views to work on macOS ([#33506](https://github.com/expo/expo/pull/33506) by [@hassankhan](https://github.com/hassankhan))
+  - Fixed **AppDelegate.mm** methods not be called on iOS. ([#34464](https://github.com/expo/expo/pull/34464) by [@kudo](https://github.com/kudo))
+  - [Android] Fixes `AppContext` is lost in nested converters. ([#34373](https://github.com/expo/expo/pull/34373) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed `kotlinx.coroutines.CancellableContinuationImpl.alreadyResumedError` error on Android. ([#35114](https://github.com/expo/expo/pull/35114) by [@kudo](https://github.com/kudo))
+  - [Android] Fixes compose views disappearing on navigation. ([#34689](https://github.com/expo/expo/pull/34689) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Fixes view managers not deallocating when reloading. ([#33760](https://github.com/expo/expo/pull/33760) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fixed converting double to float. ([#34906](https://github.com/expo/expo/pull/34906) by [@janicduplessis](https://github.com/janicduplessis))
+  - [iOS] Fixed ViewModuleWrapper initializer on old arch to use the DEFAULT_MODULE_VIEW view from the module as the default view. ([#35007](https://github.com/expo/expo/pull/35007) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Fix UnimplementedExpoView on macOS. ([#35014](https://github.com/expo/expo/pull/35014) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] Fix tvOS breakage. ([#35146](https://github.com/expo/expo/pull/35146) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Fix calls to `AsyncFunction` not working in the initial render of a `View`. ([#35176](https://github.com/expo/expo/pull/35176) by [@behenate](https://github.com/behenate))
+  - [Android] Fixed `ConcurrentModificationException` being thrown by `JNIDeallocator.deallocate` during the app reload. ([#35322](https://github.com/expo/expo/pull/35322) by [@lukmccall](https://github.com/lukmccall))
+  - Change registerWebModule to work with minified classes. ([#35946](https://github.com/expo/expo/pull/35946) by [@aleqsio](https://github.com/aleqsio))
+  - Fixed `UnwrappedChildren` not get the unwrapped content view for SwiftUI integration. ([#36112](https://github.com/expo/expo/pull/36112) by [@kudo](https://github.com/kudo))
+  - Fixed build errors on Windows. ([#36211](https://github.com/expo/expo/pull/36211) by [@kudo](https://github.com/kudo))
+  - Fixed adding SwiftUI views to navigation header ([#36305](https://github.com/expo/expo/pull/36305) by [@jakex7](https://github.com/jakex7))
+  - [iOS] Fix concurrent functions on views. ([#36431](https://github.com/expo/expo/pull/36431) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-media-library`**
+  - [iOS] Add back image loader to handle `ph://` and `assets-library://` scheme for New Architecture. ([#30116](https://github.com/expo/expo/issues/30116)) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler) ([#33097](https://github.com/expo/expo/pull/33097) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler)) ([#33097](https://github.com/expo/expo/pull/33097) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler), [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+  - [iOS] Fix `unknown` file type being returned for video files. ([#33589](https://github.com/expo/expo/pull/33589) by [@behenate](https://github.com/behenate))
+  - Fixed `medialibraryassetschangeevent` listener not capturing assets changes. ([#36459](https://github.com/expo/expo/pull/36459) by [@aleqsio](https://github.com/aleqsio))
+  - Fixed build error from **AppDelegate.swift** integration. ([#36368](https://github.com/expo/expo/pull/36368) by [@kudo](https://github.com/kudo))
+- **`expo-location`**
+  - Fixed NoClassDefFoundError for `Landroid/support/v4/app/ActivityCompat;`. ([#33088](https://github.com/expo/expo/pull/33088) by [@kudo](https://github.com/kudo))
+  - [Android] Use less specific exception in catch block of `resolveUserSettingsForRequest`. ([#34784](https://github.com/expo/expo/pull/34784) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Added guards to avoid task options to crash the app. ([#35477](https://github.com/expo/expo/pull/35477) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Added error handler to the streaming location/heading methods since these can fail while streaming ([#35004](https://github.com/expo/expo/pull/35004) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Fixed issue with some permission request flows resolving too soon on iOS. ([#35693](https://github.com/expo/expo/pull/35693) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Remove restarting all services when CLLocationManager reports an error ([#35478](https://github.com/expo/expo/pull/35478) by [@chrfalch](https://github.com/chrfalch))
+  - [Android] Add missing ProGuard rule to fix task consumer failed ([#34098](https://github.com/expo/expo/pull/34098) by [@cornejobarraza](https://github.com/cornejobarraza))
+  - [iOS] `startLocationUpdatesAsync` should not require background permissions ([#33617](https://github.com/expo/expo/pull/33617) by [@andrejpavlovic](https://github.com/andrejpavlovic)
+- **`expo-mail-composer`**
+  - [iOS] Fix mail modal callback when dismissing the composer through multitasking controls on iPad. ([#34040](https://github.com/expo/expo/pull/34040) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [Android] Improve isAvailableAsync ([#35480](https://github.com/expo/expo/pull/35480) by [@jakex7](https://github.com/jakex7))
+- **`expo-linking`**
+  - [iOS] Fix `addEventListener` and `useURL` hook. ([#33076](https://github.com/expo/expo/pull/33076) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-linear-gradient`**
+  - Fix adaptive color support for `PlatformColor` and add corresponding types ([#34214](https://github.com/expo/expo/pull/34214) by [@dlindenkreuz](https://github.com/dlindenkreuz))
+- **`expo-localization`**
+  - Fix expo-localization typo ([#35543](https://github.com/expo/expo/pull/35543) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Fix issue where `useLocales` and `useCalendars` hooks would not re-render when the timezone changed. ([#36382](https://github.com/expo/expo/pull/36382) by [@ouwargui](https://github.com/ouwargui))
+- **`expo-image-manipulator`**
+  - Changed `export` to `export type` for TS type declarations. ([#33446](https://github.com/expo/expo/pull/33446) by [@j-piasecki](https://github.com/j-piasecki))
+  - Fixed `saveAsync` not respecting the format and compression quality. ([#33690](https://github.com/expo/expo/pull/33690) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-image-picker`**
+  - [ios] fixed concurrency freeze on low-end iOS devices when selecting multiple images. ([#34585](https://github.com/expo/expo/pull/34585) by [@chrfalch](https://github.com/chrfalch))
+  - [android] fixed removal of temporary file after picking image using camera ([#34797](https://github.com/expo/expo/pull/34797) by [@chrfalch](https://github.com/chrfalch))
+  - [Android] Fix `getPendingResultAsync` incorrect return type ([#35791](https://github.com/expo/expo/pull/35791) by [@sorenfrederiksen](https://github.com/sorenfrederiksen))
+  - [iOS] Use preferred representation mode to support heic ([#35840](https://github.com/expo/expo/pull/35840) by [@jakex7](https://github.com/jakex7))
+- **`expo-file-system`**
+  - [macOS][next]: Add availability checks ([#33504](https://github.com/expo/expo/pull/33504) by [@hassankhan](https://github.com/hassankhan))
+  - Fix types that are erroring in default template. ([#34520](https://github.com/expo/expo/pull/34520) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] fixed issue with deleting a directory with children ([#34550](https://github.com/expo/expo/pull/34550) by [@chrfalch](https://github.com/chrfalch))
+  - [next] Fix inconsistent behavior when using special chars in filenames. ([#35801](https://github.com/expo/expo/pull/35801) by [@aleqsio](https://github.com/aleqsio))
+  - Fix expo-updates breaking filesystem on Android API 24 and 25. ([#33694](https://github.com/expo/expo/pull/33694) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-gl`**
+  - [ios] Fixed build errors in XCode 16.3 ([#35811](https://github.com/expo/expo/pull/35811) by [@chrfalch](https://github.com/chrfalch))
+  - stb_image PNG: Checks for invalid DEFLATE codes. ([#35184](https://github.com/expo/expo/pull/35184) by [@manoj23](https://github.com/manoj23))
+- **`expo-device`**
+  - [ios] Fixed build errors in XCode 16.3 ([#35811](https://github.com/expo/expo/pull/35811) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-document-picker`**
+  - [Android] Avoid int overflow for large files ([#36245](https://github.com/expo/expo/pull/36245) by [@vonovak](https://github.com/vonovak))
+- **`expo-font`**
+  - [iOS] Fix crash when accessing resource from multiple threads ([#33574](https://github.com/expo/expo/pull/33574) by [@chrfalch](https://github.com/chrfalch))
+  - [ios] Fix crash when writing to fontFamilyAliases ([#34044](https://github.com/expo/expo/pull/34044) by [@techied](https://github.com/techied))
+  - Add missing export specifier. ([#34839](https://github.com/expo/expo/pull/34839) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-contacts`**
+  - [Android] Fixed saving a contact with photos on Android. ([#34432](https://github.com/expo/expo/pull/34432) by [@chrfalch](https://github.com/chrfalch))
+  - Fixed corrupted contact after `updateContactAsync`. ([#34186](https://github.com/expo/expo/pull/34186) by [@freeboub](https://github.com/34186)) ([#34186](https://github.com/expo/expo/pull/34186) by [@34186](https://github.com/34186)) ([#34186](https://github.com/expo/expo/pull/34186), [#34186](https://github.com/expo/expo/pull/34186) by [@34186](https://github.com/34186), [@34186](https://github.com/34186))
+  - Fixed `the native view manager required by name (ExpoContactAccessButton) from NativeViewManagerAdapter isn't exported` warning. ([#33993](https://github.com/expo/expo/pull/33993) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-constants`**
+  - [iOS] Fix pod install in older CocoaPods versions ([#35181](https://github.com/expo/expo/pull/35181) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Add missing types to package exports ([#35223](https://github.com/expo/expo/pull/35223) by [@timostroehlein](https://github.com/timostroehlein))
+- **`expo-blur`**
+  - [Android] Bump the Dimezis/BlurView dependency to the latest patch version. ([#34012](https://github.com/expo/expo/pull/34012) by [@jakobsen](https://github.com/jakobsen))
+- **`expo-calendar`**
+  - [iOS] Fixed missing deserialization of calendarId field when calling createEventInCalendarAsync ([#33142](https://github.com/expo/expo/pull/33142) by [@chrfalch](https://github.com/chrfalch))
+  - [Android] Fix expo-calendar isPrimary on Android always returns false ([#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva) & [@sanchaz](https://github.com/sanchaz)) ([#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva), [@sanchaz](https://github.com/sanchaz)) ([#33285](https://github.com/expo/expo/pull/33285), [#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva), [@sanchaz](https://github.com/sanchaz), [@joaogabrieldasilva](https://github.com/joaogabrieldasilva), [@sanchaz](https://github.com/sanchaz))
+  - [iOS] Correctly type `organizer` and document it. ([#34052](https://github.com/expo/expo/pull/34052) by [@alanjhughes](https://github.com/alanjhughes))
+  - Updated `Event.location` type to allow a `null` value if not set. ([#33802](https://github.com/expo/expo/pull/33802) by [@rklomp](https://github.com/rklomp)
+  - Allow more characters in url encoding ([#35034](https://github.com/expo/expo/pull/35034) by [@cederache](https://github.com/cederache))
+  - [iOS] Fix event recurrence rules returning `dayOfTheWeek` as `undefined`. ([#36482](https://github.com/expo/expo/pull/36482) by [@ouwargui](https://github.com/ouwargui))
+- **`expo-camera`**
+  - [iOS] Fix shutter animation not running. ([#32820](https://github.com/expo/expo/pull/32820) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix an issue where devices supporting the `hevc` codec have `jpeg` set in the `photoSettings`. ([#33186](https://github.com/expo/expo/pull/33186) by [@alanjhughes](https://github.com/alanjhughes))
+  - [web] Fix camera not being released after use. ([#35202](https://github.com/expo/expo/pull/35202) by [@eliottg](https://github.com/EliottG-Bam)) ([#35202](https://github.com/expo/expo/pull/35202) by [@EliottG-Bam](https://github.com/EliottG-Bam))
+  - Fix `zoom` on Android and adjust the magnitude on iOS. ([#33319](https://github.com/expo/expo/pull/33319) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix setting `videoQuality` prop. ([#34082](https://github.com/expo/expo/pull/34082) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Fix an issue where the camera image is pixelated when using the gl integration. ([#34174](https://github.com/expo/expo/pull/34174) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Fix setting the camera preview provider. ([#34302](https://github.com/expo/expo/pull/34302) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix initial roation when used with `react-native-screens`. ([#34721](https://github.com/expo/expo/pull/34721) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix performance regression. ([#34750](https://github.com/expo/expo/pull/34750) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Attempt to fix `setLinearZoom` incompatability with some devices. ([#34757](https://github.com/expo/expo/pull/34757) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Fix flash. ([#34893](https://github.com/expo/expo/pull/34893) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Attempts to address crash that occurs more frequently on iPads. ([#34915](https://github.com/expo/expo/pull/34915) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Control barcode scanner on session queue. ([#35107](https://github.com/expo/expo/pull/35107) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Don't throw when setting the aspect ratio and instead fallback safely. ([#35614](https://github.com/expo/expo/pull/35614) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-background-fetch`**
+  - Android: Fixed so that background fetch will run when app is killed or in the background. ([#32849](https://github.com/expo/expo/pull/32849) by [@chrfalch](https://github.com/chrfalch))
+  - [Android] added proguard rules for background-fetch consumer ([#35816](https://github.com/expo/expo/pull/35816) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-asset`**
+  - Add support for simplified object asset format. ([#32728](https://github.com/expo/expo/pull/32728) by [@EvanBacon](https://github.com/EvanBacon))
+  - [macOS] Add macOS platform support ([#33505](https://github.com/expo/expo/pull/33505) by [@hassankhan](https://github.com/hassankhan))
+- **`expo-auth-session`**
+  - Fix `clientId` not being asserted properly if it's `undefined` in `providers/Facebook`, like it is for `providers/Google`
+- **`expo-apple-authentication`**
+  - Fix `formatFullName` not specifying a return type. ([#33068](https://github.com/expo/expo/pull/33068) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- **`unimodules-app-loader`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-web-browser`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - Update doc comment about `--https` flag. ([#36083](https://github.com/expo/expo/pull/36083) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-video-thumbnails`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-task-manager`**
+  - [Android] Added implementation of `executeTask` method in `TaskManagerUtils` ([#32849](https://github.com/expo/expo/pull/32849) by [@chrfalch](https://github.com/chrfalch))
+  - [android][background-task] Added callback parameter to new executeTask method after adding package expo-background-task ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - Removed warning about running on Expo Go. This is handled in packages using the Task Manager. ([#36038](https://github.com/expo/expo/pull/36038) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-store-review`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-speech`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-sharing`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-sqlite`**
+  - Removed unused `SQLite3Wrapper` code for legacy implementation on Android. ([#33565](https://github.com/expo/expo/pull/33565) by [@kudo](https://github.com/kudo))
+  - Enforce input validations in `kv-store` operations. ([#33874](https://github.com/expo/expo/pull/33874) by [@rtorrente](https://github.com/rtorrente))
+  - Added offline-writes support for libSQL. ([#34673](https://github.com/expo/expo/pull/34673) by [@kudo](https://github.com/kudo))
+  - Updated libsql libs. ([#35708](https://github.com/expo/expo/pull/35708) by [@kudo](https://github.com/kudo))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - Fixed resolving libsql binary issue on iOS. ([#34529](https://github.com/expo/expo/pull/34529) by [@kudo](https://github.com/kudo))
+  - Removed deprecated CR-SQLite integration. ([#35097](https://github.com/expo/expo/pull/35097) by [@kudo](https://github.com/kudo))
+  - Remove prebuilt worker on Web. ([#35311](https://github.com/expo/expo/pull/35311) by [@kudo](https://github.com/kudo))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+  - Fixed build warnings. ([#35610](https://github.com/expo/expo/pull/35610) by [@kudo](https://github.com/kudo))
+  - Added backup and session API stubs to LibSQL implementations. ([#35755](https://github.com/expo/expo/pull/35755) by [@kudo](https://github.com/kudo))
+  - Updated function docs. ([#35761](https://github.com/expo/expo/pull/35761) by [@kudo](https://github.com/kudo))
+- **`expo-secure-store`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-sms`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-screen-capture`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-sensors`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-screen-orientation`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate)), ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate)) ([#35288](https://github.com/expo/expo/pull/35288), [#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate), [@behenate](https://github.com/behenate))
+- **`expo-print`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-network`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-notifications`**
+  - Add better error when Firebase is not set up ([#34694](https://github.com/expo/expo/pull/34694) by [@vonovak](https://github.com/vonovak))
+  - update Push Notification deprecation message for Expo Go ([#35577](https://github.com/expo/expo/pull/35577) by [@vonovak](https://github.com/vonovak))
+  - simplify `nextTriggerDate` in `TimeIntervalTrigger` ([#35559](https://github.com/expo/expo/pull/35559) by [@vonovak](https://github.com/vonovak))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - deprecate `removePushTokenSubscription` and `removeNotificationSubscription` ([#36371](https://github.com/expo/expo/pull/36371) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - [Android] Added `executeTask` method to `TaskManagerUtilsInterface` ([#32849](https://github.com/expo/expo/pull/32849) by [@chrfalch](https://github.com/chrfalch))
+  - Use `findNodeHandle` with a native ref instead of a class component instance to avoid expensive calls to `findCurrentFiberUsingSlowPath`. ([#33016](https://github.com/expo/expo/pull/33016) by [@tsapeta](https://github.com/tsapeta))
+  - Introduced `ReactNativeFeatureFlags` compat to fix React Native 0.77 breaking changes. ([#33077](https://github.com/expo/expo/pull/33077) by [@kudo](https://github.com/kudo))
+  - Fixed compatibility for React Native 0.77. ([#33079](https://github.com/expo/expo/pull/33079) by [@kudo](https://github.com/kudo))
+  - [Android] Introduced `applyKspJvmToolchain()` gradle helper to enforce JVM Toolchain version for KSP. ([#33148](https://github.com/expo/expo/pull/33148) by [@kudo](https://github.com/kudo))
+  - Fixed compatibility for React Native 0.77. ([#33277](https://github.com/expo/expo/pull/33277) by [@kudo](https://github.com/kudo))
+  - [Android] Bump KSP version for Kotlin 2.0.21. ([#33306](https://github.com/expo/expo/pull/33306) by [@kudo](https://github.com/kudo))
+  - Allowed extending `process.env` types. ([#34112](https://github.com/expo/expo/pull/34112) by [@kudo](https://github.com/kudo))
+  - [Android]: Added callback to executeTask method signature after adding package expo-background-task ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Updated UnwrappedChildren to return a ForEach type, allowing support for modifiers such as onDelete. ([#35222](https://github.com/expo/expo/pull/35222) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
+  - [Android] make ReactNativeFeatureFlags injectable by wrapping it in an interface to make some tests pass ([#34363](https://github.com/expo/expo/pull/34363) by [@chrfalch](https://github.com/chrfalch))
+  - [Android] Fixed failing unit tests after internal API change that adds support for named views. ([#34384](https://github.com/expo/expo/pull/34384) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Enable named view exports. ([#34293](https://github.com/expo/expo/pull/34293) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Enable named view exports. ([#34161](https://github.com/expo/expo/pull/34161) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Introduced the option to disabled `overflow: hidden` applied to each view by default. ([#33261](https://github.com/expo/expo/pull/33261) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed compatibility for React Native 0.78 nightlies. ([#33718](https://github.com/expo/expo/pull/33718) by [@kudo](https://github.com/kudo))
+  - Show `UnimplementedExpoView` in place of SwiftUI views when the New Architecture is not enabled. ([#33901](https://github.com/expo/expo/pull/33901) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Use REACT_NATIVE_PATH to determine react-native version ([#34042](https://github.com/expo/expo/pull/34042) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [Android] Started using expo modules gradle plugin.
+  - [Android] Remove `BarCodeScannerInterface`. ([#34966](https://github.com/expo/expo/pull/34966) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Make ExpoComposeView builder function optional. ([#34907](https://github.com/expo/expo/pull/34907) by [@janicduplessis](https://github.com/janicduplessis))
+  - Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
+  - [Android] Used `compileOnly` to depend on the `expo-modules-core` when applying default dependencies. ([#35822](https://github.com/expo/expo/pull/35822) by [@lukmccall](https://github.com/lukmccall))
+  - Removed extra `UIView` from SwiftUI integration. ([#35553](https://github.com/expo/expo/pull/35553) by [@kudo](https://github.com/kudo))
+  - [Android] Migrate `AppLoaderProvider` to kotlin. ([#36035](https://github.com/expo/expo/pull/36035) by [@alanjhughes](https://github.com/alanjhughes))
+  - Removed the limitation to use `collapsable={false}` when hosting a UIView in SwiftUI views. ([#36153](https://github.com/expo/expo/pull/36153) by [@kudo](https://github.com/kudo))
+  - Droped support for Kotlin < `2.0.0`. ([#36323](https://github.com/expo/expo/pull/36323) by [@lukmccall](https://github.com/lukmccall))
+  - Removes `Jetpack Compose` integration if not needed. ([#36353](https://github.com/expo/expo/pull/36353) by [@lukmccall](https://github.com/lukmccall))
+  - Refined `Children` return type for SwiftUI integration. ([#36377](https://github.com/expo/expo/pull/36377) by [@kudo](https://github.com/kudo))
+- **`expo-media-library`**
+  - Add guards when using the module in expo go. ([#34738](https://github.com/expo/expo/pull/34738) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate)), ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate)) ([#35288](https://github.com/expo/expo/pull/35288), [#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate), [@behenate](https://github.com/behenate))
+  - [iOS] Add `preventAutomaticLimitedAccessAlert` option to config plugin. ([#35515](https://github.com/expo/expo/pull/35515) by [@fobos531](https://github.com/fobos531))
+- **`expo-location`**
+  - On iOS, added setting the scope value as per our documentation. ([#35452](https://github.com/expo/expo/pull/35452) by [@chrfalch](https://github.com/chrfalch))
+  - On Android, remove dependency on `smart-location-lib`. ([#33609](https://github.com/expo/expo/pull/33609) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Added missing dependency. ([#35822](https://github.com/expo/expo/pull/35822) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-local-authentication`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-mail-composer`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-linking`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-linear-gradient`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-intent-launcher`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-image-loader`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-localization`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
+- **`expo-image-manipulator`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-image-picker`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-keep-awake`**
+  - [android] Remove deactivation warning. ([#35760](https://github.com/expo/expo/pull/35760) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-haptics`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-file-system`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+  - Remove `web-streams-polyfill` in favor of `expo` support. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-gl`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-device`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-document-picker`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [web] Add option to disable file reader to read base64 from file on successfull picking. ([#34739](https://github.com/expo/expo/pull/34739) by [@danilaplee](https://github.com/danilaplee))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+  - [Android] Specified Gradle project version. ([#35751](https://github.com/expo/expo/pull/35751) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-font`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-crypto`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-clipboard`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-contacts`**
+  - [docs] Removed iOS platform only for the `updateContactAsync` method ([#34488](https://github.com/expo/expo/pull/34488) by [@chrfalch](https://github.com/chrfalch))
+  - Use the `src` folder as the Metro target. ([#33781](https://github.com/expo/expo/pull/33781) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate)), ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate)) ([#35288](https://github.com/expo/expo/pull/35288), [#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate), [@behenate](https://github.com/behenate))
+  - Migrated SwiftUI views with backward compatible `WithHostingView`. ([#35553](https://github.com/expo/expo/pull/35553) by [@kudo](https://github.com/kudo))
+- **`expo-constants`**
+  - [android][ios] Updated Gradle build and Podspec files to ensure app.json/app.config.js values are correctly updated during each native build. ([#34228](https://github.com/expo/expo/pull/34228) by [@chrfalch](https://github.com/chrfalch))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-cellular`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-blur`**
+  - [Android] Started using expo modules gradle plugin. ([#34138](https://github.com/expo/expo/pull/34138) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-calendar`**
+  - [android][calendar] Add `EventRecurrenceUtils` unit tests. ([#33863](https://github.com/expo/expo/pull/33863) by [@mateoguzmana](https://github.com/mateoguzmana))
+  - [ios][calendar] Use EXPermissionStatus instead of CalendarPermissionsStatus in calendar permissions requesters ([#33453](https://github.com/expo/expo/pull/33453) by [@ryanduffin](https://github.com/ryanduffin)
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
+- **`expo-battery`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-brightness`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-camera`**
+  - [Android] Drop legacy `cameraview-aar` dependency. ([#32853](https://github.com/expo/expo/pull/32853) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Return the correct bounding box and corner points when scanning barcodes. ([#32871](https://github.com/expo/expo/pull/32871) by [@alanjhughes](https://github.com/alanjhughes))
+  - Bring back `expo-gl` integration. ([#33027](https://github.com/expo/expo/pull/33027) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `Android`, parse the `pictureSize` prop safely to prevent invalid values causing exceptions. ([#33566](https://github.com/expo/expo/pull/33566) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - Add warning when rendering `children` in the `CameraView`. ([#34969](https://github.com/expo/expo/pull/34969) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
+  - [iOS] Remove unnecessary async calls. ([#36222](https://github.com/expo/expo/pull/36222) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Web] Remove `forwardRef` from Camera component. ([#36320](https://github.com/expo/expo/pull/36320) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-background-fetch`**
+  - [Android]: aligned the executeTask method signature after adding package expo-background-task ([#33438](https://github.com/expo/expo/pull/33438) by [@chrfalch](https://github.com/chrfalch))
+  - Marked library as deprecated in favor of expo-background-task. ([#35817](https://github.com/expo/expo/pull/35817) by [@chrfalch](https://github.com/chrfalch))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate)), ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate)) ([#35288](https://github.com/expo/expo/pull/35288), [#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate), [@behenate](https://github.com/behenate))
+  - Added warning about Background Fetch not being supported in Expo Go ([#36063](https://github.com/expo/expo/pull/36063) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-av`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - Expo AV has now been deprecated. ([#36020](https://github.com/expo/expo/pull/36020) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-asset`**
+  - Deprecate `expo-asset/tools/hashAssetFiles` in favor of built-in hashing support in `expo/metro-config`. ([#34208](https://github.com/expo/expo/pull/34208) by [@EvanBacon](https://github.com/EvanBacon))
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - Drop `invariant` and `md5-file` dependencies. ([#35328](https://github.com/expo/expo/pull/35328) by [@kitten](https://github.com/kitten))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+  - Added `file:///android_res/` format support. ([#36058](https://github.com/expo/expo/pull/36058) by [@kudo](https://github.com/kudo))
+- **`expo-application`**
+  - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- **`expo-auth-session`**
+  - Allow `prompt` parameter of `AuthRequest` to accept multiple values as an array ([#32373](https://github.com/expo/expo/pull/32373) by [@Nkzn](https://github.com/Nkzn))
+- **`expo-apple-authentication`**
+  - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+  - [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
+
+### ⚠️ Notices
+
+- **`expo-sqlite`**
+  - Changed async tasks to run on a dedicated parallel queue. ([#35896](https://github.com/expo/expo/pull/35896) by [@kudo](https://github.com/kudo))
+- **`expo-notifications`**
+  - [iOS] Swift conversion 1: badge and server registration. ([#32069](https://github.com/expo/expo/pull/32069) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Swift conversion 2: push token module. ([#32612](https://github.com/expo/expo/pull/32612) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Swift conversion 3: scheduling, notification builder. ([#33253](https://github.com/expo/expo/pull/33253) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Swift conversion 4: Categories. ([#33976](https://github.com/expo/expo/pull/33976) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Swift conversion 5: Fix categories, Expo Go changes. ([#34409](https://github.com/expo/expo/pull/34409) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Swift conversion 6: refactor Record classes. ([#34413](https://github.com/expo/expo/pull/34413) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Swift conversion 7: Handler and Emitter. ([#35564](https://github.com/expo/expo/pull/35564) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Swift conversion 8: Background module. ([#35695](https://github.com/expo/expo/pull/35695) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Swift conversion 9: Permissions module. ([#35719](https://github.com/expo/expo/pull/35719) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Swift conversion 10: Refactor for Expo Go. ([#35862](https://github.com/expo/expo/pull/35862) by [@douglowder](https://github.com/douglowder))
+- **`expo-modules-core`**
+  - Deprecated `EXAppDelegateWrapper` in favor of `ExpoAppDelegate`. ([#33348](https://github.com/expo/expo/pull/33348) by [@tsapeta](https://github.com/tsapeta)))
+
+## 52.0.0 — 2024-11-08
+
+### 📚 3rd party library updates
+
+- Updated `react-native-svg` from `15.2.0` to `15.7.1`. ([#31567](https://github.com/expo/expo/pull/31567) by [@lukmccall](https://github.com/lukmccall))
+
+### 🛠 Breaking changes
+
+- **`unimodules-app-loader`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-web-browser`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30864](https://github.com/expo/expo/pull/30864) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-video-thumbnails`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-task-manager`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-store-review`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sqlite`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+  - Removed deprecated legacy expo-sqlite. ([#31766](https://github.com/expo/expo/pull/31766) by [@kudo](https://github.com/kudo))
+  - Removed `next` export. ([#32184](https://github.com/expo/expo/pull/32184) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-secure-store`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sms`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-speech`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sensors`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-screen-capture`**
+  - Make permissions auto-grant on Android 14+. ([#31865](https://github.com/expo/expo/pull/31865) by [@aleqsio](https://github.com/aleqsio))
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sharing`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-print`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-screen-orientation`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-network`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-notifications`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30862](https://github.com/expo/expo/pull/30862) by [@tsapeta](https://github.com/tsapeta))
+  - Simplify calendar trigger input types. ([#31598](https://github.com/expo/expo/pull/31598) by [@douglowder](https://github.com/douglowder))
+  - remove two deprecated exports ([#32660](https://github.com/expo/expo/pull/32660) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+  - Remove expo barcode scanner interface. ([#32198](https://github.com/expo/expo/pull/32198) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-media-library`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30863](https://github.com/expo/expo/pull/30863) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-mail-composer`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-location`**
+  - Remove deprecated code: geocoding using Google Maps API, old permission methods and related types. ([#29961](https://github.com/expo/expo/pull/29961) by [@Simek](https://github.com/Simek))
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30867](https://github.com/expo/expo/pull/30867) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-local-authentication`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-localization`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-linking`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-keep-awake`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-linear-gradient`**
+  - stricter TS type of the `colors` prop. It now requires providing an array of least two values. Passing an empty array or an array with one value will fail to typecheck. ([#27820](https://github.com/expo/expo/pull/27820) by [@navignaw](https://github.com/navignaw))
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-image-manipulator`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-image-picker`**
+  - Remove `READ_MEDIA_IMAGES` and `READ_MEDIA_VIDEO` permissions. ([#31902](https://github.com/expo/expo/pull/31902) by [@aleqsio](https://github.com/aleqsio))
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+  - The default value for `quality` option has been changed from `0.2` to `1.0` for better performance and to match the most common expectation. ([#30896](https://github.com/expo/expo/pull/30896) by [@tsapeta](https://github.com/tsapeta))
+  - `ImagePicker.MediaTypeOptions` have been deprecated. Use a single MediaType or an array of MediaTypes instead. ([#30957](https://github.com/expo/expo/pull/30957) by [@behenate](https://github.com/behenate))
+- **`expo-gl`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-face-detector`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-image-loader`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-haptics`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-document-picker`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-font`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-device`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-file-system`**
+  - [next] Disable module in Expo Go. ([#31938](https://github.com/expo/expo/pull/31938) by [@aleqsio](https://github.com/aleqsio))
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-contacts`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-crypto`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-constants`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-clipboard`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30860](https://github.com/expo/expo/pull/30860) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-cellular`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-camera`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+  - Remove deprecated `expo-camera/legacy`. ([#32173](https://github.com/expo/expo/pull/32173) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-calendar`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-brightness`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-battery`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-blur`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-background-fetch`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-av`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-asset`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-apple-authentication`**
+  - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-application`**
+  - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- **`expo-web-browser`**
+  - [iOS] `dismissBrowser` function updated to return a promise. ([#31210](https://github.com/expo/expo/pull/31210) by [@nishan](https://github.com/intergalacticspacehighway)) ([#31210](https://github.com/expo/expo/pull/31210) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- **`expo-sqlite`**
+  - Added SQLCipher support. ([#30824](https://github.com/expo/expo/pull/30824), [#30825](https://github.com/expo/expo/pull/30825) by [@kudo](https://github.com/kudo))
+  - Added a way to specify custom directory for the database. ([#31278](https://github.com/expo/expo/pull/31278)) by [@IgorKhramtsov](https://github.com/IgorKhramtsov) ([#31278](https://github.com/expo/expo/pull/31278) by [@IgorKhramtsov](https://github.com/IgorKhramtsov))
+  - Added key-value storage and compatible API with `@react-native-async-storage/async-storage`. ([#31596](https://github.com/expo/expo/pull/31596), [#31676](https://github.com/expo/expo/pull/31676) by [@kudo](https://github.com/kudo))
+  - Added macOS support in expo-sqlite. ([#32181](https://github.com/expo/expo/pull/32181) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+- **`expo-secure-store`**
+  - [Android] Add a config plugin for configuring the Android backup system. ([#29944](https://github.com/expo/expo/pull/29944) by [@behenate](https://github.com/behenate))
+  - Add Apple TV support. ([#31374](https://github.com/expo/expo/pull/31374) by [@douglowder](https://github.com/douglowder))
+- **`expo-sensors`**
+  - [iOS] Allow excluding motion permission APIs. ([#29845](https://github.com/expo/expo/pull/29845) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-network`**
+  - Add network state change listeners ([#28808](https://github.com/expo/expo/pull/28808) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-notifications`**
+  - Add clearLastNotificationResponseAsync to API. ([#31607](https://github.com/expo/expo/pull/31607) by [@douglowder](https://github.com/douglowder))
+  - New monthly trigger type for scheduled notifications. ([#31823](https://github.com/expo/expo/pull/31823) by [@douglowder](https://github.com/douglowder))
+- **`expo-modules-core`**
+  - Added `onKeyDown` and `onKeyLongPress` to `ReactActivityHandler` on Android. ([#28684](https://github.com/expo/expo/pull/28684) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Add support for `onUserLeaveHint`. ([#32033](https://github.com/expo/expo/pull/32033) by [@behenate](https://github.com/behenate))
+  - [Web] Modules are now registered in global. ([#29870](https://github.com/expo/expo/pull/29870) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Add support for passing SharedObjects as a function parameter. ([#30314](https://github.com/expo/expo/pull/30314) by [@aleqsio](https://github.com/aleqsio))
+  - Added support for `startObserving` and `stopObserving` on the web. ([#28953](https://github.com/expo/expo/pull/28953) by [@aleqsio](https://github.com/aleqsio))
+  - Switched exported `EventEmitter` to the C++ implementation. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] `OnStartObserving` and `OnStopObserving` can now be attached to a specific event. ([#29012](https://github.com/expo/expo/pull/29012) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Add the ability to change the name of the exported shared object. ([#30040](https://github.com/expo/expo/pull/30040) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Supported returning of the `SharedObject` from functions. ([#30426](https://github.com/expo/expo/pull/30426) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Support implementing `customizeRootView` in `ExpoAppDelegateSubscriber`. ([#30550](https://github.com/expo/expo/pull/30550) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Added support for primitive arrays in functions. ([#30657](https://github.com/expo/expo/pull/30657) by [@lukmccall](https://github.com/lukmccall))
+  - Implemented `toJSON` function on shared objects that includes dynamic properties defined in their prototype chain. ([#30813](https://github.com/expo/expo/pull/30813) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added experimental support for rendering SwiftUI views. ([#19888](https://github.com/expo/expo/pull/19888) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Introduced experimental converter to support a broader range of types that can be passed to the JS. ([#30944](https://github.com/expo/expo/pull/30944) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Add functions that are called before and after a shared object is removed from the registry. ([#30949](https://github.com/expo/expo/pull/30949) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Rewrite map converter to support a broader range of types that can be passed to the JS. ([#31016](https://github.com/expo/expo/pull/31016) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] `EitherTypeConverter` now can work with the `Dynamic` class. ([#31074](https://github.com/expo/expo/pull/31074) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Added a way to provide shared objects memory pressure to improve garbage collection of native objects retaining some heavy data. ([#31168](https://github.com/expo/expo/pull/31168) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] The single parameter now can be auto-cast to the list. ([#31290](https://github.com/expo/expo/pull/31290) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] `SharedRef` converter now checks the inner ref type. ([#31441](https://github.com/expo/expo/pull/31441) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Added support for changing if functions are enumerable. ([#31495](https://github.com/expo/expo/pull/31495) by [@lukmccall](https://github.com/lukmccall))
+  - Introduced a base class for all shared refs (`expo.SharedRef`). ([#31513](https://github.com/expo/expo/pull/31513) & [#31706](https://github.com/expo/expo/pull/31706) by [@lukmccall](https://github.com/lukmccall)) ([#31513](https://github.com/expo/expo/pull/31513), [#31706](https://github.com/expo/expo/pull/31706) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Add support for react-native 0.76 ([#31580](https://github.com/expo/expo/pull/31580) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [Android] Added `onStartListeningToEvent` and `onStopListeningToEvent` to the `SharedObject`. ([#31385](https://github.com/expo/expo/pull/31385) by [@lukmccall](https://github.com/lukmccall))
+  - Added Apple shared app groups support. ([#31519](https://github.com/expo/expo/pull/31519) by [@kudo](https://github.com/kudo))
+  - [Android] Added a way to provide shared objects memory pressure to improve garbage collection of native objects retaining some heavy data. ([#31784](https://github.com/expo/expo/pull/31784) by [@lukmccall](https://github.com/lukmccall))
+  - Added `nativeRefType` to `SharedRef`. ([#31776](https://github.com/expo/expo/pull/31776) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Added `kotlin.time.Duration` support. ([#31858](https://github.com/expo/expo/pull/31858) by [@lukmccall](https://github.com/lukmccall))
+  - Return duration from logger timer block methods. ([#31805](https://github.com/expo/expo/pull/31805) by [@wschurman](https://github.com/wschurman))
+  - [iOS] Made `CMTime` from `CoreMedia` a convertible type. ([#31967](https://github.com/expo/expo/pull/31967) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-media-library`**
+  - [iOS] include more error information in native rejections ([#30504](https://github.com/expo/expo/pull/30504) by [@vonovak](https://github.com/vonovak))
+  - On `Android 14+`, when user gave only partial asset access, `presentPermissionsPickerAsync()` presents the permissions dialog to allow the user to change the selected assets. ([#29882](https://github.com/expo/expo/pull/29882) by [@vonovak](https://github.com/vonovak))
+- **`expo-location`**
+  - [iOS] Migrated the native module to Swift. ([#30388](https://github.com/expo/expo/pull/30388) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-local-authentication`**
+  - Added support for macOS platform. ([#29185](https://github.com/expo/expo/pull/29185) by [@hassankhan](https://github.com/hassankhan))
+- **`expo-linking`**
+  - Add shims for `react-server` environments. ([#31622](https://github.com/expo/expo/pull/31622) by [@EvanBacon](https://github.com/EvanBacon))
+  - Add native `getLinkingURL` function. ([#29405](https://github.com/expo/expo/pull/29405) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-linear-gradient`**
+  - Add experimental support for React Server Components. ([#29404](https://github.com/expo/expo/pull/29404) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-image-manipulator`**
+  - [iOS][Web] Introduce a new API for image manipulation. ([#30135](https://github.com/expo/expo/pull/30135), [#30194](https://github.com/expo/expo/pull/30194) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Introduce a new API for image manipulation. ([#30232](https://github.com/expo/expo/pull/30232) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Added support for image refs in `ImageManipulator.manipulate` and `useImageManipulator`. ([#32346](https://github.com/expo/expo/pull/32346) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS][Web] Added support for image refs in `ImageManipulator.manipulate` and `useImageManipulator`. ([#32346](https://github.com/expo/expo/pull/32346), [#32354](https://github.com/expo/expo/pull/32354) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Added support for image refs in `ImageManipulator.manipulate` and `useImageManipulator`. ([#32398](https://github.com/expo/expo/pull/32398) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-image-picker`**
+  - [web] Include `file` object from input for server uploads. ([#31788](https://github.com/expo/expo/pull/31788) by [@EvanBacon](https://github.com/EvanBacon))
+  - [iOS] Add support for picking live photos from the library. ([#30957](https://github.com/expo/expo/pull/30957) by [@behenate](https://github.com/behenate))
+- **`expo-haptics`**
+  - Jump directly to source. ([#29244](https://github.com/expo/expo/pull/29244) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-font`**
+  - Allow `woff` and `woff2` format on iOS with the config plugin. ([#30220](https://github.com/expo/expo/pull/30220) by [@titozzz](https://github/Titozzz))
+  - More detailed error messages for `FontLoader` native module rejections ([#31104](https://github.com/expo/expo/pull/31104) by [@vonovak](https://github.com/vonovak))
+  - Add `getLoadedFonts()` function ([#30431](https://github.com/expo/expo/pull/30431) by [@vonovak](https://github.com/vonovak))
+- **`expo-device`**
+  - [iOS] Added some missing entries for 2024 Apple devices. ([#31970](https://github.com/expo/expo/pull/31970) by [@fobos531](https://github.com/fobos531))
+- **`expo-file-system`**
+  - [expo-file-system][next] Add file permissions for expo go ([#31594](https://github.com/expo/expo/pull/31594) by [@aleqsio](https://github.com/aleqsio))
+  - [expo-file-system][next] Add better error handling to delete ([#31683](https://github.com/expo/expo/pull/31683) by [@aleqsio](https://github.com/aleqsio))
+  - [expo-file-system][next] Adjust copy/move functions to allow renaming folders. ([#31636](https://github.com/expo/expo/pull/31636) by [@aleqsio](https://github.com/aleqsio))
+  - [expo-file-system][next] Add name property to files and directories. ([#31545](https://github.com/expo/expo/pull/31545) by [@aleqsio](https://github.com/aleqsio))
+  - Add path joining in `File` and `Directory` constructors. ([#31467](https://github.com/expo/expo/pull/31467) by [@aleqsio](https://github.com/aleqsio))
+  - [expo-file-system][next] Make move operation change file url. ([#31544](https://github.com/expo/expo/pull/31544) by [@aleqsio](https://github.com/aleqsio))
+  - Change `exists()` function to a property. ([#31522](https://github.com/expo/expo/pull/31522) by [@aleqsio](https://github.com/aleqsio))
+  - Add path utilities and `parentDirectory`, `extension` fields to the new file system module. ([#31333](https://github.com/expo/expo/pull/31333) by [@aleqsio](https://github.com/aleqsio))
+  - Add listing directory contents to the new file system module. ([#31121](https://github.com/expo/expo/pull/31121) by [@aleqsio](https://github.com/aleqsio))
+  - Add `base64()` new file system module. ([#31357](https://github.com/expo/expo/pull/31357) by [@aleqsio](https://github.com/aleqsio))
+  - Add size and md5 properties to the new file system module. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
+  - Add downloading to the new file system module. ([#30841](https://github.com/expo/expo/pull/30841) by [@aleqsio](https://github.com/aleqsio))
+  - Add copying and moving files to the new file system module. ([#30314](https://github.com/expo/expo/pull/30314) by [@aleqsio](https://github.com/aleqsio))
+  - Add new file system module. ([#29995](https://github.com/expo/expo/pull/29995) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Added `Paths.appleSharedContainers` to get the paths to the Apple App Groups shared containers. ([#31525](https://github.com/expo/expo/pull/31525) by [@IgorKhramtsov](https://github.com/IgorKhramtsov) and [@kudo](https://github.com/kudo)) ([#31525](https://github.com/expo/expo/pull/31525) by [@IgorKhramtsov](https://github.com/IgorKhramtsov), [@kudo](https://github.com/kudo))
+- **`expo-constants`**
+  - Add support for React Server environments. ([#30586](https://github.com/expo/expo/pull/30586) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-camera`**
+  - Add `autoFocus` prop to allow setting the device focus mode. ([#28650](https://github.com/expo/expo/pull/28650) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `Android`, add support for setting the aspect ratio of the camera. ([#29822](https://github.com/expo/expo/pull/29822) by [@alanjhughes](https://github.com/alanjhughes))
+  - Support mirroring the output of the front facing camera. ([#30430](https://github.com/expo/expo/pull/30430) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `Android`, support mirroring video when using front facing camera. Control mirroring with a prop. Deprecate `mirror` option on `takePictureAsync` and `recordAsync`. ([#30548](https://github.com/expo/expo/pull/30548) by [@alanjhughes](https://github.com/alanjhughes))
+  - Support pausing and resuming the preview. ([#30666](https://github.com/expo/expo/pull/30666) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add `active` prop to stop and start the camera session. Useful with navigation where the camera is can still be active on a previous screen. ([#30802](https://github.com/expo/expo/pull/30802) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add `shutterSound` key to `CameraPictureOptions`, allowing users to disable the camera shutter sound when invoking `takePictureAsync`. ([#31038](https://github.com/expo/expo/pull/31038)) by [@yuna5566](https://github.com/yuna5566) ([#31038](https://github.com/expo/expo/pull/31038) by [@yuna5566](https://github.com/yuna5566))
+- **`expo-calendar`**
+  - Add new methods for managing events using the system-provided calendar UI ([#30102](https://github.com/expo/expo/pull/30102) by [@vonovak](https://github.com/vonovak))
+- **`expo-av`**
+  - [android] Add support for react-native 0.76 ([#31504](https://github.com/expo/expo/pull/31504) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- **`expo-web-browser`**
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30490](https://github.com/expo/expo/pull/30490) by [@byCedric](https://github.com/byCedric))
+- **`expo-video-thumbnails`**
+  - [Android] Fixed a crash when the source cannot be retrieved. ([#28961](https://github.com/expo/expo/pull/28961) by [@mrakesh0608](https://github.com/mrakesh0608))
+- **`expo-task-manager`**
+  - [Android] Fix the task manager events not being sent to the JS side. ([#29024](https://github.com/expo/expo/pull/29024) by [@behenate](https://github.com/behenate))
+  - `isAvailableAsync()` now returns `false` in Expo Go for Android. ([#29823](https://github.com/expo/expo/pull/29823)) by [@vonovak](https://github.com/vonovak) ([#29823](https://github.com/expo/expo/pull/29823) by [@vonovak](https://github.com/vonovak))
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30486](https://github.com/expo/expo/pull/30486) by [@byCedric](https://github.com/byCedric))
+- **`expo-store-review`**
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30484](https://github.com/expo/expo/pull/30484) by [@byCedric](https://github.com/byCedric))
+- **`expo-sqlite`**
+  - [Android] Reduce the number of global references to `NativeStatementBinding`. ([#29937](https://github.com/expo/expo/pull/29937) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fixed `<SQLiteProvider assetSource={{ assetId: require(...) }}>` database always being overwrite on iOS 16 and lower. ([#29945](https://github.com/expo/expo/pull/29945) by [@kudo](https://github.com/kudo))
+  - Fixed invalid characters for prepared statements on iOS. ([#30579](https://github.com/expo/expo/pull/30579) by [@kudo](https://github.com/kudo))
+  - Fixed the "disk I/O error" on older Android devices. ([#30718](https://github.com/expo/expo/pull/30718) by [@kudo](https://github.com/kudo))
+  - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30483](https://github.com/expo/expo/pull/30483) by [@byCedric](https://github.com/byCedric))
+  - Fixed build errors on iOS if other third-party libraries building with iOS system SQLite. ([#30824](https://github.com/expo/expo/pull/30824) by [@kudo](https://github.com/kudo))
+  - Fixed build error when using `incremental_installation` mode in CocoaPods. ([#30918](https://github.com/expo/expo/pull/30918) by [@kudo](https://github.com/kudo))
+  - Fixed prebuild error when `app.json` doesn't specify any plugin properties for `expo-sqlite`. ([#31672](https://github.com/expo/expo/pull/31672) by [@kudo](https://github.com/kudo))
+  - Fixed `SQLiteDatabase -> pathUtils -> SQLiteDatabase` require cycle warning from metro. ([#31956](https://github.com/expo/expo/pull/31956) by [@kudo](https://github.com/kudo))
+- **`expo-secure-store`**
+  - [iOS] Improve error message for unhandled errors ([#29394](https://github.com/expo/expo/pull/29394) by [@hassankhan](https://github.com/hassankhan))
+  - [Android] Fix decryption errors after Android Auto Backup has restored `expo-secure-store` data. ([#29943](https://github.com/expo/expo/pull/29943) by [@behenate](https://github.com/behenate))
+- **`expo-speech`**
+  - [Web] Fix crash on `listenerCount` accessor. ([#28721](https://github.com/expo/expo/pull/28721) by [@aleqsio](https://github.com/aleqsio))
+  - [Web] Fix `onDone` not firing listeners. ([#28904](https://github.com/expo/expo/pull/28904) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-sensors`**
+  - [Android] Fix crash when using `DeviceMotion` module. ([#28839](https://github.com/expo/expo/pull/28839) by [@behenate](https://github.com/behenate))
+  - [Android] Fixed `NPE` in `DeviceMotionListener`. ([#29022](https://github.com/expo/expo/pull/29022) by [@lukmccall](https://github.com/lukmccall))
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30482](https://github.com/expo/expo/pull/30482) by [@byCedric](https://github.com/byCedric))
+- **`expo-screen-capture`**
+  - [Android] Fix `ScreenCaptureModule` was crashing in the dev-client when going back to the home screen. ([#29694](https://github.com/expo/expo/pull/29694) by [@lukmccall](https://github.com/lukmccall))
+  - Add missing `react` peer dependencies for isolated modules. ([#30480](https://github.com/expo/expo/pull/30480) by [@byCedric](https://github.com/byCedric))
+  - [Android] Fix Screen capture callback was not called on Android 14 when API methods was not being called. ([#31702](https://github.com/expo/expo/pull/31702) by [@chrfalch](https://github.com/chrfalch))
+- **`expo-print`**
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30479](https://github.com/expo/expo/pull/30479) by [@byCedric](https://github.com/byCedric))
+- **`expo-screen-orientation`**
+  - Fix bug with weak var type causing dropped events. ([#28677](https://github.com/expo/expo/pull/28677) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Fixed screen orientation change listener not firing. ([#28832](https://github.com/expo/expo/pull/28832) by [@lukmccall](https://github.com/lukmccall))
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30481](https://github.com/expo/expo/pull/30481) by [@byCedric](https://github.com/byCedric))
+- **`expo-network`**
+  - [Android] Fix `java.lang.IllegalArgumentException: NetworkCallback was not registered`. ([#30185](https://github.com/expo/expo/pull/30185) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix wired ethernet connection being reported as unknown type. ([#30169](https://github.com/expo/expo/pull/30169) by [@Simek](https://github.com/Simek))
+  - [iOS] Fix getting IP address from wired ethernet connection interfaces. ([#31223](https://github.com/expo/expo/pull/31223) by [@matt-oakes](https://github.com/matt-oakes))
+  - Add missing `react` peer dependencies for isolated modules. ([#30477](https://github.com/expo/expo/pull/30477) by [@byCedric](https://github.com/byCedric))
+- **`expo-notifications`**
+  - [Android] fix response handling when app in background or not running. ([#28883](https://github.com/expo/expo/pull/28883) by [@douglowder](https://github.com/douglowder))
+  - [Android] Correctly map response in useLastNotificationResponse hook. ([#28938](https://github.com/expo/expo/pull/28938) by [@douglowder](https://github.com/douglowder))
+  - [Android] Fix FCMv1 icons and NPE. ([#29204](https://github.com/expo/expo/pull/29204) by [@douglowder](https://github.com/douglowder))
+  - [Android] Remove unneeded logging. ([#29370](https://github.com/expo/expo/pull/29370) by [@douglowder](https://github.com/douglowder))
+  - Remove console.log line. ([#29443](https://github.com/expo/expo/pull/29443) by [@douglowder](https://github.com/douglowder))
+  - [Android] Add default channel plugin prop, restore legacy icon and color. ([#29491](https://github.com/expo/expo/pull/29491) by [@douglowder](https://github.com/douglowder))
+  - [Android] fix getLastNotificationResponseAsync. ([#30301](https://github.com/expo/expo/pull/30301) by [@douglowder](https://github.com/douglowder))
+  - [Android] Fix serialization of vibration pattern. ([#30495](https://github.com/expo/expo/pull/30495) by [@douglowder](https://github.com/douglowder))
+  - [Android] Android 11 crash when click foreground notifications. ([#30207](https://github.com/expo/expo/pull/30207) by [@GrinZero](https://github.com/GrinZero))
+  - Notification's textInput content would contain `placeholder` instead of the actual user input ([#27479](https://github.com/expo/expo/pull/27479) by [@Victor-FT](https://github.com/Victor-FT))
+  - [Android] map Expo and Firebase notifications correctly. ([#30615](https://github.com/expo/expo/pull/30615) by [@douglowder](https://github.com/douglowder))
+  - `useLastNotificationResponse` should have only one effect. ([#30653](https://github.com/expo/expo/pull/30653) by [@douglowder](https://github.com/douglowder))
+  - [Android] Eliminate unsupported types when processing notification intents from onCreate/onNewIntent. ([#30750](https://github.com/expo/expo/pull/30750) by [@douglowder](https://github.com/douglowder))
+  - [Android] Fix content.data in scheduled notifications surfaced to JS. ([#31048](https://github.com/expo/expo/pull/31048) by [@douglowder](https://github.com/douglowder))
+  - [Android] image was missing on android when in foreground ([#31405](https://github.com/expo/expo/pull/31405) by [@vonovak](https://github.com/vonovak))
+  - [Android] fix local notifications with null trigger. ([#31157](https://github.com/expo/expo/pull/31157) by [@douglowder](https://github.com/douglowder))
+  - [Android] Take `channelId` into account when presenting notifications. ([#31201](https://github.com/expo/expo/pull/31201) by [@vonovak](https://github.com/vonovak))
+  - [android] fix: allow data message to control notification appearance ([#32162](https://github.com/expo/expo/pull/32162) by [@vonovak](https://github.com/vonovak))
+  - [ios] fix crash if expo-update reload happens while Notifications.requestPermissionsAsync() is showing native dialog ([#32096](https://github.com/expo/expo/pull/32096) by [@mfazekas](https://github.com/mfazekas))
+  - [android] `createNotificationChannel` could return incorrect channel information ([#32000](https://github.com/expo/expo/pull/32000) by [@vonovak](https://github.com/vonovak))
+  - [android] fix notifications with `ChannelAwareTrigger` not being presented ([#31999](https://github.com/expo/expo/pull/31999) by [@vonovak](https://github.com/vonovak))
+  - export `PermissionStatus` as value, not as type ([#31968](https://github.com/expo/expo/pull/31968) by [@vonovak](https://github.com/vonovak))
+  - throw improved error on invalid subscription in removeNotificationSubscription ([#31842](https://github.com/expo/expo/pull/31842) by [@vonovak](https://github.com/vonovak))
+  - [android] fix notifications actions not being presented ([#31795](https://github.com/expo/expo/pull/31795) by [@vonovak](https://github.com/vonovak))
+  - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30478](https://github.com/expo/expo/pull/30478) by [@byCedric](https://github.com/byCedric))
+  - [iOS] do not overwrite existing aps entitlement. ([#31892](https://github.com/expo/expo/pull/31892) by [@douglowder](https://github.com/douglowder))
+  - fix `NotificationTrigger` type ([#32659](https://github.com/expo/expo/pull/32659) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - Fix expo-modules-core is broken on the server side. ([#28764](https://github.com/expo/expo/pull/28764) by [@alantoa](https://github.com/alantoa))
+  - [Android] Fixed `No implementation found for com.facebook.jni.HybridData expo.modules.kotlin.jni.JavaScriptModuleObject.initHybrid`. ([#29513](https://github.com/expo/expo/pull/29513) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed reload crash on Android. ([#29593](https://github.com/expo/expo/pull/29593) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed converting from `null` to `Record` sometimes didn't work as expected. ([#29508](https://github.com/expo/expo/pull/29508) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed resource leakage from `ExpoRequestInterceptorProtocol`. ([#29798](https://github.com/expo/expo/pull/29798) by [@kudo](https://github.com/kudo))
+  - [Android] Reduce the number of global references to JSIContext. ([#29936](https://github.com/expo/expo/pull/29936) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed `getPathPermissions` permission error for local path with spaces on iOS 16 and older. ([#29958](https://github.com/expo/expo/pull/29958) by [@kudo](https://github.com/kudo))
+  - [iOS] Fixed broken `addUIBlock` and `executeUIBlock` on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
+  - Fixed `RCTTriggerReloadCommandListeners` not found build error on iOS. ([#30014](https://github.com/expo/expo/pull/30014) by [@kudo](https://github.com/kudo))
+  - Fixed blocking SSE responses from network interceptor on Android. ([#30062](https://github.com/expo/expo/pull/30062) by [@kudo](https://github.com/kudo))
+  - [iOS] Fix getExternalPathPermissions returns no read/write permissions. ([#30540](https://github.com/expo/expo/pull/30540) by [@dispelpowerone](https://github.com/dispelpowerone))
+  - Fix support for macOS. ([#31307](https://github.com/expo/expo/pull/31307) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [Android] Fixed `RNHeadlessAppLoader` class for New Architecture support. ([#32146](https://github.com/expo/expo/pull/32146) by [@chrfalch](https://github.com/chrfalch))
+  - [iOS] Fix using enums as optional arguments. ([#32147](https://github.com/expo/expo/pull/32147) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Change JS return type for kotlin `null` to be `null` instead of `undefined`. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Swift `Enumerable`s did not correctly convert to JS values. ([#30191](https://github.com/expo/expo/pull/30191) by [@vonovak](https://github.com/vonovak))
+  - [jest] Fix `uuid` mock in `jest-expo`. ([#29840](https://github.com/expo/expo/pull/29840) by [@EvanBacon](https://github.com/EvanBacon))
+  - [Android] Fix error: no viable constructor or deduction guide for deduction of template arguments of 'weak_ptr' ([#29075](https://github.com/expo/expo/pull/29075) by [@rafi16jan](https://github.com/rafi16jan))
+  - [Android] Fix `getContext().getNativeModule(UIManagerModule.class)` in Bridgeless. ([#29203](https://github.com/expo/expo/pull/29203) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+  - [iOS] Fix data race in `PersistentFileLogSpec.swift`. ([#28924](https://github.com/expo/expo/pull/28924) by [@hakonk](https://github.com/hakonk))
+  - [Android] Fix the event emitter, which might crash during the reloads. ([#29176](https:/github.com/expo/expo/pull/29176) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix random conversion errors when converting JavaScript floating point numbers to `Swift.Float`. ([#29053](https://github.com/expo/expo/pull/29053) by [@behenate](https://github.com/behenate))
+  - Fixed a crash when the event listener throws an error. ([#30065](https://github.com/expo/expo/pull/30065) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Fixed the record's constructor with default parameters were being ignored when converting from JavaScript to native. ([#30217](https://github.com/expo/expo/pull/30217) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fixed returning already registered shared objects. ([#30241](https://github.com/expo/expo/pull/30241) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Provide value in `getName` of `ModuleRegistryReadyNotifier.java` ([#30358](https://github.com/expo/expo/pull/30358) by [@WoLewicki](https://github.com/WoLewicki))
+  - [Android] When a `SharedObject` that was passed as an argument is returned, it no longer creates a new object. ([#30231](https://github.com/expo/expo/pull/30231) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed some types weren't correctly converted when using coroutines. ([#30227](https://github.com/expo/expo/pull/30227) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed not throwing when setting read-only properties. ([#30428](https://github.com/expo/expo/pull/30428) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed `expo.modules.kotlin.jni.tests.RuntimeHolder` class not found crash when R8 is enabled. ([#30572](https://github.com/expo/expo/pull/30572) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed `Class declares 0 type parameters, but X were provided` on Android when R8 is enabled. ([#30659](https://github.com/expo/expo/pull/30659) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed SharedObject class names are obfuscated when R8 is enabled. ([#30948](https://github.com/expo/expo/pull/30948) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed `CodedException.getCode()` crash when R8 is enabled. ([#31392](https://github.com/expo/expo/pull/31392) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed getter for the third parameter of `Either`. ([#31443](https://github.com/expo/expo/pull/31443) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed R8 build error `Missing class expo.modules.kotlin.types.ExperimentalJSTypeConverter$URIConverter`. on macOS host. ([#31452](https://github.com/expo/expo/pull/31452) by [@kudo](https://github.com/kudo))
+  - [iOS] Fixed `No space left on device` when saving persistent log. ([#31583](https://github.com/expo/expo/pull/31583) by [@RodolfoGS](https://github.com/RodolfoGS))
+  - Fixed iOS reload crash on New Architecture mode. ([#31789](https://github.com/expo/expo/pull/31789) by [@kudo](https://github.com/kudo))
+  - [iOS] Fixed views using the incorrect `AppContext` instance. ([#31897](https://github.com/expo/expo/pull/31897) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fixed crashes on the New Architecture when dispatching events during the props update. ([#31971](https://github.com/expo/expo/pull/31971) by [@tsapeta](https://github.com/tsapeta))
+  - Fixed `registerAdditionalModuleClasses` deadlock issue on old architecture mode. ([#32209](https://github.com/expo/expo/pull/32209) by [@kudo](https://github.com/kudo))
+  - [iOS] Removed window synthesis in `EXAppDelegateWrapper` to fix crashes caused by deallocated `RCTFabricSurface`. ([#32233](https://github.com/expo/expo/pull/32233) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Fix optionals conversion. ([#32239](https://github.com/expo/expo/pull/32239) by [@aleqsio](https://github.com/aleqsio))
+  - Fixed retain cycle for `ExpoRequestCdpInterceptor`. ([#32289](https://github.com/expo/expo/pull/32289) by [@kudo](https://github.com/kudo))
+  - Fixed updating props on SwiftUI views on the New Architecture. ([#32381](https://github.com/expo/expo/pull/32381) by [@tsapeta](https://github.com/tsapeta))
+  - Fixed build error when `use_frameworks!`. ([#32358](https://github.com/expo/expo/pull/32358) by [@kudo](https://github.com/kudo))
+  - [iOS] Fixed broken self-signed connections from network inspector. ([#32670](https://github.com/expo/expo/pull/32670) by [@kudo](https://github.com/kudo))
+- **`expo-media-library`**
+  - On `iOS`, add back image loader to handle `ph://` and `assets-library://` schemes. ([#29747](https://github.com/expo/expo/pull/29747) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, getAssets crashed when result was is empty ([#29969](https://github.com/expo/expo/pull/29969) by [@vonovak](https://github.com/vonovak))
+  - On `Android`, throw an error when deleting an asset was unsuccessful. ([#29777](https://github.com/expo/expo/pull/29777) by [@mathieupost](https://github.com/mathieupost))
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30476](https://github.com/expo/expo/pull/30476) by [@byCedric](https://github.com/byCedric))
+  - On `Android`, adding an asset to an album containing another album would throw an exception. ([#29777](https://github.com/expo/expo/pull/31027) by [@nafeij](https://github.com/Nafeij)) ([#31027](https://github.com/expo/expo/pull/31027) by [@Nafeij](https://github.com/Nafeij))
+  - [Android] Fix exceptions when moving or deleting video assets. ([#31424](https://github.com/expo/expo/pull/31424) by [@behenate](https://github.com/behenate))
+  - [iOS] Fixes asset types not returned correctly. ([#32621](https://github.com/expo/expo/pull/32621) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-location`**
+  - On `iOS`, fix an issue where if the user selects "Allow Once" for location permissions, we needed to request background permissions twice because the first time had effect. ([#29272](https://github.com/expo/expo/pull/29272) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-local-authentication`**
+  - [iOS] `isEnrolledAsync()` returns correct value when biometry is locked out. ([#30565](https://github.com/expo/expo/pull/30565) by [@vonovak](https://github.com/vonovak))
+  - [Android] Fix `authenticateAsync` crash when `disableDeviceFallback` is `true`. ([#32076](https://github.com/expo/expo/pull/32076) by [@dcangulo](https://github.com/dcangulo))
+- **`expo-localization`**
+  - Fix invalid `regionCode` response on iOS. ([#32081](https://github.com/expo/expo/pull/32081) by [@aleqsio](https://github.com/aleqsio))
+  - Add missing `react` peer dependencies for isolated modules. ([#30474](https://github.com/expo/expo/pull/30474) by [@byCedric](https://github.com/byCedric))
+  - Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+  - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
+- **`expo-linking`**
+  - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30473](https://github.com/expo/expo/pull/30473) by [@byCedric](https://github.com/byCedric))
+  - [iOS] Add tvOS to podspec. ([#32255](https://github.com/expo/expo/pull/32255) by [@douglowder](https://github.com/douglowder))
+- **`expo-keep-awake`**
+  - Stop useKeepAwake calls deactivating each other by default. ([#28884](https://github.com/expo/expo/pull/28884) by [@macksal](https://github.com/macksal))
+  - Add missing `react` peer dependencies for isolated modules. ([#30470](https://github.com/expo/expo/pull/30470) by [@byCedric](https://github.com/byCedric))
+- **`expo-linear-gradient`**
+  - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30471](https://github.com/expo/expo/pull/30471) by [@byCedric](https://github.com/byCedric))
+- **`expo-image-manipulator`**
+  - On `iOS` correctly handle urls coming from the users photo library. ([#28777](https://github.com/expo/expo/pull/28777) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-image-picker`**
+  - [Android] Add support for granular permissions. ([#28897](https://github.com/expo/expo/pull/28897) by [@lukmccall](https://github.com/lukmccall))
+  - Support removing microphone permissions through config plugin. ([#29749](https://github.com/expo/expo/pull/29749) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix an issue where the app will crash when using the popover presentation style on iPad. ([#29892](https://github.com/expo/expo/pull/29892) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Provide more image metadata in the result object. ([#29648](https://github.com/expo/expo/pull/29648) by [@vonovak](https://github.com/vonovak))
+  - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
+  - [web] Return missing values from video selection. ([#30966](https://github.com/expo/expo/pull/30966) by [@entiendoNull](https://github.com/entiendoNull))
+  - [Android] Fix permissions on devices running Android 11 and 12. ([#31396](https://github.com/expo/expo/pull/31396) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix incorrect width/height reported with EXIF tags 5 and 7 ([#32534](https://github.com/expo/expo/pull/32534) by [@gaearon](https://github.com/gaearon))
+- **`expo-gl`**
+  - Add NULL check before releasing `textureRef` in `EXGLCameraObject`. ([#29092](https://github.com/expo/expo/pull/29092) by [@hakonk](https://github.com/hakonk))
+  - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30468](https://github.com/expo/expo/pull/30468) by [@byCedric](https://github.com/byCedric))
+  - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+  - Converted the native view from Objective-C to Swift to fix support for the New Architecture. ([#32675](https://github.com/expo/expo/pull/32675) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-document-picker`**
+  - [iOS] Fix `video/*` MIME Type not allowing to select videos with audio. ([#29673](https://github.com/expo/expo/pull/29673) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-font`**
+  - Fixed some vector icons not rendering correctly. ([#28747](https://github.com/expo/expo/pull/28747) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Fix font registration failing when font was in use. ([#28989](https://github.com/expo/expo/pull/28989) by [@aleqsio](https://github.com/aleqsio))
+  - On `iOS`, store the font `postscriptName` instead of `fullName` which is what `iOS` will use to register the font. ([#29502](https://github.com/expo/expo/pull/29502) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix issues where fonts were removed when the app is backgrounded. ([#30400](https://github.com/expo/expo/pull/30400) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix support for macOS. ([#31307](https://github.com/expo/expo/pull/31307) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - `useFonts` could previously attempt to set state on an unmounted component ([#31143](https://github.com/expo/expo/pull/31143) by [@vonovak](https://github.com/vonovak))
+  - On iOS `loadAsync()` will reject if font loading fails. ([#31053](https://github.com/expo/expo/pull/31053) by [@vonovak](https://github.com/vonovak))
+  - Add missing `react` peer dependencies for isolated modules. ([#30467](https://github.com/expo/expo/pull/30467) by [@byCedric](https://github.com/byCedric))
+  - Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+- **`expo-file-system`**
+  - [iOS] fix: `getFreeDiskStorageAsync` returns result that's closer to the value reported by the system. ([#29732](https://github.com/expo/expo/pull/29732) by [@vonovak](https://github.com/vonovak))
+  - Add NULL check before dereferencing pointer to error pointer in `EXFileSystemAssetLibraryHandler`. ([#29091](https://github.com/expo/expo/pull/29091) by [@hakonk](https://github.com/hakonk))
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30466](https://github.com/expo/expo/pull/30466) by [@byCedric](https://github.com/byCedric))
+  - [expo-file-system][next] Fix download function throwing an unexpected error if destination already exists. ([#32626](https://github.com/expo/expo/pull/32626) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-contacts`**
+  - Fixed an issue on iOS with presentFormAsync where dates were not displayed. ([#31780](https://github.com/expo/expo/pull/31780) by [@mlecoq](https://github.com/mlecoq))
+  - Fixed an iOS issue where the contact's birthday isn't displayed when the year is set. ([#31948](https://github.com/expo/expo/pull/31948) by [@chrfalch](https://github.com/chrfalch))
+  - Fixed an Android issue where creating a contact with a birthday was not saved. ([#30131](https://github.com/expo/expo/issues/30131) by [@Eric013](https://github.com/Eric013))
+  - Fixed an issue on android where phone number and email labels were ignored on contact creation. ([#31309](https://github.com/expo/expo/pull/31309) by [@mlecoq](https://github.com/mlecoq))
+  - Fixed an issue where the `requestPermissionsAsync` promise throws when denying access to contacts on iOS. ([#29529](https://github.com/expo/expo/pull/29529) by [@jp1987](https://github.com/jp1987))
+  - Fixed an issue where the `presentFormAsync` promise doesn't resolve when the form is closed on Android. ([#29201](https://github.com/expo/expo/pull/29201) by [@jp1987](https://github.com/jp1987))
+  - Fixed an issue where the `presentContactPickerAsync` promise doesn't resolve when using the Android back button. ([#29202](https://github.com/expo/expo/pull/29202) by [@jp1987](https://github.com/jp1987))
+  - Fixed an issue where only paths of urls were stored in contacts and social profiles were only stored when all fields were filled. ([#29199](https://github.com/expo/expo/pull/29199) by [@mlecoq](https://github.com/mlecoq))
+  - Fixed an iOS issue where the Cancel button is not visible on the unknown contact form. ([#29555](https://github.com/expo/expo/pull/29555) by [@Tug](https://github.com/Tug))
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30465](https://github.com/expo/expo/pull/30465) by [@byCedric](https://github.com/byCedric))
+  - [Android] Fix `ContactQuery` `id` field not accepting arrays. ([#32651](https://github.com/expo/expo/pull/32651) by [@behenate](https://github.com/behenate))
+- **`expo-constants`**
+  - Source env when creating app config. ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30464](https://github.com/expo/expo/pull/30464) by [@byCedric](https://github.com/byCedric))
+  - Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+- **`expo-clipboard`**
+  - [iOS] fix ClipboardPasteButton asking for paste permission ([#30623](https://github.com/expo/expo/pull/30623) by [@vonovak](https://github.com/vonovak))
+  - Fixed issue when copying PNG images on Android. ([#29629](https://github.com/expo/expo/pull/29629) by [@weslley75](https://github.com/weslley75))
+  - Add missing `react`/`react-native` peer dependencies for isolated modules. ([#30463](https://github.com/expo/expo/pull/30463) by [@byCedric](https://github.com/byCedric))
+- **`expo-cellular`**
+  - [Android] Fix support for 5G ([#30012](https://github.com/expo/expo/pull/30012) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-camera`**
+  - On `iOS`, fix `ean13` barcodes not returning data. ([#28674](https://github.com/expo/expo/pull/28674) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix documention for `maxDuration` in `CameraRecordingOptions`. ([#28749](https://github.com/expo/expo/pull/28749) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix dead frames when switching from picture to video. ([#28783](https://github.com/expo/expo/pull/28783) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, prevent a crash when rendering the view on a simulator. ([#28911](https://github.com/expo/expo/pull/28911) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix incorrect orientation when taking pictures in landscape. ([#28917](https://github.com/expo/expo/pull/28917) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, set previewLayer on scanner to get correct dimensions. ([#28931](https://github.com/expo/expo/pull/28931) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `Android`, correctly handle orientation when landscape pictures are rendered. ([#28929](https://github.com/expo/expo/pull/28929) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix return type of scanFromURLAsync. ([#29547](https://github.com/expo/expo/pull/29547) by [@janicduplessis](https://github.com/janicduplessis))
+  - On `web`, fix missing function "getCapabilities" in Firefox. ([#28947](https://github.com/expo/expo/pull/28947) by [@miso-belica](https://github.com/miso-belica))
+  - Allow starting the camera with the torch enabled. ([#29217](https://github.com/expo/expo/pull/29217) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, return the correct orientation in the exif data. ([#29681](https://github.com/expo/expo/pull/29681) by [@alanjhughes](https://github.com/alanjhughes))
+  - Prevent shutter sound when device volume is muted. ([#29638](https://github.com/expo/expo/pull/29638) by [@frederikocmr](https://github.com/frederikocmr))
+  - On `Android`, correct image orientation when `exif` is set to true in `takePictureAsync`. ([#29712](https://github.com/expo/expo/pull/29712) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix calling `takePicture` from the simulator. ([#30103](https://github.com/expo/expo/pull/30103) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix touch interactions when using gesture handler. ([#30338](https://github.com/expo/expo/pull/30338) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, correctly stop the session when the `CameraView` is removed. ([#30580](https://github.com/expo/expo/pull/30580) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix rendering order of child views. ([#30759](https://github.com/expo/expo/pull/30759) by [@alanjhughes](https://github.com/alanjhughes))
+  - Set the previews `scaleType` when the aspect ratio is set. ([#30831](https://github.com/expo/expo/pull/30831) by [@alanjhughes](https://github.com/alanjhughes))
+  - On Android, fix selecting `pictureSize`. ([#31093](https://github.com/expo/expo/pull/31093) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30462](https://github.com/expo/expo/pull/30462) by [@byCedric](https://github.com/byCedric))
+  - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
+  - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+  - Fixed issue regarding using the "back"-facing on mobile web browswer. ([#30811](https://github.com/expo/expo/pull/30811) by [@entiendoNull](https://github.com/entiendoNull))
+  - Fix `takePictureAsync` `quality` option when set to 0. ([#31587](https://github.com/expo/expo/pull/31587) by [@davidavz](https://github.com/davidavz))
+  - [iOS] Fix crash related to `sublayers` on 0.75 and above on the new architecture. ([#32194](https://github.com/expo/expo/pull/32194) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix regression in running the cameras cleanup function. ([#32333](https://github.com/expo/expo/pull/32333) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Use an `Actor` to ensure correct order of changes to the barcode scanners outputs. ([#32353](https://github.com/expo/expo/pull/32353) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix build issue with after switch to Swift concurrency. ([#32379](https://github.com/expo/expo/pull/32379) by [@Eingin](https://github.com/Eingin))
+- **`expo-calendar`**
+  - On `iOS`, workaround a bug in iOS 15 where an invalid `EKCalendarType` is returned in the calendar object when siri suggestions are enabled. ([#28714](https://github.com/expo/expo/pull/28714) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix missing event info on update. ([#28825](https://github.com/expo/expo/pull/28825) by [@robertying](https://github.com/robertying))
+  - Standardize `getEventsAsync` to return events sorted by start date ([#28353](https://github.com/expo/expo/pull/28353) by [@demfabris](https://github.com/demfabris))
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30461](https://github.com/expo/expo/pull/30461) by [@byCedric](https://github.com/byCedric))
+  - Initialize EKEventStore as a singleton ([#31847](https://github.com/expo/expo/pull/31847) by [@JacquesLeupin](https://github.com/JacquesLeupin))
+- **`expo-brightness`**
+  - Add missing `react-native` peer dependencies for isolated modules. ([#30460](https://github.com/expo/expo/pull/30460) by [@byCedric](https://github.com/byCedric))
+- **`expo-battery`**
+  - Add missing `react` peer dependencies for isolated modules. ([#30458](https://github.com/expo/expo/pull/30458) by [@byCedric](https://github.com/byCedric))
+- **`expo-blur`**
+  - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30459](https://github.com/expo/expo/pull/30459) by [@byCedric](https://github.com/byCedric))
+- **`expo-auth-session`**
+  - Add missing `react`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
+- **`expo-av`**
+  - [Android] Fix events being sent using a wrong event emitter. ([#28716](https://github.com/expo/expo/pull/28716) by [@behenate](https://github.com/behenate))
+  - [Web] Fix `shouldCorrectPitch` being ignored on web. ([#28837](https://github.com/expo/expo/pull/28837) by [@behenate](https://github.com/behenate))
+  - [iOS] Fixed broken Video view on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
+  - [iOS] `loadAsync()` promise never settled when given an invalid file uri ([#30020](https://github.com/expo/expo/pull/30020) by [@vonovak](https://github.com/vonovak))
+  - Fixed putting app to background stops non-mixable audio playback in other apps on iOS ([#20380](https://github.com/expo/expo/pull/20380) by [@de1acr0ix](https://github.com/de1acr0ix))
+  - Fix unhandled promise rejection when start recording fails [#29826](https://github.com/expo/expo/pull/29826) by [@anirudhsama](https://github.com/anirudhsama)
+  - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30456](https://github.com/expo/expo/pull/30456) by [@byCedric](https://github.com/byCedric))
+  - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+  - [Android] Fixed `NullPointerException` in the `installJSIBindings` function. ([#31464](https://github.com/expo/expo/pull/31464) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed crash when reloading an expo update with a video component mounted ([#31540](https://github.com/expo/expo/pull/31540) by [@AbijahKaj](https://github.com/AbijahKaj))
+- **`expo-asset`**
+  - Fixed `PlatformUtils.ts` to have the correct export placeholders for react-native-web ([#29791](https://github.com/expo/expo/pull/29791) by [@Bram-dc](https://github.com/Bram-dc))
+  - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30454](https://github.com/expo/expo/pull/30454) by [@byCedric](https://github.com/byCedric))
+  - Add missing dependencies and follow proper dependency chains. ([#30500](https://github.com/expo/expo/pull/30500) by [@byCedric](https://github.com/byCedric))
+- **`expo-apple-authentication`**
+  - Add missing `react-native` peer dependency. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- **`expo-web-browser`**
+  - Removed old `Platform.Version` checks. ([#31557](https://github.com/expo/expo/pull/31557) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-video-thumbnails`**
+  - [Android] Made sure that `MediaMetadataRetriever` is safely released. ([#29015](https://github.com/expo/expo/pull/29015) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-task-manager`**
+  - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - [android] Added implementation in package to look up TaskService instance from expo-modules-core ([#32300](https://github.com/expo/expo/pull/32300) by [@chrfalch](https://github.com/chrfalch))
+  - Correct the return type of `TaskManagerTaskExecutor`. ([#32557](https://github.com/expo/expo/pull/32557) by [@Simek](https://github.com/Simek))
+- **`expo-store-review`**
+  - Added availability-check and migration for SkStoreReviewController on iOS. (by [@chrfalch](https://github.com/chrfalch)) ([#31341](https://github.com/expo/expo/pull/31341) by [@chrfalch](https://github.com/chrfalch)) ([#31341](https://github.com/expo/expo/pull/31341) by [@chrfalch](https://github.com/chrfalch), [@chrfalch](https://github.com/chrfalch))
+- **`expo-sqlite`**
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
+  - Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31662](https://github.com/expo/expo/pull/31662) by [@kudo](https://github.com/kudo))
+  - Deprecated `enableCRSQLite` and show a warning if using this option. ([#32117](https://github.com/expo/expo/pull/32117) by [@kudo](https://github.com/kudo))
+  - Renamed `expo-sqlite/async-storage` to `expo-sqlite/kv-store`. ([#32699](https://github.com/expo/expo/pull/32699) by [@kudo](https://github.com/kudo))
+- **`expo-secure-store`**
+  - [iOS] check return value of SecAccessControlCreateWithFlags ([#29983](https://github.com/expo/expo/pull/29983) by [@vonovak](https://github.com/vonovak))
+  - Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-sms`**
+  - Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-speech`**
+  - [Web] Change module registration. ([#29870](https://github.com/expo/expo/pull/29870) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-sensors`**
+  - Add timestamps to relevant sensor events. ([#28761](https://github.com/expo/expo/pull/28761) by [@jkaufman](https://github.com/jkaufman))
+  - Fix incorrect event emitting tests. ([#28953](https://github.com/expo/expo/pull/28953) by [@aleqsio](https://github.com/aleqsio))
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Remove usage of deprecated internal modules API. ([#28715](https://github.com/expo/expo/pull/28715) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix pedometer sensor when app goes to background then foreground. ([#29957]https://github.com/expo/expo/pull/29957) by [@rlods](https://github.com/rlods))
+- **`expo-screen-capture`**
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - Updated hook from `useScreenCapturePermissions` to `usePermissions` in the example. ([#30076](https://github.com/expo/expo/pull/30076) by [@mrakesh0608](https://github.com/mrakesh0608))
+  - Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-screen-orientation`**
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-notifications`**
+  - [iOS] Add support for `interruptionLevel`. ([#28921](https://github.com/expo/expo/pull/28921) by [@lukmccall](https://github.com/lukmccall))
+  - warn when using push tokens in Expo Go ([#32122](https://github.com/expo/expo/pull/32122) by [@vonovak](https://github.com/vonovak))
+  - [android] refactor trigger serialization ([#32032](https://github.com/expo/expo/pull/32032) by [@vonovak](https://github.com/vonovak))
+  - [android] simplify DateTrigger ([#32002](https://github.com/expo/expo/pull/32002) by [@vonovak](https://github.com/vonovak))
+  - [android] refactor ExpoNotificationBuilder ([#31838](https://github.com/expo/expo/pull/31838) by [@vonovak](https://github.com/vonovak))
+  - Warn about limited support in Expo Go ([#31573](https://github.com/expo/expo/pull/31573) by [@vonovak](https://github.com/vonovak))
+  - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Convert trigger Java classes to Kotlin. ([#31856](https://github.com/expo/expo/pull/31856) by [@douglowder](https://github.com/douglowder))
+  - remove unused deps ([#32272](https://github.com/expo/expo/pull/32272) by [@vonovak](https://github.com/vonovak))
+  - [docs] minor improvements to TS docs ([#32658](https://github.com/expo/expo/pull/32658) by [@vonovak](https://github.com/vonovak))
+- **`expo-modules-core`**
+  - [iOS] Refactored `ExpoFabricView` and remove the view wrapper for each native component. ([#28829](https://github.com/expo/expo/pull/28829) by [@kudo](https://github.com/kudo))
+  - [iOS] Exposed `Utilities` class for Expo Modules common tasks. ([#29945](https://github.com/expo/expo/pull/29945) by [@kudo](https://github.com/kudo))
+  - [iOS] Added `customizeRootView:` support to `EXAppDelegateWrapper.createRCTRootViewFactory`. ([#30245](https://github.com/expo/expo/pull/30245) by [@kudo](https://github.com/kudo))
+  - Added documentation links to `Record` and `Field` implementations ([#31997](https://github.com/expo/expo/pull/31997) by [@vonovak](https://github.com/vonovak))
+  - Remove web hydration `process.env` type. ([#31267](https://github.com/expo/expo/pull/31267) by [@EvanBacon](https://github.com/EvanBacon))
+  - Added an `async` extension for OkHttp requests. ([#30841](https://github.com/expo/expo/pull/30841) by [@aleqsio](https://github.com/aleqsio))
+  - Change `sideEffects` to use `src` folder. ([#29964](https://github.com/expo/expo/pull/29964) by [@EvanBacon](https://github.com/EvanBacon))
+  - [web] Use global `crypto` object for UUID. ([#29828](https://github.com/expo/expo/pull/29828) by [@EvanBacon](https://github.com/EvanBacon))
+  - [iOS] Send open url event to all matching subscribers. ([#29645](https://github.com/expo/expo/pull/29645) by [@aleqsio](https://github.com/aleqsio))
+  - Use `process.env.EXPO_OS` for `Platform.OS` and `Platform.select`, when available. ([#29429](https://github.com/expo/expo/pull/29429) by [@EvanBacon](https://github.com/EvanBacon))
+  - [Android] Removed unneeded in-between function call when resolving promise without arguments. ([#28944](https://github.com/expo/expo/pull/28944) by [@lukmccall](https://github.com/lukmccall))
+  - Exported some TypeScript declarations (e.g. `EventEmitter`) from `expo-modules-core/types`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Switch to the JS thread when sending an event. ([#29753](https://github.com/expo/expo/pull/29753) by [@lukmccall](https://github.com/lukmccall))
+  - Moved `process` object declaration to global declaration. ([#29745](https://github.com/expo/expo/pull/29745) by [@tsapeta](https://github.com/tsapeta))
+  - Use the `src` folder as the Metro target. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
+  - Make it possible for TypeScript to infer EventEmitter's events map. ([#29056](https://github.com/expo/expo/pull/29056) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Stop throwing runtime errors when the promise is settled more than once. ([#30000](https://github.com/expo/expo/pull/30000) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Renamed `pointer` property in the `SharedRef` class to `ref` for parity with Android. ([#30061](https://github.com/expo/expo/pull/30061) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Started using `noexcept`. ([#30128](https://github.com/expo/expo/pull/30128) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Decouple the modules state from the `AppContext` ([#30098](https://github.com/expo/expo/pull/30098) by [@lukmccall](https://github.com/lukmccall))
+  - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [Android] Bump Kotlin coroutines version to 1.7.3. ([#30226](https://github.com/expo/expo/pull/30226) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Limit the number of "Current Activity is of incorrect class" log entries. ([#30427](https://github.com/expo/expo/pull/30427) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Refactor and expose `URLSessionSessionDelegateProxy` class. ([#30173](https://github.com/expo/expo/pull/30173) by [@kudo](https://github.com/kudo))
+  - [Android] Supports passing `Accept: text/event-stream` header to bypass streaming requests from `ExpoNetworkInspectOkHttpInterceptors`. ([#30219](https://github.com/expo/expo/pull/30219) by [@kudo](https://github.com/kudo))
+  - Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
+  - Cleaned up the podspec and replaced `RN_FABRIC_ENABLED` flag with `RCT_NEW_ARCH_ENABLED`. ([#31044](https://github.com/expo/expo/pull/31044) by [@tsapeta](https://github.com/tsapeta))
+  - JS values are now used directly instead of using shared pointers to improve the overall performance. ([#31219](https://github.com/expo/expo/pull/31219) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Use singletons for string and data dynamic types. ([#31220](https://github.com/expo/expo/pull/31220) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Fixed a bottleneck in the performance-critical code by getting away from `enumerated` function. ([#31226](https://github.com/expo/expo/pull/31226) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Cached argument's type information to improve memory and startup time. ([#31297](https://github.com/expo/expo/pull/31297) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Make `func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?)` `open`. ([#31398](https://github.com/expo/expo/pull/31398) by [@abulenok](https://github.com/abulenok))
+  - [Android] Expose `RuntimeContext.eval()` as `JavaScriptRuntime.eval()` on iOS. ([#31445](https://github.com/expo/expo/pull/31445) by [@kudo](https://github.com/kudo))
+  - Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+  - Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31662](https://github.com/expo/expo/pull/31662) by [@kudo](https://github.com/kudo))
+  - Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
+  - Removed deprecated code for react-native 0.74.0. ([#31740](https://github.com/expo/expo/pull/31740) by [@kudo](https://github.com/kudo))
+  - [Android] Improve error messages when converting the `Either` type. ([#31787](https://github.com/expo/expo/pull/31787) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Improved converting function results. ([#31827](https://github.com/expo/expo/pull/31827) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Disabled `ExpoView` recycling from the New Architecture. ([#31841](https://github.com/expo/expo/pull/31841) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Renamed `SharedObject.deallocate` to `SharedObject.sharedObjectDidRelease`. ([#31921](https://github.com/expo/expo/pull/31921) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Throws a descriptive error when trying to use a released `SharedObject`. ([#31922](https://github.com/expo/expo/pull/31922) by [@lukmccall](https://github.com/lukmccall))
+  - Include error cause message in logger ([#31929](https://github.com/expo/expo/pull/31929), [#31953](https://github.com/expo/expo/pull/31953) by [@wschurman](https://github.com/wschurman))
+  - [Android] Started using view's event dispatchers with the `surfaceId`. ([#32227](https://github.com/expo/expo/pull/32227) by [@lukmccall](https://github.com/lukmccall))
+  - [android] Add enum event support to OnStartObserving and OnStopObserving. ([#32251](https://github.com/expo/expo/pull/32251), [#32287](https://github.com/expo/expo/pull/32287) by [@wschurman](https://github.com/wschurman))
+  - Added a new dynamic type dedicated for Either types. ([#32328](https://github.com/expo/expo/pull/32328) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Added `shouldUseAndroidLayout` flag to `ExpoView`. ([#32446](https://github.com/expo/expo/pull/32446) by [@lukmccall](https://github.com/lukmccall))
+  - [android] Added helper for looking up TaskService instance used by expo-task-manager ([#32300](https://github.com/expo/expo/pull/32300) by [@chrfalch](https://github.com/chrfalch))
+  - Made TypeScript declaration for `process` an interface. ([#32464](https://github.com/expo/expo/pull/32464) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Fix `ClassCastException` in headless app loader under the old architecture. ([#32390](https://github.com/expo/expo/pull/32390) by [@robertying](https://github.com/robertying))
+- **`expo-media-library`**
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-location`**
+  - Added warning when using background location in Expo Go. ([#31461](https://github.com/expo/expo/pull/31461) by [@chrfalch](https://github.com/chrfalch))
+  - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - Rework package exports. ([#29953](https://github.com/expo/expo/pull/29953) by [@Simek](https://github.com/Simek))
+  - Updated documentation for default LocationAccuracy ([#31066](https://github.com/expo/expo/pull/31066) by [@johnculviner](https://github.com/johnculviner))
+- **`expo-localization`**
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-linking`**
+  - Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-keep-awake`**
+  - Use `EventSubscription` type instead of `Subscription`. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
+- **`expo-image-manipulator`**
+  - Use the `src` folder as the Metro target. ([#30079](https://github.com/expo/expo/pull/30079) by [@tsapeta](https://github.com/tsapeta))
+  - Prefer `UIGraphicsImageRenderer` over `UIGraphicsBeginImageContext`. ([#30211](https://github.com/expo/expo/pull/30211) by [@alanjhughes](https://github.com/alanjhughes))
+  - Provide image's memory footprint for better garbage collection. ([#31168](https://github.com/expo/expo/pull/31168) by [@tsapeta](https://github.com/tsapeta) & [#31784](https://github.com/expo/expo/pull/31784) by [@lukmccall](https://github.com/lukmccall)) ([#31168](https://github.com/expo/expo/pull/31168), [#31784](https://github.com/expo/expo/pull/31784) by [@tsapeta](https://github.com/tsapeta), [@lukmccall](https://github.com/lukmccall))
+  - Exported missing types, removed unnecessary fallback and properly registered the module on Web. ([#32302](https://github.com/expo/expo/pull/32302) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-image-picker`**
+  - Refactored the code on iOS and made promise resolution faster. ([#30896](https://github.com/expo/expo/pull/30896) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-gl`**
+  - Enabled support on web on iOS. ([#31479](https://github.com/expo/expo/pull/31479) by [@fobos531](https://github.com/fobos531))
+- **`expo-haptics`**
+  - Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31662](https://github.com/expo/expo/pull/31662) by [@kudo](https://github.com/kudo))
+  - Fixed bundling error on Web. ([#32183](https://github.com/expo/expo/pull/32183) by [@kudo](https://github.com/kudo))
+- **`expo-font`**
+  - Stopped scoping font family names in Expo Go on Android. ([#28797](https://github.com/expo/expo/pull/28797) by [@lukmccall](https://github.com/lukmccall))
+  - Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
+  - Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+  - Remove deprecated Font.processFontFamily() ([#32631](https://github.com/expo/expo/pull/32631) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-file-system`**
+  - [iOS] Validate folder/file type when operating on File/Folder instances in the new FS module. ([#31316](https://github.com/expo/expo/pull/31316) by [@aleqsio](https://github.com/aleqsio))
+  - Use the `src` folder as the Metro target. ([#31234](https://github.com/expo/expo/pull/31234) by [@aleqsio](https://github.com/aleqsio))
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-contacts`**
+  - Handle new permission status on `iOS` 18. ([#29639](https://github.com/expo/expo/pull/29639) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-constants`**
+  - Deprecate `Constants.appOwnership`. ([#30021](https://github.com/expo/expo/pull/30021) by [@amandeepmittal](https://github.com/amandeepmittal))
+  - Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+  - Fixed check-package test errors. ([#32232](https://github.com/expo/expo/pull/32232) by [@kudo](https://github.com/kudo))
+- **`expo-clipboard`**
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-cellular`**
+  - Update cellular generation comments to specify HSPAP as 3G instead of 4G. ([#30008](https://github.com/expo/expo/pull/30008) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-camera`**
+  - Remove unused property `interval` from `BarcodeSettings`. ([#28760](https://github.com/expo/expo/pull/28760) by [@alanjhughes](https://github.com/alanjhughes))
+  - Make the returned `type` in `BarCodeScanningResult` consistent. ([#29421](https://github.com/expo/expo/pull/29421)) by [@alanjhughes](https://github.com/alanjhughes)) ([#29421](https://github.com/expo/expo/pull/29421) by [@alanjhughes](https://github.com/alanjhughes)) ([#29421](https://github.com/expo/expo/pull/29421), [#29421](https://github.com/expo/expo/pull/29421) by [@alanjhughes](https://github.com/alanjhughes), [@alanjhughes](https://github.com/alanjhughes))
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - Updated docs for the `pictureSize` prop. ([#30195](https://github.com/expo/expo/pull/30195) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Migrated cameraview AAR to autolinking and removed related config-plugin about adding the maven repository. ([#30707](https://github.com/expo/expo/pull/30707) by [@kudo](https://github.com/kudo))
+  - Remove the dependency on the legacy types from the newer package on web. ([#30952](https://github.com/expo/expo/pull/30952) by [@alanjhughes](https://github.com/alanjhughes))
+  - Remove `preferredVideoStabilizationMode` until is is fully supported. ([#31514](https://github.com/expo/expo/pull/31514) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Migrate to Swift concurrency. ([#31900](https://github.com/expo/expo/pull/31900) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-brightness`**
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-battery`**
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-auth-session`**
+  - Add basic support for using in API routes. ([#31480](https://github.com/expo/expo/pull/31480) by [@EvanBacon](https://github.com/EvanBacon))
+  - Use getRandomValues from expo-crypto ([#22608](https://github.com/expo/expo/pull/22608) by [@LinusU](https://github.com/LinusU))
+  - Add a standard main package entry point (`index.ts`). ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
+  - Prefer using `type` for describing the shape of objects. ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
+  - Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-av`**
+  - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+  - Added deprecation warning to the `Video` component. ([#32267](https://github.com/expo/expo/pull/32267) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-asset`**
+  - Pin @react-native subpackage versions to 0.74.83. ([#29441](https://github.com/expo/expo/pull/29441) by [@kudo](https://github.com/kudo))
+  - Removed @react-native/assets-registry dependency. ([#29541](https://github.com/expo/expo/pull/29541) by [@kudo](https://github.com/kudo))
+  - Remove unused `pathJoin` function. ([#29963](https://github.com/expo/expo/pull/29963) by [@EvanBacon](https://github.com/EvanBacon))
+  - Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
+- **`expo-apple-authentication`**
+  - Handle new error code on `iOS` 18. ([#29639](https://github.com/expo/expo/pull/29639) by [@alanjhughes](https://github.com/alanjhughes))
+  - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+### ⚠️ Notices
+
+- **`expo-sensors`**
+  - Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-modules-core`**
+  - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-gl`**
+  - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-camera`**
+  - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-av`**
+  - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 51.0.0 — 2024-05-07
+
+### 🛠 Breaking changes
+
+- **`expo-auth-session`**
+  - Drop deprecated `expoClientId` field from auth proxy. ([#28590](https://github.com/expo/expo/pull/28590) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-barcode-scanner`**
+  - `expo-barcode-scanner` is now deprecated. Please use `expo-camera` instead. ([#26025](https://github.com/expo/expo/pull/26025) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-constants`**
+  - Remove deprecated installationId, isDevice, nativeAppVersion, nativeBuildVersion, platform.platform, platform.systemVersion, platform.userInterfaceIdiom properties. ([#26329](https://github.com/expo/expo/pull/26329) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-face-detector`**
+  - `expo-face-detector` is now deprecated. We recommed using [react-native-vision-camera](https://github.com/mrousavy/react-native-vision-camera) instead. ([#26026](https://github.com/expo/expo/pull/26026) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-location`**
+  - [Web] `getPermissionsAsync` no longer prompts the user for permission instead we use the new browser API `navigator.permissions.query` to check the permission status. ([#26836](https://github.com/expo/expo/pull/26837) by [@hems](https://github.com/hems)) ([#26837](https://github.com/expo/expo/pull/26837) by [@hems](https://github.com/hems))
+- **`expo-local-authentication`**
+  - `SecurityLevel.BIOMETRIC` has been deprecated in favour of `SecurityLevel.BIOMETRIC_STRONG` and `SecurityLevel.BIOMETRIC_WEAK`. Using `SecurityLevel.BIOMETRIC` might lead to unexpected behaviour. ([#26768](https://github.com/expo/expo/pull/26768) by [@behenate](https://github.com/behenate))
+- **`expo-modules-core`**
+  - Removed `ReactNativeHostHandler.onRegisterJSIModules` interface. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+  - Dropped supports for React Native 0.73 and lower. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689), [#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
+- **`expo-sms`**
+  - [web] `sendSMSAsync` now throws error code `ERR_UNAVAILABLE` instead of `E_SMS_UNAVAILABLE`. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-sqlite`**
+  - Refactor `expo-sqlite/next` API to be more React idiomatic. ([#25657](https://github.com/expo/expo/pull/25657) by [@kudo](https://github.com/kudo))
+  - Moved the previous default export as `expo-sqlite/legacy` and promoted `expo-sqlite/next` as the default. `expo-sqlite/next` import is still as-is for backward compatibility. ([#28278](https://github.com/expo/expo/pull/28278) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- **`expo-barcode-scanner`**
+  - `BarCodeScannerResult` now returns an additional `raw` field corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS. ([#25391](https://github.com/expo/expo/pull/25391) by [@ajacquierbret](https://github.com/ajacquierbret))
+- **`expo-blur`**
+  - Added support for Apple tvOS. ([#26965](https://github.com/expo/expo/pull/26965) by [@douglowder](https://github.com/douglowder))
+  - Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-asset`**
+  - Added config plugin to allow assets to be linked at build time. ([#27052](https://github.com/expo/expo/pull/27052) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add Apple TV support to the new iOS native module. ([#27823](https://github.com/expo/expo/pull/27823) by [@douglowder](https://github.com/douglowder))
+- **`expo-camera`**
+  - `BarCodeAnalyzer` now passes an additional `raw` field to its `onComplete` callback, corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS. ([#25391](https://github.com/expo/expo/pull/25391) by [@ajacquierbret](https://github.com/ajacquierbret))
+  - Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+  - Add `pictureSize` prop to `CameraView` component. ([#27664](https://github.com/expo/expo/pull/27664) by [@alanjhughes](https://github.com/alanjhughes))
+  - Allow user to remove `NSMicrophoneUsageDescription` and ignore the `mute` prop if they don't intend to use video. ([#28156](https://github.com/expo/expo/pull/28156) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add `animateShutter` prop to provide feedback when a picture is taken. Also added shutter sound on android. ([#28211](https://github.com/expo/expo/pull/28211) by [@alanjhughes](https://github.com/alanjhughes))
+  - Support scanning barcodes from a provided image URL. ([#28445](https://github.com/expo/expo/pull/28445) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-constants`**
+  - Added support for macOS platform. ([#26233](https://github.com/expo/expo/pull/26233) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-crypto`**
+  - Added support for macOS platform. ([#26831](https://github.com/expo/expo/pull/26831) by [@tsapeta](https://github.com/tsapeta))
+  - Add Apple TV support. ([#27819](https://github.com/expo/expo/pull/27819) by [@douglowder](https://github.com/douglowder))
+- **`expo-contacts`**
+  - It is now possible to select contacts using OS-provided native contact pickers. ([#27541](https://github.com/expo/expo/pull/27541) by [@fobos531](https://github.com/fobos531))
+- **`expo-font`**
+  - Added support for macOS platform. ([#26242](https://github.com/expo/expo/pull/26242) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] The native module has been simplified and rewritten to Swift. ([#26380](https://github.com/expo/expo/pull/26380) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-file-system`**
+  - Added support for macOS platform. ([#26253](https://github.com/expo/expo/pull/26253) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-haptics`**
+  - Introduce `rigid` and `soft` impact types ([#28169](https://github.com/expo/expo/pull/28169) by [@rodperottoni](https://github.com/rodperottoni))
+- **`expo-image-picker`**
+  - Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+  - Add new `legacy` option to `ImagePickerOptions` to allow using the legacy image picker on android. ([#28514](https://github.com/expo/expo/pull/28514) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-image-manipulator`**
+  - Added support for converting to WEBP on Android and iOS. ([#26379](https://github.com/expo/expo/pull/26379) by [@NikitaDudin](https://github.com/NikitaDudin))
+- **`expo-linear-gradient`**
+  - Added support for Apple tvOS. ([#26965](https://github.com/expo/expo/pull/26965) by [@douglowder](https://github.com/douglowder))
+  - Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-keep-awake`**
+  - Added support for macOS platform. ([#26221](https://github.com/expo/expo/pull/26221) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-location`**
+  - [Android] Added `formattedAddress` to the `LocationGeocodedAddress`. ([#26342](https://github.com/expo/expo/pull/26342) by [@whysetiawan](https://github.com/whysetiawan) & [@lukmccall](https://github.com/lukmccall)) ([#26342](https://github.com/expo/expo/pull/26342) by [@whysetiawan](https://github.com/whysetiawan), [@lukmccall](https://github.com/lukmccall)) ([#26342](https://github.com/expo/expo/pull/26342), [#26342](https://github.com/expo/expo/pull/26342) by [@whysetiawan](https://github.com/whysetiawan), [@lukmccall](https://github.com/lukmccall), [@whysetiawan](https://github.com/whysetiawan), [@lukmccall](https://github.com/lukmccall))
+  - [Android] Make foreground service permission opt-in with `isAndroidForegroundServiceEnabled` config plugin option [#27265](https://github.com/expo/expo/pull/27265) by [@brentvatne](https://github.com/brentvatne))
+  - [Android] Enable foreground service by default when background location is enabled [#27359](https://github.com/expo/expo/pull/27359) by [@brentvatne](https://github.com/brentvatne))
+  - Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-localization`**
+  - Added a `forcesRTL` manifest flag for forcing RTL to be on. ([#28129](https://github.com/expo/expo/pull/28129) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-local-authentication`**
+  - [Android] Add support for `weak` and `strong` biometric authentication. ([#26768](https://github.com/expo/expo/pull/26768) by [@behenate](https://github.com/behenate))
+- **`expo-network`**
+  - Add Apple TV support. ([#27819](https://github.com/expo/expo/pull/27819) by [@douglowder](https://github.com/douglowder))
+- **`expo-modules-core`**
+  - Added support for returning shared refs from async functions. ([#26341](https://github.com/expo/expo/pull/26341) by [@aleqsio](https://github.com/aleqsio))
+  - Added support for macOS platform. ([#26186](https://github.com/expo/expo/pull/26186) by [@tsapeta](https://github.com/tsapeta))
+  - Add `Date` type converter. ([#26148](https://github.com/expo/expo/pull/26148) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add timer capability to Logger. ([#26454](https://github.com/expo/expo/pull/26454), [#26477](https://github.com/expo/expo/pull/26477) by [@wschurman](https://github.com/wschurman))
+  - Add iOS support for `PlatformColor` and `DynamicColorIOS` color props. ([#26724](https://github.com/expo/expo/pull/26724) by [@dlindenkreuz](https://github.com/dlindenkreuz))
+  - `BarCodeScannerResult` interface now declares an additional `raw` field corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS. ([#25391](https://github.com/expo/expo/pull/25391) by [@ajacquierbret](https://github.com/ajacquierbret))
+  - [Web] Add `createWebModule` function to wrap web functionality with the NativeModule class. ([#27739](https://github.com/expo/expo/pull/27739) by [@aleqsio](https://github.com/aleqsio))
+  - [Web] Add web implementations of event emitter and stubs of shared objects and native modules. ([#27595](https://github.com/expo/expo/pull/27595) by [@aleqsio](https://github.com/aleqsio))
+  - Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
+  - [iOS] Added basic filesystem module to decouple expo-file-system from other packages. ([#27069](https://github.com/expo/expo/pull/27069) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Added syntactic sugar for defining a prop group. ([#27004](https://github.com/expo/expo/pull/27004) by [@lukmccall](https://github.com/lukmccall))
+  - Introduced a base class for all shared objects (`expo.SharedObject`) with a simple mechanism to release native pointer from JS. ([#27038](https://github.com/expo/expo/pull/27038) by [@tsapeta](https://github.com/tsapeta) & [#27331](https://github.com/expo/expo/pull/27331) by [@lukmccall](https://github.com/lukmccall)) ([#27038](https://github.com/expo/expo/pull/27038), [#27331](https://github.com/expo/expo/pull/27331) by [@tsapeta](https://github.com/tsapeta), [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Added native implementation of the JS EventEmitter. ([#27092](https://github.com/expo/expo/pull/27092) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Allow for the export of views that conform to `AnyExpoView` ([#27284](https://github.com/expo/expo/pull/27284) by [@dominicstop](https://github.com/dominicstop))
+  - [iOS] Added support for bridgeless mode in React Native 0.74 ([#27242](https://github.com/expo/expo/pull/27242), [#27289](https://github.com/expo/expo/pull/27289), [#27531](https://github.com/expo/expo/pull/27531) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Implemented sending events from native shared objects. ([#27333](https://github.com/expo/expo/pull/27333) by [@tsapeta](https://github.com/tsapeta))
+  - Added support for `startObserving` and `stopObserving` in the new `EventEmitter` class. ([#27393](https://github.com/expo/expo/pull/27393) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Implemented sending events from native shared objects. ([#27523](https://github.com/expo/expo/pull/27523) by [@lukmccall](https://github.com/lukmccall))
+  - JS object of the native module is now an instance of the `NativeModule` class that inherits from `EventEmitter`. ([#27510](https://github.com/expo/expo/pull/27510) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Exposed a function on the runtime to schedule some work with synchronized access to JS. ([#27567](https://github.com/expo/expo/pull/27567) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] `OnStartObserving` and `OnStopObserving` can now be attached to a specific event. ([#27766](https://github.com/expo/expo/pull/27766) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Provide Exception.code to JavaScript (as Error.code) for all types of functions. ([#27960](https://github.com/expo/expo/pull/27960) by [@cltnschlosser](https://github.com/cltnschlosser))
+  - Introduced the `reloadAppAsync` to reload the app. ([#28400](https://github.com/expo/expo/pull/28400) by [@kudo](https://github.com/kudo))
+- **`expo-media-library`**
+  - [Android] Add support for allowing access permissions to only selected photos. ([#27749](https://github.com/expo/expo/pull/27749) by [@behenate](https://github.com/behenate))
+  - [Android] Add support for granular permissions. ([#27729](https://github.com/expo/expo/pull/27729) by [@behenate](https://github.com/behenate))
+- **`expo-screen-capture`**
+  - Added `getPermissionsAsync` and `requestPermissionsAsync` methods. ([#25849](https://github.com/expo/expo/pull/25849) by [@behenate](https://github.com/behenate))
+- **`expo-secure-store`**
+  - Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+  - Add `canUseBiometricAuthentication` function. ([#26767](https://github.com/expo/expo/pull/26767) by [@behenate](https://github.com/behenate))
+- **`expo-store-review`**
+  - `StoreReview.isAvailableAsync()` on iOS now resolves to `false` for apps distributed through TestFlight. ([#25900](https://github.com/expo/expo/pull/25900) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-sqlite`**
+  - Added `SQLiteStatement.executeForRawResultAsync()` in `expo-sqlite/next` API which returns array based raw values than key-value based row value. ([#26073](https://github.com/expo/expo/pull/26073) by [@kudo](https://github.com/kudo))
+  - [Android] Added `expo.sqlite.customBuildFlags` gradle property to support custom sqlite3 building flags. ([#27385](https://github.com/expo/expo/pull/27385) by [@kudo](https://github.com/kudo))
+  - Added `serializeAsync()` and `deserializeDatabaseAsync()` to serialze and deserialize databases. ([#27422](https://github.com/expo/expo/pull/27422) by [@kudo](https://github.com/kudo))
+  - Added `SQLiteProvider.assetSource` to import an existing database from assets. ([#28291](https://github.com/expo/expo/pull/28291) by [@kudo](https://github.com/kudo))
+  - Bumped SQLite version to 3.45.3 and enabled the [bytecodevtab](https://www.sqlite.org/bytecodevtab.html) feature. ([#28358](https://github.com/expo/expo/pull/28358) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- **`expo-av`**
+  - [Android] Add `Events` `to AVModule` to prevent event emitter warning. ([#26434](https://github.com/expo/expo/pull/26434) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Improve precision for syncing two videos and updating new video position when user sets tolerances to 0 ([#26018](https://github.com/expo/expo/pull/26018) by [@jpudysz](https://github.com/jpudysz))
+  - Tried to fix unused recording permission and getting rejected by store review. ([#28236](https://github.com/expo/expo/pull/28236) by [@kudo](https://github.com/kudo))
+  - [Android] Fix recording audio on Android after converting to Expo Modules ([#26657](https://github.com/expo/expo/pull/26657) by [@jpudysz](https://github.com/jpudysz))
+  - [Android] Fix memory leak connect with `AVManager`. ([#28159](https://github.com/expo/expo/pull/28159) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fix `HashMap cannot be cast to ReadableNativeMap` error on Android. ([#28317](https://github.com/expo/expo/pull/28317) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-blur`**
+  - Migrate web to a function component and fix reanimated errors related to [`setNativeProps` being removed](https://github.com/necolas/react-native-web/commit/e68c32770757194af103cca0095c0c204995505b). ([#27721](https://github.com/expo/expo/pull/27721) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-asset`**
+  - Fix relative URLs and support for `unstable_path` in development. ([#26084](https://github.com/expo/expo/pull/26084) by [@EvanBacon](https://github.com/EvanBacon))
+  - Fixed "Tried to resolve a promise more than once" crash on iOS. ([#27672](https://github.com/expo/expo/pull/27672) by [@kudo](https://github.com/kudo))
+  - Fix `TypeError: (0, _ExpoAsset.downloadAsync) is not a function` when loading assets using Expo Web. ([#28405](https://github.com/expo/expo/pull/28405) by [@jamiees2](https://github.com/jamiees2))
+  - Fixed `downloadAsync()` does not support Android resources from release builds. ([#28604](https://github.com/expo/expo/pull/28604) by [@kudo](https://github.com/kudo))
+- **`expo-calendar`**
+  - [iOS] Don't check calendar permissions for saving reminders, and fix missing details when saving calendar events. ([#28265](https://github.com/expo/expo/pull/28265) by [@robertying](https://github.com/robertying))
+  - Fix the problem that stringifyDateValues is not compatible with simple type arrays. ([#27147](https://github.com/expo/expo/pull/27147) by [@XHFkindergarten](https://github.com/XHFkindergarten))
+- **`expo-camera`**
+  - Fix naming of web files. ([#26505](https://github.com/expo/expo/pull/26505) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, barcode types were not converted correctly causing the scanner to not start immediately. ([#26704](https://github.com/expo/expo/pull/26704) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix `maxDuration` timescale on videos. ([#26882](https://github.com/expo/expo/pull/26882) by [@alanjhughes](https://github.com/alanjhughes))
+  - Set a higher resolution for barcode scans to allow scanning of high resolution barcodes. ([#26886](https://github.com/expo/expo/pull/26886)) by [@byudaniel](https://github.com/byudaniel)) ([#26886](https://github.com/expo/expo/pull/26886) by [@byudaniel](https://github.com/byudaniel)) ([#26886](https://github.com/expo/expo/pull/26886), [#26886](https://github.com/expo/expo/pull/26886) by [@byudaniel](https://github.com/byudaniel), [@byudaniel](https://github.com/byudaniel))
+  - Fix barcode types casing errors. ([#26888](https://github.com/expo/expo/pull/26888) by [@byudaniel](https://github.com/byudaniel))
+  - On `Android`, fix the camera not being released when the view is destroyed. ([#27086](https://github.com/expo/expo/pull/27086) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix the orientation value in `onResponsiveOrientationChanged` when `exif` is set to true. ([#27314](https://github.com/expo/expo/pull/27314) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `Android`, fix empty qualities being passed to QualitySelector ([#27126](https://github.com/expo/expo/pull/27126) by [@leonhh](https://github.com/leonhh))
+  - On `web`, prevent creating a webworker when rendering on the server ([#27222](https://github.com/expo/expo/pull/27222) by [@marklawlor](https://github.com/marklawlor))
+  - On `iOS`, fix method call on an optional variable. ([#27235](https://github.com/expo/expo/pull/27235) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix scanned frame bounds when scanning a barcode. ([#27207](https://github.com/expo/expo/pull/27207) by [@tamagokun](https://github.com/tamagokun))
+  - Fix incorrect prop name `flash` being passed to native. ([#27394](https://github.com/expo/expo/pull/27394) by [@alanjhughes](https://github.com/alanjhughes))
+  - Ensure `mute` prop is passed to native so it is correctly initialiased even when not provided from JS. ([#27546](https://github.com/expo/expo/pull/27546) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix camera orientation on initial render. ([#27545](https://github.com/expo/expo/pull/27545) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix an issue where the configuration can be interuppted when the dev menu is presented on intial launch. ([#27572](https://github.com/expo/expo/pull/27572) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix `getAvailablePictureSizes` in the legacy package. ([#27642](https://github.com/expo/expo/pull/27642) by [@alanjhughes](https://github.com/alanjhughes))
+  - Allow users using xcode 14 to still build when including camera. ([#27873](https://github.com/expo/expo/pull/27873) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix an issue where the permission functions were being imported from the wrong file. ([#27988](https://github.com/expo/expo/pull/27988) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix an issue on `iOS` where the barcode types did not match the typescript representation. Also enabled scanning `upc_a` codes on `iOS`. ([#28233](https://github.com/expo/expo/pull/28233) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fixed regression where recording a video captures dark frames. Reduced frequency of camera initialization. ([#28427](https://github.com/expo/expo/pull/28427) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-constants`**
+  - Fixed build error on AGP 8.2. ([#26362](https://github.com/expo/expo/pull/26362) by [@kudo](https://github.com/kudo))
+- **`expo-contacts`**
+  - Fixed an issue where contacts could not be edited on either platform. ([#27703](https://github.com/expo/expo/pull/27703) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-device`**
+  - `Device.productName` now returns `Build.PRODUCT` instead of `Build.DEVICE`. ([#27230](https://github.com/expo/expo/pull/27230) by [@alex-fournier](https://github.com/alex-fournier))
+- **`expo-font`**
+  - Only include supported font files when using the plugin. ([#27002](https://github.com/expo/expo/pull/27002) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-file-system`**
+  - On `iOS`, set `httpMethod` on upload requests. ([#26516](https://github.com/expo/expo/pull/26516) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, fix upload task requests. ([#26880](https://github.com/expo/expo/pull/26880) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix downloadAsync for local files. ([#27187](https://github.com/expo/expo/pull/27187) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `iOS`, fix an issue with `copyAsync` where the copy fails if it is a photo library asset. ([#27208](https://github.com/expo/expo/pull/27208) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, resolve the promise manually after copying a PHAsset file. ([#27381](https://github.com/expo/expo/pull/27381) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] remove `CookieHandler` as it's no longer in the module registry and not necessary. ([#28145](https://github.com/expo/expo/pull/28145) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-gl`**
+  - Fixed integration with `react-native-reanimated`. ([#28414](https://github.com/expo/expo/pull/28414) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-image-picker`**
+  - On Android `fileSize` was named `filesize` which did not match the docs & typescript definition. ([#27293](https://github.com/expo/expo/pull/27293) by [@WookieFPV](https://github.com/wookieFPV)) ([#27293](https://github.com/expo/expo/pull/27293) by [@wookieFPV](https://github.com/wookieFPV))
+  - Fixed an issue where cropped images were not returning file size and file name on Android. ([#28352](https://github.com/expo/expo/pull/28352) by [@fobos531](https://github.com/fobos531))
+  - Fixed type exports for isolatedModules option in typescript ([#28499](https://github.com/expo/expo/pull/28499) by [@megacherry](https://github.com/megacherry))
+  - On Android, fixed an issue where multiple pickers could be opened, causing a crash. ([#28509](https://github.com/expo/expo/pull/28509) by [@haileyok](https://github.com/haileyok))
+- **`expo-intent-launcher`**
+  - On Android, intent number extras are converted to `double`. However, it must be `int`. ([#26164](https://github.com/expo/expo/pull/26164) by [@Alperengozum](https://github.com/Alperengozum))
+- **`expo-location`**
+  - [Android] Fix the module requiring the `expo-task-manager` module for methods that don't use it. ([#26200](https://github.com/expo/expo/pull/26200) by [@behenate](https://github.com/behenate))
+  - [Android] Fixed: `NullPointerException: it must not be null`. ([#26688](https://github.com/expo/expo/pull/26688) by [@lukmccall](https://github.com/lukmccall))
+  - On `Android`, prevent location service from starting when permission is not in the manifest. ([#27355](https://github.com/expo/expo/pull/27355) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-localization`**
+  - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Fix es-419 locale returning empty list. ([#27250](https://github.com/expo/expo/pull/27250) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-modules-core`**
+  - [Android] Fixed `OnCreate` was called before the `React` instance was ready. ([#25866](https://github.com/expo/expo/pull/25866) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fixed `SharedObjectRegistry` crash for accessing internal data structures from multi-threads. ([#25997](https://github.com/expo/expo/pull/25997) by [@kudo](https://github.com/kudo))
+  - Fixed splash screen view flickering in dark mode on iOS. ([#26015](https://github.com/expo/expo/pull/26015), [#26029](https://github.com/expo/expo/pull/26029) by [@kudo](https://github.com/kudo))
+  - Fixed `SharedObject` leakage on Android. ([#25995](https://github.com/expo/expo/pull/25995) by [@kudo](https://github.com/kudo))
+  - Adjust proguard rules to prevent issues with types implementing `Enumerable`. ([#26108](https://github.com/expo/expo/pull/26108) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix proguard rules so `Serializable` types are not obfuscated. ([#26545](https://github.com/expo/expo/pull/26545) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Thrown an exception when nested types can't be converted instead of crashing the app. ([#27449](https://github.com/expo/expo/pull/27449) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Ensured that `onCreate` before `OnActivityEntersForeground` event. ([#26944](https://github.com/expo/expo/pull/26944) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed activity contract registration after host destruction. ([#26881](https://github.com/expo/expo/pull/26881) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357) by [@kudo](https://github.com/kudo))
+  - Fixed breaking changes from React-Native 0.74. ([#26357](https://github.com/expo/expo/pull/26357), [#26587](https://github.com/expo/expo/pull/26587) by [@kudo](https://github.com/kudo))
+  - [Android] Unit converter now ignores nullability. It will always return unit regardless of whether the input value is null or not. ([#27591](https://github.com/expo/expo/pull/27591) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed `RCTHost` is not retained on iOS bridgeless mode. ([#27715](https://github.com/expo/expo/pull/27715) by [@kudo](https://github.com/kudo))
+  - Fixed errors on Android when running on bridgeless mode. ([#27725](https://github.com/expo/expo/pull/27725) by [@kudo](https://github.com/kudo))
+  - Fixed breaking changes from React Native 0.75. ([#27773](https://github.com/expo/expo/pull/27773) by [@kudo](https://github.com/kudo))
+  - Fixed crash from reloading on iOS and bridgeless mode. ([#27928](https://github.com/expo/expo/pull/27928) by [@kudo](https://github.com/kudo))
+  - Fixed SharedRef class names are obfuscated when R8 is enabled. ([#27965](https://github.com/expo/expo/pull/27965) by [@kudo](https://github.com/kudo))
+  - [iOS] Fix `recreateRootViewWithBundleURL` parameters. ([#27989](https://github.com/expo/expo/pull/27989) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Fixed `ExpoBridgeModule.installModules()` is broken on Android and bridgeless mode. ([#28065](https://github.com/expo/expo/pull/28065) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed segfaults in `expo::MethodMetadata::convertJSIArgsToJNI`. ([#28163](https://github.com/expo/expo/pull/28163) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed random `TypeError: Cannot read property 'NativeModule' of undefined` exceptions on Android. ([#28200](https://github.com/expo/expo/pull/28200) by [@kudo](https://github.com/kudo))
+  - Fixed white screen flickering when using expo-updates with longer `fallbackToCacheTimeout`. ([#28227](https://github.com/expo/expo/pull/28227) by [@kudo](https://github.com/kudo))
+  - [iOS] Fixed random crashes when reloads and `EXJavaScriptObject` accesses to dangling pointers. ([#28262](https://github.com/expo/expo/pull/28262) by [@kudo](https://github.com/kudo))
+  - Fixed `AppContext.onHostResume()` sometimes getting null `currentActivity` on Android. ([#28338](https://github.com/expo/expo/pull/28338) by [@kudo](https://github.com/kudo))
+  - Fixed backward compatibility in the **build.gradle** from third party Expo modules. ([#28359](https://github.com/expo/expo/pull/28359) by [@kudo](https://github.com/kudo))
+  - [Android] Fixes SEGFAULTs caused by `std::shared_ptr<JavaCalllback::CallbackContext>::__on_zero_shared`. ([#28483](https://github.com/expo/expo/pull/28483) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed gziped payload does not correctly shown in network inspector. ([#28486](https://github.com/expo/expo/pull/28486) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed crashes during the deallocation of shared objects. ([#28491](https://github.com/expo/expo/pull/28491) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix accessing the view registry to avoid infinite loop crash. ([#28531](https://github.com/expo/expo/pull/28531) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Fix `field operation on NULL object` when reloading the app. ([#28555](https://github.com/expo/expo/pull/28555) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed building error when use_frameworks on new architecture. ([#28451](https://github.com/expo/expo/pull/28451) by [@kudo](https://github.com/kudo))
+- **`expo-media-library`**
+  - [iOS] Fix crash when passing `default` as sorting key. ([#28328](https://github.com/expo/expo/pull/28328) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Fixed crash on denied permission to modify assets. ([#28212](https://github.com/expo/expo/pull/28212) by [@mathieupost](https://github.com/mathieupost))
+  - [Android] Fixed promise resolved twice on denied permission. ([#28323](https://github.com/expo/expo/pull/28323) by [@mathieupost](https://github.com/mathieupost))
+- **`expo-notifications`**
+  - [Android] Fix `expo-notifications` requiring the `expo-task-manager` module to start. ([#26227](https://github.com/expo/expo/pull/26227) by [@behenate](https://github.com/behenate))
+  - Throw `UnavailabilityError` when trying to use `setNotificationCategoryAsync` on web. ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
+  - Remove `.native` hardcoded platform imports ([#26511](https://github.com/expo/expo/pull/26511) by [@marklawlor](https://github.com/marklawlor))
+  - On `Android`, added events to module definition to clear warnings. ([#26654](https://github.com/expo/expo/pull/26654) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Fix notifications events were using an incorrect event emitter. ([#28207](https://github.com/expo/expo/pull/28207) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-screen-capture`**
+  - Fix screenshot listener not being called on Android 34. ([#26549](https://github.com/expo/expo/pull/26549) by [@alanjhughes](https://github.com/alanjhughes))
+  - Reverse api level constraint on the `DETECT_SCREEN_CAPTURE` permission. ([#27148](https://github.com/expo/expo/pull/27148) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Fixes memory leaks caused by the event emitter. ([#28161](https://github.com/expo/expo/pull/28161) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fix accessing activity too early on bridgeless. ([#28244](https://github.com/expo/expo/pull/28244) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-screen-orientation`**
+  - Fix reversed `SizeClassIOS` enum values. ([#28448](https://github.com/expo/expo/pull/28448) by [@Simek](https://github.com/Simek))
+- **`expo-sensors`**
+  - On `Android`, add event name to definition in the `DeviceMotionModule`. ([#26679](https://github.com/expo/expo/pull/26679) by [@alanjhughes](https://github.com/alanjhughes))
+  - Prevent unnecessary permissions check when moving app to background (Would crash with certain configs). ([#28045](https://github.com/expo/expo/pull/28045) by [@cltnschlosser](https://github.com/cltnschlosser))
+  - Fix barometer updates not starting on iOS 17.4. ([#28253](https://github.com/expo/expo/pull/28253) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-store-review`**
+  - fixes incorrect scene when multiple windowscenes opened, while requesting a review. ([#28577](https://github.com/expo/expo/pull/28577) by [@dylancom](https://github.com/dylancom))
+- **`expo-task-manager`**
+  - On `Android`, added events to module definition to clear warnings. ([#26654](https://github.com/expo/expo/pull/26654) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sqlite`**
+  - Fixed `NativeStatementBinding` leakage on Android. ([#25996](https://github.com/expo/expo/pull/25996) by [@kudo](https://github.com/kudo))
+  - Fixed building error on Windows. ([#26296](https://github.com/expo/expo/pull/26296) by [@kudo](https://github.com/kudo))
+  - Fixed a write query being executed twice when using `SQLiteDatabase.getAllAsync()` in expo-sqlite/next API. ([#26344](https://github.com/expo/expo/pull/26344) by [@kudo](https://github.com/kudo))
+  - Fixed `expo-sqlite/next` cannot be imported from an ESM project. ([#27423](https://github.com/expo/expo/pull/27423) by [@kudo](https://github.com/kudo))
+  - Enabled [FTS](https://www.sqlite.org/fts3.html) and [FTS5](https://www.sqlite.org/fts5.html) for SQLite. ([#27738](https://github.com/expo/expo/pull/27738) by [@kudo](https://github.com/kudo))
+  - Fixed `NullPointerException` on Android when opening the same database multiple times. ([#27748](https://github.com/expo/expo/pull/27748) by [@kudo](https://github.com/kudo))
+- **`expo-video-thumbnails`**
+  - [Android] Enhanced resource management in VideoThumbnails module by ensuring closure of `ParcelFileDescriptor` and releasing `MediaMetadataRetriever` post-use. ([#26100](https://github.com/expo/expo/pull/26100) by [@hirbod](https://github.com/hirbod))
+- **`expo-web-browser`**
+  - On `iOS`, fix an issue where rapidly opening and closing the browser would leave the module in a bad state, preventing opening the browser again. ([#28452](https://github.com/expo/expo/pull/28452) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- **`expo-application`**
+  - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-av`**
+  - Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+  - Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-background-fetch`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-auth-session`**
+  - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+- **`expo-battery`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-brightness`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-barcode-scanner`**
+  - Add FYI link. ([#26049](https://github.com/expo/expo/pull/26049) by [@alanjhughes](https://github.com/alanjhughes))
+  - Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-blur`**
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-asset`**
+  - Create native module for iOS and Android. Migrate `downloadAsync` to a native implementation. ([#27369](https://github.com/expo/expo/pull/27369) by [@aleqsio](https://github.com/aleqsio))
+  - Remove MD5 checksum verification for remote assets. This does not change method signatures nor require changes to your application code, and should not affect any apps in practice since this behavior was used only for apps that used Classic Updates, support for which ended with SDK 50. ([#25614](https://github.com/expo/expo/pull/25614) by [@ide](https://github.com/ide))
+  - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+  - Clean up some asset stuff. ([#26310](https://github.com/expo/expo/pull/26310) by [@wschurman](https://github.com/wschurman))
+  - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+  - Remove assetUrlOverride and assetMapOverride. ([#26314](https://github.com/expo/expo/pull/26314) by [@wschurman](https://github.com/wschurman))
+  - Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Update mocks for SDK51. ([#28424](https://github.com/expo/expo/pull/28424) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-calendar`**
+  - Prevent config plugin from writing permissions until prebuild, remove duplicate permissions. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - On iOS, migrate to Expo Modules API. ([#24282](https://github.com/expo/expo/pull/24282) by [@alanjhughes](https://github.com/alanjhughes))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Use enums instead of objects for enumerable types. ([#27777](https://github.com/expo/expo/pull/27777) by [@behenate](https://github.com/behenate))
+- **`expo-cellular`**
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-camera`**
+  - Make the casing of `Barcode` consistent. ([#26900](https://github.com/expo/expo/pull/26900) by [@alanjhughes](https://github.com/alanjhughes))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - On `Android`, requesting audio permissions was meant to be optional in the config plugin. ([#27365](https://github.com/expo/expo/pull/27365) by [@alanjhughes](https://github.com/alanjhughes))
+  - Prevent unnecessary configuration changes wherever possible. ([#27919](https://github.com/expo/expo/pull/27919) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `Android`, only recreate camera after certain props have changed. ([#27952](https://github.com/expo/expo/pull/27952) by [@alanjhughes](https://github.com/alanjhughes))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Promote `next` package to stable. ([#28226](https://github.com/expo/expo/pull/28226) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-clipboard`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Rename `CornerStyle` and `DisplayMode` types to include `Type` suffix in name. ([#27190](https://github.com/expo/expo/pull/27190) by [@simek](https://github.com/simek))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Update mocks for SDK51. ([#28424](https://github.com/expo/expo/pull/28424) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-constants`**
+  - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+  - [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+  - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+  - Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-crypto`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Update error message to reflect that web crypto works on web with a localhost hostname and often doesn't require `https`. ([#26729](https://github.com/expo/expo/pull/26729) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Update mocks for SDK51. ([#28424](https://github.com/expo/expo/pull/28424) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-contacts`**
+  - Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Reuse React Native `ShareOptions` type for `shareContactAsync` parameter typing. ([#26208](https://github.com/expo/expo/pull/26208) by [@Simek](https://github.com/Simek))
+  - [iOS] Migrate to Expo Modules. ([#25696](https://github.com/expo/expo/pull/25696) by [@alanjhughes](https://github.com/alanjhughes))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-device`**
+  - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-document-picker`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-font`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Stopped scoping font family names in Expo Go on iOS. ([#28344](https://github.com/expo/expo/pull/28344) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-face-detector`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-file-system`**
+  - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-gl`**
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-haptics`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-image-loader`**
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-image-picker`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Convert WEBP to PNG instead JPEG when selecting an item in the Media Library with editing enabled. ([#26419](https://github.com/expo/expo/pull/26419) by [@NikitaDudin](https://github.com/NikitaDudin))
+  - Receiving a correct file extension for WEBP files instead `.jpeg` in the ImagePicker result. ([#26419](https://github.com/expo/expo/pull/26419) by [@NikitaDudin](https://github.com/NikitaDudin))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-intent-launcher`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-image-manipulator`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-linear-gradient`**
+  - On `Android`, remove type annotation on `View`. ([#26545](https://github.com/expo/expo/pull/26545) by [@alanjhughes](https://github.com/alanjhughes))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Changed type of `colors` and `locations` array to readonly ([#28450](https://github.com/expo/expo/pull/28450) by [@kowczarz](https://github.com/kowczarz))
+- **`expo-keep-awake`**
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-location`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Fixed unit test errors. ([#28208](https://github.com/expo/expo/pull/28208) by [@kudo](https://github.com/kudo))
+- **`expo-localization`**
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-local-authentication`**
+  - Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-mail-composer`**
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-network`**
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-modules-core`**
+  - [Android] Bump Kotlin version from `1.8.10` to `1.8.22`. ([#25945](https://github.com/expo/expo/pull/25945) by [@lukmccall](https://github.com/lukmccall))
+  - Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+  - Deprecated `expo.modules.core.Promise`. ([#27471](https://github.com/expo/expo/pull/27471) by [@aleqsio](https://github.com/aleqsio))
+  - Removed deprecated `global.ExpoModules`. ([#26027](https://github.com/expo/expo/pull/26027) by [@tsapeta](https://github.com/tsapeta))
+  - Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+  - Added an alternative way of installing the JSI bindings. ([#26691](https://github.com/expo/expo/pull/26691) by [@lukmccall](https://github.com/lukmccall))
+  - `ObjectDeallocator` is now a native state instead of a host object. ([#26906](https://github.com/expo/expo/pull/26906) by [@tsapeta](https://github.com/tsapeta))
+  - Moved away from `SharedObjectRegistry` being a singleton. ([#27032](https://github.com/expo/expo/pull/27032) by [@tsapeta](https://github.com/tsapeta))
+  - Moved and added more JSI utils to the common C++ codebase. ([#27045](https://github.com/expo/expo/pull/27045) by [@tsapeta](https://github.com/tsapeta))
+  - Introduce `EXCreateReactBindingRootView` to create correct React Native setup for New Architecture mode. ([#27216](https://github.com/expo/expo/pull/27216) by [@kudo](https://github.com/kudo))
+  - Set bridge on `AppContext` in `ExpoBridgeModule`. ([#27378](https://github.com/expo/expo/pull/27378) by [@alanjhughes](https://github.com/alanjhughes))
+  - Added TypeScript declarations and documentation for global JSI bindings. ([#27465](https://github.com/expo/expo/pull/27465) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added bridgeless support on ExpoReactDelegate. ([#27601](https://github.com/expo/expo/pull/27601), [#27689](https://github.com/expo/expo/pull/27689) by [@kudo](https://github.com/kudo))
+  - [Android] Added bridgeless support on ReactNativeHostHandler. ([#27629](https://github.com/expo/expo/pull/27629) by [@kudo](https://github.com/kudo))
+  - Refactored out `EXReactRootViewFactory.createDefaultReactRootView:` to `RCTAppDelegate.recreateRootViewWithBundleURL:` category. ([#27945](https://github.com/expo/expo/pull/27945) by [@kudo](https://github.com/kudo))
+  - Added `ReactNativeHostHandler.onReactInstanceException()` for client to listen for exceptions on Android. ([#27815](https://github.com/expo/expo/pull/27815) by [@kudo](https://github.com/kudo))
+  - Removed the legacy interfaces for font processors as they are no longer used by `expo-font` and nothing else depends on them. ([#26380](https://github.com/expo/expo/pull/26380) by [@tsapeta](https://github.com/tsapeta))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Bumped Kotlin version to 1.9.23. ([#28088](https://github.com/expo/expo/pull/28088) by [@kudo](https://github.com/kudo))
+  - Introduced `onDidCreateDevSupportManager` handler to support error recovery from expo-updates. ([#28177](https://github.com/expo/expo/pull/28177) by [@kudo](https://github.com/kudo))
+  - Dropped support for custom type converters on Android. ([#28252](https://github.com/expo/expo/pull/28252) by [@lukmccall](https://github.com/lukmccall))
+  - Introduced `ExpoReactDelegateHandler.bundleURL` for clients to override newer bundleURL. ([#28256](https://github.com/expo/expo/pull/28256) by [@kudo](https://github.com/kudo))
+- **`expo-media-library`**
+  - Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+  - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - [iOS] Migrate to expo modules. ([#25587](https://github.com/expo/expo/pull/25587) by [@alanjhughes](https://github.com/alanjhughes))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - The `ACCESS_MEDIA_LOCATION` Android permission should not pulled into by default and should be pulled through Config Plugins. ([#28230](https://github.com/expo/expo/pull/28230) by [@kudo](https://github.com/kudo))
+- **`expo-notifications`**
+  - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-screen-capture`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Native module on iOS is now written in Swift using the Sweet API. ([#26103](https://github.com/expo/expo/pull/26103) by [@fobos531](https://github.com/fobos531))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-print`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-random`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-screen-orientation`**
+  - Drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-sharing`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-secure-store`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-sms`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-speech`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Removed the usage of the legacy EventEmitter. ([#28195](https://github.com/expo/expo/pull/28195) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-sensors`**
+  - Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Fixed broken JavaScript unit tests. ([#27257](https://github.com/expo/expo/pull/27257) by [@kudo](https://github.com/kudo))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+  - Removed the usage of the legacy EventEmitter. ([#28149](https://github.com/expo/expo/pull/28149) by [@tsapeta](https://github.com/tsapeta))
+  - Update mocks for SDK51. ([#28424](https://github.com/expo/expo/pull/28424) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-store-review`**
+  - Remove expo-linking dependency and use React Native Linking instead. ([#26428](https://github.com/expo/expo/pull/26428) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-task-manager`**
+  - [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-sqlite`**
+  - Remove `onDatabaseChange` event from legacy API as it is not supported natively. ([#26655](https://github.com/expo/expo/pull/26655) by [@alanjhughes](https://github.com/alanjhughes))
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-video-thumbnails`**
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`expo-web-browser`**
+  - Updated `androidx.browser:browser` to `1.6.0` [#26619](https://github.com/expo/expo/pull/26619) by [@zoontek](https://github.com/zoontek)
+  - drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+  - Update error message to reflect that web crypto works on web with a localhost hostname and often doesn't require `https`. ([#26729](https://github.com/expo/expo/pull/26729) by [@EvanBacon](https://github.com/EvanBacon))
+  - Remove `compare-urls` and `url` dependencies in favor of built-in URL support. ([#26702](https://github.com/expo/expo/pull/26702) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- **`unimodules-app-loader`**
+  - Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 50.0.0 — 2023-12-12
+
+### 📚 3rd party library updates
+
+- Updated `react-native-maps` from `1.3.2` to `1.7.1`. ([#28007](https://github.com/expo/expo/pull/28007) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-location`**
+  - Updated `com.google.android.gms:play-services-location` to `21.0.1`. ([#25028](https://github.com/expo/expo/pull/25028) by [@behenate](https://github.com/behenate))
+
+### 🛠 Breaking changes
+
+- **`expo-asset`**
+  - Convert `../` to `_` for the property `httpServerLocation` in `hashAssetFiles` (Metro asset pre-processor) to support assets in monorepos the same everywhere. ([#24090](https://github.com/expo/expo/pull/24090) by [@EvanBacon](https://github.com/EvanBacon))
+  - Removed support for the Classic Updates service for SDK 50 ([announcement](https://blog.expo.dev/sunsetting-expo-publish-and-classic-updates-6cb9cd295378)). Specifically, references to the Classic Updates CDN were removed. [Migrate](https://docs.expo.dev/eas-update/migrate-from-classic-updates/) to EAS or other service that conforms to the modern [Expo Updates protocol](https://docs.expo.dev/technical-specs/expo-updates-1/). ([#25613](https://github.com/expo/expo/pull/25613) by [@ide](https://github.com/ide))
+- **`expo-apple-authentication`**
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-application`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Removed `androidId` constant in favor of a method (`getAndroidId`) to comply with Huawei and Xiaomi's app store policies. ([#22585](https://github.com/expo/expo/pull/22585) by [@fobos531](https://github.com/fobos531))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-auth-session`**
+  - Fix for breaking change in expo-constants to only support new manifests. ([#24267](https://github.com/expo/expo/pull/24267) by [@wschurman](https://github.com/wschurman))
+- **`expo-barcode-scanner`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-battery`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-background-fetch`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-av`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-camera`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Mark the `ratio` param of `getAvailablePictureSizes` as required because omitting it causes a crash on Android. On iOS, the param has no effect. ([#24234](https://github.com/expo/expo/pull/24234) by [@vonovak](https://github.com/vonovak))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-cellular`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-calendar`**
+  - Forbid passing an id to `createEventAsync` and `updateEventAsync`. ([#23810](https://github.com/expo/expo/pull/23810) by [@pierrezimmermannbam](https://github.com/pierrezimmermannbam))
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-brightness`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-blur`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Made `BlurView` on Android an experimental feature, which can be enabled with `experimentalBlurMethod` prop. ([#24709](https://github.com/expo/expo/pull/24709) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-constants`**
+  - Drop support for `logUrl` which sent console logs to the legacy `expo-cli`. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+  - Change source of truth for constants types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
+  - Remove classic manifest types. ([#24053](https://github.com/expo/expo/pull/24053) by [@wschurman](https://github.com/wschurman))
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-crypto`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-clipboard`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-contacts`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-file-system`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-document-picker`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-face-detector`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-haptics`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-image-loader`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-font`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-gl`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-image-manipulator`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-keep-awake`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-image-picker`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-intent-launcher`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-linear-gradient`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-mail-composer`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-local-authentication`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-location`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-linking`**
+  - Remove deprecated `makeUrl` function. ([#24300](https://github.com/expo/expo/pull/24300) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-media-library`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-localization`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-modules-core`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-notifications`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-print`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-device`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-screen-capture`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-network`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sensors`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-random`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-secure-store`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-screen-orientation`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sms`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-store-review`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-task-manager`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-speech`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sharing`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-video-thumbnails`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-web-browser`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sqlite`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Remove CRSQLite support on legacy API. ([#25092](https://github.com/expo/expo/pull/25092) by [@kudo](https://github.com/kudo))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- **`unimodules-app-loader`**
+  - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+  - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🎉 New features
+
+- **`expo-asset`**
+  - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-application`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+  - Migrate iOS module to Expo modules API. ([#24871](https://github.com/expo/expo/pull/24871) by [@reichhartd](https://github.com/reichhartd))
+  - Android module is now written using the Sweet API. ([#22395](https://github.com/expo/expo/pull/22585) by [@fobos531](https://github.com/fobos531)) ([#22585](https://github.com/expo/expo/pull/22585) by [@fobos531](https://github.com/fobos531))
+- **`expo-barcode-scanner`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-battery`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-background-fetch`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-av`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-camera`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - [iOS] Rewrote Objective-C classes to Swift. ([#22604](https://github.com/expo/expo/pull/22604) by [@alanjhughes](https://github.com/alanjhughes))
+  - Methods `stopRecording`, `pausePreview` and `resumePreview` have been updated to return promises. ([#25737](https://github.com/expo/expo/pull/25737) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-cellular`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-calendar`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-brightness`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-blur`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - Support more blur effects. On iOS, using `UIBlurEffect.Style`. On Android, find the closest available color reference. ([#24392](https://github.com/expo/expo/pull/24392) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-constants`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+- **`expo-crypto`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-clipboard`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-contacts`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-file-system`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+- **`expo-document-picker`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-face-detector`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-haptics`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-image-loader`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-font`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - Add static font extraction support with `expo-router`. ([#24027](https://github.com/expo/expo/pull/24027) by [@EvanBacon](https://github.com/EvanBacon))
+  - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+  - Added config plugin to allow fonts to be linked at build time. ([#24772](https://github.com/expo/expo/pull/24772) by [@alanjhughes](https://github.com/alanjhughes))
+  - Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25099](https://github.com/expo/expo/pull/25099) by [@reichhartd](https://github.com/reichhartd))
+  - Added custom native fonts support to `Font.isLoaded()`. ([#25770](https://github.com/expo/expo/pull/25770) by [@kudo](https://github.com/kudo))
+- **`expo-gl`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-image-manipulator`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - Added `extent` action ([#25116](https://github.com/expo/expo/pull/25116) by [@LinusU](https://github.com/LinusU))
+- **`expo-keep-awake`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+- **`expo-image-picker`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - On Android, support `fileName` and `filesize` in the returned assets. ([#24524](https://github.com/expo/expo/pull/24524) by [@alanjhughes](https://github.com/alanjhughes))
+  - Support returning the mime type of the returned assets. ([#24659](https://github.com/expo/expo/pull/24659) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-intent-launcher`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-linear-gradient`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-mail-composer`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-local-authentication`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-location`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-media-library`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-localization`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - Added a `temperatureUnit` field, which contains the default temperature unit for the locale. ([#24059](https://github.com/expo/expo/pull/24059) by [@behenate](https://github.com/behenate))
+- **`expo-modules-core`**
+  - [Android] Surfaced errorManager to allow throwing errors and warnings from modules. ([#23848](https://github.com/expo/expo/pull/23848) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Enums can now be used to define events. ([#23875](https://github.com/expo/expo/pull/23875) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Promises can now be resolved without arguments. ([#23907](https://github.com/expo/expo/pull/23907) by [@lukmccall](https://github.com/lukmccall))
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018), [#24019](https://github.com/expo/expo/pull/24019) by [@kudo](https://github.com/kudo))
+  - [Android] `Property` component can now take the native shared object instance as the first argument. ([#24206](https://github.com/expo/expo/pull/24206) by [@lukmccall](https://github.com/lukmccall))
+  - Introduced `requireOptionalNativeModule` that returns `null` when the module cannot be found instead of throwing an error. ([#24262](https://github.com/expo/expo/pull/24262) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Introduced shared refs – a way to pass native objects among different independent modules. ([#24446](https://github.com/expo/expo/pull/24446) by [@lukmccall](https://github.com/lukmccall))
+  - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+  - Add `CommonExceptions.ModuleNotFound`. ([#24898](https://github.com/expo/expo/pull/24898) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] `Set<T>` can now be passed as an argument to a module method. ([#24897](https://github.com/expo/expo/pull/24897) by [@lukmccall](https://github.com/lukmccall))
+  - Add `preventModuleOverriding` to `ModuleRegistry.register` method. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
+  - [iOS] `CGFloat` can now be used as an argument type. ([#25140](https://github.com/expo/expo/pull/25140) by [@tsapeta](https://github.com/tsapeta))
+  - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Added `Data <-> Uint8Array` convertible on iOS. ([#25726](https://github.com/expo/expo/pull/25726) by [@kudo](https://github.com/kudo))
+  - Added `ByteArray <-> Uint8Array` convertible on Android. ([#25727](https://github.com/expo/expo/pull/25727) by [@kudo](https://github.com/kudo))
+- **`expo-notifications`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-print`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-device`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+  - Added new devices for iOS. ([#24555](https://github.com/expo/expo/pull/24555) by [@johanholm](https://github.com/johanholm))
+- **`expo-screen-capture`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-network`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - Add Node.js support. ([#24505](https://github.com/expo/expo/pull/24505) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-sensors`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-random`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-secure-store`**
+  - Added a config plugin to automatically set NSFaceIDUsageDescription on iOS. ([#23268](https://github.com/expo/expo/pull/23268) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Migrated to Expo Modules API. ([#23804](https://github.com/expo/expo/pull/23804) by [@behenate](https://github.com/behenate))
+  - [Android] It is now possible to store values that require authentication and ones that don't under the same `keychainService`. ([#23804](https://github.com/expo/expo/pull/23804) by [@behenate](https://github.com/behenate))
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - [iOS] Added possibility to store values that require authentication and ones that don't under the same `keychainService`. ([#23841](https://github.com/expo/expo/pull/23841) by [@behenate](https://github.com/behenate))
+  - [iOS] Added synchronous functions for storing and retrieving values from the store. ([#23841](https://github.com/expo/expo/pull/23841) by [@behenate](https://github.com/behenate))
+- **`expo-screen-orientation`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-sms`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-store-review`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-task-manager`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-speech`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-sharing`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-video-thumbnails`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-web-browser`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+- **`expo-sqlite`**
+  - Migrated Android codebase to Expo Modules API. ([#23115](https://github.com/expo/expo/pull/23115) by [@alanjhughes](https://github.com/alanjhughes))
+  - Added experimental `Promise` based `execAsync` and `transactionAsync` functions. ([#23109](https://github.com/expo/expo/pull/23109) by [@kudo](https://github.com/kudo))
+  - Add support for running raw queries on Android. ([#24320](https://github.com/expo/expo/pull/24320) by [@alanjhughes](https://github.com/alanjhughes))
+  - On Android, add support for `CRSQLite`. ([#24322](https://github.com/expo/expo/pull/24322) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add synchronous method `closeSync`. ([#23757](https://github.com/expo/expo/pull/23757) by [@alanjhughes](https://github.com/alanjhughes))
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+  - [Android] Rewrite implementations from low-level SQLite bindings. ([#24730](https://github.com/expo/expo/pull/24730) by [@kudo](https://github.com/kudo))
+  - Introduced `expo-sqlite/next` new APIs. ([#24812](https://github.com/expo/expo/pull/24812) by [@kudo](https://github.com/kudo))
+  - Added Android implementation for `sqlite/next` APIs. ([#25021](https://github.com/expo/expo/pull/25021) by [@kudo](https://github.com/kudo))
+  - Added the `useSQLiteContext` hook that can be used across components. ([#25129](https://github.com/expo/expo/pull/25129) by [@kudo](https://github.com/kudo))
+  - Improved performance on the `expo-sqlite/next` API. ([#25314](https://github.com/expo/expo/pull/25314) by [@kudo](https://github.com/kudo))
+  - Added binary data support to the `expo-sqlite/next` API through the `Uint8Array`. ([#25787](https://github.com/expo/expo/pull/25787) by [@kudo](https://github.com/kudo))
+- **`unimodules-app-loader`**
+  - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- **`expo-asset`**
+  - URL encode asset paths defined as query parameter. ([#24562](https://github.com/expo/expo/pull/24562) by [@byCedric](https://github.com/byCedric))
+  - fix URLs in development. ([#25202](https://github.com/expo/expo/pull/25202) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-application`**
+  - On iOS, fixed a regression that prevented expo go from determining the release type. ([#25834](https://github.com/expo/expo/pull/25834) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-barcode-scanner`**
+  - On `Android`, use `rawValue` in the case of scanning a contact card to return complete information. ([#24791](https://github.com/expo/expo/pull/24791) by [@alanhughes](https://github.com/alanjhughes)) ([#24791](https://github.com/expo/expo/pull/24791) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, correctly handle when unsupported barcode types are passed to the `barCodeTypes` prop. ([#24784](https://github.com/expo/expo/pull/24784) by [@alanhughes](https://github.com/alanjhughes)) ([#24784](https://github.com/expo/expo/pull/24784) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-av`**
+  - Fixed recording status not being reset when recording is paused before being stopping. ([#21747](https://github.com/expo/expo/issues/21747)) ([#23816](https://github.com/expo/expo/pull/23816) by [@mojavad](https://github.com/mojavad))
+  - Prevent audio from other apps being stopped when users app is backgrounded. ([#24198](https://github.com/expo/expo/pull/24198) by [@alanhughes](https://github.com/alanjhughes)) ([#24198](https://github.com/expo/expo/pull/24198) by [@alanjhughes](https://github.com/alanjhughes))
+  - [ios] Fixed the `LOW_QUALITY` preset producing large audio files. ([#24323](https://github.com/expo/expo/pull/24323) by [@behenate](https://github.com/behenate))
+  - Update pitch algorithm settings for iOS >= 17. ([#24678](https://github.com/expo/expo/pull/24678) by [@hromovp](https://github.com/hromovp))
+  - [iOS] fix compilation on tvOS. ([#24864](https://github.com/expo/expo/pull/24864) by [@douglowder](https://github.com/douglowder))
+  - Fix audio recording resetting when receiving a phone call. ([#25054](https://github.com/expo/expo/pull/25054) by [@behenate](https://github.com/behenate))
+  - Fix iOS `naturalSize.orientation` in prop `onReadyForDisplay` for hls stream ([#25169](https://github.com/expo/expo/pull/25169) by [@souzaluiz](https://github.com/souzaluiz))
+  - [iOS] Fix base64 audio playback on iOS 17. ([#25414](https://github.com/expo/expo/pull/25414) by [@behenate](https://github.com/behenate))
+- **`expo-camera`**
+  - Resolved an issue on Android where recording a video, even with the mute: true option, would still result in an audio permission exception. Furthermore, the mute flag was incorrectly referred to as muteValue, causing it to be consistently ignored ([#23145](https://github.com/expo/expo/pull/23145) by [@hirbod](https://github.com/hirbod))
+  - Fix crash when onBarCodeScanned or onFacesDetected callback is removed. ([#23223](https://github.com/expo/expo/pull/23223) by [@thespacemanatee](https://github.com/thespacemanatee))
+  - Remove @koale/useworker. ([#23967](https://github.com/expo/expo/pull/23967) by [@marklawlor](https://github.com/marklawlor))
+  - Fixed issue with checking camera/microphone permissions in Firefox. ([#22855](https://github.com/expo/expo/pull/22855) by [@loganrosen](https://github.com/loganrosen))
+  - Fixed flash is not enabled during recordings. ([#23776](https://github.com/expo/expo/pull/23776) by [@tszheichoi](https://github.com/tszheichoi))
+  - On iOS, fix dead frames when starting a video recording. ([#22037](https://github.com/expo/expo/pull/22037) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix a regression from ([#22604](https://github.com/expo/expo/pull/22604) that prevented the barcode scanner from starting.([#25053](https://github.com/expo/expo/pull/25053) by [@alanjhughes](https://github.com/alanjhughes)) ([#22604](https://github.com/expo/expo/pull/22604), [#25053](https://github.com/expo/expo/pull/25053) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-calendar`**
+  - On `iOS`, fix permissions error on `iOS 17`. ([#24545](https://github.com/expo/expo/pull/24545) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix url parsing when adding url in calendar event and reminder on iOS. ([#24102](https://github.com/expo/expo/pull/24102) by [@Thomas-Mollard](https://github.com/Thomas-Mollard))
+  - On `iOS`, fix check that determines if the version of Xcode supports `iOS 17`. ([#24655](https://github.com/expo/expo/pull/24655) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `iOS`, validate calendars argument in `getRemindersAsync` before accessing `count`. ([#24677](https://github.com/expo/expo/pull/24677) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Fix unnecessary permission check for calendars when calling `saveCalendarAsync` with `entityType` `"reminder"` ([#24967](https://github.com/expo/expo/pull/24967) by [@robertying](https://github.com/robertying))
+- **`expo-brightness`**
+  - On `Android`, add event to prevent the `new NativeEventEmitter()` warning. ([#24942](https://github.com/expo/expo/pull/24942) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-constants`**
+  - Fix task ':expo-constants:packageDebugAssets' uses this output of task ':expo-constants:copyReleaseExpoConfig' without declaring an explicit or implicit dependency when running `gradlew test` on Android. ([#23511](https://github.com/expo/expo/pull/23511) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-clipboard`**
+  - [Android] Fix path traversal vulnerability in `getFileForUri` function. ([#25549](https://github.com/expo/expo/pull/25549) by [@behenate](https://github.com/behenate))
+- **`expo-contacts`**
+  - [Android] Fix `addContactAsync` failing when an e-mail or a phone number is provided with an id. ([#23877](https://github.com/expo/expo/pull/23877) by [@behenate](https://github.com/behenate))
+- **`expo-file-system`**
+  - Fix regression in `copyAsync` on Android. ([#23892](https://github.com/expo/expo/pull/23892) by [@brentvatne](https://github.com/brentvatne))
+  - On `Android`, use `addInterceptor` instead of `addNetworkInterceptor` in `downloadResumableStartAsync`. ([#24702](https://github.com/expo/expo/pull/24702) by [@alanhughes](https://github.com/alanjhughes)) ([#24702](https://github.com/expo/expo/pull/24702) by [@alanjhughes](https://github.com/alanjhughes))
+  - On `Android`, handle using files from `SAF` correctly. ([#25389](https://github.com/expo/expo/pull/25389) by [@alanjhughes](https://github.com/alanjhughes))
+  - Removed legacy `bundledAssets` constant that was used only in standalone apps. ([#25484](https://github.com/expo/expo/pull/25484) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added missing check for directory permissions in `deleteAsync` method. ([#25704](https://github.com/expo/expo/pull/25704) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-document-picker`**
+  - Fix `type` on `DocumentPickerOptions` on iOS. ([#23497](https://github.com/expo/expo/pull/23497) by [@aleqsio](https://github.com/aleqsio))
+  - [web] Fix promise never resolving when user cancels the picker. ([#24838](https://github.com/expo/expo/pull/24838) by [@behenate](https://github.com/behenate))
+  - Added default mimetype (`application/octet-stream`) to avoid quiet failure when mimetype is null on iOS ([#24764](https://github.com/expo/expo/pull/24764) by [@OzymandiasTheGreat](https://github.com/OzymandiasTheGreat))
+- **`expo-image-loader`**
+  - Bump `Glide` version to resolve `SecurityException` on Android 13. ([#24196](https://github.com/expo/expo/pull/24196) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-font`**
+  - Gracefully catch exceptions during font loading on web with `fontfaceobserver`. ([#22954](https://github.com/expo/expo/pull/22954) by [@bradjones1](https://github.com/bradjones1))
+  - Handle the case where no argument is passed to the plugin. ([#25138](https://github.com/expo/expo/pull/25138) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-image-manipulator`**
+  - [iOS] Fix an issue where the image is manipulated on a background thread. ([#25756](https://github.com/expo/expo/pull/25756) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-image-picker`**
+  - Fix manifest merger build fail on Android. ([#23191](https://github.com/expo/expo/pull/23191) by [@alexandrius](https://github.com/alexandrius))
+  - [Android] Fix backported photo picker crashing with null intent. ([#23224](https://github.com/expo/expo/pull/23224) by [@thespacemanatee](https://github.com/thespacemanatee))
+  - On Android, the `Uri` type is not serializable and causes a crash when recreating the activity. ([#23768](https://github.com/expo/expo/pull/23768) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-intent-launcher`**
+  - Fixed errors in debug and crashes in production when an intent is launched without found activities. ([#24481](https://github.com/expo/expo/pull/24481) by [@robertying](https://github.com/robertying))
+- **`expo-location`**
+  - Downgrade play-services-location to 20.0.0 to support react-native-maps. ([#23501](https://github.com/expo/expo/pull/23501) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-linking`**
+  - Fix parsing web URLs with `+` symbols in the pathname. ([#24300](https://github.com/expo/expo/pull/24300) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-media-library`**
+  - Fix `albumNeedsMigrationAsync` crashing if called with invalid `albumId` on Android. ([#23516](https://github.com/expo/expo/pull/23516) by [@lukmccall](https://github.com/lukmccall))
+  - Fix `the bind value at index 1 is null` exception thrown by `ExpoMediaLibrary.migrateAlbumIfNeededAsync` on Android. ([#23515](https://github.com/expo/expo/pull/23515) by [@lukmccall](https://github.com/lukmccall))
+  - On iOS, fix issue where the wrong requester class was used if the user had requested `writeOnly` permissions. ([#23780](https://github.com/expo/expo/pull/23780) by [@alanjhughes](https://github.com/alanjhughes))
+  - On iOS, fix iOS 14 limited library picker presentation, using `presentPermissionsPickerAsync`, on nested views and `reject` Promise if state is not `limited`. ([#25521](https://github.com/expo/expo/pull/25521) by [@exodusanto](https://github.com/exodusanto))
+  - Fix promises being resolved twice on Android. ([#25763](https://github.com/expo/expo/pull/25763) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-localization`**
+  - [iOS] fix tvOS compilation. ([#24845](https://github.com/expo/expo/pull/24845) by [@douglowder](https://github.com/douglowder))
+  - [iOS] Fix expo-localization tvOS compile, add CI. ([#25082](https://github.com/expo/expo/pull/25082) by [@douglowder](https://github.com/douglowder))
+- **`expo-modules-core`**
+  - Fix the `View cannot be cast to ViewGroup` exception on Android. ([#23264](https://github.com/expo/expo/pull/23264) by [@lukmccall](https://github.com/lukmccall))
+  - Improved the OkHttp network inspector stability on Android. ([#23350](https://github.com/expo/expo/pull/23350) by [@kudo](https://github.com/kudo))
+  - [iOS] Fix conversion to `URL` type that failed despite receiving a string that contained a valid URL. ([#23331](https://github.com/expo/expo/pull/23331) by [@alanhughes](https://github.com/alanjhughes)) ([#23331](https://github.com/expo/expo/pull/23331) by [@alanjhughes](https://github.com/alanjhughes)) ([#23331](https://github.com/expo/expo/pull/23331), [#23331](https://github.com/expo/expo/pull/23331) by [@alanjhughes](https://github.com/alanjhughes), [@alanjhughes](https://github.com/alanjhughes))
+  - Fixed the Network Inspector cannot preview response body for response without the `Content-Length` header. ([#23405](https://github.com/expo/expo/pull/23405) by [@kudo](https://github.com/kudo))
+  - Fixed `SoLoader` does not work on Android. ([#23415](https://github.com/expo/expo/pull/23415) by [@kudo](https://github.com/kudo))
+  - Fixed slower boot time on Android. ([#23345](https://github.com/expo/expo/pull/23345) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed regressions and crashes in the dev client introduced by [#23405](https://github.com/expo/expo/pull/23405). ([#23491](https://github.com/expo/expo/pull/23491) by [@kudo](https://github.com/kudo)) ([#23405](https://github.com/expo/expo/pull/23405), [#23491](https://github.com/expo/expo/pull/23491) by [@kudo](https://github.com/kudo))
+  - Fixed the `ErrorViewGroup` cannot be cast to module view class exception on Android. ([#23651](https://github.com/expo/expo/pull/23651) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix allowed orientations set in `Info.plist` being ignored when no delegates requested a different orientation. ([#23593](https://github.com/expo/expo/pull/23593) by [@behenate](https://github.com/behenate))
+  - [iOS] Fixed custom fonts support on Fabric. ([#23666](https://github.com/expo/expo/pull/23666) by [@aleqsio](https://github.com/aleqsio))
+  - [Android] Fixed splash screen is missing when using the `getDelayLoadAppHandler()` from expo-updates. ([#23747](https://github.com/expo/expo/pull/23747) by [@kudo](https://github.com/kudo))
+  - [Android] Refresh NativeModulesProxy if app bundle is reloaded. ([#23824](https://github.com/expo/expo/pull/23824) by [@douglowder](https://github.com/douglowder))
+  - [Android] Fix nullability of parameter type in `List` and `Map` when converting from JS to native. ([#23942](https://github.com/expo/expo/pull/23942) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed Fabric setup error on iOS. ([#24004](https://github.com/expo/expo/pull/24004) by [@kudo](https://github.com/kudo))
+  - Fixed uuid v4 generation. ([#24123](https://github.com/expo/expo/pull/24123) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Fixed owner type of view functions. ([#24135](https://github.com/expo/expo/pull/24135) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed IOException `No space left on device` when saving persistent log. ([#24247](https://github.com/expo/expo/pull/24247) by [@RodolfoGS](https://github.com/RodolfoGS))
+  - Fixed typed arrays couldn't be returned from synchronous functions. ([#24744](https://github.com/expo/expo/pull/24744) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fixed exception when deallocating shared objects. ([#24836](https://github.com/expo/expo/pull/24836) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed `null` or `undefined` wasn't converted to `JavaScriptValue`. ([#24899](https://github.com/expo/expo/pull/24899) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fixed `Either` converter not working with types that have common representation in JavaScript. ([#24903](https://github.com/expo/expo/pull/24903) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] `Any` converter doesn't use `ReadableMap` or `ReadableList` anymore. Objects and arrays are converted to Kotlin's primitives. ([#24963](https://github.com/expo/expo/pull/24963) by [@lukmccall](https://github.com/lukmccall))
+  - Mock native code on web platforms. ([#25264](https://github.com/expo/expo/pull/25264) by [@EvanBacon](https://github.com/EvanBacon))
+  - [iOS] Fixed the object identifier for shared object types. ([#25060](https://github.com/expo/expo/pull/25060) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Fixed concurrent functions (async/await) not converting results such as records and shared objects. ([#25075](https://github.com/expo/expo/pull/25075) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Fixed concurrent functions (async/await) not supporting an owner argument (view and class functions). ([#25141](https://github.com/expo/expo/pull/25141) by [@tsapeta](https://github.com/tsapeta))
+  - Fixed UIView arguments not being resolved correctly when passed in with findNodeHandle ([#24703](https://github.com/expo/expo/pull/24703) by [@javache](https://github.com/javache))
+  - [Android] Improve boot time on low-end devices. ([#25267](https://github.com/expo/expo/pull/25267) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Improve performance of enum and map converters. ([#25272](https://github.com/expo/expo/pull/25272) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Improve logic responsible for obtaining converters that slow down the startup time. ([#25273](https://github.com/expo/expo/pull/25273) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Improving the creation process of views for better performance. ([#25274](https://github.com/expo/expo/pull/25274) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Prevent the app from crashing during reloading when an unfinished promise tries to execute.
+  - [Android] Fix `JavaScriptFunction` not working when the return type wasn't provided. ([#25688](https://github.com/expo/expo/pull/25688) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fix requesting only `WRITE_SETTINGS` rejecting promise even if the permission was granted. ([#25732](https://github.com/expo/expo/pull/25732) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fix functions that are scheduled on the main thread weren't being called as soon as possible. ([#25757](https://github.com/expo/expo/pull/25757) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-notifications`**
+  - Fix server rendering with Metro web. ([#24195](https://github.com/expo/expo/pull/24195) by [@EvanBacon](https://github.com/EvanBacon))
+  - Send background notifications through when the app is in the foreground ([#24684](https://github.com/expo/expo/pull/24684) by [@kadikraman](https://github.com/kadikraman))
+  - On `Android`, make `tokenManager` nullable to prevent crash if we can't find it. ([#25860](https://github.com/expo/expo/pull/25860) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-print`**
+  - Fixed missing constants on iOS, restricted possibility of starting multiple print jobs at once, which would lead to crashes. ([#23128](https://github.com/expo/expo/pull/23128) by [@behenate](https://github.com/behenate))
+- **`expo-device`**
+  - [iOS] fix tvOS compilation. ([#24845](https://github.com/expo/expo/pull/24845) by [@douglowder](https://github.com/douglowder))
+- **`expo-sensors`**
+  - Fix NullPointerException in PedometerModule. ([#24079](https://github.com/expo/expo/pull/24079) by [@jleprinc](https://github.com/jleprinc))
+  - [Android] Fix pedometer not working due to lack of permissions. ([#25815](https://github.com/expo/expo/pull/25815) by [@omegascorp](https://github.com/omegascorp) and [@behenate](https://github.com/behenate)) ([#25815](https://github.com/expo/expo/pull/25815) by [@omegascorp](https://github.com/omegascorp), [@behenate](https://github.com/behenate))
+  - On iOS, fix an issue where permissions were requested on reload. ([#25827](https://github.com/expo/expo/pull/25827) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-secure-store`**
+  - Fixed the 'WHEN_UNLOCKED_THIS_DEVICE_ONLY' constraint being incorrectly mapped to wrong secure store accessible ([#24831](https://github.com/expo/expo/pull/24831) by [@mmmguitar](https://github.com/mmmguitar))
+- **`expo-screen-orientation`**
+  - [iOS] When config plugin is not configured the initial orientation is now based on values in `Info.plist` instead of being set to portrait. ([#23456](https://github.com/expo/expo/pull/23456) by [@behenate](https://github.com/behenate))
+  - [iOS] Fix event emitter sending events with no registered listeners. ([#23462](https://github.com/expo/expo/pull/23462) by [@behenate](https://github.com/behenate))
+  - [iOS] Fix config plugin deleting the orientations key from `Info.plist` when the initial orientation value is set to `DEFAULT`. ([#23637](https://github.com/expo/expo/pull/23637) by [@behenate](https://github.com/behenate))
+  - Fix addOrientationChangeListener not working on iPadOS. ([#23656](https://github.com/expo/expo/pull/23656) by [@behenate](https://github.com/behenate))
+  - On `Android`, add event to module definition to prevent `new NativeEventEmitter()` warning. ([#24943](https://github.com/expo/expo/pull/24943) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-speech`**
+  - Use new `EventEmitter` instead of `NativeEventEmitter`. ([#24221](https://github.com/expo/expo/pull/24221) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-video-thumbnails`**
+  - [iOS] Fixed an issue where `timeFrame` exceeding video duration failed to generate a thumbnail. Implemented clamping. ([#25681](https://github.com/expo/expo/pull/25681) by [@hirbod](https://github.com/hirbod))
+- **`expo-sqlite`**
+  - Fixed the return type from `executeSqlAsync` to only successful `ResultSet`. ([#24336](https://github.com/expo/expo/pull/24336) by [@kudo](https://github.com/kudo))
+  - Fixed missing `transaction()` and `readTransaction()` function types from `SQLiteDatabase`. ([#23751](https://github.com/expo/expo/pull/23751) by [@kudo](https://github.com/kudo))
+  - [iOS] Fixed build error when mixing with iOS built-in SQLite3. ([#23885](https://github.com/expo/expo/pull/23885) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed select queries with CTEs crashing on Android. ([#24132](https://github.com/expo/expo/pull/24132) by [@derekstavis](https://github.com/derekstavis))
+  - [iOS] Fixed an issue with CRSQLite missing a minimum OS version on iOS, causing rejections on AppStore Connect submission. ([#24347](https://github.com/expo/expo/pull/24347) by [@derekstavis](https://github.com/derekstavis))
+  - Fix broken JS test. ([#24498](https://github.com/expo/expo/pull/24498) by [@alanjhughes](https://github.com/alanjhughes))
+  - [ios] Fix some issues for `sqlite/next`. ([#25022](https://github.com/expo/expo/pull/25022) by [@kudo](https://github.com/kudo))
+  - Fix crash issues in `sqlite/next`. ([#25295](https://github.com/expo/expo/pull/25295) by [@kudo](https://github.com/kudo))
+  - Fix `executeSqlAsync` to accept null properly as arguments. ([#24761](https://github.com/expo/expo/pull/24761) by [@spencerc99](https://github.com/spencerc99))
+  - Fixed `useSQLiteContext()` and `finalizeUnusedStatementsBeforeClosing` issues in `expo-sqlite/next` API. ([#25328](https://github.com/expo/expo/pull/25328) by [@kudo](https://github.com/kudo))
+  - Fixed the `transactionExclusiveAsync` does not support CRSQLite. ([#25370](https://github.com/expo/expo/pull/25370) by [@kudo](https://github.com/kudo))
+  - Fixed `expo-sqlite/next` integer overflow crashes on iOS. ([#25322](https://github.com/expo/expo/pull/25322) by [@peterferguson](https://github.com/peterferguson))
+  - Fixed `expo-sqlite/next` crashes when access to finalized statements. ([#25623](https://github.com/expo/expo/pull/25623) by [@kudo](https://github.com/kudo))
+  - Fixed `expo-sqlite/next` UTF-8 text issue and `:memory:` database issue. ([#25637](https://github.com/expo/expo/pull/25637) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- **`expo-asset`**
+  - Collapse re-export of `react-native/Libraries/Image/AssetRegistry` to `@react-native/assets-registry/registry`. ([#25265](https://github.com/expo/expo/pull/25265) by [@EvanBacon](https://github.com/EvanBacon))
+  - Migrate to new standard `URL` support on native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+  - Renamed `unimodule.json` to `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+  - Removed references to legacy `bundledAssets` constant from `expo-file-system` that was used only in standalone apps. ([#25484](https://github.com/expo/expo/pull/25484) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-apple-authentication`**
+  - Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-application`**
+  - Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-auth-session`**
+  - Remove references to `startAsync` from js doc. ([#23150](https://github.com/expo/expo/pull/23150) by [@alanhughes](https://github.com/alanjhughes)) ([#23150](https://github.com/expo/expo/pull/23150) by [@alanjhughes](https://github.com/alanjhughes))
+  - Remove unnecessary test. ([#23154](https://github.com/expo/expo/pull/23154) by [@alanhughes](https://github.com/alanjhughes)) ([#23154](https://github.com/expo/expo/pull/23154) by [@alanjhughes](https://github.com/alanjhughes))
+  - Migrate to new standard `URL` support on native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+  - Added dependency on `expo-application` as it's no longer a dependency of the `expo` package. ([#25583](https://github.com/expo/expo/pull/25583) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-barcode-scanner`**
+  - Update snapshots. ([#23238](https://github.com/expo/expo/pull/23238) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-battery`**
+  - Migrated Android codebase to use Expo Modules API. ([#23883](https://github.com/expo/expo/pull/23883) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-background-fetch`**
+  - Migrated Android codebase to use Expo modules API. ([#23903](https://github.com/expo/expo/pull/23903) by [@lukmccall](https://github.com/lukmccall))
+  - Migrate iOS codebase to use Expo Modules API. ([#23936](https://github.com/expo/expo/pull/23936) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-av`**
+  - Migrated `AVModule` to use Expo modules API. ([#23902](https://github.com/expo/expo/pull/23902) by [@lukmccall](https://github.com/lukmccall))
+  - Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+  - Use `pointerEvent` style instead of prop for video component on web. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
+  - Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
+  - Removed backward compatible code for deprecated SDKs. ([#25154](https://github.com/expo/expo/pull/25154) by [@kudo](https://github.com/kudo))
+  - Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
+- **`expo-camera`**
+  - Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+  - Use `pointerEvent` style instead of prop. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
+  - [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes)) ([#25495](https://github.com/expo/expo/pull/25495) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-calendar`**
+  - [Android] Migrate to use Expo Modules API. ([#24103](https://github.com/expo/expo/pull/24103) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-blur`**
+  - Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-constants`**
+  - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes)) ([#23249](https://github.com/expo/expo/pull/23249) by [@alanjhughes](https://github.com/alanjhughes))
+  - Use dedicated `requireOptionalNativeModule` instead of try-catching `requireNativeModule`. ([#24262](https://github.com/expo/expo/pull/24262) by [@tsapeta](https://github.com/tsapeta))
+  - Drop `crypto` usage on web. ([#25411](https://github.com/expo/expo/pull/25411) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-crypto`**
+  - Change getRandomBytesAsync to use native getRandomValues when available. ([#24716](https://github.com/expo/expo/pull/24716) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-clipboard`**
+  - Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-contacts`**
+  - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes)) ([#23249](https://github.com/expo/expo/pull/23249) by [@alanjhughes](https://github.com/alanjhughes))
+  - Renamed `unimodule.json` to `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+  - Migrated codebase to use Expo Modules API. ([#24991](https://github.com/expo/expo/pull/24991) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-file-system`**
+  - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes)) ([#23249](https://github.com/expo/expo/pull/23249) by [@alanjhughes](https://github.com/alanjhughes))
+  - Migrated to Swift and Expo Modules API on iOS. ([#23943](https://github.com/expo/expo/pull/23943) by [@tsapeta](https://github.com/tsapeta))
+  - Throw the correct error when we can't find the permissions modules. ([#24464](https://github.com/expo/expo/pull/24464) by [@alanhughes](https://github.com/alanjhughes)) ([#24464](https://github.com/expo/expo/pull/24464) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-document-picker`**
+  - Remove deprecated fields and warning on `getDocumentAsync`. ([#23135](https://github.com/expo/expo/pull/23135) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-face-detector`**
+  - Migrated codebase to use Expo Modules API. ([#24994](https://github.com/expo/expo/pull/24994) by [@lukmccall](https://github.com/lukmccall))
+  - Renamed `unimodule.json` to `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-image-loader`**
+  - Renamed `unimodule.json` to `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-font`**
+  - Change unloaded font error to a warning. ([#23788](https://github.com/expo/expo/pull/23788) by [@EvanBacon](https://github.com/EvanBacon))
+  - Migrated `FontLoaderModule` to use Expo Modules API. ([#24015](https://github.com/expo/expo/pull/24015) by [@lukmccall](https://github.com/lukmccall))
+  - Updated types for server functions. ([#23911](https://github.com/expo/expo/pull/23911) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-gl`**
+  - Migrated `GLObjectManagerModule` to use Expo Modules API. ([#24017](https://github.com/expo/expo/pull/24017) by [@lukmccall](https://github.com/lukmccall))
+  - Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+  - Use `pointerEvent` style instead of prop for components on web. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
+  - Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
+  - Removed backward compatible code for deprecated SDKs. ([#25154](https://github.com/expo/expo/pull/25154) by [@kudo](https://github.com/kudo))
+  - Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
+- **`expo-image-manipulator`**
+  - [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes)) ([#25495](https://github.com/expo/expo/pull/25495) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-keep-awake`**
+  - On Android, migrate to Expo Modules Api. ([#24012](https://github.com/expo/expo/pull/24012) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-image-picker`**
+  - On Android, restore behavior from [#22658](https://github.com/expo/expo/pull/22658). ([#23617](https://github.com/expo/expo/pull/23617) by [@alanhughes](https://github.com/alanjhughes)) ([#22658](https://github.com/expo/expo/pull/22658), [#23617](https://github.com/expo/expo/pull/23617) by [@alanjhughes](https://github.com/alanjhughes)) ([#22658](https://github.com/expo/expo/pull/22658), [#23617](https://github.com/expo/expo/pull/23617), [#22658](https://github.com/expo/expo/pull/22658), [#23617](https://github.com/expo/expo/pull/23617) by [@alanjhughes](https://github.com/alanjhughes), [@alanjhughes](https://github.com/alanjhughes))
+  - Remove deprecation warnings on `ImagePickerResult`. ([#24226](https://github.com/expo/expo/pull/24226) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-linear-gradient`**
+  - Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-mail-composer`**
+  - Migrate to new standard `URL` support on native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-local-authentication`**
+  - [Android] Migrate to use Expo Modules API. ([#24083](https://github.com/expo/expo/pull/24083) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-location`**
+  - [Android] Moved to the new Modules API. ([#24737](https://github.com/expo/expo/pull/24737) by [@behenate](https://github.com/behenate))
+  - Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-linking`**
+  - Reduce bundle size on web. ([#24300](https://github.com/expo/expo/pull/24300) by [@EvanBacon](https://github.com/EvanBacon))
+  - Migrate to new standard `URL` support on native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-localization`**
+  - Change documentation to refer to a correct replacement method in a deprecated field. ([#23811](https://github.com/expo/expo/pull/23811) by [@aleqsio](https://github.com/aleqsio))
+  - [iOS] Use newer, non-deprecated platform APIs in `getLocales()`. ([#24884](https://github.com/expo/expo/pull/24884) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-modules-core`**
+  - Changed Objective-C names for `ExpoReactDelegate` and `ExpoReactDelegateHandler` to fix issues with versioning in Expo Go. ([#23229](https://github.com/expo/expo/pull/23229) by [@tsapeta](https://github.com/tsapeta))
+  - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes)) ([#23249](https://github.com/expo/expo/pull/23249) by [@alanjhughes](https://github.com/alanjhughes))
+  - Improved error handling when working with native promises on Android. ([#23571](https://github.com/expo/expo/pull/23571) by [@lukmccall](https://github.com/lukmccall))
+  - Added tracing to avoid slow app startup on Android. ([#23653](https://github.com/expo/expo/pull/23653) by [@lukmccall](https://github.com/lukmccall))
+  - Use native UUIDv4 generation on `Android` and `iOS`. ([#24199](https://github.com/expo/expo/pull/24199) by [@behenate](https://github.com/behenate))
+  - [Android] Add type converter for the `ReadableArguments` class to allow backward compatibility with older modules. ([#24137](https://github.com/expo/expo/pull/24137) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] `SharedObjectTypeConverter` now can work with the `Dynamic` class. ([#24207](https://github.com/expo/expo/pull/24207) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Expose a conversion between id and shared objects. ([#24220](https://github.com/expo/expo/pull/24220) by [@lukmccall](https://github.com/lukmccall))
+  - Remove deprecated `RCTDeviceEventEmitter`. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+  - Remove `deprecate` utility function. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+  - Deprecate `SyntheticPlatformEmitter` in favor of `DeviceEventEmitter`. ([#24298](https://github.com/expo/expo/pull/24298) by [@EvanBacon](https://github.com/EvanBacon))
+  - Introduced an AppContext config to provide things like documents and caches directories for the modules. ([#24292](https://github.com/expo/expo/pull/24292) by [@tsapeta](https://github.com/tsapeta))
+  - Fixed random `NullPointerExceptions` when calling `Updates.reloadAsync` on Android. ([#24442](https://github.com/expo/expo/pull/24442) by [@lukmccall](https://github.com/lukmccall))
+  - Converting shared object id passed as a prop to the associated native object. ([#24431](https://github.com/expo/expo/pull/24431) by [@tsapeta](https://github.com/tsapeta))
+  - Added a convenient method to get the app delegate subscriber of the given type. ([#23943](https://github.com/expo/expo/pull/23943) by [@tsapeta](https://github.com/tsapeta))
+  - Improve tracking on Android. ([#24625](https://github.com/expo/expo/pull/24625) by [@lukmccall](https://github.com/lukmccall))
+  - Use native UUIDv5 generation on `Android` and `iOS`. ([#24200](https://github.com/expo/expo/pull/24200) by [@behenate](https://github.com/behenate))
+  - Ensure native modules are installed before required. ([#24746](https://github.com/expo/expo/pull/24746) by [@tsapeta](https://github.com/tsapeta))
+  - Clean up and restructure the modules core package directory. ([#24816](https://github.com/expo/expo/pull/24816) by [@tsapeta](https://github.com/tsapeta))
+  - Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+  - Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
+  - Removed backward compatible code for deprecated SDKs. ([#25154](https://github.com/expo/expo/pull/25154) by [@kudo](https://github.com/kudo))
+  - [iOS] Made dynamic types creation faster. ([#25390](https://github.com/expo/expo/pull/25390) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Add `FileSystemUtilities` to replace legacy interfaces. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes)) ([#25495](https://github.com/expo/expo/pull/25495) by [@alanjhughes](https://github.com/alanjhughes))
+  - Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
+  - Marked `NativeModulesProxy` as deprecated in favor of `requireNativeModule` and `requireOptionalNativeModule`. ([#25666](https://github.com/expo/expo/pull/25666) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-notifications`**
+  - Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes)) ([#23249](https://github.com/expo/expo/pull/23249) by [@alanjhughes](https://github.com/alanjhughes))
+  - Remove legacy expo package notifications module code. ([#24325](https://github.com/expo/expo/pull/24325) by [@wschurman](https://github.com/wschurman))
+  - Migrated codebase to use Expo Modules API. ([#24499](https://github.com/expo/expo/pull/24499) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-print`**
+  - Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- **`expo-network`**
+  - Remove deprecated `getMacAddressAsync` method. ([#24505](https://github.com/expo/expo/pull/24505) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-sensors`**
+  - Use absolute motion reference frame to calculate device rotation if available on iOS. ([#23738](https://github.com/expo/expo/pull/23738) by [@jkaufman](https://github.com/jkaufman))
+  - Migrated Android codebase to use Expo modules API. ([#23906](https://github.com/expo/expo/pull/23906) by [@lukmccall](https://github.com/lukmccall))
+  - Migrated to Swift and Expo Modules API on iOS. ([#24133](https://github.com/expo/expo/pull/24133) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-secure-store`**
+  - Added a check for the `NSFaceIDUsageDescription` key in the `set` function. ([#23275](https://github.com/expo/expo/pull/23275) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Enforce minimum authentication tag length for the `AESEncryptor` for improved security. ([#25294](https://github.com/expo/expo/pull/25294) by [@behenate](https://github.com/behenate))
+- **`expo-screen-orientation`**
+  - [iOS] Refactor the singleton class to work properly in versioned code in Expo Go. ([#23228](https://github.com/expo/expo/pull/23228) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-task-manager`**
+  - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+  - Migrated codebase to use Expo Modules API. ([#24157](https://github.com/expo/expo/pull/24157) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-speech`**
+  - Migrated Android codebase to use Expo modules API. ([#23862](https://github.com/expo/expo/pull/23862) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-sharing`**
+  - [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes)) ([#25495](https://github.com/expo/expo/pull/25495) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-video-thumbnails`**
+  - [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes)) ([#25495](https://github.com/expo/expo/pull/25495) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sqlite`**
+  - Remove unneeded resource bundle. ([#23813](https://github.com/expo/expo/pull/23813) by [@alanjhughes](https://github.com/alanjhughes))
+  - Update `SQLite` on `Android`. ([#23993](https://github.com/expo/expo/pull/23993) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Bump `SQLite`version to latest. ([#24375](https://github.com/expo/expo/pull/24375) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Removed the package included SQLite source and download in build time. ([#25186](https://github.com/expo/expo/pull/25186) by [@kudo](https://github.com/kudo))
+  - Build `crsqlite` from source using the correct architectures. ([#25363](https://github.com/expo/expo/pull/25363) by [@alanjhughes](https://github.com/alanjhughes))
+  - [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes)) ([#25495](https://github.com/expo/expo/pull/25495) by [@alanjhughes](https://github.com/alanjhughes))
+  - Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
+- **`unimodules-app-loader`**
+  - Renamed `unimodule.json` to `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+
+### ⚠️ Notices
+
+- **`expo-localization`**
+  - Deprecated `locale` constant. ([#25078](https://github.com/expo/expo/pull/25078) by [@aleqsio](https://github.com/aleqsio))
+
+## 49.0.0 — 2023-06-27
+
+### 📚 3rd party library updates
+
+- Updated `@react-native-community/datetimepicker` from `6.7.3` to `7.2.0`. ([#23034](https://github.com/expo/expo/pull/23034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated `@react-native-community/netinfo` from `9.3.7` to `9.3.10`. ([#22892](https://github.com/expo/expo/pull/22892) by [@douglowder](https://github.com/douglowder))
+- Updated `@react-native-masked-view/masked-view` from `0.2.8` to `0.2.9`. ([#22875](https://github.com/expo/expo/pull/22875) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated `@react-native-picker/picker` from `2.4.8` to `2.4.10`. ([#22919](https://github.com/expo/expo/pull/22919) by [@keith-kurak](https://github.com/keith-kurak))
+- Updated `@react-native-segmented-control/segmented-control` from `2.4.0` to `2.4.1`. ([#22911](https://github.com/expo/expo/pull/22911) by [@keith-kurak](https://github.com/keith-kurak))
+- Updated `@shopify/flash-list` from `1.4.0` to `1.4.3`. ([#22893](https://github.com/expo/expo/pull/22893) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated `@shopify/react-native-skia` from `0.1.172` to `0.1.196`. ([#22900](https://github.com/expo/expo/pull/22900), [#23036](https://github.com/expo/expo/pull/23036), [#23157](https://github.com/expo/expo/pull/23157) by [@kudo](https://github.com/kudo))
+- Updated `lottie-react-native` from `5.1.4` to `5.1.6`. ([#22868](https://github.com/expo/expo/pull/22868) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated `react-native-gesture-handler` from `2.10.1` to `2.12.0`. ([#22621](https://github.com/expo/expo/pull/22906) by [@aleqsio](https://github.com/aleqsio))
+- Updated `react-native-maps` from `1.3.2` to `1.7.1`. ([#22908](https://github.com/expo/expo/pull/22908) by [@aleqsio](https://github.com/aleqsio))
+- Updated `react-native-pager-view` from `6.1.2` to `6.2.0`. ([#22892](https://github.com/expo/expo/pull/22892) by [@douglowder](https://github.com/douglowder))
+- Updated `react-native-reanimated` from `2.14.4` to `3.3.0`. ([#22907](https://github.com/expo/expo/pull/22907) by [@kudo](https://github.com/kudo))
+- Updated `react-native-safe-area-context` from `4.5.0` to `4.6.3`. ([#23026](https://github.com/expo/expo/pull/23026) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-screens` from `3.20.0` to `3.22.0`. ([#23022](https://github.com/expo/expo/pull/23022) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-svg` from `13.4.0` to `13.9.0`. ([#22934](https://github.com/expo/expo/pull/22934) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated `react-native-view-shot` from `3.5.0` to `3.7.0`. ([#23024](https://github.com/expo/expo/pull/23024) by [@tsapeta](https://github.com/tsapeta)))
+- Updated `react-native-webview` from `11.26.0` to `13.2.2`. ([#22913](https://github.com/expo/expo/pull/22913) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-application`**
+  - Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+- **`expo-battery`**
+  - Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+- **`expo-clipboard`**
+  - Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+- **`expo-crypto`**
+  - Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+- **`expo-location`**
+  - Updated `com.google.android.gms:play-services-location` to `21.0.1` and `io.nlopez.smartlocation:library` to `3.3.3` ([#22468](https://github.com/expo/expo/pull/22468) by [@josephyanks](https://github.com/josephyanks))
+- **`expo-media-library`**
+  - Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+- **`expo-modules-core`**
+  - Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+- **`expo-sms`**
+  - Updated `robolectric` to `4.10` and `junit` to `4.13.2`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+- **`expo-web-browser`**
+  - Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🛠 Breaking changes
+
+- **`expo-blur`**
+  - Enable blurring by default when static rendering. ([#23000](https://github.com/expo/expo/pull/23000) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-face-detector`**
+  - Removed face detector from Expo Go on iOS. (https://expo.fyi/face-detector-removed). ([#22619](https://github.com/expo/expo/pull/22619) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-gl`**
+  - Require explicit prop `enableExperimentalWorkletSupport` to use GLView from Reanimated worklet. ([#22613](https://github.com/expo/expo/pull/22613) by [@wkozyra95](https://github.com/wkozyra95))
+- **`expo-file-system`**
+  - Removed the deprecated `UploadProgressData.totalByteSent` field. ([#22277](https://github.com/expo/expo/pull/22277) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-linking`**
+  - Drop support for `detach.scheme` schemes (ExpoKit). ([#22848](https://github.com/expo/expo/pull/22848) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-notifications`**
+  - Removed the deprecated `ExpoPushTokenOptions.experienceId` field. ([#22303](https://github.com/expo/expo/pull/22303) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🎉 New features
+
+- **`expo-battery`**
+  - Added hooks `useBatteryLevel`, `useBatteryState`, `useLowPowerMode`, and `usePowerState`. ([#22646](https://github.com/expo/expo/pull/22646) by [@Adam-Schlichtmann](https://github.com/Adam-Schlichtmann))
+- **`expo-blur`**
+  - Add Android support for `BlurView`. ([#21744](https://github.com/expo/expo/pull/21744) by [@behenate](https://github.com/behenate))
+- **`expo-brightness`**
+  - Migrated Android to Expo Modules API. ([#22037](https://github.com/expo/expo/pull/22037) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-clipboard`**
+  - On iOS, added native `ClipboardPasteButton` view that uses `UIPasteControl`. ([#22823](https://github.com/expo/expo/pull/22823) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-device`**
+  - Added `deviceType` constant. ([#21633](https://github.com/expo/expo/pull/21633) by [@robertherber](https://github.com/robertherber))
+  - On iOS added support for deviceType detection of Desktop on MacOS, checking for Catalyst and iPad app running on Mac. ([#21636](https://github.com/expo/expo/pull/21636) by [@robertherber](https://github.com/robertherber))
+- **`expo-document-picker`**
+  - Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes)) ([#20336](https://github.com/expo/expo/pull/20336) by [@alanjhughes](https://github.com/alanjhughes))
+  - Added support for picking multiple documents. ([#20365](https://github.com/expo/expo/pull/20365) by [@alanhughes](https://github.com/alanjhughes)) ([#20365](https://github.com/expo/expo/pull/20365) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-gl`**
+  - Add support for the `GL_UNPACK_ALIGNMENT` parameter in the `pixelStorei` method. ([#21212](https://github.com/expo/expo/pull/21212) by [@BanBart](https://github.com/BanBart))
+- **`expo-file-system`**
+  - Migrated Android codebase to use Expo modules API. ([#22728](https://github.com/expo/expo/pull/22728) by [@alanhughes](https://github.com/alanjhughes)) ([#22728](https://github.com/expo/expo/pull/22728) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-image-picker`**
+  - Added ability to choose the camera-facing type. ([#22143](https://github.com/expo/expo/pull/22143) by [@YoussefHenna](https://github.com/YoussefHenna))
+  - Added ability to choose the preferred asset representation mode on iOS 14+. ([#22456](https://github.com/expo/expo/pull/22456) by [@thespacemanatee](https://github.com/thespacemanatee))
+  - Updated the Android image picker to use a [more streamlined and modern interface](https://developer.android.com/training/data-storage/shared/photopicker), closely resembling the one on iOS. [#22658](https://github.com/expo/expo/pull/22658) by [@fobos531](https://github.com/fobos531)
+- **`expo-localization`**
+  - Changing locale on Android no longer reloads the app if the `expo-localization` config plugin is added to app.json. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
+  - Added hooks to get current locale and calendar. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
+  - Measurement system now returns `uk` and `us` values on iOS 16 and higher. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-media-library`**
+  - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- **`expo-screen-capture`**
+  - On Android, migrated to Expo Modules API. ([#22208](https://github.com/expo/expo/pull/22208) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sharing`**
+  - On iOS, switched from using `UIDocumentInteractionController` to `UIActivityViewController` which provides more features. ([#22012](https://github.com/expo/expo/pull/22012) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-modules-core`**
+  - [iOS] Introduced native functions on the native component instances. ([#21746](https://github.com/expo/expo/pull/21746) by [@tsapeta](https://github.com/tsapeta))
+  - View tag and React component ref can now be converted to an instance of the native view when used as a function's argument. ([#21816](https://github.com/expo/expo/pull/21816) by [@lukmccall](https://github.com/lukmccall), [#21829](https://github.com/expo/expo/pull/21829) by [@tsapeta](https://github.com/tsapeta)) ([#21816](https://github.com/expo/expo/pull/21816), [#21829](https://github.com/expo/expo/pull/21829) by [@lukmccall](https://github.com/lukmccall), [@tsapeta](https://github.com/tsapeta))
+  - JavaScript functions can now be passed as an argument to a module method. ([#21976](https://github.com/expo/expo/pull/21976) by [@lukmccall](https://github.com/lukmccall), [#22245](https://github.com/expo/expo/pull/22245) by [@tsapeta](https://github.com/tsapeta)) ([#21976](https://github.com/expo/expo/pull/21976), [#22245](https://github.com/expo/expo/pull/22245) by [@lukmccall](https://github.com/lukmccall), [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Initializing and returning shared objects from the native side. ([#22195](https://github.com/expo/expo/pull/22195) by [@tsapeta](https://github.com/tsapeta))
+  - Added `ReactActivityHandler.getDelayLoadAppHandler` interface on Android. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+  - [iOS] Introduced shared refs – a way to pass native objects among different independent modules. ([#22583](https://github.com/expo/expo/pull/22583) by [@tsapeta](https://github.com/tsapeta))
+  - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+  - Supported other network CDP types like `Image` and `Media` rather than `Fetch`. ([#23058](https://github.com/expo/expo/pull/23058) by [@kudo](https://github.com/kudo))
+- **`expo-speech`**
+  - Migrated iOS codebase to use Expo modules API. ([#21814](https://github.com/expo/expo/pull/21814) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-print`**
+  - Migrated iOS codebase to use Expo modules API. ([#21561](https://github.com/expo/expo/pull/21561) by [@behenate](https://github.com/behenate))
+  - Migrated Android codebase to use the Expo modules API and Kotlin coroutines. ([#21714](https://github.com/expo/expo/pull/21714) by [@behenate](https://github.com/behenate))
+- **`expo-screen-orientation`**
+  - Migrated to new modules API on Android ([#22019](https://github.com/expo/expo/pull/22019) by [@behenate](https://github.com/behenate))
+  - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- **`expo-secure-store`**
+  - Migrated iOS codebase to use Expo modules API. ([#21393](https://github.com/expo/expo/pull/21393) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sqlite`**
+  - Migrated to Expo Modules API. ([#21721](https://github.com/expo/expo/pull/21721) by [@alanjhughes](https://github.com/alanjhughes))
+  - Migrated Android codebase to Expo Modules API. ([#23115](https://github.com/expo/expo/pull/23115) by [@alanjhughes](https://github.com/alanjhughes))
+  - Added experimental `Promise` based `execAsync` and `transactionAsync` functions. ([#23109](https://github.com/expo/expo/pull/23109) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- **`expo-application`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-asset`**
+  - Fixed `@react-native/assets-registry` module not found issue on Web. ([#21469](https://github.com/expo/expo/pull/21469) by [@kudo](https://github.com/kudo))
+  - Fixed monorepo asset resolution in production for Metro web. ([#22094](https://github.com/expo/expo/pull/22094) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-background-fetch`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-barcode-scanner`**
+  - Fixed Android property name of BarCodeScannedEvent from boundingBox to bounds to match TypeScript definitions ([#21384](https://github.com/expo/expo/pull/21384) by [@frw](https://github.com/frw))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+  - On Android, fixed an issue where certain text characters would not be recognised. ([#23094](https://github.com/expo/expo/pull/23094) by [@alanhughes](https://github.com/alanjhughes)) ([#23094](https://github.com/expo/expo/pull/23094) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-av`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-battery`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-blur`**
+  - Add `WebkitBackdropFilter` to support `react-native-web` styling. ([#21146](https://github.com/expo/expo/pull/21146) by [@EvanBacon](https://github.com/EvanBacon))
+  - [iOS] Fixed Detox tests hanging when `BlurView` is present ([#22439](https://github.com/expo/expo/pull/22439) by [@behenate](https://github.com/behenate))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-brightness`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-branch`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-calendar`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-cellular`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-clipboard`**
+  - Fixed crash in clipboard listener on Android SDK <26 ([#21383](https://github.com/expo/expo/pull/21383) by [@frw](https://github.com/frw))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-device`**
+  - Fixed Device.getDeviceTypeAsync() returning TABLET on some devices. ([#21325](https://github.com/expo/expo/pull/21325) by [@behenate](https://github.com/behenate))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-document-picker`**
+  - Fixed cancellation type not being marked as a `Record` on Android. ([#21588](https://github.com/expo/expo/pull/21588) by [@alanjhughes](https://github.com/alanjhughes))
+  - Export all types from the module. ([#22172](https://github.com/expo/expo/pull/22172) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix `copyToCacheDirectory` on iOS. ([#23102](https://github.com/expo/expo/pull/23102) by [@aleqsio](https://github.com/aleqsio))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-camera`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-contacts`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-face-detector`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-gl`**
+  - Fixed leaking GL context. ([#21247](https://github.com/expo/expo/pull/21247) by [@wkozyra95](https://github.com/wkozyra95))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+  - Fix deadlock when creating and destroying GLViews in a quick succession. ([#22484](https://github.com/expo/expo/pull/22484) by [@wkozyra95](https://github.com/wkozyra95))
+  - Move creating GL context for worklet to UI thread. ([#22634](https://github.com/expo/expo/pull/22634) by [@wkozyra95](https://github.com/wkozyra95))
+- **`expo-file-system`**
+  - Add UTF-8 URI support on iOS. ([#21196](https://github.com/expo/expo/pull/21196) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+  - Fixed hard crash on iOS when calling readDirectoryAsync. ([#23106](https://github.com/expo/expo/pull/23106) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-haptics`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-image-loader`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-crypto`**
+  - Return lower case UUID on iOS. ([#22509](https://github.com/expo/expo/pull/22509) by [@LinusU](https://github.com/LinusU))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-intent-launcher`**
+  - Fix attempting to import module on iOS. ([#21185](https://github.com/expo/expo/pull/21185) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-image-picker`**
+  - Fix images unexpectedly being converted to `.png` when opening `.bmp` files and selecting any quality in `ImagePickerOptions`. ([#21361](https://github.com/expo/expo/pull/21361) by [@behenate](https://github.com/behenate))
+  - Fix issue where the array of permissions could end up empty causing an exception. ([#21589](https://github.com/expo/expo/pull/21589) by [@alanhughes](https://github.com/alanjhughes)) ([#21589](https://github.com/expo/expo/pull/21589) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fix rotated videos returning incorrect width/height. [#12573](https://github.com/expo/expo/issues/12573) ([#21758](https://github.com/expo/expo/pull/21758) by [@mmmulani](https://github.com/mmmulani))
+  - Fix NullPointerException for launchCameraAsync on Android 13. ([#22123](https://github.com/expo/expo/pull/22123) by [@witheroux](https://github.com/witheroux))
+  - [Android] Fix image picker returning inverted dimensions when selecting vertical images without editing. ([#22383](https://github.com/expo/expo/pull/22383) by [@behenate](https://github.com/behenate))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+  - Fixed an issue that allowed picking non-image/video files when passing `MediaTypeOptions.All` ([#22606](https://github.com/expo/expo/pull/22606) by [@fobos531](https://github.com/fobos531))
+  - Fix manifest merger build fail on Android. ([#23191](https://github.com/expo/expo/pull/23191) by [@alexandrius](https://github.com/alexandrius))
+  - [Android] Fix backported photo picker crashing with null intent. ([#23224](https://github.com/expo/expo/pull/23224) by [@thespacemanatee](https://github.com/thespacemanatee))
+- **`expo-constants`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-keep-awake`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-font`**
+  - Fix require cycle on web. ([#21593](https://github.com/expo/expo/pull/21593) by [@EvanBacon](https://github.com/EvanBacon))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-mail-composer`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-location`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-local-authentication`**
+  - On iOS, fix incorrect nil check when checking for `NSFaceIDUsageDescription` in the Info.plist. ([#21500](https://github.com/expo/expo/pull/21500) by [@alanjhughes](https://github.com/alanjhughes))
+  - [Android] Fixed device credentials fallback when biometric sensors are unavailable ([#22388](https://github.com/expo/expo/pull/22388) by [@hubastard](https://github.com/hubastard))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-localization`**
+  - Fixed invalid timezone returned for `getCalendars` on Web. ([#22003](https://github.com/expo/expo/pull/22003) by [@aleqsio](https://github.com/aleqsio))
+  - Fixed errors thrown on Play Console pre-launch report. ([#22003](https://github.com/expo/expo/pull/22003) by [@aleqsio](https://github.com/aleqsio))
+  - User settings for delimiters and other locale preferences now override default locale settings for each locale in the list. ([#22763](https://github.com/expo/expo/pull/22763) by [@aleqsio](https://github.com/aleqsio))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-linear-gradient`**
+  - Fixed crashes when R8 or Proguard is enabled. ([#21580](https://github.com/expo/expo/pull/21580) by [@kudo](https://github.com/kudo))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-media-library`**
+  - Fix saving animated GIFs on iOS. ([#21549](https://github.com/expo/expo/pull/21549) by [@desi-ivanov](https://github.com/desi-ivanov))
+  - Fixed missing permissions error on Android when the user only requests write permissions ([#22457](https://github.com/expo/expo/pull/22457) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-random`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-notifications`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-screen-capture`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-sharing`**
+  - On iOS, fixed an issue where file permissions were not checked correctly. ([#22112](https://github.com/expo/expo/pull/22112) by [@alanjhughes](https://github.com/alanjhughes))
+  - On iOS, fix crash when share menu is presented on iPad. ([#22193](https://github.com/expo/expo/pull/22193) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-modules-core`**
+  - [iOS] Fixed convertible implementation for `URL` type to support unencoded UTF8 urls and file paths. ([#21139](https://github.com/expo/expo/pull/21139) by [@tsapeta](https://github.com/tsapeta))
+  - Fixed AppDelegateSubscriber broken when running on iOS dynamic framework or static framework mode. ([#21206](https://github.com/expo/expo/pull/21206) by [@kudo](https://github.com/kudo))
+  - [iOS] Fixed URI with encoded `#` getting cut off. ([#21326](https://github.com/expo/expo/pull/21326) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Fail gracefully when the view cannot be constructed due to the missing activity. ([#21328](https://github.com/expo/expo/pull/21328) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fixed jsc import when using use_frameworks ([#21479](https://github.com/expo/expo/pull/21479) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [Android] Fixed coroutine functions crashing when invoked with more than 1 argument. ([#21635](https://github.com/expo/expo/pull/21635) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Fix automatic percent-encoding when converting to the `URL` object. ([#21569](https://github.com/expo/expo/pull/21569) by [@tsapeta](https://github.com/tsapeta))
+  - [Android] Fixed `ReadableNativeMap` cannot be cast to the `Record`. ([#21773](https://github.com/expo/expo/pull/21773) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Improve the initial loading speed of the native view. ([#22153](https://github.com/expo/expo/pull/22153) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed build errors on React Native 0.72.x. ([#22170](https://github.com/expo/expo/pull/22170), [#22189](https://github.com/expo/expo/pull/22189) by [@kudo](https://github.com/kudo))
+  - [Android] Fixed argument trailing not working correctly when all parameters are optional. ([#22293](https://github.com/expo/expo/pull/22293) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed passing `JavaScriptObject` argument and view props. ([#22427](https://github.com/expo/expo/pull/22427) by [@lukmccall](https://github.com/lukmccall))
+  - Fix failing instrumentation tests in JavaScriptViewModule. ([#22518](https://github.com/expo/expo/pull/22518) by [@aleqsio](https://github.com/aleqsio))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+  - [Android] Fix the `Color` converter doesn't work on devices with SDK version below 26. ([#22191](https://github.com/expo/expo/pull/22191) by [@lukmccall](https://github.com/lukmccall))
+  - Refactored network inspector code and add unit tests. ([#22669](https://github.com/expo/expo/pull/22669), [#22693](https://github.com/expo/expo/pull/22693) by [@kudo](https://github.com/kudo))
+  - Fix the `View cannot be cast to ViewGroup` exception on Android. ([#23264](https://github.com/expo/expo/pull/23264) by [@lukmccall](https://github.com/lukmccall))
+  - Improved the OkHttp network inspector stability on Android. ([#23350](https://github.com/expo/expo/pull/23350) by [@kudo](https://github.com/kudo))
+  - [iOS] Fix conversion to `URL` type that failed despite receiving a string that contained a valid URL. ([#23331](https://github.com/expo/expo/pull/23331) by [@alanhughes](https://github.com/alanjhughes)) ([#23331](https://github.com/expo/expo/pull/23331) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fixed the Network Inspector cannot preview response body for response without the `Content-Length` header. ([#23405](https://github.com/expo/expo/pull/23405) by [@kudo](https://github.com/kudo))
+  - Fixed `SoLoader` does not work on Android. ([#23415](https://github.com/expo/expo/pull/23415) by [@kudo](https://github.com/kudo))
+  - Fixed slower boot time on Android. ([#23345](https://github.com/expo/expo/pull/23345) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed regressions and crashes in the dev client introduced by [#23405](https://github.com/expo/expo/pull/23405). ([#23491](https://github.com/expo/expo/pull/23491) by [@kudo](https://github.com/kudo)) ([#23405](https://github.com/expo/expo/pull/23405), [#23491](https://github.com/expo/expo/pull/23491) by [@kudo](https://github.com/kudo))
+- **`expo-network`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-sensors`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-speech`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-permissions`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-print`**
+  - Fixed [Multiple Print Bug on iOS 16](https://github.com/expo/expo/issues/19399). ([#21561](https://github.com/expo/expo/pull/21561) by [@behenate](https://github.com/behenate))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+  - Fixed a regression after refactoring to Swift (restore functionality to print from web url or data string). ([#22997](https://github.com/expo/expo/pull/22997) by [@mroswald](https://github.com/mroswald), [@behenate](https://github.com/behenate))
+  - Fixed missing constants on iOS, restricted possibility of starting multiple print jobs at once, which would lead to crashes. ([#23128](https://github.com/expo/expo/pull/23128) by [@behenate](https://github.com/behenate))
+- **`expo-screen-orientation`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+  - [iOS] Fixed screen orientation on iOS 16. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+  - [iOS] Fixed status bar and navigation bar following the device's orientation regardless of applied orientation lock. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+  - [iOS] Fixed SafeAreaViews failing after pulling down quick settings when the device is in a different orientation than the current orientation lock allows. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+  - [iOS] Fix crash when reading `rootViewController` value. ([#23039](https://github.com/expo/expo/pull/23039) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] When config plugin is not configured the initial orientation is now based on values in `Info.plist` instead of being set to portrait. ([#23456](https://github.com/expo/expo/pull/23456) by [@behenate](https://github.com/behenate))
+- **`expo-image-manipulator`**
+  - Handle images with an unsupported color space ([#21757](https://github.com/expo/expo/pull/21757) by [@mmmulani](https://github.com/mmmulani))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-secure-store`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-store-review`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-sms`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-sqlite`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-task-manager`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-video-thumbnails`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`unimodules-app-loader`**
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- **`expo-web-browser`**
+  - On `iOS` fix browser session being kept alive after view controller is dismissed. ([#22415](https://github.com/expo/expo/pull/22415) by [@alanjhughes](https://github.com/alanjhughes))
+  - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+  - On `iOS`, fixed crash when opening an invalid URL in the web browser. ([#22986](https://github.com/expo/expo/pull/23084) by [@hirbod](https://github.com/hirbod)) ([#23084](https://github.com/expo/expo/pull/23084) by [@hirbod](https://github.com/hirbod))
+- **`expo-camera`**
+  - Resolved an issue on Android where recording a video, even with the mute: true option, would still result in an audio permission exception. Furthermore, the mute flag was incorrectly referred to as muteValue, causing it to be consistently ignored ([#23145](https://github.com/expo/expo/pull/23145) by [@hirbod](https://github.com/hirbod))
+  - Fix crash when onBarCodeScanned or onFacesDetected callback is removed. ([#23223](https://github.com/expo/expo/pull/23223) by [@thespacemanatee](https://github.com/thespacemanatee))
+
+### ⚠️ Notices
+
+- Removed the `Remote JS debugger` option from Expo Go menu when using SDK 49 or above. ([#22027](https://github.com/expo/expo/pull/22027) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- **`expo-barcode-scanner`**
+  - [Android] Replace dependency on deprecated `com.google.android.gms:play-services-vision` with `com.google.mlkit:barcode-scanning`. ([#22107](https://github.com/expo/expo/pull/22107) by [@toshiyuki-suzuki-yukashikado](https://github.com/toshiyuki-suzuki-yukashikado))
+  - Update snapshots. ([#23238](https://github.com/expo/expo/pull/23238) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-auth-session`**
+  - Deprecated `useProxy` option. ([#21313](https://github.com/expo/expo/pull/21313) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Replaced references of `makeRedirectUriAsync` with `makeRedirectUri`. ([#21314](https://github.com/expo/expo/pull/21314) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Added deprecation warning to `promptAsync` when the `useProxy` option is used. ([#21367](https://github.com/expo/expo/pull/21367) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
+  - Remove all auth proxy APIs. ([#22834](https://github.com/expo/expo/pull/22834) by [@alanhughes](https://github.com/alanjhughes)) ([#22834](https://github.com/expo/expo/pull/22834) by [@alanjhughes](https://github.com/alanjhughes))
+  - Remove references to `startAsync` from js doc. ([#23150](https://github.com/expo/expo/pull/23150) by [@alanhughes](https://github.com/alanjhughes)) ([#23150](https://github.com/expo/expo/pull/23150) by [@alanjhughes](https://github.com/alanjhughes))
+  - Remove unnecessary test. ([#23154](https://github.com/expo/expo/pull/23154) by [@alanhughes](https://github.com/alanjhughes)) ([#23154](https://github.com/expo/expo/pull/23154) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-calendar`**
+  - Android: Switch from deprecated `toLowerCase` to `lowercase` function ([#22225](https://github.com/expo/expo/pull/22225) by [@hbiede](https://github.com/hbiede))
+- **`expo-document-picker`**
+  - Remove deprecated fields and warning on `getDocumentAsync`. ([#23135](https://github.com/expo/expo/pull/23135) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-gl`**
+  - Remove legacy code for old Expo Go. ([#21247](https://github.com/expo/expo/pull/21247) by [@wkozyra95](https://github.com/wkozyra95))
+- **`expo-file-system`**
+  - Android: Switch from deprecated `toLowerCase` to `lowercase` function ([#22225](https://github.com/expo/expo/pull/22225) by [@hbiede](https://github.com/hbiede))
+- **`expo-crypto`**
+  - Set the missing return type of `randomUUID` method. ([#21187](https://github.com/expo/expo/pull/21187) by [@KiwiKilian](https://github.com/KiwiKilian))
+- **`expo-constants`**
+  - Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
+  - Remove the long-deprecated `Constants.deviceYearClass` and `Constants.platform.ios.model`. These properties now live on `expo-device`. ([#23068](https://github.com/expo/expo/pull/23068) by [@brentvatne](https://github.com/brentvatne))
+- **`expo-linking`**
+  - Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
+- **`expo-mail-composer`**
+  - Migrated Android codebase to use the new modules API. ([#21200](https://github.com/expo/expo/pull/21200) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-location`**
+  - On Android, removed use of deprecated `LocationRequest` constructor and replaced with `LocationRequest.Builder`. ([#22653](https://github.com/expo/expo/pull/22653) by [@alanjhughes](https://github.com/alanjhughes))
+  - Removed the Geocoding API service. ([#22830](https://github.com/expo/expo/pull/22830) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-notifications`**
+  - Update fixtures. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
+  - Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
+- **`expo-screen-capture`**
+  - Android: Switch from deprecated `toLowerCase` to `lowercase` function ([#22225](https://github.com/expo/expo/pull/22225) by [@hbiede](https://github.com/hbiede))
+- **`expo-modules-core`**
+  - [Android] Made `fallbackCallback` optional in the `registerForActivityResult` method. ([#21661](https://github.com/expo/expo/pull/21661) by [@lukmccall](https://github.com/lukmccall))
+  - [iOS] Removed the legacy implementation of view managers. ([#21760](https://github.com/expo/expo/pull/21760) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Passed the app context instance down to dynamic types, object builders and convertibles. ([#21819](https://github.com/expo/expo/pull/21819) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Use `jsi::WeakObject` for weak objects on Hermes. ([#21986](https://github.com/expo/expo/pull/21986) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Removed legacyViewManager references from ExpoFabricView. ([#22089](https://github.com/expo/expo/pull/22089) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - [iOS] Dropped `proxiedProperties` prop. ([#22280](https://github.com/expo/expo/pull/22280) by [@tsapeta](https://github.com/tsapeta))
+  - Made `JavaScriptValue.kind` public. ([#22386](https://github.com/expo/expo/pull/22386) by [@lukmccall](https://github.com/lukmccall))
+  - Updated `androidx.activity:activity-ktx` to `1.7.1` and `androidx.fragment:fragment-ktx` to `1.5.7` [#22658](https://github.com/expo/expo/pull/22658) by [@fobos531](https://github.com/fobos531)
+  - [iOS] Added Interface Geometry Management section to ExpoAppDelegate. ([#22599](https://github.com/expo/expo/pull/22599) by [@behenate](https://github.com/behenate))
+  - Changed Objective-C names for `ExpoReactDelegate` and `ExpoReactDelegateHandler` to fix issues with versioning in Expo Go. ([#23229](https://github.com/expo/expo/pull/23229) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-screen-orientation`**
+  - [iOS] Migrated to new modules API. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+  - [iOS] Refactor the singleton class to work properly in versioned code in Expo Go. ([#23228](https://github.com/expo/expo/pull/23228) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-secure-store`**
+  - Added automatic invalidated key handling on Android. ([#22716](https://github.com/expo/expo/pull/22716) by [@behenate](https://github.com/behenate))
+  - Added a check for the `NSFaceIDUsageDescription` key in the `set` function. ([#23275](https://github.com/expo/expo/pull/23275) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-task-manager`**
+  - Update `defineTask` to accept type arguments. ([#21958](https://github.com/expo/expo/pull/21958) by [@kazuma0129](https://github.com/kazuma0129))
+
+## 48.0.0 — 2023-02-09
+
+### 📚 3rd party library updates
+
+- Updated `@stripe/stripe-react-native` from `0.19.0` to `0.23.3`. ([#20964](https://github.com/expo/expo/pull/20964) by [@aleqsio](https://github.com/aleqsio), [#21117](https://github.com/expo/expo/pull/21117) by [@kudo](https://github.com/kudo))
+- Updated `react-native-webview` from `11.23.1` to `11.26.0`. ([#20933](https://github.com/expo/expo/pull/20933) by [@aleqsio](https://github.com/aleqsio))
+- Updated `react-native-gesture-handler` from `2.8.0` to `2.9.0`. ([#20930](https://github.com/expo/expo/pull/20930) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-shared-element` from `0.8.4` to `0.8.7`. ([#20593](https://github.com/expo/expo/pull/20593) by [@ijzerenhein](https://github.com/ijzerenhein))
+- Updated `@react-native-async-storage/async-storage` from `1.17.3` to `1.17.11`. ([#20780](https://github.com/expo/expo/pull/20780) by [@kudo](https://github.com/kudo))
+- Updated `react-native-reanimated` from `2.12.0` to `2.14.4`. ([#20798](https://github.com/expo/expo/pull/20798) by [@kudo](https://github.com/kudo), [#20990](https://github.com/expo/expo/pull/20990) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@shopify/react-native-skia` from `0.1.157` to `0.1.172`. ([#20857](https://github.com/expo/expo/pull/20857), [#21014](https://github.com/expo/expo/pull/21014) by [@kudo](https://github.com/kudo))
+- Updated `react-native-safe-area-context` from `4.4.1` to `4.5.0`. ([#20899](https://github.com/expo/expo/pull/20899) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated `react-native-screens` from `3.18.0` to `3.20.0`. ([#20938](https://github.com/expo/expo/pull/20938) by [@lukmccall](https://github.com/lukmccall), [#21186](https://github.com/expo/expo/pull/21186) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-pager-view` from `6.0.1` to `6.1.2`. ([#20932](https://github.com/expo/expo/pull/20932) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated `@react-native-community/slider` from `4.2.4` to `4.4.2`. ([#20903](https://github.com/expo/expo/pull/20903) by [@gabrieldonadel](https://github.com/gabrieldonadel), [#21055](https://github.com/expo/expo/pull/21055) by [@kudo](https://github.com/kudo))
+- Updated `react-native-shared-element` from `0.8.7` to `0.8.8`. ([#20929](https://github.com/expo/expo/pull/20929) by [@byCedric](https://github.com/byCedric))
+- Updated `@react-native-community/datetimepicker` from `6.5.2` to `6.7.3`. ([#20926](https://github.com/expo/expo/pull/20926) by [@byCedric](https://github.com/byCedric))
+- Updated `@shopify/flash-list` from `1.3.1` to `1.4.0`. ([#20927](https://github.com/expo/expo/pull/20927) by [@lukmccall](https://github.com/lukmccall))
+
+### 🛠 Breaking changes
+
+- **`expo-contacts`**
+  - Remove deprecated and legacy contact fields constants. ([#20269](https://github.com/expo/expo/pull/20269) by [@Simek](https://github.com/Simek))
+- **`expo-keep-awake`**
+  - `KeepAwake.activateKeepAwake` has been deprecated in favor of `KeepAwake.activateKeepAwakeAsync`. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-linking`**
+  - Removed the deprecated `Linking.removeEventListener`. ([#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- **`expo-apple-authentication`**
+  - Migrated to Expo Modules API and Swift. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
+  - Added support for Fabric. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-av`**
+  - Added `PosterComponent` prop to `Video` component. ([#19625](https://github.com/expo/expo/pull/19625) by [@youedd](https://github.com/youedd)
+- **`expo-barcode-scanner`**
+  - Native module for barcode scanner view is now written in Swift and Kotlin using the new API. ([#20441](https://github.com/expo/expo/pull/20441) and ([#20668](https://github.com/expo/expo/pull/20668) by [@alanjhughes](https://github.com/alanjhughes)) ([#20441](https://github.com/expo/expo/pull/20441), [#20668](https://github.com/expo/expo/pull/20668) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-blur`**
+  - Migrated iOS codebase to Swift and the new Expo modules API. ([#19786](https://github.com/expo/expo/pull/19786) by [@tsapeta](https://github.com/tsapeta))
+- **`expo-brightness`**
+  - Migrated iOS codebase to use the new Expo modules API. ([#20316](https://github.com/expo/expo/pull/20316) by [@alanhughes](https://github.com/alanjhughes)) ([#20316](https://github.com/expo/expo/pull/20316) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-constants`**
+  - Migrated Android implementation to Expo Modules API. ([#19974](https://github.com/expo/expo/pull/19974) by [@alanhughes](https://github.com/alanjhughes)) ([#19974](https://github.com/expo/expo/pull/19974) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-crypto`**
+  - Added a `randomUUID` method to get a random UUIDv4 string. ([#20274](https://github.com/expo/expo/pull/20274) by [@aleqsio](https://github.com/aleqsio))
+  - Added a `getRandomValues` method to fill typed arrays. ([#20257](https://github.com/expo/expo/pull/20257) by [@aleqsio](https://github.com/aleqsio))
+  - Ported over `getRandomBytes`, `getRandomBytesAsync` methods from `expo-random`. ([#20217](https://github.com/expo/expo/pull/20217) by [@aleqsio](https://github.com/aleqsio))
+  - Added a `digest` method to get a cryptographic digest of a typed array. ([#20886](https://github.com/expo/expo/pull/20886) by [@aleqsio](https://github.com/aleqsio))
+- **`expo-device`**
+  - Migrated Android codebase to use the new Expo modules API. ([#20118](https://github.com/expo/expo/pull/20118) by [@alanhughes](https://github.com/alanjhughes)) ([#20118](https://github.com/expo/expo/pull/20118) by [@alanjhughes](https://github.com/alanjhughes))
+  - Native module on iOS is now written in Swift using the Sweet API. ([#19526](https://github.com/expo/expo/pull/19526) by [@fobos531](https://github.com/fobos531))
+- **`expo-document-picker`**
+  - Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes)) ([#20336](https://github.com/expo/expo/pull/20336) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-gl`**
+  - Migrated the view manager to the new Expo modules API and thus added support for Fabric. ([#19859](https://github.com/expo/expo/pull/19859) by [@tsapeta](https://github.com/tsapeta))
+  - Migrated the view manager to the new Expo modules API and thus added support for Fabric on Android. ([#20749](https://github.com/expo/expo/pull/20749) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-haptics`**
+  - Migrated Android codebase to use the new Expo modules API. ([#20016](https://github.com/expo/expo/pull/20016) by [@alanhughes](https://github.com/alanjhughes)) ([#20016](https://github.com/expo/expo/pull/20016) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-keep-awake`**
+  - Added web support. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+  - Added `KeepAwake.isAvailableAsync` which returns false on certain web browsers. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+  - Added `KeepAwake.addListener` to observe state changes on web. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-intent-launcher`**
+  - Migrated to Expo Modules API. ([#20327](https://github.com/expo/expo/pull/20327) by [@alanhughes](https://github.com/alanjhughes)) ([#20327](https://github.com/expo/expo/pull/20327) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-local-authentication`**
+  - Native module on iOS is now written in Swift using the Sweet API. ([#19980](https://github.com/expo/expo/pull/19980) by [@fobos531](https://github.com/fobos531))
+- **`expo-image-picker`**
+  - Add support for [granular permissions](https://developer.android.com/about/versions/13/behavior-changes-13) on Android 13. ([#20908](https://github.com/expo/expo/pull/20908) by [@alanhughes](https://github.com/alanjhughes)) ([#20908](https://github.com/expo/expo/pull/20908) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-media-library`**
+  - Migrated Android codebase to use the new Expo modules API. ([#20232](https://github.com/expo/expo/pull/20232) by [@alanhughes](https://github.com/alanjhughes)) ([#20232](https://github.com/expo/expo/pull/20232) by [@alanjhughes](https://github.com/alanjhughes))
+  - Add support for [granular permissions](https://developer.android.com/about/versions/13/behavior-changes-13) on Android 13. ([#20907](https://github.com/expo/expo/pull/20907) by [@alanhughes](https://github.com/alanjhughes)) ([#20907](https://github.com/expo/expo/pull/20907) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-modules-core`**
+  - Added TS definitions for `TypedArray` and additional union types for Int, Uint and Float TypedArrays. ([#20257](https://github.com/expo/expo/pull/20257) by [@aleqsio](https://github.com/aleqsio))
+  - Added a new `executeOnJavaScriptThread` method to `appContext` to allow for running code blocks on the JS thread. ([#20161](https://github.com/expo/expo/pull/20161) by [@aleqsio](https://github.com/aleqsio))
+  - Added the `Exceptions.MissingActivity` on Android. ([#20174](https://github.com/expo/expo/pull/20174) by [@lukmccall](https://github.com/lukmccall))
+  - Trailing optional arguments can be skipped when calling native functions from JavaScript on iOS. ([#20234](https://github.com/expo/expo/pull/20234) by [@tsapeta](https://github.com/tsapeta))
+  - `Events` component can now be initialized with an array of event names (not only variadic arguments). ([#20590](https://github.com/expo/expo/pull/20590) by [@tsapeta](https://github.com/tsapeta))
+  - `Property` component can now take the native shared object instance as the first argument. ([#20608](https://github.com/expo/expo/pull/20608) by [@tsapeta](https://github.com/tsapeta))
+  - Added support for referencing to `Property`'s owner properties using Swift key paths. ([#20610](https://github.com/expo/expo/pull/20610) by [@tsapeta](https://github.com/tsapeta))
+  - Added support for concurrent (async/await) functions in Swift. ([#20645](https://github.com/expo/expo/pull/20645) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Added experimental support for building the function result from the object definition. ([#20623](https://github.com/expo/expo/pull/20623) by [@tsapeta](https://github.com/tsapeta))
+  - View-related DSL functions do not require providing the view's type in function parameters on Android. ([#20751](https://github.com/expo/expo/pull/20751) by [@lukmccall](https://github.com/lukmccall))
+  - Add support for the `Long` type as function parameters on Android. ([#20787](https://github.com/expo/expo/pull/20787) by [@lukmccall](https://github.com/lukmccall))
+  - [Android] Added experimental support for building the function result from the object definition. ([#20864](https://github.com/expo/expo/pull/20864) by [@lukmccall](https://github.com/lukmccall))
+  - Removed boost dependency which needs extra downloading on Android. ([#21000](https://github.com/expo/expo/pull/21000) by [@kudo](https://github.com/kudo))
+- **`expo-network`**
+  - Migrated to Expo Modules API. ([#20083](https://github.com/expo/expo/pull/20083) and [#20303](https://github.com/expo/expo/pull/20303) by [@alanhughes](https://github.com/alanjhughes)) ([#20083](https://github.com/expo/expo/pull/20083), [#20303](https://github.com/expo/expo/pull/20303) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sharing`**
+  - Migrated Android implementation to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) by [@alanhughes](https://github.com/alanjhughes)) ([#20112](https://github.com/expo/expo/pull/20112) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-sms`**
+  - Migrated to Expo Modules API. ([#19996](https://github.com/expo/expo/pull/19996) and ([#19967](https://github.com/expo/expo/pull/19967) by [@alanhughes](https://github.com/alanjhughes)) ([#19996](https://github.com/expo/expo/pull/19996), [#19967](https://github.com/expo/expo/pull/19967) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-store-review`**
+  - Migrated Android implementation to Expo Modules API. ([#19898](https://github.com/expo/expo/pull/19898) by [@alanhughes](https://github.com/alanjhughes)) ([#19898](https://github.com/expo/expo/pull/19898) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-speech`**
+  - Added utterance word tracking support for iOS and Android. This allows the ability to highlight each word in an utterance. ([#20726](https://github.com/expo/expo/pull/20726) by [@gabrieljoelc](https://github.com/gabrieljoelc))
+- **`expo-video-thumbnails`**
+  - Native module on iOS is now written in Swift using the Sweet API. ([#19561](https://github.com/expo/expo/pull/19561) by [@fobos531](https://github.com/fobos531))
+  - Migrated Android codebase to use the new Expo modules API. ([#20541](https://github.com/expo/expo/pull/20541) by [@alanhughes](https://github.com/alanjhughes)) ([#20541](https://github.com/expo/expo/pull/20541) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- **`expo-asset`**
+  - Fix loading Metro web assets from origins other than `/`. ([#20258](https://github.com/expo/expo/pull/20258) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-av`**
+  - Fixed error for duplicated META-INF files when building on Android. ([#20251](https://github.com/expo/expo/pull/20251) by [@kudo](https://github.com/kudo))
+  - Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+  - Fixed crashes when ProGuard or R8 is enabled on Android. ([#20197](https://github.com/expo/expo/pull/20197) by [@lukmccall](https://github.com/lukmccall))
+  - Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+  - Fixed `HTMLMediaElement.play` and `HTMLMediaElement.pause` calls on the Web aren't properly awaited. ([#20439](https://github.com/expo/expo/pull/20439)) by [@zhigang1992](https://github.com/zhigang1992) ([#20439](https://github.com/expo/expo/pull/20439) by [@zhigang1992](https://github.com/zhigang1992))
+  - Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo)) ([#20799](https://github.com/expo/expo/pull/20799), [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+  - Fixed JSI audio sampling buffer issues when using `SimpleExoPlayer` implementation on Android. ([#21055](https://github.com/expo/expo/pull/21055) by [@kudo](https://github.com/kudo))
+- **`expo-barcode-scanner`**
+  - Fix import issue on case-sensitive file systems ([#20141](https://github.com/expo/expo/pull/20141) by [@hirbod](https://github.com/hirbod))
+- **`expo-blur`**
+  - Add `-webkit-backdrop-filter` to support blurring on Safari. ([#21003](https://github.com/expo/expo/pull/21003) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-clipboard`**
+  - Fixed clipboard listener is called twice on Android. ([#19723](https://github.com/expo/expo/pull/19723) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed clipboard listener can crash the application during initialization on Android. ([#19723](https://github.com/expo/expo/pull/19723) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed the `ImageFormat` or the `StringFormat` not working in the release builds on Android. ([#20155](https://github.com/expo/expo/pull/20155) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-constants`**
+  - Fix the list of platform keys in expo-module.config.json ([#20017](https://github.com/expo/expo/pull/20017) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-camera`**
+  - Fix import issue on case-sensitive file systems ([#20141](https://github.com/expo/expo/pull/20141) by [@hirbod](https://github.com/hirbod))
+  - Fix path where simulator saves photos ([#20872](https://github.com/expo/expo/pull/20872) by [@pettomartino](https://github.com/pettomartino))
+  - Fixed `Cannot set prop 'barCodeScannerSettings' on view 'class expo.modules.camera.ExpoCameraView'` on Android. ([#21033](https://github.com/expo/expo/pull/21033) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-file-system`**
+  - Add utf-8 uri support on iOS. ([#21098](https://github.com/expo/expo/pull/21098) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- **`expo-gl`**
+  - Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+  - Fixed error for duplicated META-INF files when building on Android. ([#20251](https://github.com/expo/expo/pull/20251) by [@kudo](https://github.com/kudo))
+  - Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+- **`expo-haptics`**
+  - Fixed rare crash on iOS when using Feedback Generator's API not on the main thread. ([#19819](https://github.com/expo/expo/pull/19819) by [@AntonGolikov](https://github.com/AntonGolikov))
+- **`expo-image-picker`**
+  - Fix incorrect asset type for videos on iOS. ([#19932](https://github.com/expo/expo/pull/19932) by [@tsapeta](https://github.com/tsapeta))
+  - Fix support for animated GIFs on iOS. ([#20034](https://github.com/expo/expo/pull/20034) by [@barthap](https://github.com/barthap))
+- **`expo-mail-composer`**
+  - Fix `composeAsync` not resolving promise after sending/ discarding email. ([#20869](https://github.com/expo/expo/pull/20869) by [@keith-kurak](https://github.com/keith-kurak))
+- **`expo-media-library`**
+  - Renamed the module on iOS to match the name used on Android. ([#20283](https://github.com/expo/expo/pull/20283) by [@alanhughes](https://github.com/alanjhughes)) ([#20283](https://github.com/expo/expo/pull/20283) by [@alanjhughes](https://github.com/alanjhughes))
+- **`expo-modules-core`**
+  - Added a list of the acceptable enum values to the conversion error on Android. ([#19895](https://github.com/expo/expo/pull/19895) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed `new NativeEventEmitter() was called with a non-null argument without the required addListener method.` warnings on Android with JSC. ([#19920](https://github.com/expo/expo/pull/19920) by [@kudo](https://github.com/kudo))
+  - Fixed views are not correctly initialized after reloading on Android. ([#20063](https://github.com/expo/expo/pull/20063) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed threading crash issue when running with Hermes on iOS. ([#20506](https://github.com/expo/expo/pull/20506) by [@kudo](https://github.com/kudo))
+  - Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+  - Fixed failed resolution of 'java.nio.file.Path' on Android. ([#20037](https://github.com/expo/expo/pull/20037) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed libraries using the `ViewDefinitionBuilder` crashes when ProGuard or R8 is enabled on Android. ([#20197](https://github.com/expo/expo/pull/20197) by [@lukmccall](https://github.com/lukmccall))
+  - Fixed Either types not supporting non-primitive types on iOS. ([#20247](https://github.com/expo/expo/pull/20247) by [@tsapeta](https://github.com/tsapeta))
+  - Fixed Function not supporting certain arities on Android. ([#20419](https://github.com/expo/expo/pull/20419) by [@motiz88](https://github.com/motiz88))
+  - Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+  - Fixed the `SharedObject` initializer being inaccessible due to `internal` protection level. ([#20588](https://github.com/expo/expo/pull/20588) by [@tsapeta](https://github.com/tsapeta))
+  - Fixed boost build error on Android. ([#20719](https://github.com/expo/expo/pull/20719) by [@kudo](https://github.com/kudo))
+  - Fix view prop setter not being called when its new value is `null` or `undefined`. ([#20755](https://github.com/expo/expo/pull/20755) & [#20766](https://github.com/expo/expo/pull/20766) by [@tsapeta](https://github.com/tsapeta) & [@lukmccall](https://github.com/lukmccall)) ([#20755](https://github.com/expo/expo/pull/20755), [#20766](https://github.com/expo/expo/pull/20766) by [@tsapeta](https://github.com/tsapeta), [@lukmccall](https://github.com/lukmccall))
+  - Fixed "Tried to register two views with the same name" error on fast refresh. ([#20788](https://github.com/expo/expo/pull/20788) by [@tsapeta](https://github.com/tsapeta))
+  - Fix crash when reloading app while expo-av video is playing. ([#21118](https://github.com/expo/expo/pull/21118) by [@janicduplessis](https://github.com/janicduplessis))
+- **`expo-location`**
+  - Removed strict null checks for expo location and avoid crash on android. ([#20792](https://github.com/expo/expo/pull/20792) by [@jayshah123](https://github.com/jayshah123) and [@forki](https://github.com/forki)) ([#20792](https://github.com/expo/expo/pull/20792) by [@jayshah123](https://github.com/jayshah123), [@forki](https://github.com/forki))
+  - Export types with type-only annotation to fix build when using `isolatedModules` flag. ([#20239](https://github.com/expo/expo/pull/20239) by [@zakharchenkoAndrii](https://github.com/zakharchenkoAndrii))
+- **`expo-print`**
+  - Fix `printAsync` not reflecting custom width/ height, `useMarkupFormatter` option preventing custom width/ height/ margin from being reflected. ([#18873](https://github.com/expo/expo/pull/20046) by [@keith-kurak](https://github.com/keith-kurak)) ([#20046](https://github.com/expo/expo/pull/20046) by)
+- **`expo-sensors`**
+  - Export types with type-only annotation to fix build when using `isolatedModules` flag. ([#20239](https://github.com/expo/expo/pull/20239) by [@zakharchenkoAndrii](https://github.com/zakharchenkoAndrii))
+- **`expo-web-browser`**
+  - Add missing peer dependency on `url` for web. ([#20708](https://github.com/expo/expo/pull/20708) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- **`expo-asset`**
+  - Remove unused web features. ([#20258](https://github.com/expo/expo/pull/20258) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo-application`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-auth-session`**
+  - Removed usage of the deprecated `expo-random` package. ([#21063](https://github.com/expo/expo/pull/21063) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-background-fetch`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-av`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-barcode-scanner`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-branch`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-brightness`**
+  - Deprecate `useSystemBrightnessAsync` and add it as renamed `restoreSystemBrightnessAsync` method to avoid violating Rules of Hooks. ([#19701](https://github.com/expo/expo/pull/19701) by [@Simek](https://github.com/Simek))
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-cellular`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-calendar`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-clipboard`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-constants`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-contacts`**
+  - Simplify exported types. ([#20269](https://github.com/expo/expo/pull/20269) by [@Simek](https://github.com/Simek))
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-crypto`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-battery`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-device`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-document-picker`**
+  - Avoid dependency on `uuid`. ([#20477](https://github.com/expo/expo/pull/20477) by [@LinusU](https://github.com/LinusU))
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-camera`**
+  - Use correct type for `videoStabilizationMode` option. ([#20130](https://github.com/expo/expo/pull/20130) by [@simek](https://github.com/simek))
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-error-recovery`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-file-system`**
+  - Extract nested object definitions to the separate types, which adds: `DeletingOptions`, `InfoOptions`, `RelocatingOptions` and `MakeDirectoryOptions` types. ([#20103](https://github.com/expo/expo/pull/20103) by [@Simek](https://github.com/Simek))
+  - Simplify the way in which types are exported from the package. ([#20103](https://github.com/expo/expo/pull/20103) by [@Simek](https://github.com/Simek))
+  - Rename `UploadProgressData` `totalByteSent` field to `totalBytesSent`. ([#20804](https://github.com/expo/expo/pull/20804) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-font`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-face-detector`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-gl`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-haptics`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-image-manipulator`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-image-loader`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-keep-awake`**
+  - Define `KeepAwakeOptions` type, update the doc comments. ([#20489](https://github.com/expo/expo/pull/20489) by [@Simek](https://github.com/Simek))
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-linear-gradient`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-intent-launcher`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-local-authentication`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-linking`**
+  - Fix link in README that was incorrectly pointing to to expo-asset. ([#20616](https://github.com/expo/expo/pull/20616) by [@stereoplegic](https://github.com/stereoplegic))
+- **`expo-image-picker`**
+  - Avoid dependency on `uuid`. ([#20476](https://github.com/expo/expo/pull/20476) by [@LinusU](https://github.com/LinusU))
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-localization`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-mail-composer`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-media-library`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-modules-core`**
+  - Exposed coroutines related packages on Android. ([#19896](https://github.com/expo/expo/pull/19896) by [@lukmccall](https://github.com/lukmccall))
+  - Rephrased the message of `ArgumentCastException` to use ordinal numbers. ([#19912](https://github.com/expo/expo/pull/19912) by [@tsapeta](https://github.com/tsapeta))
+  - [iOS] Make `Enumerable` protocol implement `CaseIterable` to get rid of operating on unsafe pointers. ([#20640](https://github.com/expo/expo/pull/20640) by [@tsapeta](https://github.com/tsapeta))
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-location`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-network`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-print`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-random`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-permissions`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-screen-capture`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-notifications`**
+  - Update `getExpoPushTokenAsync` to make `projectId` required. ([#20833](https://github.com/expo/expo/pull/20833) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+  - Add JSDoc comments, perform type changes related to documentation autogeneration. ([#21002](https://github.com/expo/expo/pull/21002) by [@Simek](https://github.com/Simek))
+  - Export `getExpoPushTokenAsync` parameter type. ([#21104](https://github.com/expo/expo/pull/21104) by [@Simek](https://github.com/Simek))
+- **`expo-sharing`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-screen-orientation`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-sms`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-sensors`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-store-review`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-secure-store`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-speech`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-sqlite`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-task-manager`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-video-thumbnails`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-web-browser`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- **`unimodules-app-loader`**
+  - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+### ⚠️ Notices
+
+- **`expo-image-picker`**
+  - Removed deprecated fields from pick result type and deprecated `UIImagePickerPresentationStyle` enum values. ([#21078](https://github.com/expo/expo/pull/21078) by [@Simek](https://github.com/Simek))
+- **`expo-random`**
+  - Deprecate the library in favor of expo-crypto. ([#20217](https://github.com/expo/expo/pull/20217) by [@aleqsio](https://github.com/aleqsio))
+
+## 47.0.0 — 2022-10-28
+
+For changelog entries prior to SDK 47, refer to: https://github.com/expo/expo/blob/ff35557463c0db1cf8683939d752c59baf127f21/CHANGELOG.md#L323

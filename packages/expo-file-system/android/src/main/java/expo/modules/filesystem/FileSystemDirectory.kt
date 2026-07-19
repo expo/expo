@@ -1,0 +1,133 @@
+package expo.modules.filesystem
+
+import android.net.Uri
+import expo.modules.kotlin.services.FilePermissionService
+import java.io.File
+
+class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
+  fun validatePath() {
+// Kept empty for now, but can be used to validate if the path is a valid directory path.
+  }
+
+  override fun validateType() {
+    if (file.exists() && !file.isDirectory()) {
+      throw InvalidTypeFolderException()
+    }
+  }
+
+  val exists: Boolean get() {
+    return if (checkPermission(FilePermissionService.Permission.READ)) {
+      file.isDirectory()
+    } else {
+      false
+    }
+  }
+
+  val size: Long get() {
+    validatePermission(FilePermissionService.Permission.READ)
+    validateType()
+    return file.walkTopDown().filter { it.isFile() }.map { it.length() }.sum()
+  }
+
+  fun info(): DirectoryInfo {
+    validateType()
+    validatePermission(FilePermissionService.Permission.READ)
+    if (!file.exists()) {
+      val directoryInfo = DirectoryInfo(
+        exists = false,
+        uri = slashifyFilePath(file.uri.toString())
+      )
+      return directoryInfo
+    }
+
+    val directoryInfo = DirectoryInfo(
+      exists = true,
+      uri = slashifyFilePath(file.uri.toString()),
+      files = file.listFilesAsUnified().mapNotNull { i -> i.fileName },
+      modificationTime = modificationTime,
+      creationTime = creationTime,
+      size = size
+    )
+    return directoryInfo
+  }
+
+  fun create(options: CreateOptions = CreateOptions()) {
+    if (uri.isContentUri) {
+      throw UnableToCreateException("Directory.create function does not work with SAF content:// uris, use `Directory.createDirectory` instead")
+    }
+    validateType()
+    validatePermission(FilePermissionService.Permission.WRITE)
+    if (!needsCreation(options)) {
+      return
+    }
+    validateCanCreate(options)
+    if (options.overwrite && file.exists()) {
+      file.delete()
+    }
+    val created = if (options.intermediates) {
+      javaFile.mkdirs()
+    } else {
+      javaFile.mkdir()
+    }
+    if (!created) {
+      throw UnableToCreateException("directory already exists or could not be created")
+    }
+  }
+
+  fun createFile(mimeType: String?, fileName: String): FileSystemFile {
+    validateType()
+    validatePermission(FilePermissionService.Permission.WRITE)
+    validateChildTarget(fileName)
+    val newFile = file.createFile(mimeType ?: "text/plain", fileName)
+      ?: throw UnableToCreateException("file could not be created")
+    return FileSystemFile(newFile.uri)
+  }
+
+  fun createDirectory(fileName: String): FileSystemDirectory {
+    validateType()
+    validatePermission(FilePermissionService.Permission.WRITE)
+    validateChildTarget(fileName)
+    val newDirectory = file.createDirectory(fileName)
+      ?: throw UnableToCreateException("directory could not be created")
+    return FileSystemDirectory(newDirectory.uri)
+  }
+
+  private fun validateChildTarget(fileName: String) {
+    validateFileSystemChildName(fileName)
+    if (uri.isContentUri || uri.isAssetUri) {
+      return
+    }
+    val parent = javaFile.canonicalFile
+    val child = File(parent, fileName).canonicalFile
+    if (child.parentFile?.canonicalPath != parent.canonicalPath) {
+      throw UnableToCreateException("child path escapes parent directory")
+    }
+  }
+
+  // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
+  fun listAsRecords(): List<Map<String, Any>> {
+    validateType()
+    validatePermission(FilePermissionService.Permission.READ)
+    return file.listFilesAsUnified().map {
+      val uriString = it.uri.toString()
+      val isDir = it.isDirectory()
+      mapOf(
+        "isDirectory" to isDir,
+        "uri" to if (isDir) {
+          if (uriString.endsWith("/")) uriString else "$uriString/"
+        } else {
+          uriString
+        }
+      )
+    }
+  }
+
+  fun asString(): String {
+    val uriString = file.uri.toString()
+    return if (uriString.endsWith("/")) uriString else "$uriString/"
+  }
+
+  fun needsCreation(options: CreateOptions): Boolean {
+    return !file.exists() || !options.idempotent
+  }
+}

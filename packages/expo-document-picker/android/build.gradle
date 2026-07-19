@@ -1,0 +1,20 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = "host.exp.exponent"
+version = "56.0.4"
+
+android {
+  namespace "expo.modules.documentpicker"
+  defaultConfig {
+    versionCode 17
+    versionName '56.0.4'
+  }
+}
+
+dependencies {
+  api "androidx.annotation:annotation:1.0.0"
+  api 'commons-io:commons-io:2.6'
+}

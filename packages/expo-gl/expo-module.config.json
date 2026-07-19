@@ -1,0 +1,10 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "podspecPath": "./ExpoGL.podspec",
+    "modules": ["ExpoGLModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.gl.GLModule"]
+  }
+}

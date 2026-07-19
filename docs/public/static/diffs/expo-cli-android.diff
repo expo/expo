@@ -1,0 +1,16 @@
+diff --git a/android/app/build.gradle b/android/app/build.gradle
+index e441fee..6091cd1 100644
+--- a/android/app/build.gradle
++++ b/android/app/build.gradle
+@@ -52,6 +52,11 @@ react {
+
+     /* Autolinking */
+     autolinkLibrariesWithApp()
++    //
++    // Added by install-expo-modules
++    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", rootDir.getAbsoluteFile().getParentFile().getAbsolutePath(), "android", "absolute"].execute(null, rootDir).text.trim())
++    cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
++    bundleCommand = "export:embed"
+ }
+
+ /**

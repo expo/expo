@@ -1,0 +1,9 @@
+{
+  "extends": "expo-module-scripts/tsconfig.plugin",
+  "compilerOptions": {
+    "types": ["node", "jest"],
+    "noEmit": true,
+    "rootDir": "src"
+  },
+  "include": ["./src"]
+}

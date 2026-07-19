@@ -1,0 +1,121 @@
+package expo.modules.filesystem.unifiedfile
+
+import android.content.Context
+import android.net.Uri
+import android.os.ParcelFileDescriptor
+import androidx.documentfile.provider.DocumentFile
+import expo.modules.filesystem.fsops.CopyMoveStrategy
+import expo.modules.kotlin.AppContext
+import java.io.InputStream
+import java.io.OutputStream
+
+class SAFDocumentFile(private val context: Context, override val uri: Uri) : UnifiedFileInterface {
+  val documentFile: DocumentFile?
+    get() {
+      // Relying on singleUri.isDirectory did not work, and there's no explicit method for this, so we check path
+      val pathSegment = uri.pathSegments.getOrNull(0) ?: "tree"
+      if (pathSegment == "document") {
+        // If the path starts with "document", we treat it as a raw file URI
+        return DocumentFile.fromSingleUri(context, uri)
+      } else {
+        // Otherwise, we treat it as a tree URI
+        return DocumentFile.fromTreeUri(context, uri)
+      }
+    }
+
+  override fun exists(): Boolean = documentFile?.exists() == true
+
+  override fun isDirectory(): Boolean {
+    return documentFile?.isDirectory == true
+  }
+
+  override fun isFile(): Boolean {
+    return documentFile?.isFile == true
+  }
+
+  override val parentFile: UnifiedFileInterface?
+    get() = documentFile?.parentFile?.uri?.let { SAFDocumentFile(context, it) }
+
+  override fun createFile(mimeType: String, displayName: String): UnifiedFileInterface? {
+    val documentFile = documentFile?.createFile(mimeType, displayName)
+    return documentFile?.uri?.let { SAFDocumentFile(context, it) }
+  }
+
+  override fun createDirectory(displayName: String): UnifiedFileInterface? {
+    val documentFile = documentFile?.createDirectory(displayName)
+    return documentFile?.uri?.let { SAFDocumentFile(context, it) }
+  }
+
+  override fun delete(): Boolean = documentFile?.delete() == true
+
+  override fun deleteRecursively(): Boolean = documentFile?.deleteRecursively() == true
+
+  override fun listFilesAsUnified(): List<UnifiedFileInterface> =
+    documentFile?.listFiles()?.map { SAFDocumentFile(context, it.uri) } ?: emptyList()
+
+  override val type: String?
+    get() = documentFile?.type
+
+  override fun lastModified(): Long? {
+    return documentFile?.lastModified()
+  }
+
+  override val fileName: String?
+    get() = documentFile?.name
+
+  override fun getContentUri(appContext: AppContext): Uri {
+    return uri
+  }
+
+  override val creationTime: Long? get() {
+    // It seems there's no way to get this
+    return null
+  }
+
+  override fun outputStream(append: Boolean): OutputStream {
+    val mode = if (append) "wa" else "w"
+    return context.contentResolver.openOutputStream(uri, mode)
+      ?: throw IllegalStateException("Unable to open output stream for URI: $uri")
+  }
+
+  override fun inputStream(): InputStream {
+    return context.contentResolver.openInputStream(uri)
+      ?: throw IllegalStateException("Unable to open input stream for URI: $uri")
+  }
+
+  override fun openFileDescriptor(mode: String): ParcelFileDescriptor? =
+    runCatching { context.contentResolver.openFileDescriptor(uri, mode) }.getOrNull()
+
+  override fun length(): Long {
+    return documentFile?.length() ?: 0
+  }
+
+  /**
+   * Finds a child file/directory by name.
+   * @return The child file if found, null otherwise
+   */
+  fun findFile(name: String): SAFDocumentFile? {
+    val child = documentFile?.findFile(name) ?: return null
+    return SAFDocumentFile(context, child.uri)
+  }
+
+  override fun walkTopDown(): Sequence<SAFDocumentFile> {
+    return sequence {
+      yield(this@SAFDocumentFile)
+      if (isDirectory()) {
+        documentFile?.listFiles()?.forEach { child ->
+          yieldAll(SAFDocumentFile(context, child.uri).walkTopDown())
+        }
+      }
+    }
+  }
+
+  override val copyMoveStrategy: CopyMoveStrategy = CopyMoveStrategy.SAF(this, context)
+}
+
+fun DocumentFile.deleteRecursively(): Boolean {
+  if (isDirectory) {
+    listFiles().forEach { it.deleteRecursively() }
+  }
+  return delete()
+}

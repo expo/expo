@@ -1,0 +1,209 @@
+# Changelog
+
+## Unpublished
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+- Add macOS support. ([#46471](https://github.com/expo/expo/pull/46471) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.5 — 2026-05-07
+
+### 🐛 Bug fixes
+
+- Fix `useFonts` from `@expo-google-fonts/material-symbols` using an undeclared dependency on `expo-font` and `react` ([#45471](https://github.com/expo/expo/pull/45471) by [@kitten](https://github.com/kitten))
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.8 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 - 2026-03-05
+
+### 💡 Others
+
+- Add explicit type re-export and return type annotations ([#43562](https://github.com/expo/expo/pull/43562) by [@kitten](https://github.com/kitten))
+
+## 55.0.4 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- [Android] Add support for MaterialSymbol symbols on Android and Web. ([#39516](https://github.com/expo/expo/pull/39516) by [@aleqsio](https://github.com/aleqsio))
+- [Android] add unstable_getMaterialSymbolSourceAsync ([#41064](https://github.com/expo/expo/pull/41064) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- [Android] Add lineHeight to ensure symbols occupy correct square space. ([#41091](https://github.com/expo/expo/pull/41091) by [@aleqsio](https://github.com/aleqsio))
+
+## 1.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.0 — 2025-08-13
+
+### 🐛 Bug fixes
+
+- Suppress `the native view manager isn't exported` warning on Android. ([#38504](https://github.com/expo/expo/pull/38504) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.4.5 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- Use `processColor` to accept all valid color strings. ([#36914](https://github.com/expo/expo/pull/36914) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.0 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
+- [Android] Fix platform misconfiguration in the `expo-modules.config`. ([#35849](https://github.com/expo/expo/pull/35849) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Add PlatformColor to types ([#34890](https://github.com/expo/expo/pull/34890) by [@jakex7](https://github.com/jakex7))
+
+## 0.2.2 - 2025-01-31
+
+### 🐛 Bug fixes
+
+- [iOS] Fix tvOS compilation. ([#34556](https://github.com/expo/expo/pull/34556) by [@douglowder](https://github.com/douglowder))
+
+## 0.2.1 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30865](https://github.com/expo/expo/pull/30865) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.1.5 - 2024-08-24
+
+### 🐛 Bug fixes
+
+- Fix import error when using symbols on web. ([#30249](https://github.com/expo/expo/pull/30249) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.1.4 — 2024-04-29
+
+### 🎉 New features
+
+- Add `size` prop to match api of similar packages. ([#28497](https://github.com/expo/expo/pull/28497) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fix vscode quick help link. ([#28493](https://github.com/expo/expo/pull/28493) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.1.3 — 2024-04-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.0 — 2024-04-18
+
+_This version does not introduce any user-facing changes._

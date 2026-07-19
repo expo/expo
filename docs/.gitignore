@@ -1,0 +1,33 @@
+# general
+node_modules
+.env
+*.tsbuildinfo
+.eslintcache
+
+# copied in next.config.js
+pages/versions/latest
+
+# staticly generated constants
+public/static/constants
+
+# next.js
+.cache
+.next
+.swc
+out
+next-env.d.ts
+
+# worker test temp dir
+.worker-test
+.wrangler
+
+# generated file(s) for llms
+public/llms.txt
+public/llms-full.txt
+public/llms-eas.txt
+public/llms-sdk.txt
+scripts/generate-llms/talks.js
+public/llms-sdk-*.txt
+
+# vale binary (installed by scripts/install-vale.sh)
+.vale/bin/

@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["ExpoPrintModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.print.PrintModule"]
+  }
+}

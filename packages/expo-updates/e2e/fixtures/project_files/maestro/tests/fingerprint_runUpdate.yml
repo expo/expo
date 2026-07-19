@@ -1,0 +1,21 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# checks that the update with the correct fingerprint is used
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-for-fingerprint', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve the fingerprint update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-1"}
+    label: Assert update string is from downloaded bundle

@@ -1,0 +1,48 @@
+import ExpoModulesCore
+import WidgetKit
+
+final class WidgetObject: SharedObject {
+  let name: String
+  init(name: String, layout: String, initialProps: [String: Any]?) {
+    self.name = name
+    WidgetsStorage.set(layout, forKey: "__expo_widgets_\(name)_layout")
+    if let initialProps {
+      WidgetsStorage.set(initialProps, forKey: "__expo_widgets_\(name)_initial_props")
+    } else {
+      WidgetsStorage.removeObject(forKey: "__expo_widgets_\(name)_initial_props")
+    }
+  }
+
+  func reload() {
+    WidgetCenter.shared.reloadTimelines(ofKind: name)
+  }
+
+  func updateTimeline(entries: [WidgetsJSTimelineEntry]) throws {
+    if WidgetsStorage.getString(forKey: "__expo_widgets_\(name)_layout") == nil {
+      throw UpdatedTimelineWithoutLayout(name)
+    }
+    WidgetsStorage.set(entries.map { $0.toDictionary() }, forKey: "__expo_widgets_\(name)_timeline")
+
+    self.reload()
+  }
+
+  func getTimeline() throws -> [WidgetsJSTimelineEntry] {
+    guard let entries = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline") as? [[String: Any]],
+          let appContext else {
+      return []
+    }
+    return try entries.map { try WidgetsJSTimelineEntry(from: $0, appContext: appContext) }
+  }
+
+  func setConfigurationParameterEnum(parameterName: String, options: [WidgetConfigurationOptionRecord]?) {
+    if let options {
+      WidgetsStorage.set(
+        options.map { $0.toDictionary() },
+        forKey: "__expo_widgets_\(name)_configuration_options_\(parameterName)"
+      )
+    } else {
+      WidgetsStorage.removeObject(forKey: "__expo_widgets_\(name)_configuration_options_\(parameterName)")
+    }
+    self.reload()
+  }
+}

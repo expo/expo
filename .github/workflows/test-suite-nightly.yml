@@ -1,0 +1,291 @@
+name: Test Suite on React Native nightly build
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 10 * * SAT' # 10:00 AM UTC time every Saturday
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/test-suite-nightly.yml
+      - .github/actions/setup-maestro/action.yml
+      - tools/src/commands/SetupReactNativeNightly.ts
+  pull_request:
+    paths:
+      - .github/workflows/test-suite-nightly.yml
+      - .github/actions/setup-maestro/action.yml
+      - tools/src/commands/SetupReactNativeNightly.ts
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios-build:
+    if: github.repository == 'expo/expo'
+    runs-on: macos-26
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.x
+      - name: 🔨 Switch to Xcode 26.4.1
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
+      - name: 🍺 Install required tools
+        run: |
+          brew install watchman || true
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@12fd324f1d0b43274fdc8130f6980590a667c455 # v1.312.0
+        with:
+          bundler-cache: true
+          ruby-version: 3.2.2
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: ⚙️ Setup react-native nightly
+        run: et setup-react-native-nightly
+      - name: ⚛️ Display React Native config
+        run: pnpm expo-modules-autolinking react-native-config --platform ios
+        working-directory: apps/bare-expo
+      - name: 🌳 Display pod environment
+        run: pod env
+        working-directory: apps/bare-expo/ios
+      - name: 🥥 Update RCT-Folly and SocketRocket pods in apps/bare-expo/ios
+        run: pod update RCT-Folly SocketRocket --no-repo-update
+        working-directory: apps/bare-expo/ios
+      - name: 🍏 Build iOS Project
+        run: ./scripts/start-ios-e2e-test.ts --build
+        working-directory: apps/bare-expo
+        env:
+          EXPO_DEBUG: 1
+          NODE_ENV: production
+      - name: 📸 Upload builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bare-expo-ios-builds
+          path: apps/bare-expo/ios/build/BareExpo.app
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
+        with:
+          webhook: ${{ secrets.slack_webhook_ios }}
+          channel: '#expo-ios'
+          author_name: Test Suite Nightly (iOS)
+
+  ios-test:
+    if: github.repository == 'expo/expo'
+    needs: ios-build
+    runs-on: macos-26
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.x
+      - name: 🔨 Switch to Xcode 26.4.1
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🌠 Download builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: bare-expo-ios-builds
+          path: apps/bare-expo/ios/build/BareExpo.app
+      - name: 🧹 Cleanup unused simulator runtimes
+        run: |
+          xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
+          xcrun simctl list devices --json
+          xcrun simctl erase all
+          xcrun simctl shutdown all
+          sudo xcodebuild -runFirstLaunch
+      - name: 🍺 Install Maestro
+        uses: ./.github/actions/setup-maestro
+        with:
+          version: 2.6.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 🍏 Run iOS tests
+        run: ./scripts/start-ios-e2e-test.ts --test
+        working-directory: apps/bare-expo
+      - name: 📸 Store testing artifacts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bare-expo-artifacts-ios
+          path: |
+            ~/.maestro/tests/**/*
+            ~/Library/Logs/maestro/**/*
+          overwrite: true
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
+        with:
+          webhook: ${{ secrets.slack_webhook_ios }}
+          channel: '#expo-ios'
+          author_name: Test Suite Nightly (iOS)
+
+  android-build:
+    if: github.repository == 'expo/expo'
+    runs-on: ubuntu-24.04
+    env:
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.x
+      - name: 🔨 Use JDK 17
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          gradle: 'true'
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: ⚙️ Setup react-native nightly
+        run: et setup-react-native-nightly
+      - name: ⚛️ Display React Native config
+        run: pnpm expo-modules-autolinking react-native-config --platform android
+        working-directory: apps/bare-expo
+      - name: 🤖 Gradle prebuild for Android project (workaround to fix build error)
+        run: ./gradlew preBuild
+        working-directory: apps/bare-expo/android
+      - name: 🤖 Build Android project
+        run: ./scripts/start-android-e2e-test.ts --build
+        working-directory: apps/bare-expo
+      - name: 📸 Upload builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bare-expo-android-builds
+          path: apps/bare-expo/android/app/build/outputs/apk
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
+        with:
+          webhook: ${{ secrets.slack_webhook_android }}
+          channel: '#expo-android'
+          author_name: Test Suite Nightly (Android)
+
+  android-test:
+    if: github.repository == 'expo/expo'
+    needs: android-build
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        api-level: [36]
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.x
+      - name: 🌠 Download builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: bare-expo-android-builds
+          path: apps/bare-expo/android/app/build/outputs/apk
+      - name: 🍺 Install Maestro
+        uses: ./.github/actions/setup-maestro
+        with:
+          # Pinned to 2.4.0 — 2.5.0+ replaces TCP port forwarding with a direct ADB
+          # socket gRPC connection that fails (UNAVAILABLE / tcp:7001 closed) against
+          # the Android emulator in CI.
+          version: 2.4.0
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 🤖 Run Android tests
+        uses: ./.github/actions/use-android-emulator
+        with:
+          avd-api: ${{ matrix.api-level }}
+          avd-name: avd-${{ matrix.api-level }}
+          script: ./scripts/start-android-e2e-test.ts --test
+          working-directory: ./apps/bare-expo
+      - name: 📸 Store testing artifacts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bare-expo-artifacts-android
+          path: |
+            ~/.maestro/tests/**/*
+            ~/Library/Logs/maestro/**/*
+          overwrite: true
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
+        with:
+          webhook: ${{ secrets.slack_webhook_android }}
+          channel: '#expo-android'
+          author_name: Test Suite Nightly (Android)

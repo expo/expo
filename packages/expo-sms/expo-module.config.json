@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["ExpoSMSModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.sms.SMSModule"]
+  }
+}

@@ -1,0 +1,16 @@
+import { UnavailabilityError } from 'expo';
+
+import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModule';
+
+/**
+ * Used to unregister tasks registered with `registerTaskAsync` method.
+ * @param taskName The string you passed to `registerTaskAsync` as the `taskName` parameter.
+ * @header inBackground
+ */
+export async function unregisterTaskAsync(taskName: string): Promise<null> {
+  if (!BackgroundNotificationTasksModule.unregisterTaskAsync) {
+    throw new UnavailabilityError('Notifications', 'unregisterTaskAsync');
+  }
+
+  return await BackgroundNotificationTasksModule.unregisterTaskAsync(taskName);
+}

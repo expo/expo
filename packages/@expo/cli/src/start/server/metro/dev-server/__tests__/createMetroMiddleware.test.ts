@@ -1,0 +1,134 @@
+import { vol } from 'memfs';
+
+import { withMetroServer } from './utils';
+import { openInEditorAsync } from '../../../../../utils/editor';
+import { createMetroMiddleware } from '../createMetroMiddleware';
+
+jest.mock('../../../../../utils/editor');
+
+describe(createMetroMiddleware, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  const { metro, server, projectRoot } = withMetroServer();
+
+  it('responds to a bundle request with compression', async () => {
+    // Mocked Metro Server response for a bundle request
+    metro.middleware.use('/test.bundle', (_req, res) => {
+      res.setHeader('Content-Type', 'application/javascript');
+      res.write('console.log("Hello, world!");');
+      res.end();
+    });
+    const response = await server.fetch('/test.bundle', { headers: { 'Accept-Encoding': 'gzip' } });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Encoding')).toBe('gzip');
+  });
+
+  it('responds to a map request with compression', async () => {
+    // Mocked Metro Server response for a map request
+    metro.middleware.use('/test.map', (_req, res) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.write('{}');
+      res.end();
+    });
+    const response = await server.fetch('/test.map', { headers: { 'Accept-Encoding': 'gzip' } });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Encoding')).toBe('gzip');
+  });
+
+  it('responds to a request without compression', async () => {
+    metro.middleware.use('/test', (_req, res) => {
+      res.setHeader('Content-Type', 'text/plain');
+      res.write('Hello, world!');
+      res.end();
+    });
+    const response = await server.fetch('/test', { headers: { 'Accept-Encoding': 'gzip' } });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Encoding')).toBeFalsy();
+  });
+
+  it('disables cache on all requests', async () => {
+    // Register an endpoint to capture the response headers
+    metro.middleware.use('/thisisatest', (_req, res) => res.end('OK'));
+
+    const response = await server.fetch('/thisisatest');
+
+    // Ensure the request is successful
+    expect(response.status).toBe(200);
+    // Ensure the cache control headers are set
+    expect(response.headers.get('Surrogate-Control')).toBe('no-store');
+    expect(response.headers.get('Cache-Control')).toBe(
+      'no-store, no-cache, must-revalidate, proxy-revalidate'
+    );
+    expect(response.headers.get('Pragma')).toBe('no-cache');
+    expect(response.headers.get('Expires')).toBe('0');
+  });
+
+  it('responds to /status requests', async () => {
+    const response = await server.fetch('/status');
+
+    // Ensure the request is successful
+    expect(response.status).toBe(200);
+    // Ensure the React Native project root header is set
+    expect(response.headers.get('X-React-Native-Project-Root')).toBe(projectRoot);
+    // Ensure the response body has the packager status
+    await expect(response.text()).resolves.toBe('packager-status:running');
+  });
+
+  describe('/open-stack-frame', () => {
+    it('rejects calls to /open-stack-frame outside of server root', async () => {
+      vol.fromJSON({ '/other/test-file.ts': '' });
+
+      // Avoid opening the fake file
+      jest.mocked(openInEditorAsync).mockResolvedValue(true);
+
+      const response = await server.fetch('/open-stack-frame', {
+        method: 'POST',
+        body: JSON.stringify({ file: '/other/test-file.ts', lineNumber: 1337 }),
+      });
+
+      expect(response.status).toBe(400);
+      expect(openInEditorAsync).not.toHaveBeenCalled();
+    });
+
+    it('responds to /open-stack-frame requests', async () => {
+      vol.fromJSON({ '/project/test-file.ts': '' });
+
+      // Avoid opening the fake file
+      jest.mocked(openInEditorAsync).mockResolvedValue(true);
+
+      const response = await server.fetch('/open-stack-frame', {
+        method: 'POST',
+        body: JSON.stringify({ file: '/project/test-file.ts', lineNumber: 1337 }),
+      });
+
+      // Ensure the request is successful
+      expect(response.status).toBe(200);
+      // Ensure the open in editor was called
+      expect(openInEditorAsync).toHaveBeenCalledWith('/project/test-file.ts', 1337);
+    });
+  });
+
+  describe('websockets', () => {
+    it('creates the /message websocket', () => {
+      expect(metro.messagesSocket).toBeDefined();
+      expect(metro.messagesSocket).toHaveProperty('endpoint', '/message');
+      expect(metro.messagesSocket).toHaveProperty('broadcast', expect.any(Function));
+      expect(metro.websocketEndpoints).toHaveProperty(
+        metro.messagesSocket.endpoint,
+        metro.messagesSocket.server
+      );
+    });
+
+    it('creates the /events websocket', () => {
+      expect(metro.eventsSocket).toBeDefined();
+      expect(metro.eventsSocket).toHaveProperty('endpoint', '/events');
+      expect(metro.eventsSocket).toHaveProperty('reportMetroEvent', expect.any(Function));
+      expect(metro.websocketEndpoints).toHaveProperty(
+        metro.eventsSocket.endpoint,
+        metro.eventsSocket.server
+      );
+    });
+  });
+});

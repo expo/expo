@@ -1,0 +1,158 @@
+import { Host, List, Text, Section } from '@expo/ui/swift-ui';
+import { bold, font, foregroundStyle, italic, lineLimit } from '@expo/ui/swift-ui/modifiers';
+import * as React from 'react';
+
+export default function TextScreen() {
+  const textNumber = 123;
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Section title="Default">
+          <Text>Hello world</Text>
+        </Section>
+        <Section title="Text number">
+          <Text>{textNumber}</Text>
+        </Section>
+        <Section title="Interpolated string">
+          <Text>Hello world {123}</Text>
+        </Section>
+
+        <Section title="Nested Text">
+          <Text>
+            Hello <Text modifiers={[bold(), foregroundStyle('red')]}>world</Text>!
+          </Text>
+          <Text>
+            Normal, <Text modifiers={[italic()]}>italic</Text>,{' '}
+            <Text modifiers={[bold()]}>bold</Text>
+          </Text>
+        </Section>
+
+        <Section title="Unsupported modifiers show warning in debug mode">
+          <Text>
+            Hello <Text modifiers={[bold(), lineLimit(2)]}>world</Text>!
+          </Text>
+        </Section>
+
+        <Section title="Nested Text inheritance">
+          <Text modifiers={[font({ size: 24 }), foregroundStyle('red')]}>
+            Hello <Text modifiers={[bold(), foregroundStyle('blue')]}>world</Text>!
+          </Text>
+        </Section>
+        <Section title="Hierarchical Foreground Style">
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'primary' })]}>
+            Primary{' '}
+            <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+              Secondary
+            </Text>
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+            Secondary
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'tertiary' })]}>
+            Tertiary
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'quaternary' })]}>
+            Quaternary
+          </Text>
+        </Section>
+        <Section title="Custom Font Families">
+          <Text modifiers={[font({ family: 'Inter-Bold', size: 18 })]}>Inter Bold Font</Text>
+          <Text modifiers={[font({ family: 'Inter-Medium', size: 16 })]}>Inter Medium Font</Text>
+          <Text modifiers={[font({ family: 'Inter-Light', size: 14 })]}>Inter Light Font</Text>
+          <Text modifiers={[font({ family: 'Inter-Regular', size: 15 })]}>Inter Regular Font</Text>
+        </Section>
+
+        <Section title="System Font Weights">
+          <Text modifiers={[font({ weight: 'ultraLight', size: 16 })]}>Ultra Light Weight</Text>
+          <Text modifiers={[font({ weight: 'thin', size: 16 })]}>Thin Weight</Text>
+          <Text modifiers={[font({ weight: 'light', size: 16 })]}>Light Weight</Text>
+          <Text modifiers={[font({ weight: 'regular', size: 16 })]}>Regular Weight</Text>
+          <Text modifiers={[font({ weight: 'medium', size: 16 })]}>Medium Weight</Text>
+          <Text modifiers={[font({ weight: 'semibold', size: 16 })]}>Semibold Weight</Text>
+          <Text modifiers={[font({ weight: 'bold', size: 16 })]}>Bold Weight</Text>
+          <Text modifiers={[font({ weight: 'heavy', size: 16 })]}>Heavy Weight</Text>
+          <Text modifiers={[font({ weight: 'black', size: 16 })]}>Black Weight</Text>
+        </Section>
+
+        <Section title="System Font Designs">
+          <Text modifiers={[font({ design: 'default', weight: 'medium', size: 16 })]}>
+            Default Design
+          </Text>
+          <Text modifiers={[font({ design: 'rounded', weight: 'medium', size: 16 })]}>
+            Rounded Design
+          </Text>
+          <Text modifiers={[font({ design: 'serif', weight: 'medium', size: 16 })]}>
+            Serif Design
+          </Text>
+          <Text modifiers={[font({ design: 'monospaced', weight: 'medium', size: 16 })]}>
+            Monospaced Design
+          </Text>
+        </Section>
+
+        <Section title="Font Sizes">
+          <Text modifiers={[font({ size: 12, weight: 'regular' })]}>12pt Font Size</Text>
+          <Text modifiers={[font({ size: 14, weight: 'regular' })]}>14pt Font Size</Text>
+          <Text modifiers={[font({ size: 16, weight: 'regular' })]}>16pt Font Size</Text>
+          <Text modifiers={[font({ size: 18, weight: 'regular' })]}>18pt Font Size</Text>
+          <Text modifiers={[font({ size: 20, weight: 'regular' })]}>20pt Font Size</Text>
+          <Text modifiers={[font({ size: 24, weight: 'regular' })]}>24pt Font Size</Text>
+        </Section>
+
+        <Section title="Date (style: date)">
+          <Text date={new Date(Date.now() + 3600000)} dateStyle="date" />
+        </Section>
+        <Section title="Date (style: timer)">
+          <Text date={new Date(Date.now() + 300000)} dateStyle="timer" />
+        </Section>
+        <Section title="Date (style: relative)">
+          <Text date={new Date(Date.now() + 300000)} dateStyle="relative" />
+        </Section>
+        <Section title="Timer Interval (countdown)">
+          <Text
+            timerInterval={{ lower: new Date(), upper: new Date(Date.now() + 600000) }}
+            countsDown
+          />
+        </Section>
+        <Section title="Timer Interval (count up)">
+          <Text
+            timerInterval={{ lower: new Date(), upper: new Date(Date.now() + 600000) }}
+            countsDown={false}
+          />
+        </Section>
+
+        <Section title="Markdown Text">
+          <Text markdownEnabled>Regular text.</Text>
+          <Text markdownEnabled>
+            This is **bold text**, *italic text* and ***text in both bold and italic***.
+          </Text>
+          <Text markdownEnabled>~~Strikethrough text~~</Text>
+          <Text markdownEnabled>`This is monospaced text`</Text>
+          <Text markdownEnabled>
+            Visit the [Expo Docs](https://docs.expo.dev/versions/latest/sdk/ui/) to learn more about
+            Expo UI
+          </Text>
+        </Section>
+
+        <Section title="Combined Examples">
+          <Text modifiers={[font({ family: 'Inter-ExtraBold', size: 20 })]}>
+            Custom Font: Inter Extra Bold 20pt
+          </Text>
+          <Text modifiers={[font({ weight: 'bold', design: 'rounded', size: 18 })]}>
+            System Font: Bold Rounded 18pt
+          </Text>
+          <Text modifiers={[font({ weight: 'light', design: 'serif', size: 16 })]}>
+            System Font: Light Serif 16pt
+          </Text>
+          <Text modifiers={[font({ weight: 'heavy', design: 'monospaced', size: 14 })]}>
+            System Font: Heavy Monospaced 14pt
+          </Text>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+
+TextScreen.navigationOptions = {
+  title: 'Text',
+};

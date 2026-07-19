@@ -1,0 +1,59 @@
+{
+  "name": "install-expo-modules",
+  "version": "0.15.0",
+  "description": "Tools to install expo-modules for existing react-native projects",
+  "keywords": [
+    "expo",
+    "expo-modules",
+    "npx",
+    "react",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/install-expo-modules#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/install-expo-modules"
+  },
+  "bin": "bin/install-expo-modules.js",
+  "files": [
+    "bin",
+    "build"
+  ],
+  "main": "build/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
+  },
+  "devDependencies": {
+    "@expo/config": "workspace:*",
+    "@expo/config-plugins": "workspace:*",
+    "@expo/package-manager": "workspace:*",
+    "@expo/spawn-async": "^1.8.0",
+    "@types/prompts": "^2.0.6",
+    "@types/semver": "^7.0.0",
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "expo-module-scripts": "workspace:*",
+    "glob": "^13.0.0",
+    "prompts": "^2.3.2",
+    "resolve-from": "^5.0.0",
+    "semver": "7.5.4",
+    "terminal-link": "^2.1.1",
+    "xcparse": "^0.0.3"
+  }
+}

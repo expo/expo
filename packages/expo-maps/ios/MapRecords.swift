@@ -1,0 +1,520 @@
+// Copyright 2025-present 650 Industries. All rights reserved.
+
+import ExpoModulesCore
+import MapKit
+import SwiftUI
+
+struct Coordinate: Record {
+  @Field var latitude: Double = 0
+  @Field var longitude: Double = 0
+}
+
+struct MapMarker: Identifiable, Record {
+  @Field var id: String = UUID().uuidString
+  @Field var coordinates: Coordinate
+  @Field var systemImage: String = ""
+  @Field var monogram: String = ""
+  @Field var tintColor: Color = .red
+  @Field var title: String = ""
+
+  var clLocationCoordinate2D: CLLocationCoordinate2D {
+    CLLocationCoordinate2D(
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude
+    )
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(coordinate: clLocationCoordinate2D)
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+
+  /// Returns true if the marker should display a monogram instead of a system image
+  var hasMonogram: Bool {
+    !monogram.isEmpty && systemImage.isEmpty
+  }
+}
+
+struct CameraPosition: Record, Equatable {
+  @Field var coordinates: Coordinate
+  @Field var zoom: Double = 1
+
+  static func == (lhs: CameraPosition, rhs: CameraPosition) -> Bool {
+    return lhs.coordinates.latitude == rhs.coordinates.latitude
+      && lhs.coordinates.longitude == rhs.coordinates.longitude && lhs.zoom == rhs.zoom
+  }
+}
+
+struct SelectOptions: Record {
+  @Field var zoom: Double?
+  @Field var moveCamera: Bool = true
+}
+
+struct SelectionConfig {
+  let mapItem: MKMapItem?
+  let coordinate: CLLocationCoordinate2D?
+  let zoom: Double?
+  let moveCamera: Bool
+}
+
+struct MapAnnotation: Record, Identifiable {
+  @Field var id: String = UUID().uuidString
+  @Field var coordinates: Coordinate
+  @Field var title: String = ""
+  @Field var backgroundColor: Color = .white
+  @Field var textColor: Color = .black
+  @Field var text: String = ""
+  @Field var icon: SharedRef<UIImage>?
+
+  var clLocationCoordinate2D: CLLocationCoordinate2D {
+    CLLocationCoordinate2D(
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude
+    )
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(coordinate: clLocationCoordinate2D)
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+}
+
+struct ExpoAppleMapPolyline: Record, Identifiable {
+  @Field var id: String = UUID().uuidString
+
+  @Field var coordinates: [Coordinate]
+  @Field var color: Color = .blue
+  @Field var width: Double = 4
+  @Field var contourStyle: MapContourStyle = .straight
+
+  var clLocationCoordinates2D: [CLLocationCoordinate2D] {
+    return coordinates.map {
+      CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+    }
+  }
+
+  /// Coordinates used for tap hit-testing. For geodesic polylines, this interpolates
+  /// points along the great circle arc so the hit area matches the rendered curve.
+  var hitTestCoordinates: [CLLocationCoordinate2D] {
+    let coords = clLocationCoordinates2D
+    guard contourStyle == .geodesic else { return coords }
+    return zip(coords, coords.dropFirst()).flatMap { start, end in
+      Self.interpolateGreatCircle(from: start, to: end).dropLast()
+    } + [coords.last].compactMap { $0 }
+  }
+
+  /// Interpolates points along the great circle arc between two coordinates.
+  /// See: https://www.edwilliams.org/avform147.htm#Intermediate
+  private static func interpolateGreatCircle(
+    from start: CLLocationCoordinate2D,
+    to end: CLLocationCoordinate2D,
+    segments: Int = 30
+  ) -> [CLLocationCoordinate2D] {
+    let lat1 = start.latitude * .pi / 180
+    let lon1 = start.longitude * .pi / 180
+    let lat2 = end.latitude * .pi / 180
+    let lon2 = end.longitude * .pi / 180
+
+    let d = acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1))
+    // Points are (nearly) coincident — no arc to interpolate.
+    guard d > 1e-10 else { return [start, end] }
+
+    let sinD = sin(d)
+
+    return (0...segments).map { i in
+      let f = Double(i) / Double(segments)
+      let A = sin((1 - f) * d) / sinD
+      let B = sin(f * d) / sinD
+      let x = A * cos(lat1) * cos(lon1) + B * cos(lat2) * cos(lon2)
+      let y = A * cos(lat1) * sin(lon1) + B * cos(lat2) * sin(lon2)
+      let z = A * sin(lat1) + B * sin(lat2)
+      let lat = atan2(z, sqrt(x * x + y * y))
+      let lon = atan2(y, x)
+      return CLLocationCoordinate2D(
+        latitude: lat * 180 / .pi,
+        longitude: lon * 180 / .pi
+      )
+    }
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(
+      coordinate: clLocationCoordinates2D.first ?? CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    )
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+}
+
+struct Circle: Record, Identifiable {
+  @Field var id: String = UUID().uuidString
+
+  @Field var center: Coordinate
+  @Field var radius: Double
+  @Field var lineColor: Color?
+  @Field var lineWidth: Double?
+  @Field var color: Color = .green
+
+  var clLocationCoordinate2D: CLLocationCoordinate2D {
+    CLLocationCoordinate2D(
+      latitude: center.latitude,
+      longitude: center.longitude
+    )
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(coordinate: clLocationCoordinate2D)
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+}
+
+struct Polygon: Record, Identifiable {
+  @Field var id: String = UUID().uuidString
+
+  @Field var coordinates: [Coordinate]
+  @Field var color: Color = .blue
+  @Field var lineColor: Color?
+  @Field var lineWidth: Double?
+
+  var clLocationCoordinates2D: [CLLocationCoordinate2D] {
+    return coordinates.map {
+      CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+    }
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(
+      coordinate: clLocationCoordinates2D.first ?? CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    )
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+}
+
+struct MapUISettings: Record {
+  @Field var compassEnabled: Bool = true
+  @Field var myLocationButtonEnabled: Bool = true
+  @Field var scaleBarEnabled: Bool = false
+  @Field var togglePitchEnabled: Bool = true
+}
+
+struct MapProperties: Record {
+  @Field var isMyLocationEnabled: Bool = false
+  @Field var mapType: MapType = .standard
+  @Field var isTrafficEnabled: Bool = false
+  @Field var selectionEnabled: Bool = true
+  @Field var polylineTapThreshold: Double = 20
+  @Field var elevation: MapStyleElevation = MapStyleElevation.automatic
+  @Field var emphasis: MapStyleEmphasis = MapStyleEmphasis.automatic
+  @Field var pointsOfInterest: MapPointOfInterestCategories = MapPointOfInterestCategories()
+}
+
+enum MapContourStyle: String, Enumerable {
+  case straight = "STRAIGHT"
+  case geodesic = "GEODESIC"
+
+  @available(iOS 17.0, *)
+  func toContourStyle() -> MapPolyline.ContourStyle {
+    return switch self {
+    case .straight: .straight
+    case .geodesic: .geodesic
+    }
+  }
+}
+
+enum MapStyleElevation: String, Enumerable {
+  case automatic = "AUTOMATIC"
+  case flat = "FLAT"
+  case realistic = "REALISTIC"
+
+  @available(iOS 17.0, *)
+  func toMapStyleElevation() -> MapStyle.Elevation {
+    return switch self {
+    case .flat: .flat
+    case .realistic: .realistic
+    default: .automatic
+    }
+  }
+}
+
+enum MapStyleEmphasis: String, Enumerable {
+  case muted = "MUTED"
+  case automatic = "AUTOMATIC"
+
+  @available(iOS 17.0, *)
+  func toMapStyleEmphasis() -> MapStyle.StandardEmphasis {
+    return switch self {
+    case .muted: .muted
+    default: .automatic
+    }
+  }
+}
+
+enum MapColorScheme: String, Enumerable {
+  case automatic = "AUTOMATIC"
+  case light = "LIGHT"
+  case dark = "DARK"
+
+  func toColorScheme() -> ColorScheme? {
+    return switch self {
+    case .light: .light
+    case .dark: .dark
+    case .automatic: nil
+    }
+  }
+}
+
+enum MapType: String, Enumerable {
+  case standard = "STANDARD"
+  case hybrid = "HYBRID"
+  case imagery = "IMAGERY"
+
+  @available(iOS 17.0, *)
+  func toMapStyle(_ properties: MapProperties) -> MapStyle {
+    let mapType = properties.mapType
+    let elevation = properties.elevation.toMapStyleElevation()
+    let emphasis = properties.emphasis.toMapStyleEmphasis()
+    let pointsOfInterest = properties.pointsOfInterest.toMapPointOfInterestCategories()
+    let showsTraffic = properties.isTrafficEnabled
+
+    return switch mapType {
+    case .hybrid:
+      .hybrid(
+        elevation: elevation,
+        pointsOfInterest: pointsOfInterest,
+        showsTraffic: showsTraffic
+      )
+    case .imagery:
+      .imagery(
+        elevation: elevation
+      )
+    default:
+      .standard(
+        elevation: elevation,
+        emphasis: emphasis,
+        pointsOfInterest: pointsOfInterest,
+        showsTraffic: showsTraffic
+      )
+    }
+  }
+}
+
+struct MapPointOfInterestCategories: Record {
+  @Field var including: [MapPointOfInterestCategory]?
+  @Field var excluding: [MapPointOfInterestCategory]?
+
+  @available(iOS 17.0, *)
+  func toMapPointOfInterestCategories() -> PointOfInterestCategories {
+    if let including = including {
+      let poiCategories = including.compactMap { $0.toMapPointOfInterestCategory() }
+      return .including(poiCategories)
+    }
+
+    if let excluding = excluding {
+      let poiCategories = excluding.compactMap { $0.toMapPointOfInterestCategory() }
+      return .excluding(poiCategories)
+    }
+
+    // show all POIs by default
+    return .excluding([])
+  }
+}
+
+enum MapPointOfInterestCategory: String, Enumerable {
+  // Arts and culture
+  case museum = "MUSEUM"
+  case musicVenue = "MUSIC_VENUE"
+  case theater = "THEATER"
+
+  // Education
+  case library = "LIBRARY"
+  case planetarium = "PLANETARIUM"
+  case school = "SCHOOL"
+  case university = "UNIVERSITY"
+
+  // Entertainment
+  case movieTheater = "MOVIE_THEATER"
+  case nightlife = "NIGHTLIFE"
+
+  // Health and safety
+  case fireStation = "FIRE_STATION"
+  case hospital = "HOSPITAL"
+  case pharmacy = "PHARMACY"
+  case police = "POLICE"
+
+  // Historical and cultural landmarks
+  case castle = "CASTLE"
+  case fortress = "FORTRESS"
+  case landmark = "LANDMARK"
+  case nationalMonument = "NATIONAL_MONUMENT"
+
+  // Food and drink
+  case bakery = "BAKERY"
+  case brewery = "BREWERY"
+  case cafe = "CAFE"
+  case distillery = "DISTILLERY"
+  case foodMarket = "FOOD_MARKET"
+  case restaurant = "RESTAURANT"
+  case winery = "WINERY"
+
+  // Personal services
+  case animalService = "ANIMAL_SERVICE"
+  case atm = "ATM"
+  case automotiveRepair = "AUTOMOTIVE_REPAIR"
+  case bank = "BANK"
+  case beauty = "BEAUTY"
+  case evCharger = "EV_CHARGER"
+  case fitnessCenter = "FITNESS_CENTER"
+  case laundry = "LAUNDRY"
+  case mailbox = "MAILBOX"
+  case postOffice = "POST_OFFICE"
+  case restroom = "RESTROOM"
+  case spa = "SPA"
+  case store = "STORE"
+
+  // Parks and recreation
+  case amusementPark = "AMUSEMENT_PARK"
+  case aquarium = "AQUARIUM"
+  case beach = "BEACH"
+  case campground = "CAMPGROUND"
+  case fairground = "FAIRGROUND"
+  case marina = "MARINA"
+  case nationalPark = "NATIONAL_PARK"
+  case park = "PARK"
+  case rvPark = "RV_PARK"
+  case zoo = "ZOO"
+
+  // Sports
+  case baseball = "BASEBALL"
+  case basketball = "BASKETBALL"
+  case bowling = "BOWLING"
+  case goKart = "GO_KART"
+  case golf = "GOLF"
+  case hiking = "HIKING"
+  case miniGolf = "MINI_GOLF"
+  case rockClimbing = "ROCK_CLIMBING"
+  case skatePark = "SKATE_PARK"
+  case skating = "SKATING"
+  case skiing = "SKIING"
+  case soccer = "SOCCER"
+  case stadium = "STADIUM"
+  case tennis = "TENNIS"
+  case volleyball = "VOLLEYBALL"
+
+  // Travel
+  case airport = "AIRPORT"
+  case carRental = "CAR_RENTAL"
+  case conventionCenter = "CONVENTION_CENTER"
+  case gasStation = "GAS_STATION"
+  case hotel = "HOTEL"
+  case parking = "PARKING"
+  case publicTransport = "PUBLIC_TRANSPORT"
+
+  // Water sports
+  case fishing = "FISHING"
+  case kayaking = "KAYAKING"
+  case surfing = "SURFING"
+  case swimming = "SWIMMING"
+
+  @available(iOS 18.0, *)
+  private static let ios18CategoryMap: [MapPointOfInterestCategory: MKPointOfInterestCategory] =
+  [
+    .musicVenue: .musicVenue,
+    .planetarium: .planetarium,
+    .castle: .castle,
+    .fortress: .fortress,
+    .landmark: .landmark,
+    .nationalMonument: .nationalMonument,
+    .distillery: .distillery,
+    .animalService: .animalService,
+    .automotiveRepair: .automotiveRepair,
+    .beauty: .beauty,
+    .baseball: .baseball,
+    .basketball: .basketball,
+    .bowling: .bowling,
+    .goKart: .goKart,
+    .golf: .golf,
+    .hiking: .hiking,
+    .miniGolf: .miniGolf,
+    .rockClimbing: .rockClimbing,
+    .skatePark: .skatePark,
+    .skating: .skating,
+    .skiing: .skiing,
+    .fishing: .fishing,
+    .kayaking: .kayaking,
+    .surfing: .surfing,
+    .swimming: .swimming,
+    .mailbox: .mailbox,
+    .spa: .spa,
+    .fairground: .fairground,
+    .rvPark: .rvPark,
+    .tennis: .tennis,
+    .volleyball: .volleyball,
+    .soccer: .soccer,
+    .conventionCenter: .conventionCenter
+  ]
+
+  private static let categoryMap: [MapPointOfInterestCategory: MKPointOfInterestCategory] =
+  [
+    .museum: .museum,
+    .theater: .theater,
+    .library: .library,
+    .school: .school,
+    .university: .university,
+    .movieTheater: .movieTheater,
+    .nightlife: .nightlife,
+    .fireStation: .fireStation,
+    .hospital: .hospital,
+    .pharmacy: .pharmacy,
+    .police: .police,
+    .bakery: .bakery,
+    .brewery: .brewery,
+    .cafe: .cafe,
+    .foodMarket: .foodMarket,
+    .restaurant: .restaurant,
+    .winery: .winery,
+    .atm: .atm,
+    .bank: .bank,
+    .evCharger: .evCharger,
+    .fitnessCenter: .fitnessCenter,
+    .laundry: .laundry,
+    .postOffice: .postOffice,
+    .restroom: .restroom,
+    .store: .store,
+    .amusementPark: .amusementPark,
+    .aquarium: .aquarium,
+    .beach: .beach,
+    .campground: .campground,
+    .marina: .marina,
+    .nationalPark: .nationalPark,
+    .park: .park,
+    .zoo: .zoo,
+    .stadium: .stadium,
+    .airport: .airport,
+    .carRental: .carRental,
+    .gasStation: .gasStation,
+    .hotel: .hotel,
+    .parking: .parking,
+    .publicTransport: .publicTransport
+  ]
+
+  func toMapPointOfInterestCategory() -> MKPointOfInterestCategory? {
+    if #available(iOS 18.0, *), let category = Self.ios18CategoryMap[self] {
+      return category
+    }
+    return Self.categoryMap[self]
+  }
+}

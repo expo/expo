@@ -1,0 +1,10 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["InsightsModule"],
+    "appDelegateSubscribers": ["InsightsAppDelegateSubscriber"]
+  },
+  "android": {
+    "modules": ["expo.modules.insights.ExpoInsightsModule"]
+  }
+}

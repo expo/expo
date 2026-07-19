@@ -1,0 +1,38 @@
+name: Updates E2E (CLI)
+
+defaults:
+  tools:
+    pnpm: '10.34.5'
+
+on:
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/updates-e2e-cli.yml
+      - packages/expo-updates/cli/**
+      - packages/expo-updates/e2e-cli/**
+  pull_request:
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/updates-e2e-cli.yml
+      - packages/expo-updates/cli/**
+      - packages/expo-updates/e2e-cli/**
+  schedule:
+    - cron: '0 18 * * SUN' # 18:00 UTC every Sunday
+
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
+jobs:
+  cli:
+    runs_on: linux-medium
+    image: latest
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Run CLI tests
+        id: cli
+        working_directory: ../../packages/expo-updates
+        run: |
+          pnpm run test:e2e-cli --ci --runInBand

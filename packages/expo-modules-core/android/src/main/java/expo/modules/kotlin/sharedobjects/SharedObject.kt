@@ -1,0 +1,111 @@
+package expo.modules.kotlin.sharedobjects
+
+import expo.modules.core.interfaces.DoNotStrip
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.runtime.Runtime
+import expo.modules.kotlin.jni.JNIUtils
+import expo.modules.kotlin.jni.JavaScriptWeakObject
+import expo.modules.kotlin.logger
+import expo.modules.kotlin.types.JSTypeConverterProvider
+import expo.modules.kotlin.weak
+import kotlin.reflect.KClass
+
+@DoNotStrip
+open class SharedObject(runtime: Runtime? = null) {
+  constructor(appContext: AppContext) : this(appContext.runtime)
+
+  /**
+   * An identifier of the native shared object that maps to the JavaScript object.
+   * When the object is not linked with any JavaScript object, its value is 0.
+   */
+  internal var sharedObjectId: SharedObjectId = SharedObjectId(0)
+
+  // Used by JNI
+  @DoNotStrip
+  private fun getSharedObjectId(): Int {
+    return sharedObjectId.value
+  }
+
+  var runtimeContextHolder = runtime.weak()
+
+  private val runtime: Runtime?
+    get() = runtimeContextHolder.get()
+
+  val appContext
+    get() = runtime?.appContext
+
+  private fun getJavaScriptObject(): JavaScriptWeakObject? {
+    return SharedObjectId(sharedObjectId.value)
+      .toWeakJavaScriptObjectNull(
+        runtime ?: return null
+      )
+  }
+
+  /**
+   * Emits an event with no payload to the associated JavaScript object.
+   */
+  fun emit(event: String) {
+    emitInternal(event, emptyArray())
+  }
+
+  /**
+   * Emits an event with a single payload to the associated JavaScript object.
+   */
+  fun emit(event: String, payload: Any?) {
+    emitInternal(event, arrayOf(payload))
+  }
+
+  @Deprecated(
+    "Multi-argument event emission is deprecated. Use `emit(event)` or `emit(event, payload)` and pass a single payload (typically a Map/Bundle) instead.",
+    ReplaceWith("emit(event, args)")
+  )
+  fun emit(event: String, vararg args: Any?) {
+    emitInternal(event, args)
+  }
+
+  private fun emitInternal(event: String, payload: Array<out Any?>) {
+    val jsObject = getJavaScriptObject() ?: return
+    val jniInterop = runtime?.jsiContext ?: return
+    try {
+      JNIUtils.emitEvent(
+        jsObject,
+        jniInterop,
+        event,
+        payload
+          .map { JSTypeConverterProvider.convertToJSValue(it, useExperimentalConverter = true) }
+          .toTypedArray()
+      )
+    } catch (e: Throwable) {
+      logger.error("Unable to send event '$event' by shared object of type ${this::class.java.simpleName}", e)
+    }
+  }
+
+  open fun onStartListeningToEvent(eventName: String) = Unit
+
+  open fun onStopListeningToEvent(eventName: String) = Unit
+
+  /**
+   * Called when the shared object was released.
+   */
+  @Suppress("DEPRECATION")
+  open fun sharedObjectDidRelease() = deallocate()
+
+  /**
+   * Called when the shared object being deallocated.
+   */
+  @Deprecated("Use sharedObjectDidRelease() instead.", ReplaceWith("sharedObjectDidRelease()"))
+  open fun deallocate() = Unit
+
+  /**
+   * Override this function to inform the JavaScript runtime that there is additional
+   * memory associated with a given JavaScript object that is not visible to the GC.
+   * This can be used if an object is known to exclusively retain some native memory,
+   * and may be used to guide decisions about when to run garbage collection.
+   */
+  open fun getAdditionalMemoryPressure(): Int {
+    return 0
+  }
+}
+
+fun KClass<*>.isSharedObjectClass() =
+  SharedObject::class.java.isAssignableFrom(this.java)

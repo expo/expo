@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ClipboardModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.clipboard.ClipboardModule"]
+  }
+}

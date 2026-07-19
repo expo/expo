@@ -1,0 +1,158 @@
+/**
+ * Copyright © 2022 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import type {
+  ReadOnlyGraph,
+  MixedOutput,
+  Module,
+  SerializerOptions,
+} from '@expo/metro/metro/DeltaBundler/types';
+import CountingSet from '@expo/metro/metro/lib/CountingSet';
+import countLines from '@expo/metro/metro/lib/countLines';
+
+import type { SerializerParameters } from './withExpoSerializers';
+
+export function getTransformEnvironment(url: string): string | null {
+  const match = url.match(/[&?]transform\.environment=([^&]+)/);
+  return match?.[1] ?? null;
+}
+
+function getAllExpoPublicEnvVars(
+  inputEnv: NodeJS.ProcessEnv = process.env
+): Record<string, string> {
+  // Create an object containing all environment variables that start with EXPO_PUBLIC_
+  const env: Record<string, string> = {};
+  for (const key in inputEnv) {
+    if (key.startsWith('EXPO_PUBLIC_') && inputEnv[key] != null) {
+      env[key] = inputEnv[key];
+    }
+  }
+  return env;
+}
+
+function isServerEnvironment(graph: ReadOnlyGraph, options: SerializerOptions): boolean {
+  // Requests from a dev server will use sourceUrl.
+  if (!graph.transformOptions.customTransformOptions) {
+    if (options.sourceUrl) {
+      const env = getTransformEnvironment(options.sourceUrl);
+      return env === 'node' || env === 'react-server';
+    }
+    return false;
+  }
+
+  // Other requests will use customTransformOptions.environment.
+  const env = graph.transformOptions.customTransformOptions.environment;
+  return env === 'node' || env === 'react-server';
+}
+
+/** Strips the process.env polyfill in server environments to allow for accessing environment variables off the global. */
+export function serverPreludeSerializerPlugin(
+  entryPoint: string,
+  preModules: readonly Module<MixedOutput>[],
+  graph: ReadOnlyGraph,
+  options: SerializerOptions
+): SerializerParameters {
+  if (isServerEnvironment(graph, options)) {
+    const prelude = preModules.find((module) => module.path === '__prelude__');
+    if (prelude) {
+      // TODO: The module output type should be upcast
+      const data = prelude.output[0]?.data as any;
+      data.code = data.code
+        .replace(/process=this\.process\|\|{},/, '')
+        .replace(
+          /process\.env=process\.env\|\|{};process\.env\.NODE_ENV=process\.env\.NODE_ENV\|\|"\w+";/,
+          ''
+        );
+    }
+  }
+  return [entryPoint, preModules, graph, options];
+}
+
+export function environmentVariableSerializerPlugin(
+  entryPoint: string,
+  preModules: readonly Module<MixedOutput>[],
+  graph: ReadOnlyGraph,
+  options: SerializerOptions
+): SerializerParameters {
+  // Skip replacement in Node.js environments.
+  if (isServerEnvironment(graph, options)) {
+    return [entryPoint, preModules, graph, options];
+  }
+
+  // In development, we need to add the process.env object to ensure it
+  // persists between Fast Refresh updates.
+  if (!options.dev) {
+    return [entryPoint, preModules, graph, options];
+  }
+
+  const code = getEnvVarDevString();
+
+  const prelude = preModules.find((module) => module.path === '\0polyfill:environment-variables');
+  if (prelude) {
+    // TODO: The module type should be upcast
+    const data = prelude.output[0]?.data as any;
+    // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
+    data.code = code;
+    return [entryPoint, preModules, graph, options];
+  }
+
+  // Old system which doesn't work very well since Metro doesn't serialize graphs the same way in all cases.
+  // e.g. the `.map` endpoint is serialized differently to error symbolication.
+
+  // Inject the new module at index 1
+  // @ts-expect-error: The preModules are mutable and we need to mutate them in order to ensure the changes are applied outside of the serializer.
+  preModules.splice(
+    // Inject at index 1 to ensure it runs after the prelude (which injects env vars).
+    1,
+    0,
+    getEnvPrelude(code)
+  );
+
+  return [entryPoint, preModules, graph, options];
+}
+
+export function getEnvVarDevString(env: NodeJS.ProcessEnv = process.env) {
+  // Set the process.env object to the current environment variables object
+  // ensuring they aren't iterable, settable, or enumerable.
+  const str =
+    `process.env=Object.defineProperties(process.env, {` +
+    Object.keys(getAllExpoPublicEnvVars(env))
+      .map(
+        (key) => `${JSON.stringify(key)}: { enumerable: true, value: ${JSON.stringify(env[key])} }`
+      )
+      .join(',') +
+    '});';
+  const code = '/* HMR env vars from Expo CLI (dev-only) */ ' + str;
+
+  const lineCount = countLines(code);
+  if (lineCount !== 1) {
+    throw new Error(
+      `Virtual environment variable code must be one line, got "${lineCount}" lines.`
+    );
+  }
+  return code;
+}
+
+function getEnvPrelude(code: string): Module<MixedOutput> {
+  const name = `\0polyfill:environment-variables`;
+
+  return {
+    dependencies: new Map(),
+    getSource: (): Buffer => Buffer.from(code),
+    inverseDependencies: new CountingSet(),
+    path: name,
+    output: [
+      {
+        type: 'js/script/virtual',
+        data: {
+          code,
+          lineCount: 1,
+          map: [],
+        },
+      },
+    ],
+  };
+}

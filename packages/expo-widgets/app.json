@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "ExpoWidgets",
+    "slug": "expo-widgets",
+    "web": {
+      "output": "single"
+    },
+    "experiments": {
+      "reactCompiler": false,
+      "autolinkingModuleResolution": true,
+      "baseUrl": "./bundle/"
+    }
+  }
+}

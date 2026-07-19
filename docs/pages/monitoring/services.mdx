@@ -1,0 +1,140 @@
+---
+title: Monitoring services
+description: Learn how to monitor the usage of your Expo and React Native app after its release.
+---
+
+import { LogrocketIcon } from '@expo/styleguide-icons/custom/LogrocketIcon';
+import { PosthogIcon } from '@expo/styleguide-icons/custom/PosthogIcon';
+import { SentryIcon } from '@expo/styleguide-icons/custom/SentryIcon';
+import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Once your app is released, you can track anonymized usage data to give you insights on how users use your app. This data includes which updates are in use, when users experience bugs, how the app performs in production, and more.
+
+## EAS Insights
+
+[EAS Insights](/eas-insights/introduction/) is a dashboard that surfaces trends across your project, grouped into three tabs:
+
+- **[App usage](/eas-insights/app-usage/)**: Usage of your app across platforms, app store versions, and time, aggregated from [EAS Update](/deploy/send-over-the-air-updates/) requests and the `expo-insights` library.
+- **[Workflows](/eas-insights/workflows/)**: Run counts, success rates, and trends for your [EAS Workflows](/eas/workflows/introduction/).
+- **[Maestro](/eas-insights/maestro/)**: Pass, flake, and failure trends for the [Maestro](https://maestro.dev/) end-to-end tests you run in EAS Workflows.
+
+<ContentSpotlight
+  alt="The Insights dashboard in the EAS dashboard, with tabs for App usage, Workflows, and Maestro."
+  src="/static/images/eas-insights/insights-overview-light.webp"
+  darkSrc="/static/images/eas-insights/insights-overview-dark.webp"
+/>
+
+Get started with the following guide:
+
+<BoxLink
+  title="EAS Insights"
+  description="Learn how to use EAS Insights to monitor your app."
+  href="/eas-insights/introduction/"
+  Icon={DataIcon}
+/>
+
+## EAS Observe
+
+[EAS Observe](/eas/observe/introduction/) is a performance monitoring service from Expo that tracks how your app performs in production. It gives you visibility in startup metrics (such as cold launch time, time to first render, and time to interactive) from real app user sessions, rendering performance, and app user experience across different devices, networks, and conditions.
+
+<ContentSpotlight
+  alt="Performance metrics on the EAS Observe dashboard."
+  src="/static/images/expo-observe/observe-dashboard-light.webp"
+  darkSrc="/static/images/expo-observe/observe-dashboard-dark.webp"
+/>
+
+Get started with the following guide:
+
+<BoxLink
+  title="EAS Observe"
+  description="Learn how to use EAS Observe to monitor your app's performance."
+  href="/eas/observe/introduction/"
+  Icon={ActivityIcon}
+/>
+
+## LogRocket
+
+You can get more insights with [LogRocket](https://logrocket.com). LogRocket records user sessions and identifies bugs as your users use your app. You can filter sessions by update IDs and also connect to your LogRocket account on the EAS dashboard to get quick access to your app's session data.
+
+<ContentSpotlight
+  alt="User sessions on the LogRocket dashboard."
+  src="/static/images/monitoring/monitor-your-app/logrocket.webp"
+/>
+
+Get started with the following guide:
+
+<BoxLink
+  title="Using LogRocket"
+  description="Learn how to use LogRocket to monitor your app."
+  href="/guides/using-logrocket/"
+  Icon={LogrocketIcon}
+/>
+
+## Sentry
+
+[Sentry](https://getsentry.com/) is a crash reporting platform that provides real-time insight into production deployments with information to reproduce and fix crashes.
+
+It notifies you of exceptions or errors that your users run into while using your app and organizes them for you on a web dashboard. Reported exceptions include stacktraces, device info, version, and other relevant context automatically. You can also provide additional context that is specific to your app, such as the current route and user ID.
+
+<ContentSpotlight
+  alt="Issues on the Sentry dashboard."
+  src="/static/images/monitoring/monitor-your-app/sentry.webp"
+/>
+
+Get started with the following guide:
+
+<BoxLink
+  title="Using Sentry"
+  description="Learn how to use Sentry to monitor your app."
+  href="/guides/using-sentry/"
+  Icon={SentryIcon}
+/>
+
+## Vexo
+
+[Vexo](https://www.vexo.co/) helps you understand how users interact with your Expo app, identify friction points, and improve engagement. It provides real-time user analytics with a simple two-line integration and offers a complete dashboard with insights into user activity, app performance, and adoption trends, along with features like heatmaps, session replays, and more.
+
+<ContentSpotlight
+  alt="The Vexo dashboard."
+  src="/static/images/monitoring/monitor-your-app/vexo.webp"
+/>
+
+Get started with the following guide:
+
+<BoxLink
+  title="Using Vexo"
+  description="Learn how to use Vexo to monitor your app."
+  href="/guides/using-vexo/"
+  Icon={BookOpen02Icon}
+/>
+
+## BugSnag
+
+[BugSnag](https://www.bugsnag.com/) is a stability monitoring solution that provides rich, end-to-end error reporting and analytics to reproduce and fix errors with speed and precision. BugSnag supports the full stack with open-source libraries for more than 50 platforms, including React Native.
+
+Get started with the following guide:
+
+<BoxLink
+  title="Using BugSnag"
+  description="Learn how to use BugSnag to monitor your app."
+  href="/guides/using-bugsnag/"
+  Icon={BookOpen02Icon}
+/>
+
+## PostHog
+
+[PostHog](https://posthog.com/) is a product analytics platform with session replay, feature flags, and error tracking. The EAS CLI integration provisions a PostHog project, wires up the SDK, and lets you tag events by EAS Update through release tagging, so you can filter analytics and errors by release.
+
+Get started with the following guide:
+
+<BoxLink
+  title="Using PostHog"
+  description="Learn how to use PostHog to monitor your app."
+  href="/guides/using-posthog/"
+  Icon={PosthogIcon}
+/>

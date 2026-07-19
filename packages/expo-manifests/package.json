@@ -1,0 +1,57 @@
+{
+  "name": "expo-manifests",
+  "version": "56.0.4",
+  "description": "Code to parse and use Expo and Expo Updates manifests.",
+  "keywords": [
+    "expo",
+    "expo-manifests",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/manifests/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-manifests"
+  },
+  "sideEffects": false,
+  "main": "build/Manifests.js",
+  "types": "build/Manifests.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/Manifests.ts",
+        "default": "./build/Manifests.d.ts"
+      },
+      "expo-source": "./src/Manifests.ts",
+      "default": "./build/Manifests.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "expo-json-utils": "workspace:~56.0.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
+  }
+}

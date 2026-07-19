@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`checks the number of arguments passed to bridged methods 1`] = `"Native method ExpoTest.testAsync expects 1 argument but received 0"`;
+
+exports[`checks the number of arguments passed to bridged methods 2`] = `"Native method ExpoTest.testAsync expects 1 argument but received 2"`;

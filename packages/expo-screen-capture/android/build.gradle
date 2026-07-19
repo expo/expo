@@ -1,0 +1,19 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.4'
+
+android {
+  namespace "expo.modules.screencapture"
+  defaultConfig {
+    versionCode 7
+    versionName '56.0.4'
+  }
+}
+
+dependencies {
+  implementation 'androidx.appcompat:appcompat:1.7.1'
+}

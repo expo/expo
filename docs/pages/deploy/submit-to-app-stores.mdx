@@ -1,0 +1,142 @@
+---
+title: Submit to app stores
+description: An overview of how to submit your app to the Google Play Store and Apple App Store.
+hasVideoLink: true
+---
+
+import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
+import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStoreIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+Releasing an app means uploading a signed binary (**.aab** for Android, **.ipa** for iOS) to Google Play Console or App Store Connect. From there, Google and Apple manage review, testing tracks, and production rollout.
+
+You have two options for getting a binary into each store: submit with **EAS Submit**, or upload manually through the store's own tools. **EAS Submit is the recommended path** since it works from any OS (including Windows and Linux for iOS), integrates with [EAS Build](/build/introduction/) and [EAS Workflows](/eas/workflows/introduction/), and can be run from a CI/CD service. Manual uploads are useful when you aren't using EAS, or when you prefer to create your Android app's first release directly in Play Console.
+
+<VideoBoxLink
+  videoId="-KZjr576tuE"
+  title="How to quickly publish to the App Store & Play Store with EAS Submit"
+  description="EAS Submit makes it easy to publish your apps to the App Store and Play Store with a simple command."
+/>
+
+## How EAS Submit works
+
+### Android (Google Play Store)
+
+EAS Submit uploads your **.aab** to Google Play Console and places it in the track you choose (internal, alpha, beta, or production). For a brand-new app, the default `eas submit` command creates the first release on the [internal testing track](/eas/json/#track), even before you complete the store listing. To distribute beyond internal testing, finish the setup tasks in Play Console and promote the release. To upload a build without rolling it out to its track, set [`releaseStatus`](/eas/json/#releasestatus) to `draft` in **eas.json**.
+
+### iOS (Apple App Store)
+
+EAS Submit uploads your **.ipa** to App Store Connect, where it becomes available in TestFlight after processing (usually 10-15 minutes). A TestFlight build is not automatically released to the App Store. To ship it to production, sign in to App Store Connect, complete the app metadata and screenshots, select the build, and submit it for App Review.
+
+## When to use EAS Submit
+
+| Scenario                                                                                                                                                   | Recommendation |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| Upload app binaries to [Google Play Console](https://play.google.com/console/about/) and [Apple App Store](https://developer.apple.com/app-store-connect/) | <YesIcon />    |
+| Upload iOS app binaries from Windows or Linux                                                                                                              | <YesIcon />    |
+| Avoid manual uploads through Play Console, App Store Connect, or Transporter                                                                               | <YesIcon />    |
+| Submit builds from [CI or automated workflows](/eas/workflows/pre-packaged-jobs/#submit)                                                                   | <YesIcon />    |
+| Standardize release processes via [eas.json](/eas/json/) config                                                                                            | <YesIcon />    |
+| Testing during development                                                                                                                                 | <NoIcon />     |
+
+## Choose a submission path
+
+<BoxLink
+  title="Submit to the Google Play Store with EAS Submit"
+  description="Recommended. Upload your Android build to Google Play Console with a single command, from your computer or CI."
+  href="/submit/android/"
+  Icon={GoogleAppStoreIcon}
+/>
+
+<BoxLink
+  title="Submit to the Apple App Store with EAS Submit"
+  description="Recommended. Upload your iOS build to App Store Connect and TestFlight from any OS, including Windows and Linux."
+  href="/submit/ios/"
+  Icon={AppleAppStoreIcon}
+/>
+
+<BoxLink
+  title="Manually submit an Android app for the first time"
+  description="Follow a step-by-step Play Console walkthrough to create your Android app's first release."
+  href="/submit/android-manual/"
+  Icon={GoogleAppStoreIcon}
+/>
+
+<BoxLink
+  title="Manually submit an iOS app with Xcode"
+  description="Build, archive, and upload an iOS app to App Store Connect using Xcode on macOS."
+  href="/submit/ios-manual/"
+  Icon={AppleAppStoreIcon}
+/>
+
+## Frequently asked questions
+
+<FAQ>
+
+<Collapsible summary="Can I submit builds that were not built with EAS Build?">
+
+Yes. EAS Submit accepts any valid **.aab** (Android App Bundle) or **.ipa** (iOS App Archive) file.
+
+For builds created with EAS Build, run `eas submit` and select a build from the list or let it use the latest build automatically.
+
+For local builds, use the `--path` flag to specify the binary:
+
+<Terminal
+  cmd={[
+    '$ eas submit --platform android --path ./my-app.aab',
+    '',
+    '$ eas submit --platform ios --path ./my-app.ipa',
+  ]}
+/>
+
+The binary must be correctly signed. For Android, this means an upload keystore. For iOS, this means a distribution certificate and provisioning profile.
+
+</Collapsible>
+
+<Collapsible summary="Does EAS Submit handle store metadata or screenshots?">
+
+EAS Submit uploads your binary but does not manage store listing metadata, screenshots, or release notes.
+
+For Google Play Store, configure your store listing directly in [Google Play Console](https://play.google.com/console/about/) before submitting.
+
+For Apple App Store, you can use [EAS Metadata](/eas/metadata/) to automate app information and localized descriptions.
+
+</Collapsible>
+
+<Collapsible summary="How do I know why my submission failed?">
+
+Open the submission details page in the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/submissions):
+
+- Read the logs on the submission details page to understand the error.
+- Look for a ["Build Annotations" bubble](https://expo.dev/changelog/2023-12-01-build-annotations) — these highlight common failure reasons and suggested fixes directly in the logs.
+
+</Collapsible>
+
+<Collapsible summary="Can I use EAS Submit inside EAS Workflows or from other CI/CD pipelines?">
+
+Yes. EAS Submit works in CI environments and integrates with [EAS Workflows](/eas/workflows/introduction/). You can add a submit job to your workflow configuration. For example:
+
+```yaml
+jobs:
+  submit_ios_to_store:
+    type: submit
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+```
+
+For more information, see [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#submit).
+
+For CI pipelines, you can also use the `--non-interactive` flag to skip prompts and `--latest` to automatically select the most recent build:
+
+<Terminal cmd={['$ eas submit --platform android --latest --non-interactive']} />
+
+</Collapsible>
+
+</FAQ>

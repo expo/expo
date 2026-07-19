@@ -1,0 +1,13 @@
+import type React from 'react';
+
+import { UnavailabilityError } from './errors/UnavailabilityError';
+
+/**
+ * A drop-in replacement for `requireNativeComponent`.
+ */
+export function requireNativeViewManager<P = any>(
+  moduleName: string,
+  viewName?: string
+): React.ComponentType<P> {
+  throw new UnavailabilityError('expo-modules-core', 'requireNativeViewManager');
+}

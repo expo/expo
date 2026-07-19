@@ -1,0 +1,191 @@
+# Changelog
+
+## Unpublished
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
+- Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
+
+## 0.13.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.0 — 2025-08-13
+
+### 🎉 New features
+
+- Use modern monospace font for web and iOS. ([#37789](https://github.com/expo/expo/pull/37789) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Add missing peer dependencies on `react` and `react-native` and optional peer dependency on `react-native-web` ([#38570](https://github.com/expo/expo/pull/38570) by [@kitten](https://github.com/kitten))
+
+## 0.12.5 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.4 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.3 — 2025-04-22
+
+### 🛠 Breaking changes
+
+- Upgrade to React 19 and remove compiled build code. ([#36273](https://github.com/expo/expo/pull/36273) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Switch web testing to `@testing-library/react`. ([#36293](https://github.com/expo/expo/pull/36293) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.12.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.0 — 2025-04-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.2 - 2025-01-19
+
+### 🐛 Bug fixes
+
+- change type of `outlineColor` to `ColorValue` to support react-native 0.77 ([#33946](https://github.com/expo/expo/pull/33946) by [@vonovak](https://github.com/vonovak))
+
+## 0.11.1 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.0 — 2024-10-22
+
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.10.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.0 — 2024-04-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.1 — 2023-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.0 — 2023-12-12
+
+### 🎉 New features
+
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.8.0 — 2023-11-14
+
+### 💡 Others
+
+- Migrate to use non-deprecated `react-native-web` props. ([#24930](https://github.com/expo/expo/pull/24930) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.7.0 — 2023-10-17
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.6.2 — 2023-09-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.5.1 - 2023-06-30
+
+### 💡 Others
+
+- Update snapshots. ([#23238](https://github.com/expo/expo/pull/23238) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.5.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.3 — 2023-05-08
+
+### 🐛 Bug fixes
+
+- Prevent babel plugin from running on node_modules. ([#21594](https://github.com/expo/expo/pull/21594) by [@EvanBacon](https://github.com/EvanBacon))
+- Prevent babel plugin from transforming `html` and `body` on web. ([#21594](https://github.com/expo/expo/pull/21594) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.4.1 — 2023-02-09
+
+### 🎉 New features
+
+- Strip unsupported web styles on native platforms. ([#21069](https://github.com/expo/expo/pull/21069) by [@EvanBacon](https://github.com/EvanBacon))
+- Provide better assertions for text children in View components in development-mode. ([#21069](https://github.com/expo/expo/pull/21069) by [@EvanBacon](https://github.com/EvanBacon))

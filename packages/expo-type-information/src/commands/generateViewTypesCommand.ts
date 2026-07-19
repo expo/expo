@@ -1,0 +1,39 @@
+import commander from 'commander';
+
+import { generateViewTypesFileContent } from '../typescriptGeneration';
+import {
+  addCommonOptions,
+  getFileTypeInformationFromArgs,
+  parseCommandArguments,
+  runCommandOnWatch,
+  TypeInformationCommandCommonAllArguments,
+  writeStringToFileOrPrintToConsole,
+} from './commandUtils';
+
+export function generateViewTypesCommand(cli: commander.Command) {
+  return addCommonOptions(cli.command('generate-view-types'))
+    .description('generate a type declaration file for a native View')
+    .action(async (options: TypeInformationCommandCommonAllArguments) => {
+      const parsedArgs = await parseCommandArguments(options);
+      if (!parsedArgs) {
+        return;
+      }
+      const { realOutputPath } = parsedArgs;
+
+      const command = async () => {
+        const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
+        if (!typeInfo) {
+          return;
+        }
+
+        const viewTypesFileContent = await generateViewTypesFileContent(typeInfo);
+        if (!viewTypesFileContent) {
+          console.error("Couldn't generate view types!");
+          return;
+        }
+        writeStringToFileOrPrintToConsole(viewTypesFileContent, realOutputPath);
+      };
+
+      runCommandOnWatch(parsedArgs, command);
+    });
+}

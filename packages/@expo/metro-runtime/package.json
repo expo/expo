@@ -1,0 +1,72 @@
+{
+  "name": "@expo/metro-runtime",
+  "version": "56.0.13",
+  "description": "Tools for making advanced Metro bundler features work",
+  "keywords": [],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "files": [
+    "build",
+    "src",
+    "rsc",
+    "assets",
+    "!**/__tests__"
+  ],
+  "sideEffects": true,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./rsc/runtime.js": "./rsc/runtime.js",
+    "./rsc/runtime": "./rsc/runtime.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@expo/log-box": "workspace:^56.0.12",
+    "anser": "^1.4.9",
+    "pretty-format": "^29.7.0",
+    "stacktrace-parser": "^0.1.10",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.0",
+    "expo-constants": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "react-dom": "19.2.3"
+  },
+  "peerDependencies": {
+    "@expo/log-box": "workspace:^56.0.12",
+    "expo": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    }
+  }
+}

@@ -1,0 +1,141 @@
+---
+title: Expo Skills for AI agents
+sidebar_title: Expo Skills
+description: A list of official AI agent skills provided by Expo for building, deploying, and debugging Expo and React Native apps.
+hasVideoLink: true
+---
+
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ExpoSkillsTable } from '~/ui/components/ExpoSkillsTable';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+Expo Skills are structured instruction files that teach AI agents how to build, deploy, and debug Expo and React Native apps accurately and efficiently. They work with Claude Code, Cursor, Codex, and other AI agents.
+
+<VideoBoxLink
+  videoId="WLGAuwagI8o"
+  time={61}
+  title="The 3 tools you need to build mobile apps with AI"
+  description="Learn how Expo Skills teach an AI agent to build a habit tracker app from scratch."
+/>
+
+## Install Expo Skills
+
+<Tabs>
+
+<Tab label="Claude Code">
+
+Run the following command to install the official Expo plugin from the `claude-plugins-official` marketplace:
+
+<Terminal cmd={['$ /plugin install expo@claude-plugins-official']} />
+
+</Tab>
+
+<Tab label="Codex">
+
+From the command line, run the following command to install the official Expo plugin:
+
+<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+
+You can also open `/plugins` in Codex and install `expo` from the `openai-curated` marketplace.
+
+</Tab>
+
+<Tab label="Cursor">
+
+{/* vale off */}
+
+If you have already installed Expo Skills for Claude Code, Codex, or another agent, recent versions of Cursor import them automatically. Open **Settings** > **Rules, Skills, Subagents**, make sure **Include third-party Plugins, Skills, and other configs** is enabled (it is on by default), and the Expo Skills appear in the **Skills** list.
+
+{/* vale on */}
+
+If you have not installed Expo Skills yet, run one of the following with the [skills CLI](https://skills.sh/docs/cli):
+
+<Terminal
+  cmd={{
+    npm: ['$ npx skills add expo/skills'],
+    yarn: ['$ yarn dlx skills add expo/skills'],
+    pnpm: ['$ pnpm dlx skills add expo/skills'],
+    bun: ['$ bunx skills add expo/skills'],
+  }}
+/>
+
+{/* vale off */}
+
+Then reopen Cursor and verify the skills appear under **Settings** > **Rules, Skills, Subagents** > **Skills**.
+
+{/* vale on */}
+
+> **important** Skills in Cursor are not shown in the slash command (`/`) menu. They work via auto-discovery when you ask the agent Expo-related questions.
+
+</Tab>
+
+<Tab label="Other agents">
+
+Use the [skills CLI](https://skills.sh/docs/cli) to add Expo Skills to any compatible agent:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx skills add expo/skills'],
+    yarn: ['$ yarn dlx skills add expo/skills'],
+    pnpm: ['$ pnpm dlx skills add expo/skills'],
+    bun: ['$ bunx skills add expo/skills'],
+  }}
+/>
+
+</Tab>
+
+</Tabs>
+
+## Available Expo Skills
+
+The following skills are available in the `expo` plugin. Skills name prefixed with`expo-*` skills are used for the Expo open source framework and `eas-*` skills for the EAS services.
+
+### Expo SDK and framework
+
+<ExpoSkillsTable category="framework" />
+
+### Expo Application Services (EAS)
+
+<ExpoSkillsTable category="eas" />
+
+## Example prompts
+
+Try the following prompts after installing Expo Skills. Your AI agent will automatically use the appropriate skill:
+
+| Example prompt                                         | Skill used            |
+| ------------------------------------------------------ | --------------------- |
+| Build a settings screen with native-feeling controls   | `expo-native-ui`      |
+| Add tab navigation and a modal to my app               | `expo-router`         |
+| Set up Tailwind CSS in my Expo project                 | `expo-tailwind-setup` |
+| Embed a recharts chart in my native app using web code | `expo-dom`            |
+| Add a SwiftUI picker component to my Expo app          | `expo-ui`             |
+| Use Material Design 3 components with Jetpack Compose  | `expo-ui`             |
+| How do I deploy my Expo app to the Apple App Store?    | `eas-app-stores`      |
+| Create a CI/CD workflow that builds on every PR        | `eas-workflows`       |
+| Upgrade my project to the latest Expo SDK              | `expo-upgrade`        |
+
+## Additional resources
+
+<BoxLink
+  title={
+    <>
+      <CODE>expo/skills</CODE> GitHub repository
+    </>
+  }
+  description="Browse the source for all available Expo Skills, or report issues."
+  href="https://github.com/expo/skills"
+  Icon={GithubIcon}
+/>
+
+<BoxLink
+  title="Expo MCP Server"
+  description="Companion AI tooling that gives coding agents direct access to Expo and EAS services."
+  href="/mcp/"
+  Icon={BookOpen02Icon}
+/>

@@ -1,0 +1,110 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# Test using checkForUpdate, downloadUpdate JS API to download and run an update
+- evalScript:
+    script:  ${output.downloadedUpdateId = output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve a basic update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- copyTextFrom:
+    label: Copy text from ('isembeddedlaunch')
+    id: isembeddedlaunch
+- assertTrue:
+    condition: ${maestro.copiedText == "true"}
+    label: Assert isEmbeddedLaunch is true
+- copyTextFrom:
+    label: Copy text from ('updateid')
+    id: updateid
+- assertTrue:
+    condition: ${maestro.copiedText != output.downloadedUpdateId}
+    label: Assert downloaded update is not running yet
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-1"}
+    label: Assert update string is from downloaded bundle
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from isEmbeddedLaunch
+    id: isEmbeddedLaunch
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isEmbeddedLaunch is false
+- copyTextFrom:
+    label: Copy text from checkAutomatically
+    id: checkAutomatically
+- assertTrue:
+    condition: ${maestro.copiedText == "ON_LOAD"}
+    label: Assert checkAutomatically is ON_LOAD
+- copyTextFrom:
+    label: Copy text from launchDuration
+    id: launchDuration
+- assertTrue:
+    condition: ${parseInt(maestro.copiedText, 10) > 0}
+    label: Assert launch duration is greater than 0
+- copyTextFrom:
+    label: Copy text from updateID
+    id: updateID
+- assertTrue:
+    condition: ${maestro.copiedText == output.downloadedUpdateId}
+    label: Assert downloaded update ID shows in JS API
+- tapOn:
+    label: Tap on extra params button
+    id: setExtraParams
+- copyTextFrom:
+    label: Copy text from extra params string
+    id: extraParamsString
+- assertTrue:
+    condition: ${maestro.copiedText.includes('testparam') && maestro.copiedText.includes('testvalue') && !maestro.copiedText.includes('testsetnull')}
+    label: Assert extra params are set correctly
+- evalScript:
+    script:  ${output.api.restartUpdatesServer()}
+    label: Restart updates server
+- evalScript:
+    script:  ${output.downloadedUpdateId = output.api.serveManifest('test-update-with-multiple-assets', MAESTRO_PLATFORM)}
+    label: Setup updates server for the multiple assets update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- tapOn:
+    label: Tap on check for update button
+    id: checkForUpdate
+- evalScript:
+    script: ${output.api.delay(500)}
+    label: Delay for 0.5 seconds
+- copyTextFrom:
+    label: Copy text from availableUpdateID
+    id: availableUpdateID
+- assertTrue:
+    condition: ${maestro.copiedText == output.downloadedUpdateId}
+    label: Assert correct update ID is available
+- tapOn:
+    label: Tap on download update button
+    id: downloadUpdate
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from updateID
+    id: updateID
+- assertTrue:
+    condition: ${maestro.copiedText == output.downloadedUpdateId}
+    label: Assert downloaded update ID is now the running update

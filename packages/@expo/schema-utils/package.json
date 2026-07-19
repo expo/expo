@@ -1,0 +1,40 @@
+{
+  "name": "@expo/schema-utils",
+  "version": "56.0.1",
+  "description": "Reusable JSON Schema (Draft 04) validation library for Expo",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/schema-utils#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/schema-utils"
+  },
+  "files": [
+    "build"
+  ],
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "generate": "node ./scripts/generate.js",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*",
+    "json-schema-to-typescript": "^15.0.0"
+  }
+}

@@ -1,0 +1,421 @@
+import { Inter_900Black } from '@expo-google-fonts/inter';
+import Constants from 'expo-constants';
+import { ExpoUpdatesManifest } from 'expo-manifests';
+import { requireNativeModule } from 'expo';
+import { StatusBar } from 'expo-status-bar';
+import * as Updates from 'expo-updates';
+import { UpdatesLogEntry } from 'expo-updates';
+import React from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+const ExpoUpdatesE2ETestModule = requireNativeModule('ExpoUpdatesE2ETest');
+
+ExpoUpdatesE2ETestModule.addListener('Expo.updatesE2EStateChangeEvent', _handleE2EStateChangeEvent);
+
+type NativeInterfaceState = {
+  runtimeVersion: string;
+  embeddedUpdateId: string;
+  launchedUpdateId: string;
+  downloadTimeMs: number | null;
+  type?: string | null;
+  manifest?: ExpoUpdatesManifest | null;
+};
+
+const _nativeInterfaceStateChangeListeners = new Set<(event: any) => void>();
+
+// Reemits native state change events
+function _handleE2EStateChangeEvent(params: any) {
+  const newParams = typeof params === 'string' ? JSON.parse(params) : { ...params };
+
+  _nativeInterfaceStateChangeListeners.forEach((listener) => listener(newParams));
+}
+
+function useNativeInterfaceState() {
+  const runtimeVersion = ExpoUpdatesE2ETestModule.getRuntimeVersion();
+  const embeddedUpdateId = ExpoUpdatesE2ETestModule.getEmbeddedUpdateId()?.toLowerCase();
+  const launchedUpdateId = ExpoUpdatesE2ETestModule.getLaunchedUpdateId()?.toLowerCase();
+  const [state, setState] = React.useState<NativeInterfaceState>({
+    type: null,
+    manifest: null,
+    runtimeVersion,
+    embeddedUpdateId,
+    launchedUpdateId,
+    downloadTimeMs: null,
+  });
+  const listener = React.useCallback((event: any) => {
+    setState({
+      type: event.type,
+      manifest: event.manifest,
+      runtimeVersion,
+      embeddedUpdateId,
+      launchedUpdateId: ExpoUpdatesE2ETestModule.getLaunchedUpdateId(),
+      downloadTimeMs: ExpoUpdatesE2ETestModule.getDownloadTimeMs(),
+    });
+  }, []);
+  React.useEffect(() => {
+    _nativeInterfaceStateChangeListeners.add(listener);
+    return () => {
+      _nativeInterfaceStateChangeListeners.delete(listener);
+    };
+  }, [listener]);
+  return state;
+}
+
+require('./includedAssets/test.png');
+require('./includedAssets/lock-filled.svg');
+// eslint-disable-next-line no-unused-expressions
+Inter_900Black;
+
+// keep the line below for replacement in generate-test-update-bundles
+// REPLACE_WITH_CRASHING_CODE
+
+function TestValue(props: { testID: string; value: string }) {
+  return (
+    <View>
+      <View style={{ flexDirection: 'row' }}>
+        <Text style={styles.labelText}>{props.testID}</Text>
+        <Text style={styles.labelText}>&nbsp;</Text>
+        <Text style={styles.labelText} testID={props.testID}>
+          {props.value || 'null'}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function TestButton(props: { testID: string; onPress: () => void }) {
+  return (
+    <Pressable
+      testID={props.testID}
+      style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+      onPress={props.onPress}>
+      <Text style={styles.buttonText}>{props.testID}</Text>
+    </Pressable>
+  );
+}
+
+export default function App() {
+  const [numAssetFiles, setNumAssetFiles] = React.useState(0);
+  const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
+  const [numActive, setNumActive] = React.useState(0);
+  const [extraParamsString, setExtraParamsString] = React.useState('');
+  const [isRollback, setIsRollback] = React.useState(false);
+  const [isReloading, setIsReloading] = React.useState(false);
+  const [startTime, setStartTime] = React.useState<number | null>(null);
+  const [didCheckAndDownloadHappenInParallel, setDidCheckAndDownloadHappenInParallel] =
+    React.useState(false);
+  const [wasIsStartupProcedureRunningEverTrue, setWasIsStartupProcedureRunningEverTrue] =
+    React.useState(false);
+
+  const {
+    isStartupProcedureRunning,
+    currentlyRunning,
+    availableUpdate,
+    downloadedUpdate,
+    isUpdateAvailable,
+    isUpdatePending,
+    checkError,
+    isChecking,
+    isDownloading,
+    isRestarting,
+    restartCount,
+    downloadProgress,
+  } = Updates.useUpdates();
+
+  const nativeInterfaceState = useNativeInterfaceState();
+
+  React.useEffect(() => {
+    setStartTime(Date.now());
+  }, []);
+
+  React.useEffect(() => {
+    if (isStartupProcedureRunning) {
+      setWasIsStartupProcedureRunningEverTrue(true);
+    }
+  }, [isStartupProcedureRunning]);
+
+  // Get rollback state with this, until useUpdates() supports rollbacks
+  React.useEffect(() => {
+    const handleAsync = async () => {
+      setIsRollback(availableUpdate?.type === Updates.UpdateInfoType.ROLLBACK);
+    };
+    if (isUpdateAvailable) {
+      handleAsync();
+    }
+  }, [isUpdateAvailable]);
+
+  // Record if checking an downloading happen in parallel (they shouldn't)
+  React.useEffect(() => {
+    if (isChecking && isDownloading) {
+      setDidCheckAndDownloadHappenInParallel(true);
+    }
+  }, [isChecking, isDownloading]);
+
+  const runBlockAsync = (block: () => Promise<void>) => async () => {
+    setNumActive((n) => n + 1);
+    try {
+      await block();
+    } catch (e) {
+      console.warn(e);
+    } finally {
+      setNumActive((n) => n - 1);
+    }
+  };
+
+  const handleSetExtraParams = runBlockAsync(async () => {
+    await Updates.setExtraParamAsync('testsetnull', 'testvalue');
+    await Updates.setExtraParamAsync('testsetnull', null);
+    await Updates.setExtraParamAsync('testparam', 'testvalue');
+    const params = await Updates.getExtraParamsAsync();
+    setExtraParamsString(JSON.stringify(params, null, 2));
+  });
+
+  const handleSetUpdateURLAndRequestHeadersOverride = runBlockAsync(async () => {
+    Updates.setUpdateURLAndRequestHeadersOverride({
+      updateUrl: `${Constants.expoConfig?.updates?.url}-override`,
+      requestHeaders: {},
+    });
+  });
+
+  const handleToggleUpdateRequestHeadersOverride = runBlockAsync(async () => {
+    if (currentlyRunning.channel !== 'preview') {
+      Updates.setUpdateRequestHeadersOverride({
+        'expo-channel-name': 'preview',
+      });
+    } else {
+      Updates.setUpdateRequestHeadersOverride(null);
+    }
+  });
+
+  const handleReadAssetFiles = runBlockAsync(async () => {
+    const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
+    setNumAssetFiles(numFiles);
+  });
+
+  const handleClearAssetFiles = runBlockAsync(async () => {
+    await ExpoUpdatesE2ETestModule.clearInternalAssetsFolderAsync();
+    const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
+    setNumAssetFiles(numFiles);
+  });
+
+  const handleReadLogEntries = runBlockAsync(async () => {
+    const logEntries = await Updates.readLogEntriesAsync(60000);
+    setLogs(logEntries);
+    const server_port = process.env.EXPO_PUBLIC_UPDATES_SERVER_PORT;
+    try {
+      await fetch(`http://localhost:${server_port}/upload-log-entries`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(logEntries),
+      });
+    } catch (e) {
+      console.log('Server does not support the log entry endpoints');
+    }
+  });
+
+  const handleClearLogEntries = runBlockAsync(async () => {
+    await Updates.clearLogEntriesAsync();
+  });
+
+  const handleReload = async () => {
+    setIsReloading(true);
+    // this is done after a timeout so that the button press finishes for detox
+    setTimeout(async () => {
+      try {
+        await Updates.reloadAsync();
+        setIsReloading(false);
+      } catch (e) {
+        console.warn(e);
+      }
+    }, 2000);
+  };
+
+  const handleCheckForUpdate = runBlockAsync(async () => {
+    await Updates.checkForUpdateAsync();
+  });
+
+  const handleDownloadUpdate = runBlockAsync(async () => {
+    await Updates.fetchUpdateAsync();
+  });
+
+  const handleCheckAndDownloadAtSameTime = runBlockAsync(async () => {
+    await Promise.all([
+      Updates.checkForUpdateAsync(),
+      Updates.fetchUpdateAsync(),
+      Updates.checkForUpdateAsync(),
+      Updates.fetchUpdateAsync(),
+      Updates.checkForUpdateAsync(),
+      Updates.fetchUpdateAsync(),
+      Updates.checkForUpdateAsync(),
+    ]);
+  });
+
+  const logsToString = (logs: UpdatesLogEntry[]) =>
+    JSON.stringify(
+      logs.map((log) => {
+        return {
+          message: log.message,
+          time: new Date(log.timestamp).toISOString(),
+          code: log.code,
+        };
+      })
+    );
+
+  return (
+    <View style={styles.container}>
+      <TestValue testID="numActive" value={`${numActive}`} />
+      <TestValue
+        testID="didCheckAndDownloadHappenInParallel"
+        value={`${didCheckAndDownloadHappenInParallel}`}
+      />
+      <TestValue testID="updateString" value="test" />
+      <TestValue testID="updateID" value={`${Updates.updateId}`} />
+      <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
+      <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
+      <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
+      <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
+      <TestValue testID="launchDuration" value={`${currentlyRunning.launchDuration}`} />
+      <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
+      <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
+      <TestValue testID="isReloading" value={`${isReloading}`} />
+      <TestValue testID="startTime" value={`${startTime}`} />
+      <TestValue testID="channel" value={`${currentlyRunning.channel}`} />
+
+      <TestValue
+        testID="wasIsStartupProcedureRunningEverTrue"
+        value={`${wasIsStartupProcedureRunningEverTrue}`}
+      />
+      <TestValue testID="state.isStartupProcedureRunning" value={`${isStartupProcedureRunning}`} />
+      <TestValue testID="state.isUpdateAvailable" value={`${isUpdateAvailable}`} />
+      <TestValue testID="state.isUpdatePending" value={`${isUpdatePending}`} />
+      <TestValue testID="state.isRollback" value={`${isRollback}`} />
+      <TestValue testID="state.checkError" value={`${checkError?.message ?? ''}`} />
+      <TestValue
+        testID="state.rollbackCommitTime"
+        value={`${isRollback ? availableUpdate?.createdAt.toISOString() : ''}`}
+      />
+      <TestValue
+        testID="state.latestManifest.id"
+        value={`${availableUpdate?.manifest?.id || ''}`}
+      />
+      <TestValue
+        testID="state.downloadedManifest.id"
+        value={`${downloadedUpdate?.manifest?.id || ''}`}
+      />
+      <TestValue testID="state.isRestarting" value={`${isRestarting}`} />
+      <TestValue testID="state.restartCount" value={`${restartCount}`} />
+      <TestValue testID="state.downloadProgress" value={`${downloadProgress}`} />
+      <TestValue testID="nativeInterfaceState.type" value={`${nativeInterfaceState.type}`} />
+      <TestValue
+        testID="nativeInterfaceState.launchedUpdateId"
+        value={`${nativeInterfaceState.launchedUpdateId}`}
+      />
+      <TestValue
+        testID="nativeInterfaceState.availableUpdateId"
+        value={`${nativeInterfaceState.manifest?.id}`}
+      />
+      <TestValue
+        testID="nativeInterfaceState.downloadTimeMs"
+        value={`${nativeInterfaceState.downloadTimeMs}`}
+      />
+
+      <Text>Log messages</Text>
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
+        <Text testID="logEntries" style={styles.logEntriesText}>
+          {logsToString(logs)}
+        </Text>
+      </ScrollView>
+
+      <Text>Updates expoConfig</Text>
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
+        <Text testID="updates.expoClient" style={styles.logEntriesText}>
+          {JSON.stringify((Updates.manifest as ExpoUpdatesManifest)?.extra?.expoClient || {})}
+        </Text>
+      </ScrollView>
+
+      <Text>Constants expoConfig</Text>
+      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
+        <Text testID="constants.expoConfig" style={styles.logEntriesText}>
+          {JSON.stringify(Constants.expoConfig)}
+        </Text>
+      </ScrollView>
+
+      {numActive > 0 ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
+      <View style={{ flexDirection: 'row' }}>
+        <View>
+          <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
+          <TestButton testID="clearAssetFiles" onPress={handleClearAssetFiles} />
+          <TestButton testID="readLogEntries" onPress={handleReadLogEntries} />
+          <TestButton testID="clearLogEntries" onPress={handleClearLogEntries} />
+        </View>
+        <View>
+          <TestButton testID="checkForUpdate" onPress={handleCheckForUpdate} />
+          <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
+          <TestButton testID="setExtraParams" onPress={handleSetExtraParams} />
+          <TestButton
+            testID="triggerParallelFetchAndDownload"
+            onPress={handleCheckAndDownloadAtSameTime}
+          />
+          <TestButton testID="reload" onPress={handleReload} />
+          <TestButton
+            testID="setUpdateURLAndRequestHeadersOverride"
+            onPress={handleSetUpdateURLAndRequestHeadersOverride}
+          />
+          <TestButton
+            testID="toggleUpdateRequestHeadersOverride"
+            onPress={handleToggleUpdateRequestHeadersOverride}
+          />
+        </View>
+      </View>
+
+      <StatusBar style="auto" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 100,
+    marginBottom: 100,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 5,
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: '#4630EB',
+  },
+  buttonPressed: {
+    backgroundColor: '#FFFFFF',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 10,
+  },
+  labelText: {
+    fontSize: 10,
+  },
+  logEntriesContainer: {
+    margin: 10,
+    height: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    width: '90%',
+    minWidth: '90%',
+    borderColor: '#4630EB',
+    borderWidth: 1,
+    borderRadius: 4,
+  },
+  logEntriesText: {
+    fontSize: 6,
+  },
+});

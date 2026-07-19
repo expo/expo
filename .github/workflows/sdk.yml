@@ -1,0 +1,155 @@
+name: SDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      checkAll:
+        description: 'type "check-all" to force checking all packages'
+        required: false
+        default: ''
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/sdk.yml
+      - packages/**
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - turbo.json
+  pull_request:
+    paths:
+      - .github/workflows/sdk.yml
+      - packages/**
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - turbo.json
+  schedule:
+    - cron: 0 14 * * *
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # JS-only jobs, so skip the ~685 MB @shopify/react-native-skia prebuilt-binary download.
+  SKIP_SKIA_DOWNLOAD: '1'
+  # Turborepo remote cache
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: expo
+
+jobs:
+  check-packages:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.base_ref || github.event.before || 'main' }}:${{ github.base_ref || github.event.before || 'main' }} --depth 100
+        if: github.event_name == 'pull_request'
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🧐 Check all packages
+        if: github.event_name == 'schedule' ||
+          github.event.inputs.checkAll == 'check-all'
+        run: |
+          pnpm turbo run build typecheck depscheck test lint format \
+            --filter="./packages/**" \
+            --continue=dependencies-successful
+
+      - name: 🧐 Check changed packages
+        if: github.event_name != 'schedule' &&
+          github.event.inputs.checkAll != 'check-all'
+        env:
+          TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
+        run: |
+          pnpm turbo run build typecheck test \
+            --affected \
+            --filter="./packages/**" \
+            --continue=dependencies-successful
+
+      - name: ✨ Lint & format changed packages
+        if: github.event_name != 'schedule' &&
+          github.event.inputs.checkAll != 'check-all'
+        env:
+          TURBO_SCM_BASE: ${{ github.base_ref || github.event.before || 'main' }}
+        run: |
+          pnpm turbo run depscheck lint format \
+            --filter="{./packages/**}[$TURBO_SCM_BASE...HEAD]" \
+            --continue
+
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-')) && github.repository == 'expo/expo'
+        with:
+          webhook: ${{ secrets.slack_webhook_api }}
+          author_name: Check packages
+
+  check-packages-windows:
+    runs-on: windows-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.repository == 'expo/expo') }}
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 100
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🧐 Check all packages
+        shell: bash
+        run: |
+          pnpm turbo run build test \
+            --filter="./packages/**" \
+            --filter='!@expo/cli' \
+            --filter='!@expo/config' \
+            --filter='!@expo/config-plugins' \
+            --filter='!@expo/env' \
+            --filter='!@expo/fingerprint' \
+            --filter='!@expo/image-utils' \
+            --filter='!@expo/metro-config' \
+            --filter='!@expo/package-manager' \
+            --filter='!@expo/prebuild-config' \
+            --filter='!@expo/router-server' \
+            --filter='!babel-preset-expo' \
+            --filter='!create-expo' \
+            --filter='!expo-brownfield' \
+            --filter='!expo-doctor' \
+            --filter='!expo-modules-autolinking' \
+            --filter='!install-expo-modules' \
+            --continue=dependencies-successful
+
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-')) && github.repository == 'expo/expo'
+        with:
+          webhook: ${{ secrets.slack_webhook_api }}
+          author_name: Check packages

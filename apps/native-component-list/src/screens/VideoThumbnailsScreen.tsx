@@ -1,0 +1,51 @@
+import * as VideoThumbnails from 'expo-video-thumbnails';
+import React, { useState } from 'react';
+import { StyleSheet, Button, View, Image } from 'react-native';
+
+import { BodyText } from '../components/BodyText';
+
+export default function VideoThumbnailsScreen() {
+  const [image, setImage] = useState<string | null>(null);
+
+  const generateThumbnail = async (sourceFilename: string) => {
+    try {
+      const { uri } = await VideoThumbnails.getThumbnailAsync(sourceFilename, {
+        time: 15000,
+      });
+      setImage(uri);
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      {image && <Image source={{ uri: image }} style={styles.image} />}
+      <BodyText>{image}</BodyText>
+      <Button
+        onPress={() => generateThumbnail('https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4')}
+        title="Check Valid Source"
+      />
+      <Button
+        onPress={() =>
+          generateThumbnail('https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny2.mp4')
+        }
+        title="Check Invalid Source"
+      />
+      <Button onPress={() => generateThumbnail('invalid-url')} title="Check random text" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    rowGap: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: 200,
+    height: 200,
+  },
+});

@@ -1,0 +1,37 @@
+{
+  "name": "expo-dev-launcher",
+  "title": "Expo Development Launcher",
+  "version": "56.0.16",
+  "description": "Pre-release version of the Expo development launcher package for testing.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-dev-launcher"
+  },
+  "scripts": {
+    "build": "pnpm build:plugin",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p plugin/tsconfig.json"
+  },
+  "keywords": [
+    "react-native"
+  ],
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.dev",
+  "dependencies": {
+    "@expo/schema-utils": "workspace:^56.0.0",
+    "expo-dev-menu": "workspace:~56.0.15",
+    "expo-manifests": "workspace:~56.0.4"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0"
+  }
+}

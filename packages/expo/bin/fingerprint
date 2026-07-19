@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+
+require('@expo/fingerprint/bin/cli');

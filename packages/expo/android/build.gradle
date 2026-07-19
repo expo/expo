@@ -1,0 +1,57 @@
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: "expo-autolinking"
+
+buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+}
+
+group = 'host.exp.exponent'
+version = '56.0.5'
+
+expoModule {
+  // We can't prebuild the module because it depends on the generated files.
+  canBePublished false
+}
+
+android {
+  namespace "expo.core"
+  defaultConfig {
+    versionCode 1
+    versionName "56.0.5"
+    consumerProguardFiles("proguard-rules.pro")
+  }
+  testOptions {
+    unitTests.includeAndroidResources = true
+  }
+
+  buildTypes {
+    create("debugOptimized") {
+      initWith(buildTypes.release)
+      matchingFallbacks += ["release"]
+    }
+  }
+
+  sourceSets {
+    debugOptimized {
+      setRoot 'src/release'
+    }
+  }
+}
+
+dependencies { dependencyHandler ->
+  implementation 'com.facebook.react:react-android'
+  implementation 'com.squareup.okio:okio:3.16.0'
+  implementation 'com.squareup.zstd:zstd-kmp-okio:0.4.0'
+  implementation 'org.brotli:dec:0.1.2'
+
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'io.mockk:mockk:1.13.5'
+  testImplementation 'androidx.test:core:1.7.0'
+  testImplementation "com.google.truth:truth:1.4.5"
+  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
+  testImplementation 'org.robolectric:robolectric:4.16'
+}

@@ -1,0 +1,101 @@
+---
+title: User-defined events
+sidebar_title: Events
+description: Log named events from your app to track custom signals visible in the EAS Observe dashboard.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+
+User-defined events let you record arbitrary, named events from your app. Use them to track any signal specific to your app that the built-in performance metrics do not cover.
+
+Events are persisted on-device, batched, and dispatched on the next flush as OpenTelemetry log records. They appear in the **Events** tab of the EAS Observe dashboard and are queryable from the EAS CLI.
+
+## Log an event
+
+Call `Observe.logEvent` from anywhere in your app:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+function handleOnboardingComplete() {
+  Observe.logEvent('onboarding.completed');
+}
+```
+
+The first argument is the event name. Use a stable, dot-separated identifier. The dashboard groups events by exact name.
+
+## Attach attributes
+
+Pass an `attributes` map to record context with the event:
+
+```tsx
+Observe.logEvent('report.exported', {
+  attributes: {
+    format: 'csv',
+    rowCount: 1248,
+    durationMs: 532,
+    filters: ['status:active', 'region:us-west'],
+  },
+});
+```
+
+Supported attribute value types: `string`, `number`, `boolean`, arrays, and nested objects. Other JS values (`Date`, `undefined`, functions) are dropped.
+
+## Severity
+
+Events default to `"info"` severity. Override with the `severity` option for warnings or errors you want to surface separately in the dashboard:
+
+```tsx
+Observe.logEvent('sync.failed', {
+  severity: 'error',
+  attributes: { reason: 'network_timeout' },
+});
+```
+
+Supported severities, from lowest to highest: `"trace"`, `"debug"`, `"info"`, `"warn"`, `"error"`, `"fatal"`.
+
+## Body
+
+Use `body` for a free-form message that complements the structured attributes:
+
+```tsx
+Observe.logEvent('cache.evicted', {
+  body: 'Cache evicted because disk pressure exceeded the configured threshold.',
+  severity: 'warn',
+  attributes: { evictedItemCount: 42, freedBytes: 1048576 },
+});
+```
+
+## Naming conventions
+
+- Use lowercase, dot-separated names: `task.completed`, `onboarding.skipped`, `report.exported`.
+- Pick a vocabulary and stick to it. The dashboard groups by exact event name, so `report_exported` and `report.exported` will appear as separate rows.
+- Avoid Personally Identifiable Information (PII) in event names, attribute keys, and attribute values. Everything you pass is visible in the dashboard and is dispatched off-device.
+
+## View events
+
+In the dashboard: open your project and navigate to [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe?tab=events). The default view lists distinct event names with their counts in the selected time range. Click an event name to see individual events with their timestamps, attributes, and the session they belong to.
+
+<ContentSpotlight
+  alt="The Events tab in the EAS Observe dashboard listing distinct event names and their counts."
+  src="/static/images/expo-observe/observe-events-light.webp"
+  darkSrc="/static/images/expo-observe/observe-events-dark.webp"
+/>
+
+From the CLI:
+
+<Terminal
+  cmd={[
+    '# List event names with counts',
+    '$ eas observe:events',
+    '',
+    '# Show individual events for a specific event name',
+    '$ eas observe:events report.exported',
+    '',
+    '# Show all events across all names (JSON output)',
+    '$ eas observe:events --all-events --json',
+  ]}
+/>
+
+Run `eas observe:events --help` for the full list of flags (time range, platform, session ID, and more).

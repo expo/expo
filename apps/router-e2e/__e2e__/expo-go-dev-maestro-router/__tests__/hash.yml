@@ -1,0 +1,27 @@
+appId: host.exp.Exponent
+name: Hash support
+---
+- stopApp: host.exp.Exponent
+- openLink:
+    link: ${MAESTRO_APP_URL}/hash#hello
+- assertVisible:
+    id: 'e2e-pathname'
+    text: '/hash'
+- assertVisible:
+    id: 'e2e-hash'
+    text: 'hello'
+- tapOn:
+    id: 'e2e-set-hash'
+- assertVisible:
+    id: 'e2e-hash'
+    text: 'world'
+- tapOn:
+    id: 'e2e-set-hash'
+- assertVisible: # Pressing twice doesn't change anything
+    id: 'e2e-hash'
+    text: 'world'
+- tapOn:
+    id: 'e2e-remove-hash'
+- assertVisible:
+    id: 'e2e-hash'
+    text: ''

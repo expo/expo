@@ -1,0 +1,188 @@
+package expo.modules.kotlin.views
+
+import android.content.Context
+import android.view.View
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.uimanager.ViewManager
+import expo.modules.kotlin.ModuleHolder
+import expo.modules.kotlin.events.normalizeEventName
+import expo.modules.kotlin.exception.OnViewDidUpdatePropsException
+import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.exception.toCodedException
+import expo.modules.kotlin.jni.fabric.NativeStatePropsGetter
+import expo.modules.kotlin.logger
+
+class ViewManagerWrapperDelegate(
+  internal var moduleHolder: ModuleHolder<*>,
+  internal val definition: ViewManagerDefinition,
+  internal val delegateName: String? = null
+) {
+  internal val viewGroupDefinition: ViewGroupDefinition?
+    get() = definition.viewGroupDefinition
+
+  val name: String
+    get() = delegateName ?: "${moduleHolder.name}_${definition.name}"
+
+  val viewManagerName: String
+    get() = "ViewManagerAdapter_$name"
+
+  val props: Map<String, AnyViewProp>
+    get() = definition.props
+
+  val hasStateProps: Boolean = definition.props.values.any { it.isStateProp }
+
+  fun createView(context: Context): View {
+    return definition
+      .createView(context, moduleHolder.module.appContext)
+  }
+
+  fun onViewDidUpdateProps(view: View) {
+    definition.onViewDidUpdateProps?.let {
+      try {
+        exceptionDecorator(
+          { exception -> OnViewDidUpdatePropsException(view.javaClass.kotlin, exception) }
+        ) {
+          it.invoke(view)
+        }
+      } catch (exception: Throwable) {
+        // The view wasn't constructed correctly, so errors are expected.
+        // We can ignore them.
+        if (view.isErrorView()) {
+          return@let
+        }
+
+        val codedException = exception.toCodedException()
+        logger.error("❌ Error occurred when invoking 'onViewDidUpdateProps' on '${view.javaClass.simpleName}'", codedException)
+        definition.handleException(view, codedException)
+      }
+    }
+  }
+
+  fun toRNViewManager(): ViewManager<*, *> {
+    return when (definition.getViewManagerType()) {
+      ViewManagerType.SIMPLE -> SimpleViewManagerWrapper(this)
+      ViewManagerType.GROUP -> GroupViewManagerWrapper(this)
+    }
+  }
+
+  /**
+   * Updates the expo related properties of a given View based on a ReadableMap of property values.
+   *
+   * @param view The View whose properties should be updated.
+   * @param propsMap A ReadableMap of property values.
+   *
+   * @return A List of property names that were successfully updated.
+   */
+  fun updateProperties(view: View, propsMap: ReadableMap): List<String> {
+    val expoProps = props
+    val handledProps = mutableListOf<String>()
+    val iterator = propsMap.keySetIterator()
+
+    while (iterator.hasNextKey()) {
+      val key = iterator.nextKey()
+      expoProps[key]
+        ?.takeIf { !it.isStateProp }
+        ?.let { expoProp ->
+          try {
+            expoProp.set(propsMap.getDynamic(key), view, moduleHolder.module.appContext)
+          } catch (exception: Throwable) {
+            // The view wasn't constructed correctly, so errors are expected.
+            // We can ignore them.
+            if (view.isErrorView()) {
+              return@let
+            }
+
+            val codedException = exception.toCodedException()
+            logger.error("❌ Cannot set the '$name' prop on the '$view'", codedException)
+            definition.handleException(
+              view,
+              codedException
+            )
+          } finally {
+            handledProps.add(key)
+          }
+        }
+    }
+    return handledProps
+  }
+
+  fun updateStateProps(view: View) {
+    if (!hasStateProps) {
+      return
+    }
+
+    val expoView = view as? ExpoView
+      ?: return
+
+    val stateWrapper = expoView.stateWrapper
+      ?: return
+
+    val stateProps = NativeStatePropsGetter()
+      .getStateProps(stateWrapper)
+      ?: return
+
+    stateProps.forEach { (propName, value) ->
+      val prop = props[propName]
+      if (prop != null && prop.isStateProp) {
+        try {
+          prop.set(value, view, moduleHolder.module.appContext)
+        } catch (exception: Throwable) {
+          // The view wasn't constructed correctly, so errors are expected.
+          // We can ignore them.
+          if (view.isErrorView()) {
+            return@forEach
+          }
+
+          val codedException = exception.toCodedException()
+          logger.error("❌ Cannot set the '$propName' state prop on the '$view'", codedException)
+          definition.handleException(
+            view,
+            codedException
+          )
+        }
+      } else {
+        logger.warn("⚠️ Tried to set unknown or non-state prop '$propName' on '$view'")
+      }
+    }
+  }
+
+  fun onDestroy(view: View) {
+    try {
+      (view as? ComposeHostingView)?.disposeHostedComposition()
+      definition.onViewDestroys?.invoke(view)
+    } catch (exception: Throwable) {
+      // The view wasn't constructed correctly, so errors are expected.
+      // We can ignore them.
+      if (view.isErrorView()) {
+        return
+      }
+
+      val codedException = exception.toCodedException()
+      logger.error("❌ '$view' wasn't able to destroy itself", codedException)
+      definition.handleException(
+        view,
+        codedException
+      )
+    }
+  }
+
+  fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> = buildMap {
+    definition
+      .callbacksDefinition
+      ?.names
+      ?.forEach {
+        put(
+          normalizeEventName(it),
+          mapOf("registrationName" to it)
+        )
+      }
+  }
+}
+
+/**
+ * Implemented by Compose-based views to dispose their composition when the
+ * view is destroyed.
+ */
+interface ComposeHostingView {
+  fun disposeHostedComposition()
+}

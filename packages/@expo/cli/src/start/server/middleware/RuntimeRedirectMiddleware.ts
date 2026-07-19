@@ -1,0 +1,63 @@
+import { parse } from 'url';
+
+import * as Log from '../../../log';
+import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
+import type { RuntimePlatform } from './resolvePlatform';
+import {
+  assertMissingRuntimePlatform,
+  assertRuntimePlatform,
+  parsePlatformHeader,
+  resolvePlatformFromUserAgentHeader,
+} from './resolvePlatform';
+import type { ServerRequest, ServerResponse } from './server.types';
+
+export const LinkEndpoint = '/_expo/link';
+
+/** Runtime to target: expo = Expo Go, custom = Dev Client. */
+type RuntimeTarget = 'expo' | 'custom';
+
+export type DeepLinkHandler = (props: {
+  runtime: RuntimeTarget;
+  platform: RuntimePlatform;
+}) => void | Promise<void>;
+
+export class RuntimeRedirectMiddleware extends ExpoMiddleware {
+  constructor(
+    protected projectRoot: string,
+    protected options: {
+      onDeepLink?: DeepLinkHandler;
+      getLocation: (props: { runtime: RuntimeTarget }) => string | null | undefined;
+    }
+  ) {
+    super(projectRoot, [LinkEndpoint]);
+  }
+
+  async handleRequestAsync(req: ServerRequest, res: ServerResponse): Promise<void> {
+    const { query } = parse(req.url!, true);
+    const isDevClient = query['choice'] === 'expo-dev-client';
+    const platform = parsePlatformHeader(req) ?? resolvePlatformFromUserAgentHeader(req);
+    assertMissingRuntimePlatform(platform);
+    assertRuntimePlatform(platform);
+    const runtime = isDevClient ? 'custom' : 'expo';
+
+    this.options.onDeepLink?.({ runtime, platform });
+
+    const redirect = this.options.getLocation({ runtime });
+    if (!redirect) {
+      Log.warn(
+        `[redirect middleware]: Unable to determine redirect location for runtime '${runtime}' and platform '${platform}'`
+      );
+      res.statusCode = 404;
+      res.end();
+      return;
+    }
+    res.setHeader('Location', redirect);
+
+    // Disable caching
+    disableResponseCache(res);
+
+    // 'Temporary Redirect'
+    res.statusCode = 307;
+    res.end();
+  }
+}

@@ -1,0 +1,19 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.3'
+
+android {
+  namespace "expo.modules.blur"
+  defaultConfig {
+    versionCode 1
+    versionName "56.0.3"
+  }
+}
+
+dependencies {
+  implementation 'com.github.Dimezis:BlurView:version-3.1.0'
+}

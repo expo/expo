@@ -1,0 +1,329 @@
+extends: capitalization
+message: "'%s' should be in sentence case"
+link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#headings'
+level: error
+scope:
+  - heading.h2
+  - heading.h3
+  - heading.h4
+  - heading.h5
+match: $sentence
+exceptions:
+  - '.*2FA.*'
+  - '.*app\.config\.js.*'
+  - '.*app\.json.*'
+  - '.*app\.plugin\.js.*'
+  - '.*app directory.*'
+  - '.*assets.*'
+  - '.*create-expo-app.*'
+  - '.*create-react-native-app.*'
+  - '.*^iOS(.*)'
+  - '.*iPhone.*'
+  - '.*web.*'
+  - '.*AASA.*'
+  - '.*AES.*'
+  - '.*\bAI\b.*'
+  - '.*API.*'
+  - '.*APIs.*'
+  - '.*^Android(.*)'
+  - '.*AndroidManifest.*'
+  - '.*Android.*Bundle.*'
+  - '.*Android.*Package.*'
+  - '.*Android Studio.*'
+  - '.*APNs.*'
+  - '.*App Links.*'
+  - '.*AppDelegate.*'
+  - '.*App Store.*'
+  - '.*App Store Connect.*'
+  - '.*Apple.*'
+  - '.*Apple App Store.*'
+  - '.*Apple Developer.*'
+  - '.*Apple Developer Account.*'
+  - '.*Apple Developer Console.*'
+  - '.*Apple Developer Portal.*'
+  - '.*Apple ID.*'
+  - '.*Apple Pay.*'
+  - '.*Argent.*'
+  - '.*Asset Links.*'
+  - '.*Async Storage.*'
+  - '.*Autolinking.*'
+  - '.*AuthSession.*'
+  - '.*AWS Amplify Console.*'
+  - '.*AWS.*'
+  - '.*Babel.*'
+  - '.*babel\.config\.js.*'
+  - '.*Bundler.*'
+  - '.*Cache-Control.*'
+  - '.*Can I pay.*'
+  - '.*CSS.*'
+  - '.*CDN.*'
+  - '.*Chrome.*'
+  - '.*CLI.*'
+  - '.*TTI.*'
+  - '.*Classic Updates.*'
+  - '.*Claude Code.*'
+  - '.*Clerk.*'
+  - '.*CNG.*'
+  - '.*CocoaPods.*'
+  - '.*CodePush.*'
+  - '.*Codex.*'
+  - '.*Convex.*'
+  - '.*Command Line Tools.*'
+  - '.*Config Plugin.*'
+  - '.*CORS.*'
+  - '.*CRUD.*'
+  - '.*credentials\.json.*'
+  - '.*Cursor.*'
+  - '.*DevTools.*'
+  - '.*Developer Console.*'
+  - '.*Developer Mode.*'
+  - '.*detach.*'
+  - '.*develop.*apps.*Windows.*'
+  - '.*DNS.*'
+  - '.*E2E.*'
+  - '.*EAS.*'
+  - '.*EAS Build.*'
+  - '.*EAS Submit.*'
+  - '.*EAS Metadata.*'
+  - '.*EAS Update.*'
+  - '.*EAS Insights.*'
+  - '.*Element Inspector.*'
+  - '.*Environment Variables.*'
+  - '.*ESLint.*'
+  - '.*EXIF.*'
+  - '.*Expo.*'
+  - '.*ExpoKit.*'
+  - '.*Expo Application Services.*'
+  - '.*eject.*'
+  - '.*esbuild.*'
+  - '.*ESM.*'
+  - '.*expo.*'
+  - '.*Fastlane.*'
+  - '.*Firebase.*'
+  - '.*FileSystem.*'
+  - '.*FlatList.*'
+  - '.*Flipper.*'
+  - '.*Frequently Asked Questions.*'
+  - '.*Frame Content-Security Policy.*'
+  - '.*FAB.*'
+  - '.*FAQ.*'
+  - '.*FCM.*'
+  - '.*FYI.*'
+  - '.*fingerprintignore.*'
+  - '.*fingerprint.config.js.*'
+  - '.*Generate.*Android.*'
+  - '.*\bGET\b.*'
+  - '.*GitHub.*'
+  - '.*GitHub Pages.*'
+  - '.*Google.*'
+  - '.*Google Developer.*'
+  - '.*Google Font.*'
+  - '.*Google Service Account.*'
+  - '.*Google Pay.*'
+  - ".*Giphy's.*"
+  - '.*GLView.*'
+  - '.*gitignore.*'
+  - '.*Play Store.*'
+  - '.*Gradle.*'
+  - '.*Gymfile.*'
+  - '.*Headless.*Background.*'
+  - '.*Help.*published.*'
+  - '.*Hermes.*'
+  - '.*HTML.*'
+  - '.*HTTP.*'
+  - '.*HTTPS.*'
+  - '.*Info\.plist.*'
+  - '.*iOS.*Simulator.*'
+  - '.*JDK.*'
+  - '.*JSON.*'
+  - '.*JavaScript.*'
+  - '.*JavaScriptCore.*'
+  - '.*Java Development Kit.*'
+  - '.*Jest.*'
+  - '.*Keychain.*'
+  - '.*Kotlin.*'
+  - '.*layout.*'
+  - '.*Legend-State.*'
+  - '.*Link component.*'
+  - '.*Linking.*'
+  - '.*MCP*'
+  - '.*Material Symbols.*'
+  - '.*MultiBrowse.*'
+  - '.*macOS.*'
+  - '.*manifest\.json.*'
+  - '.*metro\.config\.js.*'
+  - '.*Maven.*'
+  - '.*Netlify.*'
+  - '.*Node\.js.*'
+  - '.*Node Package Managers.*'
+  - '.*NavigationContainer.*'
+  - '.*Next\.js.*'
+  - '.*New Architecture.*'
+  - '.*Notification Message.*'
+  - '.*npm.*'
+  - '.*OAuth.*'
+  - '.*OTA.*'
+  - '.*OTF.*'
+  - '.*\bPOST\b.*'
+  - '.*PostCSS.*'
+  - '.*PostHog.*'
+  - '.*PRAGMA.*'
+  - '.*Prebuild.*'
+  - '.*Privacy Shield.*'
+  - '.*Push Notification.*'
+  - '.*PWA.*'
+  - '.*package\.json.*'
+  - '.*props.*'
+  - '.*QR.*'
+  - '.*RTL.*'
+  - '.*React.*'
+  - '.*React Native.*'
+  - '.*React Navigation.*'
+  - '.*Reanimated.*'
+  - '.*Remote Debugging.*'
+  - '.*Resend.*'
+  - '.*REST API.*'
+  - '.*Remote JS.*'
+  - '.*Router.*'
+  - ".*Router's.*"
+  - '.*RxDB.*'
+  - '.*SAF.*'
+  - '.*SASS.*'
+  - '.*SDK.*'
+  - '.*SecureStore.*'
+  - '.*SF Symbol.*'
+  - '.*Sentry.*'
+  - '.*Server-side.*'
+  - '.*Sierra.*'
+  - '.*SLAs.*'
+  - '.*Smart Banner.*'
+  - '.*Smart App Banners.*'
+  - '.*SMS.*'
+  - '.*Software Mansion.*'
+  - '.*SQLite.*'
+  - '.*SQLCipher.*'
+  - '.*Statically-typed.*'
+  - '.*Storage Access Framework.*'
+  - '.*Strict-Transport-Security.*'
+  - '.*SSO.*'
+  - '.*Suspense.*'
+  - '.*Swift.*'
+  - '.*Terser.*'
+  - '.*TestFlight.*'
+  - '.*TLS.*'
+  - '.*Transporter.*'
+  - '.*TTF.*'
+  - '.*TTI.*'
+  - '.*Turtle.*'
+  - '.*TV.*'
+  - '.*TypeScript.*'
+  - '.*TypeScript module.*'
+  - '.*Watchman.*'
+  - '.*UI.*'
+  - '.*USB.*'
+  - '.*URI.*'
+  - '.*URL.*'
+  - '.*URLs.*'
+  - '.*V8.*'
+  - '.*VS Code.*'
+  - '.*WebGL.*'
+  - '.*WebView.*'
+  - '.*Wix.*'
+  - '.*webpack.*'
+  - '.*Xcode.*'
+  - '.*XDE.*'
+  - '.*Yarn.*'
+  - '.*YAML.*'
+  # PascalCase for React component names that end with common component suffixes
+  - '^[A-Z][a-zA-Z]*(?:Input|Sheet|Picker|Progress|Menu|View|Button|Switch|Slider|Text|TextInput)(?:\s*\([^)]+\))?$'
+  # Standalone Expo UI component names
+  - '^(?:BottomSheet|Button|Chip|CircularProgress|ColorPicker|ContextMenu|DatePicker|DateTimePicker|DisclosureGroup|Divider|DropdownMenu|Form|Gauge|Host|LinearProgress|List|Menu|Modifiers|Namespace|Picker|Popover|ProgressView|Section|Slider|Switch|TextField|TextInput|Toggle)(?:\s*\([^)]+\))?$'
+  # Component, service and product names that are proper nouns
+  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer|Popover|HStack|VStack)(?:\s*\([^)]+\))?$'
+  # Specific edge cases
+  - two-factor
+  - (deprecated)
+  - (optional)
+  - Two-factor
+  - (experimental support)
+  - How can I implement a custom
+  - Drizzle ORM
+  - architecture?
+  - index.tsx files
+  - registerRootComponent
+  - browserslist
+  - ID
+  - IP
+  - SSR
+  - ECONNREFUSED
+  - ES Module
+  - Jetpack Compose
+  - (Background)
+  - Dynamic Route
+  - Config Mods
+  - Convertibles
+  - (Optional)
+  - Flat config
+  - Server Components
+  - (Deprecated)
+  - Organization
+  - Content
+  - Docs
+  - DocSearch
+  - Snack
+  - TypeDoc
+  - Code
+  - Prose
+  - Background Location
+  - Headless Background
+  - Start Packager
+  - CI
+  - CD
+  - Dynamic Routes
+  - Protected Routes
+  - Metro
+  - Component
+  - Metro
+  - Privacy
+  - Podfile
+  - Orbit
+  - Webpack
+  - Remote and Local
+  - Server Functions
+  - New Android Builds Infrastructure
+  - Build
+  - Maestro
+  - Maestro Cloud
+  - Require Approval
+  - Asset Caching
+  - Getting Started
+  - Keyboard Controller
+  - PR
+  - Apollo Client
+  - Environment Variable
+  - App Store
+  - Secure Context in DOM
+  - Enterprise Support
+  - Use Stacks
+  - 'Mode 1: Auto-with-overrides mode'
+  - 'Mode 2: Payload mode'
+  - 'Method 1: Use'
+  - 'Method 2: Use'
+  - 'Image manipulation without disk I/O'
+  - Live Activities
+  - Live Activity
+  - 'Prerequisite: Creating widget'
+  - 'Prerequisite: Creating Live Activity'
+  - 'Prerequisite: Creating a widget'
+  - 'Prerequisite: Creating a Live Activity'
+  - Hiding the Tab bar
+  - Integrated vs Isolated
+  - Expo Skills
+  - DSL
+  - TriStateCheckbox
+  - MainApplication
+  - MainActivity
+  - HorizontalCenteredHeroCarousel
+  - HorizontalUncontainedCarousel
+  - Serving Markdown to AI Agents
+  - Clerk Publishable Key

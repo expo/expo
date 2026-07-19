@@ -1,0 +1,149 @@
+public final class ModuleRegistry: Sequence {
+  public typealias Element = ModuleHolder
+
+  private weak var appContext: AppContext?
+
+  private let registry = Mutex<[String: ModuleHolder]>([:])
+  private var overrideDisallowModules = Set<String>()
+
+  init(appContext: AppContext) {
+    self.appContext = appContext
+  }
+
+  /**
+   Registers an instance of module holder.
+   */
+  internal func register(holder: ModuleHolder, preventModuleOverriding: Bool = false) {
+    log.info("Registering module '\(holder.name)'")
+
+    if preventModuleOverriding {
+      overrideDisallowModules.insert(holder.name)
+    }
+    let didRegister = registry.withLock { registry -> Bool in
+      // if overriding is disallowed for this module and the module already registered, don't re-register
+      if overrideDisallowModules.contains(holder.name) && registry[holder.name] != nil {
+        log.info(
+          "Not re-registering module '\(holder.name)' since a previous registration specified preventModuleOverriding: true"
+        )
+        return false
+      }
+      registry[holder.name] = holder
+      return true
+    }
+    if didRegister {
+      // Call the `didCreate` lifecycle hook only after the holder is in the registry, so the module
+      // can already look itself up (e.g. through `withEventTarget`). Rejected registrations don't get it.
+      holder.module.didCreate()
+    }
+  }
+
+  /**
+   Registers an instance of the module.
+   */
+  public func register(module: AnyModule, name: String?, preventModuleOverriding: Bool = false) {
+    guard let appContext else {
+      log.error("Unable to register a module '\(module)', the app context is unavailable")
+      return
+    }
+    register(
+      holder: ModuleHolder(appContext: appContext, module: module, name: name),
+      preventModuleOverriding: preventModuleOverriding)
+  }
+
+  /**
+   Registers a module by its type.
+   */
+  public func register(moduleType: AnyModule.Type, name: String?, preventModuleOverriding: Bool = false) {
+    guard let appContext else {
+      log.error("Unable to register a module '\(moduleType)', the app context is unavailable")
+      return
+    }
+    register(
+      module: moduleType.init(appContext: appContext), name: name, preventModuleOverriding: preventModuleOverriding)
+  }
+
+  /**
+   Registers modules exported by given modules provider.
+   */
+  public func register(fromProvider provider: ModulesProviderProtocol) {
+    provider.getModuleClasses().forEach { module, name in
+      register(moduleType: module, name: name)
+    }
+  }
+
+  /**
+   Unregisters given module from the registry.
+   */
+  public func unregister(module: AnyModule) {
+    registry.withLock { registry in
+      if let index = registry.firstIndex(where: { $1.module === module }) {
+        registry.remove(at: index)
+      }
+    }
+  }
+
+  public func unregister(moduleName: String) {
+    registry.withLock { registry in
+      if registry[moduleName] != nil {
+        log.info("Unregistering module '\(moduleName)'")
+        registry[moduleName] = nil
+      }
+    }
+  }
+
+  public func has(moduleWithName moduleName: String) -> Bool {
+    return registry.withLock { registry in
+      return registry[moduleName] != nil
+    }
+  }
+
+  public func get(moduleHolderForName moduleName: String) -> ModuleHolder? {
+    return registry.withLock { registry in
+      return registry[moduleName]
+    }
+  }
+
+  public func get(moduleWithName moduleName: String) -> AnyModule? {
+    return registry.withLock { registry in
+      registry[moduleName]?.module
+    }
+  }
+
+  public func getModule<ModuleProtocol>(implementing protocol: ModuleProtocol.Type) -> ModuleProtocol? {
+    return registry.withLock { registry in
+      for holder in registry.values {
+        if let module = holder.module as? ModuleProtocol {
+          return module
+        }
+      }
+      return nil
+    }
+  }
+
+  public func getModuleNames() -> [String] {
+    return registry.withLock { registry in
+      return Array(registry.keys)
+    }
+  }
+
+  public func makeIterator() -> IndexingIterator<[ModuleHolder]> {
+    return registry.withLock { registry in
+      return registry.map({ $1 }).makeIterator()
+    }
+  }
+
+  internal func post(event: EventName) {
+    log.info("Posting '\(event)' event to registered modules")
+    forEach { holder in
+      holder.post(event: event)
+    }
+  }
+
+  internal func post<PayloadType>(event: EventName, payload: PayloadType? = nil) {
+    log.info("Posting '\(event)' event to registered modules")
+    forEach { holder in
+      holder.post(event: event, payload: payload)
+    }
+  }
+
+}

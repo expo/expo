@@ -1,0 +1,104 @@
+import { requireNativeView } from 'expo';
+import type { NativeSyntheticEvent } from 'react-native';
+
+import { Slot } from '../SlotView';
+import { type CommonViewModifierProps } from '../types';
+
+export interface SliderProps extends CommonViewModifierProps {
+  /**
+   * The current value of the slider.
+   */
+  value?: number;
+  /**
+   * The step increment for the slider.
+   */
+  step?: number;
+  /**
+   * The minimum value of the slider. Updating this value does not trigger callbacks if the current value is below `min`.
+   */
+  min?: number;
+  /**
+   * The maximum value of the slider. Updating this value does not trigger callbacks if the current value is above `max`.
+   */
+  max?: number;
+  /**
+   * Lower limit the user can drag the thumb to. The visible track still
+   * spans `min..max`, but the thumb stops at `lowerLimit` during drag.
+   */
+  lowerLimit?: number;
+  /**
+   * Upper limit the user can drag the thumb to. The visible track still
+   * spans `min..max`, but the thumb stops at `upperLimit` during drag.
+   */
+  upperLimit?: number;
+  /**
+   * A label describing the slider's purpose.
+   */
+  label?: React.ReactNode;
+  /**
+   * A label displayed at the minimum value position.
+   */
+  minimumValueLabel?: React.ReactNode;
+  /**
+   * A label displayed at the maximum value position.
+   */
+  maximumValueLabel?: React.ReactNode;
+  /**
+   * Callback triggered on dragging along the slider.
+   */
+  onValueChange?: (value: number) => void;
+  /**
+   * Callback triggered when the user starts or ends editing the slider.
+   */
+  onEditingChanged?: (isEditing: boolean) => void;
+}
+
+type NativeSliderProps = Omit<
+  SliderProps,
+  'onValueChange' | 'onEditingChanged' | 'label' | 'minimumValueLabel' | 'maximumValueLabel'
+> & {
+  onValueChanged?: (event: NativeSyntheticEvent<{ value: number }>) => void;
+  onEditingChanged?: (event: NativeSyntheticEvent<{ isEditing: boolean }>) => void;
+  children?: React.ReactNode;
+};
+
+const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeView(
+  'ExpoUI',
+  'SliderView'
+);
+
+function transformSliderProps(props: SliderProps): NativeSliderProps {
+  const {
+    label,
+    minimumValueLabel,
+    maximumValueLabel,
+    onValueChange,
+    onEditingChanged,
+    ...restProps
+  } = props;
+  return {
+    ...restProps,
+    onValueChanged: onValueChange
+      ? ({ nativeEvent: { value } }) => {
+          onValueChange(value);
+        }
+      : undefined,
+    onEditingChanged: onEditingChanged
+      ? ({ nativeEvent: { isEditing } }) => {
+          onEditingChanged(isEditing);
+        }
+      : undefined,
+  };
+}
+
+export function Slider(props: SliderProps) {
+  const { label, minimumValueLabel, maximumValueLabel } = props;
+
+  return (
+    <SliderNativeView {...transformSliderProps(props)}>
+      {label && <Slot name="label">{label}</Slot>}
+      {minimumValueLabel && <Slot name="minimum">{minimumValueLabel}</Slot>}
+      {maximumValueLabel && <Slot name="maximum">{maximumValueLabel}</Slot>}
+    </SliderNativeView>
+  );
+}

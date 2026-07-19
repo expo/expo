@@ -1,0 +1,18 @@
+---
+title: Using npm cache with Yarn 1 (Classic)
+sidebar_label: npm cache with Yarn 1 (Classic)
+hideTOC: true
+description: Learn how to use npm cache by overriding the registry in Yarn 1 (Classic).
+---
+
+By default, the EAS npm cache won't work with Yarn 1 (Classic) because **yarn.lock** files contain URLs to registries for every library. Yarn 1 does not provide any way to override it and Yarn team does not plan to support it in Yarn 1. However, this issue is fixed in Yarn 2+.
+
+If you want to take advantage of the npm cache with Yarn 1, add the [`eas-build-pre-install` npm hook](/build-reference/npm-hooks/) in **package.json** to override the registry in the **yarn.lock**:
+
+```json package.json
+{
+  "scripts": {
+    "eas-build-pre-install": "bash -c \"[ ! -z \\\"$EAS_BUILD_NPM_CACHE_URL\\\" ] && sed -i -e \\\"s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g\\\" yarn.lock\" || true"
+  }
+}
+```

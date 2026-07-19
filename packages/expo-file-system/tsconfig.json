@@ -1,0 +1,14 @@
+{
+  "extends": "expo-module-scripts/tsconfig.base",
+  "compilerOptions": {
+    "composite": true,
+    // `rootDir` spans both `src` and the hand-maintained `mocks/` module, which
+    // the native tests import directly (e.g. `../../mocks/FileSystem`).
+    "rootDir": ".",
+    "noEmit": true,
+    "emitDeclarationOnly": true,
+    // `mocks/` and the native tests rely on Node globals (`Buffer`, `global`).
+    "types": ["jest", "node"]
+  },
+  "include": ["./src", "./mocks"]
+}

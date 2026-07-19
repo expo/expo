@@ -1,0 +1,83 @@
+{
+  "name": "expo-observe",
+  "version": "56.0.16",
+  "description": "Expo module that dispatches collected app metrics to EAS Observe",
+  "keywords": [
+    "EAS",
+    "ExpoObserve",
+    "expo",
+    "expo-observe",
+    "observability",
+    "observe",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-observe"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./integrations/react-navigation": {
+      "types": {
+        "expo-source": "./src/integrations/react-navigation/index.ts",
+        "default": "./build/integrations/react-navigation/index.d.ts"
+      },
+      "expo-source": "./src/integrations/react-navigation/index.ts",
+      "default": "./build/integrations/react-navigation/index.js"
+    }
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "expo-app-metrics": "workspace:~56.0.14",
+    "expo-eas-client": "workspace:~56.0.0"
+  },
+  "devDependencies": {
+    "@react-navigation/native": "^7.1.33",
+    "@testing-library/react-native": "^13.3.0",
+    "@types/react": "~19.2.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "@react-navigation/native": "^7.0.0",
+    "expo": "*",
+    "expo-router": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-router": {
+      "optional": true
+    },
+    "@react-navigation/native": {
+      "optional": true
+    }
+  },
+  "title": "Expo Observe"
+}

@@ -1,0 +1,14 @@
+{
+  "platforms": ["apple", "android"],
+  "coreFeatures": ["swiftui", "compose"],
+  "apple": {
+    "modules": ["MapsModule", "AppleMapsModule"]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.maps.MapsModule",
+      "expo.modules.maps.GoogleMapsModule",
+      "expo.modules.maps.StreetViewModule"
+    ]
+  }
+}

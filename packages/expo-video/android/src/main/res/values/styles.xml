@@ -1,0 +1,9 @@
+<resources>
+  <style name="Fullscreen" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:windowActionBar">false</item>
+    <item name="android:windowTranslucentStatus">true</item>
+    <item name="android:windowTranslucentNavigation">true</item>
+    <item name="android:fitsSystemWindows">false</item>
+  </style>
+</resources>

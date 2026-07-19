@@ -1,0 +1,21 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '56.0.3'
+
+android {
+  namespace "expo.modules.storereview"
+  defaultConfig {
+    versionCode 4
+    versionName "56.0.3"
+  }
+}
+
+dependencies {
+  implementation "com.google.android.play:review:2.0.1"
+  implementation "com.google.android.play:review-ktx:2.0.0"
+  api "com.google.android.gms:play-services-base:17.3.0"
+}

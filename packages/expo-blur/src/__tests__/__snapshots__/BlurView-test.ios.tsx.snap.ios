@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`passes radius styles to the native blur view 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "transparent",
+      },
+      {
+        "borderCurve": "continuous",
+        "borderRadius": 24,
+        "borderTopLeftRadius": 8,
+        "height": 100,
+        "shadowOpacity": 0.2,
+        "width": 100,
+      },
+    ]
+  }
+  testID="blur"
+>
+  <ViewManagerAdapter_ExpoBlur
+    blurMethod="none"
+    blurReductionFactor={4}
+    intensity={80}
+    style={
+      [
+        {
+          "bottom": 0,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        },
+        {
+          "borderCurve": "continuous",
+          "borderRadius": 24,
+          "borderTopLeftRadius": 8,
+          "overflow": "hidden",
+        },
+      ]
+    }
+    tint="light"
+  />
+</View>
+`;
+
+exports[`renders a native blur view 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "transparent",
+      },
+      undefined,
+    ]
+  }
+  testID="blur"
+>
+  <ViewManagerAdapter_ExpoBlur
+    blurMethod="none"
+    blurReductionFactor={4}
+    intensity={0.65}
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+    tint="light"
+  />
+</View>
+`;

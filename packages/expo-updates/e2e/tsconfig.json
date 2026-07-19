@@ -1,0 +1,8 @@
+{
+  "extends": "expo-module-scripts/tsconfig.node",
+  "include": ["./fixtures", "./setup"],
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "."
+  }
+}

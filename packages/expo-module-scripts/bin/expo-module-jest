@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+import { getArgs, packageManagerExecAsync } from '../utils/commandUtils.js';
+
+await packageManagerExecAsync(['jest', ...getArgs()]);

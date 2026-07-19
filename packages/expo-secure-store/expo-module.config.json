@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["SecureStoreModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.securestore.SecureStoreModule"]
+  }
+}

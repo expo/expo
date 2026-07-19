@@ -1,0 +1,11 @@
+{
+  "extends": "expo-module-scripts/tsconfig.node",
+  "include": ["./src"],
+  "compilerOptions": {
+    "noEmit": true,
+    "customConditions": [],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "rootDir": "src"
+  }
+}

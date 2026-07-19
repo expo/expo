@@ -1,0 +1,43 @@
+{
+  "name": "expo-network-addons",
+  "version": "56.0.5",
+  "description": "Expo module that provides extra functionalities for networking",
+  "keywords": [
+    "EAS",
+    "ExpoNetworkAddons",
+    "addons",
+    "expo",
+    "expo-network-addons",
+    "network",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-network-addons"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "title": "Expo Networking Addons"
+}

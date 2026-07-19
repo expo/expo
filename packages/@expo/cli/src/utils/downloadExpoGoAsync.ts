@@ -1,0 +1,156 @@
+import fs from 'fs/promises';
+import path from 'path';
+import type ProgressBar from 'progress';
+import { gt } from 'semver';
+
+import { debugEvent } from '../api/events';
+import type { SDKVersion } from '../api/getVersions';
+import { getVersionsAsync } from '../api/getVersions';
+import { getExpoHomeDirectory } from '../api/user/UserSettings';
+import { Log } from '../log';
+import { downloadAppAsync } from './downloadAppAsync';
+import { CommandError } from './errors';
+import { ora } from './ora';
+import { profile } from './profile';
+import { createProgressBar } from './progress';
+
+const platformSettings = {
+  ios: {
+    versionsKey: 'iosClientUrl',
+    getFilePath: (filename: string) =>
+      path.join(getExpoHomeDirectory(), 'ios-simulator-app-cache', `${filename}.app`),
+    shouldExtractResults: true,
+  },
+  android: {
+    versionsKey: 'androidClientUrl',
+    getFilePath: (filename: string) =>
+      path.join(getExpoHomeDirectory(), 'android-apk-cache', `${filename}.apk`),
+    shouldExtractResults: false,
+  },
+} as const;
+
+/**
+ * @internal exposed for testing.
+ * @returns the matching `SDKVersion` object from the Expo API.
+ */
+export async function getExpoGoVersionEntryAsync(sdkVersion: string): Promise<SDKVersion> {
+  const { sdkVersions: versions } = await getVersionsAsync();
+  let version: SDKVersion | undefined;
+  if (sdkVersion.toUpperCase() === 'UNVERSIONED') {
+    // find the latest version
+    const latestVersionKey = Object.keys(versions).reduce((a, b) => {
+      if (gt(b, a)) {
+        return b;
+      }
+      return a;
+    }, '0.0.0');
+
+    Log.warn(
+      `Downloading the latest Expo Go client (${latestVersionKey}). This will not fully conform to UNVERSIONED.`
+    );
+    version = versions[latestVersionKey];
+  } else {
+    version = versions[sdkVersion];
+  }
+
+  if (!version) {
+    throw new CommandError(`Unable to find a version of Expo Go for SDK ${sdkVersion}`);
+  }
+  return version;
+}
+
+const SIX_MONTHS_IN_MS = 6 * 30 * 24 * 60 * 60 * 1000;
+
+/** Remove cached Expo Go apps (.apk / .app) that are older than `maxAge` from the given directory. */
+export async function cleanupOldExpoGoCacheEntriesAsync(
+  cacheDirectory: string,
+  maxAgeMs: number = SIX_MONTHS_IN_MS
+): Promise<void> {
+  let cacheEntries: string[];
+  try {
+    cacheEntries = await fs.readdir(cacheDirectory);
+  } catch {
+    return;
+  }
+
+  const now = Date.now();
+  for (const entry of cacheEntries) {
+    const filePath = path.join(cacheDirectory, entry);
+    try {
+      const stat = await fs.lstat(filePath);
+      if (now - stat.mtimeMs > maxAgeMs) {
+        debugEvent('expo_go_cache_removed', { path: debugEvent.path(filePath) });
+        await fs.rm(filePath, { recursive: true, force: true });
+      }
+    } catch {
+      // continue
+    }
+  }
+}
+
+/** Download the Expo Go app from the Expo servers (if only it was this easy for every app). */
+export async function downloadExpoGoAsync(
+  platform: keyof typeof platformSettings,
+  {
+    url,
+    sdkVersion,
+  }: {
+    url?: string;
+    sdkVersion: string;
+  }
+): Promise<string> {
+  const { getFilePath, versionsKey, shouldExtractResults } = platformSettings[platform];
+
+  const spinner = ora({ text: 'Fetching Expo Go', color: 'white' }).start();
+
+  let bar: ProgressBar | null = null;
+
+  try {
+    if (!url) {
+      const version = await getExpoGoVersionEntryAsync(sdkVersion);
+
+      debugEvent('expo_go_version_resolved', { sdkVersion, url: version[versionsKey] as string });
+      url = version[versionsKey] as string;
+    }
+  } catch (error) {
+    spinner.fail();
+    throw error;
+  }
+
+  const filename = path.parse(url).name;
+
+  try {
+    const outputPath = getFilePath(filename);
+    cleanupOldExpoGoCacheEntriesAsync(path.dirname(outputPath));
+    debugEvent('expo_go_download_started', { url, output: outputPath });
+    await profile(downloadAppAsync)({
+      url,
+      // Save all encrypted cache data to `~/.expo/expo-go`
+      cacheDirectory: 'expo-go',
+      outputPath,
+      extract: shouldExtractResults,
+      onProgress({ progress, total }) {
+        if (progress && total) {
+          if (!bar) {
+            if (spinner.isSpinning) {
+              spinner.stop();
+            }
+            bar = createProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
+              width: 64,
+              total: 100,
+              // clear: true,
+              complete: '=',
+              incomplete: ' ',
+            });
+          } else {
+            bar.update(progress, total);
+          }
+        }
+      },
+    });
+    return outputPath;
+  } finally {
+    spinner.stop();
+    (bar as ProgressBar | null)?.terminate();
+  }
+}

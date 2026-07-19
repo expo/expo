@@ -1,0 +1,139 @@
+import fs from 'fs/promises';
+import path from 'path';
+
+import type { HashSource } from '../Fingerprint.types';
+import { getNodeModulesPackageJsonPath, toPosixPath } from '../utils/Path';
+
+/**
+ * Build a hash source for an autolinked native module - its `package.json` name+version for the
+ * `package` source type, otherwise its whole native directory.
+ */
+export async function createAutolinkingHashSourceAsync(
+  projectRoot: string,
+  dirRelativePath: string,
+  reasons: string[],
+  nativeModuleSourceType: 'files' | 'package'
+): Promise<HashSource> {
+  if (nativeModuleSourceType === 'package') {
+    const packageJsonPath = getNodeModulesPackageJsonPath(dirRelativePath);
+    if (packageJsonPath) {
+      const identity = await readPackageIdentityAsync(path.join(projectRoot, packageJsonPath));
+      if (identity) {
+        return { type: 'package', ...identity, filePath: packageJsonPath, reasons };
+      }
+    }
+  }
+  return { type: 'dir', filePath: dirRelativePath, reasons };
+}
+
+/**
+ * Read a package's identity — its `package.json` `name` and `version` — for a `package` source.
+ * Returns null when the `package.json` is missing so the caller can fall back to hashing files;
+ * any other read/parse error throws, matching `getPackageSourceAsync`.
+ */
+export async function readPackageIdentityAsync(
+  packageJsonPath: string
+): Promise<{ name: string; version: string } | null> {
+  let packageJson: { name?: string; version?: string };
+  try {
+    packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      return null;
+    }
+    throw error;
+  }
+  return { name: packageJson.name ?? '', version: packageJson.version ?? '' };
+}
+
+export async function getFileBasedHashSourceAsync(
+  projectRoot: string,
+  filePath: string,
+  reason: string
+): Promise<HashSource | null> {
+  let result: HashSource | null = null;
+  try {
+    const stat = await fs.stat(path.join(projectRoot, filePath));
+    result = {
+      type: stat.isDirectory() ? 'dir' : 'file',
+      filePath: toPosixPath(filePath),
+      reasons: [reason],
+    };
+  } catch {
+    result = null;
+  }
+  return result;
+}
+
+/**
+ * Resolve path aliases before computing relative hash source paths.
+ * On Windows, temp paths can be passed as short paths like `RUNNER~1` while
+ * autolinking returns the long real path, which makes `path.relative()` unstable.
+ */
+export async function maybeGetRealPathAsync(filePath: string): Promise<string> {
+  try {
+    return await fs.realpath(filePath);
+  } catch {
+    return filePath;
+  }
+}
+
+/**
+ * A version of `JSON.stringify` that keeps the keys sorted
+ */
+export function stringifyJsonSorted(target: any, space?: string | number | undefined): string {
+  return JSON.stringify(target, (_, value) => sortJson(value), space);
+}
+
+/**
+ * Transform absolute paths in JSON to relative paths based on the project root.
+ */
+export function relativizeJsonPaths(value: any, projectRoot: string): any {
+  if (typeof value === 'string' && value.startsWith(projectRoot)) {
+    return toPosixPath(path.relative(projectRoot, value));
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => relativizeJsonPaths(item, projectRoot));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, val]) => [key, relativizeJsonPaths(val, projectRoot)])
+    );
+  }
+
+  return value;
+}
+
+function sortJson(json: any): any {
+  if (Array.isArray(json)) {
+    return json.sort((a, b) => {
+      // Sort array items by their stringified value.
+      // We don't need the array to be sorted in meaningful way, just to be sorted in deterministic.
+      // E.g. `[{ b: '2' }, {}, { a: '3' }, null]` -> `[null, { a : '3' }, { b: '2' }, {}]`
+      // This result is not a perfect solution, but it's good enough for our use case.
+      const stringifiedA = stringifyJsonSorted(a);
+      const stringifiedB = stringifyJsonSorted(b);
+      if (stringifiedA < stringifiedB) {
+        return -1;
+      } else if (stringifiedA > stringifiedB) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
+  if (json != null && typeof json === 'object') {
+    // Sort object items by keys
+    return Object.keys(json)
+      .sort()
+      .reduce((acc: any, key: string) => {
+        acc[key] = json[key];
+        return acc;
+      }, {});
+  }
+
+  // Return primitives
+  return json;
+}

@@ -1,0 +1,13 @@
+import { UnavailabilityError } from 'expo';
+
+import NotificationChannelManager from './NotificationChannelManager';
+import type { NotificationChannel } from './NotificationChannelManager.types';
+
+export async function getNotificationChannelAsync(
+  channelId: string
+): Promise<NotificationChannel | null> {
+  if (!NotificationChannelManager.getNotificationChannelAsync) {
+    throw new UnavailabilityError('Notifications', 'getNotificationChannelAsync');
+  }
+  return await NotificationChannelManager.getNotificationChannelAsync(channelId);
+}

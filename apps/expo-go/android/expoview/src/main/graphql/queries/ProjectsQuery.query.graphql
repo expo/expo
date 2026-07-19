@@ -1,0 +1,24 @@
+query ProjectsQuery(
+  $appId: String!
+  $platform: AppPlatform!
+) {
+  app {
+    byId(appId: $appId) {
+      id
+      name
+      slug
+      fullName
+      ownerAccount {
+        name
+      }
+      updateBranches(limit: 100, offset: 0) {
+        id
+        name
+        updates(limit: 1, offset: 0, filter: { platform: $platform }) {
+          id
+          ...UpdateData
+        }
+      }
+    }
+  }
+}

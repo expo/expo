@@ -1,0 +1,216 @@
+{
+  "title": "expo-router config plugin options",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/Props",
+  "definitions": {
+    "AsyncRouteOption": {
+      "description": "Should Async Routes be enabled. `production` is currently web-only and will be disabled on native.",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["development", "production"]
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    },
+    "Props": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "description": "Production origin URL where assets in the public folder are hosted. The fetch function is polyfilled to support relative requests from this origin in production, development origin is inferred using the Expo CLI development server.",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "headOrigin": {
+          "description": "A more specific origin URL used in the `expo-router/head` module for iOS handoff. Defaults to `origin`.",
+          "type": "string"
+        },
+        "root": {
+          "description": "Changes the routes directory from `app` to another value. Defaults to `app`. Avoid using this property.",
+          "type": "string"
+        },
+        "platformRoutes": {
+          "description": "Enable or disable platform-specific routes. Defaults to `true`.",
+          "type": "boolean"
+        },
+        "sitemap": {
+          "description": "Enable or disable automatically generated routes. Defaults to `true`.",
+          "type": "boolean"
+        },
+        "asyncRoutes": {
+          "description": "Should Async Routes be enabled. `production` is currently web-only and will be disabled on native.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/AsyncRouteOption"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "ios": {
+                  "$ref": "#/definitions/AsyncRouteOption"
+                },
+                "android": {
+                  "$ref": "#/definitions/AsyncRouteOption"
+                },
+                "web": {
+                  "$ref": "#/definitions/AsyncRouteOption"
+                },
+                "default": {
+                  "$ref": "#/definitions/AsyncRouteOption"
+                }
+              },
+              "additionalProperties": true
+            }
+          ]
+        },
+        "partialRouteTypes": {
+          "description": "Enable or disable partial route type generation. Defaults to `true`.",
+          "type": "boolean"
+        },
+        "redirects": {
+          "description": "Enable static redirects. Defaults to `true`.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["source", "destination"],
+            "properties": {
+              "source": {
+                "description": "The previous file path that this route should redirect from",
+                "type": "string"
+              },
+              "destination": {
+                "description": "The target file path that this route should redirect to",
+                "type": "string"
+              },
+              "permanent": {
+                "description": "Whether the redirect is temporary or permanent. Defaults to `false`.",
+                "type": "boolean",
+                "default": false
+              },
+              "methods": {
+                "description": "HTTP methods that should be redirected. Omit to redirect all methods.",
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+                }
+              }
+            }
+          }
+        },
+        "rewrites": {
+          "description": "Enable static rewrites",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["source", "destination"],
+            "properties": {
+              "source": {
+                "description": "The previous file path that should be rewritten",
+                "type": "string"
+              },
+              "destination": {
+                "description": "The target file path that this route should rewrite",
+                "type": "string"
+              },
+              "methods": {
+                "description": "HTTP methods that should be rewritten. Omit to rewrite all methods.",
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+                }
+              }
+            }
+          }
+        },
+        "headers": {
+          "description": "A list of headers that are set on every route response from the server",
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          }
+        },
+        "pageHeaders": {
+          "description": "A list of headers that are set on a specific path's response from the server",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source", "headers"],
+            "properties": {
+              "source": {
+                "description": "The path to match for the headers to apply",
+                "type": "string"
+              },
+              "headers": {
+                "description": "Response headers to apply for matching paths",
+                "type": "object",
+                "additionalProperties": {
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "unstable_useServerMiddleware": {
+          "description": "Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config.",
+          "type": "boolean",
+          "default": false
+        },
+        "unstable_useServerDataLoaders": {
+          "description": "Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config.",
+          "type": "boolean",
+          "default": false
+        },
+        "unstable_useServerRendering": {
+          "description": "Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time.",
+          "type": "boolean",
+          "default": false
+        },
+        "disableSynchronousScreensUpdates": {
+          "description": "Disable synchronous layout updates for native screens.",
+          "type": "boolean",
+          "default": false
+        },
+        "adaptiveColors": {
+          "description": "Rerender the app on color scheme changes. When enabled, the app tree will rerender when the system theme changes (light/dark mode). Defaults to `true`.",
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

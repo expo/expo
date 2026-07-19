@@ -1,0 +1,29 @@
+package expo.modules.devlauncher.modules
+
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import expo.modules.devlauncher.DevLauncherController
+
+class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
+  private val controller = DevLauncherController.nullableInstance
+
+  override fun getName() = "EXDevLauncher"
+
+  override fun getConstants(): Map<String, Any?> {
+    val manifestString = try {
+      controller?.manifest?.getRawJson().toString()
+    } catch (_: IllegalStateException) {
+      null
+    }
+    val manifestURLString = try {
+      controller?.manifestURL?.toString()
+    } catch (_: IllegalStateException) {
+      null
+    }
+
+    return mapOf<String, Any?>(
+      "manifestString" to manifestString,
+      "manifestURL" to manifestURLString
+    )
+  }
+}

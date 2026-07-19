@@ -1,0 +1,150 @@
+import { getConfig } from '@expo/config';
+
+import { resolveOptionsAsync } from '../resolveOptions';
+
+jest.mock('@expo/config', () => ({
+  ...jest.requireActual('@expo/config'),
+  getConfig: jest.fn(() => ({
+    pkg: {},
+    exp: {
+      sdkVersion: '45.0.0',
+      name: 'my-app',
+      slug: 'my-app',
+      platforms: ['ios', 'android'],
+    },
+  })),
+}));
+
+describe(resolveOptionsAsync, () => {
+  it(`asserts unknown platform`, async () => {
+    await expect(resolveOptionsAsync('/', { '--platform': ['foobar'] })).rejects.toThrow(
+      /^Unsupported platform "foobar"\./
+    );
+  });
+
+  it(`asserts not-configured platform`, async () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      // @ts-expect-error
+      exp: { web: { bundler: 'webpack' }, platforms: ['ios', 'android', 'web'] },
+    });
+    await expect(resolveOptionsAsync('/', { '--platform': ['web'] })).rejects.toThrow(
+      /^Platform "web" is not configured to use the Metro bundler in the project Expo config,/
+    );
+  });
+
+  it(`allows multiple platform flags`, async () => {
+    await expect(
+      resolveOptionsAsync('/', { '--platform': ['android', 'ios'] })
+    ).resolves.toMatchObject({
+      platforms: ['android', 'ios'],
+    });
+  });
+
+  it(`resolves the tvos platform`, async () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      // `tvos` is an out-of-tree platform not present in the `ExpoConfig` platform union.
+      exp: {
+        platforms: ['ios', 'android', 'tvos'],
+        experiments: {
+          outOfTreePlatforms: true,
+        },
+      },
+    } as unknown as ReturnType<typeof getConfig>);
+    await expect(resolveOptionsAsync('/', { '--platform': ['tvos'] })).resolves.toMatchObject({
+      platforms: ['tvos'],
+    });
+  });
+
+  it(`filters duplicated platform flags`, async () => {
+    await expect(
+      resolveOptionsAsync('/', { '--platform': ['android', 'android', 'ios', 'ios'] })
+    ).resolves.toMatchObject({
+      platforms: ['android', 'ios'],
+    });
+  });
+
+  it(`filters duplicated platform flags including all`, async () => {
+    await expect(
+      resolveOptionsAsync('/', { '--platform': ['android', 'all'] })
+    ).resolves.toMatchObject({
+      platforms: ['android', 'ios'],
+    });
+  });
+
+  it(`parses qualified options`, async () => {
+    await expect(
+      resolveOptionsAsync('/', {
+        '--output-dir': 'foobar',
+        '--platform': ['android'],
+        '--clear': true,
+        '--dev': true,
+        '--dump-assetmap': true,
+        '--source-maps': 'true',
+        '--max-workers': 2,
+      })
+    ).resolves.toEqual({
+      clear: true,
+      dev: true,
+      bytecode: true,
+      minify: true,
+      dumpAssetmap: true,
+      hostedNative: false,
+      sourceMaps: true,
+      inlineSourceMaps: false,
+      maxWorkers: 2,
+      skipSSG: false,
+      outputDir: 'foobar',
+      platforms: ['android'],
+    });
+  });
+
+  it(`parses inline source maps option`, async () => {
+    await expect(
+      resolveOptionsAsync('/', {
+        '--source-maps': 'inline',
+      })
+    ).resolves.toMatchObject({
+      sourceMaps: true,
+      inlineSourceMaps: true,
+    });
+  });
+
+  it(`parses source maps option as boolean true`, async () => {
+    await expect(
+      resolveOptionsAsync('/', {
+        '--source-maps': true,
+      })
+    ).resolves.toMatchObject({
+      sourceMaps: true,
+      inlineSourceMaps: false,
+    });
+  });
+
+  it(`parses default options`, async () => {
+    await expect(resolveOptionsAsync('/', {})).resolves.toEqual({
+      clear: false,
+      dev: false,
+      bytecode: true,
+      minify: true,
+      dumpAssetmap: false,
+      hostedNative: false,
+      sourceMaps: false,
+      inlineSourceMaps: false,
+      maxWorkers: undefined,
+      skipSSG: false,
+      outputDir: 'dist',
+      platforms: ['ios', 'android'],
+    });
+  });
+  it(`parses default options with web enabled`, async () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      // @ts-expect-error
+      exp: { web: { bundler: 'metro' }, platforms: ['ios', 'android', 'web'] },
+    });
+    await expect(resolveOptionsAsync('/', {})).resolves.toEqual(
+      expect.objectContaining({
+        platforms: ['ios', 'android', 'web'],
+      })
+    );
+  });
+});
