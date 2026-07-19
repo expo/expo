@@ -147,7 +147,7 @@ export type UnloadFontOptions = Pick<FontResource, 'display' | 'weight' | 'style
 
 // @needsAudit
 /**
- * The value accepted by [`useFonts`](#usefontsmap) and [`loadAsync`](#loadasyncfontfamilyorfontmap-source):
+ * The value accepted by [`useFonts`](#usefonts) and [`loadAsync`](#loadasyncfontfamilyorfontmap-source):
  * a single `fontFamily` name, a map of `fontFamily` names to [`FontSource`](#fontsource)s, or an
  * array of [`FontFamilyDefinition`](#fontfamilydefinition)s for loading multiple faces per family.
  */
