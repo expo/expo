@@ -25,6 +25,72 @@ export type FontResource = {
    * @platform web
    */
   testString?: string;
+  /**
+   * Sets the `font-weight` property for a given typeface in the browser. Use this to
+   * distinguish multiple weights of the same `fontFamily` loaded through [`FontFamilyDefinition`](#fontfamilydefinition).
+   * @platform web
+   */
+  weight?: number | string;
+  /**
+   * Sets the `font-style` property for a given typeface in the browser. Use this to
+   * distinguish italic faces of the same `fontFamily` loaded through [`FontFamilyDefinition`](#fontfamilydefinition).
+   * @platform web
+   */
+  style?: 'normal' | 'italic' | 'oblique';
+};
+
+// @needsAudit
+/**
+ * A single font face that belongs to a [`FontFamilyDefinition`](#fontfamilydefinition). Use
+ * `weight` and `style` to distinguish faces of the same `fontFamily`, for example the bold or
+ * italic cut of a typeface.
+ */
+export type FontFaceDefinition = {
+  /**
+   * The font asset to load for this face, in any format accepted by [`FontSource`](#fontsource).
+   */
+  path: FontSource;
+  /**
+   * Maps to the CSS `font-weight` property. Has no effect on native platforms, where only the
+   * first `fontDefinitions` entry of a given `fontFamily` can be loaded.
+   * @platform web
+   */
+  weight?: number | string;
+  /**
+   * Maps to the CSS `font-style` property. Has no effect on native platforms, where only the
+   * first `fontDefinitions` entry of a given `fontFamily` can be loaded.
+   * @platform web
+   */
+  style?: 'normal' | 'italic' | 'oblique';
+  /**
+   * Sets the [`font-display`](#fontdisplay) property for this face in the browser.
+   * @platform web
+   */
+  display?: FontDisplay;
+  /**
+   * Sets a custom test string passed to the [FontFace Observer](https://www.npmjs.com/package/fontfaceobserver) for this face.
+   * @platform web
+   */
+  testString?: string;
+};
+
+// @needsAudit
+/**
+ * Groups one or more [`FontFaceDefinition`](#fontfacedefinition)s under a single `fontFamily`
+ * name. Use this to load multiple weights or styles (for example regular, bold, and italic) of
+ * the same typeface so the browser can select the correct face with the CSS `font-weight` and
+ * `font-style` properties.
+ */
+export type FontFamilyDefinition = {
+  /**
+   * The name used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
+   * with React Native `Text` elements.
+   */
+  fontFamily: string;
+  /**
+   * The faces (for example different weights or styles) that make up `fontFamily`.
+   */
+  fontDefinitions: FontFaceDefinition[];
 };
 
 // @needsAudit
@@ -75,9 +141,17 @@ export enum FontDisplay {
  * Object used to query fonts for unloading.
  * @hidden
  */
-export type UnloadFontOptions = Pick<FontResource, 'display'>;
+export type UnloadFontOptions = Pick<FontResource, 'display' | 'weight' | 'style'>;
 
-export type UseFontHook = (map: string | Record<string, FontSource>) => [boolean, Error | null];
+// @needsAudit
+/**
+ * The value accepted by [`useFonts`](#usefontsmap) and [`loadAsync`](#loadasyncfontfamilyorfontmap-source):
+ * a single `fontFamily` name, a map of `fontFamily` names to [`FontSource`](#fontsource)s, or an
+ * array of [`FontFamilyDefinition`](#fontfamilydefinition)s for loading multiple faces per family.
+ */
+export type FontMap = string | Record<string, FontSource> | FontFamilyDefinition[];
+
+export type UseFontHook = (map: FontMap) => [boolean, Error | null];
 
 export type ServerFontResourceDescriptor =
   | {

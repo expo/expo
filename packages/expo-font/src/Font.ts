@@ -1,7 +1,15 @@
+import { Asset } from 'expo-asset';
 import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import type { FontSource, UnloadFontOptions } from './Font.types';
+import type {
+  FontFaceDefinition,
+  FontFamilyDefinition,
+  FontMap,
+  FontResource,
+  FontSource,
+  UnloadFontOptions,
+} from './Font.types';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
 import {
   isLoadedInCache,
@@ -61,21 +69,42 @@ export function isLoading(fontFamily: string): boolean {
  *
  * > **Note**: We recommend using the [config plugin](#configuration-in-app-config) instead whenever possible.
  *
- * @param fontFamilyOrFontMap String or map of values that can be used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
- * with React Native `Text` elements.
+ * @param fontFamilyOrFontMap String, map of values that can be used as the `fontFamily`
+ * [style prop](https://reactnative.dev/docs/text#style) with React Native `Text` elements, or an
+ * array of [`FontFamilyDefinition`](#fontfamilydefinition)s for loading multiple faces per family.
  * @param source The font asset that should be loaded into the `fontFamily` namespace.
  *
  * @return Returns a promise that fulfils when the font has loaded. Often you may want to wrap the
  * method in a `try/catch/finally` to ensure the app continues if the font fails to load.
  */
-export function loadAsync(
-  fontFamilyOrFontMap: string | Record<string, FontSource>,
-  source?: FontSource
-): Promise<void> {
+export function loadAsync(fontFamilyOrFontMap: FontMap, source?: FontSource): Promise<void> {
   // NOTE(EvanBacon): Static render pass on web must be synchronous to collect all fonts.
   // Because of this, `loadAsync` doesn't use the `async` keyword and deviates from the
   // standard Expo SDK style guide.
   const isServer = Platform.OS === 'web' && typeof window === 'undefined';
+
+  if (Array.isArray(fontFamilyOrFontMap)) {
+    if (source) {
+      return Promise.reject(
+        new CodedError(
+          `ERR_FONT_API`,
+          `No fontFamily can be used for the provided source: ${source}. The second argument of \`loadAsync()\` can only be used with a \`string\` value as the first argument.`
+        )
+      );
+    }
+    const definitions = fontFamilyOrFontMap;
+
+    if (isServer) {
+      for (const { fontFamily, fontDefinitions } of definitions) {
+        for (const face of fontDefinitions) {
+          registerStaticFont(fontFamily, fontSourceFromFace(face));
+        }
+      }
+      return Promise.resolve();
+    }
+
+    return Promise.all(definitions.map(loadFontFamilyInNamespaceAsync)).then(() => {});
+  }
 
   if (typeof fontFamilyOrFontMap === 'object') {
     if (source) {
@@ -105,6 +134,76 @@ export function loadAsync(
   }
 
   return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
+}
+
+// Merges a face's `weight`/`style`/`display`/`testString` onto its `path`, falling back to
+// values already present on `path` when it's a `FontResource`-shaped object.
+function fontSourceFromFace(face: FontFaceDefinition): FontSource {
+  const { path, weight, style, display, testString } = face;
+
+  if (path instanceof Asset) {
+    return path;
+  }
+
+  const base: FontResource =
+    typeof path === 'string' || typeof path === 'number' ? { uri: path } : path;
+
+  return {
+    ...base,
+    weight: weight ?? base.weight,
+    style: style ?? base.style,
+    display: display ?? base.display,
+    testString: testString ?? base.testString,
+  };
+}
+
+async function loadFontFamilyInNamespaceAsync(definition: FontFamilyDefinition): Promise<void> {
+  const { fontFamily, fontDefinitions } = definition;
+
+  if (loadPromises.hasOwnProperty(fontFamily)) {
+    return loadPromises[fontFamily];
+  }
+
+  const promise = Promise.all(
+    fontDefinitions.map((face) => loadFontFaceInNamespaceAsync(fontFamily, face))
+  ).then(() => {});
+
+  loadPromises[fontFamily] = promise;
+  promise.finally(() => {
+    delete loadPromises[fontFamily];
+  });
+
+  return promise;
+}
+
+// Faces of the same `fontFamily` are cached and awaited individually (keyed by weight/style)
+// since native and the JS-level cache in `memory.ts` can only track loaded state per name.
+async function loadFontFaceInNamespaceAsync(
+  fontFamily: string,
+  face: FontFaceDefinition
+): Promise<void> {
+  const cacheKey = `${fontFamily}\0${face.weight ?? ''}\0${face.style ?? ''}`;
+
+  if (isLoadedInCache(cacheKey)) {
+    return;
+  }
+
+  if (loadPromises.hasOwnProperty(cacheKey)) {
+    return loadPromises[cacheKey];
+  }
+
+  const asset = getAssetForSource(fontSourceFromFace(face));
+  loadPromises[cacheKey] = (async () => {
+    try {
+      await loadSingleFontAsync(fontFamily, asset);
+      markLoaded(fontFamily);
+      markLoaded(cacheKey);
+    } finally {
+      delete loadPromises[cacheKey];
+    }
+  })();
+
+  await loadPromises[cacheKey];
 }
 
 async function loadFontInNamespaceAsync(
@@ -227,6 +326,9 @@ export {
   FontDisplay,
   type FontSource,
   type FontResource,
+  type FontFaceDefinition,
+  type FontFamilyDefinition,
+  type FontMap,
   type UnloadFontOptions,
   type ServerFontResourceDescriptor,
 } from './Font.types';
