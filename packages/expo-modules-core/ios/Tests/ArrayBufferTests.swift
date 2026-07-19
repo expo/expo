@@ -547,21 +547,28 @@ struct ArrayBufferTests {
     }
 
     @Test
-    func `drops JS-backed ArrayBuffer retained value off JavaScript thread`() async throws {
+    func `defers JS-backed ArrayBuffer cleanup from a worker until the JavaScript-thread sweep`() throws {
       let runtime = try runtime
       let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
       var buffer: ArrayBuffer? = try ArrayBuffer.decode(value, in: runtime)
 
+      #expect(runtime.supportsAsyncScheduling == false)
       #expect(runtime.longLivedObjects.count == 1)
 
       let box = ArrayBufferOptionalBox(buffer)
       buffer = nil
 
-      try await runOffThreadWithTimeout {
+      let workerFinished = DispatchSemaphore(value: 0)
+      Thread.detachNewThread {
         box.buffer = nil
+        workerFinished.signal()
       }
+      workerFinished.wait()
 
-      try await runtime.execute {}
+      #expect(runtime.isOnJavaScriptThread())
+      #expect(runtime.longLivedObjects.count == 1)
+
+      runtime.longLivedObjects.clear()
       #expect(runtime.longLivedObjects.count == 0)
     }
 
