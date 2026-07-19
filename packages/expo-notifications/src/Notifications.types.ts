@@ -832,7 +832,7 @@ export type NotificationTaskPayload =
         [key: string]: unknown;
       };
       /**
-       * Detailed, raw object describing the remote notification. [See more](https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification#Payload-key-reference).
+       * Detailed, raw object describing the remote notification. See [Apple's payload key reference](https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification#Payload-key-reference).
        * @platform ios
        */
       aps?: Record<string, unknown>;
