@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed iOS file previews rejecting a new preview while the previous Quick Look dismissal animation is still finishing. ([#47947](https://github.com/expo/expo/pull/47947) by [@eliotgevers](https://github.com/eliotgevers))
 - Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support. ([#47176](https://github.com/expo/expo/pull/47176) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
