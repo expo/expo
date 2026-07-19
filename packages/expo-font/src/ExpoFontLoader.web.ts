@@ -3,7 +3,7 @@ import FontObserver from 'fontfaceobserver';
 
 import type { ExpoFontLoaderModule } from './ExpoFontLoader';
 import type { UnloadFontOptions } from './Font';
-import { FontDisplay, type FontResource } from './Font.types';
+import type { FontResource } from './Font.types';
 import {
   addServerFont,
   getLoadedServerFonts,
@@ -202,17 +202,19 @@ function getStyleElement(): HTMLStyleElement {
 
 const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
 
+// None of `display`/`weight`/`style` are given a hardcoded default: omitting a descriptor lets
+// the browser fall back to its own default, which matters for variable fonts (a single file can
+// cover a range of weights/styles; forcing e.g. `font-weight: 400` on it would incorrectly
+// restrict the face to only that one weight).
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
-  const display =
-    typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)
-      ? resource.display
-      : FontDisplay.AUTO;
-
   const declarations = [
     `font-family:${JSON.stringify(fontFamily)}`,
     `src:url(${JSON.stringify(resource.uri)})`,
-    `font-display:${display}`,
   ];
+
+  if (typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)) {
+    declarations.push(`font-display:${resource.display}`);
+  }
 
   if (typeof resource.weight === 'number' && Number.isFinite(resource.weight)) {
     declarations.push(`font-weight:${resource.weight}`);
