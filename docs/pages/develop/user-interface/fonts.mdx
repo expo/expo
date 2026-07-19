@@ -252,6 +252,40 @@ Use the font on the `<Text>` by using `fontFamily` style prop in a React compone
 
 </Step>
 
+#### Loading multiple weights and styles for one font family on web
+
+The map syntax used in the example above treats each key as an independent font family, so on
+web there's no way for the browser to tell that `'Inter-Bold'` and `'Inter-BoldItalic'` are
+related faces of the same typeface. To load several font files (for example regular, bold, and
+italic cuts) under a single `fontFamily` name and let the browser select the correct face using
+the CSS `font-weight` and `font-style` properties, pass `useFonts` an array of
+[`FontFamilyDefinition`](/versions/latest/sdk/font/#fontfamilydefinition)s instead of a map:
+
+```tsx src/app/_layout.tsx
+const [loaded, error] = useFonts([
+  {
+    fontFamily: 'Inter',
+    fontDefinitions: [
+      { path: require('./assets/fonts/Inter-Regular.otf'), weight: 400 },
+      { path: require('./assets/fonts/Inter-Italic.otf'), weight: 400, style: 'italic' },
+      { path: require('./assets/fonts/Inter-Bold.otf'), weight: 700 },
+    ],
+  },
+]);
+```
+
+Then select the loaded face with the `fontWeight` and `fontStyle` style props:
+
+```tsx
+<Text style={{ fontFamily: 'Inter', fontWeight: '700' }}>Inter Bold</Text>
+<Text style={{ fontFamily: 'Inter', fontWeight: '400', fontStyle: 'italic' }}>Inter Italic</Text>
+```
+
+> **Note:** `weight` and `style` only affect the `@font-face` CSS generated on web. On Android and
+> iOS, only the first `fontDefinitions` entry for a given `fontFamily` is loaded &mdash; to select
+> different weights and styles natively, use separate `fontFamily` names, or embed them with the
+> [config plugin's per-platform `fontDefinitions`](#with-expo-font-config-plugin) instead.
+
 ## Use Google Fonts
 
 Expo has first-class support for all fonts listed in [Google Fonts](https://fonts.google.com/). They are available using [`@expo-google-fonts`](https://github.com/expo/google-fonts) library. With any of the font package from this library, you can quickly integrate that font and its variants.
