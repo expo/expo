@@ -188,6 +188,12 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
     'Debug',
     '-destination',
     destination,
+    // Spread parallelizable testables across multiple simulator clones. Without an explicit
+    // worker count, xcodebuild tends to stick to a single clone for this kind of load.
+    '-parallel-testing-enabled',
+    'YES',
+    '-parallel-testing-worker-count',
+    '3',
     '-resultBundlePath',
     path.join(RESULTS_DIR, `${scheme}.xcresult`),
     'CODE_SIGN_IDENTITY=',
