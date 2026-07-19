@@ -936,6 +936,28 @@ struct JavaScriptRuntimeTests {
     #expect(tracked.released == false)
     #expect(runtime.longLivedObjects.count == 1)
   }
+
+  @Test
+  func `non-owning wrapper outliving its runtime does not destroy cached PropNameIDs against freed memory`() throws {
+    // A non-owning wrapper's `deinit` returns early, so its stored `propNameIdsRegistry` is
+    // destroyed whenever the wrapper deallocates. If the wrapper outlives its runtime (e.g. it is
+    // captured by a task abandoned on reload), the cached `jsi::PropNameID` destructors used to run
+    // against the freed Hermes runtime, a use-after-free. Now the teardown sweep flushes the
+    // registry on the JS thread while the runtime is still valid.
+    var wrapper: JavaScriptRuntime? = nil
+    do {
+      let baseRuntime = JavaScriptRuntime()
+      wrapper = baseRuntime.withUnsafePointee { JavaScriptRuntime(unsafePointer: $0) }
+      // Creating a promise populates the wrapper's registry with cached "Promise" and "then" IDs.
+      _ = try JavaScriptPromise(wrapper!)
+      // Leaving the scope destroys the Hermes runtime while the wrapper is still alive; its
+      // teardown sweep must flush the cached PropNameIDs before Hermes is destroyed.
+    }
+    // Deallocating the wrapper here must not touch the freed runtime. Reaching the end of the test
+    // without a crash is the assertion.
+    wrapper = nil
+    _ = wrapper
+  }
 }
 
 /// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React

@@ -715,13 +715,18 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       // collection keeps it alive for the sweep; it does not retain the runtime.
       let longLivedObjects = self.longLivedObjects
       let nativeState = JavaScriptNativeState()
-      nativeState.setDeallocator { nativeState in
+      nativeState.setDeallocator { [weak self] nativeState in
         // Fires as the teardown object is released on the JavaScript thread with the runtime still
         // valid, so releasing JSI state here is safe. Mirrors the caveat on `AppContext.NativeState`:
         // a future cross-runtime path that could drop this state from another thread would have to
         // hop back to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
+          // Also flush the cached `jsi::PropNameID`s: a non-owning wrapper can outlive its runtime
+          // (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
+          // the freed runtime when it deallocates. `self` is weak so the teardown object doesn't
+          // retain the wrapper; the owning wrapper clears its own registry in `deinit`.
+          self?.propNameIdsRegistry.removeAll()
         }
       }
       let object = createObject()
