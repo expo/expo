@@ -392,36 +392,53 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return JavaScriptFunction(self, hostFunction)
   }
 
-  /// Type of the closure that is passed to the `createAsyncFunction` function.
-  /// It is invoked from asynchronous context, so it can await and call other asynchronous functions.
+  /// The synchronous decode phase of an async host function, passed to ``createAsyncFunction(_:_:)``.
+  /// It takes the same parameters as ``UnownedThisSyncFunctionClosure`` and returns the function's
+  /// asynchronous body (``AsyncFunctionBody``). Decode `this` and the arguments here and capture
+  /// only decoded values in the returned body: both parameters are valid only for the host call, so
+  /// nothing JSI-owned may cross the asynchronous boundary. Promote `this` with
+  /// ``JavaScriptUnownedValue/copied(in:)`` when an owning value is needed.
   public typealias AsyncFunctionClosure =
     @JavaScriptActor (
-      _ this: JavaScriptValue,
-      _ arguments: consuming JavaScriptValuesBuffer,
-    ) async throws -> JavaScriptValue
+      _ this: borrowing JavaScriptUnownedValue,
+      _ arguments: consuming JavaScriptValuesBuffer
+    ) throws -> AsyncFunctionBody
 
-  /// Creates an asynchronous host function that runs given block when it's called.
-  /// The value returned by the closure is returned to JS asynchronously.
+  /// The asynchronous body returned by ``AsyncFunctionClosure``. Its return value resolves the
+  /// promise that the host function returned to JS.
+  public typealias AsyncFunctionBody = @JavaScriptActor () async throws -> JavaScriptValue
+
+  /// Creates an asynchronous host function from the given ``AsyncFunctionClosure``.
   /// - Returns: A JavaScript function represented as a `JavaScriptFunction` that returns a promise.
   @JavaScriptActor
   public func createAsyncFunction(_ name: String, _ function: sending @escaping AsyncFunctionClosure)
     -> JavaScriptFunction
   {
-    return createFunction(name) { this, arguments in
+    // The explicitly typed `this` selects the unowned-`this` overload of `createFunction`,
+    // skipping the per-call owning-value allocation (see ``UnownedThisSyncFunctionClosure``).
+    return createFunction(name) {
+      (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
       let promise = try JavaScriptPromise(self)
 
-      // Arguments buffer needs to be copied to ensure safe async access.
-      let argumentsRef = arguments.copy().ref()
+      do {
+        // Decode phase: runs synchronously within the host function call, so the arguments
+        // buffer passes straight through from the JS caller instead of being copied into the task.
+        let body = try function(this, arguments)
 
-      // Switch to asynchronous context.
-      self.schedule {
-        // Invoke the asynchronous function and resolve/reject the promise.
-        do {
-          let result = try await function(this, argumentsRef.take())
-          promise.resolve(result)
-        } catch {
-          promise.reject(error)
+        // Switch to asynchronous context.
+        self.schedule {
+          // Invoke the asynchronous body and resolve/reject the promise.
+          do {
+            let result = try await body()
+            promise.resolve(result)
+          } catch {
+            promise.reject(error)
+          }
         }
+      } catch {
+        // Match JavaScript's async-function semantics: an error thrown before the first
+        // suspension still rejects the returned promise instead of throwing synchronously.
+        promise.reject(error)
       }
 
       // Always return a promise in async functions
@@ -698,13 +715,18 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       // collection keeps it alive for the sweep; it does not retain the runtime.
       let longLivedObjects = self.longLivedObjects
       let nativeState = JavaScriptNativeState()
-      nativeState.setDeallocator { nativeState in
+      nativeState.setDeallocator { [weak self] nativeState in
         // Fires as the teardown object is released on the JavaScript thread with the runtime still
         // valid, so releasing JSI state here is safe. Mirrors the caveat on `AppContext.NativeState`:
         // a future cross-runtime path that could drop this state from another thread would have to
         // hop back to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
+          // Also flush the cached `jsi::PropNameID`s: a non-owning wrapper can outlive its runtime
+          // (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
+          // the freed runtime when it deallocates. `self` is weak so the teardown object doesn't
+          // retain the wrapper; the owning wrapper clears its own registry in `deinit`.
+          self?.propNameIdsRegistry.removeAll()
         }
       }
       let object = createObject()

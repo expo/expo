@@ -4,7 +4,7 @@ import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIco
 import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
 
 import { GridContainer, GridCell, HomeButton } from '~/ui/components/Home/components';
-import { QuickStartIcon, DevicesImage } from '~/ui/components/Home/resources';
+import { QuickStartIcon, DevicesImage, WorkflowsImage } from '~/ui/components/Home/resources';
 import { Terminal } from '~/ui/components/Snippet';
 import { H1, CALLOUT, A, P } from '~/ui/components/Text';
 
@@ -68,12 +68,9 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'col-span-2 min-h-48 overflow-hidden bg-linear-to-br from-[#F3E5F5] via-[#E3F2FD] to-[#E3F2FD]',
+            'min-h-48 overflow-hidden bg-linear-to-br from-[#F3E5F5] via-[#E3F2FD] to-[#E3F2FD]',
             'border border-palette-gray7 selection:bg-palette-blue8',
-            'dark:border-[#2d3748] dark:from-[#0a0a0a] dark:via-[#1a1a2e] dark:to-[#16213e]',
-            'max-xl:col-span-1',
-            'max-lg:col-span-2',
-            'max-md:col-span-1'
+            'dark:border-[#2d3748] dark:from-[#0a0a0a] dark:via-[#1a1a2e] dark:to-[#16213e]'
           )}>
           <div
             className={mergeClasses(
@@ -116,6 +113,28 @@ export function QuickStart() {
               </HomeButton>
             </div>
           </div>
+        </GridCell>
+        <GridCell
+          className={mergeClasses(
+            'relative z-0 min-h-48 border-palette-green6 bg-palette-green4 bg-cell-workflows-pattern! bg-blend-multiply',
+            'dark:bg-palette-green3 dark:bg-blend-color-burn'
+          )}>
+          <div
+            className={mergeClasses(
+              'absolute inset-0 size-full rounded-lg bg-linear-to-b from-palette-green3 from-15% to-transparent',
+              'dark:from-palette-green3 dark:to-transparent'
+            )}
+          />
+          <WorkflowsImage className="text-palette-blue9" />
+          <h2 className="relative z-10 max-w-[24ch] heading-xl font-bold text-palette-green12">
+            Automate builds and releases with EAS Workflows
+          </h2>
+          <HomeButton
+            className="border-palette-green11 bg-palette-green11 text-palette-white dark:text-palette-green2 hocus:bg-palette-green10"
+            href="/tutorial/cicd/introduction/"
+            rightSlot={<ArrowRightIcon aria-hidden="true" className="icon-md" />}>
+            <span className="max-sm:hidden">Start&nbsp;</span>CI/CD Tutorial
+          </HomeButton>
         </GridCell>
       </GridContainer>
     </>

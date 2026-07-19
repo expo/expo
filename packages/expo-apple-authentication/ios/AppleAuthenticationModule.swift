@@ -21,7 +21,7 @@ public final class AppleAuthenticationModule: Module {
           promise.resolve(response)
         }
       }
-    }
+    }.runOnQueue(.main)
 
     AsyncFunction("getCredentialStateAsync") { (userId: String, promise: Promise) in
       let appleIdProvider = ASAuthorizationAppleIDProvider()

@@ -66,7 +66,44 @@ export type FingerprintDiffItem =
 export type Platform = 'android' | 'ios';
 export type ProjectWorkflow = 'generic' | 'managed' | 'unknown';
 
+/**
+ * A named preset of fingerprint settings, from strict (react to any potential native change) to
+ * relaxed (ignore changes that usually don't affect the native build).
+ * - `strict`: highest fidelity - even a version bump changes the fingerprint.
+ *   The historical default.
+ * - `balanced`: the default, tuned for a good first-time experience.
+ * - `relaxed`: for building multiple variants from one native project.
+ *   On top of `balanced`, it also ignores app identity like app icons and the Android `package` /
+ *   iOS `bundleIdentifier`.
+ */
+export type FingerprintPreset = 'strict' | 'balanced' | 'relaxed';
+
+/**
+ * How an autolinked native module is hashed.
+ * - `files`: hash the module's native directory.
+ * - `package`: hash its `package.json` `name@version`, so patch-level or cross-machine churn inside
+ *   the module is ignored.
+ */
+export type NativeModuleSourceType = 'files' | 'package';
+
+/**
+ * How config-plugin modules loaded while evaluating the Expo config are hashed.
+ * - `files`: hash every loaded module from its files (in-repo and node_modules).
+ * - `package`: collapse node_modules modules to their package `name@version` while still hashing
+ *   in-repo modules from their files, trading exact node_modules plugin fidelity for far fewer false
+ *   positives.
+ */
+export type ConfigPluginSourceType = 'files' | 'package';
+
 export interface Options {
+  /**
+   * The preset to derive default settings from.
+   * A preset sets `sourceSkips` and related defaults;
+   * any explicitly provided option (e.g. `sourceSkips`) takes precedence over the preset.
+   * @default 'balanced'
+   */
+  preset?: FingerprintPreset;
+
   /**
    * Limit native files to those for specified platforms.
    * @default ['android', 'ios']
@@ -115,6 +152,18 @@ export interface Options {
   sourceSkips?: SourceSkips;
 
   /**
+   * How autolinked native modules are hashed.
+   * Defaults to the value from the resolved `preset`; set this to override it.
+   */
+  nativeModuleSourceType?: NativeModuleSourceType;
+
+  /**
+   * How config-plugin modules loaded while evaluating the Expo config are hashed.
+   * Defaults to the value from the resolved `preset`; set this to override it.
+   */
+  configPluginSourceType?: ConfigPluginSourceType;
+
+  /**
    * Enable ReactImportsPatcher to transform imports from React of the form `#import "RCTBridge.h"` to `#import <React/RCTBridge.h>`.
    * This is useful when you want to have a stable fingerprint for Expo projects,
    * since expo-modules-autolinking will change the import style on iOS.
@@ -152,12 +201,15 @@ type SourceSkipsKeys = keyof typeof SourceSkips;
  */
 export type Config = Pick<
   Options,
+  | 'preset'
   | 'concurrentIoLimit'
   | 'hashAlgorithm'
   | 'ignorePaths'
   | 'extraSources'
   | 'enableReactImportsPatcher'
   | 'useRNCoreAutolinkingFromExpo'
+  | 'nativeModuleSourceType'
+  | 'configPluginSourceType'
   | 'debug'
   | 'fileHookTransform'
 > & {
@@ -246,7 +298,42 @@ export interface HashSourceContents {
   reasons: string[];
 }
 
-export type HashSource = HashSourceFile | HashSourceDir | HashSourceContents;
+export interface HashSourcePackage {
+  type: 'package';
+
+  /**
+   * Package name from its `package.json`.
+   * Together with `version`, this is the only thing hashed, so unrelated churn inside the package
+   * (or across machines) is ignored.
+   */
+  name: string;
+
+  /**
+   * Package version from its `package.json`.
+   */
+  version: string;
+
+  /**
+   * Path to the package's `package.json`.
+   * Kept for ignore-path matching and debugging only — it is deliberately not part of the hash, so
+   * the fingerprint doesn't depend on where the package resolves on disk (e.g. hoisted vs. isolated
+   * installs).
+   */
+  filePath: string;
+
+  /**
+   * Reasons of this source coming from.
+   */
+  reasons: string[];
+
+  /**
+   * Override key for hashing.
+   * Without this key, the package `name@version` is used as the hash key.
+   */
+  overrideHashKey?: string;
+}
+
+export type HashSource = HashSourceFile | HashSourceDir | HashSourceContents | HashSourcePackage;
 
 export interface DebugInfoFile {
   path: string;
@@ -267,7 +354,14 @@ export interface DebugInfoContents {
   isTransformed?: boolean;
 }
 
-export type DebugInfo = DebugInfoFile | DebugInfoDir | DebugInfoContents;
+export interface DebugInfoPackage {
+  path: string;
+  name: string;
+  version: string;
+  hash: string;
+}
+
+export type DebugInfo = DebugInfoFile | DebugInfoDir | DebugInfoContents | DebugInfoPackage;
 
 export interface HashResultFile {
   type: 'file';
@@ -290,7 +384,14 @@ export interface HashResultContents {
   debugInfo?: DebugInfoContents;
 }
 
-export type HashResult = HashResultFile | HashResultDir | HashResultContents;
+export interface HashResultPackage {
+  type: 'package';
+  id: string;
+  hex: string;
+  debugInfo?: DebugInfoPackage;
+}
+
+export type HashResult = HashResultFile | HashResultDir | HashResultContents | HashResultPackage;
 
 //#region internal types
 
@@ -315,6 +416,17 @@ export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
    * Indicate whether the project is using CNG for each platform.
    */
   useCNGForPlatforms: Record<Platform, boolean>;
+
+  /**
+   * How autolinked native modules are hashed. From the resolved preset unless explicitly overridden.
+   */
+  nativeModuleSourceType: NativeModuleSourceType;
+
+  /**
+   * How config-plugin modules loaded during config evaluation are hashed. From the resolved preset
+   * unless explicitly overridden.
+   */
+  configPluginSourceType: ConfigPluginSourceType;
 };
 
 //#endregion

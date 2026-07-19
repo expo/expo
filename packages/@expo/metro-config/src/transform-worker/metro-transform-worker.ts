@@ -52,6 +52,7 @@ import type {
 import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from './collect-dependencies';
+import { debugEvent } from './events';
 import { shouldMinify } from './resolveOptions';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
@@ -146,6 +147,7 @@ export const minifyCode = async (
 
   const minify = getMinifier(config.minifierPath);
 
+  const done = debugEvent.span();
   try {
     const minified = await minify({
       code,
@@ -155,6 +157,7 @@ export const minifyCode = async (
       config: config.minifierConfig,
     });
 
+    done('minify', { file: debugEvent.path(filename) });
     return {
       code: minified.code,
       sourceMap: minified.map
@@ -270,6 +273,7 @@ export function applyImportSupport<TFile extends t.File>(
 
   // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
   if (plugins.length) {
+    const done = debugEvent.span();
     const result = nullthrows(
       transformFromAstSync(ast, '', {
         ast: true,
@@ -292,6 +296,7 @@ export function applyImportSupport<TFile extends t.File>(
         cloneInputAst: false,
       })
     );
+    done('import_support', { file: debugEvent.path(filename) });
     return {
       ast: result.ast as TFile,
       metadata: result.metadata,
@@ -318,6 +323,7 @@ function performConstantFolding(ast: t.File | ParseResult, { filename }: { filen
   // Run the constant folding plugin in its own pass, avoiding race conditions
   // with other plugins that have exit() visitors on Program (e.g. the ESM
   // transform).
+  const done = debugEvent.span();
   const result = transformFromAstSync(ast, '', {
     ast: true,
     babelrc: false,
@@ -333,6 +339,7 @@ function performConstantFolding(ast: t.File | ParseResult, { filename }: { filen
     // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
     cloneInputAst: false,
   })?.ast;
+  done('constant_folding', { file: debugEvent.path(filename) });
 
   return nullthrows(result) as ParseResult;
 }
@@ -429,6 +436,7 @@ async function transformJS(
         collectOnly: optimize === true,
       };
 
+      const doneDeps = debugEvent.span();
       ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
         ...collectDependenciesOptions,
         // This setting shouldn't be shared with the tree shaking transformer.
@@ -439,6 +447,10 @@ async function transformJS(
             ? (loc: t.SourceLocation) => importDeclarationLocs.has(locToKey(loc))
             : null,
       }));
+      doneDeps('collect_dependencies', {
+        file: debugEvent.path(file.filename),
+        count: dependencies.length,
+      });
 
       // Ensure we use the same name for the second pass of the dependency collection in the serializer.
       collectDependenciesOptions = {
@@ -494,6 +506,7 @@ async function transformJS(
     );
   }
 
+  const doneCodegen = debugEvent.span();
   const result = generate(
     wrappedAst,
     {
@@ -506,6 +519,7 @@ async function transformJS(
     },
     file.code
   );
+  doneCodegen('codegen', { file: debugEvent.path(file.filename) });
 
   // `rawMappings` is omitted from `@types/babel__generator`'s
   // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.

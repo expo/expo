@@ -400,7 +400,7 @@ GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
 SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 
 if [[ "$CLEAN" == true ]]; then
-  rm -rf "$XCFRAMEWORK_PATH" "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
+  clean_xcframework_state "$PACKAGE_DIR"
   log "Cleaned existing xcframework, DerivedData, and SwiftPM state"
   # Re-stamp stub slices so the post-clean state matches a fresh `pod install`:
   # CocoaPods reads Info.plist before this script runs, and would fail to
@@ -448,7 +448,7 @@ PLATFORMS=("${platforms_to_build[@]}")
 # generated modulemap is left intact — it was already regenerated above for the
 # cache hash, so wiping it here would just force a redundant rebuild.
 log "Clearing stale build state (DerivedData, SwiftPM) before rebuild"
-rm -rf "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
+safe_remove_dirs "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
 
 SECONDS=0
 

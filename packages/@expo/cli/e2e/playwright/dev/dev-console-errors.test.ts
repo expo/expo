@@ -56,15 +56,15 @@ test.describe('dev console errors', () => {
 Web  ERROR  [Error: unhandled-throw]
 
 Code: index.tsx
-  42 |         title="throw new Error()"
-  43 |         onPress={() => {
-> 44 |           throw new Error('unhandled-throw');
+  41 |         title="throw new Error()"
+  42 |         onPress={() => {
+> 43 |           throw new Error('unhandled-throw');
      |                 ^
-  45 |         }}
-  46 |       />
-  47 |       <BigButton
+  44 |         }}
+  45 |       />
+  46 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:44:17)
+  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:43:17)
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -76,7 +76,7 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:141:5)
-  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:41:7)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:40:7)
         `.trim()
       );
     } else {
@@ -86,15 +86,15 @@ Call Stack
 Web  ERROR  [Error: unhandled-throw]
 
 Code: index.tsx
-  42 |         title="throw new Error()"
-  43 |         onPress={() => {
-> 44 |           throw new Error('unhandled-throw');
+  41 |         title="throw new Error()"
+  42 |         onPress={() => {
+> 43 |           throw new Error('unhandled-throw');
      |                 ^
-  45 |         }}
-  46 |       />
-  47 |       <BigButton
+  44 |         }}
+  45 |       />
+  46 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:44:17)
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:43:17)
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -106,7 +106,7 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:41:7)
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:40:7)
         `.trim()
       );
     }
@@ -125,16 +125,16 @@ Call Stack
 Web  ERROR  [Error: unhandled-async-throw]
 
 Code: index.tsx
-  49 |         onPress={() => {
-  50 |           async function throwAsyncError() {
-> 51 |             throw new Error('unhandled-async-throw');
+  48 |         onPress={() => {
+  49 |           async function throwAsyncError() {
+> 50 |             throw new Error('unhandled-async-throw');
      |                   ^
-  52 |           }
-  53 |           void throwAsyncError();
-  54 |         }}
+  51 |           }
+  52 |           throwAsyncError();
+  53 |         }}
 Call Stack
-  throwAsyncError (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:51:19)
-  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:53:16)
+  throwAsyncError (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:50:19)
+  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:52:11)
         `.trim()
       );
     } else {
@@ -144,15 +144,15 @@ Call Stack
 Web  ERROR  [Error: unhandled-async-throw]
 
 Code: index.tsx
-  49 |         onPress={() => {
-  50 |           async function throwAsyncError() {
-> 51 |             throw new Error('unhandled-async-throw');
+  48 |         onPress={() => {
+  49 |           async function throwAsyncError() {
+> 50 |             throw new Error('unhandled-async-throw');
      |                   ^
-  52 |           }
-  53 |           void throwAsyncError();
-  54 |         }}
+  51 |           }
+  52 |           throwAsyncError();
+  53 |         }}
 Call Stack
-  throwAsyncError (apps/router-e2e/__e2e__/06-errors/app/index.tsx:51:19)
+  throwAsyncError (apps/router-e2e/__e2e__/06-errors/app/index.tsx:50:19)
         `.trim()
       );
     }
@@ -182,7 +182,7 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:141:5)
-  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:56:7)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:55:7)
         `.trim()
       );
     } else {
@@ -201,7 +201,7 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:56:7)
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:55:7)
         `.trim()
       );
     }
@@ -230,15 +230,15 @@ Call Stack
 Web  ERROR  [Error: console-error-object]
 
 Code: index.tsx
-  89 |         title="console.error(new Error())"
-  90 |         onPress={() => {
-> 91 |           console.error(new Error('console-error-object'));
+  90 |         title="console.error(new Error())"
+  91 |         onPress={() => {
+> 92 |           console.error(new Error('console-error-object'));
      |                         ^
-  92 |         }}
-  93 |       />
-  94 |       <BigButton
+  93 |         }}
+  94 |       />
+  95 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:91:25)
+  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:92:25)
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -250,7 +250,7 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:141:5)
-  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:88:7)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:89:7)
         `.trim()
       );
     } else {
@@ -260,15 +260,15 @@ Call Stack
 Web  ERROR  [Error: console-error-object]
 
 Code: index.tsx
-  89 |         title="console.error(new Error())"
-  90 |         onPress={() => {
-> 91 |           console.error(new Error('console-error-object'));
+  90 |         title="console.error(new Error())"
+  91 |         onPress={() => {
+> 92 |           console.error(new Error('console-error-object'));
      |                         ^
-  92 |         }}
-  93 |       />
-  94 |       <BigButton
+  93 |         }}
+  94 |       />
+  95 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:91:25)
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:92:25)
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -280,7 +280,7 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:88:7)
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:89:7)
         `.trim()
       );
     }
@@ -313,7 +313,7 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:141:5)
-  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:94:7)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:95:7)
         `.trim()
       );
     } else {
@@ -323,15 +323,15 @@ Call Stack
 Web  ERROR  console-error-string
 
 Code: index.tsx
-   95 |         title="console.error(string)"
-   96 |         onPress={() => {
->  97 |           console.error('console-error-string');
+   96 |         title="console.error(string)"
+   97 |         onPress={() => {
+>  98 |           console.error('console-error-string');
       |                   ^
-   98 |         }}
-   99 |       />
-  100 |       <BigButton
+   99 |         }}
+  100 |       />
+  101 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:97:19)
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:98:19)
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -343,7 +343,7 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:94:7)
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:95:7)
         `.trim()
       );
     }

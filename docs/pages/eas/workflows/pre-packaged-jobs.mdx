@@ -17,9 +17,12 @@ Build your project into an Android or iOS app.
 Build jobs can be customized so that you can execute custom commands during the build process. See [Custom builds](/custom-builds/get-started/) for more information.
 
 <Prerequisites>
-  <Requirement title="A completed build from your local machine">
-    Complete a build with EAS CLI using the same platform and profile as the pre-packaged job. Learn
-    how to [create your first build](/build/setup/) to get started.
+  <Requirement title="A project configured for EAS Build">
+    Your project must be set up for EAS Build: **eas.json** must contain the build profile the job
+    uses, and app signing credentials must be configured for the platform. Set up credentials
+    without running a build first by running `eas credentials:configure-build -p <platform> -e
+    <profile>` with the same platform and profile the job uses. Learn more about [configuring your
+    project for EAS Build](/build/setup/).
   </Requirement>
 </Prerequisites>
 
@@ -224,16 +227,18 @@ jobs:
     params:
       alias: string # optional
       prod: boolean # optional
+      source_maps: boolean # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type    | Description                                                                        |
-| --------- | ------- | ---------------------------------------------------------------------------------- |
-| alias     | string  | Optional. The [alias](/eas/hosting/deployments-and-aliases/#aliases) to deploy to. |
-| prod      | boolean | Optional. Whether to deploy to production.                                         |
+| Parameter   | Type    | Description                                                                        |
+| ----------- | ------- | ---------------------------------------------------------------------------------- |
+| alias       | string  | Optional. The [alias](/eas/hosting/deployments-and-aliases/#aliases) to deploy to. |
+| prod        | boolean | Optional. Whether to deploy to production.                                         |
+| source_maps | boolean | Optional. Whether to upload source maps with the deployment.                       |
 
 #### Outputs
 
@@ -530,9 +535,8 @@ Submit an Android or iOS build to the app store using EAS Submit.
 <Prerequisites>
   <Requirement title="CI/CD submission configuration">
     Submission jobs require additional configuration to run within a CI/CD process. See the [Google
-    Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) and
-    [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services)
-    for more information.
+    Play Store CI/CD submission guide](/submit/android/#automate-with-eas-workflows) and [Apple App
+    Store CI/CD submission guide](/submit/ios/#automate-with-eas-workflows) for more information.
   </Requirement>
 </Prerequisites>
 
@@ -542,10 +546,10 @@ Submit an Android or iOS build to the app store using EAS Submit.
 jobs:
   submit_to_store:
     type: submit
-    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       build_id: string # required
       profile: string # optional - default: production
+      groups: string[] # optional
     hooks:
       before_submit: step[] # optional - steps to run before the submission starts.
       after_submit: step[] # optional - steps to run after the submission completes.
@@ -555,10 +559,11 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type   | Description                                                    |
-| --------- | ------ | -------------------------------------------------------------- |
-| build_id  | string | Required. The ID of the build to submit.                       |
-| profile   | string | Optional. The submit profile to use. Defaults to `production`. |
+| Parameter | Type     | Description                                                                                                                                     |
+| --------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id  | string   | Required. The ID of the build to submit.                                                                                                        |
+| profile   | string   | Optional. The submit profile to use. Defaults to `production`.                                                                                  |
+| groups    | string[] | Optional. TestFlight internal group names to add the build to. For more TestFlight distribution options, see the [TestFlight job](#testflight). |
 
 #### Outputs
 
@@ -670,7 +675,7 @@ Upload an EAS iOS build and submit it to TestFlight in a single workflow job.
   <Requirement title="An iOS store build and Apple Developer account">
     TestFlight jobs require an iOS build created with `distribution: store` and an Apple Developer
     account configured. See the [TestFlight submission
-    guide](/submit/ios/#submitting-your-app-using-cicd-services) for more information.
+    guide](/submit/ios/#automate-with-eas-workflows) for more information.
   </Requirement>
 </Prerequisites>
 
@@ -680,7 +685,6 @@ Upload an EAS iOS build and submit it to TestFlight in a single workflow job.
 jobs:
   testflight_distribution:
     type: testflight
-    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       build_id: string # required
       profile: string # optional - default: production
@@ -893,7 +897,6 @@ jobs:
     environment: production | preview | development # optional, defaults to production
     env: # optional list of environment variables
       ENV_VAR_NAME: value
-    runs_on: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for available options
     params:
       message: string # optional
       platform: string # optional - android | ios | all, defaults to all
@@ -1007,6 +1010,79 @@ jobs:
 
 </Collapsible>
 
+## Update rollout
+
+Increase the rollout percentage of an in-progress [EAS Update](/eas-update/introduction/) rollout. Use this to gradually roll out an update group that was published to a subset of users with a partial `rollout_percentage`.
+
+### Syntax
+
+```yaml
+jobs:
+  roll_out_update:
+    type: update-rollout
+    params:
+      update_group_id: string # required
+      rollout_percentage: number # optional - 0 to 100, defaults to 100
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter          | Type   | Description                                                                                                                                                                                                                                                       |
+| ------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| update_group_id    | string | Required. The ID of the update group whose rollout to change. This is typically the `first_update_group_id` output of a preceding [`update`](#update) job. The group must have an in-progress rollout, otherwise the job fails.                                   |
+| rollout_percentage | number | Optional. Percentage of users this update group should be rolled out to. Must be an integer between `0` and `100`, and no less than the group's current rollout percentage. Defaults to `100`, which rolls the update out to all users and completes the rollout. |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output             | Type   | Description                                                          |
+| ------------------ | ------ | -------------------------------------------------------------------- |
+| update_group_id    | string | The ID of the update group that was rolled out.                      |
+| rollout_percentage | number | The rollout percentage that was applied to the update group.         |
+| updates_json       | string | A JSON string containing information about all updates in the group. |
+
+### Examples
+
+Here are some practical examples of using the update rollout job:
+
+<Collapsible summary="Publish a partial rollout, then complete it after approval">
+
+This workflow publishes an update to 25% of users, waits for approval, and only then completes the rollout to 100%.
+
+```yaml .eas/workflows/update-rollout.yml
+name: Update with staged rollout
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  publish_update:
+    name: Publish update to 25% of users
+    type: update
+    params:
+      channel: production
+      rollout_percentage: 25
+
+  require_approval:
+    name: Roll out to all users?
+    type: require-approval
+    needs: [publish_update]
+
+  complete_rollout:
+    name: Roll out to all users
+    type: update-rollout
+    needs: [publish_update, require_approval]
+    params:
+      update_group_id: ${{ needs.publish_update.outputs.first_update_group_id }}
+      rollout_percentage: 100
+```
+
+</Collapsible>
+
 ## Branch delete
 
 Delete an [EAS Update](/eas-update/introduction/) branch in the current project. The same as [`eas branch:delete`](/eas-update/eas-cli/#delete-a-branch). Pass the EAS Update branch name in `branch_name`.
@@ -1058,6 +1134,7 @@ jobs:
     type: maestro
     environment: production | preview | development # optional - defaults to preview
     image: string # optional - see https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    runs_on: string # optional - use a linux-*-nested-virtualization worker for Android Emulator tests. See https://docs.expo.dev/eas/workflows/syntax/#jobsjob_idruns_on for available options.
     params:
       build_id: string # required
       flow_path: string | string[] # required
@@ -1071,6 +1148,7 @@ jobs:
       android_system_image_package: string # optional
       device_identifier: string | { android?: string, ios?: string } # optional
       output_format: string # optional - defaults to junit
+      skip_build_check: boolean # optional - defaults to false
     hooks:
       before_maestro_tests: step[] # optional - steps to run before the tests start.
       after_maestro_tests: step[] # optional - steps to run after the tests complete.
@@ -1286,6 +1364,7 @@ jobs:
       device_locale: string # optional - device locale to use for the tests. Will be passed to Maestro as `--device-locale`.
       device_model: string # optional - model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro list-cloud-devices` for a list of supported values.
       device_os: string # optional - OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro list-cloud-devices` for a list of supported values.
+      skip_build_check: boolean # optional - skip validation of the build (whether an iOS build is a simulator build). Defaults to false.
       name: string # optional - name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
       branch: string # optional - override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional - run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
@@ -1311,6 +1390,7 @@ You can pass the following parameters into the `params` list:
 | device_locale      | string  | Optional. The locale that will be set on devices used for the tests. Corresponds to `--device-locale` param to `maestro cloud`. Example: `pl_PL`.                                                                                            |
 | device_model       | string  | Optional. The model of the device to use for the tests. Corresponds to `--device-model` param to `maestro cloud`. Example: `iPhone-11`. Run `maestro list-cloud-devices` for a list of supported values.                                     |
 | device_os          | string  | Optional. The OS of the device to use for the tests. Corresponds to `--device-os` param to `maestro cloud`. Example: `iOS-18-2`. Run `maestro list-cloud-devices` for a list of supported values.                                            |
+| skip_build_check   | boolean | Optional. Skip validation of the build (whether an iOS build is a simulator build). Defaults to false.                                                                                                                                       |
 | name               | string  | Optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.                                                                                                                                               |
 | branch             | string  | Optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`. |
 | async              | boolean | Optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.               |
@@ -2066,8 +2146,12 @@ jobs:
       build_id: string # required
       profile: string # optional
       embed_bundle_assets: boolean # optional
+      js_bundle_only: boolean # optional
+      ios_signing_use_source_app_entitlements: boolean # optional
+      ios_signing_app_entitlements_path: string # optional
       message: string # optional
       repack_version: string # optional
+      repack_package: string # optional
 ```
 
 > **Note:** If the build might still be in progress, use [`get-build`](#get-build) with `wait_for_in_progress: true`, then pass its `build_id` to `repack`.
@@ -2104,6 +2188,7 @@ You can pass the following parameters into the `params` list:
 | js_bundle_only                          | boolean | Optional. Whether to only repack the JavaScript bundle. Defaults to false, which means the entire app metadata will be updated.                                                                                 |
 | message                                 | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                                                                                                   |
 | repack_version                          | string  | Optional. The version of the `@expo/repack-app` to use. Defaults to the latest version.                                                                                                                         |
+| repack_package                          | string  | Optional. The repack npm package to use. Defaults to `@expo/repack-app`.                                                                                                                                        |
 | ios_signing_use_source_app_entitlements | boolean | Optional. Whether to use fastlane resign `use_app_entitlements` behavior: extract app bundle code signing entitlements and combine them with entitlements from the new provisioning profile. Defaults to false. |
 | ios_signing_app_entitlements_path       | string  | Optional. Path to the entitlements file to use, for example, `myApp/MyApp.entitlements`. This is exclusive with `ios_signing_use_source_app_entitlements`                                                       |
 

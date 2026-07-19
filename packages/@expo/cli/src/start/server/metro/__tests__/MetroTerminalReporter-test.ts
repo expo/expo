@@ -29,6 +29,7 @@ jest.useFakeTimers();
 const mockIsInteractive = jest.fn(() => false);
 jest.mock('../../../../utils/interactive', () => ({
   isInteractive: () => mockIsInteractive(),
+  shouldReduceLogs: () => false,
 }));
 
 jest.mock('../../serverLogLikeMetro', () => {

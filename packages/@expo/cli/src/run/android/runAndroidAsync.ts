@@ -14,10 +14,9 @@ import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
+import { event, debugEvent } from '../events';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
-
-const debug = require('debug')('expo:run:android');
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
   // NOTE: This is a guess, the developer can overwrite with `NODE_ENV`.
@@ -28,6 +27,14 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
 
   const props = await resolveOptionsAsync(projectRoot, options);
+
+  event('device:selected', {
+    platform: 'android',
+    name: props.device.device.name,
+    id: props.device.device.pid ?? props.device.device.name,
+    os: null,
+    type: props.device.device.type,
+  });
 
   if (!options.binary && props.buildCacheProvider) {
     const localPath = await resolveBuildCache({
@@ -41,7 +48,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     }
   }
 
-  debug('Package name: ' + props.packageName);
+  debugEvent('android:package_name', { name: props.packageName });
   Log.log('› Building app...');
 
   const androidProjectRoot = path.join(projectRoot, 'android');
@@ -59,13 +66,25 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
       );
     }
 
-    await assembleAsync(androidProjectRoot, {
-      variant: props.variant,
-      port: props.port,
-      appName: props.appName,
-      buildCache: props.buildCache,
-      architectures: props.architectures,
-      eagerBundleOptions,
+    const done = event.span();
+    try {
+      await assembleAsync(androidProjectRoot, {
+        variant: props.variant,
+        port: props.port,
+        appName: props.appName,
+        buildCache: props.buildCache,
+        architectures: props.architectures,
+        eagerBundleOptions,
+      });
+    } catch (error) {
+      event('build:failed', { platform: 'android', error: event.error(error as Error) });
+      throw error;
+    }
+    done('build:done', {
+      platform: 'android',
+      scheme: props.variant,
+      configuration: props.variant,
+      deviceId: props.device.device.pid ?? null,
     });
     shouldUpdateBuildCache = true;
 
@@ -91,6 +110,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     }
   }
 
+  const doneInstall = event.span();
   if (options.binary) {
     // Attempt to install the APK from the file path
     const binaryPath = path.join(options.binary);
@@ -103,6 +123,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   } else {
     await installAppAsync(androidProjectRoot, props);
   }
+  doneInstall('install', { platform: 'android', appId: props.packageName });
 
   await manager.getDefaultDevServer().openCustomRuntimeAsync(
     'emulator',
@@ -113,6 +134,8 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     },
     { device: props.device.device }
   );
+
+  event('launch', { platform: 'android', appId: props.packageName });
 
   if (props.shouldStartBundler) {
     logProjectLogsLocation();

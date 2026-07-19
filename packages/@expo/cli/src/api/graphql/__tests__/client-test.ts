@@ -30,7 +30,7 @@ function mockJsonResponseOnce(data: unknown) {
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  asMock(fetch).mockReset();
 });
 
 describe('mutate', () => {
@@ -63,5 +63,33 @@ describe('query', () => {
     expect(await query(Document, {})).toEqual({ value: 7 });
     expect(await query(Document, {})).toEqual({ value: 7 });
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns GraphQL results with all-null fields', async () => {
+    const document = graphql<{ meActor: null }>(`
+      query CurrentUser {
+        meActor {
+          id
+        }
+      }
+    `);
+
+    mockJsonResponseOnce({ meActor: null });
+
+    await expect(query(document, {})).resolves.toEqual({ meActor: null });
+  });
+
+  it('throws when the GraphQL result is null', async () => {
+    const document = graphql<Data>(`
+      query NullResult {
+        value
+      }
+    `);
+
+    mockJsonResponseOnce(null);
+    mockJsonResponseOnce(null);
+    mockJsonResponseOnce(null);
+
+    await expect(query(document, {})).rejects.toThrow('No returned query result');
   });
 });

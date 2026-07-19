@@ -4,6 +4,7 @@ sidebar_title: Release
 description: Learn how to create a release (production) build for your Expo app locally.
 ---
 
+import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
 import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStoreIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -113,14 +114,14 @@ This command will generate app-release.aab inside the **android/app/build/output
 
 <Step label="5">
 
-### Manual app submission to Google Play Console
+### App submission to Google Play Console
 
-Google Play Store requires manual app submission when submitting the **.aab** file for the first time.
+To submit the **.aab** file, upload it manually through Google Play Console. Alternatively, [EAS Submit](/deploy/submit-to-app-stores/#can-i-submit-builds-that-were-not) accepts locally built binaries with `eas submit --platform android --path ./my-app.aab`.
 
 <BoxLink
   title="Manual submission of an Android app"
-  description="Follow the steps from the FYI guide on manually submitting your app to Google Play Store for the first time."
-  href="https://expo.fyi/first-android-submission"
+  description="Follow the step-by-step guide on manually submitting your app to Google Play Store for the first time."
+  href="/submit/android-manual/"
   Icon={GoogleAppStoreIcon}
 />
 
@@ -128,67 +129,11 @@ Google Play Store requires manual app submission when submitting the **.aab** fi
 
 ## iOS
 
-To create an iOS release build locally for Apple App Store, you need to use Xcode which handles the signing and submission process via App Store Connect.
+To create an iOS release build locally, you use Xcode, which handles signing and uploading to App Store Connect. Follow the manual submission guide for the complete walkthrough, from configuring a release scheme to archiving and uploading your app:
 
-<Prerequisites>
-  <Requirement title="Apple Developer membership">
-    A paid Apple Developer membership is required to sign and submit iOS apps.
-  </Requirement>
-  <Requirement title="Xcode installed">
-    [Install
-    Xcode](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-xcode-and-watchman)
-    on your computer.
-  </Requirement>
-  <Requirement title="ios directory generated">
-    If you are using [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/),
-    run `npx expo prebuild` to generate it.
-  </Requirement>
-</Prerequisites>
-
-<Step label="1">
-
-### Open iOS workspace in Xcode
-
-Inside your Expo project directory, run the following command to open `your-project.xcworkspace` in Xcode:
-
-<Terminal cmd={['$ xed ios']} />
-
-After opening the iOS project in Xcode:
-
-1. From the sidebar on the left, select your app's workspace.
-2. Go to **Signing & Capabilities** and select **All** or **Release**.
-3. Under **Signing** > **Team**, ensure your Apple Developer team is selected. Xcode will generate an automatically managed Provisioning Profile and Signing Certificate.
-
-</Step>
-
-<Step label="2">
-
-### Configure a release scheme
-
-To configure your app's release scheme:
-
-1. From the menu bar, open **Product** > **Scheme** > **Edit Scheme**.
-2. Select **Run** from the sidebar, then set the **Build configuration** to **Release** using the dropdown.
-
-</Step>
-
-<Step label="3">
-
-### Build app for release
-
-To build your app for release, From the menu bar, open **Product** > **Build**. This step will build your app binary for release.
-
-</Step>
-
-<Step label="4">
-
-### App submission using App Store Connect
-
-Once the build is complete, you can distribute your app to TestFlight or submit it to the App Store using App Store Connect:
-
-1. From the menu bar, open **Product** > **Archive**.
-2. Under **Archives**, click **Distribute App** from the right sidebar.
-3. Click **App Store Connect** and follow the prompts shown in the window. This step will create an app store record and upload your app to the App Store.
-4. Now you can go to your App Store Connect account, select your app under Apps, and submit it for testing using TestFlight or prepare it for final release by following the steps in the App Store Connect dashboard.
-
-</Step>
+<BoxLink
+  title="Manually submit an iOS app with Xcode"
+  description="Configure signing, archive your app with Xcode, and upload it to App Store Connect."
+  href="/submit/ios-manual/"
+  Icon={AppleAppStoreIcon}
+/>

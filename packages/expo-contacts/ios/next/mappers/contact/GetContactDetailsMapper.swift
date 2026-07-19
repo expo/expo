@@ -11,7 +11,7 @@ class GetContactDetailsMapper {
 
   func map(contact: CNContact) throws -> GetContactDetailsRecord {
     let imageMapper = ImageMapper(service: imageService, filename: "\(contact.identifier)-image.png")
-    let thumbnailMapper = ImageMapper(service: imageService, filename: "\(contact.identifier)-thumb.png")
+    let thumbnailMapper = ThumbnailMapper(service: imageService, filename: "\(contact.identifier)-thumb.png")
 
     return GetContactDetailsRecord(
       id: contact.identifier,

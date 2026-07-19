@@ -65,7 +65,9 @@ You can see any devices registered via `eas device:create` by running:
   cmdCopy="eas device:list"
 />
 
-Devices registered with Expo for ad hoc provisioning will appear on your Apple Developer Portal after they are used to generate a provisioning profile for a new internal build with EAS Build or to [resign an existing build](/app-signing/app-credentials/#re-signing-new-credentials) with `eas build:resign`.
+Devices registered with Expo for ad hoc provisioning will appear on your Apple Developer Portal after they are used to generate a provisioning profile for a new internal build with EAS Build or to [re-sign an existing build](/app-signing/app-credentials/#re-signing-new-credentials) with `eas build:resign`.
+
+> **warning** **On new or recently renewed Apple Developer Program memberships, a newly registered device may not be immediately installable.** Registering a device with Expo does not register it with Apple. The device is added to your Apple Developer Portal only when it's first included in a provisioning profile, which happens when you create a new internal build or re-sign an existing one. For these memberships, Apple can take [up to 24–72 hours](https://developer.apple.com/help/account/reference/device-registration-updates/) to finish processing a newly registered device, and during that time the device can't be added to provisioning profiles. As a result, the first build or re-sign that includes a new device may fail. Wait for Apple to finish processing, then create a new build or re-sign again to produce an installable build that includes the device.
 
 #### Remove devices
 

@@ -51,6 +51,7 @@ fun DevMenuBottomSheet(
 
   BottomSheetScaffold(
     state = bottomSheetState,
+    onMenuKeyPress = { onAction(DevMenuAction.Toggle) },
     onDismiss = {
       if (isOpen) {
         shouldShowOnboarding.value = false

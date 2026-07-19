@@ -282,7 +282,7 @@ private fun ModifierList.toPeekModifier(): PeekModifier {
 }
 
 private fun ModifierType.toPeekModifier(): PeekModifier {
-  return when (this["\$type"] as? String) {
+  return when (this["\$type"]?.asString()) {
     "paddingAll" -> asRecord<PaddingAllParams>()?.let { PeekModifier.padding(it.all.dp) }
     "padding" -> asRecord<PaddingParams>()?.let {
       PeekModifier.padding(

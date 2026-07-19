@@ -5,6 +5,7 @@ on:
     branches: [main, 'sdk-*']
     paths:
       - .github/workflows/cli.yml
+      - apps/router-e2e/**
       - packages/@expo/cli/**
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/src/**
@@ -27,6 +28,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/cli.yml
+      - apps/router-e2e/**
       - packages/@expo/cli/**
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/src/**
@@ -239,7 +241,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        shard: [1, 2, 3, 4]
     env:
       # Change bun, npm, and pnpm caches to the much faster D:\ drive
       # See: https://github.com/twpayne/chezmoi/pull/4064

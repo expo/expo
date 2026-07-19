@@ -38,6 +38,20 @@ function mockConfigFile(filePath: string, factory: () => any) {
 // NOTE(cedric): this is a workaround to also mock `node:fs`
 jest.mock('node:fs', () => require('memfs').fs);
 
+/** Make the next ExpoConfigLoader spawn return the given config and loaded modules. */
+function mockLoadedModules(config: unknown, loadedModules: unknown[]) {
+  const configResult = JSON.stringify({ config, loadedModules });
+  const mockSpawnWithIpcAsync = spawnWithIpcAsync as jest.MockedFunction<typeof spawnWithIpcAsync>;
+  mockSpawnWithIpcAsync.mockResolvedValueOnce({
+    output: [],
+    stdout: configResult,
+    message: configResult,
+    stderr: '',
+    signal: null,
+    status: 0,
+  });
+}
+
 const expoAutolinkingVersion = '1.11.2';
 
 describe(getEasBuildSourcesAsync, () => {
@@ -494,8 +508,11 @@ describe(getExpoConfigSourcesAsync, () => {
     const configResult = JSON.stringify({
       config,
       loadedModules: [
-        'node_modules/third-party/index.js',
-        'node_modules/third-party/node_modules/transitive-third-party/index.js',
+        { type: 'file', path: 'node_modules/third-party/index.js' },
+        {
+          type: 'file',
+          path: 'node_modules/third-party/node_modules/transitive-third-party/index.js',
+        },
       ],
     });
     mockSpawnWithIpcAsync.mockResolvedValueOnce({
@@ -519,6 +536,108 @@ describe(getExpoConfigSourcesAsync, () => {
       expect.objectContaining({
         type: 'file',
         filePath: 'node_modules/third-party/node_modules/transitive-third-party/index.js',
+      })
+    );
+  });
+
+  it('should map a virtual config-plugin module to a contents source', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    const config = await getConfig('/app', { skipSDKVersionRequirement: true });
+    const mockSpawnWithIpcAsync = spawnWithIpcAsync as jest.MockedFunction<
+      typeof spawnWithIpcAsync
+    >;
+    const configResult = JSON.stringify({
+      config,
+      loadedModules: [
+        { type: 'contents', id: 'plugins/virtual-plugin.js', contents: 'module.exports = () => {};' },
+      ],
+    });
+    mockSpawnWithIpcAsync.mockResolvedValueOnce({
+      output: [],
+      stdout: configResult,
+      message: configResult,
+      stderr: '',
+      signal: null,
+      status: 0,
+    });
+    const options = await normalizeOptionsAsync('/app');
+    const { config: expoConfig, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', expoConfig, loadedModules, options);
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'contents',
+        id: 'plugins/virtual-plugin.js',
+        contents: 'module.exports = () => {};',
+        reasons: ['expoConfigPlugins'],
+      })
+    );
+  });
+
+  it('should collapse a node_modules plugin file to a package source when configPluginSourceType is package', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.mkdirSync('/app/node_modules/some-plugin', { recursive: true });
+    vol.writeFileSync(
+      '/app/node_modules/some-plugin/package.json',
+      JSON.stringify({ name: 'some-plugin', version: '1.2.3' })
+    );
+    const config = await getConfig('/app', { skipSDKVersionRequirement: true });
+    mockLoadedModules(config, [
+      { type: 'file', path: 'node_modules/some-plugin/build/withPlugin.js' },
+    ]);
+    // The default (balanced) preset uses the `package` config-plugin source type.
+    const options = await normalizeOptionsAsync('/app');
+    const { config: expoConfig, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', expoConfig, loadedModules, options);
+
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'package',
+        filePath: 'node_modules/some-plugin/package.json',
+        reasons: ['expoConfigPlugins'],
+      })
+    );
+    expect(sources).not.toContainEqual(
+      expect.objectContaining({ type: 'file', filePath: 'node_modules/some-plugin/build/withPlugin.js' })
+    );
+  });
+
+  it('should keep a node_modules plugin file as a file source when configPluginSourceType is files', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.mkdirSync('/app/node_modules/some-plugin', { recursive: true });
+    vol.writeFileSync(
+      '/app/node_modules/some-plugin/package.json',
+      JSON.stringify({ name: 'some-plugin', version: '1.2.3' })
+    );
+    const config = await getConfig('/app', { skipSDKVersionRequirement: true });
+    mockLoadedModules(config, [
+      { type: 'file', path: 'node_modules/some-plugin/build/withPlugin.js' },
+    ]);
+    const options = await normalizeOptionsAsync('/app', { preset: 'strict' });
+    const { config: expoConfig, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', expoConfig, loadedModules, options);
+
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'node_modules/some-plugin/build/withPlugin.js',
+        reasons: ['expoConfigPlugins'],
+      })
+    );
+  });
+
+  it('should keep an in-repo plugin file as a file source when configPluginSourceType is package', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    const config = await getConfig('/app', { skipSDKVersionRequirement: true });
+    mockLoadedModules(config, [{ type: 'file', path: 'plugins/withLocalPlugin.ts' }]);
+    const options = await normalizeOptionsAsync('/app');
+    const { config: expoConfig, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', expoConfig, loadedModules, options);
+
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'plugins/withLocalPlugin.ts',
+        reasons: ['expoConfigPlugins'],
       })
     );
   });

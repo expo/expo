@@ -13,6 +13,7 @@ struct ScannerContext {
 
 public final class CameraViewModule: Module, ScannerResultHandler {
   private var scannerContext: ScannerContext?
+  private var documentScannerDelegate: DocumentScannerDelegate?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoCamera")
@@ -32,6 +33,10 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
     Property("isModernBarcodeScannerAvailable") {
       if #available(iOS 16.0, *) { true } else { false }
+    }
+
+    Property("isDocumentScannerAvailable") {
+      return VNDocumentCameraViewController.isSupported
     }
 
     Property("toggleRecordingAsyncAvailable") {
@@ -352,6 +357,10 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
     }
 
+    AsyncFunction("scanDocumentAsync") { (options: DocumentScannerOptions?) -> [String: Any]? in
+      try await self.scanDocument(options: options ?? DocumentScannerOptions())
+    }
+
     AsyncFunction("getCameraPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
@@ -425,6 +434,28 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
     controller.dismiss(animated: true) { [weak self] in
       self?.onScannerDismissed()
+    }
+  }
+
+  @available(iOS 13.0, *)
+  @MainActor
+  private func scanDocument(options: DocumentScannerOptions) async throws -> [String: Any]? {
+    guard VNDocumentCameraViewController.isSupported else {
+      throw DocumentScannerUnavailableException()
+    }
+    guard documentScannerDelegate == nil else {
+      throw DocumentScanFailedException("a document scan is already in progress")
+    }
+    guard let presenter = appContext?.utilities?.currentViewController() else {
+      throw DocumentScanFailedException("no view controller to present from")
+    }
+    defer { documentScannerDelegate = nil }
+    return try await withCheckedThrowingContinuation { continuation in
+      let delegate = DocumentScannerDelegate(appContext: appContext, options: options, continuation: continuation)
+      documentScannerDelegate = delegate
+      let controller = VNDocumentCameraViewController()
+      controller.delegate = delegate
+      presenter.present(controller, animated: true)
     }
   }
 
