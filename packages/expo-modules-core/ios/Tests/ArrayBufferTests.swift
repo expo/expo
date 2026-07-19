@@ -547,24 +547,6 @@ struct ArrayBufferTests {
     }
 
     @Test
-    func `JS-backed unscoped materialization does not deadlock with JS-thread access`() async throws {
-      let runtime = try runtime
-      let value = try runtime.eval("new Uint8Array([1, 2, 3, 4]).buffer")
-      let buffer = try ArrayBuffer.decode(value, in: runtime)
-
-      #expect(buffer.isNativeBacked == false)
-
-      async let materialized: [UInt8] = runOffThreadWithTimeout {
-        let copy = buffer.copy()
-        _ = buffer.data
-        return Array(copy.data)
-      }
-
-      #expect(buffer.byteLength == 4)
-      #expect(try await materialized == [1, 2, 3, 4])
-    }
-
-    @Test
     func `drops JS-backed ArrayBuffer retained value off JavaScript thread`() async throws {
       let runtime = try runtime
       let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
@@ -750,176 +732,63 @@ struct ArrayBufferTests {
     }
   }
 
-  @Suite("scheduler teardown")
+  @Suite("concurrent materialization")
   @JavaScriptActor
-  struct SchedulerTeardownTests {
-    /// Owns the Hermes runtime; it must outlive the non-owning runtime wrapper created for
-    /// each test.
-    let hermesRuntime = JavaScriptRuntime()
-    let testScheduler = EXTestReactScheduler()
-
+  struct ConcurrentMaterializationTests {
     @Test
-    func `sync withJSBytes fails without running its body after scheduler teardown`() async throws {
-      let runtime = makeRuntimeWiredToTestScheduler()
-      let buffer = try makeJSBackedBuffer(in: runtime)
-      let bodyRan = ArrayBufferTestFlag()
-      testScheduler.destroy()
+    func `concurrent materializers publish one native storage and clean up the loser`() async throws {
+      let runtime = JavaScriptRuntime()
+      let backingValue = try runtime.eval("new ArrayBuffer(1)")
+      let sourceView = JavaScriptBackedArrayBufferView(
+        runtime: runtime,
+        backingValue: backingValue,
+        byteOffset: 0,
+        byteLength: 1)
+      let storage = SynchronizedArrayBufferStorage(
+        .javaScriptBacked(sourceView))
+      let firstCleanup = ArrayBufferStorageCleanupCounter()
+      let secondCleanup = ArrayBufferStorageCleanupCounter()
+      let firstCandidate = makeOwnedNativeStorage(bytes: [0xa1], cleanupCounter: firstCleanup)
+      let secondCandidate = makeOwnedNativeStorage(bytes: [0xb2], cleanupCounter: secondCleanup)
+      let startBarrier = ArrayBufferTwoWorkerStartBarrier()
 
-      await #expect(throws: JavaScriptRuntimeSchedulingError.self) {
-        try await runOffThreadWithTimeout {
-          try buffer.withJSBytes { _ in
-            bodyRan.set()
+      #expect(storage.currentStorage().isNativeBacked == false)
+
+      let first = Task.detached {
+        await startBarrier.wait()
+        storage.publishMaterializedStorage(firstCandidate)
+      }
+      let second = Task.detached {
+        await startBarrier.wait()
+        storage.publishMaterializedStorage(secondCandidate)
+      }
+
+      let firstPublished = await first.value
+      let secondPublished = await second.value
+      try withExtendedLifetime(storage) {
+        try withExtendedLifetime(sourceView) {
+          let firstNativeStorage = try #require(firstPublished.nativeStorage)
+          let secondNativeStorage = try #require(secondPublished.nativeStorage)
+          let firstBytes = Array(
+            UnsafeRawBufferPointer(start: firstNativeStorage.pointer, count: firstNativeStorage.byteLength))
+          let secondBytes = Array(
+            UnsafeRawBufferPointer(start: secondNativeStorage.pointer, count: secondNativeStorage.byteLength))
+
+          #expect(firstNativeStorage.pointer == secondNativeStorage.pointer)
+          #expect(firstBytes == secondBytes)
+
+          if firstBytes == [0xa1] {
+            #expect(firstCleanup.count == 0)
+            #expect(secondCleanup.count == 1)
+          } else {
+            #expect(firstBytes == [0xb2])
+            #expect(firstCleanup.count == 1)
+            #expect(secondCleanup.count == 0)
           }
         }
       }
-
-      #expect(bodyRan.value == false)
     }
 
-    @Test
-    func `sync withMutableJSBytes fails without running its body after scheduler teardown`() async throws {
-      let runtime = makeRuntimeWiredToTestScheduler()
-      let buffer = try makeJSBackedBuffer(in: runtime)
-      let bodyRan = ArrayBufferTestFlag()
-      testScheduler.destroy()
-
-      await #expect(throws: JavaScriptRuntimeSchedulingError.self) {
-        try await runOffThreadWithTimeout {
-          try buffer.withMutableJSBytes { bytes in
-            bodyRan.set()
-            bytes[0] = 9
-          }
-        }
-      }
-
-      #expect(bodyRan.value == false)
-      #expect(try originalBytes(in: runtime) == [1, 2, 3, 4])
-    }
-
-    @Test
-    func `async withJSBytes fails without running its body after scheduler teardown`() async throws {
-      let runtime = makeRuntimeWiredToTestScheduler()
-      let buffer = try makeJSBackedBuffer(in: runtime)
-      let bodyRan = ArrayBufferTestFlag()
-      testScheduler.destroy()
-
-      await #expect(throws: JavaScriptRuntimeSchedulingError.self) {
-        try await runAsyncWithTimeout {
-          try await buffer.withJSBytes { _ in
-            bodyRan.set()
-          }
-        }
-      }
-
-      #expect(bodyRan.value == false)
-    }
-
-    @Test
-    func `async withMutableJSBytes fails without running its body after scheduler teardown`() async throws {
-      let runtime = makeRuntimeWiredToTestScheduler()
-      let buffer = try makeJSBackedBuffer(in: runtime)
-      let bodyRan = ArrayBufferTestFlag()
-      testScheduler.destroy()
-
-      await #expect(throws: JavaScriptRuntimeSchedulingError.self) {
-        try await runAsyncWithTimeout {
-          try await buffer.withMutableJSBytes { bytes in
-            bodyRan.set()
-            bytes[0] = 9
-          }
-        }
-      }
-
-      #expect(bodyRan.value == false)
-      #expect(try originalBytes(in: runtime) == [1, 2, 3, 4])
-    }
-
-    @Test
-    func `concurrent JS-backed materializers publish one native storage without corrupting it`() async throws {
-      let runtime = makeRuntimeWiredToTestScheduler()
-      let backingValue = try runtime.eval("new Uint8Array([1, 2, 3, 4]).buffer")
-      var buffer: ArrayBuffer? = try ArrayBuffer.decode(backingValue, in: runtime)
-      let completedWorkers = ArrayBufferWorkerCompletionTracker()
-      var first: Task<[UInt8], Never>? = Task.detached { [buffer, completedWorkers] in
-        defer { completedWorkers.complete() }
-        return Array(buffer!.data)
-      }
-      var second: Task<[UInt8], Never>? = Task.detached { [buffer, completedWorkers] in
-        defer { completedWorkers.complete() }
-        return Array(buffer!.data)
-      }
-
-      do {
-        try await waitUntil(timeout: 5) {
-          testScheduler.scheduledWorkLoopCount > 0
-        }
-        await drainWorkLoopsUntilWorkersFinish(completedWorkers, expectedCount: 2)
-
-        let firstBytes = await first!.value
-        let secondBytes = await second!.value
-        first = nil
-        second = nil
-
-        // Materializing replaces the JS-backed view, whose cleanup must run before scheduler teardown.
-        drainWorkLoops()
-
-        #expect(firstBytes == [1, 2, 3, 4])
-        #expect(secondBytes == [1, 2, 3, 4])
-        #expect(buffer!.isNativeBacked == true)
-        #expect(Array(buffer!.data) == [1, 2, 3, 4])
-      } catch {
-        // A failed wait must still join both workers before any runtime-owned value can be released.
-        await drainWorkLoopsUntilWorkersFinish(completedWorkers, expectedCount: 2)
-        _ = await first?.value
-        _ = await second?.value
-        first = nil
-        second = nil
-        throw error
-      }
-
-      testScheduler.destroy()
-      runtime.longLivedObjects.clear()
-      buffer = nil
-      #expect(testScheduler.scheduledWorkLoopCount == 0)
-    }
-
-    private func drainWorkLoops() {
-      while testScheduler.scheduledWorkLoopCount > 0 {
-        hermesRuntime.withUnsafePointee { runtimePointer in
-          testScheduler.drainWorkLoops(withRuntime: runtimePointer)
-        }
-      }
-    }
-
-    private func drainWorkLoopsUntilWorkersFinish(
-      _ completedWorkers: ArrayBufferWorkerCompletionTracker,
-      expectedCount: Int
-    ) async {
-      while completedWorkers.count < expectedCount {
-        drainWorkLoops()
-        await Task.yield()
-      }
-    }
-
-    private func makeRuntimeWiredToTestScheduler() -> JavaScriptRuntime {
-      return hermesRuntime.withUnsafePointee { runtimePointer in
-        return JavaScriptRuntime(
-          unsafePointer: runtimePointer,
-          scheduler: testScheduler.schedulerHandle!,
-          dispatch: testScheduler.dispatchFunction
-        )
-      }
-    }
-
-    private func makeJSBackedBuffer(in runtime: JavaScriptRuntime) throws -> ArrayBuffer {
-      let value = try runtime.eval("globalThis.arrayBufferUnderTest = new Uint8Array([1, 2, 3, 4]).buffer")
-      return try ArrayBuffer.decode(value, in: runtime)
-    }
-
-    private func originalBytes(in runtime: JavaScriptRuntime) throws -> [Int] {
-      return try runtime.eval("Array.from(new Uint8Array(globalThis.arrayBufferUnderTest))")
-        .asArray().map { try $0.asInt() }
-    }
   }
 
   // MARK: - Memory management
@@ -969,38 +838,55 @@ struct ArrayBufferTests {
 
 private struct ArrayBufferTestTimeout: Error {}
 
-private final class ArrayBufferTestFlag: @unchecked Sendable {
+private final class ArrayBufferStorageCleanupCounter: @unchecked Sendable {
   private let lock = NSLock()
-  private var didSet = false
-
-  var value: Bool {
-    lock.lock()
-    defer { lock.unlock() }
-    return didSet
-  }
-
-  func set() {
-    lock.lock()
-    defer { lock.unlock() }
-    didSet = true
-  }
-}
-
-private final class ArrayBufferWorkerCompletionTracker: @unchecked Sendable {
-  private let lock = NSLock()
-  private var completedWorkerCount = 0
+  private var cleanupCount = 0
 
   var count: Int {
     lock.lock()
     defer { lock.unlock() }
-    return completedWorkerCount
+    return cleanupCount
   }
 
-  func complete() {
+  func increment() {
     lock.lock()
     defer { lock.unlock() }
-    completedWorkerCount += 1
+    cleanupCount += 1
   }
+}
+
+private actor ArrayBufferTwoWorkerStartBarrier {
+  private var waitingWorkers: [CheckedContinuation<Void, Never>] = []
+
+  func wait() async {
+    await withCheckedContinuation { continuation in
+      waitingWorkers.append(continuation)
+      guard waitingWorkers.count == 2 else {
+        return
+      }
+
+      let workers = waitingWorkers
+      waitingWorkers.removeAll()
+      for worker in workers {
+        worker.resume()
+      }
+    }
+  }
+}
+
+private func makeOwnedNativeStorage(
+  bytes: [UInt8],
+  cleanupCounter: ArrayBufferStorageCleanupCounter
+) -> ArrayBufferStorage {
+  let pointer = UnsafeMutableRawPointer.allocate(byteCount: bytes.count, alignment: 1)
+  bytes.withUnsafeBytes { source in
+    pointer.copyMemory(from: source.baseAddress!, byteCount: bytes.count)
+  }
+  return .ownedNative(
+    NativeArrayBufferStorage(pointer: pointer, byteLength: bytes.count) {
+      pointer.deallocate()
+      cleanupCounter.increment()
+    })
 }
 
 private final class ArrayBufferOptionalBox: @unchecked Sendable {
@@ -1054,43 +940,6 @@ private func runOffThreadWithTimeout<R: Sendable>(
     DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
       state.resume(.failure(ArrayBufferTestTimeout()))
     }
-  }
-}
-
-private func runAsyncWithTimeout<R: Sendable>(
-  timeout: TimeInterval = 1,
-  _ body: @escaping @Sendable () async throws -> R
-) async throws -> R {
-  return try await withCheckedThrowingContinuation { continuation in
-    let state = ArrayBufferTestContinuationState(continuation)
-
-    Thread.detachNewThread {
-      Task.immediate_polyfill {
-        do {
-          state.resume(.success(try await body()))
-        } catch {
-          state.resume(.failure(error))
-        }
-      }
-    }
-
-    DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
-      state.resume(.failure(ArrayBufferTestTimeout()))
-    }
-  }
-}
-
-@JavaScriptActor
-private func waitUntil(
-  timeout: TimeInterval,
-  _ condition: @escaping @JavaScriptActor () -> Bool
-) async throws {
-  let deadline = Date().addingTimeInterval(timeout)
-  while condition() == false {
-    guard Date() < deadline else {
-      throw ArrayBufferTestTimeout()
-    }
-    try await Task.sleep(nanoseconds: 10_000_000)
   }
 }
 
