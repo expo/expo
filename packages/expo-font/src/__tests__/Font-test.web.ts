@@ -33,10 +33,7 @@ if (typeof window === 'undefined') {
 
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(1);
 
-    expect(ExpoFontLoader.loadAsync).toHaveBeenCalledWith(name, {
-      ...resource,
-      display: Font.FontDisplay.AUTO,
-    });
+    expect(ExpoFontLoader.loadAsync).toHaveBeenCalledWith(name, resource);
 
     await Font.unloadAsync(name);
     expect(Font.isLoaded(name)).toBe(false);
@@ -81,7 +78,6 @@ if (typeof window === 'undefined') {
 
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(1);
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledWith(name, {
-      display: Font.FontDisplay.AUTO,
       uri: 'font.ttf',
     });
   });
@@ -101,8 +97,8 @@ if (typeof window === 'undefined') {
   });
 
   it('parses an array of font family definitions, loading every face', async () => {
-    // Mirrors a family with a regular, an italic, and a bold face where only the properties
-    // that differ from the default (weight 400, style "normal") are specified per face.
+    // Mirrors a family with a regular, an italic, and a bold face where each face only
+    // specifies the properties that differ from the others.
     await Font.loadAsync([
       {
         fontFamily: name,
@@ -117,25 +113,19 @@ if (typeof window === 'undefined') {
     // All three faces must be registered; none should be skipped as an "already loaded"
     // duplicate of the shared `fontFamily` name.
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(3);
-    // `weight`/`style` default to 400/"normal" so every generated `@font-face` rule is
-    // unambiguous, even for faces that didn't specify one or the other.
+    // `weight`/`style`/`display` are never defaulted: forcing a value (e.g. `font-weight: 400`)
+    // on a face that didn't specify one would incorrectly restrict a variable font file to a
+    // single weight or style.
     expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(1, name, {
       uri: 'regular.ttf',
-      display: Font.FontDisplay.AUTO,
-      weight: 400,
-      style: 'normal',
     });
     expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(2, name, {
       uri: 'italic.ttf',
-      display: Font.FontDisplay.AUTO,
-      weight: 400,
       style: 'italic',
     });
     expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(3, name, {
       uri: 'bold.ttf',
-      display: Font.FontDisplay.AUTO,
       weight: 800,
-      style: 'normal',
     });
 
     expect(Font.isLoaded(name)).toBe(true);
