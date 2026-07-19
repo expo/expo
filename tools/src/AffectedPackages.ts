@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import path from 'path';
 
 import * as Directories from './Directories';
 
@@ -33,14 +34,29 @@ export async function getAffectedPackagesAsync(
     return { type: 'infra-changed', changedFile: changedInfraFile };
   }
 
-  const { stdout } = await spawnAsync('pnpm', ['turbo', 'ls', '--affected', '--output=json'], {
+  // Invoke the turbo binary directly — going through pnpm can prepend warning banners
+  // (which may themselves contain braces) to stdout, breaking JSON extraction.
+  const turboBin = path.join(Directories.getNodeModulesDir(), '.bin', 'turbo');
+  const { stdout } = await spawnAsync(turboBin, ['ls', '--affected', '--output=json'], {
     cwd: Directories.getExpoRepositoryRootDir(),
     env: { ...process.env, TURBO_SCM_BASE: options.scmBase },
   });
-  // Skip anything a package manager may print before turbo's JSON output.
-  const json = JSON.parse(stdout.slice(stdout.indexOf('{')));
+  const json = extractJson(stdout);
   const items: { name: string }[] = json.packages?.items ?? [];
   return { type: 'packages', packageNames: new Set(items.map((item) => item.name)) };
+}
+
+// Extracts the JSON document from process output that may be surrounded by other text
+// (warnings, banners): tries each `{` as a start and accepts the one that parses to the end.
+function extractJson(output: string): any {
+  for (let index = output.indexOf('{'); index !== -1; index = output.indexOf('{', index + 1)) {
+    try {
+      return JSON.parse(output.slice(index));
+    } catch {
+      // Not the start of the JSON document — try the next brace.
+    }
+  }
+  throw new Error(`No JSON document found in the output:\n${output}`);
 }
 
 // Changed repo-relative paths since the merge base with `scmBase`, including uncommitted
