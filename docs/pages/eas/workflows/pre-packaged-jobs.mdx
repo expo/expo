@@ -642,7 +642,7 @@ jobs:
 
 ## TestFlight
 
-Distribute iOS builds to TestFlight internal and external testing groups. This is an alternative to the iOS submit job for when you need more advanced TestFlight features. If you need to control test groups, changelog, or Beta App Review submission, use the `testflight` job instead of submit.
+Distribute iOS builds to [TestFlight](/submit/testflight/) internal and external testing groups. This is an alternative to the iOS submit job for when you need more advanced TestFlight features. If you need to control test groups, changelog, or Beta App Review submission, use the `testflight` job instead of submit.
 
 The job supports two approaches: upload a build and submit it to TestFlight (`build_id`), or submit an already uploaded build (`asc_build_id`). In both cases, you can add the build to groups, set "What to Test" notes, and submit for Beta App Review. Provide exactly one of `build_id` or `asc_build_id`.
 
