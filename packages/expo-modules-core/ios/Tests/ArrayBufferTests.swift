@@ -548,7 +548,7 @@ struct ArrayBufferTests {
 
     @Test
     func `defers JS-backed ArrayBuffer cleanup from a worker until the JavaScript-thread sweep`() throws {
-      let runtime = try runtime
+      let runtime = JavaScriptRuntime()
       let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
       var buffer: ArrayBuffer? = try ArrayBuffer.decode(value, in: runtime)
 
@@ -763,11 +763,11 @@ struct ArrayBufferTests {
 
       let first = Task.detached {
         await startBarrier.wait()
-        storage.publishMaterializedStorage(firstCandidate)
+        return storage.publishMaterializedStorage(firstCandidate)
       }
       let second = Task.detached {
         await startBarrier.wait()
-        storage.publishMaterializedStorage(secondCandidate)
+        return storage.publishMaterializedStorage(secondCandidate)
       }
 
       let firstPublished = await first.value
