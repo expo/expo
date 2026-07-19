@@ -10,6 +10,8 @@ on:
       - apps/bare-expo/ios/**
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
+      - Gemfile
+      - Gemfile.lock
       - '!packages/@expo/cli/**'
   push:
     branches: [main]
@@ -20,6 +22,8 @@ on:
       - apps/bare-expo/ios/**
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
+      - Gemfile
+      - Gemfile.lock
       - '!packages/@expo/cli/**'
 
 concurrency:
