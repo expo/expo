@@ -17,12 +17,27 @@ describe('useFonts', () => {
     'ComicSans-Regular': 'path/to/jailed/font.ttf',
   };
 
+  const STUB_FONT_FAMILIES: Font.FontFamilyDefinition[] = [
+    {
+      fontFamily: 'OpenSans',
+      fontDefinitions: [
+        { path: 'path/to/font.ttf', weight: 400 },
+        { path: 'path/to/font-bold.ttf', weight: 700 },
+      ],
+    },
+  ];
+
   const loadAsyncSpy = jest.spyOn(Font, 'loadAsync').mockResolvedValue();
 
   describeStaticFonts('static fonts', () => {
     it('loads fonts when mounted', async () => {
       expect(useFonts(STUB_FONTS)).toEqual([true, null]);
       expect(loadAsyncSpy).toHaveBeenCalledWith(STUB_FONTS);
+    });
+
+    it('loads an array of font family definitions when mounted', async () => {
+      expect(useFonts(STUB_FONT_FAMILIES)).toEqual([true, null]);
+      expect(loadAsyncSpy).toHaveBeenCalledWith(STUB_FONT_FAMILIES);
     });
   });
 
@@ -36,6 +51,16 @@ describe('useFonts', () => {
       await waitFor(() => {
         expect(result.current[RESULT_LOADED]).toBe(true);
       });
+    });
+
+    it('loads an array of font family definitions when mounted', async () => {
+      const { result } = renderHook(useFonts, { initialProps: STUB_FONT_FAMILIES });
+
+      expect(result.current[RESULT_LOADED]).toBe(false);
+      await waitFor(() => {
+        expect(result.current[RESULT_LOADED]).toBe(true);
+      });
+      expect(loadAsyncSpy).toHaveBeenCalledWith(STUB_FONT_FAMILIES);
     });
 
     it('skips new font map when rerendered', async () => {

@@ -99,4 +99,52 @@ if (typeof window === 'undefined') {
   it('getLoadedFonts is available', () => {
     expect(Font.getLoadedFonts()).toHaveLength(0);
   });
+
+  it('parses an array of font family definitions, loading every face', async () => {
+    await Font.loadAsync([
+      {
+        fontFamily: name,
+        fontDefinitions: [
+          { path: 'regular.ttf', weight: 400 },
+          { path: 'italic.ttf', weight: 400, style: 'italic' },
+          { path: 'bold.ttf', weight: 800 },
+        ],
+      },
+    ]);
+
+    // All three faces must be registered; none should be skipped as an "already loaded"
+    // duplicate of the shared `fontFamily` name.
+    expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(3);
+    expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(1, name, {
+      uri: 'regular.ttf',
+      display: Font.FontDisplay.AUTO,
+      weight: 400,
+    });
+    expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(2, name, {
+      uri: 'italic.ttf',
+      display: Font.FontDisplay.AUTO,
+      weight: 400,
+      style: 'italic',
+    });
+    expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(3, name, {
+      uri: 'bold.ttf',
+      display: Font.FontDisplay.AUTO,
+      weight: 800,
+    });
+
+    expect(Font.isLoaded(name)).toBe(true);
+    expect(Font.isLoading(name)).toBe(false);
+  });
+
+  it('does not reload a face that was already loaded via the array API', async () => {
+    const definition = {
+      fontFamily: name,
+      fontDefinitions: [{ path: 'regular.ttf', weight: 400 }],
+    };
+
+    await Font.loadAsync([definition]);
+    await Font.loadAsync([definition]);
+
+    expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(1);
+  });
 }
