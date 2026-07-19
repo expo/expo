@@ -145,47 +145,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-### Loading multiple weights and styles per font family on web
-
-By default, the CSS generated for the web export doesn't distinguish weights or styles for
-fonts loaded through the map syntax above &mdash; each key is treated as a completely separate
-font family. To load several files (for example regular, bold, and italic cuts) under one
-`fontFamily` and let the browser pick the right face with the CSS `font-weight` and `font-style`
-properties, pass `useFonts` (or [`loadAsync`](#loadasyncfontfamilyorfontmap-source)) an array of
-[`FontFamilyDefinition`](#fontfamilydefinition)s instead:
-
-```tsx
-import { useFonts } from 'expo-font';
-
-export default function App() {
-  const [loaded, error] = useFonts([
-    {
-      fontFamily: 'Inter',
-      fontDefinitions: [
-        { path: require('./assets/fonts/Inter-Regular.otf'), weight: 400 },
-        { path: require('./assets/fonts/Inter-Italic.otf'), weight: 400, style: 'italic' },
-        { path: require('./assets/fonts/Inter-Bold.otf'), weight: 700 },
-      ],
-    },
-  ]);
-
-  // ...
-}
-```
-
-You can then select the loaded face with the `fontWeight` and `fontStyle` style props, the same
-way you would with a system font:
-
-```tsx
-<Text style={{ fontFamily: 'Inter', fontWeight: '700' }}>Inter Bold</Text>
-<Text style={{ fontFamily: 'Inter', fontWeight: '400', fontStyle: 'italic' }}>Inter Italic</Text>
-```
-
-> **Note:** `weight` and `style` on [`FontFaceDefinition`](#fontfacedefinition) only affect the
-> `@font-face` CSS generated on web. On Android and iOS, only the first `fontDefinitions` entry
-> for a given `fontFamily` is loaded &mdash; use separate `fontFamily` names (or the
-> [config plugin's per-platform `fontDefinitions`](#configuration-in-app-config)) to select
-> different weights and styles natively.
+To load multiple weights and styles of the same font family and have the browser pick the correct face on web using the CSS `font-weight` and `font-style` properties, pass `useFonts` an array of [`FontFamilyDefinition`](#fontfamilydefinition)s. See [Loading multiple weights and styles for one font family on web](/develop/user-interface/fonts/#loading-multiple-weights-and-styles-for-one-font-family-on-web) in the Fonts guide.
 
 ## API
 
