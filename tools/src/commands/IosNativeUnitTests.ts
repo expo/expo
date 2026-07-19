@@ -209,9 +209,11 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
     // The github-actions renderer emits `::error`/`::warning` annotations with file and line
     // for compile errors and test failures.
     const xcbeautify = isGithubActions ? 'xcbeautify --renderer github-actions' : 'xcbeautify';
-    // Pipe through xcbeautify while preserving xcodebuild's exit code.
+    // Pipe through xcbeautify while preserving xcodebuild's exit code. Single quotes within
+    // an argument (e.g. a repo path like /Users/O'Brien/…) must be escaped for the shell.
     const command =
-      ['xcodebuild', ...args].map((arg) => `'${arg}'`).join(' ') + ` 2>&1 | ${xcbeautify}`;
+      ['xcodebuild', ...args].map((arg) => `'${arg.replace(/'/g, `'\\''`)}'`).join(' ') +
+      ` 2>&1 | ${xcbeautify}`;
     await spawnAsync('bash', ['-o', 'pipefail', '-c', command], { cwd, env, stdio: 'inherit' });
   } else {
     await spawnAsync('xcodebuild', args, { cwd, env, stdio: 'inherit' });
@@ -247,9 +249,18 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
     packagesToTest.push(pkg.packageName);
   }
 
-  if (packageNamesFilter.length && !targetsToTest.length) {
+  if (!targetsToTest.length) {
+    if (packageNamesFilter.length) {
+      throw new Error(
+        `No packages were found with the specified names: ${packageNamesFilter.join(', ')}`
+      );
+    }
+    // Without this guard, an empty target list would generate a scheme with no testables and
+    // `xcodebuild` would exit 0 — a vacuous success masking a broken package/test discovery.
     throw new Error(
-      `No packages were found with the specified names: ${packageNamesFilter.join(', ')}`
+      'No iOS unit test targets were found in any package. This likely means the package ' +
+        'discovery or podspec scanning is broken, since this repository does contain packages ' +
+        'with iOS test specs.'
     );
   }
 
