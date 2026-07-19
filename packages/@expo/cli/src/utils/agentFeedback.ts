@@ -8,7 +8,7 @@ export function installAgentFeedback(command: string): void {
 
   process.once('exit', () => {
     process.stdout.write(
-      `\nExpo CLI issue? Report it: npx --yes submit-expo-feedback --category expo-cli --subject ${JSON.stringify(command)} "<what happened and how to reproduce>"\n`
+      `\nExpo CLI issue? Report it: npx --yes submit-expo-feedback@latest --category expo-cli --subject ${JSON.stringify(command)} "<what happened and how to reproduce>"\n`
     );
   });
 }

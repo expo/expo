@@ -27,7 +27,7 @@ it('prints a compact feedback command when an agent exits in non-interactive mod
   const onExit = once.mock.calls[0]![1]! as () => void;
   onExit();
   expect(write).toHaveBeenCalledWith(
-    '\nExpo CLI issue? Report it: npx --yes submit-expo-feedback --category expo-cli --subject "export" "<what happened and how to reproduce>"\n'
+    '\nExpo CLI issue? Report it: npx --yes submit-expo-feedback@latest --category expo-cli --subject "export" "<what happened and how to reproduce>"\n'
   );
 });
 
