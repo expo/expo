@@ -1,3 +1,7 @@
+import { applyPatch } from 'diff';
+import fs from 'node:fs';
+import path from 'node:path';
+
 import { setupPlugin as setupAndroidPlugin } from '../../utils/android';
 import { setupPlugin as setupIosPlugin } from '../../utils/ios';
 import { createTempProject, cleanUpProject, createTemplateOverrides } from '../../utils/project';
@@ -16,6 +20,35 @@ describe('plugin templates', () => {
   afterAll(async () => {
     await cleanUpProject('plugintemplates');
   }, 600000);
+
+  /**
+   * Expected behavior:
+   * - The dev-menu patches apply cleanly to the current templates. The patches
+   *   encode template lines as context, so any template edit that isn't
+   *   mirrored in the patch breaks prebuild for every expo-dev-menu user —
+   *   but only projects that actually depend on expo-dev-menu hit it, which
+   *   the temp projects here don't. Guard it directly.
+   */
+  it('applies the dev-menu patches cleanly to the current templates', () => {
+    const templatesDir = path.join(__dirname, '../../../plugin/templates');
+    const interpolate = (contents: string) =>
+      contents.replace(/\$\{\{[A-Za-z0-9]+\}\}/g, 'com.example.app');
+
+    const pairs = [
+      ['android/BrownfieldActivity.kt', 'patches/BrownfieldActivity.patch'],
+      ['android/ReactNativeHostManager.kt', 'patches/ReactNativeHostManager.patch'],
+    ];
+    for (const [template, patch] of pairs) {
+      const templateContents = interpolate(
+        fs.readFileSync(path.join(templatesDir, template), 'utf8')
+      );
+      const patchContents = fs.readFileSync(path.join(templatesDir, patch), 'utf8');
+      const result = applyPatch(templateContents, patchContents);
+      if (result === false) {
+        throw new Error(`${patch} no longer applies to ${template} — update the patch context`);
+      }
+    }
+  });
 
   /**
    * Expected behavior:
