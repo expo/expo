@@ -180,9 +180,11 @@ const isGithubActions = process.env.GITHUB_ACTIONS === 'true';
 
 // Changes to any of these paths affect how the tests themselves build and run, so
 // affected-packages detection must fall back to testing everything — the infrastructure
-// must not be able to skip its own validation.
+// must not be able to skip its own validation. For `tools/`, only the modules this command
+// is built from are listed (not the whole directory, which changes far too often).
 const INFRA_PATH_PATTERNS = [
-  /^tools\//,
+  /^tools\/src\/commands\/(IosNativeUnitTests|NativeUnitTests)\.ts$/,
+  /^tools\/src\/(AffectedPackages|Packages|Directories|CocoaPods)\.ts$/,
   /^apps\/bare-expo\/ios\//,
   /^\.github\/workflows\/ios-unit-tests\.yml$/,
   /^packages\/expo-modules-autolinking\//,

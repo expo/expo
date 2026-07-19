@@ -10,6 +10,7 @@ on:
       - apps/bare-expo/ios/**
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
+      - tools/src/AffectedPackages.ts
       - Gemfile
       - Gemfile.lock
       - '!packages/@expo/cli/**'
@@ -22,6 +23,7 @@ on:
       - apps/bare-expo/ios/**
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
+      - tools/src/AffectedPackages.ts
       - Gemfile
       - Gemfile.lock
       - '!packages/@expo/cli/**'
