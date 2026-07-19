@@ -139,6 +139,17 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     guard let runtime else {
       return
     }
+    if runtime.isOnJavaScriptThread() {
+      JavaScriptActor.assumeIsolated {
+        runtime.longLivedObjects.remove(longLivedState)
+        longLivedState.allowRelease()
+      }
+      return
+    }
+    guard runtime.supportsAsyncScheduling else {
+      // Schedulerless runtimes defer release to the JavaScript-thread teardown sweep.
+      return
+    }
     runtime.schedule(priority: .immediate) { [weak runtime, longLivedState] in
       guard let runtime else {
         return
