@@ -91,7 +91,7 @@ Constants {
 
 Defines a native synchronous function that will be exported to JavaScript. Synchronous means that when the function is executed in JavaScript, its native code is run on the same thread and blocks further execution of the script until the native function returns.
 
-### Arguments
+#### Arguments
 
 - **name**: `String` — Name of the function that you'll call from JavaScript.
 - **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
@@ -132,7 +132,7 @@ function getMessage() {
 
 Defines a JavaScript function that always returns a `Promise` and whose native code is by default dispatched on a different thread than the JavaScript runtime runs on.
 
-### Arguments
+#### Arguments
 
 - **name**: `String` — Name of the function that you'll call from JavaScript.
 - **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
@@ -210,7 +210,7 @@ AsyncFunction("myAsyncFunction") { message: String ->
 
 ---
 
-### Kotlin coroutines <PlatformTags prefix="" platforms={['android']} />
+#### Kotlin coroutines <PlatformTags prefix="" platforms={['android']} />
 
 `AsyncFunction` can receive a suspendable body on Android. However, it has to be passed in the infix notation after the `Coroutine` block. You can read more about suspendable functions and coroutines on [coroutine overview](https://kotlinlang.org/docs/coroutines-overview.html).
 
@@ -302,7 +302,7 @@ Enables the module to be used as a native view. Definition components that are a
 [`AsyncFunction`](#asyncfunction) in the view definition is added to the React ref of the React component representing the native view.
 Such async functions automatically receive an instance of the native view as the first argument and run on the UI thread by default.
 
-### Arguments
+#### Arguments
 
 - **viewType** — The class of the native view that will be rendered. Note: On Android, the provided class must inherit from the [`ExpoView`](#expoview), on iOS it's optional. See [`Extending ExpoView`](#extending--expoview).
 - **definition**: `() -> ViewDefinition` — A builder of the view definition.
@@ -573,7 +573,7 @@ Name("MyViewName")
 
 Defines a setter for the view prop of given name.
 
-### Arguments
+#### Arguments
 
 - **name**: `String` — Name of view prop that you want to define a setter.
 - **defaultValue**: `ValueType` — Optional default value used when the setter is called with `null`.
@@ -885,7 +885,7 @@ You can define additional Convertibles by making native Swift types conform to t
   ]}
 />
 
-### Example
+#### Example
 
 ```swift Swift
 import ExpoModulesCore
@@ -1434,7 +1434,7 @@ Function("mutateMe") { jsObject: JavaScriptObject ->
 
 A base class for a native module.
 
-### Properties
+#### Properties
 
 <APIMethod
   name="appContext"
@@ -1446,7 +1446,7 @@ A base class for a native module.
   isReturnTypeReference
 />
 
-### Methods
+#### Methods
 
 <APIMethod
   name="sendEvent"
@@ -1474,7 +1474,7 @@ A base class for a native module.
 
 The app context is an interface to a single Expo app.
 
-### Properties
+#### Properties
 
 <APIMethod
   name="constants"
@@ -1542,7 +1542,7 @@ A base class that should be used by all exported views.
 
 On iOS, `ExpoView` extends the `RCTView` which handles some styles (for example, borders) and accessibility.
 
-### Properties
+#### Properties
 
 <APIMethod
   name="appContext"
@@ -1552,7 +1552,7 @@ On iOS, `ExpoView` extends the `RCTView` which handles some styles (for example,
   isReturnTypeReference
 />
 
-### Extending `ExpoView`
+#### Extending `ExpoView`
 
 To export your view using the [`View`](#view) component, your custom class must inherit from the `ExpoView`. By doing that you will get access to the [`AppContext`](#appcontext) object. It's the only way of communicating with other modules and the JavaScript runtime. Also, you can't change constructor parameters, because provided view will be initialized by `expo-modules-core`.
 
