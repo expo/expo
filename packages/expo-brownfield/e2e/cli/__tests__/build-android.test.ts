@@ -88,40 +88,25 @@ describe('build:android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build:android
-     * Expected behavior: The CLI should fail if prebuild is cancelled
+     * Command: npx expo-brownfield build:android (non-interactive stdin)
+     * Expected behavior: The CLI must not hang on the prebuild prompt in
+     * non-TTY contexts (CI); it runs `npx expo prebuild` automatically and
+     * continues. NOTE: mutates TEMP_DIR (creates android/) — keep this the
+     * last test in the "without prebuild" block.
      */
-    it('should fail if prebuild is cancelled', async () => {
-      // The command fails, because `expo-brownfield` is not added to app.json
-      // But the prebuild should succeed
-      const { exitCode, stdout, stderr } = await executeCommandAsync(
+    it('should automatically run prebuild in a non-interactive shell', async () => {
+      const { exitCode, stdout } = await executeCommandAsync(
         TEMP_DIR,
         'bash',
-        ['-c', `yes no | node ${CLI_PATH} build:android --repo MavenLocal`],
+        ['-c', `node ${CLI_PATH} build:android --repo MavenLocal --dry-run < /dev/null`],
         { ignoreErrors: true }
       );
-      expect(exitCode).not.toBe(0);
       expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
-      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
-      expect(stderr).toContain(ERROR.MISSING_PREBUILD());
-    });
-
-    /**
-     * Command: npx expo-brownfield build:android
-     * Expected behavior: The CLI should validate and ask for prebuild
-     */
-    it('should validate and ask for prebuild', async () => {
-      // The command fails, because `expo-brownfield` is not added to app.json
-      // But the prebuild should succeed
-      const { exitCode, stdout, stderr } = await executeCommandAsync(
-        TEMP_DIR,
-        'bash',
-        ['-c', `yes no | node ${CLI_PATH} build:android --repo MavenLocal`],
-        { ignoreErrors: true }
-      );
-      expect(exitCode).not.toBe(0);
-      expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
-      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stdout).not.toContain(BUILD.PREBUILD_PROMPT);
+      expect(stdout).toContain(BUILD.PREBUILD_AUTO('android'));
+      expect(exitCode).toBe(0);
+      expect(stdout).toContain(`./gradlew publishBrownfieldAllPublicationToMavenLocal`);
+      expectPrebuild(TEMP_DIR, 'android');
     });
   });
 
@@ -411,14 +396,33 @@ describe('build:android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build:android
-     * Expected behavior: The CLI should print an error message and exit
+     * Command: npx expo-brownfield build:android (no --repo / -t)
+     * Expected behavior: The CLI derives the local publish targets from the
+     * app config's `android.publishing` (default: localMaven) instead of
+     * erroring. Remote repositories are never published to by default.
      */
-    it('should print an error message and exit if no tasks or repositories are specified', async () => {
+    it('should default to local repositories from the app config when no tasks or repositories are specified', async () => {
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
-        successExit: false,
-        stderr: [ERROR.MISSING_TASKS_OR_REPOSITORIES()],
+        args: ['--dry-run'],
+        stdout: [
+          BUILD_ANDROID.DEFAULT_REPOSITORIES('MavenLocal'),
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+        ],
+      });
+    });
+
+    /**
+     * Command: npx expo-brownfield build:android --repo mavenlocal --dry-run
+     * Expected behavior: The built-in Maven local target matches
+     * case-insensitively — `mavenlocal` must not produce the broken
+     * `...TomavenLocalRepository` task name
+     */
+    it('should treat the MavenLocal repository name case-insensitively', async () => {
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'mavenlocal', '--dry-run'],
+        stdout: [`./gradlew publishBrownfieldAllPublicationToMavenLocal`],
       });
     });
   });

@@ -14,8 +14,8 @@ index dda8db9d25..ee263e78e2 100644
 +import expo.modules.devmenu.api.DevMenuApi
 
  object BrownfieldLifecycleDispatcher {
-   fun onApplicationCreate(application: Application) {
-@@ -43,4 +45,15 @@ open class BrownfieldActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
+   // @JvmStatic so Java hosts can call BrownfieldLifecycleDispatcher.onApplicationCreate(this)
+@@ -47,4 +49,15 @@ open class BrownfieldActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
    override fun invokeDefaultOnBackPressed() {
      finish()
    }

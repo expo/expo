@@ -391,6 +391,12 @@ dependencies {
 
 `releaseImplementation`/`debugImplementation` pair the variants automatically. Gradle picks the matching sibling per host build type. If your host only ships release builds, you can drop the `debugImplementation` line and publish only the release sibling with `--fused --release`.
 
+A few host app requirements and tips:
+
+- **`minSdk` must be at least 24** (React Native's floor). Hosts targeting a lower API level fail at manifest merge when they consume the AAR.
+- **Permissions merge in from the fused modules.** For example, media-related Expo modules declare storage permissions. If your host enforces a permission allowlist, strip unwanted entries in the host manifest with `tools:node="remove"` (or reconcile attribute conflicts with `tools:replace`).
+- **The AAR ships native libraries for every ABI enabled at publish time.** Without filtering, a host APK grows by all four ABIs' worth of React Native libraries. Constrain ABIs when publishing (`reactNativeArchitectures=arm64-v8a` in the Expo project's **gradle.properties**) or filter in the host with `ndk.abiFilters`/APK splits.
+
 ## CLI
 
 The `expo-brownfield` library includes a CLI for building and publishing to Maven repositories (Android) and XCFrameworks (iOS).

@@ -12,7 +12,8 @@ export const buildPublishingTask = (
   repository: string,
   fusedOpts: { fused: boolean; library: string } = { fused: false, library: '' }
 ): string => {
-  const repositoryName = repository === 'MavenLocal' ? repository : `${repository}Repository`;
+  const repositoryName =
+    repository.toLowerCase() === 'mavenlocal' ? 'MavenLocal' : `${repository}Repository`;
   const task = `publishBrownfield${variant}PublicationTo${repositoryName}`;
   // In `--fused` mode, route the task to the matching sibling subproject:
   // `:<lib>-fused-release` for Release, `:<lib>-fused-debug` for Debug.

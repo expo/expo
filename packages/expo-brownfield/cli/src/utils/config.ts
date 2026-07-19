@@ -1,4 +1,5 @@
 import type { OptionValues } from 'commander';
+import { getConfig } from 'expo/config';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -168,7 +169,15 @@ const resolveTaskArray = (
   fusedOpts: { fused: boolean; library: string }
 ): string[] => {
   const tasks: string[] = options.task ?? [];
-  const repositories: string[] = options.repository ?? [];
+  let repositories: string[] = options.repository ?? [];
+  if (tasks.length === 0 && repositories.length === 0) {
+    repositories = resolveLocalRepositoriesFromAppConfig();
+    if (repositories.length > 0) {
+      console.info(
+        `No --repo or --task specified; defaulting to local repositories from the app config: ${repositories.join(', ')}`
+      );
+    }
+  }
   // In `--fused` mode, `--all` expands to separate Debug + Release task
   // invocations against the matching sibling subprojects.
   const variantsForRepoTasks: BuildVariant[] =
@@ -178,6 +187,33 @@ const resolveTaskArray = (
   );
 
   return Array.from(new Set([...tasks, ...repoTasks]));
+};
+
+const resolveLocalRepositoriesFromAppConfig = (): string[] => {
+  let publishing: unknown;
+  try {
+    const { exp } = getConfig(process.cwd(), { skipSDKVersionRequirement: true });
+    const plugin = exp.plugins?.find(
+      (entry): entry is [string, any] => Array.isArray(entry) && entry[0] === 'expo-brownfield'
+    );
+    publishing = plugin?.[1]?.android?.publishing;
+  } catch {
+    // App config could not be evaluated here — fall through to the plugin's
+    // default publishing target below.
+  }
+
+  const entries =
+    Array.isArray(publishing) && publishing.length > 0 ? publishing : [{ type: 'localMaven' }];
+  const repositories = entries.flatMap((entry) => {
+    if (entry?.type === 'localMaven') {
+      return ['MavenLocal'];
+    }
+    if (entry?.type === 'localDirectory' && typeof entry?.name === 'string') {
+      return [entry.name];
+    }
+    return [];
+  });
+  return Array.from(new Set(repositories));
 };
 
 const resolveVariant = (options: OptionValues): BuildVariant => {

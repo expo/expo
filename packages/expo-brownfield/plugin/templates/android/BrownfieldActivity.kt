@@ -9,10 +9,12 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import expo.modules.ApplicationLifecycleDispatcher
 
 object BrownfieldLifecycleDispatcher {
+  @JvmStatic
   fun onApplicationCreate(application: Application) {
     ApplicationLifecycleDispatcher.onApplicationCreate(application)
   }
 
+  @JvmStatic
   fun onConfigurationChanged(application: Application, newConfig: Configuration) {
     ApplicationLifecycleDispatcher.onConfigurationChanged(application, newConfig)
   }
