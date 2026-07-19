@@ -51,16 +51,18 @@ export type FontFaceDefinition = {
    */
   path: FontSource;
   /**
-   * Maps to the CSS `font-weight` property. Has no effect on native platforms, where only the
-   * first `fontDefinitions` entry of a given `fontFamily` can be loaded.
-   * @default 400
+   * Maps to the CSS `font-weight` property. Leave unset for a variable font file that covers a
+   * range of weights. Setting a single value restricts the face to only that weight. Has no effect
+   * on native platforms, where only the first `fontDefinitions` entry of a given `fontFamily` can
+   * be loaded.
    * @platform web
    */
   weight?: number | string;
   /**
-   * Maps to the CSS `font-style` property. Has no effect on native platforms, where only the
-   * first `fontDefinitions` entry of a given `fontFamily` can be loaded.
-   * @default 'normal'
+   * Maps to the CSS `font-style` property. Leave unset for a variable font file that covers both
+   * upright and italic/oblique styles &mdash; setting a single value restricts the face to only
+   * that style. Has no effect on native platforms, where only the first `fontDefinitions` entry
+   * of a given `fontFamily` can be loaded.
    * @platform web
    */
   style?: 'normal' | 'italic' | 'oblique';

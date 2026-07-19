@@ -19,12 +19,12 @@ function uriFromFontSource(asset: FontSource): string | number | null {
   return null;
 }
 
-function displayFromFontSource(asset: FontSource): FontDisplay {
+function displayFromFontSource(asset: FontSource): FontDisplay | undefined {
   if (typeof asset === 'object' && 'display' in asset) {
-    return asset.display || FontDisplay.AUTO;
+    return asset.display ?? undefined;
   }
 
-  return FontDisplay.AUTO;
+  return undefined;
 }
 
 function testStringFromFontSource(asset: FontSource): string | undefined {
