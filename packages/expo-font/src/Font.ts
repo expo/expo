@@ -137,7 +137,10 @@ export function loadAsync(fontFamilyOrFontMap: FontMap, source?: FontSource): Pr
 }
 
 // Merges a face's `weight`/`style`/`display`/`testString` onto its `path`, falling back to
-// values already present on `path` when it's a `FontResource`-shaped object.
+// values already present on `path` when it's a `FontResource`-shaped object. `weight`/`style`
+// default to 400/"normal" so every face of a `FontFamilyDefinition` gets an unambiguous
+// `@font-face` rule on web, rather than leaving the descriptor out and relying on the browser's
+// own (unspecified, and inconsistent across engines) fallback for a missing weight/style.
 function fontSourceFromFace(face: FontFaceDefinition): FontSource {
   const { path, weight, style, display, testString } = face;
 
@@ -150,8 +153,8 @@ function fontSourceFromFace(face: FontFaceDefinition): FontSource {
 
   return {
     ...base,
-    weight: weight ?? base.weight,
-    style: style ?? base.style,
+    weight: weight ?? base.weight ?? 400,
+    style: style ?? base.style ?? 'normal',
     display: display ?? base.display,
     testString: testString ?? base.testString,
   };

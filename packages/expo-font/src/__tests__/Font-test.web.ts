@@ -101,12 +101,14 @@ if (typeof window === 'undefined') {
   });
 
   it('parses an array of font family definitions, loading every face', async () => {
+    // Mirrors a family with a regular, an italic, and a bold face where only the properties
+    // that differ from the default (weight 400, style "normal") are specified per face.
     await Font.loadAsync([
       {
         fontFamily: name,
         fontDefinitions: [
-          { path: 'regular.ttf', weight: 400 },
-          { path: 'italic.ttf', weight: 400, style: 'italic' },
+          { path: 'regular.ttf' },
+          { path: 'italic.ttf', style: 'italic' },
           { path: 'bold.ttf', weight: 800 },
         ],
       },
@@ -115,10 +117,13 @@ if (typeof window === 'undefined') {
     // All three faces must be registered; none should be skipped as an "already loaded"
     // duplicate of the shared `fontFamily` name.
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(3);
+    // `weight`/`style` default to 400/"normal" so every generated `@font-face` rule is
+    // unambiguous, even for faces that didn't specify one or the other.
     expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(1, name, {
       uri: 'regular.ttf',
       display: Font.FontDisplay.AUTO,
       weight: 400,
+      style: 'normal',
     });
     expect(ExpoFontLoader.loadAsync).toHaveBeenNthCalledWith(2, name, {
       uri: 'italic.ttf',
@@ -130,6 +135,7 @@ if (typeof window === 'undefined') {
       uri: 'bold.ttf',
       display: Font.FontDisplay.AUTO,
       weight: 800,
+      style: 'normal',
     });
 
     expect(Font.isLoaded(name)).toBe(true);

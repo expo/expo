@@ -51,6 +51,42 @@ describe('_createWebFontTemplate', () => {
       '@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-display:auto}'
     );
   });
+
+  it('reproduces the reported multi-face family output, one rule per face', () => {
+    // A "Wix Madefor Text" family with a regular, an italic, and a bold face, each defaulting
+    // weight/style to 400/"normal" when unset.
+    const regular = _createWebFontTemplate('Wix Madefor Text', {
+      uri: 'fonts/WixMadeforText-Regular.woff2',
+      display: FontDisplay.AUTO,
+      weight: 400,
+      style: 'normal',
+    });
+    const italic = _createWebFontTemplate('Wix Madefor Text', {
+      uri: 'fonts/WixMadeforText-Italic.woff2',
+      display: FontDisplay.AUTO,
+      weight: 400,
+      style: 'italic',
+    });
+    const bold = _createWebFontTemplate('Wix Madefor Text', {
+      uri: 'fonts/WixMadeforText-Bold.woff2',
+      display: FontDisplay.AUTO,
+      weight: 800,
+      style: 'normal',
+    });
+
+    expect(regular).toBe(
+      '@font-face{font-family:"Wix Madefor Text";src:url("fonts/WixMadeforText-Regular.woff2");font-display:auto;font-weight:400;font-style:normal}'
+    );
+    expect(italic).toBe(
+      '@font-face{font-family:"Wix Madefor Text";src:url("fonts/WixMadeforText-Italic.woff2");font-display:auto;font-weight:400;font-style:italic}'
+    );
+    expect(bold).toBe(
+      '@font-face{font-family:"Wix Madefor Text";src:url("fonts/WixMadeforText-Bold.woff2");font-display:auto;font-weight:800;font-style:normal}'
+    );
+    // Same family, three distinct rules — the browser can select the right face via
+    // font-weight/font-style instead of needing three unrelated fontFamily names.
+    expect(new Set([regular, italic, bold]).size).toBe(3);
+  });
 });
 
 describe('_matchesFontFaceOptions', () => {
