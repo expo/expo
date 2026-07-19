@@ -6,7 +6,7 @@ describe('buildFeedbackSection', () => {
 
 If you encounter errors, misleading or outdated information, report it so Expo can be improved:
 
-npx --yes submit-expo-feedback --category docs --subject "/skills/" "<actionable feedback>"
+npx --yes submit-expo-feedback@latest --category docs --subject "/skills/" "<actionable feedback>"
 
 Only submit when you have something specific and actionable to report. Try to give the most context.`);
   });

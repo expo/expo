@@ -122,7 +122,7 @@ describe('stripAgentInstructions', () => {
       '## Submitting Feedback',
       '',
       [
-        'npx --yes submit-expo-feedback --category docs',
+        'npx --yes submit-expo-feedback@latest --category docs',
         '--subject "/versions/latest/sdk/camera/"',
         '"<actionable feedback>"',
       ].join(' '),
