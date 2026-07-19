@@ -1,113 +1,142 @@
-import ExpoModulesTestCore
+import Testing
 
 @testable import ExpoModulesCore
 
-class PropertyDefinitionSpec: ExpoSpec {
-  override class func spec() {
-    describe("module property") {
-      let appContext = AppContext.create()
-      let runtime = try! appContext.runtime
+@Suite("PropertyDefinition")
+struct PropertyDefinitionTests {
+  @Suite("module property", .serialized)
+  @JavaScriptActor
+  struct ModulePropertyTests {
+    let appContext: AppContext
+    let runtime: ExpoRuntime
 
-      beforeSuite {
-        appContext.moduleRegistry.register(moduleType: PropertyTestModule.self, name: "PropertyTest")
-      }
-
-      it("gets read-only property") {
-        let value = try runtime.eval("expo.modules.PropertyTest.readOnly")
-        expect(value.getString()) == "foo"
-      }
-
-      it("gets writable property") {
-        let value = try runtime.eval("expo.modules.PropertyTest.writable")
-        expect(value.getInt()) == 444
-      }
-
-      it("sets writable property") {
-        try runtime.eval("expo.modules.PropertyTest.writable = 777")
-        let value = try runtime.eval("expo.modules.PropertyTest.writable")
-        expect(value.getInt()) == 777
-      }
-
-      it("is enumerable") {
-        let keys = try runtime.eval("Object.keys(expo.modules.PropertyTest)").getArray().map { $0.getString() }
-        expect(keys).to(contain("readOnly", "writable", "undefined"))
-      }
-
-// TODO: Using JavaScriptObject as the owner is no longer possible, but we may want to bring this feature back
-//      it("is called with the caller") {
-//        let value = try runtime?.eval("expo.modules.PropertyTest.withCaller")
-//        expect(value?.getString()) == "foo"
-//      }
-
-      it("returns undefined when getter is not specified") {
-        let value = try runtime.eval("expo.modules.PropertyTest.undefined")
-        expect(value.isUndefined()) == true
-      }
+    init() throws {
+      appContext = AppContext.create()
+      runtime = try appContext.runtime
+      appContext.moduleRegistry.register(moduleType: PropertyTestModule.self, name: "PropertyTest")
     }
 
-    describe("class property") {
-      let appContext = AppContext.create()
-      let runtime = try! appContext.runtime
+    @Test
+    func `gets read-only property`() throws {
+      let value = try runtime.eval("expo.modules.PropertyTest.readOnly")
+      #expect(value.getString() == "foo")
+    }
 
-      beforeSuite {
+    @Test
+    func `gets writable property`() throws {
+      let value = try runtime.eval("expo.modules.PropertyTest.writable")
+      #expect(value.getInt() == 444)
+    }
+
+    @Test
+    func `sets writable property`() throws {
+      try runtime.eval("expo.modules.PropertyTest.writable = 777")
+      let value = try runtime.eval("expo.modules.PropertyTest.writable")
+      #expect(value.getInt() == 777)
+    }
+
+    @Test
+    func `is enumerable`() throws {
+      let keys = try runtime.eval("Object.keys(expo.modules.PropertyTest)").getArray().map { $0.getString() }
+      #expect(keys.contains("readOnly") && keys.contains("writable") && keys.contains("undefined"))
+    }
+
+// TODO: Using JavaScriptObject as the owner is no longer possible, but we may want to bring this feature back
+//    @Test
+//    func `is called with the caller`() throws {
+//      let value = try runtime.eval("expo.modules.PropertyTest.withCaller")
+//      #expect(value.getString() == "foo")
+//    }
+
+    @Test
+    func `returns undefined when getter is not specified`() throws {
+      let value = try runtime.eval("expo.modules.PropertyTest.undefined")
+      #expect(value.isUndefined() == true)
+    }
+  }
+
+  @Suite("class property", .serialized)
+  @JavaScriptActor
+  struct ClassPropertyTests {
+    let appContext: AppContext
+    let runtime: ExpoRuntime
+
+    init() throws {
+      appContext = AppContext.create()
+      runtime = try appContext.runtime
+      appContext.moduleRegistry.register(moduleType: PropertyTestModule.self, name: "PropertyTest")
+    }
+
+    @Test
+    func `gets the value`() throws {
+      let value = try runtime.eval("new expo.modules.PropertyTest.TestClass().someValue")
+
+      #expect(value.kind == .number)
+      #expect(value.getInt() == TestClass.constantValue)
+    }
+
+    @Test
+    func `sets the value`() throws {
+      let newValue = Int.random(in: 1..<100)
+      let value = try runtime.eval([
+        "object = new expo.modules.PropertyTest.TestClass()",
+        "object.someValue = \(newValue)",
+        "object.someValue"
+      ])
+
+      #expect(value.kind == .number)
+      #expect(value.getInt() == newValue)
+    }
+
+    // Tests for accessing shared object properties through KeyPath and ReferenceWritableKeyPath
+    @Suite("key path", .serialized)
+    @JavaScriptActor
+    struct KeyPathTests {
+      let appContext: AppContext
+      let runtime: ExpoRuntime
+
+      init() throws {
+        appContext = AppContext.create()
+        runtime = try appContext.runtime
         appContext.moduleRegistry.register(moduleType: PropertyTestModule.self, name: "PropertyTest")
       }
 
-      it("gets the value") {
-        let value = try runtime.eval("new expo.modules.PropertyTest.TestClass().someValue")
-
-        expect(value.kind) == .number
-        expect(value.getInt()) == TestClass.constantValue
-      }
-
-      it("sets the value") {
-        let newValue = Int.random(in: 1..<100)
+      @Test
+      func `gets immutable property`() throws {
         let value = try runtime.eval([
           "object = new expo.modules.PropertyTest.TestClass()",
-          "object.someValue = \(newValue)",
-          "object.someValue"
+          "object.immutableKeyPathProperty"
         ])
 
-        expect(value.kind) == .number
-        expect(value.getInt()) == newValue
+        #expect(value.kind == .number)
+        #expect(value.getInt() == TestClass.constantValue)
       }
 
-      // Tests for accessing shared object properties through KeyPath and ReferenceWritableKeyPath
-      describe("key path") {
-        it("gets immutable property") {
-          let value = try runtime.eval([
-            "object = new expo.modules.PropertyTest.TestClass()",
-            "object.immutableKeyPathProperty"
-          ])
+      @Test
+      func `cannot set immutable property`() throws {
+        let newValue = Int.random(in: 100..<200)
+        let value = try runtime.eval([
+          "object = new expo.modules.PropertyTest.TestClass()",
+          "object.immutableKeyPathProperty = \(newValue)",
+          "object.immutableKeyPathProperty"
+        ])
 
-          expect(value.kind) == .number
-          expect(value.getInt()) == TestClass.constantValue
-        }
+        // Returned value didn't change, it doesn't equal to `newValue`
+        #expect(value.kind == .number)
+        #expect(value.getInt() == TestClass.constantValue)
+      }
 
-        it("cannot set immutable property") {
-          let newValue = Int.random(in: 100..<200)
-          let value = try runtime.eval([
-            "object = new expo.modules.PropertyTest.TestClass()",
-            "object.immutableKeyPathProperty = \(newValue)",
-            "object.immutableKeyPathProperty"
-          ])
+      @Test
+      func `sets mutable property`() throws {
+        let newValue = Int.random(in: 100..<200)
+        let value = try runtime.eval([
+          "object = new expo.modules.PropertyTest.TestClass()",
+          "object.mutableKeyPathProperty = \(newValue)",
+          "object.mutableKeyPathProperty"
+        ])
 
-          // Returned value didn't change, it doesn't equal to `newValue`
-          expect(value.kind) == .number
-          expect(value.getInt()) == TestClass.constantValue
-        }
-
-        it("sets mutable property") {
-          let newValue = Int.random(in: 100..<200)
-          let value = try runtime.eval([
-            "object = new expo.modules.PropertyTest.TestClass()",
-            "object.mutableKeyPathProperty = \(newValue)",
-            "object.mutableKeyPathProperty"
-          ])
-
-          expect(value.kind) == .number
-          expect(value.getInt()) == newValue
-        }
+        #expect(value.kind == .number)
+        #expect(value.getInt() == newValue)
       }
     }
   }

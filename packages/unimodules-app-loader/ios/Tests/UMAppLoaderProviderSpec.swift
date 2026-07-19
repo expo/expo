@@ -1,13 +1,11 @@
-import ExpoModulesTestCore
+import Testing
 
 @testable import UMAppLoader
 
-class UMAppLoaderProviderSpec: ExpoSpec {
-  override class func spec() {
-    describe("UMAppLoaderProvider") {
-      it("exposes a shared singleton") {
-        expect(UMAppLoaderProvider.sharedInstance()).notTo(beNil())
-      }
-    }
+@Suite("UMAppLoaderProvider")
+struct UMAppLoaderProviderTests {
+  @Test
+  func `exposes a shared singleton`() {
+    #expect(UMAppLoaderProvider.sharedInstance() != nil)
   }
 }

@@ -1,13 +1,11 @@
-import ExpoModulesTestCore
+import Testing
 
 @testable import ExpoTaskManager
 
-class EXTaskServiceSpec: ExpoSpec {
-  override class func spec() {
-    describe("EXTaskService") {
-      it("exposes a shared singleton") {
-        expect(EXTaskService.shared).notTo(beNil())
-      }
-    }
+@Suite("EXTaskService")
+struct EXTaskServiceTests {
+  @Test
+  func `exposes a shared singleton`() {
+    #expect(EXTaskService.shared != nil)
   }
 }
