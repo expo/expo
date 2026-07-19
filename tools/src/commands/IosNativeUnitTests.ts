@@ -249,17 +249,27 @@ export async function iosNativeUnitTests({
   // An explicit `--packages` list takes precedence over affected-packages detection.
   let affectedFilter: Set<string> | null = null;
   if (affected && !packageNamesFilter.length) {
-    const result = await getAffectedPackagesAsync({
-      scmBase: since,
-      infraPathPatterns: INFRA_PATH_PATTERNS,
-    });
-    if (result.type === 'infra-changed') {
+    try {
+      const result = await getAffectedPackagesAsync({
+        scmBase: since,
+        infraPathPatterns: INFRA_PATH_PATTERNS,
+      });
+      if (result.type === 'infra-changed') {
+        console.log(
+          `Test infrastructure changed (${chalk.bold(result.changedFile)}) — running all iOS unit tests.\n`
+        );
+      } else {
+        affectedFilter = result.packageNames;
+        console.log(`Testing only packages affected since ${chalk.bold(since)}.\n`);
+      }
+    } catch (error: any) {
+      // Fail open: when the detection itself breaks (e.g. the merge base is unreachable in
+      // a shallow clone), running everything is always correct — just slower.
       console.log(
-        `Test infrastructure changed (${chalk.bold(result.changedFile)}) — running all iOS unit tests.\n`
+        chalk.yellow(
+          `Couldn't determine affected packages (${error.message?.trim()}) — running all iOS unit tests.\n`
+        )
       );
-    } else {
-      affectedFilter = result.packageNames;
-      console.log(`Testing only packages affected since ${chalk.bold(since)}.\n`);
     }
   }
 
