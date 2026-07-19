@@ -1,5 +1,15 @@
 import ExpoModulesJSI
+import Foundation
 import Testing
+
+/// A `JavaScriptEncodable` whose `encode` always throws, for exercising the encodable `resolve`'s
+/// encode-failure path.
+private struct FailingEncodable: JavaScriptEncodable {
+  struct EncodingError: Error {}
+  static func encode(_ value: FailingEncodable, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    throw EncodingError()
+  }
+}
 
 @Suite
 @JavaScriptActor
@@ -31,6 +41,45 @@ struct JavaScriptPromiseTests {
 
     let result = try await promise.await()
     #expect(result.getInt() == 42)
+  }
+
+  @Test
+  func `resolve with a both-conforming value keeps its representable type`() async throws {
+    // A 64-bit integer conforms to both `JavaScriptRepresentable` and `JavaScriptEncodable`. The
+    // encodable overload is disfavored, so it resolves through the representable path and stays a JS
+    // `number`, rather than encoding to a `bigint` (`Int64.encode`) or rejecting for exceeding the
+    // safe-integer range (`Int.encode`).
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(Int64(42))
+    let result = try await promise.await()
+    #expect(result.isNumber())
+    #expect(result.getInt() == 42)
+  }
+
+  @Test
+  func `resolve promise with an encodable-only value`() async throws {
+    // `Date` is `JavaScriptEncodable` but not `JavaScriptRepresentable`, so it can only settle the
+    // promise through the encodable overload. It encodes to a JS `Date`.
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    let date = Date(timeIntervalSince1970: 1000)
+    promise.resolve(date)
+    let result = try await promise.await()
+    let milliseconds = try result.getObject().callFunction("getTime").asDouble()
+    #expect(milliseconds == 1_000_000)
+  }
+
+  @Test
+  func `resolve rejects the promise when encoding throws`() async throws {
+    // The encodable `resolve` encodes on the JavaScript thread; if that throws, the promise must
+    // reject with the thrown error rather than fulfill.
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(FailingEncodable())
+    await #expect(throws: Error.self) {
+      try await promise.await()
+    }
   }
 
   @Test
