@@ -121,7 +121,7 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] removed fix for FB 54066 which is now merged and ready to be used. Introduced in #40219. ([#44290](https://github.com/expo/expo/pull/44290) by [@chrfalch](https://github.com/chrfalch))
 - Add `package.json:exports` with no-op reexport paths ([#44002](https://github.com/expo/expo/pull/44002) by [@kitten](https://github.com/kitten), [@hassankhan](https://github.com/hassankhan))
-- [iOS] Add early escape in generateModulesProviderAsync to avoid touching files that hasn't changed ([#44289](https://github.com/expo/expo/pull/44289) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add early escape in generateModulesProviderAsync to avoid touching files that haven't changed ([#44289](https://github.com/expo/expo/pull/44289) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Added `@OptimizedFunction` macros support for Expo modules. ([#44262](https://github.com/expo/expo/pull/44262) by [@kudo](https://github.com/kudo))
 - [iOS] Add more detailed warnings when a package is not linked due to a mismatch between project and package deployment target. ([#44200](https://github.com/expo/expo/pull/44200) by [@behenate](https://github.com/behenate))
 - Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
@@ -421,7 +421,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Improved error message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
 - Prevent Expo Modules from being detected as C++-only React Native modules ([#38658](https://github.com/expo/expo/pull/38658) by [@kitten](https://github.com/kitten))
 - Ignore optional peer dependencies in dependency traversal ([#38713](https://github.com/expo/expo/pull/38713) by [@kitten](https://github.com/kitten))
 
@@ -623,7 +623,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
+- Removed `expo_patch_react_imports!` and align more standard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
 - Exported a new `findProjectRootSync` API. ([#31966](https://github.com/expo/expo/pull/31966) by [@kudo](https://github.com/kudo))
 
 ## 1.11.2 - 2024-08-14
