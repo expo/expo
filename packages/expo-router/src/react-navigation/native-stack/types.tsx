@@ -1215,6 +1215,23 @@ export type NativeStackHeaderItem =
   | NativeStackHeaderItemSpacing
   | NativeStackHeaderItemCustom;
 
+export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
+
+export type NativeStackViewEmit = (
+  event:
+    | {
+        type: 'transitionStart' | 'transitionEnd';
+        target?: string;
+        data: { closing: boolean };
+      }
+    | { type: 'gestureCancel'; target?: string; data?: undefined }
+    | {
+        type: 'sheetDetentChange';
+        target?: string;
+        data: { index: number; stable: boolean };
+      }
+) => void;
+
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<
   ParamListBase,
   string | undefined,
