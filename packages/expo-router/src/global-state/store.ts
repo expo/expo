@@ -20,6 +20,9 @@ type StoreRef = {
   navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   routeNode: RouteNode | null;
   rootComponent: ComponentType<any>;
+  // Pre-mount seed only: the compiled initial state `useSyncState` initialises from (via
+  // `getSeedState`). Once the container mounts, `store.state` reads the live committed state from
+  // `navigationRef.getRootState()` and never consults this field again — it is not a state mirror.
   state?: ReactNavigationState;
   linking?: ExpoLinkingOptions;
   config: any;
@@ -80,7 +83,14 @@ export const store = {
   shouldShowTutorial() {
     return !storeRef.current.routeNode && process.env.NODE_ENV === 'development';
   },
-  get state() {
+  get state(): ReactNavigationState | undefined {
+    // Single source of truth: the committed container store, read live through the navigation ref.
+    // Before the container mounts (its ref isn't attached yet) there is nothing to read, so fall
+    // back to the compiled seed — the state `useSyncState` will initialise the container from.
+    const { navigationRef } = storeRef.current;
+    if (navigationRef?.current != null) {
+      return navigationRef.getRootState() as ReactNavigationState | undefined;
+    }
     return storeRef.current.state;
   },
   // Readiness gate: while the initial URL is still resolving there is no seed to render, so
@@ -127,8 +137,8 @@ export const store = {
       assertStateIsComplete(newState);
     }
 
-    storeRef.current.state = newState;
-
+    // `store.state` reads the committed state live, so this only derives the route info off the new
+    // commit (and notifies its subscribers) — it does not mirror the state.
     storeRef.current.routeInfo = getCachedRouteInfo(newState);
 
     for (const callback of routeInfoSubscribers) {

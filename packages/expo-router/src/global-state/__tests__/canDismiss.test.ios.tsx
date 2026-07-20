@@ -13,14 +13,15 @@ import { renderRouter } from '../../testing-library';
  * `canDismiss()` was `true`.
  */
 
-/** Deep-equality proxy: dismiss changed the state iff this snapshot differs afterwards. */
-const snapshot = () => JSON.stringify(store.state);
+// Read the committed navigation state directly — the same source `canDismiss()` simulates against.
+const committedState = () => store.navigationRef.current?.getRootState();
 
 function expectDismissMatchesCanDismiss() {
   const canDismiss = router.canDismiss();
-  const before = snapshot();
-  // When the POP isn't handled, the store rethrows the unhandled-action warning (test env only).
-  // Either way the state must be unchanged, so swallow it and rely on the snapshot comparison.
+  const before = JSON.stringify(committedState());
+  // When the POP isn't handled, the store rethrows the unhandled-action warning (test env only;
+  // production just logs it). That rethrow tears the container down, so an unhandled dismiss ends
+  // with no committed state at all — which is still "no state change", since nothing was reduced.
   try {
     act(() => router.dismiss());
   } catch (e) {
@@ -28,7 +29,8 @@ function expectDismissMatchesCanDismiss() {
       throw e;
     }
   }
-  const changed = snapshot() !== before;
+  const after = committedState();
+  const changed = after != null && JSON.stringify(after) !== before;
   expect(changed).toBe(canDismiss);
   return canDismiss;
 }

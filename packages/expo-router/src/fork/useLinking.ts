@@ -309,25 +309,16 @@ export function useLinking(
       getPathFromStateRef.current(state, configRef.current);
 
     if (ref.current) {
-      // We need to record the current metadata on the first render if they aren't set
-      // This will allow the initial state to be in the history entry
-
-      // START FORK
-      // Instead of using the rootState (which might be stale) we should use the focused state
-      // const state = ref.current.getRootState();
-      const rootState = ref.current.getRootState();
+      // Record the current metadata on the first render so the initial state lands in the history
+      // entry. `store.state` is the single committed source (a live read of `getRootState()`), so
+      // there is no separate root/focused read to reconcile here.
       const state = store.state as NavigationState;
-
-      // END FORK
 
       if (state) {
         const path = getPathForState(state);
 
         if (previousStateRef.current === undefined) {
-          // START FORK
-          // previousStateRef.current = state;
-          previousStateRef.current = rootState;
-          // END FORK
+          previousStateRef.current = state;
         }
 
         history.replace({ path, state });
@@ -342,15 +333,9 @@ export function useLinking(
       }
 
       const previousState = previousStateRef.current;
-      // START FORK
-      // Instead of using the rootState (which might be stale) we should use the focused state
-      // const state = navigation.getRootState();
-      const rootState = navigation.getRootState();
       const state = store.state as NavigationState;
 
-      // END FORK
-
-      // root state may not available, for example when root navigators switch inside the container
+      // root state may not be available, for example when root navigators switch inside the container
       if (!state) {
         return;
       }
@@ -358,10 +343,7 @@ export function useLinking(
       const pendingPath = pendingPopStatePathRef.current;
       const path = getPathForState(state);
 
-      // START FORK
-      // previousStateRef.current = state;
-      previousStateRef.current = rootState;
-      // END FORK
+      previousStateRef.current = state;
       pendingPopStatePathRef.current = undefined;
 
       // To detect the kind of state change, we need to:
