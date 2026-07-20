@@ -76,3 +76,36 @@ test('cold deep-link into a nested stack tab of NativeTabs', () => {
 
   expect(screen).toHaveSegments(['tabs', 'faces', '[face]']);
 });
+
+// Switching to a tab that was never focused must not crash: the tab was committed with its compiled
+// subtree by the PRELOAD wire (Step 6), so first-visit no longer relies on the removed self-seed.
+test('switching to a never-focused tab commits its subtree', () => {
+  renderRouter(nestedTabsApp, { initialUrl: '/tabs/faces/1' });
+  expect(screen).toHaveSegments(['tabs', 'faces', '[face]']);
+
+  act(() => router.navigate('/tabs/dynamic'));
+
+  expect(screen).toHaveSegments(['tabs', 'dynamic']);
+  expect(screen.getByTestId('tabs-dynamic')).toBeVisible();
+});
+
+// GO_BACK ascends across navigator boundaries one level at a time: from the nested leaf, backing out
+// pops the faces Stack, then the NativeTabs, then the root Stack — back to the root screen.
+test('backing out ascends across navigator boundaries (faces Stack → NativeTabs → root Stack)', () => {
+  renderRouter(nestedTabsApp, { initialUrl: '/' });
+  expect(screen.getByTestId('home')).toBeVisible();
+
+  act(() => router.push('/tabs'));
+  act(() => router.push('/tabs/faces/1'));
+  expect(screen).toHavePathname('/tabs/faces/1');
+
+  act(() => router.back()); // faces Stack: [face] → faces index
+  expect(screen).toHavePathname('/tabs/faces');
+
+  act(() => router.back()); // ascend faces Stack → NativeTabs
+  expect(screen).toHavePathname('/tabs');
+
+  act(() => router.back()); // ascend NativeTabs → root Stack
+  expect(screen).toHavePathname('/');
+  expect(router.canGoBack()).toBe(false);
+});
