@@ -8,8 +8,6 @@ import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.services.FilePermissionService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
 import java.security.MessageDigest
 
@@ -204,29 +202,26 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     return file.type
   }
 
-  suspend fun info(options: InfoOptions?): FileInfo {
+  fun info(options: InfoOptions?): FileInfo {
     validateType()
     validatePermission(FilePermissionService.Permission.READ)
-
-    return withContext(Dispatchers.IO) {
-      if (!file.exists()) {
-        val fileInfo = FileInfo(
-          exists = false,
-          uri = slashifyFilePath(file.uri.toString())
-        )
-        return@withContext fileInfo
-      }
+    if (!file.exists()) {
       val fileInfo = FileInfo(
-        exists = true,
-        uri = slashifyFilePath(file.uri.toString()),
-        size = size,
-        modificationTime = modificationTime,
-        creationTime = creationTime
+        exists = false,
+        uri = slashifyFilePath(file.uri.toString())
       )
-      if (options != null && options.md5 == true) {
-        fileInfo.md5 = md5
-      }
-      return@withContext fileInfo
+      return fileInfo
     }
+    val fileInfo = FileInfo(
+      exists = true,
+      uri = slashifyFilePath(file.uri.toString()),
+      size = size,
+      modificationTime = modificationTime,
+      creationTime = creationTime
+    )
+    if (options != null && options.md5 == true) {
+      fileInfo.md5 = md5
+    }
+    return fileInfo
   }
 }

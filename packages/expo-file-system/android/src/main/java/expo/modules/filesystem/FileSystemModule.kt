@@ -226,13 +226,13 @@ class FileSystemModule : Module() {
       }
 
       AsyncFunction("info") Coroutine { file: FileSystemFile, options: InfoOptions? ->
-        file.info(options)
+        withContext(Dispatchers.IO) {
+          file.info(options)
+        }
       }
 
       Function("infoSync") { file: FileSystemFile, options: InfoOptions? ->
-        runBlocking {
-          file.info(options)
-        }
+        file.info(options)
       }
 
       AsyncFunction("getMd5Async") Coroutine { file: FileSystemFile ->
