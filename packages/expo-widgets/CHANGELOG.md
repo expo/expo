@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix blank widget when JSX children mix a `.map()` array with sibling elements. ([#47888](https://github.com/expo/expo/pull/47888) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 57.0.10 — 2026-08-14
