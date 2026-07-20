@@ -16,7 +16,6 @@ import {
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
-  type PartialState,
   RECONCILE_ROUTE_NAMES,
   type Route,
   type Router,
@@ -454,21 +453,13 @@ export function useNavigationBuilder<
 
   const key = currentState?.key;
 
+  const reducerRegistry = use(ReducerRegistryContext);
+
   const previousRouteKeyListRef = React.useRef(routeKeyList);
   const previousRouteKeyList = previousRouteKeyListRef.current;
   const routeKeyChanges = Object.keys(routeKeyList).filter(
     (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
   );
-
-  // An unhandled state is a captured NAVIGATE/RESET target whose routes were all invalid for this
-  // navigator (see `onUnhandledAction` below). We store it so `lastUnhandled` can restore it once
-  // the route names change to include those routes.
-  const [unhandledState, setUnhandledState] = React.useState<
-    NavigationState | PartialState<NavigationState> | undefined
-  >(undefined);
-  const unhandledStateRef = React.useRef<
-    NavigationState | PartialState<NavigationState> | undefined
-  >(undefined);
 
   const storeSlice = useStoreSlice(key);
   // Prefer the subscribed store slice. Fall back to the slice the parent handed down (covers a
@@ -581,7 +572,7 @@ export function useNavigationBuilder<
   const needsRouteNamesReconcile =
     !isArrayEqual(reconciliationState.routeNames, routeNames) ||
     !isRecordEqual(routeKeyList, previousRouteKeyList);
-  const pendingUnhandledState = unhandledStateRef.current ?? unhandledState;
+  const pendingUnhandledState = reducerRegistry?.getEntry(state.key)?.unhandledState;
   const shouldRestoreUnhandledState =
     options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
     pendingUnhandledState?.routes.every((r) => routeNames.includes(r.name)) &&
@@ -597,7 +588,7 @@ export function useNavigationBuilder<
       typeof action.payload.name === 'string' &&
       !routeNames.includes(action.payload.name)
     ) {
-      const state = {
+      const unhandledState = {
         routes: [
           {
             name: action.payload.name,
@@ -611,14 +602,18 @@ export function useNavigationBuilder<
         ],
       };
 
-      unhandledStateRef.current = state;
-      setUnhandledState(state);
+      // Persist on the registry entry (looked up live: `onUnhandledAction` fires during a dispatch,
+      // after this navigator has registered). Restored by the layout effect below once the route
+      // names change to include the captured routes.
+      const entry = reducerRegistry?.getEntry(state.key);
+      if (entry) {
+        entry.unhandledState = unhandledState;
+      }
     }
 
     onUnhandledActionParent?.(action);
   });
 
-  const reducerRegistry = use(ReducerRegistryContext);
   const registryReducer = React.useCallback<NavigationReducer>(
     (state, action) =>
       router.getStateForAction(
@@ -640,7 +635,11 @@ export function useNavigationBuilder<
           action
         ),
       onUnhandledAction,
+      // Carry a captured `unhandledState` across entry re-creation so a pending `lastUnhandled`
+      // restore survives an unrelated dep change between capture and the route-names change.
+      unhandledState: reducerRegistry?.getEntry(state.key)?.unhandledState,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [emitter, keyedListeners.beforeRemove, onUnhandledAction, registryReducer, router]
   );
   const backBehavior = (rest as { backBehavior?: unknown }).backBehavior;
@@ -683,8 +682,10 @@ export function useNavigationBuilder<
       previousRouteKeyListRef.current = routeKeyList;
 
       if (shouldRestoreUnhandledState) {
-        unhandledStateRef.current = undefined;
-        setUnhandledState(undefined);
+        const entry = reducerRegistry?.getEntry(state.key);
+        if (entry) {
+          entry.unhandledState = undefined;
+        }
       }
     }
   });

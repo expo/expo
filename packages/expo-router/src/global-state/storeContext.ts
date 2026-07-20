@@ -22,6 +22,11 @@ export type NavigatorRegistryEntry = {
     action: NavigationAction
   ) => boolean;
   onUnhandledAction?: (action: NavigationAction) => void;
+  // Last NAVIGATE/RESET target this navigator couldn't handle (its routes weren't yet valid), held
+  // for `UNSTABLE_routeNamesChangeBehavior: 'lastUnhandled'` to restore once the route names change
+  // to include those routes. Lives on the registry entry rather than in builder component state, so
+  // the store/registry stays the single home for per-navigator navigation data.
+  unhandledState?: NavigationState | PartialState<NavigationState>;
 };
 
 export type ReducerRegistry = {
