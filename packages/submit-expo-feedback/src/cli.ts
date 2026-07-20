@@ -8,6 +8,7 @@ import { existsSync, readFileSync } from 'fs';
 import { homedir } from 'os';
 import path from 'path';
 import prompts from 'prompts';
+import { detectSandbox } from 'sandbox-cli-detector';
 
 const CLI_NAME = 'submit-expo-feedback';
 const FEEDBACK_TIMEOUT_MS = 15_000;
@@ -40,6 +41,7 @@ type FeedbackMetadata = {
     version: string;
   };
   agentEnvironment: ReturnType<typeof getAgentEnvironment>;
+  sandboxEnvironment: ReturnType<typeof getSandboxEnvironment>;
   ci?: {
     name: string | null;
     isPr: boolean | null;
@@ -124,7 +126,7 @@ async function runAsync(): Promise<void> {
 
   console.log(
     chalk.dim(
-      'Submitting feedback with available agent, environment, project, and Expo account metadata.'
+      'Submitting feedback with available agent, sandbox, environment, project, and Expo account metadata.'
     )
   );
   await sendFeedbackAsync({
@@ -201,6 +203,7 @@ export async function createFeedbackMetadataAsync(
       version: getPackageVersion(),
     },
     agentEnvironment: getAgentEnvironment(),
+    sandboxEnvironment: getSandboxEnvironment(),
     ci: ciInfo.isCI
       ? {
           name: ciInfo.name ?? null,
@@ -226,6 +229,15 @@ function getAgentEnvironment() {
   return {
     detected: result.detected,
     agent: result.agent,
+  };
+}
+
+function getSandboxEnvironment() {
+  const result = detectSandbox();
+
+  return {
+    detected: result.detected,
+    sandbox: result.sandbox,
   };
 }
 
@@ -446,8 +458,8 @@ function printHelp(): void {
     Send feedback to the Expo team. If no message is provided, you will be prompted.
 
   {bold Data collection}
-    Feedback includes available agent/session identifiers, environment details,
-    Expo project metadata, and Expo account identifiers.
+    Feedback includes available agent/session identifiers, sandbox and environment
+    details, Expo project metadata, and Expo account identifiers.
 
   {bold Options}
     --category, -c <category>  Feedback category (${FEEDBACK_CATEGORIES.join(', ')})
