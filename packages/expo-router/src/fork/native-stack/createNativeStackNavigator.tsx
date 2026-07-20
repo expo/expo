@@ -26,6 +26,7 @@ import {
   type NativeStackNavigationProp,
   NativeStackView,
   type NativeStackNavigatorProps,
+  makePopAction,
 } from '../../react-navigation/native-stack';
 import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
 import { DescriptorsContext } from './descriptors-context';
@@ -64,7 +65,12 @@ function NativeStackNavigator({
     UNSTABLE_router,
   });
 
-  useClearGuardedRoutes(state, navigation);
+  const removeRoutesFromState = React.useCallback(
+    (routeNames: string[]) =>
+      navigation.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
+    [navigation]
+  );
+  useClearGuardedRoutes(removeRoutesFromState);
 
   React.useEffect(
     () =>
@@ -104,6 +110,8 @@ function NativeStackNavigator({
     descriptors,
     describe
   );
+
+  const pop = makePopAction(navigation.dispatch, state.key);
 
   // Map internal gesture option to React Navigation's gestureEnabled option
   // This allows Expo Router to override gesture behavior without affecting user settings
@@ -154,8 +162,9 @@ function NativeStackNavigator({
             {...rest}
             // START FORK
             state={computedState}
-            navigation={navigationWrapper}
             descriptors={mergedDescriptors}
+            emit={navigationWrapper.emit}
+            pop={pop}
             // state={state}
             // navigation={navigation}
             // descriptors={descriptors}

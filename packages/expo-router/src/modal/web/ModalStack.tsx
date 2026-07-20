@@ -22,7 +22,7 @@ import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '../../react-navigation/native-stack';
-import { NativeStackView } from '../../react-navigation/native-stack';
+import { makePopAction, NativeStackView } from '../../react-navigation/native-stack';
 import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
 import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
 import type { ModalStackNavigatorProps, ModalStackViewProps } from './types';
@@ -100,6 +100,8 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
     index: nonModalIndex,
   };
 
+  const pop = makePopAction(navigation.dispatch, state.key);
+
   const dismiss = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
@@ -114,9 +116,10 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
     <div style={{ flex: 1, display: 'flex' }}>
       <NativeStackView
         state={newStackState}
-        navigation={navigation}
         descriptors={descriptors}
         describe={describe}
+        emit={navigation.emit}
+        pop={pop}
       />
       {isWeb &&
         overlayRoutes.map((route) => {

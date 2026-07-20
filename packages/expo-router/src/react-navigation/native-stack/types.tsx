@@ -1204,6 +1204,8 @@ export type NativeStackHeaderItem =
   | NativeStackHeaderItemSpacing
   | NativeStackHeaderItemCustom;
 
+export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
+
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<
   ParamListBase,
   string | undefined,

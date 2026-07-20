@@ -46,6 +46,10 @@ export type StackActionType =
       };
       source?: string;
       target?: string;
+    }
+  | {
+      type: 'REMOVE_ROUTES';
+      payload: { routeNames: string[] };
     };
 
 export type StackRouterOptions = DefaultRouterOptions;
@@ -520,6 +524,24 @@ export function StackRouter(options: StackRouterOptions) {
               ...state.routes.slice(0, index),
               params !== route.params ? { ...route, params } : state.routes[index]!,
             ],
+          };
+        }
+
+        case 'REMOVE_ROUTES': {
+          const focusedRoute = state.routes[state.index]!;
+          const routes = state.routes.filter(
+            (route) =>
+              route.key === focusedRoute.key || !action.payload.routeNames.includes(route.name)
+          );
+
+          if (routes.length === state.routes.length) {
+            return state;
+          }
+
+          return {
+            ...state,
+            index: routes.findIndex((route) => route.key === focusedRoute.key),
+            routes,
           };
         }
 

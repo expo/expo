@@ -23,6 +23,7 @@ import type {
   NativeStackNavigationProp,
   NativeStackNavigatorProps,
 } from '../types';
+import { makePopAction } from '../utils/makePopAction';
 import { NativeStackView } from '../views/NativeStackView';
 
 function NativeStackNavigator({
@@ -83,14 +84,17 @@ function NativeStackNavigator({
     });
   }, [meta, navigation, state.index, state.key]);
 
+  const pop = makePopAction(navigation.dispatch, state.key);
+
   return (
     <NavigationContent>
       <NativeStackView
         {...rest}
         state={state}
-        navigation={navigation}
         descriptors={descriptors}
         describe={describe}
+        emit={navigation.emit}
+        pop={pop}
       />
     </NavigationContent>
   );
