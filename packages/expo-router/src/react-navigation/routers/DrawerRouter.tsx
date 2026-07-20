@@ -7,7 +7,7 @@ import {
 } from './TabRouter';
 import { asFocusChildAction } from './focusChild';
 import { asReconcileRouteNamesAction, isUnhandledStateRestore } from './reconcileRouteNames';
-import type { CommonNavigationAction, InternalRouter, ParamListBase } from './types';
+import type { CommonNavigationAction, ParamListBase, Router } from './types';
 
 export type DrawerStatus = 'open' | 'closed';
 
@@ -76,7 +76,7 @@ function withDrawerStatus<State extends TabNavigationState<ParamListBase>>(
 export function DrawerRouter({
   defaultStatus = 'closed',
   ...options
-}: DrawerRouterOptions): InternalRouter<
+}: DrawerRouterOptions): Router<
   DrawerNavigationState<ParamListBase>,
   DrawerActionType | CommonNavigationAction
 > {

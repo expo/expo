@@ -12,12 +12,12 @@ import { asReconcileRouteNamesAction, isUnhandledStateRestore } from './reconcil
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
-  InternalRouter,
   NavigationRoute,
   NavigationState,
   ParamListBase,
   PartialState,
   Route,
+  Router,
   RouterConfigOptions,
 } from './types';
 
@@ -324,7 +324,7 @@ export function StackRouter(options: StackRouterOptions) {
     };
   }
 
-  const router: InternalRouter<State, CommonNavigationAction | StackActionType> = {
+  const router: Router<State, CommonNavigationAction | StackActionType> = {
     ...BaseRouter,
 
     getStateForAction(state, action, options) {

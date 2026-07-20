@@ -2,7 +2,7 @@ import {
   BaseRouter,
   type CommonNavigationAction,
   type DefaultRouterOptions,
-  type InternalRouter,
+  type Router,
   asFocusChildAction,
   asReconcileRouteNamesAction,
   isUnhandledStateRestore,
@@ -130,7 +130,7 @@ export function MockRouter(options: DefaultRouterOptions) {
     return { ...state, index };
   }
 
-  const router: InternalRouter<NavigationState, MockActions> = {
+  const router: Router<NavigationState, MockActions> = {
     getStateForAction(state, action, options) {
       const reconcile = asReconcileRouteNamesAction(action);
       if (reconcile) {

@@ -13,13 +13,13 @@ import {
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
-  type InternalRouter,
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
   type PartialState,
   RECONCILE_ROUTE_NAMES,
   type Route,
+  type Router,
   type RouterConfigOptions,
   type RouterFactory,
 } from '../routers';
@@ -376,7 +376,7 @@ export function useNavigationBuilder<
 
   const routeConfigs = getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(children);
 
-  const router = useLazyValue<InternalRouter<State, any>>(() => {
+  const router = useLazyValue<Router<State, any>>(() => {
     if (
       rest.initialRouteName != null &&
       routeConfigs.every((config) => config.props.name !== rest.initialRouteName)
@@ -386,7 +386,7 @@ export function useNavigationBuilder<
       );
     }
 
-    const original = createRouter(rest as unknown as RouterOptions) as InternalRouter<State, any>;
+    const original = createRouter(rest as unknown as RouterOptions) as Router<State, any>;
 
     if (UNSTABLE_router != null) {
       const overrides = UNSTABLE_router(original);

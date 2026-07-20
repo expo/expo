@@ -6,7 +6,7 @@ import {
   type DefaultRouterOptions,
   type NavigationState,
   type ParamListBase,
-  type InternalRouter,
+  type Router,
   StackRouter,
   TabRouter,
 } from '../../routers';
@@ -105,7 +105,7 @@ test('throws when nesting containers', () => {
 test('handle dispatching with ref', () => {
   function CurrentRootRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const RootRouter: InternalRouter<NavigationState, MockActions | { type: 'REVERSE' }> = {
+    const RootRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       getStateForAction(state, action, options) {

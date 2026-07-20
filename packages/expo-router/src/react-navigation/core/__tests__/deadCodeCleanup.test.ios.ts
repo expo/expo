@@ -1,6 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
+import type { NavigationAction, NavigationState, Router } from '../../routers';
+
+// Exact type-equality: true only when `A` and `B` are structurally identical.
+type Equals<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
+
 const coreDir = path.join(__dirname, '..');
 const routersDir = path.join(__dirname, '..', '..', 'routers');
 const globalStateDir = path.join(__dirname, '..', '..', '..', 'global-state');
@@ -31,19 +37,25 @@ describe('global-state Step 11 cleanup', () => {
     expect(navigationHelpers).not.toContain('stateRef');
   });
 
-  it('keeps initialization/reconciliation helpers out of the public Router contract', () => {
-    const routerTypes = readRouterFile('types.tsx');
-    const publicRouter = routerTypes.slice(
-      routerTypes.indexOf('export type Router<'),
-      routerTypes.indexOf('export type InternalRouter<')
-    );
+  it('keeps the public Router contract to getStateForAction + actionCreators only', () => {
+    // Load-bearing, semantic guard: `keyof Router` must be exactly these two members. Re-adding any
+    // former router-specific method (getInitialState, getRehydratedState, getStateForRouteNamesChange,
+    // getStateForRouteFocus, shouldActionChangeFocus) to `Router` fails typecheck right here — no
+    // reliance on comment/marker positions in the source file.
+    const routerContractIsMinimal: Equals<
+      keyof Router<NavigationState, NavigationAction>,
+      'getStateForAction' | 'actionCreators'
+    > = true;
+    expect(routerContractIsMinimal).toBe(true);
 
-    expect(publicRouter).not.toContain('getInitialState');
-    expect(publicRouter).not.toContain('getRehydratedState');
-    expect(publicRouter).not.toContain('getStateForRouteNamesChange');
-    expect(publicRouter).not.toContain('getStateForRouteFocus');
-    expect(publicRouter).not.toContain('shouldActionChangeFocus');
-    expect(routerTypes).toContain('export type InternalRouter<');
+    // The methods and the retired transitional `InternalRouter` alias are physically gone from the file.
+    const routerTypes = readRouterFile('types.tsx');
+    expect(routerTypes).not.toContain('getInitialState');
+    expect(routerTypes).not.toContain('getRehydratedState');
+    expect(routerTypes).not.toContain('getStateForRouteNamesChange');
+    expect(routerTypes).not.toContain('getStateForRouteFocus');
+    expect(routerTypes).not.toContain('shouldActionChangeFocus');
+    expect(routerTypes).not.toContain('InternalRouter');
   });
 });
 

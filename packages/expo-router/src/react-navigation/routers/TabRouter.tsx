@@ -12,11 +12,11 @@ import { asReconcileRouteNamesAction, isUnhandledStateRestore } from './reconcil
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
-  InternalRouter,
   NavigationState,
   ParamListBase,
   PartialState,
   Route,
+  Router,
   RouterConfigOptions,
 } from './types';
 
@@ -445,7 +445,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
     return { ...state, routes, index };
   }
 
-  const router: InternalRouter<State, TabActionType | CommonNavigationAction> = {
+  const router: Router<State, TabActionType | CommonNavigationAction> = {
     ...BaseRouter,
 
     getStateForAction(state, action, options) {
@@ -698,7 +698,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
  */
 export function TabRouter(
   args: TabRouterOptions
-): InternalRouter<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction> {
+): Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction> {
   const base = BaseTabRouter(args);
   return {
     ...base,
