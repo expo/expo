@@ -38,6 +38,7 @@
 
 ### 💡 Others
 
+- Project preloaded routes in native-stack. ([#47961](https://github.com/expo/expo/pull/47961) by [@Ubax](https://github.com/Ubax))
 - Refactor native-stack for compliance with standard-navigation integration. ([#46592](https://github.com/expo/expo/pull/46592) by [@Ubax](https://github.com/Ubax))
 - Move `@testing-library/jest-dom` and `@testing-library/user-event` from `dependencies` to `devDependencies` ([#47820](https://github.com/expo/expo/pull/47820) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Rewrite native tabs using standard-navigation ([#46457](https://github.com/expo/expo/pull/46457) by [@Ubax](https://github.com/Ubax))
