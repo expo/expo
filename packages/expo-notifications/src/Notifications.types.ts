@@ -612,7 +612,7 @@ export type NotificationContentInput = {
   categoryIdentifier?: string;
   /**
    * If set to `true`, the notification cannot be dismissed by swipe. This setting defaults
-   * to `false` if not provided or is invalid. Corresponds directly do Android's `isOngoing` behavior.
+   * to `false` if not provided or is invalid. Corresponds directly to Android's `isOngoing` behavior.
    * In Firebase terms this property of a notification is called `sticky`.
    *
    * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setOngoing(boolean))

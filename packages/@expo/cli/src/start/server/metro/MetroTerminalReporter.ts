@@ -537,7 +537,7 @@ function maybeAppendCodeFrame(message: string, rawMessage: string): string {
   return message;
 }
 
-/** Extract fist code frame presented in the error message */
+/** Extract first code frame presented in the error message */
 export function extractCodeFrame(errorMessage: string): string {
   const codeFrameLine = /^(?:\s*(?:>?\s*\d+\s*\||\s*\|).*\n?)+/;
   let wasPreviousLineCodeFrame: boolean | null = null;

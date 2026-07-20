@@ -147,7 +147,7 @@ export class NpmPackageManager extends BasePackageManager {
 
   /**
    * Older npm versions have issues with mismatched nested dependencies when adding exact versions.
-   * This propagates as issues like mismatched `@expo/config-pugins` versions.
+   * This propagates as issues like mismatched `@expo/config-plugins` versions.
    * As a workaround, we update the `package.json` directly and run `npm install`.
    */
   private async updatePackageFileAsync(
