@@ -112,4 +112,35 @@ describe('e2e: Android locales', () => {
       'https://docs.expo.dev/guides/localization/#translating-app-metadata'
     );
   });
+
+  it('skips non-string values instead of writing "[object Object]"', async () => {
+    await setLocalesAsync(
+      {
+        locales: {
+          pt: {
+            app_name: 'pt-name',
+            plugins: { 'expo-camera': { cameraPermission: 'pt-camera-nested' } } as any,
+          },
+        },
+      },
+      { projectRoot }
+    );
+
+    const strings = vol
+      .readFileSync('/app/android/app/src/main/res/values-b+pt/strings.xml')
+      .toString();
+    expect(strings).toMatchInlineSnapshot(`
+      "<resources>
+        <string name="app_name">"pt-name"</string>
+      </resources>"
+    `);
+    expect(strings).not.toMatch(/object Object/);
+
+    expect(WarningAggregator.addWarningForPlatform).toHaveBeenCalledWith(
+      'android',
+      'locales.pt',
+      'Skipped locale keys with invalid values: plugins. Values must be strings.',
+      'https://docs.expo.dev/guides/localization/#translating-app-metadata'
+    );
+  });
 });
